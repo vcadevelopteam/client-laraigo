@@ -1980,6 +1980,7 @@ export const langKeys = {
   standard: 'standard',
   custom: 'custom',
   data_table: 'data_table',
+  code_binding: "code_binding",
   levelName: 'levelName',
   getVariables: 'getVariables',
   requesttype: 'requesttype',
@@ -6118,6 +6119,19 @@ export const langKeys = {
   tmeDescription: 'tmeDescription',
   tmrDescription: 'tmrDescription',
 
+  code_table: 'code_table',
+  codes_table_helper: 'codes_table_helper',
+  tracking_fields:'tracking_fields',
+  tracking_fields_helper:'tracking_fields_helper',
+  person_table: 'person_table',
+  people_table_helper: 'people_table_helper',
+  expiration_date: 'expiration_date',
+  add_expiration_date_to_code:'add_expiration_date_to_code',
+  add_expiration_date_to_code_helper: 'add_expiration_date_to_code_helper',
+  add_expiration_date_to_person:'add_expiration_date_to_person',
+  add_expiration_date_to_person_helper: 'add_expiration_date_to_person_helper',
+  errorIntegrationColumnDuplicates: 'errorIntegrationColumnDuplicates',
+  errorIntegrationTrackinguplicates: 'errorIntegrationTrackinguplicates',
 };
 
 export type LangKeys = typeof langKeys;

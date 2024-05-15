@@ -1525,6 +1525,7 @@ const translation: LangKeys = {
   standard: 'Estándar',
   custom: 'Personalizado',
   data_table: 'Tabla de Datos',
+  code_binding: "Vinculación de códigos",
   requesttype: 'Tipo de solicitud',
   url: 'Url',
   authorization: 'Autorización',
@@ -6102,6 +6103,19 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   app_orders_in_store: 'Pedidos en tienda',
 
 
+  code_table: 'Tabla códigos',
+  codes_table_helper: 'Crea tu tabla de códigos que serán vinculados a las personas que se encuentren registradas.',
+  add_expiration_date_to_code:'Añadir fecha de caducidad al código',
+  tracking_fields:'Campos de rastreo',
+  tracking_fields_helper:'Añade los campos de la tabla personas que desees, se mostrarán los campos relacionados al código, para una mayor trazabilidad.',
+  person_table: 'Tabla de personas',
+  people_table_helper: 'Crea tu tabla de personas que podrán vincularse a los códigos registrados.',
+  expiration_date: 'Fecha de caducidad',
+  add_expiration_date_to_code_helper: 'Añade un campo de fecha de caducidad para tu código, posterior a esta fecha se eliminará el registro.',
+  add_expiration_date_to_person:'Añadir fecha caducidad de la persona',
+  add_expiration_date_to_person_helper: 'Añade un campo de fecha de caducidad para tu persona, posterior a esta fecha se eliminará el registro.',
+  errorIntegrationColumnDuplicates: 'Los nombres de las columnas no se pueden repetir.',
+  errorIntegrationTrackinguplicates: 'Los nombres de los campos de rastreo no se pueden repetir.',
 };
 
 const esResource: ResourceLanguage = {

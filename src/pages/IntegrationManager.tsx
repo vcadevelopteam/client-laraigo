@@ -15,6 +15,7 @@ import {
    FieldCheckbox,
    DialogZyx,
    RadioGroudFieldEdit,
+   IOSSwitch,
 } from "components";
 import {
    getIntegrationManagerSel,
@@ -67,6 +68,7 @@ import useDrivePicker from "react-google-drive-picker";
 import { exchangeCode } from "store/google/actions";
 import { ExcelFileIcon, GoogleDriveIcon } from "icons";
 import { integrationManagerDataSourceIns } from "../common/helpers/requestBodies";
+import VinculationTable from "./integrationmanager/VinculationTable";
 
 interface RowSelected {
    row: Dictionary | null;
@@ -86,6 +88,46 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
       padding: theme.spacing(2),
       background: "#fff",
+   },
+   addField: {
+      display: 'flex',
+      marginTop: theme.spacing(2),
+      justifyContent: "end"
+   },
+   addFieldTracking: {
+      display: 'flex',
+      marginTop: theme.spacing(4),
+      justifyContent: "space-between"
+   },
+   switchStyle: {
+      marginTop: theme.spacing(1),
+   },
+   switchContainer: {
+      display: 'flex',
+      gap: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+   },
+   containerClaro: {
+       display: 'flex',
+       flexDirection: 'row',
+       gap: theme.spacing(2),
+       [theme.breakpoints.down('sm')]: {
+         flexWrap: 'wrap',
+       },
+   },
+   containerDetailClaro: {
+      marginTop: theme.spacing(2),
+      padding: theme.spacing(2),
+      background: '#fff',
+      border: '1px solid #7721ad',
+      borderRadius: '10px',
+      [theme.breakpoints.up('sm')]: {
+          width: '50%', 
+      },
+      [theme.breakpoints.down('sm')]: {
+          width: '100%', 
+      },
    },
    button: {
       padding: 12,
@@ -136,6 +178,12 @@ const useStyles = makeStyles((theme) => ({
 const dataIntegrationType: Dictionary = {
    API_TEMPLATE: "api_template",
    DATA_TABLE: "data_table",
+};
+
+const dataIntegrationTypeClaro: Dictionary = {
+   API_TEMPLATE: "api_template",
+   DATA_TABLE: "data_table",
+   CODE_PERSON: "code_binding",
 };
 
 const dataMethodType: Dictionary = {
@@ -402,6 +450,12 @@ type FormFields = {
    bodytype: string;
    body: string;
    url_params: Dictionary[];
+   code_params: Dictionary[];
+   code_table: any;
+   person_table: any;
+   person_params: Dictionary[];
+   code_params_tracking: Dictionary[];
+   person_params_tracking: Dictionary[];
    parameters: Dictionary[];
    variables: string[];
    level: string;
@@ -444,7 +498,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    const [waitImport, setWaitImport] = useState(false);
    const [waitDelete, setWaitDelete] = useState(false);
-
    const mainAuxRes = useSelector((state) => state.main.mainAux);
    const [waitView, setWaitView] = useState(false);
    const [openViewTableModal, setOpenViewTableModal] = useState(false);
@@ -454,6 +507,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const [contentType, setContentType] = useState("Texto");
    const [openTestModal, setOpenTestModal] = useState(false);
    const [openResponseModal, setOpenResponseModal] = useState(false);
+   const [view, setView] = useState("view-1");
    const [responseData, setResponseData] = useState<any>();
 
    const [openPicker] = useDrivePicker();
@@ -461,6 +515,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const exchangeCodeResult = useSelector((state) => state.google.requestExchangeCode);
    const [importedData, setImportedData] = useState<Dictionary[] | null>(null)
    const [dataSourceConfig, setDataSourceConfig] = useState<IDataSourceConfig | null>(row?.datasource_config ?? null)
+   const [dataIntType, setDataIntType] = useState<Dictionary>([]);
+   const [codeExpiration, setCodeExpiration] = useState(!!row?.code_table?.columns?.includes("Fecha de caducidad")||false);
+   const [personExpiration, setPersonExpiration] = useState(!!row?.person_table?.columns?.includes("Fecha de caducidad")||false);
 
    const dataKeys = new Set([
       ...dataLevelKeys,
@@ -478,6 +535,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       trigger,
       watch,
       formState: { errors },
+      setError
    } = useForm<FormFields>({
       defaultValues: {
          isnew: row ? false : true,
@@ -504,7 +562,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             : [{ name: "corpid", key: true }],
          operation: row ? "EDIT" : "INSERT",
          results: row ? row.results || [] : [],
-         datasource: row ? row.datasource || '' : ''
+         datasource: row ? row.datasource || '' : '',
+         code_table: {},
+         code_params: row?.code_table?.columns?.filter((item) => !['Codigo', 'Fecha de caducidad'].includes(item))?.map((item) => ({ key: item })) ||[],
+         person_params: row?.person_table?.columns?.filter((item) => !['Persona', 'Fecha de caducidad'].includes(item))?.map((item) => ({ key: item })) ||[],
+         code_params_tracking: row?.code_table?.tracking_columns?.map((item) => ({ key: item })) ||[{key:"Persona"}],
+         person_params_tracking: row?.person_table?.tracking_columns?.map((item) => ({ key: item })) ||[{key:"Codigo"}],
       },
    });
 
@@ -527,6 +590,40 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    } = useFieldArray({
       control,
       name: "url_params",
+   });
+   const {
+      fields: codeParams,
+      append: codeParamsAppend,
+      remove: codeParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "code_params",
+   });
+   
+   const {
+      fields: personParams,
+      append: personParamsAppend,
+      remove: personParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "person_params",
+   });
+   const {
+      fields: codeTrackingParams,
+      append: codeTrackingParamsAppend,
+      remove: codeTrackingParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "code_params_tracking",
+   });
+
+   const {
+      fields: personTrackingParams,
+      append: personTrackingParamsAppend,
+      remove: personTrackingParamsRemove,
+   } = useFieldArray({
+      control,
+      name: "person_params_tracking",
    });
 
    const {
@@ -711,6 +808,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    }, [edit, register]);
 
    useEffect(() => {
+      setDataIntType(user?.properties.environment === "CLARO"?dataIntegrationTypeClaro: dataIntegrationType)
+   }, [user])
+
+   useEffect(() => {
       if (waitSave) {
          if (!executeRes.loading && !executeRes.error) {
             dispatch(
@@ -748,6 +849,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    }, [executeRes, waitSave]);
 
    const onSubmit = handleSubmit((data) => {
+      let error=false
       data.variables = data.variables || [];
       if (data.type === "API_TEMPLATE") {
          let v: string[] = [];
@@ -758,6 +860,65 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             v = extractVariablesFromArray(data.parameters, "value", v);
          }
          data.variables = v;
+      }else if (data.type === "CODE_PERSON"){  
+         const codecolumnstrack = data.code_params_tracking.map((item) => item.key);
+         const personcolumnstrack = data.person_params_tracking.map((item) => item.key);
+         const codecolumns = ['Codigo']
+         data.code_params.forEach((item) => {
+            codecolumns.push(item.key);
+            if (codeExpiration) {
+               codecolumns.splice(1, 0, 'Fecha de caducidad');
+            }
+          });
+         const personcolumns = ['Persona']
+         data.person_params.forEach((item) => {
+            personcolumns.push(item.key);
+            if (personExpiration) {
+               personcolumns.splice(1, 0, 'Fecha de caducidad');
+            }
+         });
+         data.code_table={
+            "columns": codecolumns,
+            "tracking_columns": codecolumnstrack
+         }
+         data.person_table={
+            "columns": personcolumns,
+            "tracking_columns": personcolumnstrack
+         }
+  
+         data.code_params.forEach((x,i)=>{
+            const count = codecolumns.filter((value) => value === x.key).length;
+            const hasDuplicates = count > 1;
+            if(x.key==="Codigo"||x.key==="Fecha de caducidad"||hasDuplicates) {
+               setError(`code_params.${i}.key`, { type: 'manual', message: t(langKeys.errorIntegrationColumnDuplicates) })
+               error=true
+            }
+         })
+         data.code_params_tracking.forEach((x,i)=>{
+            const count = codecolumnstrack.filter((value) => value === x.key).length;
+            const hasDuplicates = count > 1;
+            if(hasDuplicates) {
+               setError(`code_params.${i}.key`, { type: 'manual', message: t(langKeys.errorIntegrationColumnDuplicates) })
+               error=true
+            }
+         })
+         data.person_params.forEach((x,i)=>{
+            const count = personcolumns.filter((value) => value === x.key).length;
+            const hasDuplicates = count > 1;
+            if(x.key==="Persona"||x.key==="Fecha de caducidad"||hasDuplicates){ 
+               error= true
+               setError(`person_params.${i}.key`, { type: 'manual', message: t(langKeys.errorIntegrationColumnDuplicates)})
+            }
+         })
+         data.person_params_tracking.forEach((x,i)=>{
+            const count = personcolumnstrack.filter((value) => value === x.key).length;
+            const hasDuplicates = count > 1;
+            if(hasDuplicates) {
+               setError(`code_params.${i}.key`, { type: 'manual', message: t(langKeys.errorIntegrationColumnDuplicates) })
+               error=true
+            }
+         })
+
       } else if (data.isnew && data.type === "DATA_TABLE") {
          const getKeyField = data.fields.filter( (d) => !dataLevelKeys.includes(d.name) && d.key === true )
          if ( getKeyField.length === 0 ) {
@@ -804,14 +965,15 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
          dispatch(showBackdrop(true));
          setWaitSave(true);
       };
-
-      dispatch(
-         manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback,
-         })
-      );
+      if(!error){      
+         dispatch(
+            manageConfirmation({
+               visible: true,
+               question: t(langKeys.confirmation_save),
+               callback,
+            })
+         );
+      }
    });
 
    const onChangeContentType = (e: { key: React.SetStateAction<string> }) => {
@@ -1295,1205 +1457,1227 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       return [head, tail];
    }, [fields]);
 
-   return (
-      <div style={{ width: "100%" }}>
-         {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
-         <form onSubmit={onSubmit}>
-            <div
-               style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-               }}
-            >
-               <div>
-                  <TemplateBreadcrumbs
-                     breadcrumbs={[
-                        ...arrayBread,
-                        {
-                           id: "view-2",
-                           name: t(langKeys.integrationmanagerdetail),
-                        },
-                     ]}
-                     handleClick={setViewSelected}
-                  />
-                  <TitleDetail
-                     title={
-                        row ? `${row.name}` : t(langKeys.newintegrationmanager)
-                     }
-                  />
-               </div>
+   if(view === "view-1"){
+      return (
+         <div style={{ width: "100%" }}>
+            {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
+            <form onSubmit={onSubmit}>
                <div
                   style={{
                      display: "flex",
-                     gap: "10px",
-                     alignItems: "center",
+                     justifyContent: "space-between",
                   }}
                >
-                  {getValues("type") === "API_TEMPLATE" && (
+                  <div>
+                     <TemplateBreadcrumbs
+                        breadcrumbs={[
+                           ...arrayBread,
+                           {
+                              id: "view-2",
+                              name: t(langKeys.integrationmanagerdetail),
+                           },
+                        ]}
+                        handleClick={setViewSelected}
+                     />
+                     <TitleDetail
+                        title={
+                           row ? `${row.name}` : t(langKeys.newintegrationmanager)
+                        }
+                     />
+                  </div>
+                  <div
+                     style={{
+                        display: "flex",
+                        gap: "10px",
+                        alignItems: "center",
+                     }}
+                  >
+                     {getValues("type") === "API_TEMPLATE" && (
+                        <Button
+                           variant="contained"
+                           type="button"
+                           color="primary"
+                           style={{ backgroundColor: "#7721AD" }}
+                           // onClick={() => onClickTest()}
+                           onClick={onClickTestButton}
+                        >
+                           {t(langKeys.test)}
+                        </Button>
+                     )}
+                     {!getValues("isnew") &&
+                        getValues("type") === "DATA_TABLE" && (
+                           <React.Fragment>
+                               {/* <Button
+                                 variant="contained"
+                                 type="button"
+                                 color="primary"
+                                 startIcon={<DeleteIcon color="secondary" />}
+                                 style={{ backgroundColor: "#FB5F5F" }}
+                                 onClick={onDeleteData}
+                              >
+                                 {t(langKeys.deletedata)}
+                              </Button> */}
+                              
+                              {/*
+                              <input
+                                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                                 id="uploadfile"
+                                 type="file"
+                                 style={{ display: "none" }}
+                                 onChange={(e) => handleUpload(e.target.files)}
+                              />
+                              <label htmlFor="uploadfile">
+                                 <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    component="span"
+                                    color="primary"
+                                    startIcon={<BackupIcon color="secondary" />}
+                                    style={{
+                                       backgroundColor: "#55BD84",
+                                    }}
+                                 >
+                                    {t(langKeys.import)}
+                                 </Button>
+                              </label> */}
+                           </React.Fragment>
+                        )}
                      <Button
                         variant="contained"
                         type="button"
                         color="primary"
-                        style={{ backgroundColor: "#7721AD" }}
-                        // onClick={() => onClickTest()}
-                        onClick={onClickTestButton}
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => setViewSelected("view-1")}
                      >
-                        {t(langKeys.test)}
+                        {t(langKeys.back)}
                      </Button>
-                  )}
-                  {!getValues("isnew") &&
-                     getValues("type") === "DATA_TABLE" && (
-                        <React.Fragment>
-                            {/* <Button
-                              variant="contained"
-                              type="button"
-                              color="primary"
-                              startIcon={<DeleteIcon color="secondary" />}
-                              style={{ backgroundColor: "#FB5F5F" }}
-                              onClick={onDeleteData}
-                           >
-                              {t(langKeys.deletedata)}
-                           </Button> */}
-                           
-                           {/*
-                           <input
-                              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
-                              id="uploadfile"
-                              type="file"
-                              style={{ display: "none" }}
-                              onChange={(e) => handleUpload(e.target.files)}
-                           />
-                           <label htmlFor="uploadfile">
-                              <Button
-                                 className={classes.button}
-                                 variant="contained"
-                                 component="span"
-                                 color="primary"
-                                 startIcon={<BackupIcon color="secondary" />}
-                                 style={{
-                                    backgroundColor: "#55BD84",
-                                 }}
-                              >
-                                 {t(langKeys.import)}
-                              </Button>
-                           </label> */}
-                        </React.Fragment>
+                     {edit && (
+                        <Button
+                           className={classes.button}
+                           variant="contained"
+                           color="primary"
+                           type="submit"
+                           startIcon={<SaveIcon color="secondary" />}
+                           style={{ backgroundColor: "#55BD84" }}
+                        >
+                           {t(langKeys.save)}
+                        </Button>
                      )}
-                  <Button
-                     variant="contained"
-                     type="button"
-                     color="primary"
-                     startIcon={<ClearIcon color="secondary" />}
-                     style={{ backgroundColor: "#FB5F5F" }}
-                     onClick={() => setViewSelected("view-1")}
-                  >
-                     {t(langKeys.back)}
-                  </Button>
-                  {edit && (
-                     <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}
-                     >
-                        {t(langKeys.save)}
-                     </Button>
-                  )}
+                  </div>
                </div>
-            </div>
-            <div className={classes.containerDetail}>
-               <div className="row-zyx">
-                  {edit && getValues("isnew") ? (
-                     <FieldEdit
-                        label={t(langKeys.name)}
-                        className="col-12"
-                        valueDefault={getValues("name")}
-                        onChange={(value) => setValue("name", value)}
-                        error={errors?.name?.message}
-                        helperText={ getValues('type') === 'DATA_TABLE' ? t(langKeys.tooltipintegrationname): undefined}
-                     />
-                  ) : (
-                     <FieldView
-                        label={t(langKeys.name)}
-                        tooltip={t(langKeys.tooltipintegrationname)}
-                        value={row?.name || ""}
-                        className="col-12"
-                     />
-                  )}
-               </div>
-
-               <div className="row-zyx">
-                  {edit && getValues("isnew") ? (
-                     <FieldSelect
-                        uset={true}
-                        label={t(langKeys.type)}
-                        className="col-12"
-                        valueDefault={getValues("type")}
-                        onChange={onChangeType}
-                        error={errors?.type?.message}
-                        data={dictToArrayKV(dataIntegrationType)}
-                        optionDesc="value"
-                        optionValue="key"
-                     />
-                  ) : (
-                     <FieldView
-                        label={t(langKeys.type)}
-                        value={t(dataIntegrationType[row?.type]) || ""}
-                        className="col-12"
-                     />
-                  )}
-               </div>
-
-               {getValues("type") === "API_TEMPLATE" ? (
+               <div className={classes.containerDetail}>
                   <div className="row-zyx">
-                     {edit ? (
-                        <React.Fragment>
-                           <FieldSelect
-                              fregister={{
-                                 ...register(`method`, {
-                                    validate: (value: any) =>
-                                       (value && value.length) ||
-                                       t(langKeys.field_required),
-                                 }),
-                              }}
-                              label={t(langKeys.requesttype)}
-                              className={classes.selectInput1}
-                              valueDefault={getValues("method")}
-                              onChange={onChangeMethod}
-                              error={errors?.method?.message}
-                              data={dictToArrayKV(dataMethodType)}
-                              optionDesc="value"
-                              optionValue="key"
-                           />
-                           <FieldEdit
-                              fregister={{
-                                 ...register(`url`, {
-                                    validate: (value: any) =>
-                                       (value && value.length) ||
-                                       t(langKeys.field_required),
-                                 }),
-                              }}
-                              label={t(langKeys.url)}
-                              className={classes.selectInput2}
-                              valueDefault={getValues("url")}
-                              onChange={(value) => onChangeURL(value)}
-                              error={errors?.url?.message}
-                           />
-                        </React.Fragment>
+                     {edit && getValues("isnew") ? (
+                        <FieldEdit
+                           label={t(langKeys.name)}
+                           className="col-12"
+                           valueDefault={getValues("name")}
+                           onChange={(value) => setValue("name", value)}
+                           error={errors?.name?.message}
+                           helperText={ getValues('type') === 'DATA_TABLE' ? t(langKeys.tooltipintegrationname): undefined}
+                        />
                      ) : (
                         <FieldView
-                           label={t(langKeys.url)}
-                           value={row?.url || ""}
+                           label={t(langKeys.name)}
+                           tooltip={t(langKeys.tooltipintegrationname)}
+                           value={row?.name || ""}
                            className="col-12"
                         />
                      )}
                   </div>
-               ) : <div className="row-zyx">
-               {edit && getValues("isnew") ? (
-                  <React.Fragment>
-                     <FieldEdit
-                        label={t(langKeys.url)}
-                        className="col-12"
-                        valueDefault={getValues("url")}
-                        disabled={true}
-                        error={errors?.url?.message}
-                        helperText={t(langKeys.tooltipintegrationurl)}
-                     />
-                  </React.Fragment>
-               ) : (
-                  <FieldView
-                     label={t(langKeys.url)}
-                     value={row?.url || ""}
-                     className="col-12"
-                     tooltip={t(langKeys.tooltipintegrationurl)}
-                  />
-               )}
-            </div>}
-            </div>
-            {getValues("type") === "API_TEMPLATE" ? (
-               <React.Fragment>
-                  <div className={classes.containerDetail}>
-                     <div className="row-zyx">
+   
+                  <div className="row-zyx">
+                     {edit && getValues("isnew") ? (
                         <FieldSelect
                            uset={true}
-                           fregister={{
-                              ...register(`authorization.type`, {
-                                 validate: (value: any) =>
-                                    (value && value.length) ||
-                                    t(langKeys.field_required),
-                              }),
-                           }}
-                           label={t(langKeys.authorization)}
-                           valueDefault={getValues("authorization.type")}
-                           onChange={onChangeAuthorization}
-                           error={errors?.authorization?.type?.message}
-                           data={dictToArrayKV(dataAuthorizationType)}
+                           label={t(langKeys.type)}
+                           className="col-12"
+                           valueDefault={getValues("type")}
+                           onChange={onChangeType}
+                           error={errors?.type?.message}
+                           data={dictToArrayKV(dataIntType)}
                            optionDesc="value"
                            optionValue="key"
                         />
-                     </div>
-
-                     {getValues("authorization.type") === "BASIC" ? (
-                        <div className="row-zyx">
-                           <React.Fragment>
-                              <FieldEdit
-                                 fregister={{
-                                    ...register(`authorization.username`, {
-                                       validate: (value: any) =>
-                                          getValues("authorization.type") ===
-                                          "BASIC"
-                                             ? (value && value.length) ||
-                                               t(langKeys.field_required)
-                                             : null,
-                                    }),
-                                 }}
-                                 label={t(langKeys.username)}
-                                 className="col-6"
-                                 valueDefault={getValues(
-                                    "authorization.username"
-                                 )}
-                                 onChange={(value) =>
-                                    setValue("authorization.username", value)
-                                 }
-                                 error={
-                                    errors?.authorization?.username?.message
-                                 }
-                              />
-                              <FieldEdit
-                                 fregister={{
-                                    ...register(`authorization.password`, {
-                                       validate: (value: any) =>
-                                          getValues("authorization.type") ===
-                                          "BASIC"
-                                             ? (value && value.length) ||
-                                               t(langKeys.field_required)
-                                             : null,
-                                    }),
-                                 }}
-                                 label={t(langKeys.password)}
-                                 className="col-6"
-                                 valueDefault={getValues(
-                                    "authorization.password"
-                                 )}
-                                 onChange={(value) =>
-                                    setValue("authorization.password", value)
-                                 }
-                                 error={
-                                    errors?.authorization?.password?.message
-                                 }
-                              />
-                           </React.Fragment>
-                        </div>
-                     ) : null}
-                     {getValues("authorization.type") === "BEARER" ? (
-                        <div className="row-zyx">
-                           {edit ? (
-                              <FieldEdit
-                                 fregister={{
-                                    ...register(`authorization.token`, {
-                                       validate: (value: any) =>
-                                          getValues("authorization.type") ===
-                                          "BEARER"
-                                             ? (value && value.length) ||
-                                               t(langKeys.field_required)
-                                             : null,
-                                    }),
-                                 }}
-                                 label={t(langKeys.token)}
-                                 className="col-12"
-                                 valueDefault={getValues("authorization.token")}
-                                 onChange={(value) =>
-                                    setValue("authorization.token", value)
-                                 }
-                                 error={errors?.authorization?.token?.message}
-                              />
-                           ) : (
-                              <FieldView
-                                 label={t(langKeys.token)}
-                                 value={row?.authorization?.token || ""}
-                                 className="col-12"
-                              />
-                           )}
-                        </div>
-                     ) : null}
+                     ) : (
+                        <FieldView
+                           label={t(langKeys.type)}
+                           value={t(dataIntType[row?.type]) || ""}
+                           className="col-12"
+                        />
+                     )}
                   </div>
-                  <div className={classes.containerDetail}>
-                     <div
-                        className="row-zyx"
-                        style={{ alignItems: "flex-end" }}
-                     >
-                        <React.Fragment>
-                           <FieldView
-                              label={t(langKeys.header)}
-                              className={classes.labelButton1}
-                           />
-                           {edit ? (
-                              <Button
-                                 variant="outlined"
-                                 type="button"
-                                 color="primary"
-                                 className={classes.labelButton2}
-                                 startIcon={<AddIcon color="primary" />}
-                                 onClick={() => onClickAddHeader()}
-                              >
-                                 {t(langKeys.addheader)}
-                              </Button>
-                           ) : null}
-                        </React.Fragment>
-                     </div>
-                     {edit
-                        ? headers?.map((field: any, i: number) => {
-                             return (
-                                <div className="row-zyx" key={field.id}>
-                                   <FieldEdit
-                                      fregister={{
-                                         ...register(
-                                            `headers.${i}.key` as const,
-                                            {
-                                               validate: (value: string) =>
-                                                  value !== "" ||
-                                                  (t(
-                                                     langKeys.field_required
-                                                  ) as string),
-                                            }
-                                         ),
-                                      }}
-                                      label={t(langKeys.key)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.key || ""}
-                                      onBlur={(value) =>
-                                         onBlurHeader(i, "key", value)
-                                      }
-                                      error={errors?.headers?.[i]?.key?.message}
-                                   />
-                                   <FieldEdit
-                                      fregister={{
-                                         ...register(
-                                            `headers.${i}.value` as const,
-                                            {
-                                               validate: (value: string) =>
-                                                  value !== "" ||
-                                                  (t(
-                                                     langKeys.field_required
-                                                  ) as string),
-                                            }
-                                         ),
-                                      }}
-                                      label={t(langKeys.value)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.value || ""}
-                                      onBlur={(value) =>
-                                         onBlurHeader(i, "value", value)
-                                      }
-                                      error={
-                                         errors?.headers?.[i]?.value?.message
-                                      }
-                                   />
-                                   <FieldEdit
-                                      label={t(langKeys.description)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.description || ""}
-                                      onBlur={(value) =>
-                                         onBlurHeader(i, "description", value)
-                                      }
-                                      error={
-                                         errors?.headers?.[i]?.description
-                                            ?.message
-                                      }
-                                   />
-                                   <IconButton
-                                      size="small"
-                                      className={classes.fieldButton}
-                                      onClick={() => onClickDeleteHeader(i)}
-                                   >
-                                      <DeleteIcon
-                                         style={{
-                                            color: "#000000",
-                                         }}
-                                      />
-                                   </IconButton>
-                                </div>
-                             );
-                          })
-                        : headers?.map((field: any, i: number) => {
-                             return (
-                                <div className="row-zyx" key={field.id}>
-                                   <FieldView
-                                      label={t(langKeys.key)}
-                                      value={field?.key || ""}
-                                      className="col-12"
-                                   />
-                                   <FieldView
-                                      label={t(langKeys.value)}
-                                      value={field?.value || ""}
-                                      className="col-12"
-                                   />
-                                </div>
-                             );
-                          })}
-                  </div>
-                  <div className={classes.containerDetail}>
-                     <div
-                        className="row-zyx"
-                        style={{ alignItems: "flex-end" }}
-                     >
-                        <React.Fragment>
-                           <FieldView
-                              label={t(langKeys.urlParams)}
-                              className={classes.labelButton1}
-                           />
-                           {edit ? (
-                              <Button
-                                 variant="outlined"
-                                 type="button"
-                                 color="primary"
-                                 className={classes.labelButton2}
-                                 startIcon={<AddIcon color="primary" />}
-                                 onClick={() => onClickAddUrlParam()}
-                              >
-                                 {t(langKeys.addUrlParam)}
-                              </Button>
-                           ) : null}
-                        </React.Fragment>
-                     </div>
-                     {/* {getValues("method") !== "GET" && (
-                     )} */}
-                     {edit
-                        ? urlParams?.map((field, i) => {
-                             return (
-                                <div className="row-zyx" key={field.id}>
-                                   <FieldEdit
-                                      fregister={{
-                                         ...register(
-                                            `url_params.${i}.key` as const,
-                                            {
-                                               validate: (value: string) =>
-                                                  value !== "" ||
-                                                  (t(
-                                                     langKeys.field_required
-                                                  ) as string),
-                                            }
-                                         ),
-                                      }}
-                                      label={t(langKeys.key)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.key || ""}
-                                      //   onBlur={(value) =>
-                                      //      onBlurUrlParam(i, "key", value)
-                                      //   }
-                                      onChange={(value) => {
-                                         //   onChangeUrlParams(i, "key", value)
-                                         setValue(`url_params.${i}.key`, value);
-                                         updateUrl();
-                                      }}
-                                      error={
-                                         errors?.url_params?.[i]?.key?.message
-                                      }
-                                   />
-                                   <FieldEdit
-                                      fregister={{
-                                         ...register(
-                                            `url_params.${i}.value` as const,
-                                            {
-                                               validate: (value: string) =>
-                                                  value !== "" ||
-                                                  (t(
-                                                     langKeys.field_required
-                                                  ) as string),
-                                            }
-                                         ),
-                                      }}
-                                      label={t(langKeys.value)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.value || ""}
-                                      //   onBlur={(value) =>
-                                      //      onBlurUrlParam(i, "value", value)
-                                      //   }
-                                      onChange={(value) => {
-                                         //   onChangeUrlParams(i, "key", value)
-                                         setValue(
-                                            `url_params.${i}.value`,
-                                            value
-                                         );
-                                         updateUrl();
-                                      }}
-                                      error={
-                                         errors?.url_params?.[i]?.value?.message
-                                      }
-                                   />
-                                   <FieldEdit
-                                      label={t(langKeys.description)}
-                                      fregister={{
-                                         ...register(
-                                            `url_params.${i}.description` as const
-                                         ),
-                                      }}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.description || ""}
-                                      onChange={
-                                         (value) => {
-                                            setValue(
-                                               `url_params.${i}.description`,
-                                               value
-                                            );
-                                         }
-                                         //   onBlurUrlParam(i, "description", value)
-                                      }
-                                      error={
-                                         errors?.url_params?.[i]?.description
-                                            ?.message
-                                      }
-                                   />
-                                   <IconButton
-                                      size="small"
-                                      className={classes.fieldButton}
-                                      onClick={() => onClickDeleteUrlParam(i)}
-                                   >
-                                      <DeleteIcon
-                                         style={{
-                                            color: "#000000",
-                                         }}
-                                      />
-                                   </IconButton>
-                                </div>
-                             );
-                          })
-                        : urlParams?.map((field: any, i: number) => {
-                             return (
-                                <div className="row-zyx" key={field.id}>
-                                   <FieldView
-                                      label={t(langKeys.key)}
-                                      value={field?.key || ""}
-                                      className="col-12"
-                                   />
-                                   <FieldView
-                                      label={t(langKeys.value)}
-                                      value={field?.value || ""}
-                                      className="col-12"
-                                   />
-                                </div>
-                             );
-                          })}
-                  </div>
-
-                  {getValues("method") !== "GET" ? (
-                     <div className={classes.containerDetail}>
-                        <div className="row-zyx">
-                           {edit ? (
-                              <React.Fragment>
-                                 <FieldSelect
-                                    fregister={{
-                                       ...register(`bodytype`, {
-                                          validate: (value: any) =>
-                                             (value && value.length) ||
-                                             t(langKeys.field_required),
-                                       }),
-                                    }}
-                                    label={t(langKeys.bodytype)}
-                                    className={`${classes.selectInput1} col-4`}
-                                    valueDefault={getValues("bodytype")}
-                                    onChange={onChangeBodyType}
-                                    error={errors?.bodytype?.message}
-                                    data={dictToArrayKV(dataBodyType)}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                 />
-                                 <RadioGroudFieldEdit
-                                    className={"col-4"}
-                                    data={[
-                                       { key: "Texto" },
-                                       { key: "Formulario" },
-                                    ]}
-                                    label={"Tipo de contenido"}
-                                    optionDesc={"key"}
-                                    optionValue={"key"}
-                                    value={contentType}
-                                    onChange={onChangeContentType}
-                                    row
-                                 />
-                                 {getValues("bodytype") !== "URLENCONDED" &&
-                                 contentType === "Texto" ? (
-                                    <Button
-                                       variant="outlined"
-                                       type="button"
-                                       color="primary"
-                                       className={classes.labelButton2}
-                                       onClick={() => onClickBeautify()}
-                                    >
-                                       {t(langKeys.beautify)}
-                                    </Button>
-                                 ) : null}
-                                 {getValues("bodytype") === "URLENCODED" ||
-                                 contentType === "Formulario" ? (
-                                    <Button
-                                       variant="outlined"
-                                       type="button"
-                                       color="primary"
-                                       className={`${classes.labelButton2} col-4`}
-                                       startIcon={<AddIcon color="primary" />}
-                                       onClick={() => onClickAddParameter()}
-                                    >
-                                       {t(langKeys.addparameter)}
-                                    </Button>
-                                 ) : null}
-                              </React.Fragment>
-                           ) : (
-                              <FieldView
-                                 label={t(langKeys.bodytype)}
-                                 value={row ? row.bodytype || "" : ""}
-                                 className="col-12"
-                              />
-                           )}
-                        </div>
-                     </div>
-                  ) : null}
-
-                  {getValues("method") !== "GET" &&
-                  getValues("bodytype") !== "URLENCODED" ? (
+                  {getValues("type") === "CODE_PERSON" &&
+                     <FieldSelect
+                        uset={true}
+                        fregister={{
+                           ...register(`level`, {
+                              validate: (value: any) =>
+                                 (value && value.length) ||
+                                 t(langKeys.field_required),
+                           }),
+                        }}
+                        label={t(langKeys.level)}
+                        className="col-4"
+                        valueDefault={getValues("level")}
+                        onChange={onChangeLevel}
+                        error={errors?.level?.message}
+                        data={dictToArrayKV(dataLevel)}
+                        optionDesc="value"
+                        optionValue="key"
+                     />
+                     
+                  }
+                  {getValues("type") === "API_TEMPLATE" &&
                      <div className="row-zyx">
                         {edit ? (
-                           <FieldEditMulti
-                              fregister={{
-                                 ...register(`body`, {
-                                    validate: {
-                                       value: (value: any) =>
+                           <React.Fragment>
+                              <FieldSelect
+                                 fregister={{
+                                    ...register(`method`, {
+                                       validate: (value: any) =>
                                           (value && value.length) ||
                                           t(langKeys.field_required),
-                                       invalid: (value: any) =>
-                                          validateJSON(value) ||
-                                          t(langKeys.invalidjson),
-                                    },
-                                 }),
-                              }}
-                              label={t(langKeys.body)}
-                              className="col-12"
-                              valueDefault={getValues("body")}
-                              onChange={onChangeBody}
-                              onBlur={onBlurBody}
-                              error={errors?.body?.message}
-                              rows={8}
-                           />
+                                    }),
+                                 }}
+                                 label={t(langKeys.requesttype)}
+                                 className={classes.selectInput1}
+                                 valueDefault={getValues("method")}
+                                 onChange={onChangeMethod}
+                                 error={errors?.method?.message}
+                                 data={dictToArrayKV(dataMethodType)}
+                                 optionDesc="value"
+                                 optionValue="key"
+                              />
+                              <FieldEdit
+                                 fregister={{
+                                    ...register(`url`, {
+                                       validate: (value: any) =>
+                                          (value && value.length) ||
+                                          t(langKeys.field_required),
+                                    }),
+                                 }}
+                                 label={t(langKeys.url)}
+                                 className={classes.selectInput2}
+                                 valueDefault={getValues("url")}
+                                 onChange={(value) => onChangeURL(value)}
+                                 error={errors?.url?.message}
+                              />
+                           </React.Fragment>
                         ) : (
                            <FieldView
-                              label={t(langKeys.body)}
-                              value={row ? row.body || "" : ""}
+                              label={t(langKeys.url)}
+                              value={row?.url || ""}
                               className="col-12"
                            />
                         )}
                      </div>
-                  ) : null}
-                  {getValues("method") === "POST" &&
-                  getValues("bodytype") === "URLENCODED" ? (
-                     <div className={classes.containerDetail}>
-                        <React.Fragment>
-                           {edit
-                              ? parameters?.map((field: any, i: number) => {
-                                   return (
-                                      <div className="row-zyx" key={field.id}>
-                                         <FieldEdit
-                                            fregister={{
-                                               ...register(
-                                                  `parameters.${i}.key` as const,
-                                                  {
-                                                     validate: (
-                                                        value: string
-                                                     ) =>
-                                                        value !== "" ||
-                                                        (t(
-                                                           langKeys.field_required
-                                                        ) as string),
-                                                  }
-                                               ),
-                                            }}
-                                            label={t(langKeys.key)}
-                                            className={classes.fieldRow}
-                                            valueDefault={field?.key || ""}
-                                            onBlur={(value) =>
-                                               onBlurParameter(i, "key", value)
-                                            }
-                                            error={
-                                               errors?.parameters?.[i]?.key
-                                                  ?.message
-                                            }
-                                         />
-                                         <FieldEdit
-                                            fregister={{
-                                               ...register(
-                                                  `parameters.${i}.value` as const,
-                                                  {
-                                                     validate: (
-                                                        value: string
-                                                     ) =>
-                                                        value !== "" ||
-                                                        (t(
-                                                           langKeys.field_required
-                                                        ) as string),
-                                                  }
-                                               ),
-                                            }}
-                                            label={t(langKeys.value)}
-                                            className={classes.fieldRow}
-                                            valueDefault={field?.value || ""}
-                                            onBlur={(value) =>
-                                               onBlurParameter(
-                                                  i,
-                                                  "value",
-                                                  value
-                                               )
-                                            }
-                                            error={
-                                               errors?.parameters?.[i]?.value
-                                                  ?.message
-                                            }
-                                         />
-                                         <IconButton
-                                            size="small"
-                                            className={classes.fieldButton}
-                                            onClick={() =>
-                                               onClickDeleteParameter(i)
-                                            }
-                                         >
-                                            <DeleteIcon
-                                               style={{
-                                                  color: "#000000",
-                                               }}
-                                            />
-                                         </IconButton>
-                                      </div>
-                                   );
-                                })
-                              : parameters?.map((field: any, i: number) => {
-                                   return (
-                                      <div className="row-zyx" key={field.id}>
-                                         <FieldView
-                                            label={t(langKeys.key)}
-                                            value={field?.key || ""}
-                                            className="col-12"
-                                         />
-                                         <FieldView
-                                            label={t(langKeys.value)}
-                                            value={field?.value || ""}
-                                            className="col-12"
-                                         />
-                                      </div>
-                                   );
-                                })}
-                        </React.Fragment>
-                     </div>
-                  ) : null}
-
-                  <div className={classes.containerDetail}>
-                     <div
-                        className="row-zyx"
-                        style={{ alignItems: "flex-end" }}
-                     >
-                        <React.Fragment>
-                           <FieldView
-                              label={t(langKeys.result)}
-                              className={classes.labelButton1}
-                           />
-                           {edit ? (
-                              <Button
-                                 variant="outlined"
-                                 type="button"
-                                 color="primary"
-                                 className={classes.labelButton2}
-                                 startIcon={<AddIcon color="primary" />}
-                                 onClick={() => onClickAddResult()}
-                              >
-                                 {t(langKeys.addResponse)}
-                              </Button>
-                           ) : null}
-                        </React.Fragment>
-                     </div>
-
-                     {edit
-                        ? results?.map((field, i) => {
-                             return (
-                                <div className="row-zyx" key={field.id}>
-                                   <FieldEdit
-                                      fregister={{
-                                         ...register(
-                                            `results.${i}.variable` as const,
-                                            {
-                                               validate: (value: string) =>
-                                                  value !== "" ||
-                                                  (t(
-                                                     langKeys.field_required
-                                                  ) as string),
-                                            }
-                                         ),
-                                      }}
-                                      label={t(langKeys.variable)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.variable || ""}
-                                      onBlur={(value) =>
-                                         onBlurResult(i, "variable", value)
-                                      }
-                                      error={
-                                         errors?.results?.[i]?.variable?.message
-                                      }
-                                   />
-                                   <FieldEdit
-                                      fregister={{
-                                         ...register(
-                                            `results.${i}.path` as const,
-                                            {
-                                               validate: (value: string) => {
-                                                  return (
-                                                     value !== "" ||
-                                                     (t(
-                                                        langKeys.field_required
-                                                     ) as string)
-                                                  );
-                                               },
-                                            }
-                                         ),
-                                      }}
-                                      label={t(langKeys.path)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.path || ""}
-                                      onBlur={(value) =>
-                                         onBlurResult(i, "path", value)
-                                      }
-                                      error={
-                                         errors?.results?.[i]?.path?.message
-                                      }
-                                   />
-                                   <FieldEdit
-                                      label={t(langKeys.description)}
-                                      className={classes.fieldRow}
-                                      valueDefault={field?.description || ""}
-                                      onBlur={(value) =>
-                                         onBlurResult(i, "description", value)
-                                      }
-                                      error={
-                                         errors?.headers?.[i]?.description
-                                            ?.message
-                                      }
-                                   />
-                                   <IconButton
-                                      size="small"
-                                      className={classes.fieldButton}
-                                      onClick={() => onClickDeleteResult(i)}
-                                   >
-                                      <DeleteIcon
-                                         style={{
-                                            color: "#000000",
-                                         }}
-                                      />
-                                   </IconButton>
-                                </div>
-                             );
-                          })
-                        : results?.map((field, i) => {
-                             return (
-                                <div className="row-zyx" key={field.id}>
-                                   <FieldView
-                                      label={t(langKeys.variable)}
-                                      value={field?.variable || ""}
-                                      className="col-12"
-                                   />
-                                   <FieldView
-                                      label={t(langKeys.path)}
-                                      value={field?.path || ""}
-                                      className="col-12"
-                                   />
-                                   <FieldView
-                                      label={t(langKeys.description)}
-                                      value={field?.description || ""}
-                                      className="col-12"
-                                   />
-                                </div>
-                             );
-                          })}
-                  </div>
-               </React.Fragment>
-            ) : null}
-
-               {getValues("type") === "DATA_TABLE" ? (
+                  } 
+                  {getValues("type") === "DATA_TABLE" && <div className="row-zyx">
+                  {edit && getValues("isnew") ? (
+                     <React.Fragment>
+                        <FieldEdit
+                           label={t(langKeys.url)}
+                           className="col-12"
+                           valueDefault={getValues("url")}
+                           disabled={true}
+                           error={errors?.url?.message}
+                           helperText={t(langKeys.tooltipintegrationurl)}
+                        />
+                     </React.Fragment>
+                  ) : (
+                     <FieldView
+                        label={t(langKeys.url)}
+                        value={row?.url || ""}
+                        className="col-12"
+                        tooltip={t(langKeys.tooltipintegrationurl)}
+                     />
+                  )}
+               </div>}
+               </div>
+               {getValues("type") === "API_TEMPLATE" ? (
                   <React.Fragment>
-
                      <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                           {edit && getValues("isnew") ? (
-                              <FieldEdit
-                                 label={t(langKeys.apikey)}
-                                 className="col-12"
-                                 valueDefault={getValues("apikey")}
-                                 disabled={true}
-                                 error={errors?.apikey?.message}
-                              />
-                           ) : (
-                              <FieldView
-                                 label={t(langKeys.apikey)}
-                                 value={row?.apikey || ""}
-                                 className="col-12"
-                              />
-                           )}
-                           
+                           <FieldSelect
+                              uset={true}
+                              fregister={{
+                                 ...register(`authorization.type`, {
+                                    validate: (value: any) =>
+                                       (value && value.length) ||
+                                       t(langKeys.field_required),
+                                 }),
+                              }}
+                              label={t(langKeys.authorization)}
+                              valueDefault={getValues("authorization.type")}
+                              onChange={onChangeAuthorization}
+                              error={errors?.authorization?.type?.message}
+                              data={dictToArrayKV(dataAuthorizationType)}
+                              optionDesc="value"
+                              optionValue="key"
+                           />
                         </div>
-                        <div className="row-zyx">
-                           {edit && getValues("isnew") ? (
-                              <>
-                              <FieldSelect
-                                 uset={true}
-                                 fregister={{
-                                    ...register(`level`, {
-                                       validate: (value: any) =>
-                                          (value && value.length) ||
-                                          t(langKeys.field_required),
-                                    }),
-                                 }}
-                                 label={t(langKeys.level)}
-                                 className="col-4"
-                                 valueDefault={getValues("level")}
-                                 onChange={onChangeLevel}
-                                 error={errors?.level?.message}
-                                 data={dictToArrayKV(dataLevel)}
-                                 optionDesc="value"
-                                 optionValue="key"
-                              />
-                              
-                                 
-                                    {/* Acá deberían ir los FieldEdit */}
-                                     {
-                                       headFields?.map((field, i: number) => {
-                                          return (
-                                             <div className="col-4">
-                                             <FieldEdit
-                                                fregister={{
-                                                   ...register(`fields.${i}.name`, {
-                                                      validate: {
-                                                         value: (value: any) =>
-                                                            (value && value.length) ||
-                                                            t(langKeys.field_required),
-                                                         duplicate: (value: any) =>
-                                                            validateDuplicateFieldName(
-                                                               field,
-                                                               value
-                                                            ) ||
-                                                            t(langKeys.field_duplicate),
-                                                         startwithchar: (value: any) =>
-                                                            validateStartwithcharFieldName(
-                                                               value
-                                                            ) ||
-                                                            t(
-                                                               langKeys.field_startwithchar
-                                                            ),
-                                                         basiclatin: (value: any) =>
-                                                            validateBasicLatinFieldName(
-                                                               value
-                                                            ) ||
-                                                            t(
-                                                               langKeys.field_basiclatinlowercase
-                                                            ),
-                                                      },
-                                                   }),
-                                                }}
-                                                label={t(langKeys.levelName)}
-                                                className={classes.fieldRow}
-                                                valueDefault={field?.name || ""}
-                                                disabled={disableKeys(field, i)}
-                                                onBlur={(value) =>
-                                                   onBlurField(i, "name", value)
-                                                }
-                                                error={errors?.fields?.[i]?.name?.message}
-                                             />
-                                             </div>
-                                          )
-                                       })
-                                     }
-                              
-                              </>
-                           ) : (
-                              <>
-                                 <FieldView
-                                    label={t(langKeys.level)}
-                                    value={t(dataLevel[row?.level]) || ""}
-                                    className="col-4"
+   
+                        {getValues("authorization.type") === "BASIC" ? (
+                           <div className="row-zyx">
+                              <React.Fragment>
+                                 <FieldEdit
+                                    fregister={{
+                                       ...register(`authorization.username`, {
+                                          validate: (value: any) =>
+                                             getValues("authorization.type") ===
+                                             "BASIC"
+                                                ? (value && value.length) ||
+                                                  t(langKeys.field_required)
+                                                : null,
+                                       }),
+                                    }}
+                                    label={t(langKeys.username)}
+                                    className="col-6"
+                                    valueDefault={getValues(
+                                       "authorization.username"
+                                    )}
+                                    onChange={(value) =>
+                                       setValue("authorization.username", value)
+                                    }
+                                    error={
+                                       errors?.authorization?.username?.message
+                                    }
                                  />
-                                 {
-                                       headFields?.map((field, i: number) => {
-                                          return (
-                                             <div className="col-4">
-                                             <FieldEdit
-                                                fregister={{
-                                                   ...register(`fields.${i}.name`, {
-                                                      validate: {
-                                                         value: (value: any) =>
-                                                            (value && value.length) ||
-                                                            t(langKeys.field_required),
-                                                         duplicate: (value: any) =>
-                                                            validateDuplicateFieldName(
-                                                               field,
-                                                               value
-                                                            ) ||
-                                                            t(langKeys.field_duplicate),
-                                                         startwithchar: (value: any) =>
-                                                            validateStartwithcharFieldName(
-                                                               value
-                                                            ) ||
-                                                            t(
-                                                               langKeys.field_startwithchar
-                                                            ),
-                                                         basiclatin: (value: any) =>
-                                                            validateBasicLatinFieldName(
-                                                               value
-                                                            ) ||
-                                                            t(
-                                                               langKeys.field_basiclatinlowercase
-                                                            ),
-                                                      },
-                                                   }),
-                                                }}
-                                                label={t(langKeys.levelName)}
-                                                className={classes.fieldRow}
-                                                valueDefault={field?.name || ""}
-                                                disabled={disableKeys(field, i)}
-                                                onBlur={(value) =>
-                                                   onBlurField(i, "name", value)
-                                                }
-                                                error={errors?.fields?.[i]?.name?.message}
-                                             />
-                                             </div>
-                                          )
-                                       })
-                                     }
-      
-                              </>
-                           )}
-                        </div>
+                                 <FieldEdit
+                                    fregister={{
+                                       ...register(`authorization.password`, {
+                                          validate: (value: any) =>
+                                             getValues("authorization.type") ===
+                                             "BASIC"
+                                                ? (value && value.length) ||
+                                                  t(langKeys.field_required)
+                                                : null,
+                                       }),
+                                    }}
+                                    label={t(langKeys.password)}
+                                    className="col-6"
+                                    valueDefault={getValues(
+                                       "authorization.password"
+                                    )}
+                                    onChange={(value) =>
+                                       setValue("authorization.password", value)
+                                    }
+                                    error={
+                                       errors?.authorization?.password?.message
+                                    }
+                                 />
+                              </React.Fragment>
+                           </div>
+                        ) : null}
+                        {getValues("authorization.type") === "BEARER" ? (
+                           <div className="row-zyx">
+                              {edit ? (
+                                 <FieldEdit
+                                    fregister={{
+                                       ...register(`authorization.token`, {
+                                          validate: (value: any) =>
+                                             getValues("authorization.type") ===
+                                             "BEARER"
+                                                ? (value && value.length) ||
+                                                  t(langKeys.field_required)
+                                                : null,
+                                       }),
+                                    }}
+                                    label={t(langKeys.token)}
+                                    className="col-12"
+                                    valueDefault={getValues("authorization.token")}
+                                    onChange={(value) =>
+                                       setValue("authorization.token", value)
+                                    }
+                                    error={errors?.authorization?.token?.message}
+                                 />
+                              ) : (
+                                 <FieldView
+                                    label={t(langKeys.token)}
+                                    value={row?.authorization?.token || ""}
+                                    className="col-12"
+                                 />
+                              )}
+                           </div>
+                        ) : null}
                      </div>
                      <div className={classes.containerDetail}>
                         <div
                            className="row-zyx"
                            style={{ alignItems: "flex-end" }}
                         >
-                           {edit ? (
-                              <React.Fragment>
-                                 <FieldView
-                                    label={t(langKeys.tablelayout)}
-                                    className={classes.labelButton1}
-                                 />
-                              </React.Fragment>
-                           ) : (
+                           <React.Fragment>
                               <FieldView
-                                 label={t(langKeys.tablelayout)}
-                                 className="col-12"
+                                 label={t(langKeys.header)}
+                                 className={classes.labelButton1}
                               />
-                           )}
+                              {edit ? (
+                                 <Button
+                                    variant="outlined"
+                                    type="button"
+                                    color="primary"
+                                    className={classes.labelButton2}
+                                    startIcon={<AddIcon color="primary" />}
+                                    onClick={() => onClickAddHeader()}
+                                 >
+                                    {t(langKeys.addheader)}
+                                 </Button>
+                              ) : null}
+                           </React.Fragment>
                         </div>
                         {edit
-                           ? tailFields?.map((field, i: number) => {
-                              const index = i + (levelFields[getValues("level")] === 'corpid' ? 1 : 2);
-                              return (
-                                 <div className="row-zyx" key={field.id} style={{gap: 32}}>
-                                    <FieldEdit
+                           ? headers?.map((field: any, i: number) => {
+                                return (
+                                   <div className="row-zyx" key={field.id}>
+                                      <FieldEdit
+                                         fregister={{
+                                            ...register(
+                                               `headers.${i}.key` as const,
+                                               {
+                                                  validate: (value: string) =>
+                                                     value !== "" ||
+                                                     (t(
+                                                        langKeys.field_required
+                                                     ) as string),
+                                               }
+                                            ),
+                                         }}
+                                         label={t(langKeys.key)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.key || ""}
+                                         onBlur={(value) =>
+                                            onBlurHeader(i, "key", value)
+                                         }
+                                         error={errors?.headers?.[i]?.key?.message}
+                                      />
+                                      <FieldEdit
+                                         fregister={{
+                                            ...register(
+                                               `headers.${i}.value` as const,
+                                               {
+                                                  validate: (value: string) =>
+                                                     value !== "" ||
+                                                     (t(
+                                                        langKeys.field_required
+                                                     ) as string),
+                                               }
+                                            ),
+                                         }}
+                                         label={t(langKeys.value)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.value || ""}
+                                         onBlur={(value) =>
+                                            onBlurHeader(i, "value", value)
+                                         }
+                                         error={
+                                            errors?.headers?.[i]?.value?.message
+                                         }
+                                      />
+                                      <FieldEdit
+                                         label={t(langKeys.description)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.description || ""}
+                                         onBlur={(value) =>
+                                            onBlurHeader(i, "description", value)
+                                         }
+                                         error={
+                                            errors?.headers?.[i]?.description
+                                               ?.message
+                                         }
+                                      />
+                                      <IconButton
+                                         size="small"
+                                         className={classes.fieldButton}
+                                         onClick={() => onClickDeleteHeader(i)}
+                                      >
+                                         <DeleteIcon
+                                            style={{
+                                               color: "#000000",
+                                            }}
+                                         />
+                                      </IconButton>
+                                   </div>
+                                );
+                             })
+                           : headers?.map((field: any, i: number) => {
+                                return (
+                                   <div className="row-zyx" key={field.id}>
+                                      <FieldView
+                                         label={t(langKeys.key)}
+                                         value={field?.key || ""}
+                                         className="col-12"
+                                      />
+                                      <FieldView
+                                         label={t(langKeys.value)}
+                                         value={field?.value || ""}
+                                         className="col-12"
+                                      />
+                                   </div>
+                                );
+                             })}
+                     </div>
+                     <div className={classes.containerDetail}>
+                        <div
+                           className="row-zyx"
+                           style={{ alignItems: "flex-end" }}
+                        >
+                           <React.Fragment>
+                              <FieldView
+                                 label={t(langKeys.urlParams)}
+                                 className={classes.labelButton1}
+                              />
+                              {edit ? (
+                                 <Button
+                                    variant="outlined"
+                                    type="button"
+                                    color="primary"
+                                    className={classes.labelButton2}
+                                    startIcon={<AddIcon color="primary" />}
+                                    onClick={() => onClickAddUrlParam()}
+                                 >
+                                    {t(langKeys.addUrlParam)}
+                                 </Button>
+                              ) : null}
+                           </React.Fragment>
+                        </div>
+                        {/* {getValues("method") !== "GET" && (
+                        )} */}
+                        {edit
+                           ? urlParams?.map((field, i) => {
+                                return (
+                                   <div className="row-zyx" key={field.id}>
+                                      <FieldEdit
+                                         fregister={{
+                                            ...register(
+                                               `url_params.${i}.key` as const,
+                                               {
+                                                  validate: (value: string) =>
+                                                     value !== "" ||
+                                                     (t(
+                                                        langKeys.field_required
+                                                     ) as string),
+                                               }
+                                            ),
+                                         }}
+                                         label={t(langKeys.key)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.key || ""}
+                                         //   onBlur={(value) =>
+                                         //      onBlurUrlParam(i, "key", value)
+                                         //   }
+                                         onChange={(value) => {
+                                            //   onChangeUrlParams(i, "key", value)
+                                            setValue(`url_params.${i}.key`, value);
+                                            updateUrl();
+                                         }}
+                                         error={
+                                            errors?.url_params?.[i]?.key?.message
+                                         }
+                                      />
+                                      <FieldEdit
+                                         fregister={{
+                                            ...register(
+                                               `url_params.${i}.value` as const,
+                                               {
+                                                  validate: (value: string) =>
+                                                     value !== "" ||
+                                                     (t(
+                                                        langKeys.field_required
+                                                     ) as string),
+                                               }
+                                            ),
+                                         }}
+                                         label={t(langKeys.value)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.value || ""}
+                                         //   onBlur={(value) =>
+                                         //      onBlurUrlParam(i, "value", value)
+                                         //   }
+                                         onChange={(value) => {
+                                            //   onChangeUrlParams(i, "key", value)
+                                            setValue(
+                                               `url_params.${i}.value`,
+                                               value
+                                            );
+                                            updateUrl();
+                                         }}
+                                         error={
+                                            errors?.url_params?.[i]?.value?.message
+                                         }
+                                      />
+                                      <FieldEdit
+                                         label={t(langKeys.description)}
+                                         fregister={{
+                                            ...register(
+                                               `url_params.${i}.description` as const
+                                            ),
+                                         }}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.description || ""}
+                                         onChange={
+                                            (value) => {
+                                               setValue(
+                                                  `url_params.${i}.description`,
+                                                  value
+                                               );
+                                            }
+                                            //   onBlurUrlParam(i, "description", value)
+                                         }
+                                         error={
+                                            errors?.url_params?.[i]?.description
+                                               ?.message
+                                         }
+                                      />
+                                      <IconButton
+                                         size="small"
+                                         className={classes.fieldButton}
+                                         onClick={() => onClickDeleteUrlParam(i)}
+                                      >
+                                         <DeleteIcon
+                                            style={{
+                                               color: "#000000",
+                                            }}
+                                         />
+                                      </IconButton>
+                                   </div>
+                                );
+                             })
+                           : urlParams?.map((field: any, i: number) => {
+                                return (
+                                   <div className="row-zyx" key={field.id}>
+                                      <FieldView
+                                         label={t(langKeys.key)}
+                                         value={field?.key || ""}
+                                         className="col-12"
+                                      />
+                                      <FieldView
+                                         label={t(langKeys.value)}
+                                         value={field?.value || ""}
+                                         className="col-12"
+                                      />
+                                   </div>
+                                );
+                             })}
+                     </div>
+   
+                     {getValues("method") !== "GET" ? (
+                        <div className={classes.containerDetail}>
+                           <div className="row-zyx">
+                              {edit ? (
+                                 <React.Fragment>
+                                    <FieldSelect
                                        fregister={{
-                                          ...register(`fields.${index}.name`, {
-                                             validate: {
-                                                value: (value: any) =>
-                                                   (value && value.length) ||
-                                                   t(langKeys.field_required),
-                                                duplicate: (value: any) =>
-                                                   validateDuplicateFieldName(
-                                                      field,
-                                                      value
-                                                   ) ||
-                                                   t(langKeys.field_duplicate),
-                                                startwithchar: (value: any) =>
-                                                   validateStartwithcharFieldName(
-                                                      value
-                                                   ) ||
-                                                   t(
-                                                      langKeys.field_startwithchar
-                                                   ),
-                                                basiclatin: (value: any) =>
-                                                   validateBasicLatinFieldName(
-                                                      value
-                                                   ) ||
-                                                   t(
-                                                      langKeys.field_basiclatinlowercase
-                                                   ),
-                                             },
+                                          ...register(`bodytype`, {
+                                             validate: (value: any) =>
+                                                (value && value.length) ||
+                                                t(langKeys.field_required),
                                           }),
                                        }}
-                                       label={t(langKeys.columntitle)}
-                                       className={classes.fieldRow}
-                                       valueDefault={field?.name || ""}
-                                       disabled={disableKeys(field, i)}
-                                       onBlur={(value) =>
-                                          onBlurField(index, "name", value)
-                                       }
-                                       error={errors?.fields?.[index]?.name?.message}
+                                       label={t(langKeys.bodytype)}
+                                       className={`${classes.selectInput1} col-4`}
+                                       valueDefault={getValues("bodytype")}
+                                       onChange={onChangeBodyType}
+                                       error={errors?.bodytype?.message}
+                                       data={dictToArrayKV(dataBodyType)}
+                                       optionDesc="value"
+                                       optionValue="key"
                                     />
-                                    {getValues("isnew") ? (
-                                       <FieldCheckbox
-                                          label={index===0?t(langKeys.key): ""}
-                                          className={`${classes.checkboxRow}`}
-                                          valueDefault={field?.key}
-                                          disabled={disableKeys(field, index)}
-                                          onChange={(value) =>
-                                             onBlurField(index, "key", value)
-                                          }
-                                          error={
-                                             errors?.fields?.[index]?.key?.message
-                                          }
-                                       />
-                                    ) : null}
-                                    {!disableKeys(field, index) ? (
-                                       <IconButton
-                                          size="small"
-                                          className={classes.fieldButton}
-                                          onClick={() => onClickDeleteField(index)}
-                                          style={{width: "30px"}}
-                                       >
-                                          <DeleteIcon
-                                             style={{
-                                                color: "#000000",
-                                             }}
-                                          />
-                                       </IconButton>
-                                    ) : <div style={{width: "30px"}}></div>}
-                                 </div>
-                              );
-                           })
-                           : tailFields?.map((fields:any, i: number) => {
-                              return (
-                                 <div className="row-zyx" key={fields.id}>
-                                    <FieldView
-                                       label={t(langKeys.name)}
-                                       value={fields?.name || ""}
-                                       className="col-12"
+                                    <RadioGroudFieldEdit
+                                       className={"col-4"}
+                                       data={[
+                                          { key: "Texto" },
+                                          { key: "Formulario" },
+                                       ]}
+                                       label={"Tipo de contenido"}
+                                       optionDesc={"key"}
+                                       optionValue={"key"}
+                                       value={contentType}
+                                       onChange={onChangeContentType}
+                                       row
                                     />
-                                    <FieldView
-                                       label={t(langKeys.order)}
-                                       value={fields?.order || ""}
-                                       className="col-12"
-                                    />
-                                 </div>
-                              );
-                           })
-                        }
-                           <div
-                              className="row-zyx"
-                              style={{ alignItems: "flex-end", gap: '1rem' }}
-                           >
-                                 <React.Fragment>
-                                    <Button
+                                    {getValues("bodytype") !== "URLENCONDED" &&
+                                    contentType === "Texto" ? (
+                                       <Button
                                           variant="outlined"
                                           type="button"
                                           color="primary"
                                           className={classes.labelButton2}
-                                          startIcon={<AddIcon color="primary" />}
-                                          onClick={() => onClickAddField()}
+                                          onClick={() => onClickBeautify()}
                                        >
-                                          {t(langKeys.addfield)}
-                                    </Button>
-
+                                          {t(langKeys.beautify)}
+                                       </Button>
+                                    ) : null}
+                                    {getValues("bodytype") === "URLENCODED" ||
+                                    contentType === "Formulario" ? (
+                                       <Button
+                                          variant="outlined"
+                                          type="button"
+                                          color="primary"
+                                          className={`${classes.labelButton2} col-4`}
+                                          startIcon={<AddIcon color="primary" />}
+                                          onClick={() => onClickAddParameter()}
+                                       >
+                                          {t(langKeys.addparameter)}
+                                       </Button>
+                                    ) : null}
+                                 </React.Fragment>
+                              ) : (
+                                 <FieldView
+                                    label={t(langKeys.bodytype)}
+                                    value={row ? row.bodytype || "" : ""}
+                                    className="col-12"
+                                 />
+                              )}
+                           </div>
+                        </div>
+                     ) : null}
+   
+                     {getValues("method") !== "GET" &&
+                     getValues("bodytype") !== "URLENCODED" ? (
+                        <div className="row-zyx">
+                           {edit ? (
+                              <FieldEditMulti
+                                 fregister={{
+                                    ...register(`body`, {
+                                       validate: {
+                                          value: (value: any) =>
+                                             (value && value.length) ||
+                                             t(langKeys.field_required),
+                                          invalid: (value: any) =>
+                                             validateJSON(value) ||
+                                             t(langKeys.invalidjson),
+                                       },
+                                    }),
+                                 }}
+                                 label={t(langKeys.body)}
+                                 className="col-12"
+                                 valueDefault={getValues("body")}
+                                 onChange={onChangeBody}
+                                 onBlur={onBlurBody}
+                                 error={errors?.body?.message}
+                                 rows={8}
+                              />
+                           ) : (
+                              <FieldView
+                                 label={t(langKeys.body)}
+                                 value={row ? row.body || "" : ""}
+                                 className="col-12"
+                              />
+                           )}
+                        </div>
+                     ) : null}
+                     {getValues("method") === "POST" &&
+                     getValues("bodytype") === "URLENCODED" ? (
+                        <div className={classes.containerDetail}>
+                           <React.Fragment>
+                              {edit
+                                 ? parameters?.map((field: any, i: number) => {
+                                      return (
+                                         <div className="row-zyx" key={field.id}>
+                                            <FieldEdit
+                                               fregister={{
+                                                  ...register(
+                                                     `parameters.${i}.key` as const,
+                                                     {
+                                                        validate: (
+                                                           value: string
+                                                        ) =>
+                                                           value !== "" ||
+                                                           (t(
+                                                              langKeys.field_required
+                                                           ) as string),
+                                                     }
+                                                  ),
+                                               }}
+                                               label={t(langKeys.key)}
+                                               className={classes.fieldRow}
+                                               valueDefault={field?.key || ""}
+                                               onBlur={(value) =>
+                                                  onBlurParameter(i, "key", value)
+                                               }
+                                               error={
+                                                  errors?.parameters?.[i]?.key
+                                                     ?.message
+                                               }
+                                            />
+                                            <FieldEdit
+                                               fregister={{
+                                                  ...register(
+                                                     `parameters.${i}.value` as const,
+                                                     {
+                                                        validate: (
+                                                           value: string
+                                                        ) =>
+                                                           value !== "" ||
+                                                           (t(
+                                                              langKeys.field_required
+                                                           ) as string),
+                                                     }
+                                                  ),
+                                               }}
+                                               label={t(langKeys.value)}
+                                               className={classes.fieldRow}
+                                               valueDefault={field?.value || ""}
+                                               onBlur={(value) =>
+                                                  onBlurParameter(
+                                                     i,
+                                                     "value",
+                                                     value
+                                                  )
+                                               }
+                                               error={
+                                                  errors?.parameters?.[i]?.value
+                                                     ?.message
+                                               }
+                                            />
+                                            <IconButton
+                                               size="small"
+                                               className={classes.fieldButton}
+                                               onClick={() =>
+                                                  onClickDeleteParameter(i)
+                                               }
+                                            >
+                                               <DeleteIcon
+                                                  style={{
+                                                     color: "#000000",
+                                                  }}
+                                               />
+                                            </IconButton>
+                                         </div>
+                                      );
+                                   })
+                                 : parameters?.map((field: any, i: number) => {
+                                      return (
+                                         <div className="row-zyx" key={field.id}>
+                                            <FieldView
+                                               label={t(langKeys.key)}
+                                               value={field?.key || ""}
+                                               className="col-12"
+                                            />
+                                            <FieldView
+                                               label={t(langKeys.value)}
+                                               value={field?.value || ""}
+                                               className="col-12"
+                                            />
+                                         </div>
+                                      );
+                                   })}
+                           </React.Fragment>
+                        </div>
+                     ) : null}
+   
+                     <div className={classes.containerDetail}>
+                        <div
+                           className="row-zyx"
+                           style={{ alignItems: "flex-end" }}
+                        >
+                           <React.Fragment>
+                              <FieldView
+                                 label={t(langKeys.result)}
+                                 className={classes.labelButton1}
+                              />
+                              {edit ? (
+                                 <Button
+                                    variant="outlined"
+                                    type="button"
+                                    color="primary"
+                                    className={classes.labelButton2}
+                                    startIcon={<AddIcon color="primary" />}
+                                    onClick={() => onClickAddResult()}
+                                 >
+                                    {t(langKeys.addResponse)}
+                                 </Button>
+                              ) : null}
+                           </React.Fragment>
+                        </div>
+   
+                        {edit
+                           ? results?.map((field, i) => {
+                                return (
+                                   <div className="row-zyx" key={field.id}>
+                                      <FieldEdit
+                                         fregister={{
+                                            ...register(
+                                               `results.${i}.variable` as const,
+                                               {
+                                                  validate: (value: string) =>
+                                                     value !== "" ||
+                                                     (t(
+                                                        langKeys.field_required
+                                                     ) as string),
+                                               }
+                                            ),
+                                         }}
+                                         label={t(langKeys.variable)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.variable || ""}
+                                         onBlur={(value) =>
+                                            onBlurResult(i, "variable", value)
+                                         }
+                                         error={
+                                            errors?.results?.[i]?.variable?.message
+                                         }
+                                      />
+                                      <FieldEdit
+                                         fregister={{
+                                            ...register(
+                                               `results.${i}.path` as const,
+                                               {
+                                                  validate: (value: string) => {
+                                                     return (
+                                                        value !== "" ||
+                                                        (t(
+                                                           langKeys.field_required
+                                                        ) as string)
+                                                     );
+                                                  },
+                                               }
+                                            ),
+                                         }}
+                                         label={t(langKeys.path)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.path || ""}
+                                         onBlur={(value) =>
+                                            onBlurResult(i, "path", value)
+                                         }
+                                         error={
+                                            errors?.results?.[i]?.path?.message
+                                         }
+                                      />
+                                      <FieldEdit
+                                         label={t(langKeys.description)}
+                                         className={classes.fieldRow}
+                                         valueDefault={field?.description || ""}
+                                         onBlur={(value) =>
+                                            onBlurResult(i, "description", value)
+                                         }
+                                         error={
+                                            errors?.headers?.[i]?.description
+                                               ?.message
+                                         }
+                                      />
+                                      <IconButton
+                                         size="small"
+                                         className={classes.fieldButton}
+                                         onClick={() => onClickDeleteResult(i)}
+                                      >
+                                         <DeleteIcon
+                                            style={{
+                                               color: "#000000",
+                                            }}
+                                         />
+                                      </IconButton>
+                                   </div>
+                                );
+                             })
+                           : results?.map((field, i) => {
+                                return (
+                                   <div className="row-zyx" key={field.id}>
+                                      <FieldView
+                                         label={t(langKeys.variable)}
+                                         value={field?.variable || ""}
+                                         className="col-12"
+                                      />
+                                      <FieldView
+                                         label={t(langKeys.path)}
+                                         value={field?.path || ""}
+                                         className="col-12"
+                                      />
+                                      <FieldView
+                                         label={t(langKeys.description)}
+                                         value={field?.description || ""}
+                                         className="col-12"
+                                      />
+                                   </div>
+                                );
+                             })}
+                     </div>
+                  </React.Fragment>
+               ) : null}
+   
+                  {getValues("type") === "DATA_TABLE" ? (
+                     <React.Fragment>
+   
+                        <div className={classes.containerDetail}>
+                           <div className="row-zyx">
+                              {edit && getValues("isnew") ? (
+                                 <FieldEdit
+                                    label={t(langKeys.apikey)}
+                                    className="col-12"
+                                    valueDefault={getValues("apikey")}
+                                    disabled={true}
+                                    error={errors?.apikey?.message}
+                                 />
+                              ) : (
+                                 <FieldView
+                                    label={t(langKeys.apikey)}
+                                    value={row?.apikey || ""}
+                                    className="col-12"
+                                 />
+                              )}
+                              
+                           </div>
+                           <div className="row-zyx">
+                              {edit && getValues("isnew") ? (
+                                 <>
+                                 <FieldSelect
+                                    uset={true}
+                                    fregister={{
+                                       ...register(`level`, {
+                                          validate: (value: any) =>
+                                             (value && value.length) ||
+                                             t(langKeys.field_required),
+                                       }),
+                                    }}
+                                    label={t(langKeys.level)}
+                                    className="col-4"
+                                    valueDefault={getValues("level")}
+                                    onChange={onChangeLevel}
+                                    error={errors?.level?.message}
+                                    data={dictToArrayKV(dataLevel)}
+                                    optionDesc="value"
+                                    optionValue="key"
+                                 />
+                                 
+                                    
+                                       {/* Acá deberían ir los FieldEdit */}
+                                        {
+                                          headFields?.map((field, i: number) => {
+                                             return (
+                                                <div className="col-4">
+                                                <FieldEdit
+                                                   fregister={{
+                                                      ...register(`fields.${i}.name`, {
+                                                         validate: {
+                                                            value: (value: any) =>
+                                                               (value && value.length) ||
+                                                               t(langKeys.field_required),
+                                                            duplicate: (value: any) =>
+                                                               validateDuplicateFieldName(
+                                                                  field,
+                                                                  value
+                                                               ) ||
+                                                               t(langKeys.field_duplicate),
+                                                            startwithchar: (value: any) =>
+                                                               validateStartwithcharFieldName(
+                                                                  value
+                                                               ) ||
+                                                               t(
+                                                                  langKeys.field_startwithchar
+                                                               ),
+                                                            basiclatin: (value: any) =>
+                                                               validateBasicLatinFieldName(
+                                                                  value
+                                                               ) ||
+                                                               t(
+                                                                  langKeys.field_basiclatinlowercase
+                                                               ),
+                                                         },
+                                                      }),
+                                                   }}
+                                                   label={t(langKeys.levelName)}
+                                                   className={classes.fieldRow}
+                                                   valueDefault={field?.name || ""}
+                                                   disabled={disableKeys(field, i)}
+                                                   onBlur={(value) =>
+                                                      onBlurField(i, "name", value)
+                                                   }
+                                                   error={errors?.fields?.[i]?.name?.message}
+                                                />
+                                                </div>
+                                             )
+                                          })
+                                        }
+                                 
+                                 </>
+                              ) : (
+                                 <>
+                                    <FieldView
+                                       label={t(langKeys.level)}
+                                       value={t(dataLevel[row?.level]) || ""}
+                                       className="col-4"
+                                    />
+                                    {
+                                          headFields?.map((field, i: number) => {
+                                             return (
+                                                <div className="col-4">
+                                                <FieldEdit
+                                                   fregister={{
+                                                      ...register(`fields.${i}.name`, {
+                                                         validate: {
+                                                            value: (value: any) =>
+                                                               (value && value.length) ||
+                                                               t(langKeys.field_required),
+                                                            duplicate: (value: any) =>
+                                                               validateDuplicateFieldName(
+                                                                  field,
+                                                                  value
+                                                               ) ||
+                                                               t(langKeys.field_duplicate),
+                                                            startwithchar: (value: any) =>
+                                                               validateStartwithcharFieldName(
+                                                                  value
+                                                               ) ||
+                                                               t(
+                                                                  langKeys.field_startwithchar
+                                                               ),
+                                                            basiclatin: (value: any) =>
+                                                               validateBasicLatinFieldName(
+                                                                  value
+                                                               ) ||
+                                                               t(
+                                                                  langKeys.field_basiclatinlowercase
+                                                               ),
+                                                         },
+                                                      }),
+                                                   }}
+                                                   label={t(langKeys.levelName)}
+                                                   className={classes.fieldRow}
+                                                   valueDefault={field?.name || ""}
+                                                   disabled={disableKeys(field, i)}
+                                                   onBlur={(value) =>
+                                                      onBlurField(i, "name", value)
+                                                   }
+                                                   error={errors?.fields?.[i]?.name?.message}
+                                                />
+                                                </div>
+                                             )
+                                          })
+                                        }
+         
+                                 </>
+                              )}
+                           </div>
+                        </div>
+                        <div className={classes.containerDetail}>
+                           <div
+                              className="row-zyx"
+                              style={{ alignItems: "flex-end" }}
+                           >
+                              {edit ? (
+                                 <React.Fragment>
+                                    <FieldView
+                                       label={t(langKeys.tablelayout)}
+                                       className={classes.labelButton1}
+                                    />
+                                 </React.Fragment>
+                              ) : (
+                                 <FieldView
+                                    label={t(langKeys.tablelayout)}
+                                    className="col-12"
+                                 />
+                              )}
+                           </div>
+                           {edit
+                              ? tailFields?.map((field, i: number) => {
+                                 const index = i + (levelFields[getValues("level")] === 'corpid' ? 1 : 2);
+                                 return (
+                                    <div className="row-zyx" key={field.id} style={{gap: 32}}>
+                                       <FieldEdit
+                                          fregister={{
+                                             ...register(`fields.${index}.name`, {
+                                                validate: {
+                                                   value: (value: any) =>
+                                                      (value && value.length) ||
+                                                      t(langKeys.field_required),
+                                                   duplicate: (value: any) =>
+                                                      validateDuplicateFieldName(
+                                                         field,
+                                                         value
+                                                      ) ||
+                                                      t(langKeys.field_duplicate),
+                                                   startwithchar: (value: any) =>
+                                                      validateStartwithcharFieldName(
+                                                         value
+                                                      ) ||
+                                                      t(
+                                                         langKeys.field_startwithchar
+                                                      ),
+                                                   basiclatin: (value: any) =>
+                                                      validateBasicLatinFieldName(
+                                                         value
+                                                      ) ||
+                                                      t(
+                                                         langKeys.field_basiclatinlowercase
+                                                      ),
+                                                },
+                                             }),
+                                          }}
+                                          label={t(langKeys.columntitle)}
+                                          className={classes.fieldRow}
+                                          valueDefault={field?.name || ""}
+                                          disabled={disableKeys(field, i)}
+                                          onBlur={(value) =>
+                                             onBlurField(index, "name", value)
+                                          }
+                                          error={errors?.fields?.[index]?.name?.message}
+                                       />
+                                       {getValues("isnew") ? (
+                                          <FieldCheckbox
+                                             label={index===0?t(langKeys.key): ""}
+                                             className={`${classes.checkboxRow}`}
+                                             valueDefault={field?.key}
+                                             disabled={disableKeys(field, index)}
+                                             onChange={(value) =>
+                                                onBlurField(index, "key", value)
+                                             }
+                                             error={
+                                                errors?.fields?.[index]?.key?.message
+                                             }
+                                          />
+                                       ) : null}
+                                       {!disableKeys(field, index) ? (
+                                          <IconButton
+                                             size="small"
+                                             className={classes.fieldButton}
+                                             onClick={() => onClickDeleteField(index)}
+                                             style={{width: "30px"}}
+                                          >
+                                             <DeleteIcon
+                                                style={{
+                                                   color: "#000000",
+                                                }}
+                                             />
+                                          </IconButton>
+                                       ) : <div style={{width: "30px"}}></div>}
+                                    </div>
+                                 );
+                              })
+                              : tailFields?.map((fields:any, i: number) => {
+                                 return (
+                                    <div className="row-zyx" key={fields.id}>
+                                       <FieldView
+                                          label={t(langKeys.name)}
+                                          value={fields?.name || ""}
+                                          className="col-12"
+                                       />
+                                       <FieldView
+                                          label={t(langKeys.order)}
+                                          value={fields?.order || ""}
+                                          className="col-12"
+                                       />
+                                    </div>
+                                 );
+                              })
+                           }
+                              <div
+                                 className="row-zyx"
+                                 style={{ alignItems: "flex-end", gap: '1rem' }}
+                              >
+                                    <React.Fragment>
+                                       <Button
+                                             variant="outlined"
+                                             type="button"
+                                             color="primary"
+                                             className={classes.labelButton2}
+                                             startIcon={<AddIcon color="primary" />}
+                                             onClick={() => onClickAddField()}
+                                          >
+                                             {t(langKeys.addfield)}
+                                       </Button>
+   
                                     { isnew && (
                                        <div style={{ width: 'auto' }}>
                                           <input
@@ -2548,80 +2732,442 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                        </Button>
                                     )}
                                  </React.Fragment>
+                              </div>
+                              
+                              <div
+                                 className="row-zyx"
+                                 style={{ alignItems: "flex-end" }}
+                              >
+                              {!getValues("isnew") &&
+                                 <React.Fragment>
+                                    <div style={{gap: 8}}>
+                                       <Button
+                                          variant="outlined"
+                                          type="button"
+                                          color="primary"
+                                          style={{width: 155, marginRight: 8}}
+                                          className={classes.labelButton2}
+                                          startIcon={<GetAppIcon color="primary" />}
+                                          onClick={() => onClickInfo()}
+                                       >
+                                          JSON
+                                       </Button>
+                                       <Button
+                                          variant="contained"
+                                          type="button"
+                                          color="primary"
+                                          startIcon={<ListAltIcon color="secondary" />}
+                                          style={{ width: 155,backgroundColor: "#7721AD" }}
+                                          onClick={handleViewTable}
+                                       >
+                                          {t(langKeys.view_table)}
+                                       </Button>
+                                    </div>
+                                 </React.Fragment>
+                              }
                            </div>
-                           
-                           <div
-                              className="row-zyx"
-                              style={{ alignItems: "flex-end" }}
-                           >
-                           {!getValues("isnew") &&
-                              <React.Fragment>
-                                 <div style={{gap: 8}}>
-                                    <Button
-                                       variant="outlined"
-                                       type="button"
-                                       color="primary"
-                                       style={{width: 155, marginRight: 8}}
-                                       className={classes.labelButton2}
-                                       startIcon={<GetAppIcon color="primary" />}
-                                       onClick={() => onClickInfo()}
-                                    >
-                                       JSON
-                                    </Button>
-                                    <Button
-                                       variant="contained"
-                                       type="button"
-                                       color="primary"
-                                       startIcon={<ListAltIcon color="secondary" />}
-                                       style={{ width: 155,backgroundColor: "#7721AD" }}
-                                       onClick={handleViewTable}
-                                    >
-                                       {t(langKeys.view_table)}
-                                    </Button>
-                                 </div>
-                              </React.Fragment>
-                           }
                         </div>
+                     </React.Fragment>
+                  ) : null}
+               
+            </form>
+            {getValues("type") === "CODE_PERSON" && <div className={classes.containerClaro}>
+               <div className={classes.containerDetailClaro}>
+                  <div style={{display:"flex", justifyContent:"space-between"}}>
+                     <FieldView
+                        label={t(langKeys.code_table)}
+                        tooltip={t(langKeys.codes_table_helper)}
+                        className="col-6"
+                     />                  
+                     {!getValues("isnew") ? (
+                        <Button
+                           variant="contained"
+                           type="button"
+                           color="primary"
+                           disabled={codeParams.length>=10}
+                           className={classes.labelButton2}
+                           onClick={() => {setView("code_table")}}
+                        >
+                           {t(langKeys.view_table)}
+                        </Button>
+                     ) : null}
+                  </div>
+                  <FieldEdit
+                     valueDefault={"Codigo"}
+                     className="col-12"
+                     disabled
+                  />  
+                  <div className={classes.switchContainer}>
+                     <div className={classes.switchStyle}>
+                        <IOSSwitch checked={codeExpiration} onChange={()=>{
+                           setCodeExpiration(!codeExpiration)
+                        }} name="codeExpiration" />
                      </div>
-                  </React.Fragment>
-               ) : null}
-            
-         </form>
-
-         {openResponseModal && (
-            <ModalIntegrationManager
-               data={responseData}
-               openModal={openResponseModal}
-               setOpenModal={setOpenResponseModal}
-               cleanModalData={cleanRequestData}
-               setResponseData={setResponseData}
-               setValue={setValue}
+                     <FieldView
+                        label={t(langKeys.add_expiration_date_to_code)}
+                        tooltip={t(langKeys.codes_table_helper)}
+                     />
+                  </div>   
+                  {codeExpiration &&
+                     <FieldEdit
+                        valueDefault={t(langKeys.expiration_date)}
+                        className="col-12"
+                        disabled
+                     />  
+                  }   
+                  <div className={classes.addField}>
+                     {edit ? (
+                        <Button
+                           variant="outlined"
+                           type="button"
+                           color="primary"
+                           disabled={codeParams.length>=10}
+                           className={classes.labelButton2}
+                           startIcon={<AddIcon color="primary" />}
+                           onClick={() => {codeParamsAppend({ key: "" });
+                        }}
+                        >
+                           {t(langKeys.addUrlParam)}
+                        </Button>
+                     ) : null}
+                  </div> 
+                  {codeParams.map((x:Dictionary,i:number)=>{
+                     return <div className="row-zyx" key={"extraparamscode" + i}>
+                        <FieldEdit
+                           fregister={{
+                              ...register(
+                                 `code_params.${i}.key` as const,
+                                 {
+                                    validate: (value: string) =>
+                                       value !== "" ||
+                                       (t(
+                                          langKeys.field_required
+                                       ) as string),
+                                 }
+                              ),
+                           }}
+                           label={t(langKeys.columntitle)}
+                           className={classes.fieldRow}
+                           valueDefault={x?.key || ""}
+                           onChange={(value) => {
+                              setValue(`code_params.${i}.key`, value);
+                           }}
+                           error={
+                              errors?.code_params?.[i]?.key?.message
+                           }
+                        />
+                        <IconButton
+                           size="small"
+                           className={classes.fieldButton}
+                           onClick={() => {
+                              let value = getValues(`code_params.${i}.key`);
+                              if (value!=="Codigo" && value!=="Fecha de caducidad" && value!==""){
+                                 let found = false
+                                 let person_params_tracking = getValues("person_params_tracking")                           
+                                 for (let objeto of person_params_tracking) {
+                                    if (objeto.key === value) {
+                                       found = true
+                                       objeto.key = "";
+                                    }
+                                 }
+                                 if(found) setValue("person_params_tracking", person_params_tracking)
+                              }
+                              codeParamsRemove(i)
+                           }}
+                        >
+                           <DeleteIcon
+                              style={{
+                                 color: "#000000",
+                              }}
+                           />
+                        </IconButton>
+                     </div>
+                  })}    
+                    
+                  <div className={classes.addFieldTracking}>
+                     <FieldView
+                        label={t(langKeys.tracking_fields)}
+                        tooltip={t(langKeys.tracking_fields_helper)}
+                     />
+                     {edit ? (
+                        <Button
+                           variant="outlined"
+                           type="button"
+                           color="primary"
+                           disabled={codeTrackingParams.length>=10}
+                           className={classes.labelButton2}
+                           startIcon={<AddIcon color="primary" />}
+                           onClick={() => {codeTrackingParamsAppend({ key: codeTrackingParams.length?"":"Persona" });}}
+                        >
+                           {t(langKeys.addUrlParam)}
+                        </Button>
+                     ) : null}
+                  </div> 
+                  {codeTrackingParams.map((x:Dictionary,i:number)=>{
+                     return <div className="row-zyx" key={"extraparamscode" + i}>
+                        <FieldSelect
+                           fregister={{
+                              ...register(
+                                 `code_params_tracking.${i}.key` as const,
+                                 {
+                                    validate: (value: string) =>
+                                       value !== "" ||
+                                       (t(
+                                          langKeys.field_required
+                                       ) as string),
+                                 }
+                              ),
+                           }}
+                           disabled={!i}
+                           data={[
+                             { key: "Persona" },
+                             ...getValues('person_params')
+                           ]}
+                           optionValue="key"
+                           optionDesc="key"
+                           label={t(langKeys.columntitle)}
+                           className={classes.fieldRow}
+                           valueDefault={getValues(`code_params_tracking.${i}.key`)}
+                           onChange={(value) => {
+                              setValue(`code_params_tracking.${i}.key`, value?.key||"");
+                           }}
+                           error={
+                              errors?.code_params_tracking?.[i]?.key?.message
+                           }
+                        />
+                        {Boolean(i) && <IconButton
+                           size="small"
+                           className={classes.fieldButton}
+                           onClick={() => {codeTrackingParamsRemove(i)}}
+                        >
+                           <DeleteIcon
+                              style={{
+                                 color: "#000000",
+                              }}
+                           />
+                        </IconButton>}
+                     </div>
+                  })}   
+               </div>
+               <div className={classes.containerDetailClaro}>
+                  <div style={{display:"flex", justifyContent:"space-between"}}>
+                     <FieldView
+                        label={t(langKeys.person_table)}
+                        tooltip={t(langKeys.people_table_helper)}
+                        className="col-6"
+                     />
+                     {!getValues("isnew") ? (
+                        <Button
+                           variant="contained"
+                           type="button"
+                           color="primary"
+                           disabled={codeParams.length>=10}
+                           className={classes.labelButton2}
+                           onClick={() => {setView("person_table")}}
+                        >
+                           {t(langKeys.view_table)}
+                        </Button>
+                     ) : null}
+                  </div>
+                  <FieldEdit
+                     valueDefault={"Persona"}
+                     className="col-12"
+                     disabled
+                  />  
+                  <div className={classes.switchContainer}>
+                     <div className={classes.switchStyle}>
+                        <IOSSwitch checked={personExpiration} onChange={()=>{
+                           setPersonExpiration(!personExpiration)
+                        }} name="personExpiration" />
+                     </div>
+                     <FieldView
+                        label={t(langKeys.add_expiration_date_to_person)}
+                        tooltip={t(langKeys.add_expiration_date_to_person_helper)}
+                     />
+                  </div>    
+                  {personExpiration &&
+                     <FieldEdit
+                        valueDefault={t(langKeys.expiration_date)}
+                        className="col-12"
+                        disabled
+                     />  
+                  }   
+                  <div className={classes.addField}>
+                     {edit ? (
+                        <Button
+                           variant="outlined"
+                           type="button"
+                           color="primary"
+                           disabled={personParams.length>=10}
+                           className={classes.labelButton2}
+                           startIcon={<AddIcon color="primary" />}
+                           onClick={() => {personParamsAppend({ key: "" });}}
+                        >
+                           {t(langKeys.addUrlParam)}
+                        </Button>
+                     ) : null}
+                  </div> 
+                  {personParams.map((x:Dictionary,i:number)=>{
+                     return <div className="row-zyx" key={"extraparamsperson" + i}>
+                        <FieldEdit
+                           fregister={{
+                              ...register(
+                                 `person_params.${i}.key` as const,
+                                 {
+                                    validate: (value: string) =>
+                                       value !== "" ||
+                                       (t(
+                                          langKeys.field_required
+                                       ) as string),
+                                 }
+                              ),
+                           }}
+                           label={t(langKeys.columntitle)}
+                           className={classes.fieldRow}
+                           valueDefault={x?.key || ""}
+                           onChange={(value) => {
+                              setValue(`person_params.${i}.key`, value);
+                           }}
+                           error={
+                              errors?.person_params?.[i]?.key?.message
+                           }
+                        />
+                        <IconButton
+                           size="small"
+                           className={classes.fieldButton}
+                           onClick={() => {
+                              let value = getValues(`person_params.${i}.key`);
+                              if (value!=="Persona" && value!=="Fecha de caducidad" && value!==""){
+                                 let found = false
+                                 let code_params_tracking = getValues("code_params_tracking")                           
+                                 for (let objeto of code_params_tracking) {
+                                    if (objeto.key === value) {
+                                       found = true
+                                       objeto.key = "";
+                                    }
+                                 }
+                                 if(found) setValue("code_params_tracking", code_params_tracking)
+                              }
+                              personParamsRemove(i)
+                           }}
+                        >
+                           <DeleteIcon
+                              style={{
+                                 color: "#000000",
+                              }}
+                           />
+                        </IconButton>
+                     </div>
+                  })}    
+                    
+                  <div className={classes.addFieldTracking}>
+                     <FieldView
+                        label={t(langKeys.tracking_fields)}
+                        tooltip={t(langKeys.tracking_fields_helper)}
+                     />
+                     {edit ? (
+                        <Button
+                           variant="outlined"
+                           type="button"
+                           color="primary"
+                           disabled={personTrackingParams.length>=10}
+                           className={classes.labelButton2}
+                           startIcon={<AddIcon color="primary" />}
+                           onClick={() => {personTrackingParamsAppend({ key: personTrackingParams.length?"":"Codigo" });}}
+                        >
+                           {t(langKeys.addUrlParam)}
+                        </Button>
+                     ) : null}
+                  </div> 
+                  {personTrackingParams.map((x:Dictionary,i:number)=>{
+                     return <div className="row-zyx" key={"extraparamsperson" + i}>
+                        <FieldSelect
+                           fregister={{
+                              ...register(
+                                 `person_params_tracking.${i}.key` as const,
+                                 {
+                                    validate: (value: string) =>
+                                       value !== "" ||
+                                       (t(
+                                          langKeys.field_required
+                                       ) as string),
+                                 }
+                              ),
+                           }}
+                           data={[
+                             { key: "Codigo" },
+                             ...getValues('code_params')
+                           ]}
+                           optionValue="key"
+                           optionDesc="key"
+                           disabled={!i}
+                           label={t(langKeys.columntitle)}
+                           className={classes.fieldRow}
+                           valueDefault={getValues(`person_params_tracking.${i}.key`)}
+                           onChange={(value) => {
+                              setValue(`person_params_tracking.${i}.key`, value?.key||"");
+                           }}
+                           error={
+                              errors?.person_params_tracking?.[i]?.key?.message
+                           }
+                        />
+                        {Boolean(i) && <IconButton
+                           size="small"
+                           className={classes.fieldButton}
+                           onClick={() => {personTrackingParamsRemove(i)}}
+                        >
+                           <DeleteIcon
+                              style={{
+                                 color: "#000000",
+                              }}
+                           />
+                        </IconButton>}
+                     </div>
+                  })}   
+               </div>
+            </div>}
+            {openResponseModal && (
+               <ModalIntegrationManager
+                  data={responseData}
+                  openModal={openResponseModal}
+                  setOpenModal={setOpenResponseModal}
+                  cleanModalData={cleanRequestData}
+                  setResponseData={setResponseData}
+                  setValue={setValue}
+               />
+            )}
+            {openTestModal && (
+               <ModalTestIntegrationManager
+                  formData={getValues()}
+                  openModal={openTestModal}
+                  setOpenModal={setOpenTestModal}
+                  setOpenResponseModal={setOpenResponseModal}
+                  setResponseData={setResponseData}
+               />
+            )}
+            {openViewTableModal && (
+               <ModalViewTable
+                  openModal={openViewTableModal}
+                  setOpenModal={setOpenViewTableModal}
+                  columns={columnData}
+                  data={tableData}
+                  formId={getValues("id")}
+                  importDataFunction={handleUpload}
+                  deleteDataFunction={onDeleteData} 
+                  waitImport={waitImport}
+                  row={row}
             />
-         )}
-         {openTestModal && (
-            <ModalTestIntegrationManager
-               formData={getValues()}
-               openModal={openTestModal}
-               setOpenModal={setOpenTestModal}
-               setOpenResponseModal={setOpenResponseModal}
-               setResponseData={setResponseData}
-            />
-         )}
-         {openViewTableModal && (
-            <ModalViewTable
-               openModal={openViewTableModal}
-               setOpenModal={setOpenViewTableModal}
-               columns={columnData}
-               data={tableData}
-               formId={getValues("id")}
-               importDataFunction={handleUpload}
-               deleteDataFunction={onDeleteData} 
-               waitImport={waitImport}
-               row={row}
-            />
-         )}
-      </div>
-   );
+            )}
+         </div>
+      );
+      
+   }else{
+      return (<VinculationTable
+            title={view}
+            row={row}
+            setViewSelected={setView}
+         />)
+   }
 };
 
 interface ModalProps {
@@ -3178,5 +3724,6 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
       </DialogZyx>
    );
 };
+
 
 export default IntegrationManager;

@@ -1167,6 +1167,7 @@ const translation: LangKeys = {
   standard: 'Standard',
   custom: 'Custom',
   data_table: 'Data table',
+  code_binding: "Code binding",
   requesttype: 'Request Type',
   url: 'Url',
   pollsanswered: "Polls {{survey}} answered",
@@ -6154,6 +6155,19 @@ const translation: LangKeys = {
   app_orders_in_attention: 'Orders in attention',
   app_order_list: 'Order list',
   app_orders_in_store: 'Orders in store',
+  code_table: 'Codes table',
+  codes_table_helper: 'Create your table of codes that will be linked to the people who are registered.',
+  add_expiration_date_to_code:'Add expiration date to code',
+  tracking_fields:'Tracking fields',
+  tracking_fields_helper:'Add the fields from the people table that you want, the fields related to the code will be shown, for greater traceability.',
+  person_table: 'People table',
+  people_table_helper: 'Create your table of people who can be linked to the registered codes.',
+  expiration_date: 'Expiration date',
+  add_expiration_date_to_code_helper: 'Add an expiration date field for your code, after this date the record will be deleted.',
+  add_expiration_date_to_person:'Add expiration date of the person',
+  add_expiration_date_to_person_helper: 'Add an expiration date field for your person, after this date the record will be deleted.',
+  errorIntegrationColumnDuplicates: 'Column names cannot be repeated.',
+  errorIntegrationTrackinguplicates: 'Trace field names cannot be repeated.',
 };
 
 const enResource: ResourceLanguage = {
