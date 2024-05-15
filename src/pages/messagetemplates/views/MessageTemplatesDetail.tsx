@@ -427,7 +427,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             body: row?.body || "",
             buttons: row ? row.buttons || [] : [],
             buttonstext: row ? row.buttonstext || [] : [],
-            buttonsphone: row ? row.buttonsphone || [] : [],
             carouselcards: row ? row.carouselcards || [] : [],
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
@@ -812,7 +811,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("headertype");
         setValue('buttons', [])
         setValue('buttonstext', [])
-        setValue('buttonsphone', [])
         setValue('carouselcards', [])
 
         //trigger("body");
@@ -868,7 +866,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('footer', '')
         setValue('buttons', [])
         setValue('buttonstext', [])
-        setValue('buttonsphone', [])
         setValue("headertype", "none");
         setValue('carouselcards', [])
         trigger('carouselcards');
@@ -877,7 +874,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("footer");
         trigger('buttons');
         trigger('buttonstext');
-        trigger('buttonsphone');
     };
 
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
@@ -926,16 +922,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onChangeButton = (index: number, param: string, value: string) => {
-        setValue(`buttons.${index}.${param}`, value);
+        setValue(`buttons.${index}.btn.${param}`, value);
         trigger('buttons')
     };
     const onChangeButtonText = (index: number, param: string, value: string) => {
         setValue(`buttonstext.${index}.${param}`, value);
         trigger('buttonstext')
-    };
-    const onChangeButtonPhone = (index: number, param: string, value: string) => {
-        setValue(`buttonsphone.${index}.${param}`, value);
-        trigger('buttonsphone')
     };
     const onChangeCardsButton = (cindex: number, bindex: number, param: string, value: string, buttontype: string) => {
         setValue(`carouselcards.${cindex}.buttons${buttontype}.${bindex}.${param}`, value);
@@ -943,8 +935,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const onClickAddButton = async () => {
-        if (getValues("buttons") && getValues("buttons").length < 2) {
-            setValue("buttons", [...getValues("buttons"), { text: "", type: "", url: "" }]);
+        if (getValues("buttons") && getValues("buttons").filter((btn: Dictionary) => {return btn.type === 'link'}).length < 2) {
+            setValue("buttons", [...getValues("buttons"), { type: 'link', btn: { text: "", type: "", url: "", variable: "" } }]);
         }
         trigger("buttons");
     };
@@ -955,10 +947,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("buttonstext");
     };
     const onClickAddButtonPhone = async () => {
-        if (getValues("buttonsphone") && getValues("buttonsphone").length < 1) {
-            setValue("buttonsphone", [...getValues("buttonsphone"), { text: "", code: "", number: "" }]);
+        if (getValues("buttons") && getValues("buttons").filter((btn: Dictionary) => {return btn.type === 'phone'}).length < 1) {
+            setValue("buttons", [...getValues("buttons"), { type: 'phone', btn: { text: "", code: "", number: "" } }]);
         }
-        trigger("buttonsphone");
+        trigger("buttons");
     };
     const onClickAddCard = async () => {
         if(getValues("carouselcards") && getValues('carouselcards').length < 10) {
@@ -1077,17 +1069,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             unregister(`buttonstext.${index}`);
             setValue(
                 "buttonstext",
-                btns.filter((x: any, i: number) => i !== index)
-            );
-        }
-    };
-    const onClickRemoveButtonPhone = async (index: number) => {
-        const btns = getValues("buttonsphone");
-
-        if (btns && btns.length > 0) {
-            unregister(`buttonsphone.${index}`);
-            setValue(
-                "buttonsphone",
                 btns.filter((x: any, i: number) => i !== index)
             );
         }
@@ -1229,7 +1210,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("headertype");
         setValue('buttons', [])
         setValue('buttonstext', [])
-        setValue('buttonsphone', [])
         setValue('carouselcards', [])
         setAddSafetyAdvice(false)
         setAddLastDateCode(false)
@@ -1266,6 +1246,22 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
             setValue('buttonstext', reorderedItems)
             trigger('buttonstext')
+        }
+    }
+
+    const handleDragDropAux = (results) => {
+        const {source, destination, type} = results;
+        if(!destination) return;
+        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if(type === 'group'){
+            const reorderedItems = [...getValues('buttons')];
+            const sourceIndex = source.index;
+            const destinationIndex = destination.index;
+            const [removedStore] = reorderedItems.splice(sourceIndex, 1);
+            reorderedItems.splice(destinationIndex, 0, removedStore);
+
+            setValue('buttons', reorderedItems)
+            trigger('buttons')
         }
     }
 
@@ -1760,9 +1756,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.buttons)}</span>
                                     <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
                                     <div style={{display: 'flex'}}>
-                                        {(getValues("buttons")?.length + getValues("buttonstext")?.length + getValues("buttonsphone")?.length) < 10 && (
+                                        {(getValues("buttons")?.length + getValues("buttonstext")?.length) < 10 && (
                                             <div>
-                                                <AddButtonMenu fastAnswer={onClickAddButtonText} urlWeb={onClickAddButton} callNumber={onClickAddButtonPhone} textbtn={getValues('buttonstext')} urlbtn={getValues('buttons')} phonebtn={getValues('buttonsphone')}/>
+                                                <AddButtonMenu fastAnswer={onClickAddButtonText} urlWeb={onClickAddButton} callNumber={onClickAddButtonPhone} textbtn={getValues('buttonstext')} urlbtn={getValues('buttons').filter((btn: Dictionary) => { return btn.type === 'link'})} phonebtn={getValues('buttons').filter((btn: Dictionary) => { return btn.type === 'phone'})}/>
                                             </div>
                                         )}
                                     </div>
@@ -1821,170 +1817,180 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         )}
                                     </DragDropContext>
-                                    {(getValues('buttons')?.length > 0 || getValues('buttonsphone')?.length > 0) && (
-                                        <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
-                                            <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
-                                                <ImportExportIcon style={{color: '#0049CF'}} />
-                                                <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
+                                    <DragDropContext onDragEnd={handleDragDropAux}>
+                                        {getValues('buttons')?.length > 0 && (
+                                            <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
+                                                <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
+                                                    <ImportExportIcon style={{color: '#0049CF'}} />
+                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
+                                                </div>
+                                                <React.Fragment>
+                                                    <Droppable droppableId="root2" type="group">
+                                                        {(provided) => (
+                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+                                                                {getValues("buttons")?.map((btn: any, i: number) => {
+                                                                    return (
+                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                            {(provided) => (
+                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                    {btn.type === 'link' ? (
+                                                                                        <>
+                                                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                                                                <DragIndicatorIcon />
+                                                                                                <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
+                                                                                                    <div className="row-zyx" style={{width: '100%', marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                                                                                                        <FieldEdit
+                                                                                                            className='col-4'
+                                                                                                            label={t(langKeys.buttontext)}
+                                                                                                            error={errors?.buttons?.[i]?.btn?.text?.message}
+                                                                                                            onChange={(value) => onChangeButton(i, "text", value)}
+                                                                                                            valueDefault={btn?.btn?.text || ""}
+                                                                                                            variant="outlined"
+                                                                                                            maxLength={25}
+                                                                                                            fregister={{
+                                                                                                                ...register(`buttons.${i}.btn.text`, {
+                                                                                                                    validate: (value) =>
+                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                }),
+                                                                                                            }}
+                                                                                                            size="small"
+                                                                                                        />
+                                                                                                        <FieldSelect
+                                                                                                            className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}
+                                                                                                            data={dataURLType}
+                                                                                                            label={t(langKeys.urltype)}
+                                                                                                            error={errors?.buttons?.[i]?.btn?.type?.message}
+                                                                                                            onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                            optionDesc="text"
+                                                                                                            optionValue="value"
+                                                                                                            valueDefault={btn?.btn?.type || ""}
+                                                                                                            variant="outlined"
+                                                                                                            fregister={{
+                                                                                                                ...register(`buttons.${i}.btn.type`, {
+                                                                                                                    validate: (value) =>
+                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                }),
+                                                                                                            }}
+                                                                                                        />
+                                                                                                        <FieldEdit
+                                                                                                            className='col-4'
+                                                                                                            label={t(langKeys.urlwebsite)}
+                                                                                                            error={errors?.buttons?.[i]?.btn?.url?.message}
+                                                                                                            onChange={(value) => onChangeButton(i, "url", value)}
+                                                                                                            valueDefault={btn?.btn?.url || ""}
+                                                                                                            variant="outlined"
+                                                                                                            fregister={{
+                                                                                                                ...register(`buttons.${i}.btn.url`, {
+                                                                                                                    validate: (value) =>
+                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                }),
+                                                                                                            }}
+                                                                                                            size="small"
+                                                                                                        />
+                                                                                                        {btn?.type === 'dynamic' && (
+                                                                                                            <div className="col-1">
+                                                                                                                <span>{'{{'}1{'}}'}</span>
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <IconButton onClick={() => onClickRemoveButton(i)}>
+                                                                                                    <CloseIcon/>
+                                                                                                </IconButton>
+                                                                                            </div>
+                                                                                            {btn?.btn?.type === 'dynamic' && (
+                                                                                                <div style={{marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column'}}>
+                                                                                                    <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10}}>
+                                                                                                        <span>{'{{'}1{'}}'}</span>
+                                                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                                                            <FieldEdit
+                                                                                                                variant="outlined"
+                                                                                                                size="small"
+                                                                                                                onChange={(value) => onChangeButton(i, "variable", value)}
+                                                                                                                valueDefault={btn?.btn?.variable || ""}
+                                                                                                            />
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div className={classes.warningContainer}>
+                                                                                                        <WarningIcon style={{color: '#FF7575'}}/>
+                                                                                                        {t(langKeys.addexampletext)}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </>
+                                                                                    ) : (
+                                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                                                            <DragIndicatorIcon />
+                                                                                            <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
+                                                                                                <div className="row-zyx" style={{width: '100%', marginBottom: 0}}>
+                                                                                                    <FieldEdit
+                                                                                                        className='col-4'
+                                                                                                        label={t(langKeys.buttontext)}
+                                                                                                        error={errors?.buttons?.[i]?.btn?.text?.message}
+                                                                                                        onChange={(value) => onChangeButton(i, "text", value)}
+                                                                                                        valueDefault={btn?.btn?.text || ""}
+                                                                                                        variant="outlined"
+                                                                                                        maxLength={25}
+                                                                                                        fregister={{
+                                                                                                            ...register(`buttons.${i}.btn.text`, {
+                                                                                                                validate: (value) =>
+                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                            }),
+                                                                                                        }}
+                                                                                                        size="small"
+                                                                                                    />
+                                                                                                    <FieldSelect
+                                                                                                        className='col-4'
+                                                                                                        data={dataURLType}
+                                                                                                        label={t(langKeys.country)}
+                                                                                                        error={errors?.buttons?.[i]?.btn?.code?.message}
+                                                                                                        onChange={(value) => onChangeButton(i, "code", value?.value)}
+                                                                                                        optionDesc="text"
+                                                                                                        optionValue="value"
+                                                                                                        valueDefault={btn?.btn?.code || ""}
+                                                                                                        variant="outlined"
+                                                                                                        fregister={{
+                                                                                                            ...register(`buttons.${i}.btn.code`, {
+                                                                                                                validate: (value) =>
+                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                            }),
+                                                                                                        }}
+                                                                                                    />
+                                                                                                    <FieldEdit
+                                                                                                        className='col-4'
+                                                                                                        type="number"
+                                                                                                        label={t(langKeys.telephonenumber)}
+                                                                                                        error={errors?.buttons?.[i]?.btn?.number?.message}
+                                                                                                        onChange={(value) => onChangeButton(i, "number", value)}
+                                                                                                        valueDefault={btn?.btn?.number || ""}
+                                                                                                        variant="outlined"
+                                                                                                        fregister={{
+                                                                                                            ...register(`buttons.${i}.btn.number`, {
+                                                                                                                validate: (value) =>
+                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                            }),
+                                                                                                        }}
+                                                                                                        size="small"
+                                                                                                    />
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <IconButton onClick={() => onClickRemoveButton(i)}>
+                                                                                                <CloseIcon/>
+                                                                                            </IconButton>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                            )}
+                                                                        </Draggable>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </Droppable>
+                                                </React.Fragment>
                                             </div>
-                                            <React.Fragment>
-                                                {getValues("buttons")?.map((btn: any, i: number) => {
-                                                    return (
-                                                        <div key={`btn-${i}`}>
-                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                                                <DragIndicatorIcon />
-                                                                <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
-                                                                    <div className="row-zyx" style={{width: '100%', marginBottom: 0, display: 'flex', alignItems: 'center'}}>
-                                                                        <FieldEdit
-                                                                            className='col-4'
-                                                                            disabled={disableInput}
-                                                                            label={t(langKeys.buttontext)}
-                                                                            error={errors?.buttons?.[i]?.text?.message}
-                                                                            onChange={(value) => onChangeButton(i, "text", value)}
-                                                                            valueDefault={btn?.text || ""}
-                                                                            variant="outlined"
-                                                                            maxLength={25}
-                                                                            fregister={{
-                                                                                ...register(`buttons.${i}.text`, {
-                                                                                    validate: (value) =>
-                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                }),
-                                                                            }}
-                                                                            size="small"
-                                                                        />
-                                                                        <FieldSelect
-                                                                            className={btn?.type === 'dynamic' ? 'col-3' : 'col-4'}
-                                                                            data={dataURLType}
-                                                                            disabled={disableInput}
-                                                                            label={t(langKeys.urltype)}
-                                                                            error={errors?.buttons?.[i]?.type?.message}
-                                                                            onChange={(value) => onChangeButton(i, "type", value?.value)}
-                                                                            optionDesc="text"
-                                                                            optionValue="value"
-                                                                            valueDefault={btn?.type || ""}
-                                                                            variant="outlined"
-                                                                            fregister={{
-                                                                                ...register(`buttons.${i}.type`, {
-                                                                                    validate: (value) =>
-                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                }),
-                                                                            }}
-                                                                        />
-                                                                        <FieldEdit
-                                                                            className='col-4'
-                                                                            disabled={disableInput}
-                                                                            label={t(langKeys.urlwebsite)}
-                                                                            error={errors?.buttons?.[i]?.url?.message}
-                                                                            onChange={(value) => onChangeButton(i, "url", value)}
-                                                                            valueDefault={btn?.url || ""}
-                                                                            variant="outlined"
-                                                                            fregister={{
-                                                                                ...register(`buttons.${i}.url`, {
-                                                                                    validate: (value) =>
-                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                }),
-                                                                            }}
-                                                                            size="small"
-                                                                        />
-                                                                        {btn?.type === 'dynamic' && (
-                                                                            <div className="col-1">
-                                                                                <span>{'{{'}1{'}}'}</span>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                                <IconButton onClick={() => onClickRemoveButton(i)}>
-                                                                    <CloseIcon/>
-                                                                </IconButton>
-                                                            </div>
-                                                            {btn?.type === 'dynamic' && (
-                                                                <div style={{marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                                    <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10}}>
-                                                                        <span>{'{{'}1{'}}'}</span>
-                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                            <FieldEdit
-                                                                                variant="outlined"
-                                                                                size="small"
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className={classes.warningContainer}>
-                                                                        <WarningIcon style={{color: '#FF7575'}}/>
-                                                                        {t(langKeys.addexampletext)}
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                                {getValues("buttonsphone")?.map((btn: any, i: number) => {
-                                                    return (
-                                                        <div key={`btn-${i}`} style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                                            <DragIndicatorIcon />
-                                                            <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
-                                                                <div className="row-zyx" style={{width: '100%', marginBottom: 0}}>
-                                                                    <FieldEdit
-                                                                        className='col-4'
-                                                                        disabled={disableInput}
-                                                                        label={t(langKeys.buttontext)}
-                                                                        error={errors?.buttonsphone?.[i]?.text?.message}
-                                                                        onChange={(value) => onChangeButtonPhone(i, "text", value)}
-                                                                        valueDefault={btn?.text || ""}
-                                                                        variant="outlined"
-                                                                        maxLength={25}
-                                                                        fregister={{
-                                                                            ...register(`buttonsphone.${i}.text`, {
-                                                                                validate: (value) =>
-                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                            }),
-                                                                        }}
-                                                                        size="small"
-                                                                    />
-                                                                    <FieldSelect
-                                                                        className='col-4'
-                                                                        data={dataURLType}
-                                                                        disabled={disableInput}
-                                                                        label={t(langKeys.country)}
-                                                                        error={errors?.buttonsphone?.[i]?.code?.message}
-                                                                        onChange={(value) => onChangeButtonPhone(i, "code", value?.value)}
-                                                                        optionDesc="text"
-                                                                        optionValue="value"
-                                                                        valueDefault={btn?.code || ""}
-                                                                        variant="outlined"
-                                                                        fregister={{
-                                                                            ...register(`buttonsphone.${i}.code`, {
-                                                                                validate: (value) =>
-                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                            }),
-                                                                        }}
-                                                                    />
-                                                                    <FieldEdit
-                                                                        className='col-4'
-                                                                        disabled={disableInput}
-                                                                        label={t(langKeys.telephonenumber)}
-                                                                        error={errors?.buttonsphone?.[i]?.number?.message}
-                                                                        onChange={(value) => onChangeButtonPhone(i, "number", value)}
-                                                                        valueDefault={btn?.number || ""}
-                                                                        variant="outlined"
-                                                                        fregister={{
-                                                                            ...register(`buttonsphone.${i}.number`, {
-                                                                                validate: (value) =>
-                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                            }),
-                                                                        }}
-                                                                        size="small"
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <IconButton onClick={() => onClickRemoveButtonPhone(i)}>
-                                                                <CloseIcon/>
-                                                            </IconButton>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </React.Fragment>
-                                        </div>
-                                    )}
+                                        )}
+                                    </DragDropContext>
                                 </div>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
@@ -1997,8 +2003,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             bodyObject={bodyObject}
                                             footer={getValues('footer')}
                                             buttonstext={getValues('buttonstext').map((btn: Dictionary) => { return btn.text })}
-                                            buttonslink={getValues('buttons').map((btn: Dictionary) => { return btn.text })}
-                                            buttonsphone={getValues('buttonsphone').map((btn: Dictionary) => { return btn.text })}
+                                            buttonslink={getValues('buttons').map((btn: Dictionary) => { return { type: btn.type, text: btn.btn.text } })}
                                         />
                                     </div>
                                 </div>

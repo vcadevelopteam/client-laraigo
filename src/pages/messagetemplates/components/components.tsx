@@ -251,17 +251,15 @@ interface MessagePreviewMultimediaProps {
     bodyObject: Descendant[];
     footer: string;
     buttonstext: string[];
-    buttonslink: string[];
-    buttonsphone: string[];
+    buttonslink: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, selectedFile, bodyObject, footer, buttonstext, buttonslink, buttonsphone}) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, selectedFile, bodyObject, footer, buttonstext, buttonslink}) => {
     const classes = useStyles();
     const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
     const combinedButtons = [
-        ...buttonstext.map(text => ({ type: 'text', text })),
-        ...buttonslink.map(text => ({ type: 'link', text })),
-        ...buttonsphone.map(text => ({ type: 'phone', text }))
+        ...buttonstext.map(text => ({ type: 'text', text: text })),
+        ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
     ];
 
     return (
