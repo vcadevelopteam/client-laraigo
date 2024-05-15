@@ -52,7 +52,7 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
     }, [collectionAux2])
 
     const validateObjects = (data) => {
-        let headers: any = [...row[title].columns, ...row[title].tracking_columns]
+        let headers: any = [...row[title].columns]
         headers = [...new Set(headers)];
         const validObjects = [];
         for (const obj of data) {
