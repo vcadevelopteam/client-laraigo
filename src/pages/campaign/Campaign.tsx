@@ -29,6 +29,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import BlockIcon from '@material-ui/icons/Block';
+import { multiMain } from 'network/service/common';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -497,6 +498,9 @@ export const Campaign: FC = () => {
             }))
         }
     }
+
+
+
 
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);

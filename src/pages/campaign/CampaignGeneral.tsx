@@ -15,6 +15,8 @@ import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
+import { Descendant } from "slate";
+import { MessagePreviewAuthentication, MessagePreviewMultimedia } from 'pages/messagetemplates/components/components';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -29,6 +31,13 @@ interface DetailProps {
     setPageSelected: (page: number) => void;
     setSave: (value: any) => void;
 }
+
+type Button = {
+    type: string;
+    title: string;
+    payload: string;
+};
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -107,7 +116,15 @@ type FormFields = {
     batchjson: Dictionary[],
     fields: SelectedColumns,
     operation: string,
-    sourcechanged: boolean
+    sourcechanged: boolean,
+
+    headertype: string;
+    header: string;
+    footer: string;
+    buttons: Button[];
+    buttonstext: { text: string }[];
+    buttonsphone: { text: string }[];
+
 }
 
 export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave }) => {
@@ -155,7 +172,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             batchjson: [],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
-            sourcechanged: false,
+            sourcechanged: false,           
+           
+            headertype: row?.headertype || "none",
+            buttonsphone: row ? row.buttonsphone || [] : [],
+            buttonstext: row ? row.buttonstext || [] : [],
+            header: row?.header || "",
+            footer: row?.footer || "",
+            buttons: row ? row.buttons || [] : [],
         }
     });
 
@@ -392,6 +416,29 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
 
+
+
+    const [bodyObject, setBodyObject] = useState<Descendant[]>(
+        row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
+    );
+
+    const templateId = getValues('messagetemplateid');
+    const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId);
+
+    const headerType = selectedTemplate?.headertype || '';
+    const header = selectedTemplate?.header || '';
+    const footer = selectedTemplate?.footer || '';
+    const buttons = selectedTemplate?.buttons || [];
+    const buttonsText = buttons.map(button => ({ text: button.title }));
+    const buttonsLink = buttons.map(button => ({ text: button.payload }));
+    const buttonsPhone = getValues('buttonsphone').map((btn: any) => ({ text: btn.text }));
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+    
+    console.log(selectedTemplate)
+
+
+
     return (
         <React.Fragment>
            <div style={{display:'flex', gap: '1rem', width:'100%'}}>
@@ -590,11 +637,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 {['HSM'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
-                            <FormControl className="col-6" >                       
-                              
+                            <FormControl className="col-6" >                     
                                 <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetemplate)} </div>
                                 <div className={classes.subtitle}> {t(langKeys.campaign_comunicationtemplate_desc)} </div>
-                                
                                 <FieldSelect
                                     fregister={{
                                         ...register(`messagetemplateid`, {
@@ -736,12 +781,28 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         
                         <div style={{ borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem' }}> 
                             <div className='container'>
-                                Communication Template
+                                {/* <MessagePreviewAuthentication
+                                    buttontext={authButtonText}
+                                    safetyAdvice={addSafetyAdvice}
+                                    dateAdvice={addLastDateCode}
+                                    expiresValue={expiresValue}
+                                /> */}
+
+                                <MessagePreviewMultimedia
+                                    headerType={getValues('headertype')}
+                                    header={getValues('header')}
+                                    selectedFile={selectedFile}
+                                    bodyObject={bodyObject}
+                                    footer={getValues('footer')}
+                                    buttonstext={getValues('buttonstext').map((btn: any) => { return btn.text })}
+                                    buttonslink={getValues('buttons').map((btn: Dictionary) => { return btn.text })}
+                                    buttonsphone={getValues('buttonsphone').map((btn: any) => { return btn.text })}
+                                />
                             </div>
                         </div>
                         
+                        
                     </div>    
-              
                 </div>
 
            </div>
