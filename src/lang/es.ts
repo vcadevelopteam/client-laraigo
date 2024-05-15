@@ -6116,6 +6116,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   add_expiration_date_to_person_helper: 'Añade un campo de fecha de caducidad para tu persona, posterior a esta fecha se eliminará el registro.',
   errorIntegrationColumnDuplicates: 'Los nombres de las columnas no se pueden repetir.',
   errorIntegrationTrackinguplicates: 'Los nombres de los campos de rastreo no se pueden repetir.',
+  repeated_code: 'Los Codigos no pueden repetirse',
+  repeated_person: 'Las Personas no pueden repetirse',
 };
 
 const esResource: ResourceLanguage = {

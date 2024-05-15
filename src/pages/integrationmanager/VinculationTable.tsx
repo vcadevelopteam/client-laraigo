@@ -72,25 +72,53 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
         if (file) {
             let data: any = await uploadExcel(file, undefined);
             data = validateObjects(data)
-            if (data.length > 0) {
-                const callback = () => {
-                    dispatch(execute(integrationManagerBulkloadIns({
-                        integrationmanagerid: row.id,
-                        table: JSON.stringify(data),
-                        type: title === "code_table" ? "CODE" : "PERSON"
-                    })))
-                    setWaitValidation(true)
-                    dispatch(showBackdrop(true));
-                }
-                dispatch(manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback
-                }))
+            
+            let codigosSet = new Set();
+
+            let hayRepetidos = false;
+
+            if(title === "code_table"){
+                data.forEach(objeto => {
+                    if (codigosSet.has(objeto.Codigo)) {
+                        hayRepetidos = true;
+                    } else {
+                        codigosSet.add(objeto.Codigo);
+                    }
+                });
+            }else{
+                data.forEach(objeto => {
+                    if (codigosSet.has(objeto.Persona)) {
+                        hayRepetidos = true;
+                    } else {
+                        codigosSet.add(objeto.Persona);
+                    }
+                });
             }
-            else {
+            if(!hayRepetidos){
+
+                if (data.length > 0) {
+                    const callback = () => {
+                        dispatch(execute(integrationManagerBulkloadIns({
+                            integrationmanagerid: row.id,
+                            table: JSON.stringify(data),
+                            type: title === "code_table" ? "CODE" : "PERSON"
+                        })))
+                        setWaitValidation(true)
+                        dispatch(showBackdrop(true));
+                    }
+                    dispatch(manageConfirmation({
+                        visible: true,
+                        question: t(langKeys.confirmation_save),
+                        callback
+                    }))
+                }
+                else {
+                    dispatch(showBackdrop(false));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
+                }
+            }else{
                 dispatch(showBackdrop(false));
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: title === "code_table"?t(langKeys.repeated_code):t(langKeys.repeated_person) }));
             }
         }
     };

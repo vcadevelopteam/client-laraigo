@@ -6115,6 +6115,8 @@ export const langKeys = {
   add_expiration_date_to_person_helper: 'add_expiration_date_to_person_helper',
   errorIntegrationColumnDuplicates: 'errorIntegrationColumnDuplicates',
   errorIntegrationTrackinguplicates: 'errorIntegrationTrackinguplicates',
+  repeated_code: 'repeated_code',
+  repeated_person: 'repeated_person',
 };
 
 export type LangKeys = typeof langKeys;
