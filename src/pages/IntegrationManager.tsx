@@ -717,8 +717,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             "columns": personcolumns,
             "tracking_columns": personcolumnstrack
          }
-
-         debugger    
+  
          data.code_params.forEach((x,i)=>{
             const count = codecolumns.filter((value) => value === x.key).length;
             const hasDuplicates = count > 1;
@@ -2629,7 +2628,21 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         <IconButton
                            size="small"
                            className={classes.fieldButton}
-                           onClick={() => {codeParamsRemove(i)}}
+                           onClick={() => {
+                              let value = getValues(`code_params.${i}.key`);
+                              if (value!=="Codigo" && value!=="Fecha de caducidad" && value!==""){
+                                 let found = false
+                                 let person_params_tracking = getValues("person_params_tracking")                           
+                                 for (let objeto of person_params_tracking) {
+                                    if (objeto.key === value) {
+                                       found = true
+                                       objeto.key = "";
+                                    }
+                                 }
+                                 if(found) setValue("person_params_tracking", person_params_tracking)
+                              }
+                              codeParamsRemove(i)
+                           }}
                         >
                            <DeleteIcon
                               style={{
@@ -2791,7 +2804,21 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         <IconButton
                            size="small"
                            className={classes.fieldButton}
-                           onClick={() => {personParamsRemove(i)}}
+                           onClick={() => {
+                              let value = getValues(`person_params.${i}.key`);
+                              if (value!=="Persona" && value!=="Fecha de caducidad" && value!==""){
+                                 let found = false
+                                 let code_params_tracking = getValues("code_params_tracking")                           
+                                 for (let objeto of code_params_tracking) {
+                                    if (objeto.key === value) {
+                                       found = true
+                                       objeto.key = "";
+                                    }
+                                 }
+                                 if(found) setValue("code_params_tracking", code_params_tracking)
+                              }
+                              personParamsRemove(i)
+                           }}
                         >
                            <DeleteIcon
                               style={{

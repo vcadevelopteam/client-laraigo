@@ -5058,3 +5058,8 @@ export const integrationManagerCodePersonSel = ({integrationmanagerid, type}:Dic
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
     parameters: { integrationmanagerid, type },
 });
+export const integrationManagerCodePersonDel = ({integrationmanagerid, type, ids}:Dictionary) => ({
+    method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
+    key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
+    parameters: { integrationmanagerid, type, ids },
+});

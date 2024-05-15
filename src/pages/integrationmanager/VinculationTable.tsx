@@ -1,5 +1,5 @@
 import { Dictionary } from "@types";
-import { integrationManagerBulkloadIns, integrationManagerCodePersonExport, integrationManagerCodePersonSel, uploadExcel } from "common/helpers";
+import { integrationManagerBulkloadIns, integrationManagerCodePersonDel, integrationManagerCodePersonExport, integrationManagerCodePersonSel, uploadExcel } from "common/helpers";
 import { TemplateBreadcrumbs, TitleDetail } from "components";
 import TableZyx from "components/fields/table-simple";
 import { langKeys } from "lang/keys";
@@ -15,7 +15,7 @@ interface VinculationTableProps {
     setViewSelected: (value: string) => any;
     row: any;
 }
-const key="id"
+const key = "id"
 const VinculationTable: React.FC<VinculationTableProps> = ({
     title,
     setViewSelected,
@@ -24,26 +24,27 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitValidation, setWaitValidation] = useState(false);
+    const [waitDelete, setWaitDelete] = useState(false);
     const [data, setData] = useState<any[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const executeResult = useSelector(state => state.main.execute);
     const collectionAux2 = useSelector(state => state.main.mainAux2);
-    
-    const fetchData = () => dispatch(getCollectionAux2(integrationManagerCodePersonSel({integrationmanagerid:row.id,type: title === "code_table" ? "CODE" : "PERSON"})))
+
+    const fetchData = () => dispatch(getCollectionAux2(integrationManagerCodePersonSel({ integrationmanagerid: row.id, type: title === "code_table" ? "CODE" : "PERSON" })))
 
     useEffect(() => {
         fetchData()
     }, [])
 
     useEffect(() => {
-        if(!collectionAux2.loading && !collectionAux2.error) {            
+        if (!collectionAux2.loading && !collectionAux2.error) {
             const flattenedData = collectionAux2.data.map((obj) => {
-                let newData = { ...obj }; 
-                delete newData.json_data; 
-                delete newData.tracking_data; 
-                
+                let newData = { ...obj };
+                delete newData.json_data;
+                delete newData.tracking_data;
+
                 newData = { ...newData, ...obj.json_data, ...obj.tracking_data };
-            
+
                 return newData;
             });
             setData(flattenedData)
@@ -70,7 +71,7 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
         files = null
         if (file) {
             let data: any = await uploadExcel(file, undefined);
-            data= validateObjects(data)
+            data = validateObjects(data)
             if (data.length > 0) {
                 const callback = () => {
                     dispatch(execute(integrationManagerBulkloadIns({
@@ -100,11 +101,32 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
         return objs.map((c) => ({
             Header: c,
             accessor: c,
-            width: objs.length?`${(Math.floor(100 / objs.length))}%`:"10%"
+            width: objs.length ? `${(Math.floor(100 / objs.length))}%` : "10%"
         }));
     }, [row]);
 
 
+    const deleteDataFunction = () => {
+        if(Object.keys(selectedRows).join()){
+            const callback = () => {
+                dispatch(showBackdrop(true));
+                dispatch(execute(integrationManagerCodePersonDel({
+                    integrationmanagerid: row.id,
+                    type: title === "code_table" ? "CODE" : "PERSON",
+                    ids: Object.keys(selectedRows).join()
+                })));
+                setWaitDelete(true);
+            };
+    
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_delete_data),
+                    callback,
+                })
+            );
+        }
+    };
 
     useEffect(() => {
         if (waitValidation) {
@@ -120,6 +142,21 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
             }
         }
     }, [executeResult, waitValidation]);
+
+    useEffect(() => {
+        if (waitDelete) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                fetchData()
+            } else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+            }
+        }
+    }, [executeResult, waitDelete]);
 
     return (
         <div>
@@ -151,8 +188,8 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                 importData={true}
                 loading={collectionAux2.loading}
                 importDataFunction={handleUpload}
-                deleteData={!!Object.keys(selectedRows).length}
-            //deleteDataFunction={deleteDataFunction}
+                deleteData={true}
+                deleteDataFunction={deleteDataFunction}
             />
         </div>
 
