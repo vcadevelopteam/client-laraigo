@@ -6104,6 +6104,8 @@ const translation: LangKeys = {
   add_expiration_date_to_person_helper: 'Add an expiration date field for your person, after this date the record will be deleted.',
   errorIntegrationColumnDuplicates: 'Column names cannot be repeated.',
   errorIntegrationTrackinguplicates: 'Trace field names cannot be repeated.',
+  repeated_code: 'Codes cannot be repeated',
+  repeated_person: 'Persons cannot be repeated',
 };
 
 const enResource: ResourceLanguage = {
