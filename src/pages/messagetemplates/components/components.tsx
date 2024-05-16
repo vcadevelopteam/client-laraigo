@@ -247,19 +247,34 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
 interface MessagePreviewMultimediaProps {
     headerType: string;
     header: string;
-    bodyObject: Descendant[];
+    body: string;
     footer: string;
     buttonstext: string[];
     buttonslink: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, bodyObject, footer, buttonstext, buttonslink}) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, body, footer, buttonstext, buttonslink}) => {
     const classes = useStyles();
-    const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
     const combinedButtons = [
         ...buttonstext.map(text => ({ type: 'text', text: text })),
         ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
     ];
+
+    const parseFormattedText = (text: string) => {
+        const monospace = /```(.*?)```/g;
+        text = text.replace(monospace, '<code>$1</code>');
+
+        const bold = /\*(.*?)\*/g;
+        text = text.replace(bold, '<strong>$1</strong>');
+    
+        const italic = /_(.*?)_/g;
+        text = text.replace(italic, '<em>$1</em>');
+    
+        const strikethrough = /~(.*?)~/g;
+        text = text.replace(strikethrough, '<del>$1</del>');
+    
+        return text;
+    };
 
     return (
         <div className={classes.messagePrevContainer}>
@@ -285,8 +300,10 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                     ) : (
                         <></>
                     )}
-                    {concatenatedText !== '' && (
-                        <div className={classes.body} style={{marginTop: 10}}>{concatenatedText}</div>
+                    {body !== '' && (
+                        <div className={classes.body} style={{ marginTop: 10 }} 
+                            dangerouslySetInnerHTML={{ __html: parseFormattedText(body) }}>
+                        </div>
                     )}
                     {footer !== '' && (
                         <span className={classes.footer}>{footer}</span>
@@ -333,20 +350,37 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
 };
 
 interface MessagePreviewCarouselProps {
-    bodyObject: Descendant[];
+    body: string;
     carouselCards: Dictionary[];
 }
 
-export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({bodyObject, carouselCards}) => {
+export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({body, carouselCards}) => {
     const classes = useStyles();
-    const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
+
+    const parseFormattedText = (text: string) => {
+        const monospace = /```(.*?)```/g;
+        text = text.replace(monospace, '<code>$1</code>');
+
+        const bold = /\*(.*?)\*/g;
+        text = text.replace(bold, '<strong>$1</strong>');
+    
+        const italic = /_(.*?)_/g;
+        text = text.replace(italic, '<em>$1</em>');
+    
+        const strikethrough = /~(.*?)~/g;
+        text = text.replace(strikethrough, '<del>$1</del>');
+    
+        return text;
+    };
 
     return (
         <div className={classes.messagePrevContainer}>
             <div className={classes.container} style={{width: 350}}>
                 <div className={classes.messageCard}>
-                    {concatenatedText !== '' && (
-                        <div className={classes.bodyCar}>{concatenatedText}</div>
+                    {body !== '' && (
+                        <div className={classes.body} style={{ marginTop: 10 }} 
+                            dangerouslySetInnerHTML={{ __html: parseFormattedText(body) }}>
+                        </div>
                     )}
                     <span className={classes.chatTime}>11:54</span>
                 </div>

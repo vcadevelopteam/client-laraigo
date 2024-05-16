@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { Picker } from 'emoji-mart';
 import WarningIcon from '@material-ui/icons/Warning';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -23,6 +24,13 @@ import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd"
+import {
+    FormatBold as FormatBoldIcon,
+    FormatItalic as FormatItalicIcon,
+    Code as FormatCodeIcon,
+    FormatStrikethrough as FormatStrikethroughIcon,
+    EmojiEmotions as EmojiEmotionsIcon,
+} from '@material-ui/icons';
 
 import {
     execute,
@@ -50,7 +58,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import MenuItem from "@material-ui/core/MenuItem";
-import React, { FC, Suspense, useCallback, useEffect, useState } from "react";
+import React, { FC, Suspense, useCallback, useEffect, useState, useRef } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
@@ -265,13 +273,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
-    const [bodyObjectCar, setBodyObjectCar] = useState<Descendant[]>(
-        row?.bodyobjectcar || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
-    );
     const [category, setCategory] = useState(row ? row.category : '')
     const [isHeaderVariable, setIsHeaderVariable] = useState(false)
-    const [bodyVariables, setBodyVariables] = useState<string[]>([])
-    const [bubbleVariables, setBubbleVariables] = useState<string[]>([])
+    const [bodyVariables, setBodyVariables] = useState<Dictionary[]>([])
     const [addSafetyAdvice, setAddSafetyAdvice] = useState(false)
     const [addLastDateCode, setAddLastDateCode] = useState(false)
     const [cardsVariables, setCardsVariables] = useState<Dictionary[]>([])
@@ -283,6 +287,25 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         row?.headertype === 'text' ? 'text' : 'none')
     const [filename, setFilename] = useState(row ? row.header.split('/').pop().replace(/%20/g, ' ') : '')
     const [uploading, setUploading] = useState(false)
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const emojiButtonRef = useRef(null);
+    const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
+
+    useEffect(() => {
+        if (showEmojiPicker && emojiButtonRef.current) {
+            const buttonRect = emojiButtonRef.current.getBoundingClientRect();
+            const pickerHeight = 370; // Aproximadamente la altura del Picker
+            const pickerWidth = 300; // Aproximadamente el ancho del Picker
+
+            const availableHeight = window.innerHeight - buttonRect.bottom;
+            const isPickerFit = availableHeight >= pickerHeight;
+
+            setPickerPosition({
+                top: isPickerFit ? buttonRect.bottom + window.scrollY : window.innerHeight - pickerHeight + window.scrollY,
+                left: buttonRect.left + window.scrollX,
+            });
+        }
+    }, [showEmojiPicker]);
     
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -425,6 +448,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger,
         watch,
         unregister,
+        control
     } = useForm({
         defaultValues: {
             attachment: row?.attachment || "",
@@ -867,12 +891,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("templatetype");
 
         setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
-        setBodyObjectCar(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
         setValue('header', '')
         setValue('footer', '')
         setValue('buttons', [])
         setValue('buttonsquick_reply', [])
         setValue("headertype", "none");
+        setValue('body', '')
         setHeaderType('none')
         setValue('carouselcards', [])
         trigger('carouselcards');
@@ -880,7 +904,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("header");
         trigger("footer");
         trigger('buttons');
+        trigger('body');
         trigger('buttonsquick_reply');
+        setBodyVariables([])
     };
 
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
@@ -1215,13 +1241,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('category', categoryText)
 
         setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
-        setBodyObjectCar(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
         setValue('footer', '')
         trigger('footer')
         setBodyVariables([])
         setValue("headertype", "none");
         setIsHeaderVariable(false)
-        setSelectedFile(null)
         trigger("headertype");
         setValue('buttons', [])
         setValue('buttonsquick_reply', [])
@@ -1296,6 +1320,33 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue(`carouselcards.${index}.buttons`, reorderedItems)
             trigger('carouselcards')
         }
+    }
+
+    const addEmoji = (emoji) => {
+        const currentText = getValues('body');
+        setValue('body', currentText + emoji.native);
+        trigger('body');
+        setShowEmojiPicker(false);
+    };
+
+    const addVariable = () => {
+        const body = getValues('body');
+        const newVariableNumber = bodyVariables.length + 1;
+        const newVariableTag = `{{${newVariableNumber}}}`;
+
+        setValue('body', body + newVariableTag);
+        trigger('body');
+        setBodyVariables([...bodyVariables, { variable: newVariableNumber, text: "" }]);
+    };
+
+    const deleteVariable = () => {
+        const lastVariable = bodyVariables[bodyVariables.length - 1];
+        const variablePattern = new RegExp(`\\{\\{${lastVariable.variable}\\}\\}`, 'g');
+        const updatedBody = getValues('body').replace(variablePattern, '');
+
+        setBodyVariables(bodyVariables.slice(0, -1));
+        setValue('body', updatedBody);
+        trigger('body');
     }
 
     return (
@@ -1730,38 +1781,71 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     )}
                                     <span className={classes.title}>{t(langKeys.body)}</span>
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
-                                    <React.Fragment>
-                                        <RichText
-                                            spellCheck
-                                            emoji={true}
-                                            value={bodyObject}
+                                    <div>
+                                        <FieldEditMulti
+                                            variant="outlined"
+                                            inputProps={{
+                                                rows: 7,
+                                                maxRows: 7
+                                            }}
+                                            valueDefault={getValues('body')}
                                             onChange={(value) => {
-                                                setBodyObject(value);
+                                                setValue('body', value)
+                                                trigger('body')
                                             }}
-                                            positionEditable="top"
-                                            style={{
-                                                borderColor: "#762AA9",
-                                                borderRadius: "4px",
-                                                borderStyle: "solid",
-                                                borderWidth: "1px",
-                                                padding: "10px",
-                                            }}
+                                            maxLength={1024}
                                         />
-                                    </React.Fragment>
+                                    </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
+                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                            <EmojiEmotionsIcon />
+                                        </IconButton>
+                                        {showEmojiPicker && (
+                                            <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
+                                                <Picker onSelect={addEmoji} />
+                                            </div>
+                                        )}
+                                        <IconButton
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '**')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatBoldIcon />
+                                        </IconButton>
+                                        <IconButton 
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '__')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatItalicIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '~~')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatStrikethroughIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '``````')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatCodeIcon />
+                                        </IconButton>
                                         {bodyVariables.length < 20 &&(
-                                            <Button
-                                                className={classes.button}
-                                                startIcon={<AddIcon />}
-                                                onClick={() => setBodyVariables([...bodyVariables, ''])}
-                                            >
-                                                {t(langKeys.addvariable)}
+                                            <Button onClick={addVariable} startIcon={<AddIcon />}>
+                                                Añadir Variable
                                             </Button>
                                         )}
                                         <Button
                                             className={classes.button}
                                             startIcon={<CloseIcon />}
-                                            onClick={() => setBodyVariables(bodyVariables.slice(0,-1))}
+                                            onClick={deleteVariable}
                                         >
                                             {t(langKeys.deletevariable)}
                                         </Button>
@@ -1769,15 +1853,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     {bodyVariables.length > 0 && (
                                         <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                             <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {bodyVariables.map((v: string, index: number) => {
+                                            {bodyVariables.map((v, index: number) => {
                                                 return (
                                                     <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        <span>{'{{'}{index + 1}{'}}'}</span>
+                                                        <span>{'{{'}{v.variable}{'}}'}</span>
                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
                                                             <FieldEdit
                                                                 variant="outlined"
                                                                 size="small"
-                                                                valueDefault={v}
+                                                                valueDefault={v.text}
+                                                                onChange={(e) => {
+                                                                    const newBodyVariables = [...bodyVariables];
+                                                                    newBodyVariables[index].text = e.target.value;
+                                                                    setBodyVariables(newBodyVariables);
+                                                                }}
                                                             />
                                                         </div>
                                                     </div>
@@ -2054,7 +2143,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <MessagePreviewMultimedia
                                             headerType={getValues('headertype')}
                                             header={getValues('header')}
-                                            bodyObject={bodyObject}
+                                            body={getValues('body')}
                                             footer={getValues('footer')}
                                             buttonstext={getValues('buttonsquick_reply').map((btn: Dictionary) => { return btn.text })}
                                             buttonslink={getValues('buttons').map((btn: Dictionary) => { return { type: btn.type, text: btn.btn.text } })}
@@ -2192,54 +2281,92 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%'}}>
                                     <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
                                     <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
-                                    <React.Fragment>
-                                        <RichText
-                                            spellCheck
-                                            emoji={true}
-                                            value={bodyObjectCar}
+                                    <div>
+                                        <FieldEditMulti
+                                            variant="outlined"
+                                            inputProps={{
+                                                rows: 7,
+                                                maxRows: 7
+                                            }}
+                                            valueDefault={getValues('body')}
                                             onChange={(value) => {
-                                                setBodyObjectCar(value);
+                                                setValue('body', value)
+                                                trigger('body')
                                             }}
-                                            positionEditable="top"
-                                            style={{
-                                                borderColor: "#762AA9",
-                                                borderRadius: "4px",
-                                                borderStyle: "solid",
-                                                borderWidth: "1px",
-                                                padding: "10px",
-                                            }}
+                                            maxLength={1024}
                                         />
-                                    </React.Fragment>
+                                    </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        {bubbleVariables.length < 20 &&(
-                                            <Button
-                                                className={classes.button}
-                                                startIcon={<AddIcon />}
-                                                onClick={() => setBubbleVariables([...bubbleVariables, ''])}
-                                            >
-                                                {t(langKeys.addvariable)}
+                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                            <EmojiEmotionsIcon />
+                                        </IconButton>
+                                        {showEmojiPicker && (
+                                            <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
+                                                <Picker onSelect={addEmoji} />
+                                            </div>
+                                        )}
+                                        <IconButton
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '**')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatBoldIcon />
+                                        </IconButton>
+                                        <IconButton 
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '__')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatItalicIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '~~')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatStrikethroughIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={() => {
+                                                setValue('body', getValues('body') + '``````')
+                                                trigger('body')
+                                            }}
+                                        >
+                                            <FormatCodeIcon />
+                                        </IconButton>
+                                        {bodyVariables.length < 20 &&(
+                                            <Button onClick={addVariable} startIcon={<AddIcon />}>
+                                                Añadir Variable
                                             </Button>
                                         )}
                                         <Button
                                             className={classes.button}
                                             startIcon={<CloseIcon />}
-                                            onClick={() => setBubbleVariables(bubbleVariables.slice(0,-1))}
+                                            onClick={deleteVariable}
                                         >
                                             {t(langKeys.deletevariable)}
                                         </Button>
                                     </div>
-                                    {bubbleVariables.length > 0 && (
+                                    {bodyVariables.length > 0 && (
                                         <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                             <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {bubbleVariables.map((v: string, index: number) => {
+                                            {bodyVariables.map((v, index: number) => {
                                                 return (
                                                     <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        <span>{'{{'}{index + 1}{'}}'}</span>
+                                                        <span>{'{{'}{v.variable}{'}}'}</span>
                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
                                                             <FieldEdit
                                                                 variant="outlined"
                                                                 size="small"
-                                                                valueDefault={v}
+                                                                valueDefault={v.text}
+                                                                onChange={(e) => {
+                                                                    const newBodyVariables = [...bodyVariables];
+                                                                    newBodyVariables[index].text = e.target.value;
+                                                                    setBodyVariables(newBodyVariables);
+                                                                }}
                                                             />
                                                         </div>
                                                     </div>
@@ -2545,7 +2672,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
                                     <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
                                         <MessagePreviewCarousel
-                                            bodyObject={bodyObjectCar}
+                                            body={getValues('body')}
                                             carouselCards={getValues('carouselcards')}
                                         />
                                     </div>
