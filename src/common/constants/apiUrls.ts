@@ -465,4 +465,6 @@ export const apiUrls = {
     LLAMA_DELETE_FILE: `${BASE_URL}/llama/delete_file`,
     LLAMA_QUERY: `${BASE_URL}/llama/query`,
     LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
+
+    PROCESSZIPINTEGRATION: `${BASE_URL}/integrationmanager/file_upload`,
 };

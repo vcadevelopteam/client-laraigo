@@ -89,6 +89,9 @@ export function mainEventBooking(requestBody: IRequestBody) {
 export function mainEventCancelBooking(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.MAIN_EVENT_CANCELBOOKING_URL, { data: requestBody }, false);
 }
+export function processzip_send(requestBody: IRequestBody) {
+    return APIManager.post(apiUrls.PROCESSZIPINTEGRATION, { data: requestBody }, true);
+}
 
 export function request_send(request: any) {
     const { method, url, authorization, headers, bodytype, body, parameters } = request;

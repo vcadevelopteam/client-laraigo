@@ -13,3 +13,15 @@ export const request_send = (request: any): IActionCall => ({
 });
 
 export const resetRequest = (): IActionCall => ({type: actionTypes.REQUEST_RESET});
+
+export const processzip_send = (processzip: any): IActionCall => ({
+    callAPI: () => CommonService.processzip_send(processzip),
+    types: {
+        loading: actionTypes.PROCESSZIP_SEND,
+        success: actionTypes.PROCESSZIP_SUCCESS,
+        failure: actionTypes.PROCESSZIP_FAILURE,
+    },
+    type: null,
+});
+
+export const resetProcesszip = (): IActionCall => ({type: actionTypes.PROCESSZIP_RESET});
