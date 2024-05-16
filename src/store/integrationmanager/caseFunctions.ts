@@ -48,6 +48,7 @@ export const processzipFailure = (state: IState, action: IAction): IState => ({
     ...state,
     processzip: {
         ...state.processzip,
+        code: action?.payload?.code,
         loading: false,
         error: true,
     }

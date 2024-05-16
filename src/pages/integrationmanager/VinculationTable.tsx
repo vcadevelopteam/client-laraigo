@@ -1,5 +1,4 @@
-import { Dictionary, IFile } from "@types";
-import { integrationManagerBulkloadIns, integrationManagerCodePersonDel, integrationManagerCodePersonExport, integrationManagerCodePersonSel, uploadExcel } from "common/helpers";
+import { integrationManagerBulkloadIns, integrationManagerCodePersonDel, integrationManagerCodePersonSel, uploadExcel } from "common/helpers";
 import { TemplateBreadcrumbs, TitleDetail } from "components";
 import TableZyx from "components/fields/table-simple";
 import { langKeys } from "lang/keys";
@@ -9,7 +8,9 @@ import { useDispatch } from "react-redux";
 import { execute, exportData, getCollectionAux2, uploadFile } from "store/main/actions";
 import { useSelector } from 'hooks';
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import ClearIcon from '@material-ui/icons/Clear';
 import { processzip_send } from "store/integrationmanager/actions";
+import { Button } from "@material-ui/core";
 
 interface VinculationTableProps {
     title: string;
@@ -72,7 +73,6 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
         }
     }, [waitSaveUpload, uploadResult])
     useEffect(() => {
-        debugger
         if (waitSaveZip) {
             if (!zipResult.loading && !zipResult.error) {
                 dispatch(showBackdrop(false));
@@ -80,7 +80,8 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData()
             } else if (zipResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
+                const message = t(zipResult.code || "error_unexpected_error", { module: t(title).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: message }))
                 dispatch(showBackdrop(false));
                 setWaitSaveZip(false);
             }
@@ -255,7 +256,8 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData()
             } else if (executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
+                const message = t(executeResult.code || "error_unexpected_error", { module: t(title).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: message }))
                 dispatch(showBackdrop(false));
                 setWaitValidation(false);
             }
@@ -270,15 +272,16 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData()
             } else if (executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
+                const message = t(executeResult.code || "error_unexpected_error", { module: t(title).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: message }))
                 dispatch(showBackdrop(false));
                 setWaitDelete(false);
             }
         }
     }, [executeResult, waitDelete]);
 
-    return (
-        <div>
+    return (        
+        <div style={{width:"100%"}}>
             <TemplateBreadcrumbs
                 breadcrumbs={[
                     {
@@ -300,11 +303,22 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                 data={data}
                 download={true}
                 selectionKey={key}
+                titlemodule={" "}
                 useSelection
                 setSelectedRows={setSelectedRows}
                 pageSizeDefault={20}
                 filterGeneral={false}
                 importData={true}
+                ButtonsElement={() => (
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => setViewSelected("view-1")}
+                    >{t(langKeys.back)}</Button>
+                )}
                 loading={collectionAux2.loading}
                 importDataFunction={handleUpload}
                 deleteData={true}
