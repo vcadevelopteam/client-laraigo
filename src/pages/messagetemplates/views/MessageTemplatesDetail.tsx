@@ -63,6 +63,7 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
 import { AddButtonMenu, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
+import { text } from "stream/consumers";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -270,6 +271,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [waitUploadFile2, setWaitUploadFile2] = useState(false);
+    const [waitUploadFile3, setWaitUploadFile3] = useState(false);
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
@@ -290,6 +292,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const emojiButtonRef = useRef(null);
     const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
+    const [cardAux, setCardAux] = useState<number | null>(null)
 
     useEffect(() => {
         if (showEmojiPicker && emojiButtonRef.current) {
@@ -439,6 +442,22 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: 10, text: `10 ${t(langKeys.minutes)}`},
     ]
 
+    const dataCountryCodes = [
+        { value: 54, text: 'AR +54' },
+        { value: 591, text: 'BO +591' },
+        { value: 55, text: 'BR +55' },
+        { value: 1, text: 'CA +1' },
+        { value: 56, text: 'CH +56' },
+        { value: 57, text: 'CO +57' },
+        { value: 593, text: 'EC +593' },
+        { value: 34, text: 'ES +34' },
+        { value: 52, text: 'MX +52' },
+        { value: 51, text: 'PE +51' },
+        { value: 598, text: 'UR +598' },
+        { value: 1, text: 'US +1' },
+        { value: 44, text: 'UK +44' }
+    ]
+
     const {
         formState: { errors },
         getValues,
@@ -448,7 +467,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger,
         watch,
         unregister,
-        control
     } = useForm({
         defaultValues: {
             attachment: row?.attachment || "",
@@ -862,7 +880,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("type");
         trigger("typeattachment");
     };
-
+    
     const onChangeTemplateMedia = async () => {
         if (getValues("headerenabled")) {
             register("header", {
@@ -950,7 +968,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setHeaderType(data?.value || "");
             setValue("headertype", data?.value || "")
             setIsHeaderVariable(false)
-            setSelectedFile(null)
             setValue('header', '')
             trigger("header")
             trigger("headertype");
@@ -958,7 +975,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setHeaderType(data?.value || "");
             setIsHeaderVariable(false)
             setValue('headertype', 'multimedia')
-            setSelectedFile(null)
             setValue('header', '')
             trigger("header")
             trigger("headertype");
@@ -999,7 +1015,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
     const onClickAddCard = async () => {
         if(getValues("carouselcards") && getValues('carouselcards').length < 10) {
-            setValue('carouselcards', [...getValues('carouselcards'), { image: null, body: '', buttons: [] }])
+            setValue('carouselcards', [...getValues('carouselcards'), { image: "", body: '', bodyvariables: [], buttons: [] }])
         }
         trigger("carouselcards");
     }
@@ -1258,21 +1274,36 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleImageRemove = (index: number) => {
-        const newCards = [...getValues("carouselcards")];
-        newCards[index].image = null;
-        setValue(`carouselcards.${index}.image`, null);
+        setValue(`carouselcards.${index}.image`, "");
         trigger('carouselcards')
     };
 
-    const handleFileChangeAux = (event, index: number) => {
-        const file = event.target.files[0];
-        const newCards = [...getValues("carouselcards")];
-        newCards[index].image = file;
+    const handleFileChangeAux = (files: any, index: number) => {
+        const file = files?.item(0);
         if (file) {
-            setValue(`carouselcards`, newCards)
-            trigger('carouselcards')
+            const fd = new FormData();
+            fd.append("file", file, file.name);
+            setCardAux(index)
+            dispatch(showBackdrop(true))
+            dispatch(uploadFile(fd));
+            setWaitUploadFile3(true);
         }
     };
+
+    useEffect(() => {
+        if (waitUploadFile3) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                const newCards = [...getValues("carouselcards")];
+                newCards[cardAux].image = uploadResult?.url;
+                setValue(`carouselcards`, newCards)
+                trigger('carouselcards')
+                dispatch(showBackdrop(false))
+                setWaitUploadFile3(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile3(false);
+            }
+        }
+    }, [waitUploadFile3, uploadResult])
     
     const handleDragDrop = (results) => {
         const {source, destination, type} = results;
@@ -1329,6 +1360,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setShowEmojiPicker(false);
     };
 
+    const addVariableCard = (index: number) => {
+        const body = getValues(`carouselcards.${index}.body`);
+        const newVariableNumber = getValues(`carouselcards.${index}.bodyvariables`).length + 1;
+        const newVariableTag = `{{${newVariableNumber}}}`;
+
+        setValue(`carouselcards.${index}.body`, body + newVariableTag);
+        setValue(`carouselcards.${index}.bodyvariables`, [...getValues(`carouselcards.${index}.bodyvariables`), {variable: newVariableNumber, text: ''}])
+        trigger('carouselcards')
+    }
+
+    const deleteVariableCard = (index: number) => {
+        const cardVariables = getValues(`carouselcards.${index}.bodyvariables`)
+        const lastVariable = cardVariables[cardVariables.length - 1];
+        const variablePattern = new RegExp(`\\{\\{${lastVariable.variable}\\}\\}`, 'g');
+        const updatedBody = getValues(`carouselcards.${index}.body`).replace(variablePattern, '');
+
+        setValue(`carouselcards.${index}.bodyvariables`, cardVariables.slice(0, -1));
+        setValue(`carouselcards.${index}.body`, updatedBody);
+        trigger('carouselcards');
+    }
+
     const addVariable = () => {
         const body = getValues('body');
         const newVariableNumber = bodyVariables.length + 1;
@@ -1347,6 +1399,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setBodyVariables(bodyVariables.slice(0, -1));
         setValue('body', updatedBody);
         trigger('body');
+    }
+    
+    const changeHeaderType = (type: string) => {
+        setValue('headertype', type)
+        trigger('headertype')
+        setValue('header', '')
+        trigger('header')
     }
 
     return (
@@ -1646,7 +1705,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     <Button
                                                         className={classes.button}
                                                         startIcon={isHeaderVariable ? <ClearIcon /> : <AddIcon />}
-                                                        onClick={() => setIsHeaderVariable(!isHeaderVariable)}
+                                                        onClick={() => {
+                                                            setIsHeaderVariable(!isHeaderVariable)
+                                                            setValue('headervariable', '')
+                                                        }}
                                                     >
                                                         {isHeaderVariable ? t(langKeys.deletevariable) : t(langKeys.addvariable)}
                                                     </Button>
@@ -1664,10 +1726,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         variant="outlined"
                                                         size="small"
                                                         maxLength={60}
-                                                        valueDefault={getValues('header')}
+                                                        valueDefault={getValues('headervariable')}
                                                         onChange={(value) => {
-                                                            setValue('header', value)
-                                                            trigger('header')
+                                                            setValue('headervariable', value)
+                                                            trigger('headervariable')
                                                         }}
                                                     />
                                                 </div>
@@ -1681,12 +1743,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     {(headerType !== 'text' && headerType !== 'none') && (
                                         <div style={{display: 'flex', flexDirection: 'column'}}>
                                             <div style={{display: 'flex', gap: 20, marginBottom: 20}}>
-                                                <div className={getValues('headertype') === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
-                                                    setValue('headertype', 'image')
-                                                    trigger('headertype')
-                                                    setValue('header', '')
-                                                    trigger('header')
-                                                }}>
+                                                <div className={getValues('headertype') === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('image')}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
                                                         <input type="checkbox" checked={getValues('headertype') === 'image'} className={classes.checkboxHeadOption}/>
                                                     </div>
@@ -1695,12 +1752,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <span style={{ textAlign: 'center', color: getValues('headertype') === 'image' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
-                                                    setValue('headertype', 'video')
-                                                    trigger('headertype')
-                                                    setValue('header', '')
-                                                    trigger('header')
-                                                }}>
+                                                <div className={getValues('headertype') === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('video')}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
                                                         <input type="checkbox" checked={getValues('headertype') === 'video'} className={classes.checkboxHeadOption} />
                                                     </div>
@@ -1709,12 +1761,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <span style={{ textAlign: 'center', color: getValues('headertype') === 'video' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'file' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
-                                                    setValue('headertype', 'file')
-                                                    trigger('headertype')
-                                                    setValue('header', '')
-                                                    trigger('header')
-                                                }}>
+                                                <div className={getValues('headertype') === 'file' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('file')}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
                                                         <input type="checkbox" checked={getValues('headertype') === 'file'} className={classes.checkboxHeadOption} />
                                                     </div>
@@ -1729,10 +1776,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
                                                     <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
                                                         {t(langKeys[getValues('headertype')])}
-                                                        {(getValues('headertype') === 'image' || getValues('headertype') === 'video') && (
+                                                        {(getValues('headertype') === 'image' || getValues('headertype') === 'video' || getValues('headertype') === 'file') && (
                                                             <input
                                                                 type="file"
-                                                                accept={getValues('headertype') === 'image' ? '.jpg,.png' : getValues('headertype') === 'video' ? '.mp4' : ''}
+                                                                accept={getValues('headertype') === 'image' ? '.jpg,.png' : getValues('headertype') === 'video' ? '.mp4' : '.pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls'}
                                                                 onChange={(e) => handleFileChange(e.target.files)}
                                                                 style={{ display: 'none' }}
                                                                 disabled={uploading}
@@ -2085,7 +2132,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                     />
                                                                                                     <FieldSelect
                                                                                                         className='col-4'
-                                                                                                        data={dataURLType}
+                                                                                                        data={dataCountryCodes}
                                                                                                         label={t(langKeys.country)}
                                                                                                         error={errors?.buttons?.[i]?.btn?.code?.message}
                                                                                                         onChange={(value) => onChangeButton(i, "code", value?.value)}
@@ -2114,6 +2161,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                     (value && value.length) || t(langKeys.field_required),
                                                                                                             }),
                                                                                                         }}
+                                                                                                        maxLength={20}
                                                                                                         size="small"
                                                                                                     />
                                                                                                 </div>
@@ -2391,11 +2439,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     <ClearIcon className={classes.closeIcon}/>
                                                                 </IconButton>
                                                             </div>
-                                                            {card.image ? (
+                                                            {card.image !== '' ? (
                                                                 <div className={classes.uploadedImage}>
                                                                     <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
                                                                     <div style={{display: 'flex', gap: 10}}>
-                                                                        <span className={classes.imageName}>{card.image.name}</span>
+                                                                        <span className={classes.imageName}>{card.image.split('/').pop().replace(/%20/g, ' ')}</span>
                                                                         <IconButton onClick={() => handleImageRemove(index)} style={{padding: 0}}>
                                                                             <ClearIcon className={classes.closeIcon}/>
                                                                         </IconButton>
@@ -2406,7 +2454,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     <input
                                                                         type="file"
                                                                         accept={'.jpg,.png'}
-                                                                        onChange={(e) => handleFileChangeAux(e, index)}
+                                                                        onChange={(e) => handleFileChangeAux(e.target.files, index)}
                                                                         style={{ display: 'none' }}
                                                                         id={`fileInput-${index}`}
                                                                     />
@@ -2439,12 +2487,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         }),
                                                                     }}
                                                                 />
-                                                                {cardsVariables.filter((card) => { return card.cindex === index }).length < 7 &&(
+                                                                {getValues(`carouselcards.${index}.bodyvariables`).length < 7 &&(
                                                                     <div style={{display: 'flex', justifyContent: 'end'}}>
                                                                         <Button
                                                                             className={classes.button}
                                                                             startIcon={<AddIcon />}
-                                                                            onClick={() => setCardsVariables([...cardsVariables, { cindex: index, value: ''}])}
+                                                                            onClick={() => addVariableCard(index)}
                                                                         >
                                                                             {t(langKeys.addvariable)}
                                                                         </Button>
@@ -2539,8 +2587,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             <div style={{width: '100%', display:'flex'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{width: '100%', display: 'flex'}}>
-                                                                                                                <div style={{flex: 1, backgroundColor: 'white'}}>
+                                                                                                            <div style={{display: 'flex', width: '100%'}}>
+                                                                                                                <div style={{backgroundColor: 'white', flex: 1}}>
                                                                                                                     <FieldEdit
                                                                                                                         variant="outlined"
                                                                                                                         size="small"
@@ -2548,10 +2596,25 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         onChange={(value) => onChangeCardsButton(index, btni, "url", value)}
                                                                                                                     />
                                                                                                                 </div>
-                                                                                                                {btn?.type === 'dynamic' &&(
+                                                                                                                {btn?.btn?.type === 'dynamic' &&(
                                                                                                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{'{{'}1{'}}'}</div>
                                                                                                                 )}
                                                                                                             </div>
+                                                                                                            {btn?.btn?.type === 'dynamic' && (
+                                                                                                                <>
+                                                                                                                    <div style={{width: '100%', display:'flex'}}>
+                                                                                                                        <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.addexampletext)}</span>
+                                                                                                                    </div>
+                                                                                                                    <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                                                                        <FieldEdit
+                                                                                                                            variant="outlined"
+                                                                                                                            size="small"
+                                                                                                                            onChange={(value) => onChangeCardsButton(index, btni, "variable", value)}
+                                                                                                                            valueDefault={btn?.btn?.variable || ""}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                </>
+                                                                                                            )}
                                                                                                         </>
                                                                                                     ) : (
                                                                                                         <>
@@ -2578,7 +2641,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             </div>
                                                                                                             <div style={{backgroundColor: 'white', width: '100%'}}>
                                                                                                                 <FieldSelect
-                                                                                                                    data={dataURLType}
+                                                                                                                    data={dataCountryCodes}
                                                                                                                     variant="outlined"
                                                                                                                     optionDesc="text"
                                                                                                                     optionValue="value"
@@ -2628,34 +2691,51 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
                                                 </div>
                                             </React.Fragment>
-                                            {cardsVariables.length > 0 && (
-                                                <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                                    {cardsVariables.map((cv: Dictionary, index: number) => {
+                                            {getValues('carouselcards').length > 0 && (
+                                                <>
+                                                    {getValues('carouselcards').map((card, cindex: number) => {
                                                         return (
-                                                            <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                                <span>{'{{'}{index + 1}{'}}'}</span>
-                                                                <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                    <FieldEdit
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        valueDefault={cv.value}
-                                                                    />
-                                                                </div>
-                                                                <IconButton style={{margin: 0}} onClick={() => {
-                                                                    const newVariables = cardsVariables.filter((_, i) => i !== index)
-                                                                    setCardsVariables(newVariables)
-                                                                }}>
-                                                                    <ClearIcon/>
-                                                                </IconButton>
-                                                            </div>
-                                                        );
+                                                            <>
+                                                                {card.bodyvariables.length > 0 && (
+                                                                    <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
+                                                                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                                                            <span style={{fontWeight: 'bold'}}>Variables del card {cindex + 1}</span>
+                                                                            <Button
+                                                                                className={classes.button}
+                                                                                startIcon={<CloseIcon />}
+                                                                                onClick={() => deleteVariableCard(cindex)}
+                                                                            >
+                                                                                {t(langKeys.deletevariable)}
+                                                                            </Button>
+                                                                        </div>
+                                                                        {getValues(`carouselcards.${cindex}.bodyvariables`).map((cv: Dictionary, vindex: number) => {
+                                                                            return (
+                                                                                <div key={vindex} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
+                                                                                    <span>{'{{'}{cv.variable}{'}}'}</span>
+                                                                                    <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                                        <FieldEdit
+                                                                                            variant="outlined"
+                                                                                            size="small"
+                                                                                            valueDefault={cv.text}
+                                                                                            onChange={(value) => {
+                                                                                                setValue(`carouselcards.${cindex}.bodyvariables.${vindex}.text`, value)
+                                                                                                trigger('carouselcards')
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                        <div className={classes.warningContainer}>
+                                                                            <WarningIcon style={{color: '#FF7575'}}/>
+                                                                            {t(langKeys.addexampletext)}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        )
                                                     })}
-                                                    <div className={classes.warningContainer}>
-                                                        <WarningIcon style={{color: '#FF7575'}}/>
-                                                        {t(langKeys.addexampletext)}
-                                                    </div>
-                                                </div>
+                                                </>
                                             )}
                                         </div>
                                     ) : (

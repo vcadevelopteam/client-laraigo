@@ -7,7 +7,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Dictionary } from "@types";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import messageImage from '../../../icons/wsp_fondo.jpg'
-import { Descendant } from "slate";
+import { PictureAsPdf as PdfIcon, Description as DocIcon, InsertDriveFile as ExcelIcon, Slideshow as PptIcon } from '@material-ui/icons'; // Importa íconos de Material-UI
 import ReplyIcon from '@material-ui/icons/Reply';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -131,6 +131,13 @@ const useStyles = makeStyles(() => ({
     chatTime: {
         textAlign: 'end',
         fontSize: 10,
+    },
+    fileHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        borderRadius: 5,
+        padding: 10,
+        gap: 10,
     },
 }));
 
@@ -276,6 +283,45 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
         return text;
     };
 
+    const getFileIcon = (url: string) => {
+        const extension = url?.split('.')?.pop()?.toLowerCase();
+        switch (extension) {
+            case 'pdf':
+                return (
+                    <div className={classes.fileHeader} style={{backgroundColor: '#F5D9D9'}}>
+                        <PdfIcon style={{color: '#D80000'}}/>
+                        <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
+                    </div>
+                );
+            case 'doc':
+            case 'docx':
+                return (
+                    <div className={classes.fileHeader} style={{backgroundColor: '#CDDEF5'}}>
+                        <DocIcon style={{color: '#001F4D'}}/>
+                        <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
+                    </div>
+                );
+            case 'xls':
+            case 'xlsx':
+                return (
+                    <div className={classes.fileHeader} style={{backgroundColor: '#B3E7E0'}}>
+                        <ExcelIcon style={{color: '#00493F'}}/>
+                        <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
+                    </div>
+                );
+            case 'ppt':
+            case 'pptx':
+                return (
+                    <div className={classes.fileHeader} style={{backgroundColor: '#FAD3C7'}}>
+                        <PptIcon style={{color: '#CE3203'}}/>
+                        <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
+                    </div>
+                );
+            default:
+                return;
+        }
+    };
+
     return (
         <div className={classes.messagePrevContainer}>
             <div className={classes.container} style={{width: 350}}>
@@ -284,18 +330,22 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                         <span className={classes.headerText}>{header}</span>
                     ) : (headerType !== 'text' && headerType !== 'none') ? (
                         <>
-                            {(header && headerType === 'image') ? (
+                            {(header !== '' && headerType === 'image') ? (
                                 <div className={classes.cardMediaContainer}>
                                     <img src={header} alt="Cabecera" className={classes.cardMedia}/>
                                 </div>
-                            ) : ((header && headerType === 'video') ? (
+                            ) : (header !== '' && headerType === 'video') ? (
                                 <video controls className={classes.cardMedia}>
                                     <source src={header} type="video/mp4" />
                                     Tu navegador no soporta la etiqueta de video.
                                 </video>
+                            ) : (header !== '' && headerType === 'file') ? (
+                                <>
+                                    {getFileIcon(header)}
+                                </>
                             ) : (
                                 <span>No media selected</span>
-                            ))}
+                            )}
                         </>
                     ) : (
                         <></>
@@ -392,7 +442,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
                         return (
                             <div key={index} className={classes.messageCard2}>
                                 <div className={classes.cardMediaContainer}>
-                                    <img src={card.image ? URL.createObjectURL(card.image) : NoImage} alt="Selected Image" className={classes.cardMedia}/>
+                                    <img src={card.image ? card.image : NoImage} alt="Selected Image" className={classes.cardMedia}/>
                                 </div>
                                 <div className={classes.bodyCar}>{card.body}</div>
                                 {card.buttons.length > 0 && (
