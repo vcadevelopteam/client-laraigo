@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
@@ -177,6 +177,13 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [waitSaveMessageAux, setWaitSaveMessageLlamaAux] = useState(false);
     const [waitSaveThreadDeleteLlama, setWaitSaveThreadDeleteLlama] = useState(false)
     const [date, setDate] = useState('');
+    const endOfMessagesRef = useRef(null);
+
+    useEffect(() => {
+        if (endOfMessagesRef.current) {
+            endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
@@ -656,7 +663,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                         <>
                             {messages.data && messages.data.length > 0 ? (
                                 <>
-                                    {messages.data.map(message => (
+                                    {messages.data.map((message, index) => (
                                         <div key={message.messageaiid} className={classes.messageContainer} style={{ backgroundColor: message.type !== 'USER' ? '' : 'white' }}>
                                             <div className={classes.messageContainer2}>
                                                 <div className={classes.messageDate}>
@@ -678,6 +685,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            {index === messages.data.length - 1 && (
+                                                <div ref={endOfMessagesRef}></div>
+                                            )}
                                         </div>
                                     ))}
                                 </>
