@@ -95,12 +95,20 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                 });
             }
             if(!hayRepetidos){
+                let regexFecha = /^\d{2}\/\d{2}\/\d{4}$/;
+                
+                let objetosFiltrados = data.filter(objeto => {
+                    if (!objeto.hasOwnProperty("Fecha de caducidad")) {
+                        return true;
+                    }
+                    return regexFecha.test(objeto["Fecha de caducidad"]);
+                });
 
-                if (data.length > 0) {
+                if (objetosFiltrados.length > 0) {
                     const callback = () => {
                         dispatch(execute(integrationManagerBulkloadIns({
                             integrationmanagerid: row.id,
-                            table: JSON.stringify(data),
+                            table: JSON.stringify(objetosFiltrados),
                             type: title === "code_table" ? "CODE" : "PERSON"
                         })))
                         setWaitValidation(true)
