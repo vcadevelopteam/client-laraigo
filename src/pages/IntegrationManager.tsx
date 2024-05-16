@@ -698,14 +698,14 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
          const codecolumns = ['Codigo']
          data.code_params.forEach((item) => {
             codecolumns.push(item.key);
-            if (codeExpiration) {
+            if (codeExpiration && codecolumns.indexOf('Fecha de caducidad') === -1) {
                codecolumns.splice(1, 0, 'Fecha de caducidad');
             }
           });
          const personcolumns = ['Persona']
          data.person_params.forEach((item) => {
             personcolumns.push(item.key);
-            if (personExpiration) {
+            if (personExpiration && personcolumns.indexOf('Fecha de caducidad') === -1) {
                personcolumns.splice(1, 0, 'Fecha de caducidad');
             }
          });

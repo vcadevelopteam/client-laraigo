@@ -456,4 +456,6 @@ export const apiUrls = {
 
     CORP_URL: `${BASE_URL}/corp`,
     DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
+
+    PROCESSZIPINTEGRATION: `${BASE_URL}/integrationmanager/file_upload`,
 };
