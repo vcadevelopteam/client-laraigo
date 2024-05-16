@@ -247,14 +247,13 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
 interface MessagePreviewMultimediaProps {
     headerType: string;
     header: string;
-    selectedFile: File | null;
     bodyObject: Descendant[];
     footer: string;
     buttonstext: string[];
     buttonslink: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, selectedFile, bodyObject, footer, buttonstext, buttonslink}) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, bodyObject, footer, buttonstext, buttonslink}) => {
     const classes = useStyles();
     const concatenatedText = bodyObject.map((obj) => obj?.children?.[0]?.text).join('\n\n');
     const combinedButtons = [
@@ -268,22 +267,20 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                 <div className={classes.messageCard}>
                     {headerType === 'text' ? (
                         <span className={classes.headerText}>{header}</span>
-                    ) : headerType === 'multimedia' ? (
+                    ) : (headerType !== 'text' && headerType !== 'none') ? (
                         <>
-                        {selectedFile && selectedFile.type && selectedFile.type.startsWith('image/') ? (
+                            {(header && headerType === 'image') ? (
                                 <div className={classes.cardMediaContainer}>
-                                    <img src={URL.createObjectURL(selectedFile)} alt="Selected Image" className={classes.cardMedia} />
+                                    <img src={header} alt="Cabecera" className={classes.cardMedia}/>
                                 </div>
+                            ) : ((header && headerType === 'video') ? (
+                                <video controls className={classes.cardMedia}>
+                                    <source src={header} type="video/mp4" />
+                                    Tu navegador no soporta la etiqueta de video.
+                                </video>
                             ) : (
-                                selectedFile && selectedFile.type && selectedFile.type.startsWith('video/') ? (
-                                    <video controls className={classes.media}>
-                                        <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type} />
-                                        Your browser does not support the video tag.
-                                    </video>
-                                ) : (
-                                    <span>No media selected</span>
-                                )
-                            )}
+                                <span>No media selected</span>
+                            ))}
                         </>
                     ) : (
                         <></>

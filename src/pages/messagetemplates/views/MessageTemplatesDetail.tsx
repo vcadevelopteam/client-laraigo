@@ -261,6 +261,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitUploadFile2, setWaitUploadFile2] = useState(false);
     const [bodyObject, setBodyObject] = useState<Descendant[]>(
         row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
@@ -268,8 +269,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         row?.bodyobjectcar || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
     );
     const [category, setCategory] = useState(row ? row.category : '')
-    const [headerMedia, setHeaderMedia] = useState('')
-    const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [isHeaderVariable, setIsHeaderVariable] = useState(false)
     const [bodyVariables, setBodyVariables] = useState<string[]>([])
     const [bubbleVariables, setBubbleVariables] = useState<string[]>([])
@@ -279,6 +278,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [authButtonText, setAuthButtonText] = useState('')
     const [expiresValue, setExpiresValue] = useState(0)
     const [validatePeriod, setValidatePeriod] = useState(false)
+    const [headerType, setHeaderType] = useState(
+        (row?.headertype === 'video' || row?.headertype === 'iamge' || row?.headertype === 'file') ? 'multimedia' :
+        row?.headertype === 'text' ? 'text' : 'none')
+    const [filename, setFilename] = useState(row ? row.header.split('/').pop().replace(/%20/g, ' ') : '')
+    const [uploading, setUploading] = useState(false)
     
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -425,8 +429,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         defaultValues: {
             attachment: row?.attachment || "",
             body: row?.body || "",
+            bodyvariables: row?.bodyvariables || [],
             buttons: row ? row.buttons || [] : [],
-            buttonstext: row ? row.buttonstext || [] : [],
+            buttonsquick_reply: row ? row.buttonsquick_reply || [] : [],
             carouselcards: row ? row.carouselcards || [] : [],
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
@@ -442,6 +447,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             header: row?.header || "",
             headerenabled: ![null, undefined].includes(row?.headerenabled) ? row?.headerenabled : false,
             headertype: row?.headertype || "none",
+            headervariable: row?.headervariable || '',
             id: row ? row.id : 0,
             integrationid: row?.communicationchannelintegrationid || "",
             language: row?.language || "",
@@ -463,6 +469,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     React.useEffect(() => {
         register("body");
+        register("bodyvariables");
         register("category");
         register("communicationchannelid");
         register("communicationchanneltype");
@@ -805,12 +812,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         setBodyVariables([])
         setValue("headertype", "none");
-        setHeaderMedia('')
         setIsHeaderVariable(false)
         setSelectedFile(null)
         trigger("headertype");
         setValue('buttons', [])
-        setValue('buttonstext', [])
+        setValue('buttonsquick_reply', [])
         setValue('carouselcards', [])
 
         //trigger("body");
@@ -865,15 +871,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('header', '')
         setValue('footer', '')
         setValue('buttons', [])
-        setValue('buttonstext', [])
+        setValue('buttonsquick_reply', [])
         setValue("headertype", "none");
+        setHeaderType('none')
         setValue('carouselcards', [])
         trigger('carouselcards');
         trigger("headertype");
         trigger("header");
         trigger("footer");
         trigger('buttons');
-        trigger('buttonstext');
+        trigger('buttonsquick_reply');
     };
 
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
@@ -913,21 +920,33 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onChangeHeaderType = async (data: Dictionary) => {
-        setValue("headertype", data?.value || "");
-        setHeaderMedia('')
-        setIsHeaderVariable(false)
-        setValue('header', '')
-        trigger("header")
-        trigger("headertype");
+        if(data.value === 'text') {
+            setHeaderType(data?.value || "");
+            setValue("headertype", data?.value || "")
+            setIsHeaderVariable(false)
+            setSelectedFile(null)
+            setValue('header', '')
+            trigger("header")
+            trigger("headertype");
+        } else {
+            setHeaderType(data?.value || "");
+            setIsHeaderVariable(false)
+            setValue('headertype', 'multimedia')
+            setSelectedFile(null)
+            setValue('header', '')
+            trigger("header")
+            trigger("headertype");
+        }
     };
 
     const onChangeButton = (index: number, param: string, value: string) => {
         setValue(`buttons.${index}.btn.${param}`, value);
         trigger('buttons')
     };
-    const onChangeButtonText = (index: number, param: string, value: string) => {
-        setValue(`buttonstext.${index}.${param}`, value);
-        trigger('buttonstext')
+    const onChangeButtonText = (index: number, value: string) => {
+        setValue(`buttonsquick_reply.${index}.text`, value);
+        setValue(`buttonsquick_reply.${index}.payload`, value);
+        trigger('buttonsquick_reply')
     };
     const onChangeCardsButton = (cindex: number, bindex: number, param: string, value: string) => {
         setValue(`carouselcards.${cindex}.buttons.${bindex}.btn.${param}`, value);
@@ -935,16 +954,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const onClickAddButton = async () => {
-        if (getValues("buttons") && getValues("buttons").filter((btn: Dictionary) => {return btn.type === 'link'}).length < 2) {
-            setValue("buttons", [...getValues("buttons"), { type: 'link', btn: { text: "", type: "", url: "", variable: "" } }]);
+        if (getValues("buttons") && getValues("buttons").filter((btn: Dictionary) => {return btn.type === 'url'}).length < 2) {
+            setValue("buttons", [...getValues("buttons"), { type: 'url', btn: { text: "", type: "", url: "", variable: "" } }]);
         }
         trigger("buttons");
     };
     const onClickAddButtonText = async () => {
-        if (getValues("buttonstext") && getValues("buttonstext").length < 7) {
-            setValue("buttonstext", [...getValues("buttonstext"), { text: "" }]);
+        if (getValues("buttonsquick_reply") && getValues("buttonsquick_reply").length < 7) {
+            setValue("buttonsquick_reply", [...getValues("buttonsquick_reply"), { text: "", payload: "" }]);
         }
-        trigger("buttonstext");
+        trigger("buttonsquick_reply");
     };
     const onClickAddButtonPhone = async () => {
         if (getValues("buttons") && getValues("buttons").filter((btn: Dictionary) => {return btn.type === 'phone'}).length < 1) {
@@ -981,7 +1000,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'link', btn: { text: "", type: "", url: "", variable: "" }}]
+                        buttons: [...card.buttons, { type: 'url', btn: { text: "", type: "", url: "", variable: "" }}]
                     };
                 }
                 return card;
@@ -1041,16 +1060,42 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
     };
     const onClickRemoveButtonText = async (index: number) => {
-        const btns = getValues("buttonstext");
+        const btns = getValues("buttonsquick_reply");
 
         if (btns && btns.length > 0) {
-            unregister(`buttonstext.${index}`);
+            unregister(`buttonsquick_reply.${index}`);
             setValue(
-                "buttonstext",
+                "buttonsquick_reply",
                 btns.filter((x: any, i: number) => i !== index)
             );
         }
     };
+
+    const handleFileChange = useCallback((files: any) => {
+        const file = files?.item(0);
+
+        if (file) {
+            setFileAttachment(file);
+            const fd = new FormData();
+            fd.append("file", file, file.name);
+            dispatch(uploadFile(fd));
+            setUploading(true);
+            setWaitUploadFile2(true);
+        }
+    }, [])
+
+    useEffect(() => {
+        if (waitUploadFile2) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setValue('header', uploadResult?.url || '')
+                setFilename(fileAttachment?.name || '')
+                setUploading(false);
+                setWaitUploadFile2(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile2(false);
+            }
+        }
+    }, [waitUploadFile2, uploadResult])
 
     const onClickAttachment = useCallback(() => {
         const input = document.getElementById("attachmentInput");
@@ -1165,13 +1210,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("typeattachment");
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-        }
-    };
-
     const changeCategory = (categoryText: string) => {
         setCategory(categoryText)
         setValue('category', categoryText)
@@ -1182,12 +1220,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('footer')
         setBodyVariables([])
         setValue("headertype", "none");
-        setHeaderMedia('')
         setIsHeaderVariable(false)
         setSelectedFile(null)
         trigger("headertype");
         setValue('buttons', [])
-        setValue('buttonstext', [])
+        setValue('buttonsquick_reply', [])
         setValue('carouselcards', [])
         setAddSafetyAdvice(false)
         setAddLastDateCode(false)
@@ -1218,14 +1255,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if(!destination) return;
         if(source.droppableId === destination.droppableId && source.index === destination.index) return;
         if(type === 'group'){
-            const reorderedItems = [...getValues('buttonstext')];
+            const reorderedItems = [...getValues('buttonsquick_reply')];
             const sourceIndex = source.index;
             const destinationIndex = destination.index;
             const [removedStore] = reorderedItems.splice(sourceIndex, 1);
             reorderedItems.splice(destinationIndex, 0, removedStore);
 
-            setValue('buttonstext', reorderedItems)
-            trigger('buttonstext')
+            setValue('buttonsquick_reply', reorderedItems)
+            trigger('buttonsquick_reply')
         }
     }
 
@@ -1538,7 +1575,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 onChange={onChangeHeaderType}
                                                 optionDesc="text"
                                                 optionValue="value"
-                                                valueDefault={getValues("headertype")}
+                                                valueDefault={headerType}
                                                 variant="outlined"
                                             />
                                         </div>
@@ -1590,83 +1627,98 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         </div>
                                     )}
-                                    {getValues('headertype') === 'multimedia' && (
+                                    {(headerType !== 'text' && headerType !== 'none') && (
                                         <div style={{display: 'flex', flexDirection: 'column'}}>
                                             <div style={{display: 'flex', gap: 20, marginBottom: 20}}>
-                                                <div className={headerMedia === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
-                                                    setHeaderMedia('image')
-                                                    setSelectedFile(null)
+                                                <div className={getValues('headertype') === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
+                                                    setValue('headertype', 'image')
+                                                    trigger('headertype')
+                                                    setValue('header', '')
+                                                    trigger('header')
                                                 }}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={headerMedia === 'image'} className={classes.checkboxHeadOption}/>
+                                                        <input type="checkbox" checked={getValues('headertype') === 'image'} className={classes.checkboxHeadOption}/>
                                                     </div>
                                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <ImageIcon style={{ height: 80, width: 'auto', color: headerMedia === 'image' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: headerMedia === 'image' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
+                                                        <ImageIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'image' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'image' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={headerMedia === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
-                                                    setHeaderMedia('video')
-                                                    setSelectedFile(null)
+                                                <div className={getValues('headertype') === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
+                                                    setValue('headertype', 'video')
+                                                    trigger('headertype')
+                                                    setValue('header', '')
+                                                    trigger('header')
                                                 }}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={headerMedia === 'video'} className={classes.checkboxHeadOption} />
+                                                        <input type="checkbox" checked={getValues('headertype') === 'video'} className={classes.checkboxHeadOption} />
                                                     </div>
                                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: headerMedia === 'video' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: headerMedia === 'video' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
+                                                        <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'video' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'video' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={headerMedia === 'document' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
-                                                    setHeaderMedia('document')
-                                                    setSelectedFile(null)
+                                                <div className={getValues('headertype') === 'file' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {
+                                                    setValue('headertype', 'file')
+                                                    trigger('headertype')
+                                                    setValue('header', '')
+                                                    trigger('header')
                                                 }}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={headerMedia === 'document'} className={classes.checkboxHeadOption} />
+                                                        <input type="checkbox" checked={getValues('headertype') === 'file'} className={classes.checkboxHeadOption} />
                                                     </div>
                                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: headerMedia === 'document' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: headerMedia === 'document' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
+                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'file' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'file' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {headerMedia !== '' && (
+                                            {(getValues('headertype') !== 'text' && getValues('headertype') !== 'none') && (
                                                 <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                                     <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
                                                     <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        {t(langKeys[headerMedia])}
-                                                        {(headerMedia === 'image' || headerMedia === 'video') && (
+                                                        {t(langKeys[getValues('headertype')])}
+                                                        {(getValues('headertype') === 'image' || getValues('headertype') === 'video') && (
                                                             <input
                                                                 type="file"
-                                                                accept={headerMedia === 'image' ? '.jpg,.png' : headerMedia === 'video' ? '.mp4' : ''}
-                                                                onChange={handleFileChange}
+                                                                accept={getValues('headertype') === 'image' ? '.jpg,.png' : getValues('headertype') === 'video' ? '.mp4' : ''}
+                                                                onChange={(e) => handleFileChange(e.target.files)}
                                                                 style={{ display: 'none' }}
+                                                                disabled={uploading}
                                                                 id="fileInput"
                                                             />
                                                         )}
-                                                        {!selectedFile ? (
+                                                        {getValues('header') === ''  ? (
                                                             <label htmlFor="fileInput">
                                                                 <Button
                                                                     startIcon={<ImageIcon/>}
                                                                     variant="outlined"
                                                                     style={{backgroundColor: '#F5F5F5'}}
+                                                                    onClick={onClickAttachment}
+                                                                    disabled={uploading}
                                                                     component="span" // Esto es necesario para que el botón funcione como un input de tipo file
                                                                 >
-                                                                    {headerMedia === 'image' ? (selectedFile ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): headerMedia === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
+                                                                    {getValues('headertype') === 'image' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
                                                                 </Button>
                                                             </label>
                                                         ) : (
                                                             <div style={{display: 'flex', alignItems: 'center'}}>
                                                                 <div style={{padding: 10, border: '1px solid #888888', borderRadius: 4, width: 'fit-content', maxWidth: '100%'}}>
-                                                                    {selectedFile.name}
+                                                                    {filename}
                                                                 </div>
-                                                                <IconButton onClick={() => setSelectedFile(null)}>
+                                                                <IconButton onClick={() => {
+                                                                    setValue('header', '')
+                                                                    setFilename('')
+                                                                }}>
                                                                     <ClearIcon />
                                                                 </IconButton>
                                                             </div>
                                                         )}
+                                                        {uploading && (
+                                                            <span>Subiendo...</span>
+                                                        )}
                                                     </div>
-                                                    {!selectedFile && (
+                                                    {getValues('header') === '' && (
                                                         <div className={classes.warningContainer}>
                                                             <WarningIcon style={{ color: '#FF7575' }} />
                                                             Añade contenido multimedia de ejemplo
@@ -1752,9 +1804,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.buttons)}</span>
                                     <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
                                     <div style={{display: 'flex'}}>
-                                        {(getValues("buttons")?.length + getValues("buttonstext")?.length) < 10 && (
+                                        {(getValues("buttons")?.length + getValues("buttonsquick_reply")?.length) < 10 && (
                                             <div>
-                                                <AddButtonMenu fastAnswer={onClickAddButtonText} urlWeb={onClickAddButton} callNumber={onClickAddButtonPhone} textbtn={getValues('buttonstext')} urlbtn={getValues('buttons').filter((btn: Dictionary) => { return btn.type === 'link'})} phonebtn={getValues('buttons').filter((btn: Dictionary) => { return btn.type === 'phone'})}/>
+                                                <AddButtonMenu
+                                                    fastAnswer={onClickAddButtonText}
+                                                    urlWeb={onClickAddButton}
+                                                    callNumber={onClickAddButtonPhone}
+                                                    textbtn={getValues('buttonsquick_reply')}
+                                                    urlbtn={getValues('buttons').filter((btn: Dictionary) => { return btn.type === 'url'})}
+                                                    phonebtn={getValues('buttons').filter((btn: Dictionary) => { return btn.type === 'phone'})}
+                                                />
                                             </div>
                                         )}
                                     </div>
@@ -1763,7 +1822,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span style={{marginLeft: 10}}>Si añades más de tres botones, se mostrarán en una lista</span>
                                     </div>
                                     <DragDropContext onDragEnd={handleDragDrop}>
-                                        {getValues('buttonstext')?.length > 0 && (
+                                        {getValues('buttonsquick_reply')?.length > 0 && (
                                             <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
                                                 <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
                                                     <ImportExportIcon style={{color: '#0049CF'}} />
@@ -1773,7 +1832,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     <Droppable droppableId="root" type="group">
                                                         {(provided) => (
                                                             <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
-                                                                {getValues("buttonstext")?.map((btn: any, i: number) => {
+                                                                {getValues("buttonsquick_reply")?.map((btn: any, i: number) => {
                                                                     return (
                                                                         <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
                                                                             {(provided) => (
@@ -1784,13 +1843,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                             <FieldEdit
                                                                                                 disabled={disableInput}
                                                                                                 label={t(langKeys.buttontext)}
-                                                                                                error={errors?.buttonstext?.[i]?.text?.message}
-                                                                                                onChange={(value) => onChangeButtonText(i, "text", value)}
+                                                                                                error={errors?.buttonsquick_reply?.[i]?.text?.message}
+                                                                                                onChange={(value) => onChangeButtonText(i, value)}
                                                                                                 valueDefault={btn?.text || ""}
                                                                                                 variant="outlined"
                                                                                                 maxLength={25}
                                                                                                 fregister={{
-                                                                                                    ...register(`buttonstext.${i}.text`, {
+                                                                                                    ...register(`buttonsquick_reply.${i}.text`, {
                                                                                                         validate: (value) =>
                                                                                                             (value && value.length) || t(langKeys.field_required),
                                                                                                     }),
@@ -1829,7 +1888,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
                                                                             {(provided) => (
                                                                                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                    {btn.type === 'link' ? (
+                                                                                    {btn.type === 'url' ? (
                                                                                         <>
                                                                                             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                                                                                                 <DragIndicatorIcon />
@@ -1995,10 +2054,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <MessagePreviewMultimedia
                                             headerType={getValues('headertype')}
                                             header={getValues('header')}
-                                            selectedFile={selectedFile}
                                             bodyObject={bodyObject}
                                             footer={getValues('footer')}
-                                            buttonstext={getValues('buttonstext').map((btn: Dictionary) => { return btn.text })}
+                                            buttonstext={getValues('buttonsquick_reply').map((btn: Dictionary) => { return btn.text })}
                                             buttonslink={getValues('buttons').map((btn: Dictionary) => { return { type: btn.type, text: btn.btn.text } })}
                                         />
                                     </div>
@@ -2273,7 +2331,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         urlWeb={() => onClickAddButtonLCard(index)}
                                                                         callNumber={() => onClickAddButtonPCard(index)}
                                                                         textbtn={getValues(`carouselcards.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'text'})}
-                                                                        urlbtn={getValues(`carouselcards.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'link'})}
+                                                                        urlbtn={getValues(`carouselcards.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'url'})}
                                                                         phonebtn={getValues(`carouselcards.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'phone'})}
                                                                     />
                                                                 </div>
@@ -2312,7 +2370,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                 </IconButton>
                                                                                                             </div>
                                                                                                         </>
-                                                                                                    ) : btn.type === 'link' ?(
+                                                                                                    ) : btn.type === 'url' ?(
                                                                                                         <>
                                                                                                             <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
                                                                                                             <div style={{width: '100%'}}>
