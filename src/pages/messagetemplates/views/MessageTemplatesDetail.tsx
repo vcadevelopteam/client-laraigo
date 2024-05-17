@@ -287,7 +287,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [headerType, setHeaderType] = useState(
         (row?.headertype === 'video' || row?.headertype === 'iamge' || row?.headertype === 'file') ? 'multimedia' :
         row?.headertype === 'text' ? 'text' : 'none')
-    const [filename, setFilename] = useState(row ? row.header.split('/').pop().replace(/%20/g, ' ') : '')
+    const [filename, setFilename] = useState(row ? row?.header?.split('/')?.pop()?.replace(/%20/g, ' ') : '')
     const [uploading, setUploading] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const emojiButtonRef = useRef(null);
@@ -416,13 +416,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: "STANDARD", text: t(langKeys.messagetemplate_standard) },
         { value: "CAROUSEL", text: t(langKeys.messagetemplate_carousel) },
     ];
-
+    
     const dataHeaderType = [
         { value: "none", text: t(langKeys.none) },
         { value: "text", text: t(langKeys.messagetemplate_text) },
         { value: "multimedia", text: t(langKeys.messagetemplate_multimedia) },
     ];
-
+    
     const dataURLType = [
         { value: "static", text: t(langKeys.static) },
         { value: "dynamic", text: t(langKeys.dynamic) },
@@ -544,7 +544,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 return true;
             },
         });
-
+        
         switch (type) {
             case "HSM":
                 // register("body", {
@@ -567,7 +567,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
                 }
-                onChangeTemplateType({ value: "" });
                 setTemplateTypeDisabled(false);
                 onChangeTemplateMedia();
                 break;
@@ -650,13 +649,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setHtmlLoad([html.html({ matchClosingTags: true })]);
         });
     }, []);
-
+    
     useEffect(() => {
         if (!isNew && isProvider) {
             setDisableInput(true);
         }
     }, [isNew, isProvider]);
-
+    
     useEffect(() => {
         if (waitAdd) {
             if (!addRequest.loading && !addRequest.error) {
@@ -855,7 +854,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setBodyVariables([])
         setValue("headertype", "none");
         setIsHeaderVariable(false)
-        setSelectedFile(null)
         trigger("headertype");
         setValue('buttons', [])
         setValue('buttonsquick_reply', [])
@@ -926,7 +924,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('buttonsquick_reply');
         setBodyVariables([])
     };
-
+    
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
         if (value) {
             setValue("headerenabled", value);
@@ -2193,8 +2191,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             header={getValues('header')}
                                             body={getValues('body')}
                                             footer={getValues('footer')}
-                                            buttonstext={getValues('buttonsquick_reply').map((btn: Dictionary) => { return btn.text })}
-                                            buttonslink={getValues('buttons').map((btn: Dictionary) => { return { type: btn.type, text: btn.btn.text } })}
+                                            buttonstext={getValues('buttonsquick_reply').map((btn: Dictionary) => { return btn?.text })}
+                                            buttonslink={getValues('buttons').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
                                         />
                                     </div>
                                 </div>

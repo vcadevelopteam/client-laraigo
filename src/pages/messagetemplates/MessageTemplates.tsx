@@ -529,30 +529,6 @@ const MessageTemplates: FC = () => {
                         </Button>
                         <Button
                             color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<Search style={{ color: "white" }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            variant="contained"
-                            onClick={() => {
-                                fetchData(fetchDataAux);
-                            }}
-                        >
-                            {t(langKeys.search)}
-                        </Button>
-                        <FieldSelect
-                            data={communicationChannelList}
-                            label={t(langKeys.communicationchanneldesc)}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                            style={{ width: 300 }}
-                            valueDefault={communicationChannel?.communicationchannelid}
-                            variant="outlined"
-                            onChange={(value) => {
-                                setCommunicationChannel(value);
-                            }}
-                        />
-                        <Button
-                            color="primary"
                             startIcon={<RefreshIcon style={{ color: "white" }} />}
                             style={{ width: 140, backgroundColor: "#55BD84" }}
                             variant="contained"
