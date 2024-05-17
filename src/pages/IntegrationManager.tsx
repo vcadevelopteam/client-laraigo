@@ -62,13 +62,13 @@ import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { TextField, Tooltip, Typography } from "@material-ui/core";
 import { CellProps } from "react-table";
+import VinculationTable from "./integrationmanager/VinculationTable";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import GoogleLogIn from "components/fields/GoogleLogIn";
 import useDrivePicker from "react-google-drive-picker";
 import { exchangeCode } from "store/google/actions";
 import { ExcelFileIcon, GoogleDriveIcon } from "icons";
 import { integrationManagerDataSourceIns } from "../common/helpers/requestBodies";
-import VinculationTable from "./integrationmanager/VinculationTable";
 
 interface RowSelected {
    row: Dictionary | null;
