@@ -961,11 +961,11 @@ export const getParentSel = (): IRequestBody => ({
     }
 });
 
-export const getPaginatedMessageTemplate = ({ communicationchannelid, enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS",
     parameters: {
-        communicationchannelid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take,
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take,
     }
 })
 
@@ -3995,12 +3995,11 @@ export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody 
     }
 });
 
-export const getMessageTemplateExport = ({ filters, sorts, communicationchannelid }: Dictionary): IRequestBody => ({
+export const getMessageTemplateExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_EXPORT",
     key: "UFN_MESSAGETEMPLATE_EXPORT",
     parameters: {
         origin: "messagetemplate",
-        communicationchannelid,
         filters,
         sorts,
         offset: (new Date().getTimezoneOffset() / 60) * -1
