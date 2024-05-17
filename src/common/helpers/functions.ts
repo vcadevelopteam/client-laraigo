@@ -597,6 +597,23 @@ export function uploadExcel(file: any, owner: any = {}) {
     });
 }
 
+export const uploadExcelBuffer = (buffer: any) => {
+    return new Promise((res, rej) => {
+        import('xlsx').then(XLSX => {
+            const workbook = XLSX.read(buffer, { type: "array", });
+            const sheetName = workbook.SheetNames[0];
+            const rowsx = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
+                .map((row: any) =>
+                    Object.keys(row).reduce((obj: any, key: any) => {
+                        obj[key.trim()] = row[key];
+                        return obj;
+                    }, {})
+                );
+            res(rowsx)
+        })      
+    })
+}
+
 export const dateToLocalDate = (date: string, returnType = 'string'): string | Date => {
     if (!date) return new Date().toLocaleDateString();
     const nn = new Date(date)
@@ -1041,6 +1058,22 @@ export const getFormattedDate = (date: Date) => {
     const offset = date.getTimezoneOffset();
     date = new Date(date.getTime() - (offset * 60 * 1000));
     return date.toISOString().split('T')[0];
+}
+
+export const stringBDTimestampToLocalDate12hr = (timestamp: string) => {
+    const date = new Date(timestamp);
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const period = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 || 12;
+
+    const formattedDate = `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year} ${displayHours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds} ${period}`;
+    return formattedDate;
 }
 
 const transDayLocal = (day: Date) => day.getDay() - 1 < 0 ? 6 : day.getDay() - 1;

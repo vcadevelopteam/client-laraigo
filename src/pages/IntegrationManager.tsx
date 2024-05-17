@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FC, useEffect, useMemo, useState } from "react"; 
 import { useDispatch, useSelector } from "react-redux";
 import IconButton from "@material-ui/core/IconButton";
@@ -26,6 +28,8 @@ import {
    insarrayIntegrationManager,
    deldataIntegrationManager,
    getdataIntegrationManager,
+   uploadExcelBuffer,
+   stringBDTimestampToLocalDate12hr,
 } from "common/helpers";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -56,9 +60,15 @@ import { resetRequest } from "store/integrationmanager/actions";
 import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { TextField } from "@material-ui/core";
+import { TextField, Tooltip, Typography } from "@material-ui/core";
 import { CellProps } from "react-table";
 import VinculationTable from "./integrationmanager/VinculationTable";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import GoogleLogIn from "components/fields/GoogleLogIn";
+import useDrivePicker from "react-google-drive-picker";
+import { exchangeCode } from "store/google/actions";
+import { ExcelFileIcon, GoogleDriveIcon } from "icons";
+import { integrationManagerDataSourceIns } from "../common/helpers/requestBodies";
 
 interface RowSelected {
    row: Dictionary | null;
@@ -452,7 +462,25 @@ type FormFields = {
    fields: FieldType[];
    operation: string;
    results: Dictionary[];
+   datasource?: string;
 };
+
+interface IGoolgeTokenInfo {
+   access_token?: string;
+   expires_in?: number;
+   code?: string;
+   id_token?: string;
+   refresh_token?: string;
+   scope?: string;
+   token_type?: string;
+}
+
+interface IDataSourceConfig {
+   fileid?: string;
+   filename?: string;
+   datasource_lastsync?: string;
+   credentials?: IGoolgeTokenInfo | null
+}
 
 const DetailIntegrationManager: React.FC<DetailProps> = ({
    data: { row, edit },
@@ -481,6 +509,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const [openResponseModal, setOpenResponseModal] = useState(false);
    const [view, setView] = useState("view-1");
    const [responseData, setResponseData] = useState<any>();
+
+   const [openPicker] = useDrivePicker();
+   const [waitGoogleTokenExchange, setWaitGoogleTokenExchange] = useState(false);
+   const exchangeCodeResult = useSelector((state) => state.google.requestExchangeCode);
+   const [importedData, setImportedData] = useState<Dictionary[] | null>(null)
+   const [dataSourceConfig, setDataSourceConfig] = useState<IDataSourceConfig | null>(row?.datasource_config ?? null)
    const [dataIntType, setDataIntType] = useState<Dictionary>([]);
    const [codeExpiration, setCodeExpiration] = useState(!!row?.code_table?.columns?.includes("Fecha de caducidad")||false);
    const [personExpiration, setPersonExpiration] = useState(!!row?.person_table?.columns?.includes("Fecha de caducidad")||false);
@@ -499,6 +533,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       setValue,
       getValues,
       trigger,
+      watch,
       formState: { errors },
       setError
    } = useForm<FormFields>({
@@ -527,6 +562,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             : [{ name: "corpid", key: true }],
          operation: row ? "EDIT" : "INSERT",
          results: row ? row.results || [] : [],
+         datasource: row ? row.datasource || '' : '',
          code_table: {},
          code_params: row?.code_table?.columns?.filter((item) => !['Codigo', 'Fecha de caducidad'].includes(item))?.map((item) => ({ key: item })) ||[],
          person_params: row?.person_table?.columns?.filter((item) => !['Persona', 'Fecha de caducidad'].includes(item))?.map((item) => ({ key: item })) ||[],
@@ -534,6 +570,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
          person_params_tracking: row?.person_table?.tracking_columns?.map((item) => ({ key: item })) ||[{key:"Codigo"}],
       },
    });
+
+   const [isnew] = watch(["isnew"]);
 
    const {
       fields: headers,
@@ -617,6 +655,136 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       control,
       name: "results",
    });
+
+   useEffect(() => {
+      if (waitGoogleTokenExchange) {
+         if (!exchangeCodeResult.loading) {
+            if (!exchangeCodeResult.error) {
+               dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+               if (exchangeCodeResult.data) {
+                  setDataSourceConfig(pv => ({ ...pv, credentials: exchangeCodeResult.data as IGoolgeTokenInfo}))
+                  handleOpenPicker(exchangeCodeResult.data.access_token)
+               }
+            } else {
+               dispatch(
+                  showSnackbar({
+                     show: true,
+                     severity: "error",
+                     message: t(
+                        exchangeCodeResult.msg ??
+                        exchangeCodeResult.message ??
+                        exchangeCodeResult.code ??
+                        "error_unexpected_error"
+                     ),
+                  })
+               );
+            }
+            dispatch(showBackdrop(false));
+            setWaitGoogleTokenExchange(false);
+         }
+      }
+   }, [exchangeCodeResult, waitGoogleTokenExchange])
+
+   const handleOpenPicker = (token: string) => {
+      openPicker({
+         clientId: `${apiUrls.GOOGLECLIENTID_CHANNEL}`,
+         developerKey: 'AIzaSyB_xsVpmtbD7qrQ2WDXRkaGW9YZTOcn424',
+         viewId: "SPREADSHEETS",
+         token: token,
+         showUploadView: true,
+         showUploadFolders: true,
+         supportDrives: true,
+         multiselect: false,
+         callbackFunction: async (data) => {
+            if (data.action === 'picked') {
+               dispatch(showBackdrop(true));
+               const fetchOptions = {
+                     headers: {
+                        Authorization: `Bearer ${token}`,
+                     },
+               };
+
+               setDataSourceConfig(prevValue => ({
+                  ...prevValue,
+                  fileid: String(data.docs[0].id),
+                  filename: String(data.docs[0].name)
+               }))
+
+               const driveFileUrl = "https://www.googleapis.com/drive/v3/files";
+               const fileId = data.docs[0].id
+               const fileMimeType = data.docs[0].mimeType
+               let exportUrl = ''
+               if (fileMimeType === 'application/vnd.google-apps.spreadsheet')
+                  exportUrl = `${driveFileUrl}/${fileId}/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`;
+               else {
+                  exportUrl = `${driveFileUrl}/${fileId}?alt=media`;
+               }
+               const response = await fetch(exportUrl, fetchOptions);
+               const resBuffer = await response.arrayBuffer();
+               const dataFromBuffer = new Uint8Array( resBuffer );
+               const outputData = await uploadExcelBuffer(dataFromBuffer ) as Dictionary[]
+               if (outputData.length) {
+                  const validateHeaders = validateHeader(outputData[0])
+                  if (validateHeaders) {
+                     setValue('datasource', 'GOOGLE DRIVE')
+                     resetFields(getValues('level'))
+                     Object.keys(outputData[0]).map(i => fieldsAppend({ name: i, key: false}))
+                     setImportedData(outputData)
+                  }
+               }
+               dispatch(showBackdrop(false));
+            }
+         }
+      });
+   };
+
+   const handleExcelImport = async (files: any) => {
+      const file = files?.item(0);
+      if (file) {
+         const data: any = await uploadExcel(file, undefined);
+         if (data.length > 0) {
+            const validateHeaders = validateHeader(data[0])
+            if (validateHeaders) {
+               setDataSourceConfig(null)
+               setValue('datasource', 'FILE')
+               resetFields(getValues('level'))
+               Object.keys(data[0]).map(i => fieldsAppend({ name: i, key: false}))
+               setImportedData(data)
+            }
+         }
+      }
+   };
+
+   const resetFields = (level: string) => {
+      const newFields: FieldType[] = []
+      newFields.push({ name: "corpid", key: true, id: 'newCorpid' })
+      if (level === "ORGANIZATION") {
+         newFields.push({ name: "orgid", key: true })
+      }
+
+      setValue('fields', newFields)
+   }
+
+   const validateHeader = (data) => {
+      const regex = /^[a-z0-9]+$/;
+      for (const header of Object.keys(data)) {
+         if (!regex.test(header)) {
+            dispatch( showSnackbar({ show: true, severity: "error", message: t(langKeys.importfield_basiclatinlowercasenospaces), }));
+            return false;
+         }
+      }
+      return true;
+   };
+
+   const hasDuplicatesForKey = (array, key) => {
+      const valuesSet = new Set();
+      for (const obj of array) {
+          const value = obj[key];
+          if (valuesSet.has(value)) return true;
+          valuesSet.add(value);
+      }
+      return false;
+  };
 
    React.useEffect(() => {
       register("name", {
@@ -752,20 +920,23 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
          })
 
       } else if (data.isnew && data.type === "DATA_TABLE") {
-         if (
-            data.fields.filter(
-               (d) => !dataLevelKeys.includes(d.name) && d.key === true
-            ).length === 0
-         ) {
-            dispatch(
-               showSnackbar({
-                  show: true,
-                  severity: "error",
-                  message: t(langKeys.field_key_required),
-               })
-            );
+         const getKeyField = data.fields.filter( (d) => !dataLevelKeys.includes(d.name) && d.key === true )
+         if ( getKeyField.length === 0 ) {
+            dispatch( showSnackbar({ show: true, severity: "error", message: t(langKeys.field_key_required), }) );
             return null;
          }
+         if (importedData && importedData.length) {
+            const keyHasDuplicates = hasDuplicatesForKey(importedData, getKeyField[0].name)
+            if (keyHasDuplicates) {
+               dispatch( showSnackbar({ show: true, severity: "error", message: t(langKeys.keyfield_duplicate), }) );
+               return null;
+            }
+         }
+
+         if (data.datasource !== 'GOOGLE DRIVE') {
+            setDataSourceConfig(null)
+         }
+
          let rex1 = new RegExp(/[^0-9a-zA-Z\s-_]/, "g");
          let rex2 = new RegExp(/[\s-]/, "g");
          let corpdesc = (user?.corpdesc || "")
@@ -784,7 +955,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       }
 
       const callback = () => {
-         dispatch(execute(insIntegrationManager(data)));
+          dispatch(execute({
+            header: insIntegrationManager(data),
+            detail: [
+               ...(importedData && importedData.length ? [insarrayIntegrationManager(0, importedData)] : []),
+               ...(dataSourceConfig ? [integrationManagerDataSourceIns(0, 'DRIVE', dataSourceConfig as Dictionary)] : [])
+            ]
+          }, true));
          dispatch(showBackdrop(true));
          setWaitSave(true);
       };
@@ -2487,20 +2664,74 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                            }
                               <div
                                  className="row-zyx"
-                                 style={{ alignItems: "flex-end" }}
+                                 style={{ alignItems: "flex-end", gap: '1rem' }}
                               >
                                     <React.Fragment>
+                                       <Button
+                                             variant="outlined"
+                                             type="button"
+                                             color="primary"
+                                             className={classes.labelButton2}
+                                             startIcon={<AddIcon color="primary" />}
+                                             onClick={() => onClickAddField()}
+                                          >
+                                             {t(langKeys.addfield)}
+                                       </Button>
+   
+                                    { isnew && (
+                                       <div style={{ width: 'auto' }}>
+                                          <input
+                                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                                             id="uploadfiledetail"
+                                             type="file"
+                                             style={{ display: "none" }}
+                                             onChange={(e) => handleExcelImport(e.target.files)}
+                                             onClick={(event) => {
+                                                event.target.value = null;
+                                             }
+                                          }
+                                          />
+                                          <label htmlFor="uploadfiledetail">
+                                             <Button
+                                                variant="outlined"
+                                                className={classes.labelButton2}
+                                                component="span"
+                                                color="primary"
+                                                startIcon={<ExcelFileIcon fill="green" stroke="7721AD" width={25} height={25}/>}
+                                             >
+                                                {t(langKeys.import)}
+                                             </Button>
+                                          </label>
+                                       </div>
+                                    )}
+
+                                    { isnew && !dataSourceConfig?.credentials && (
+                                       <GoogleOAuthProvider clientId={`${apiUrls.GOOGLECLIENTID_CHANNEL}`}>
+                                          <GoogleLogIn
+                                             label="Conectar Google Drive"
+                                             scope="https://www.googleapis.com/auth/drive.readonly"
+                                             googleDispatch={(e) => {
+                                                   dispatch(exchangeCode({ googlecode: e.code }));
+                                                   setWaitGoogleTokenExchange(true)
+                                             }}
+                                             data={{id: row?.id, data_code: row?.description }}
+                                          />
+                                       </GoogleOAuthProvider>
+                                    )}
+
+                                    { isnew && dataSourceConfig?.credentials && dataSourceConfig?.credentials.access_token && (
                                        <Button
                                           variant="outlined"
                                           type="button"
                                           color="primary"
                                           className={classes.labelButton2}
-                                          startIcon={<AddIcon color="primary" />}
-                                          onClick={() => onClickAddField()}
+                                          startIcon={<GoogleDriveIcon fill="#7721AD" stroke="#7721AD" width={25} height={25} />}
+                                          onClick={() => handleOpenPicker(String(dataSourceConfig?.credentials?.access_token))}
                                        >
-                                          {t(langKeys.addfield)}
+                                          {'GoogleDrive'}
                                        </Button>
-                                    </React.Fragment>
+                                    )}
+                                 </React.Fragment>
                               </div>
                               
                               <div
@@ -2924,7 +3155,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                   importDataFunction={handleUpload}
                   deleteDataFunction={onDeleteData} 
                   waitImport={waitImport}
-               />
+                  row={row}
+            />
             )}
          </div>
       );
@@ -3374,6 +3606,11 @@ interface ViewTableModalProps {
    importDataFunction: (files: any) => Promise<void>
    deleteDataFunction: ()=> void;
    waitImport: boolean;
+   row?: Dictionary | null;
+}
+
+interface ILangKeys {
+   [key: string]: string;
 }
 
 const ModalViewTable: React.FC<ViewTableModalProps> = ({
@@ -3384,7 +3621,8 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    formId,
    importDataFunction,
    deleteDataFunction,
-   waitImport
+   waitImport,
+   row
 }) => {
    const { t } = useTranslation();
    const dispatch = useDispatch();
@@ -3448,7 +3686,28 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
          handleClickButton1={handleCancelModal}
       >
          {
-           
+            <>
+               {row?.datasource && row?.datasource_syncinfo && (
+                  <div style={{ display: 'block', fontSize: '12px', position: 'absolute' }}>
+                     <div style={{ display: 'flex', gap: '1.5rem'}}>
+                        <div>Origen: <span><b>{row?.datasource || t(langKeys.file).toUpperCase()}</b></span></div>
+                        <div>Archivo: <span><b>{row?.datasource_config?.filename}</b></span></div>
+                     </div>
+                     <div style={{ display: 'flex'}}>
+                        <div>
+                           Ult. sincronización: <span style={{ fontWeight: 'bold' }}>
+                              <span style={{ marginRight: '0.5rem' }}>{stringBDTimestampToLocalDate12hr(row?.datasource_syncinfo?.last_sync)}</span>
+                              <span style={{ color: row?.datasource_syncinfo?.last_sync_result === 'SUCCESS' ? 'green' : 'red' }}>
+                                 (<Tooltip title={row?.datasource_syncinfo?.last_sync_message} arrow>
+                                    <Typography component="span" style={{ fontSize: '12px' }}><b>{t((langKeys as ILangKeys)[String(row?.datasource_syncinfo?.last_sync_result).toLowerCase()])}</b></Typography>
+                                 </Tooltip>)
+                              </span>
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
                <TableZyx
                   columns={columnsData}
                   data={tableData}
@@ -3460,6 +3719,7 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
                   deleteData={true}
                   deleteDataFunction={deleteDataFunction}
                />
+            </>
          }
       </DialogZyx>
    );

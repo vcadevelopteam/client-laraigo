@@ -1124,6 +1124,16 @@ export const insarrayIntegrationManager = (id: number, table: Dictionary[]): IRe
     }
 });
 
+export const integrationManagerDataSourceIns = (id: number, datasource: string, config: Dictionary): IRequestBody => ({
+    method: "UFN_INTEGRATION_MANAGER_DATASOURCE_INS",
+    parameters: {
+        id: id,
+        datasource,
+        config: JSON.stringify(config)
+    }
+});
+
+
 export const importPerson = (table: Dictionary[]): IRequestBody => ({
     method: "UDTT_PERSON_PCC_IMPORT",
     parameters: {
