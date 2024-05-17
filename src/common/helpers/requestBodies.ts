@@ -1385,7 +1385,14 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
 export const getCampaignLst = (): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
-    parameters: {}
+    parameters: {
+        corpid: null,
+        orgid: null,
+        username: null,
+        startdate: null,
+        enddate: null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 });
 
 export const getCampaignSel = (id: number): IRequestBody => ({
