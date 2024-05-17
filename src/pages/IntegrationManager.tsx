@@ -2920,7 +2920,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                            }}
                            disabled={!i}
                            data={[
-                             { key: "Persona" },
                              ...getValues('person_params')
                            ]}
                            optionValue="key"
@@ -3095,7 +3094,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                               ),
                            }}
                            data={[
-                             { key: "Codigo" },
                              ...getValues('code_params')
                            ]}
                            optionValue="key"

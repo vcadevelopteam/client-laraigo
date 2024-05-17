@@ -152,23 +152,21 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                         }
                         return regexFecha.test(objeto["Fecha de caducidad"]);
                     });
-                    const fechaBaseExcel = new Date(1900, 0, 1);
+                    const fechaBaseExcel = new Date(Date.UTC(1899, 11, 30));
                     
                     objetosFiltrados.forEach(objeto => {
                         if (objeto.hasOwnProperty("Fecha de caducidad")) {
                             if (!isNaN(objeto["Fecha de caducidad"]) && Number.isInteger(parseFloat(objeto["Fecha de caducidad"]))) {
-                                const numeroSerieFecha = objeto["Fecha de caducidad"];
-                                const fecha = new Date(fechaBaseExcel.getTime() + (numeroSerieFecha - 1) * 24 * 60 * 60 * 1000);
-                                fecha.setUTCHours(0, 0, 0, 0);
-                                objeto["Fecha de caducidad"] = fecha;
-                            } else {
-                                const partesFecha = objeto["Fecha de caducidad"].split("/");
-                                const dia = parseInt(partesFecha[0], 10);
-                                const mes = parseInt(partesFecha[1], 10) - 1;
-                                const anio = parseInt(partesFecha[2], 10);
-                                const fecha = new Date(anio, mes, dia);
-                                objeto["Fecha de caducidad"] = fecha;
-                            }
+                                const numeroSerieFecha = parseInt(objeto["Fecha de caducidad"], 10);
+                                const fecha = new Date(fechaBaseExcel.getTime() + numeroSerieFecha * 24 * 60 * 60 * 1000);
+                                
+                                const dia = fecha.getUTCDate();
+                                const mes = fecha.getUTCMonth() + 1; 
+                                const anio = fecha.getUTCFullYear();
+                                const fechaFormateada = `${dia < 10 ? '0' : ''}${dia}/${mes < 10 ? '0' : ''}${mes}/${anio}`;
+                                
+                                objeto["Fecha de caducidad"] = fechaFormateada;
+                            } 
                         }
                     });
     
@@ -207,7 +205,7 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
             Header: c,
             accessor: c,
             width: objs.length ? `${(Math.floor(100 / objs.length))}%` : "10%",
-            Cell: (props: any) => {
+            /*Cell: (props: any) => {
                 const row = props.cell.row.original || {};
                 if(props.column.Header === "Fecha de caducidad"){
                     console.log(row["Fecha de caducidad"])
@@ -221,7 +219,7 @@ const VinculationTable: React.FC<VinculationTableProps> = ({
                 }else{
                     return row[props.column.Header]||""
                 }
-            }
+            }*/
         }));
     }, [row]);
 
