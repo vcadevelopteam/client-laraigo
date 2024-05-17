@@ -149,7 +149,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
                 setIconColor(channelSelected?.coloricon || '#7721AD');
             }
-            
+
             if (multiData?.data[14] && multiData.data[14].success) {
                 data14.current = multiData.data[14].data;
             }
@@ -331,7 +331,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     </IconButton>
                 </div>
             }
-            {(!!callVoxi && callVoxi?.statusCall === "CONNECTING" && callVoxi.type === "OUTBOUND") && (
+            {(!!callVoxi && (callVoxi?.statusCall === "CONNECTING" || callVoxi?.statusCall === "DISCONNECTED") && callVoxi.type === "OUTBOUND") && (
                 <div style={{ flex: 1 }}>
                     <IconButton
                         className={localclasses.phoneCallingIcon}

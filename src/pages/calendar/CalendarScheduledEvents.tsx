@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DateRangePicker, FieldEditMulti, FieldView, IOSSwitch } from 'components';
-import { getDateCleaned, insCommentsBooking, calendarBookingCancel, getDateToday, selBookingCalendar, dayNames } from 'common/helpers';
+import { DateRangePicker, FieldEdit, FieldEditMulti, FieldSelect, FieldView, IOSSwitch } from 'components';
+import { getDateCleaned, insCommentsBooking, calendarBookingCancel, getDateToday, selBookingCalendar, dayNames, editCalendarBooking } from 'common/helpers';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
@@ -94,9 +94,15 @@ const DialogBooking: React.FC<{
     useEffect(() => {
         if (openModal) {
             reset({
-                comment: booking?.comment || ''
+                comment: booking?.comment || '',
+                personname: booking?.personname || '',
+                personmail: booking?.personmail || '',
+                notes: booking?.notes || '',
             })
             register('comment', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('personname', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('personmail', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('notes');
         }
     }, [openModal])
 
@@ -105,11 +111,11 @@ const DialogBooking: React.FC<{
         if (allOk) {
             const data = getValues();
             const datat = {
-                calendareventid: event.calendareventid,
-                id: booking?.calendarbookingid,
-                comment: data.comment,
+                ...data,
+                calendarbookingid: booking?.calendarbookingid,
+                comments: data.comment
             }
-            dispatch(execute(insCommentsBooking(datat)));
+            dispatch(execute(editCalendarBooking(datat)));
             setWaitSave(true);
             dispatch(showBackdrop(true));
         }
@@ -127,21 +133,25 @@ const DialogBooking: React.FC<{
             <DialogContent>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div style={{ display: 'flex', gap: 8 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
-                            <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                        <div style={{width:"50%", display: 'flex', gap: 8}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
+                                    label={t(langKeys.schedule)}
+                                    value={`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
+                                    className={classes.colInput}
+                                />
+                            </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
-                            <FieldView
-                                label={t(langKeys.schedule)}
-                                value={`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
-                                className={classes.colInput}
-                            />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
-                            <FieldView
+                            <FieldEdit
                                 label={t(langKeys.clientname)}
-                                value={booking?.personname}
+                                valueDefault={getValues('personname')}
+                                onChange={(value) => setValue('personname', value)}
                                 className={classes.colInput}
+                                error={errors?.personname?.message}
                             />
                         </div>
                     </div>
@@ -154,10 +164,12 @@ const DialogBooking: React.FC<{
                     </div>
                     <div style={{ display: 'flex', gap: 20 }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
-                            <FieldView
+                            <FieldEdit
                                 label={t(langKeys.email)}
-                                value={booking?.personmail}
+                                valueDefault={getValues('personmail')}
+                                onChange={(value) => setValue('personmail', value)}
                                 className={classes.colInput}
+                                error={errors?.personmail?.message}
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
@@ -207,10 +219,16 @@ const DialogBooking: React.FC<{
                     </div>
                     <div style={{ display: 'flex', flex: 1, width: '100%' }}>
                         <div className={classes.colInput}>
+                            <FieldEdit
+                                label={t(langKeys.note)}
+                                valueDefault={getValues('notes')}
+                                onChange={(value) => setValue('notes', value)}
+                                className={classes.colInput}
+                            />{/*
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 {t(langKeys.note)}
                             </Box>
-                            <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{ overflowWrap: "anywhere" }}>{booking?.notes}</Box>
+                            <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{ overflowWrap: "anywhere" }}>{booking?.notes}</Box>*/}
                         </div>
                     </div>
                     <FieldEditMulti
@@ -397,6 +415,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
     const [openDialogCancel, setOpenDialogCancel] = useState(false);
     const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
     const [dataBooking, setDataBooking] = useState<Dictionary[]>([])
+    const [filterAgent, setFilterAgent] = useState<string>("")
     const [view, setView] = useState<"list" | "calendar">("list")
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -422,8 +441,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                 ...acc,
                 [item.monthdate]: acc[item.monthdate] ? acc[item.monthdate] : item
             }), {}))
-
-            setDataBooking(mainAux.data.map(x => {
+            const processedDataBooking = mainAux.data.map(x => {
                 const datessplit = x.monthdate.split("-");
                 const date = new Date(parseInt(datessplit[0]), parseInt(datessplit[1]) - 1, parseInt(datessplit[2]));
                 const dateString = t(langKeys.invitation_date, { month: t(`month_${((date.getMonth() + 1) + "").padStart(2, "0")}`), year: date.getFullYear(), day: t(dayNames[date.getDay()]), date: date.getDate() })
@@ -433,9 +451,10 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                     dateString,
                     haveDate: bookingDates.find(y => y.calendarbookingid === x.calendarbookingid)
                 };
-            }));
+            })
+            setDataBooking(processedDataBooking.filter(x=>(x?.created_by||"").includes(filterAgent)));
         }
-    }, [mainAux])
+    }, [mainAux,filterAgent])
 
     return (
         <div style={{ gap: 16, marginTop: 16, overflowY: 'auto' }}>
@@ -464,6 +483,21 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                 {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                             </Button>
                         </DateRangePicker>
+                        <FieldSelect 
+                            label={t(langKeys.createdBy)}
+                            data={mainAux?.data?.map(obj => (obj?.created_by||"")).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
+                                .map(name => ({ agent: name }))||[]} 
+                            
+                            onChange={(value) => {
+                                setFilterAgent(value?.agent||"")
+                            }}
+                            valueDefault={filterAgent}
+                            loading={mainAux.loading}
+                            style={{width:"200px"}}
+                            optionValue={'agent'} 
+                            optionDesc={'agent'}    
+                            variant="outlined"                    
+                        />
                         <Button
                             disabled={mainAux.loading}
                             variant="contained"
@@ -511,6 +545,11 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                             <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
                                         </div>
                                         <div className={classes.integrationInformation}>
+                                            {x.created_by && (
+                                                <Typography>
+                                                    {t(langKeys.createdBy)}: <span>{x.created_by}</span>
+                                                </Typography>
+                                            )}
                                             {x.person_name && (
                                                 <Typography>
                                                     {t(langKeys.assigned_agent)}: <span>{x.person_name}</span>

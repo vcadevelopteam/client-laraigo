@@ -5,7 +5,7 @@ require(Modules.AI);
 require(Modules.ASR);
 require(Modules.IVR); // enable IVR module
 
-const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
+const URL_SERVICES = "https://cloudprdservices.laraigo.com/api/";
 const VOICE_ES = VoiceList.Microsoft.Neural.es_PE_CamilaNeural;
 //const VOICE_ES = {"language": VoiceList.Microsoft.Neural.es_PE_CamilaNeural, "ttsOptions": {"rate":"x-fast"}};
 
@@ -80,6 +80,7 @@ function createTicket2(callback) {
             personName = result.Result.personname || result.Result.split("#")[1];
             configSIP = result.Result.configsip;
             flow = !flow ? JSON.parse(result.Result.flow) : flow;
+            red = { "recording": true, "recordingquality": "hd", "recordingstorage": "month3" };
             callback(identifier)
         }
     }, {
@@ -89,48 +90,6 @@ function createTicket2(callback) {
             "Content-Type: application/json;charset=utf-8"
         ]
     })
-}
-
-function createTicket(callback) {
-    const bodyZyx = {
-        platformType: "VOXI",
-        personId: phone_number,
-        type: "text",
-        content: "LLAMADA DE CAMPAÑA",
-        siteId: caller_id,
-        postId: sessionID,
-        commentId: accessURL,
-        smoochWebProfile: `{"firstName": "${phone_number}", "phone": "${phone_number}", "externalId": "${phone_number}"}`,
-    };
-    //externalid es el pccowner
-    Net.httpRequest(
-        `${URL_SERVICES}ServiceLogicHook/ProcessMessageIn`,
-        (res) => {
-            const result = JSON.parse(res.text).Result;
-
-            const identiff = result.Identifier.split("#");
-            try {
-                if (identiff[1]) {
-                    const aa = JSON.parse(identiff[1]);
-                    if (aa) {
-                        red = aa;
-                    }
-                }
-            } catch (e) { }
-
-            identifier = identiff[0];
-            personName = result.Name || phone_number;
-            welcomeTone = result.Properties?.WelcomeTone || welcomeTone;
-            holdTone = result.Properties?.HoldTone || holdTone;
-            Logger.write("voximplant: createticket: " + res.text);
-            callback();
-        },
-        {
-            method: "POST",
-            postData: JSON.stringify(bodyZyx),
-            headers: ["Content-Type: application/json;charset=utf-8"],
-        }
-    );
 }
 
 function closeTicket(motive) {
@@ -285,7 +244,7 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     message = data.message;
     flow = data.flow;
     variables = data.variables || {};
-    variables.phone = phone_number
+    variables.phone = phone_number;
 
     dataCampaign = {
         type: data.type || "CAMPAIGN",
@@ -297,52 +256,68 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     Logger.write(`Calling ${list_id} with  ${task_id} on ${phone_number}`);
 
     createTicket2(() => {
-        // if (configSIP?.SIP) {
-        if (false) {
-            call = VoxEngine.callSIP(`${configSIP.prefix}${phone_number}@${configSIP.peer_address}`, {
+        //detect voice mail
+        const amdParameters = {
+            model: AMD.Model.PE,
+        };
+        const amd = AMD.create(amdParameters);
+
+        if (configSIP?.SIP) {
+            call = VoxEngine.callSIP(`${configSIP.prefix}${phone_number.replace("51", "")}@${configSIP.peer_address}`, {
                 callerid: `agent${lastagentid}@${configSIP.domain}`,
                 displayName: "Laraigo",
+                amd
             });
         } else {
             call = VoxEngine.callPSTN(phone_number, caller_id);
         }
 
+        amd.addEventListener(AMD.Events.DetectionComplete, (result) => {
+            Logger.write(`VOICEMAIL: Machine answer detection is complete.`);
+            if (result.resultClass === AMD.ResultClass.VOICEMAIL) {
+                Logger.write(`VOICEMAIL: detected with a ${result.confidence}% confidence.`);
+                voicemailDetected(call, result.confidence);
+            } else {
+                Logger.write('VOICEMAIL: not detected.');
+            }
+        });
+
+        amd.addEventListener(AMD.Events.DetectionError, (error) => {
+            Logger.write(`Detection failed with an error:`);
+            Logger.write(error);
+        });
+
         if (red.recording) {
+            Logger.write("Recording... ");
             call.record({
-                transcribe: true,
+                transcribe: false,
                 language: ASRLanguage.SPANISH_ES,
                 name: identifier + ".mp3",
                 contentDispositionFilename: identifier + ".mp3",
-                recordNamePrefix: "" + caller_id,
-                hd_audio: (red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd",
+                recordNamePrefix: "" + site,
+                hd_audio:
+                    (red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd",
                 lossless:
-                    (red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "lossless",
+                    (red.recordingquality || "default") === "default"
+                        ? undefined
+                        : red.recordingquality === "lossless",
                 expire: cleanExpiration(red.recordingstorage),
             });
         }
-        // setTimeout(function () {
-        //     // Trying to detect voicemail
-        //     AI.detectVoicemail(call, { model: "colombia" })
-        //         .then(voicemailDetected)
-        //         .catch(() => {
-        //             Logger.write("Voicemail not detected");
-        //         });
-        // }, 7000);
 
         // Add event listeners
         call.addEventListener(CallEvents.Connected, handleCallConnected);
-        // call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);
         call.addEventListener(CallEvents.Failed, handleCallFailed);
         call.addEventListener(CallEvents.Disconnected, handleCallDisconnected);
     });
 });
 
-function voicemailDetected(e) {
-    Logger.write("Voicemail detected +" + e.confidence);
+function voicemailDetected(call, confidence) {
     deliveryCall(false, "customer did not answer the call");
-    if (e.confidence >= 75) {
+    if (confidence >= 75) {
         closeTicket("LLAMADA NO CONTESTADA");
         VoxEngine.CallList.reportError("Voicemail", VoxEngine.terminate);
+        call.hangup();
     }
 }
 
@@ -376,7 +351,7 @@ const cardInput = async (variables, { question, output, timeout = 5000 }) => (
             call.removeEventListener(CallEvents.PlaybackFinished);
             call.sendMediaTo(asr);
             tsMuteTotal = setTimeout(() => {
-                Logger.write("ASR-REC: .tsMuteTotal" + full_result);
+                Logger.write("ASR-REC: tsMuteTotal: " + full_result);
                 asr.stop();
                 clearTimeout(ts);
                 clearTimeout(tsStopOnTime);
@@ -385,13 +360,13 @@ const cardInput = async (variables, { question, output, timeout = 5000 }) => (
             }, timeout);
 
             tsStopOnTime = setTimeout(() => {
-                Logger.write("ASR-REC: .tsStopOnTime" + full_result);
+                Logger.write("ASR-REC: tsStopOnTime: " + full_result);
                 asr.stop();
                 clearTimeout(ts);
                 clearTimeout(tsMuteTotal);
                 setVariable(variables, output, full_result);
                 resolve(full_result)
-            }, timeout + 2000);
+            }, timeout);
         });
 
         // const asr = VoxEngine.createASR({
@@ -408,18 +383,18 @@ const cardInput = async (variables, { question, output, timeout = 5000 }) => (
         });
 
         asr.addEventListener(ASREvents.Result, e => {
-            Logger.write("ASR-REC: .Result" + e.text);
+            Logger.write("ASR-REC: Result: " + e.text);
             clearTimeout(tsMuteTotal);
             // Recognition results arrive here
             full_result += ((e.text || "") + " ");
             // sendInteraction("text", full_result, true);
             // If CaptureStarted wo not be triggered in 2 seconds then stop recognition
-            ts = setTimeout(() => {
-                clearTimeout(tsStopOnTime)
-                asr.stop();
-                setVariable(variables, output, full_result);
-                resolve(full_result);
-            }, 2000);
+            clearTimeout(tsStopOnTime)
+            asr.stop();
+            setVariable(variables, output, full_result);
+            resolve(full_result);
+            // ts = setTimeout(() => {
+            // }, 1000);
         });
 
         asr.addEventListener(ASREvents.SpeechCaptured, () => {
@@ -513,7 +488,6 @@ const cleanText = (text) => text
     .replace(/ó/g, 'o')
     .replace(/ú/g, 'u')
 
-
 const cardSetAttribute = (variables, { variable, value }) => {
     const valueCleaned = replaceTextWithVariables(value, variables);
     if (/[+\-%*/()]/.test(valueCleaned)) {
@@ -536,12 +510,13 @@ const validateCondition = (variables, condition) => {
     if (type === "lower") return variableValue < cleanText(value);
     if (type === "lowerandequals") return variableValue <= cleanText(value);
     if (type === "includes") {
-        const words = cleanText(variableValue).split(" ");
-        return value.split(",").map(x => cleanText(x)).some(x => words.includes(x.trim()));
+        const text1 = cleanText(variableValue);
+        const words = text1.split(" ");
+        return value.split(",").map(x => cleanText(x)).some(x => words.includes(x.trim()) || text1.replace(" ", "") === x.replace(" ", ""));
     }
     if (type === "notincludes") {
         const words = cleanText(variableValue).split(" ");
-        return !value.split(",").map(x => cleanText(x)).some(x => words.includes(x));
+        return !value.split(",").map(x => cleanText(x)).some(x => words.includes(x.trim() || text1.replace(" ", "") === x.replace(" ", "")));
     };
 }
 
@@ -575,6 +550,7 @@ const loopInteractions = async (call, variables, flow, blockid = "genesis") => {
 // Call connected successfully
 async function handleCallConnected(e) {
     if (onlybot) {
+        sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA");
         await loopInteractions(call, variables, flow);
         closeTicket("finish");
         VoxEngine.terminate();

@@ -1508,6 +1508,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             valueDefault={row?.customlabel4 || ''}
                         />
                     </div>
+                    
                     <div className="row-zyx">
                         <FieldMultiSelectFreeSolo
                             className="col-6"
@@ -1571,6 +1572,20 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             onChange={(value) => setValue('customnumber4', (value || value === 0) ? value.toString() : '')}
                             type="number"
                             valueDefault={row?.customnumber4 || ''}
+                        />
+                        <FieldMultiSelectFreeSolo
+                            className="col-6"
+                            data={numbers.map((x: any) => ({ value: x }))}
+                            disabled={!edit}
+                            label={t(langKeys.number)}
+                            loading={false}
+                            onChange={(value) => {
+                                setnumbers(value.reduce((acc: any, x: any) => [...acc, typeof x === "object" ? x.value : x], []))
+                                setValue("numbers", value.reduce((acc: any, x: any) => [...acc, typeof x === "object" ? x.value : x], []).join(","))
+                            }}
+                            optionDesc="value"
+                            optionValue="value"
+                            valueDefault={numbers.join(",") || ''}
                         />
                     </div>
                     <div className="row-zyx">

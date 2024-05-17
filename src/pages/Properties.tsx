@@ -811,7 +811,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     }
                                 })
                             }}*/
-                            inputProps={{ step: 0.1 }}
+                            inputProps={{ step: 'any', min: 0 }}
                             label={t(langKeys.value)}
                             onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                             type='number'

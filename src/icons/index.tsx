@@ -135,6 +135,7 @@ export { ReactComponent as LocationIcon } from './ubicacionLocal.svg';
 export { ReactComponent as UserGroupIcon } from './user-group.svg';
 export { ReactComponent as EmojiSadFaceIcon } from './emoji-sad-face.svg';
 export { ReactComponent as ChannelsIcon } from './channels.svg';
+export { ReactComponent as CustomVariablesIcon } from './campo_personalizado.svg';
 export { ReactComponent as DomainsIcon } from './domains.svg';
 export { ReactComponent as ForbiddenWordsIcon } from './forbidden-words.svg';
 export { ReactComponent as OrganizationsIcon } from './organization.svg';
@@ -329,3 +330,5 @@ export { ReactComponent as InventoryIcon } from './inventarios.svg';
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
 export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
 
+export {ReactComponent as GoogleDriveIcon} from './google-drive.svg';
+export {ReactComponent as ExcelFileIcon} from './excel-file.svg';

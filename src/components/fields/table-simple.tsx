@@ -275,7 +275,7 @@ export const SelectFilterTmp: React.FC<{ value: any; data: any[]; handleClickIte
     )
 }
 
-export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+export const DateOptionsMenuComponent = ({value, handleDate}:any) => {
     const { t } = useTranslation();
     const [value2, setvalue2] = useState(null)
 
@@ -292,8 +292,11 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
                 format={getLocaleDateString()}
                 value={value2}
                 onChange={(e: any) => {
-                    handleClickItemMenu(e);
-                    setvalue2(e)
+                    const date = new Date(e);
+                    if(!isNaN(date.getTime())){
+                        handleDate(e);
+                        setvalue2(e)
+                    }
                 }}
                 style={{ minWidth: '150px' }}
             />
@@ -301,7 +304,7 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
     )
 }
 
-export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+export const TimeOptionsMenuComponent = ({value, handleTime}:any) => {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
             <KeyboardTimePicker
@@ -311,7 +314,7 @@ export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
                 error={false}
                 helperText={''}
                 value={value === '' ? null : value}
-                onChange={(e: any) => handleClickItemMenu(e)}
+                onChange={(e: any) => handleTime(e)}
                 style={{ minWidth: '150px' }}
             />
         </MuiPickersUtilsProvider>

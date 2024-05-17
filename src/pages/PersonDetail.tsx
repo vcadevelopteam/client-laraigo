@@ -4,7 +4,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, GetIcon } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne, getDomainByDomainNameList } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled, InputAdornment } from '@material-ui/core';
 import clsx from 'clsx';
@@ -23,7 +23,7 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { getChannelListByPerson, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useFieldArray, useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { execute } from 'store/main/actions';
+import { execute, getCollectionAux2 } from 'store/main/actions';
 import Rating from '@material-ui/lab/Rating';
 import TableZyx from '../components/fields/table-simple';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
@@ -35,10 +35,12 @@ import LinkIcon from '@material-ui/icons/Link';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
 import { sendHSM } from 'store/inbox/actions';
 
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { Controller } from "react-hook-form";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
+import CustomTableZyxEditable from 'components/fields/customtable-editable';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
 
@@ -1120,6 +1122,88 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
     );
 }
 
+interface CustomVariableTabProps {
+    setTableData: (x:Dictionary[])=>void;
+    tableData: Dictionary[];
+}
+
+const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData }) => {
+    const dispatch = useDispatch();
+    const domains = useSelector(state => state.person.editableDomains);
+    const { t } = useTranslation();
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
+
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        const auxTableData = tableData
+        auxTableData[rowIndex][columnId] = value
+        setTableData(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+    useEffect(() => {
+        if(!domains.loading && !domains.error && domains.value?.customVariables){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariables?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [domains]);
+
+    useEffect(() => {
+        setSkipAutoReset(false)
+    }, [updatingDataTable])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: true,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: true,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: true,
+                sortType: 'string',
+                prefixTranslation: 'datatype_',
+                Cell: (props: any) => {
+                    const { variabletype } = props.cell.row.original || {}; 
+                    return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
+    return (        
+        <CustomTableZyxEditable
+            columns={columns}
+            data={tableData}
+            download={false}
+            loading={domains.loading}
+            register={false}
+            dataDomains={domainsCustomTable?.data||[]}
+            filterGeneral={false}
+            updateCell={updateCell}
+            skipAutoReset={skipAutoReset}
+        />
+    );
+}
+
 interface ConversationsTabProps {
     person: IPerson;
 }
@@ -1979,6 +2063,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     const [payloadTemp, setpayloadTemp] = useState<any>(null)
     const [valuestosend, setvaluestosend] = useState<any>(null)
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
         phone: person?.phone || '',
@@ -1986,6 +2071,13 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     })
 
     const user = useSelector(state => state.login.validateToken.user);
+
+    useEffect(() => {
+        if (domains.value?.customVariables && person) {
+            console.log(person)
+            setTableDataVariables(domains.value.customVariables.map(x=>({...x,value: person?.variablecontext?.[x?.variablename]||""})))
+        }
+    }, [person, domains]);
 
     const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -2129,7 +2221,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     const editperson = () => {
         dispatch(showBackdrop(true));
         dispatch(editPerson(payloadTemp.parameters.personid ? payloadTemp : {
-            header: editPersonBody({ ...person, ...valuestosend }),
+            header: editPersonBody({ ...person, ...valuestosend,
+                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+            }),
             detail: []
         }, !payloadTemp.parameters.personid));
 
@@ -2142,7 +2236,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
         if (allOk) {
             const values = getValues();
             const callback = () => {
-                const payload = editPersonBody(values);
+                const payload = editPersonBody({...values, 
+                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                });
                 setpayloadTemp(payload)
                 setvaluestosend(values)
                 dispatch(execute(personInsValidation({
@@ -2387,6 +2483,19 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
                                     value="4"
                                 />
                             }
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "5" && classes.activetab)}
+                                    label={
+                                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                            <Trans i18nKey={langKeys.customvariables} />
+                                            <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                            </Tooltip>
+                                        </div>}
+                                    value="5"
+                                />
+                            }
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.claim} count={2} />}
@@ -2423,6 +2532,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
                     </TabPanel>
                     <TabPanel value="4" index={tabIndex}>
                         <AuditTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="5" index={tabIndex}>
+                        <CustomVariableTab tableData={tableDataVariables} setTableData={setTableDataVariables}/>
                     </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
@@ -2583,7 +2695,6 @@ const PersonDetail: FC = () => {
             setWaitLoading(true)
             dispatch(execute(getPersonOne({ personid: match.params.id })));
             setrefresh(false)
-            //agregale la candicion para que llame al person sel
         }
     }, [person, refresh]);
 
