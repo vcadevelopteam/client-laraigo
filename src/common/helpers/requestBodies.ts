@@ -1085,7 +1085,9 @@ export const insIntegrationManager = ({
     apikey,
     operation,
     results,
-    orgid
+    orgid,
+    code_table= {},
+    person_table={}
 }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
     parameters: {
@@ -1109,6 +1111,8 @@ export const insIntegrationManager = ({
         operation,
         orgid,
         results: JSON.stringify(results),
+        code_table,
+        person_table
     }
 });
 
@@ -5078,4 +5082,19 @@ export const editCalendarBooking = ({calendarbookingid,personmail,personname,not
     method: "UFN_CALENDARBOOKING_EDIT",
     key: "UFN_CALENDARBOOKING_EDIT",
     parameters: { calendarbookingid,personmail,personname,notes,comments },
+});
+export const integrationManagerBulkloadIns = ({integrationmanagerid, table, type}:Dictionary) => ({
+    method: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
+    key: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
+    parameters: { integrationmanagerid, table, type },
+});
+export const integrationManagerCodePersonSel = ({integrationmanagerid, type}:Dictionary) => ({
+    method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
+    key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
+    parameters: { integrationmanagerid, type },
+});
+export const integrationManagerCodePersonDel = ({integrationmanagerid, type, ids}:Dictionary) => ({
+    method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
+    key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
+    parameters: { integrationmanagerid, type, ids },
 });
