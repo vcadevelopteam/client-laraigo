@@ -23,7 +23,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
-import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd"
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd"
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -280,7 +280,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [bodyVariables, setBodyVariables] = useState<Dictionary[]>([])
     const [headerType, setHeaderType] = useState(
         (row?.headertype === 'video' || row?.headertype === 'iamge' || row?.headertype === 'file') ? 'multimedia' :
-        row?.headertype === 'text' ? 'text' : 'none')
+            row?.headertype === 'text' ? 'text' : 'none')
     const [filename, setFilename] = useState(row ? row?.header?.split('/')?.pop()?.replace(/%20/g, ' ') : '')
     const [uploading, setUploading] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -303,7 +303,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             });
         }
     }, [showEmojiPicker]);
-    
+
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
         { value: "MARKETING", description: t(langKeys.TEMPLATE_MARKETING) },
@@ -410,13 +410,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: "STANDARD", text: t(langKeys.messagetemplate_standard) },
         { value: "CAROUSEL", text: t(langKeys.messagetemplate_carousel) },
     ];
-    
+
     const dataHeaderType = [
         { value: "none", text: t(langKeys.none) },
         { value: "text", text: t(langKeys.messagetemplate_text) },
         { value: "multimedia", text: t(langKeys.messagetemplate_multimedia) },
     ];
-    
+
     const dataURLType = [
         { value: "static", text: t(langKeys.static) },
         { value: "dynamic", text: t(langKeys.dynamic) },
@@ -429,11 +429,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     ];
 
     const dataValidityPeriod = [
-        { value: 1, text: `1 ${t(langKeys.minutes)}`},
-        { value: 2, text: `2 ${t(langKeys.minutes)}`},
-        { value: 3, text: `3 ${t(langKeys.minutes)}`},
-        { value: 5, text: `5 ${t(langKeys.minutes)}`},
-        { value: 10, text: `10 ${t(langKeys.minutes)}`},
+        { value: 1, text: `1 ${t(langKeys.minutes)}` },
+        { value: 2, text: `2 ${t(langKeys.minutes)}` },
+        { value: 3, text: `3 ${t(langKeys.minutes)}` },
+        { value: 5, text: `5 ${t(langKeys.minutes)}` },
+        { value: 10, text: `10 ${t(langKeys.minutes)}` },
     ]
 
     const dataCountryCodes = [
@@ -540,7 +540,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 return true;
             },
         });
-        
+
         switch (type) {
             case "HSM":
                 // register("body", {
@@ -645,13 +645,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setHtmlLoad([html.html({ matchClosingTags: true })]);
         });
     }, []);
-    
+
     useEffect(() => {
         if (!isNew && isProvider) {
             setDisableInput(true);
         }
     }, [isNew, isProvider]);
-    
+
     useEffect(() => {
         if (waitAdd) {
             if (!addRequest.loading && !addRequest.error) {
@@ -874,7 +874,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("type");
         trigger("typeattachment");
     };
-    
+
     const onChangeTemplateMedia = async () => {
         if (getValues("headerenabled")) {
             register("header", {
@@ -920,7 +920,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('buttonsquickreply');
         setBodyVariables([])
     };
-    
+
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
         if (value) {
             setValue("headerenabled", value);
@@ -958,7 +958,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onChangeHeaderType = async (data: Dictionary) => {
-        if(data.value === 'text') {
+        if (data.value === 'text') {
             setHeaderType(data?.value || "");
             setValue("headertype", data?.value || "")
             setIsHeaderVariable(false)
@@ -990,7 +990,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const onClickAddButton = async () => {
-        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'url'}).length < 2) {
+        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => { return btn.type === 'url' }).length < 2) {
             setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'url', btn: { text: "", type: "", url: "", variable: "" } }]);
         }
         trigger("buttonsgeneric");
@@ -1002,13 +1002,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("buttonsquickreply");
     };
     const onClickAddButtonPhone = async () => {
-        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'phone'}).length < 1) {
+        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => { return btn.type === 'phone' }).length < 1) {
             setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'phone', btn: { text: "", code: "", number: "" } }]);
         }
         trigger("buttonsgeneric");
     };
     const onClickAddCard = async () => {
-        if(getValues("carouseldata") && getValues('carouseldata').length < 10) {
+        if (getValues("carouseldata") && getValues('carouseldata').length < 10) {
             setValue('carouseldata', [...getValues('carouseldata'), { image: "", body: '', bodyvariables: [], buttons: [] }])
         }
         trigger("carouseldata");
@@ -1016,11 +1016,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onClickAddButtonTCard = async (index: number) => {
         const currentCards = getValues('carouseldata');
         if (currentCards && currentCards.length > index) {
-            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+            const updatedCards = currentCards.map((card: Dictionary, i: number) => {
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'text', btn: { text: '' }}]
+                        buttons: [...card.buttons, { type: 'text', btn: { text: '' } }]
                     };
                 }
                 return card;
@@ -1032,11 +1032,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onClickAddButtonLCard = async (index: number) => {
         const currentCards = getValues('carouseldata');
         if (currentCards && currentCards.length > index) {
-            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+            const updatedCards = currentCards.map((card: Dictionary, i: number) => {
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'url', btn: { text: "", type: "", url: "", variable: "" }}]
+                        buttons: [...card.buttons, { type: 'url', btn: { text: "", type: "", url: "", variable: "" } }]
                     };
                 }
                 return card;
@@ -1048,11 +1048,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onClickAddButtonPCard = async (index: number) => {
         const currentCards = getValues('carouseldata');
         if (currentCards && currentCards.length > index) {
-            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+            const updatedCards = currentCards.map((card: Dictionary, i: number) => {
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'phone', btn: { text: "", code: "", number: "" }}]
+                        buttons: [...card.buttons, { type: 'phone', btn: { text: "", code: "", number: "" } }]
                     };
                 }
                 return card;
@@ -1261,7 +1261,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('buttonsquickreply', [])
         setValue('carouseldata', [])
 
-        if(categoryText === 'AUTHENTICATION') {
+        if (categoryText === 'AUTHENTICATION') {
             setValue('authenticationdata', {
                 buttontext: "",
                 codeexpirationdate: 0,
@@ -1310,12 +1310,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [waitUploadFile3, uploadResult])
-    
+
     const handleDragDrop = (results: DropResult) => {
-        const {source, destination, type} = results;
-        if(!destination) return;
-        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
-        if(type === 'group'){
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
             const reorderedItems = [...getValues('buttonsquickreply')];
             const sourceIndex = source.index;
             const destinationIndex = destination.index;
@@ -1328,10 +1328,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleDragDropAux = (results: DropResult) => {
-        const {source, destination, type} = results;
-        if(!destination) return;
-        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
-        if(type === 'group'){
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
             const reorderedItems = [...getValues('buttonsgeneric')];
             const sourceIndex = source.index;
             const destinationIndex = destination.index;
@@ -1344,10 +1344,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleDragDropCarrusel = (results: DropResult, index: number) => {
-        const {source, destination, type} = results;
-        if(!destination) return;
-        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
-        if(type === 'group') {
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
             const reorderedItems = [...getValues(`carouseldata.${index}.buttons`)];
             const sourceIndex = source.index;
             const destinationIndex = destination.index;
@@ -1372,7 +1372,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         const newVariableTag = `{{${newVariableNumber}}}`;
 
         setValue(`carouseldata.${index}.body`, body + newVariableTag);
-        setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), {variable: newVariableNumber, text: ''}])
+        setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), { variable: newVariableNumber, text: '' }])
         trigger('carouseldata')
     }
 
@@ -1406,7 +1406,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('body', updatedBody);
         trigger('body');
     }
-    
+
     const changeHeaderType = (type: string) => {
         setValue('headertype', type)
         trigger('headertype')
@@ -1495,11 +1495,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             />
                         </div>
                     )}
-                    <div className='row-zyx' style={{display: 'flex', flexDirection: 'column'}}>
-                        <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetype)}</span>
+                    <div className='row-zyx' style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.messagetype)}</span>
                         <span>{t(langKeys.messagetypetext)}</span>
                     </div>
-                    <div className="row-zyx" style={{display: 'flex', alignItems: 'center'}}>
+                    <div className="row-zyx" style={{ display: 'flex', alignItems: 'center' }}>
                         <FieldSelect
                             className="col-4"
                             data={dataMessageType}
@@ -1513,8 +1513,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         />
                         {getValues("type") === '' && (
                             <div className="col-4">
-                                <div className={classes.warningContainer} style={{width: 220}}>
-                                    <WarningIcon style={{color: '#FF7575'}}/>
+                                <div className={classes.warningContainer} style={{ width: 220 }}>
+                                    <WarningIcon style={{ color: '#FF7575' }} />
                                     Selecciona una opción
                                 </div>
                             </div>
@@ -1522,35 +1522,35 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     </div>
                     {getValues("type") === 'HSM' && (
                         <>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{`${t(langKeys.configuration)} ${t(langKeys.template)}`}</span>
+                            <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{`${t(langKeys.configuration)} ${t(langKeys.template)}`}</span>
                             </div>
-                            <div className='row-zyx' style={{display: 'flex', flexDirection: 'column'}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.category)}</span>
+                            <div className='row-zyx' style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.category)}</span>
                                 <span>Elige la categoría que mejor describa tu plantilla de mensaje.</span>
                             </div>
-                            <div style={{display: 'flex', flexDirection: 'row', gap: '0.5rem'}}>
+                            <div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem' }}>
                                 <div className={classes.categoryOption} onClick={() => changeCategory('MARKETING')}>
-                                    <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox}/>
-                                    <VolumeUpIcon style={{marginLeft: 10, marginRight: 10}}/>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Marketing</span>
+                                    <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox} />
+                                    <VolumeUpIcon style={{ marginLeft: 10, marginRight: 10 }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>Marketing</span>
                                         <span>Envía promociones o información sobre tus productos, servicios o negocio.</span>
                                     </div>
                                 </div>
                                 <div className={classes.categoryOption} onClick={() => changeCategory('UTILITY')}>
-                                    <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox}/>
-                                    <NotificationsIcon style={{marginLeft: 10, marginRight: 10}}/>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Utilidad</span>
+                                    <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox} />
+                                    <NotificationsIcon style={{ marginLeft: 10, marginRight: 10 }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>Utilidad</span>
                                         <span>Envía mensajes sobre un pedido o cuenta existentes.</span>
                                     </div>
                                 </div>
                                 <div className={classes.categoryOption} onClick={() => changeCategory('AUTHENTICATION')}>
-                                    <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox}/>
-                                    <VpnKeyIcon style={{marginLeft: 10, marginRight: 10}}/>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Autenticación</span>
+                                    <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox} />
+                                    <VpnKeyIcon style={{ marginLeft: 10, marginRight: 10 }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>Autenticación</span>
                                         <span>Envía códigos para verificar una transacción o un inicio de sesión.</span>
                                     </div>
                                 </div>
@@ -1573,19 +1573,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === "HSM" && (
-                        <div style={{display: 'flex', marginBottom: 10}}>
-                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                <span style={{fontWeight: 'bold'}}>{t(langKeys.name)}</span>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.name)}</span>
                                 <span>Asigna un nombre a la plantilla de mensaje</span>
                             </div>
-                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                <span style={{fontWeight: 'bold'}}>{t(langKeys.language)}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.language)}</span>
                                 <span>Elige idiomas para tu plantilla de mensaje</span>
                             </div>
                         </div>
                     )}
-                    <div className="row-zyx" style={{marginBottom: 0}}>
-                        {getValues('type') !== '' &&(
+                    <div className="row-zyx" style={{ marginBottom: 0 }}>
+                        {getValues('type') !== '' && (
                             <FieldEdit
                                 className="col-6"
                                 disabled={disableInput}
@@ -1611,7 +1611,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         label={getValues('type') !== 'HSM' ? t(langKeys.language) : ''}
                                         variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
                                         onChange={(value) => {
-                                            if(value) {
+                                            if (value) {
                                                 setValue("language", value.value)
                                                 trigger("language")
                                             } else {
@@ -1636,7 +1636,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         disabled={disableInput}
                                         error={errors?.language?.message}
                                         onChange={(value) => {
-                                            if(value) {
+                                            if (value) {
                                                 setValue("language", value.domainvalue)
                                                 trigger("language")
                                             } else {
@@ -1657,15 +1657,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === "HSM" && (
-                        <div style={{display: 'flex', marginBottom: 10}}>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
                             {getValues("category") !== 'AUTHENTICATION' && (
-                                <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.templatetype)}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                    <span style={{ fontWeight: 'bold' }}>{t(langKeys.templatetype)}</span>
                                     <span>Seleccione el tipo de plantilla que utilizarás</span>
                                 </div>
                             )}
-                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                <span style={{fontWeight: 'bold'}}>{t(langKeys.channel)}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.channel)}</span>
                                 <span>Seleccione el canal en el que registrarás tu plantilla</span>
                             </div>
                         </div>
@@ -1676,7 +1676,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 {getValues("category") !== 'AUTHENTICATION' && (
                                     <FieldSelect
                                         className="col-6"
-                                        data={getValues("type") !== 'HSM' ? dataTemplateType : dataTemplateType.filter((x: Dictionary) => {return x.value !== 'STANDARD'})}
+                                        data={getValues("type") !== 'HSM' ? dataTemplateType : dataTemplateType.filter((x: Dictionary) => { return x.value !== 'STANDARD' })}
                                         disabled={templateTypeDisabled || disableInput}
                                         error={errors?.templatetype?.message}
                                         onChange={onChangeTemplateType}
@@ -1705,367 +1705,451 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === 'HSM' &&
-                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
-                        <div>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span className={classes.title}>{t(langKeys.templateedition)}</span>
-                            </div>
-                            <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%'}}>
-                                    <span className={classes.title}>{t(langKeys.heading)}</span>
-                                    <span style={{marginBottom: 10}}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
-                                    <div style={{display: 'flex', gap: 10}}>
-                                        <div style={{width: 180, marginBottom: 20}}>
-                                            <FieldSelect
-                                                data={dataHeaderType}
-                                                onChange={onChangeHeaderType}
-                                                optionDesc="text"
-                                                optionValue="value"
-                                                valueDefault={headerType}
-                                                variant="outlined"
-                                            />
-                                        </div>
-                                        {getValues('headertype') === 'text' && (
-                                            <div style={{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
-                                                <FieldEdit
+                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
+                            <div>
+                                <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                    <span className={classes.title}>{t(langKeys.templateedition)}</span>
+                                </div>
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%' }}>
+                                        <span className={classes.title}>{t(langKeys.heading)}</span>
+                                        <span style={{ marginBottom: 10 }}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
+                                        <div style={{ display: 'flex', gap: 10 }}>
+                                            <div style={{ width: 180, marginBottom: 20 }}>
+                                                <FieldSelect
+                                                    data={dataHeaderType}
+                                                    onChange={onChangeHeaderType}
+                                                    optionDesc="text"
+                                                    optionValue="value"
+                                                    valueDefault={headerType}
                                                     variant="outlined"
-                                                    size="small"
-                                                    maxLength={60}
-                                                    valueDefault={getValues('header')}
-                                                    onChange={(value) => {
-                                                        setValue('header', value)
-                                                        trigger('header')
-                                                    }}
                                                 />
-                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                                    <Button
-                                                        className={classes.button}
-                                                        startIcon={isHeaderVariable ? <ClearIcon /> : <AddIcon />}
-                                                        onClick={() => {
-                                                            setIsHeaderVariable(!isHeaderVariable)
-                                                            setValue('headervariables', '')
-                                                        }}
-                                                    >
-                                                        {isHeaderVariable ? t(langKeys.deletevariable) : t(langKeys.addvariable)}
-                                                    </Button>
-                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                    {getValues('headertype') === 'text' && isHeaderVariable && (
-                                        <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
-                                            <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                <span>{'{{'}1{'}}'}</span>
-                                                <div style={{backgroundColor: 'white', width: '100%'}}>
+                                            {getValues('headertype') === 'text' && (
+                                                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                                                     <FieldEdit
                                                         variant="outlined"
                                                         size="small"
                                                         maxLength={60}
-                                                        valueDefault={getValues('headervariables')}
+                                                        valueDefault={getValues('header')}
                                                         onChange={(value) => {
-                                                            setValue('headervariables', value)
-                                                            trigger('headervariables')
+                                                            setValue('header', value)
+                                                            trigger('header')
                                                         }}
                                                     />
-                                                </div>
-                                            </div>
-                                            <div className={classes.warningContainer}>
-                                                <WarningIcon style={{color: '#FF7575'}}/>
-                                                {t(langKeys.addexampletext)}
-                                            </div>
-                                        </div>
-                                    )}
-                                    {(headerType !== 'text' && headerType !== 'none') && (
-                                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                                            <div style={{display: 'flex', gap: 20, marginBottom: 20}}>
-                                                <div className={getValues('headertype') === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('image')}>
-                                                    <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'image'} className={classes.checkboxHeadOption}/>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+                                                        <Button
+                                                            className={classes.button}
+                                                            startIcon={isHeaderVariable ? <ClearIcon /> : <AddIcon />}
+                                                            onClick={() => {
+                                                                setIsHeaderVariable(!isHeaderVariable)
+                                                                setValue('headervariables', '')
+                                                            }}
+                                                        >
+                                                            {isHeaderVariable ? t(langKeys.deletevariable) : t(langKeys.addvariable)}
+                                                        </Button>
                                                     </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <ImageIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'image' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'image' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className={getValues('headertype') === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('video')}>
-                                                    <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'video'} className={classes.checkboxHeadOption} />
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'video' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'video' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className={getValues('headertype') === 'file' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('file')}>
-                                                    <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'file'} className={classes.checkboxHeadOption} />
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'file' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'file' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {(getValues('headertype') !== 'text' && getValues('headertype') !== 'none') && (
-                                                <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                    <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
-                                                    <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        {t(langKeys[getValues('headertype')])}
-                                                        {(getValues('headertype') === 'image' || getValues('headertype') === 'video' || getValues('headertype') === 'file') && (
-                                                            <input
-                                                                type="file"
-                                                                accept={getValues('headertype') === 'image' ? '.jpg,.png' : getValues('headertype') === 'video' ? '.mp4' : '.pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls'}
-                                                                onChange={(e) => handleFileChange(e.target.files)}
-                                                                style={{ display: 'none' }}
-                                                                disabled={uploading}
-                                                                id="fileInput"
-                                                            />
-                                                        )}
-                                                        {getValues('header') === ''  ? (
-                                                            <label htmlFor="fileInput">
-                                                                <Button
-                                                                    startIcon={<ImageIcon/>}
-                                                                    variant="outlined"
-                                                                    style={{backgroundColor: '#F5F5F5'}}
-                                                                    onClick={onClickAttachment}
-                                                                    disabled={uploading}
-                                                                    component="span" // Esto es necesario para que el botón funcione como un input de tipo file
-                                                                >
-                                                                    {getValues('headertype') === 'image' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
-                                                                </Button>
-                                                            </label>
-                                                        ) : (
-                                                            <div style={{display: 'flex', alignItems: 'center'}}>
-                                                                <div style={{padding: 10, border: '1px solid #888888', borderRadius: 4, width: 'fit-content', maxWidth: '100%'}}>
-                                                                    {filename}
-                                                                </div>
-                                                                <IconButton onClick={() => {
-                                                                    setValue('header', '')
-                                                                    setFilename('')
-                                                                }}>
-                                                                    <ClearIcon />
-                                                                </IconButton>
-                                                            </div>
-                                                        )}
-                                                        {uploading && (
-                                                            <span>Subiendo...</span>
-                                                        )}
-                                                    </div>
-                                                    {getValues('header') === '' && (
-                                                        <div className={classes.warningContainer}>
-                                                            <WarningIcon style={{ color: '#FF7575' }} />
-                                                            Añade contenido multimedia de ejemplo
-                                                        </div>
-                                                    )}
                                                 </div>
                                             )}
                                         </div>
-                                    )}
-                                    <span className={classes.title}>{t(langKeys.body)}</span>
-                                    <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
-                                    <div>
-                                        <FieldEditMulti
-                                            variant="outlined"
-                                            inputProps={{
-                                                rows: 7,
-                                                maxRows: 7
-                                            }}
-                                            valueDefault={getValues('body')}
-                                            onChange={(value) => {
-                                                setValue('body', value)
-                                                trigger('body')
-                                            }}
-                                            maxLength={1024}
-                                        />
-                                    </div>
-                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                                            <EmojiEmotionsIcon />
-                                        </IconButton>
-                                        {showEmojiPicker && (
-                                            <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                <Picker onSelect={addEmoji} />
+                                        {getValues('headertype') === 'text' && isHeaderVariable && (
+                                            <div style={{ marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: 'bold' }}>Ejemplos de contenido del encabezado</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                    <span>{'{{'}1{'}}'}</span>
+                                                    <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                        <FieldEdit
+                                                            variant="outlined"
+                                                            size="small"
+                                                            maxLength={60}
+                                                            valueDefault={getValues('headervariables')}
+                                                            onChange={(value) => {
+                                                                setValue('headervariables', value)
+                                                                trigger('headervariables')
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className={classes.warningContainer}>
+                                                    <WarningIcon style={{ color: '#FF7575' }} />
+                                                    {t(langKeys.addexampletext)}
+                                                </div>
                                             </div>
                                         )}
-                                        <IconButton
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '**')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatBoldIcon />
-                                        </IconButton>
-                                        <IconButton 
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '__')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatItalicIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '~~')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatStrikethroughIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '``````')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatCodeIcon />
-                                        </IconButton>
-                                        {bodyVariables.length < 20 &&(
-                                            <Button onClick={addVariable} startIcon={<AddIcon />}>
-                                                Añadir Variable
-                                            </Button>
-                                        )}
-                                        <Button
-                                            className={classes.button}
-                                            startIcon={<CloseIcon />}
-                                            onClick={deleteVariable}
-                                        >
-                                            {t(langKeys.deletevariable)}
-                                        </Button>
-                                    </div>
-                                    {bodyVariables.length > 0 && (
-                                        <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {bodyVariables.map((v, index: number) => {
-                                                return (
-                                                    <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        <span>{'{{'}{v.variable}{'}}'}</span>
-                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                            <FieldEdit
-                                                                variant="outlined"
-                                                                size="small"
-                                                                valueDefault={v.text}
-                                                                onChange={(e) => {
-                                                                    const newBodyVariables = [...bodyVariables];
-                                                                    newBodyVariables[index].text = e.target.value;
-                                                                    setBodyVariables(newBodyVariables);
-                                                                }}
-                                                            />
+                                        {(headerType !== 'text' && headerType !== 'none') && (
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <div style={{ display: 'flex', gap: 20, marginBottom: 20 }}>
+                                                    <div className={getValues('headertype') === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('image')}>
+                                                        <div style={{ position: 'relative', marginRight: 10 }}>
+                                                            <input type="checkbox" checked={getValues('headertype') === 'image'} className={classes.checkboxHeadOption} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                            <ImageIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'image' ? '#0E60A0' : '#9B9B9B' }} />
+                                                            <span style={{ textAlign: 'center', color: getValues('headertype') === 'image' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
                                                         </div>
                                                     </div>
-                                                );
-                                            })}
-                                            <div className={classes.warningContainer}>
-                                                <WarningIcon style={{color: '#FF7575'}}/>
-                                                {t(langKeys.addexampletext)}
-                                            </div>
-                                        </div>
-                                    )}
-                                    <span className={classes.title} style={{marginTop: 20}}>{t(langKeys.footer)}</span>
-                                    <span style={{marginBottom: 5}}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
-                                    <FieldEditMulti
-                                        error={errors?.footer?.message}
-                                        maxLength={60}
-                                        onChange={(value) => {
-                                            setValue("footer", value)
-                                            trigger('footer')
-                                        }}
-                                        rows={2}
-                                        valueDefault={getValues("footer")}
-                                    />
-                                    <span className={classes.title}>{t(langKeys.buttons)}</span>
-                                    <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
-                                    <div style={{display: 'flex'}}>
-                                        {(getValues("buttonsgeneric")?.length + getValues("buttonsquickreply")?.length) < 10 && (
-                                            <div>
-                                                <AddButtonMenu
-                                                    fastAnswer={onClickAddButtonText}
-                                                    urlWeb={onClickAddButton}
-                                                    callNumber={onClickAddButtonPhone}
-                                                    textbtn={getValues('buttonsquickreply')}
-                                                    urlbtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'url'})}
-                                                    phonebtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'phone'})}
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 5, marginBottom: 10}}>
-                                        <EmojiObjectsIcon />
-                                        <span style={{marginLeft: 10}}>Si añades más de tres botones, se mostrarán en una lista</span>
-                                    </div>
-                                    <DragDropContext onDragEnd={handleDragDrop}>
-                                        {getValues('buttonsquickreply')?.length > 0 && (
-                                            <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
-                                                <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
-                                                    <ImportExportIcon style={{color: '#0049CF'}} />
-                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
+                                                    <div className={getValues('headertype') === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('video')}>
+                                                        <div style={{ position: 'relative', marginRight: 10 }}>
+                                                            <input type="checkbox" checked={getValues('headertype') === 'video'} className={classes.checkboxHeadOption} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                            <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'video' ? '#0E60A0' : '#9B9B9B' }} />
+                                                            <span style={{ textAlign: 'center', color: getValues('headertype') === 'video' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className={getValues('headertype') === 'file' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('file')}>
+                                                        <div style={{ position: 'relative', marginRight: 10 }}>
+                                                            <input type="checkbox" checked={getValues('headertype') === 'file'} className={classes.checkboxHeadOption} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                            <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'file' ? '#0E60A0' : '#9B9B9B' }} />
+                                                            <span style={{ textAlign: 'center', color: getValues('headertype') === 'file' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <React.Fragment>
-                                                    <Droppable droppableId="root" type="group">
-                                                        {(provided) => (
-                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
-                                                                {getValues("buttonsquickreply")?.map((btn: any, i: number) => {
-                                                                    return (
-                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                            {(provided) => (
-                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                    <div style={{display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5}}>
-                                                                                        <DragIndicatorIcon />
-                                                                                        <div style={{flex: 1}}>
-                                                                                            <FieldEdit
-                                                                                                disabled={disableInput}
-                                                                                                label={t(langKeys.buttontext)}
-                                                                                                error={errors?.buttonsquickreply?.[i]?.text?.message}
-                                                                                                onChange={(value) => onChangeButtonText(i, value)}
-                                                                                                valueDefault={btn?.text || ""}
-                                                                                                variant="outlined"
-                                                                                                maxLength={25}
-                                                                                                fregister={{
-                                                                                                    ...register(`buttonsquickreply.${i}.text`, {
-                                                                                                        validate: (value) =>
-                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                    }),
-                                                                                                }}
-                                                                                            />
-                                                                                        </div>
-                                                                                        <IconButton onClick={() => onClickRemoveButtonText(i)}>
-                                                                                            <CloseIcon/>
-                                                                                        </IconButton>
-                                                                                    </div>
-                                                                                </div>
-                                                                            )}
-                                                                        </Draggable>
-                                                                    );
-                                                                })}
+                                                {(getValues('headertype') !== 'text' && getValues('headertype') !== 'none') && (
+                                                    <div style={{ marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Ejemplos de contenido del encabezado</span>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                            {t(langKeys[getValues('headertype')])}
+                                                            {(getValues('headertype') === 'image' || getValues('headertype') === 'video' || getValues('headertype') === 'file') && (
+                                                                <input
+                                                                    type="file"
+                                                                    accept={getValues('headertype') === 'image' ? '.jpg,.png' : getValues('headertype') === 'video' ? '.mp4' : '.pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls'}
+                                                                    onChange={(e) => handleFileChange(e.target.files)}
+                                                                    style={{ display: 'none' }}
+                                                                    disabled={uploading}
+                                                                    id="fileInput"
+                                                                />
+                                                            )}
+                                                            {getValues('header') === '' ? (
+                                                                <label htmlFor="fileInput">
+                                                                    <Button
+                                                                        startIcon={<ImageIcon />}
+                                                                        variant="outlined"
+                                                                        style={{ backgroundColor: '#F5F5F5' }}
+                                                                        onClick={onClickAttachment}
+                                                                        disabled={uploading}
+                                                                        component="span" // Esto es necesario para que el botón funcione como un input de tipo file
+                                                                    >
+                                                                        {getValues('headertype') === 'image' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG') : getValues('headertype') === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
+                                                                    </Button>
+                                                                </label>
+                                                            ) : (
+                                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                                    <div style={{ padding: 10, border: '1px solid #888888', borderRadius: 4, width: 'fit-content', maxWidth: '100%' }}>
+                                                                        {filename}
+                                                                    </div>
+                                                                    <IconButton onClick={() => {
+                                                                        setValue('header', '')
+                                                                        setFilename('')
+                                                                    }}>
+                                                                        <ClearIcon />
+                                                                    </IconButton>
+                                                                </div>
+                                                            )}
+                                                            {uploading && (
+                                                                <span>Subiendo...</span>
+                                                            )}
+                                                        </div>
+                                                        {getValues('header') === '' && (
+                                                            <div className={classes.warningContainer}>
+                                                                <WarningIcon style={{ color: '#FF7575' }} />
+                                                                Añade contenido multimedia de ejemplo
                                                             </div>
                                                         )}
-                                                    </Droppable>
-                                                </React.Fragment>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
-                                    </DragDropContext>
-                                    <DragDropContext onDragEnd={handleDragDropAux}>
-                                        {getValues('buttonsgeneric')?.length > 0 && (
-                                            <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
-                                                <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
-                                                    <ImportExportIcon style={{color: '#0049CF'}} />
-                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
+                                        <span className={classes.title}>{t(langKeys.body)}</span>
+                                        <span style={{ marginBottom: 5 }}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
+                                        <div>
+                                            <FieldEditMulti
+                                                variant="outlined"
+                                                inputProps={{
+                                                    rows: 7,
+                                                    maxRows: 7
+                                                }}
+                                                valueDefault={getValues('body')}
+                                                onChange={(value) => {
+                                                    setValue('body', value)
+                                                    trigger('body')
+                                                }}
+                                                maxLength={1024}
+                                            />
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+                                            <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                                <EmojiEmotionsIcon />
+                                            </IconButton>
+                                            {showEmojiPicker && (
+                                                <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
+                                                    <Picker onSelect={addEmoji} />
                                                 </div>
-                                                <React.Fragment>
-                                                    <Droppable droppableId="root2" type="group">
-                                                        {(provided) => (
-                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
-                                                                {getValues("buttonsgeneric")?.map((btn: any, i: number) => {
-                                                                    return (
-                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                            {(provided) => (
-                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                    {btn.type === 'url' ? (
-                                                                                        <>
-                                                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                            )}
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '**')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatBoldIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '__')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatItalicIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '~~')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatStrikethroughIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '``````')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatCodeIcon />
+                                            </IconButton>
+                                            {bodyVariables.length < 20 && (
+                                                <Button onClick={addVariable} startIcon={<AddIcon />}>
+                                                    Añadir Variable
+                                                </Button>
+                                            )}
+                                            <Button
+                                                className={classes.button}
+                                                startIcon={<CloseIcon />}
+                                                onClick={deleteVariable}
+                                            >
+                                                {t(langKeys.deletevariable)}
+                                            </Button>
+                                        </div>
+                                        {bodyVariables.length > 0 && (
+                                            <div style={{ marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.text)}</span>
+                                                {bodyVariables.map((v, index: number) => {
+                                                    return (
+                                                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                            <span>{'{{'}{v.variable}{'}}'}</span>
+                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                <FieldEdit
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    valueDefault={v.text}
+                                                                    onChange={(e) => {
+                                                                        const newBodyVariables = [...bodyVariables];
+                                                                        newBodyVariables[index].text = e.target.value;
+                                                                        setBodyVariables(newBodyVariables);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                                <div className={classes.warningContainer}>
+                                                    <WarningIcon style={{ color: '#FF7575' }} />
+                                                    {t(langKeys.addexampletext)}
+                                                </div>
+                                            </div>
+                                        )}
+                                        <span className={classes.title} style={{ marginTop: 20 }}>{t(langKeys.footer)}</span>
+                                        <span style={{ marginBottom: 5 }}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
+                                        <FieldEditMulti
+                                            error={errors?.footer?.message}
+                                            maxLength={60}
+                                            onChange={(value) => {
+                                                setValue("footer", value)
+                                                trigger('footer')
+                                            }}
+                                            rows={2}
+                                            valueDefault={getValues("footer")}
+                                        />
+                                        <span className={classes.title}>{t(langKeys.buttons)}</span>
+                                        <span style={{ marginBottom: 5 }}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
+                                        <div style={{ display: 'flex' }}>
+                                            {(getValues("buttonsgeneric")?.length + getValues("buttonsquickreply")?.length) < 10 && (
+                                                <div>
+                                                    <AddButtonMenu
+                                                        fastAnswer={onClickAddButtonText}
+                                                        urlWeb={onClickAddButton}
+                                                        callNumber={onClickAddButtonPhone}
+                                                        textbtn={getValues('buttonsquickreply')}
+                                                        urlbtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'url' })}
+                                                        phonebtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'phone' })}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 5, marginBottom: 10 }}>
+                                            <EmojiObjectsIcon />
+                                            <span style={{ marginLeft: 10 }}>Si añades más de tres botones, se mostrarán en una lista</span>
+                                        </div>
+                                        <DragDropContext onDragEnd={handleDragDrop}>
+                                            {getValues('buttonsquickreply')?.length > 0 && (
+                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
+                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
+                                                    </div>
+                                                    <React.Fragment>
+                                                        <Droppable droppableId="root" type="group">
+                                                            {(provided) => (
+                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                    {getValues("buttonsquickreply")?.map((btn: any, i: number) => {
+                                                                        return (
+                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                {(provided) => (
+                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                        <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
+                                                                                            <DragIndicatorIcon />
+                                                                                            <div style={{ flex: 1 }}>
+                                                                                                <FieldEdit
+                                                                                                    disabled={disableInput}
+                                                                                                    label={t(langKeys.buttontext)}
+                                                                                                    error={errors?.buttonsquickreply?.[i]?.text?.message}
+                                                                                                    onChange={(value) => onChangeButtonText(i, value)}
+                                                                                                    valueDefault={btn?.text || ""}
+                                                                                                    variant="outlined"
+                                                                                                    maxLength={25}
+                                                                                                    fregister={{
+                                                                                                        ...register(`buttonsquickreply.${i}.text`, {
+                                                                                                            validate: (value) =>
+                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                        }),
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+                                                                                            <IconButton onClick={() => onClickRemoveButtonText(i)}>
+                                                                                                <CloseIcon />
+                                                                                            </IconButton>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )}
+                                                                            </Draggable>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                        </Droppable>
+                                                    </React.Fragment>
+                                                </div>
+                                            )}
+                                        </DragDropContext>
+                                        <DragDropContext onDragEnd={handleDragDropAux}>
+                                            {getValues('buttonsgeneric')?.length > 0 && (
+                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
+                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
+                                                    </div>
+                                                    <React.Fragment>
+                                                        <Droppable droppableId="root2" type="group">
+                                                            {(provided) => (
+                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                    {getValues("buttonsgeneric")?.map((btn: any, i: number) => {
+                                                                        return (
+                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                {(provided) => (
+                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                        {btn.type === 'url' ? (
+                                                                                            <>
+                                                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                                                    <DragIndicatorIcon />
+                                                                                                    <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                        <div className="row-zyx" style={{ width: '100%', marginBottom: 0, display: 'flex', alignItems: 'center' }}>
+                                                                                                            <FieldEdit
+                                                                                                                className='col-4'
+                                                                                                                label={t(langKeys.buttontext)}
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                onChange={(value) => onChangeButton(i, "text", value)}
+                                                                                                                valueDefault={btn?.btn?.text || ""}
+                                                                                                                variant="outlined"
+                                                                                                                maxLength={25}
+                                                                                                                fregister={{
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                        validate: (value) =>
+                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                    }),
+                                                                                                                }}
+                                                                                                                size="small"
+                                                                                                            />
+                                                                                                            <FieldSelect
+                                                                                                                className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}
+                                                                                                                data={dataURLType}
+                                                                                                                label={t(langKeys.urltype)}
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
+                                                                                                                onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                optionDesc="text"
+                                                                                                                optionValue="value"
+                                                                                                                valueDefault={btn?.btn?.type || ""}
+                                                                                                                variant="outlined"
+                                                                                                                fregister={{
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                        validate: (value) =>
+                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                    }),
+                                                                                                                }}
+                                                                                                            />
+                                                                                                            <FieldEdit
+                                                                                                                className='col-4'
+                                                                                                                label={t(langKeys.urlwebsite)}
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
+                                                                                                                onChange={(value) => onChangeButton(i, "url", value)}
+                                                                                                                valueDefault={btn?.btn?.url || ""}
+                                                                                                                variant="outlined"
+                                                                                                                fregister={{
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.url`, {
+                                                                                                                        validate: (value) =>
+                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                    }),
+                                                                                                                }}
+                                                                                                                size="small"
+                                                                                                            />
+                                                                                                            {btn?.type === 'dynamic' && (
+                                                                                                                <div className="col-1">
+                                                                                                                    <span>{'{{'}1{'}}'}</span>
+                                                                                                                </div>
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <IconButton onClick={() => onClickRemoveButton(i)}>
+                                                                                                        <CloseIcon />
+                                                                                                    </IconButton>
+                                                                                                </div>
+                                                                                                {btn?.btn?.type === 'dynamic' && (
+                                                                                                    <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                                                                                            <span>{'{{'}1{'}}'}</span>
+                                                                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                                                <FieldEdit
+                                                                                                                    variant="outlined"
+                                                                                                                    size="small"
+                                                                                                                    onChange={(value) => onChangeButton(i, "variable", value)}
+                                                                                                                    valueDefault={btn?.btn?.variable || ""}
+                                                                                                                />
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <div className={classes.warningContainer}>
+                                                                                                            <WarningIcon style={{ color: '#FF7575' }} />
+                                                                                                            {t(langKeys.addexampletext)}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                )}
+                                                                                            </>
+                                                                                        ) : (
+                                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                                                                 <DragIndicatorIcon />
-                                                                                                <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
-                                                                                                    <div className="row-zyx" style={{width: '100%', marginBottom: 0, display: 'flex', alignItems: 'center'}}>
+                                                                                                <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
                                                                                                         <FieldEdit
                                                                                                             className='col-4'
                                                                                                             label={t(langKeys.buttontext)}
@@ -2083,17 +2167,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             size="small"
                                                                                                         />
                                                                                                         <FieldSelect
-                                                                                                            className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}
-                                                                                                            data={dataURLType}
-                                                                                                            label={t(langKeys.urltype)}
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
-                                                                                                            onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                            className='col-4'
+                                                                                                            data={dataCountryCodes}
+                                                                                                            label={t(langKeys.country)}
+                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
+                                                                                                            onChange={(value) => onChangeButton(i, "code", value?.value)}
                                                                                                             optionDesc="text"
                                                                                                             optionValue="value"
-                                                                                                            valueDefault={btn?.btn?.type || ""}
+                                                                                                            valueDefault={btn?.btn?.code || ""}
                                                                                                             variant="outlined"
                                                                                                             fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                ...register(`buttonsgeneric.${i}.btn.code`, {
                                                                                                                     validate: (value) =>
                                                                                                                         (value && value.length) || t(langKeys.field_required),
                                                                                                                 }),
@@ -2101,152 +2185,68 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                         />
                                                                                                         <FieldEdit
                                                                                                             className='col-4'
-                                                                                                            label={t(langKeys.urlwebsite)}
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
-                                                                                                            onChange={(value) => onChangeButton(i, "url", value)}
-                                                                                                            valueDefault={btn?.btn?.url || ""}
+                                                                                                            type="number"
+                                                                                                            label={t(langKeys.telephonenumber)}
+                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.number?.message}
+                                                                                                            onChange={(value) => onChangeButton(i, "number", value)}
+                                                                                                            valueDefault={btn?.btn?.number || ""}
                                                                                                             variant="outlined"
                                                                                                             fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.url`, {
+                                                                                                                ...register(`buttonsgeneric.${i}.btn.number`, {
                                                                                                                     validate: (value) =>
                                                                                                                         (value && value.length) || t(langKeys.field_required),
                                                                                                                 }),
                                                                                                             }}
+                                                                                                            maxLength={20}
                                                                                                             size="small"
                                                                                                         />
-                                                                                                        {btn?.type === 'dynamic' && (
-                                                                                                            <div className="col-1">
-                                                                                                                <span>{'{{'}1{'}}'}</span>
-                                                                                                            </div>
-                                                                                                        )}
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <IconButton onClick={() => onClickRemoveButton(i)}>
-                                                                                                    <CloseIcon/>
+                                                                                                    <CloseIcon />
                                                                                                 </IconButton>
                                                                                             </div>
-                                                                                            {btn?.btn?.type === 'dynamic' && (
-                                                                                                <div style={{marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                                                                    <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10}}>
-                                                                                                        <span>{'{{'}1{'}}'}</span>
-                                                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                                            <FieldEdit
-                                                                                                                variant="outlined"
-                                                                                                                size="small"
-                                                                                                                onChange={(value) => onChangeButton(i, "variable", value)}
-                                                                                                                valueDefault={btn?.btn?.variable || ""}
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div className={classes.warningContainer}>
-                                                                                                        <WarningIcon style={{color: '#FF7575'}}/>
-                                                                                                        {t(langKeys.addexampletext)}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            )}
-                                                                                        </>
-                                                                                    ) : (
-                                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                                                                            <DragIndicatorIcon />
-                                                                                            <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
-                                                                                                <div className="row-zyx" style={{width: '100%', marginBottom: 0}}>
-                                                                                                    <FieldEdit
-                                                                                                        className='col-4'
-                                                                                                        label={t(langKeys.buttontext)}
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                        onChange={(value) => onChangeButton(i, "text", value)}
-                                                                                                        valueDefault={btn?.btn?.text || ""}
-                                                                                                        variant="outlined"
-                                                                                                        maxLength={25}
-                                                                                                        fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.text`, {
-                                                                                                                validate: (value) =>
-                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                            }),
-                                                                                                        }}
-                                                                                                        size="small"
-                                                                                                    />
-                                                                                                    <FieldSelect
-                                                                                                        className='col-4'
-                                                                                                        data={dataCountryCodes}
-                                                                                                        label={t(langKeys.country)}
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
-                                                                                                        onChange={(value) => onChangeButton(i, "code", value?.value)}
-                                                                                                        optionDesc="text"
-                                                                                                        optionValue="value"
-                                                                                                        valueDefault={btn?.btn?.code || ""}
-                                                                                                        variant="outlined"
-                                                                                                        fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.code`, {
-                                                                                                                validate: (value) =>
-                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                            }),
-                                                                                                        }}
-                                                                                                    />
-                                                                                                    <FieldEdit
-                                                                                                        className='col-4'
-                                                                                                        type="number"
-                                                                                                        label={t(langKeys.telephonenumber)}
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.number?.message}
-                                                                                                        onChange={(value) => onChangeButton(i, "number", value)}
-                                                                                                        valueDefault={btn?.btn?.number || ""}
-                                                                                                        variant="outlined"
-                                                                                                        fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.number`, {
-                                                                                                                validate: (value) =>
-                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                            }),
-                                                                                                        }}
-                                                                                                        maxLength={20}
-                                                                                                        size="small"
-                                                                                                    />
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <IconButton onClick={() => onClickRemoveButton(i)}>
-                                                                                                <CloseIcon/>
-                                                                                            </IconButton>
-                                                                                        </div>
-                                                                                    )}
-                                                                                </div>
-                                                                            )}
-                                                                        </Draggable>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        )}
-                                                    </Droppable>
-                                                </React.Fragment>
-                                            </div>
-                                        )}
-                                    </DragDropContext>
-                                </div>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
-                                    <span className={classes.title}>{t(langKeys.messagepreview)}</span>
-                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
-                                        <MessagePreviewMultimedia
-                                            headerType={getValues('headertype')}
-                                            header={getValues('header')}
-                                            body={getValues('body')}
-                                            footer={getValues('footer')}
-                                            buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.text })}
-                                            buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
-                                        />
+                                                                                        )}
+                                                                                    </div>
+                                                                                )}
+                                                                            </Draggable>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                        </Droppable>
+                                                    </React.Fragment>
+                                                </div>
+                                            )}
+                                        </DragDropContext>
+                                    </div>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20 }}>
+                                        <span className={classes.title}>{t(langKeys.messagepreview)}</span>
+                                        <span style={{ marginBottom: 10 }}>Vista previa del mensaje configurado a enviar</span>
+                                        <div style={{ height: 'fit-content', width: '100%', border: '1px solid black' }}>
+                                            <MessagePreviewMultimedia
+                                                headerType={getValues('headertype')}
+                                                header={getValues('header')}
+                                                body={getValues('body')}
+                                                footer={getValues('footer')}
+                                                buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.text })}
+                                                buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     {(getValues("type") === 'HSM' && getValues('category') === 'AUTHENTICATION' && getValues('name') !== '' && getValues('language') !== '') && (
                         <div>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
+                            <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.templateedition)}</span>
                             </div>
-                            <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20 }}>
                                     <span className={classes.title}>{t(langKeys.messagecontent)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.authenticationmessagecontent)}</span>
-                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                    <span style={{ marginBottom: 10 }}>{t(langKeys.authenticationmessagecontent)}</span>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <Checkbox
                                             checked={getValues('authenticationdata.safetyrecommendation')}
                                             color="primary"
@@ -2254,7 +2254,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         />
                                         <span>{t(langKeys.addsecurityadvice)}</span>
                                     </div>
-                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <Checkbox
                                             checked={getValues('authenticationdata.showexpirationdate')}
                                             color="primary"
@@ -2262,9 +2262,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         />
                                         <span>{t(langKeys.addlastdatecode)}</span>
                                     </div>
-                                    <div style={{display: 'flex', flexDirection: 'column', border: '1px solid #B4B4B4', backgroundColor: '#F1F1F1', padding: 15, borderRadius: 10, marginTop: 10, marginBottom: 20}}>
-                                        <span style={{fontWeight: 'bold', marginBottom: 8}}>{t(langKeys.expiresin)}</span>
-                                        <div style={{display: 'flex', gap: 20, alignItems: 'center'}}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid #B4B4B4', backgroundColor: '#F1F1F1', padding: 15, borderRadius: 10, marginTop: 10, marginBottom: 20 }}>
+                                        <span style={{ fontWeight: 'bold', marginBottom: 8 }}>{t(langKeys.expiresin)}</span>
+                                        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
                                             <FieldEdit
                                                 type="number"
                                                 valueDefault={getValues('authenticationdata.codeexpirationdate')}
@@ -2277,14 +2277,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 size="small"
                                             />
                                             <div className={classes.warningContainer}>
-                                                <WarningIcon style={{color: '#FF7575'}}/>
+                                                <WarningIcon style={{ color: '#FF7575' }} />
                                                 <span>{t(langKeys.introudceavalue)}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <span className={classes.title}>{t(langKeys.buttontext)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.buttontextauth)}</span>
-                                    <div style={{width: '50%', marginBottom: 20}}>
+                                    <span style={{ marginBottom: 10 }}>{t(langKeys.buttontextauth)}</span>
+                                    <div style={{ width: '50%', marginBottom: 20 }}>
                                         <FieldEdit
                                             label={t(langKeys.code)}
                                             valueDefault={getValues('authenticationdata.buttontext')}
@@ -2297,27 +2297,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             variant="outlined"
                                         />
                                     </div>
-                                    <span className={classes.title} style={{marginBottom: 10}}>{t(langKeys.advanceconfig)}</span>
+                                    <span className={classes.title} style={{ marginBottom: 10 }}>{t(langKeys.advanceconfig)}</span>
                                     <span className={classes.title}>{t(langKeys.validityperiodmessages)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.validityperiodtext)}</span>
-                                    <div style={{display: 'flex', alignItems: 'start', marginTop: 10}}>
+                                    <span style={{ marginBottom: 10 }}>{t(langKeys.validityperiodtext)}</span>
+                                    <div style={{ display: 'flex', alignItems: 'start', marginTop: 10 }}>
                                         <Checkbox
                                             checked={getValues('authenticationdata.configurevalidityperiod')}
                                             color="primary"
                                             onChange={(e) => configureValidityPeriod(e)}
                                         />
-                                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.configvalidityperiod)}</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontWeight: 'bold' }}>{t(langKeys.configvalidityperiod)}</span>
                                             <span>{t(langKeys.validityperiodconfigcondition)}</span>
                                         </div>
                                     </div>
                                     {getValues('authenticationdata.configurevalidityperiod') && (
-                                        <div style={{display: 'flex', flexDirection: 'column', padding: '15px 25px', backgroundColor: '#F5F5F5', border: '1px solid #ACACAC', borderRadius: 10, marginTop: 10}}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', padding: '15px 25px', backgroundColor: '#F5F5F5', border: '1px solid #ACACAC', borderRadius: 10, marginTop: 10 }}>
                                             <CustomTitleHelper
                                                 title={t(langKeys.validityperiod) + ' '}
                                                 helperText={t(langKeys.test)}
-                                            /> 
-                                            <div style={{backgroundColor: 'white', width: 250, marginTop: 5}}>
+                                            />
+                                            <div style={{ backgroundColor: 'white', width: 250, marginTop: 5 }}>
                                                 <FieldSelect
                                                     data={dataValidityPeriod}
                                                     optionDesc="text"
@@ -2325,7 +2325,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     variant="outlined"
                                                     valueDefault={getValues('authenticationdata.validityperiod')}
                                                     onChange={(value) => {
-                                                        if(value) {
+                                                        if (value) {
                                                             setValue('authenticationdata.validityperiod', value.value)
                                                             trigger('authenticationdata')
                                                         } else {
@@ -2338,10 +2338,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </div>
                                     )}
                                 </div>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20 }}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
-                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 500, width: '100%', border: '1px solid black'}}>
+                                    <span style={{ marginBottom: 10 }}>Vista previa del mensaje configurado a enviar</span>
+                                    <div style={{ height: 500, width: '100%', border: '1px solid black' }}>
                                         <MessagePreviewAuthentication
                                             buttontext={getValues('authenticationdata.buttontext')}
                                             safetyAdvice={getValues('authenticationdata.safetyrecommendation')}
@@ -2354,446 +2354,446 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </div>
                     )}
                     {getValues("type") === 'HSM' &&
-                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) &&(
-                        <div>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
-                            </div>
-                            <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%'}}>
-                                    <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
-                                    <div>
-                                        <FieldEditMulti
-                                            variant="outlined"
-                                            inputProps={{
-                                                rows: 7,
-                                                maxRows: 7
-                                            }}
-                                            valueDefault={getValues('body')}
-                                            onChange={(value) => {
-                                                setValue('body', value)
-                                                trigger('body')
-                                            }}
-                                            maxLength={1024}
-                                        />
-                                    </div>
-                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                                            <EmojiEmotionsIcon />
-                                        </IconButton>
-                                        {showEmojiPicker && (
-                                            <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                <Picker onSelect={addEmoji} />
-                                            </div>
-                                        )}
-                                        <IconButton
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '**')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatBoldIcon />
-                                        </IconButton>
-                                        <IconButton 
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '__')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatItalicIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '~~')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatStrikethroughIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => {
-                                                setValue('body', getValues('body') + '``````')
-                                                trigger('body')
-                                            }}
-                                        >
-                                            <FormatCodeIcon />
-                                        </IconButton>
-                                        {bodyVariables.length < 20 &&(
-                                            <Button onClick={addVariable} startIcon={<AddIcon />}>
-                                                Añadir Variable
-                                            </Button>
-                                        )}
-                                        <Button
-                                            className={classes.button}
-                                            startIcon={<CloseIcon />}
-                                            onClick={deleteVariable}
-                                        >
-                                            {t(langKeys.deletevariable)}
-                                        </Button>
-                                    </div>
-                                    {bodyVariables.length > 0 && (
-                                        <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {bodyVariables.map((v, index: number) => {
-                                                return (
-                                                    <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        <span>{'{{'}{v.variable}{'}}'}</span>
-                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                            <FieldEdit
-                                                                variant="outlined"
-                                                                size="small"
-                                                                valueDefault={v.text}
-                                                                onChange={(e) => {
-                                                                    const newBodyVariables = [...bodyVariables];
-                                                                    newBodyVariables[index].text = e.target.value;
-                                                                    setBodyVariables(newBodyVariables);
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                            <div className={classes.warningContainer}>
-                                                <WarningIcon style={{color: '#FF7575'}}/>
-                                                {t(langKeys.addexampletext)}
-                                            </div>
+                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
+                            <div>
+                                <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.templateedition)}</span>
+                                </div>
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%' }}>
+                                        <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
+                                        <span style={{ marginBottom: 10 }}>{t(langKeys.bubblemessagetext)}</span>
+                                        <div>
+                                            <FieldEditMulti
+                                                variant="outlined"
+                                                inputProps={{
+                                                    rows: 7,
+                                                    maxRows: 7
+                                                }}
+                                                valueDefault={getValues('body')}
+                                                onChange={(value) => {
+                                                    setValue('body', value)
+                                                    trigger('body')
+                                                }}
+                                                maxLength={1024}
+                                            />
                                         </div>
-                                    )}
-                                    <span className={classes.title}>{t(langKeys.messagetemplate_carousel)}</span>
-                                    <span style={{marginBottom: 10}}>Configura tus cards de carrusel añadiendo imágenes, texto, variables y botones</span>
-                                    {getValues('carouseldata')?.length > 0 ? (
-                                        <div className="row-zyx">
-                                            <React.Fragment>
-                                                {getValues("carouseldata")?.map((card: any, index: number) => {
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+                                            <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                                <EmojiEmotionsIcon />
+                                            </IconButton>
+                                            {showEmojiPicker && (
+                                                <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
+                                                    <Picker onSelect={addEmoji} />
+                                                </div>
+                                            )}
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '**')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatBoldIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '__')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatItalicIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '~~')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatStrikethroughIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => {
+                                                    setValue('body', getValues('body') + '``````')
+                                                    trigger('body')
+                                                }}
+                                            >
+                                                <FormatCodeIcon />
+                                            </IconButton>
+                                            {bodyVariables.length < 20 && (
+                                                <Button onClick={addVariable} startIcon={<AddIcon />}>
+                                                    Añadir Variable
+                                                </Button>
+                                            )}
+                                            <Button
+                                                className={classes.button}
+                                                startIcon={<CloseIcon />}
+                                                onClick={deleteVariable}
+                                            >
+                                                {t(langKeys.deletevariable)}
+                                            </Button>
+                                        </div>
+                                        {bodyVariables.length > 0 && (
+                                            <div style={{ marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.text)}</span>
+                                                {bodyVariables.map((v, index: number) => {
                                                     return (
-                                                        <div key={`card-${index}`} className="col-4" style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', padding: '0px 8px 0px 8px'}}>
-                                                            <div style={{display: 'flex', width: '100%', justifyContent: 'end'}}>
-                                                                <IconButton onClick={() => onClickRemoveCard(index)} style={{padding: 0}}>
-                                                                    <ClearIcon className={classes.closeIcon}/>
-                                                                </IconButton>
-                                                            </div>
-                                                            {card.image !== '' ? (
-                                                                <div className={classes.uploadedImage}>
-                                                                    <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
-                                                                    <div style={{display: 'flex', gap: 10}}>
-                                                                        <span className={classes.imageName}>{card.image.split('/').pop().replace(/%20/g, ' ')}</span>
-                                                                        <IconButton onClick={() => handleImageRemove(index)} style={{padding: 0}}>
-                                                                            <ClearIcon className={classes.closeIcon}/>
-                                                                        </IconButton>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                <>
-                                                                    <input
-                                                                        type="file"
-                                                                        accept={'.jpg,.png'}
-                                                                        onChange={(e) => handleFileChangeAux(e.target.files, index)}
-                                                                        style={{ display: 'none' }}
-                                                                        id={`fileInput-${index}`}
-                                                                    />
-                                                                    <label htmlFor={`fileInput-${index}`}>
-                                                                        <div className={classes.uploadImage}>
-                                                                            <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
-                                                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
-                                                                            <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
-                                                                        </div>
-                                                                    </label>
-                                                                </>
-                                                            )}
-                                                            <div style={{width: '90%', fontWeight: 'bold'}}>
-                                                                {t(langKeys.body)}
+                                                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                            <span>{'{{'}{v.variable}{'}}'}</span>
+                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
                                                                 <FieldEdit
                                                                     variant="outlined"
-                                                                    InputProps={{
-                                                                        multiline: true,
-                                                                    }}
-                                                                    maxLength={160}
-                                                                    valueDefault={card?.body || ""}
-                                                                    onChange={(value) => {
-                                                                        setValue(`carouseldata.${index}.body`, value)
-                                                                        trigger('carouseldata')
-                                                                    }}
-                                                                    fregister={{
-                                                                        ...register(`carouseldata.${index}.body`, {
-                                                                            validate: (value) =>
-                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                        }),
+                                                                    size="small"
+                                                                    valueDefault={v.text}
+                                                                    onChange={(e) => {
+                                                                        const newBodyVariables = [...bodyVariables];
+                                                                        newBodyVariables[index].text = e.target.value;
+                                                                        setBodyVariables(newBodyVariables);
                                                                     }}
                                                                 />
-                                                                {getValues(`carouseldata.${index}.bodyvariables`).length < 7 &&(
-                                                                    <div style={{display: 'flex', justifyContent: 'end'}}>
-                                                                        <Button
-                                                                            className={classes.button}
-                                                                            startIcon={<AddIcon />}
-                                                                            onClick={() => addVariableCard(index)}
-                                                                        >
-                                                                            {t(langKeys.addvariable)}
-                                                                        </Button>
-                                                                    </div>
-                                                                )}
                                                             </div>
-                                                            {(getValues(`carouseldata.${index}.buttons`)?.length < 2) && (
-                                                                <div>
-                                                                    <AddButtonMenu
-                                                                        fastAnswer={() => onClickAddButtonTCard(index)}
-                                                                        urlWeb={() => onClickAddButtonLCard(index)}
-                                                                        callNumber={() => onClickAddButtonPCard(index)}
-                                                                        textbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'text'})}
-                                                                        urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'url'})}
-                                                                        phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'phone'})}
-                                                                    />
-                                                                </div>
-                                                            )}
-                                                            <DragDropContext onDragEnd={(results) => handleDragDropCarrusel(results, index)}>
-                                                                <Droppable droppableId="root3" type="group">
-                                                                    {(provided) => (
-                                                                        <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
-                                                                            {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
-                                                                                return (
-                                                                                    <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
-                                                                                        {(provided) => (
-                                                                                            <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
-                                                                                                    {getValues(`carouseldata.${index}.buttons`).length === 2 &&(
-                                                                                                        <DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/>
-                                                                                                    )}
-                                                                                                    {btn.type === 'text' ? (
-                                                                                                        <>
-                                                                                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0}} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                    <ClearIcon />
-                                                                                                                </IconButton>
-                                                                                                            </div>
-                                                                                                        </>
-                                                                                                    ) : btn.type === 'url' ?(
-                                                                                                        <>
-                                                                                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0}} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                    <ClearIcon />
-                                                                                                                </IconButton>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urltype)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%', backgroundColor: 'white'}}>
-                                                                                                                <FieldSelect
-                                                                                                                    data={dataURLType}
-                                                                                                                    variant="outlined"
-                                                                                                                    optionDesc="text"
-                                                                                                                    optionValue="value"
-                                                                                                                    valueDefault={btn?.btn?.type}
-                                                                                                                    onChange={(value) => onChangeCardsButton(index, btni, "type", value?.value)}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%', display:'flex'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex', width: '100%'}}>
-                                                                                                                <div style={{backgroundColor: 'white', flex: 1}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
-                                                                                                                        valueDefault={btn?.btn?.url}
-                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "url", value)}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                {btn?.btn?.type === 'dynamic' &&(
-                                                                                                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{'{{'}1{'}}'}</div>
-                                                                                                                )}
-                                                                                                            </div>
-                                                                                                            {btn?.btn?.type === 'dynamic' && (
-                                                                                                                <>
-                                                                                                                    <div style={{width: '100%', display:'flex'}}>
-                                                                                                                        <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.addexampletext)}</span>
-                                                                                                                    </div>
-                                                                                                                    <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                                                        <FieldEdit
-                                                                                                                            variant="outlined"
-                                                                                                                            size="small"
-                                                                                                                            onChange={(value) => onChangeCardsButton(index, btni, "variable", value)}
-                                                                                                                            valueDefault={btn?.btn?.variable || ""}
-                                                                                                                        />
-                                                                                                                    </div>
-                                                                                                                </>
-                                                                                                            )}
-                                                                                                        </>
-                                                                                                    ) : (
-                                                                                                        <>
-                                                                                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0}} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                    <ClearIcon />
-                                                                                                                </IconButton>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.country)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                                                <FieldSelect
-                                                                                                                    data={dataCountryCodes}
-                                                                                                                    variant="outlined"
-                                                                                                                    optionDesc="text"
-                                                                                                                    optionValue="value"
-                                                                                                                    valueDefault={btn?.btn?.type}
-                                                                                                                    onChange={(value) => onChangeCardsButton(index, btni, "type", value?.value)}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.telephonenumber)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                                                <FieldEdit
-                                                                                                                    variant="outlined"
-                                                                                                                    size="small"
-                                                                                                                    type="number"
-                                                                                                                    maxLength={20}
-                                                                                                                    valueDefault={btn?.btn?.number}
-                                                                                                                    onChange={(value) => onChangeCardsButton(index, btni, "number", value)}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                        </>
-                                                                                                    )}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )}
-                                                                                    </Draggable>
-                                                                                )
-                                                                            })}
-                                                                        </div>
-                                                                    )}
-                                                                </Droppable>
-                                                            </DragDropContext>
                                                         </div>
                                                     );
                                                 })}
-                                                <div 
-                                                    style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
-                                                    onClick={onClickAddCard}
-                                                    className="col-4"
-                                                >
-                                                    <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
+                                                <div className={classes.warningContainer}>
+                                                    <WarningIcon style={{ color: '#FF7575' }} />
+                                                    {t(langKeys.addexampletext)}
                                                 </div>
-                                            </React.Fragment>
-                                            {getValues('carouseldata').length > 0 && (
-                                                <>
-                                                    {getValues('carouseldata').map((card, cindex: number) => {
+                                            </div>
+                                        )}
+                                        <span className={classes.title}>{t(langKeys.messagetemplate_carousel)}</span>
+                                        <span style={{ marginBottom: 10 }}>Configura tus cards de carrusel añadiendo imágenes, texto, variables y botones</span>
+                                        {getValues('carouseldata')?.length > 0 ? (
+                                            <div className="row-zyx">
+                                                <React.Fragment>
+                                                    {getValues("carouseldata")?.map((card: any, index: number) => {
                                                         return (
-                                                            <>
-                                                                {card.bodyvariables.length > 0 && (
-                                                                    <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                                            <span style={{fontWeight: 'bold'}}>Variables del card {cindex + 1}</span>
-                                                                            <Button
-                                                                                className={classes.button}
-                                                                                startIcon={<CloseIcon />}
-                                                                                onClick={() => deleteVariableCard(cindex)}
-                                                                            >
-                                                                                {t(langKeys.deletevariable)}
-                                                                            </Button>
-                                                                        </div>
-                                                                        {getValues(`carouseldata.${cindex}.bodyvariables`).map((cv: Dictionary, vindex: number) => {
-                                                                            return (
-                                                                                <div key={vindex} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                                                    <span>{'{{'}{cv.variable}{'}}'}</span>
-                                                                                    <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                        <FieldEdit
-                                                                                            variant="outlined"
-                                                                                            size="small"
-                                                                                            valueDefault={cv.text}
-                                                                                            onChange={(value) => {
-                                                                                                setValue(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, value)
-                                                                                                trigger('carouseldata')
-                                                                                            }}
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                            );
-                                                                        })}
-                                                                        <div className={classes.warningContainer}>
-                                                                            <WarningIcon style={{color: '#FF7575'}}/>
-                                                                            {t(langKeys.addexampletext)}
+                                                            <div key={`card-${index}`} className="col-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', padding: '0px 8px 0px 8px' }}>
+                                                                <div style={{ display: 'flex', width: '100%', justifyContent: 'end' }}>
+                                                                    <IconButton onClick={() => onClickRemoveCard(index)} style={{ padding: 0 }}>
+                                                                        <ClearIcon className={classes.closeIcon} />
+                                                                    </IconButton>
+                                                                </div>
+                                                                {card.image !== '' ? (
+                                                                    <div className={classes.uploadedImage}>
+                                                                        <ImageIcon style={{ color: '#004DB1', height: 85, width: 'auto' }} />
+                                                                        <div style={{ display: 'flex', gap: 10 }}>
+                                                                            <span className={classes.imageName}>{card.image.split('/').pop().replace(/%20/g, ' ')}</span>
+                                                                            <IconButton onClick={() => handleImageRemove(index)} style={{ padding: 0 }}>
+                                                                                <ClearIcon className={classes.closeIcon} />
+                                                                            </IconButton>
                                                                         </div>
                                                                     </div>
+                                                                ) : (
+                                                                    <>
+                                                                        <input
+                                                                            type="file"
+                                                                            accept={'.jpg,.png'}
+                                                                            onChange={(e) => handleFileChangeAux(e.target.files, index)}
+                                                                            style={{ display: 'none' }}
+                                                                            id={`fileInput-${index}`}
+                                                                        />
+                                                                        <label htmlFor={`fileInput-${index}`}>
+                                                                            <div className={classes.uploadImage}>
+                                                                                <ImageIcon style={{ color: '#004DB1', height: 85, width: 'auto' }} />
+                                                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.uploadImage)}</span>
+                                                                                <span style={{ color: '#004DB1' }}>Tamaño máximo 5 MB</span>
+                                                                            </div>
+                                                                        </label>
+                                                                    </>
                                                                 )}
-                                                            </>
-                                                        )
+                                                                <div style={{ width: '90%', fontWeight: 'bold' }}>
+                                                                    {t(langKeys.body)}
+                                                                    <FieldEdit
+                                                                        variant="outlined"
+                                                                        InputProps={{
+                                                                            multiline: true,
+                                                                        }}
+                                                                        maxLength={160}
+                                                                        valueDefault={card?.body || ""}
+                                                                        onChange={(value) => {
+                                                                            setValue(`carouseldata.${index}.body`, value)
+                                                                            trigger('carouseldata')
+                                                                        }}
+                                                                        fregister={{
+                                                                            ...register(`carouseldata.${index}.body`, {
+                                                                                validate: (value) =>
+                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                            }),
+                                                                        }}
+                                                                    />
+                                                                    {getValues(`carouseldata.${index}.bodyvariables`).length < 7 && (
+                                                                        <div style={{ display: 'flex', justifyContent: 'end' }}>
+                                                                            <Button
+                                                                                className={classes.button}
+                                                                                startIcon={<AddIcon />}
+                                                                                onClick={() => addVariableCard(index)}
+                                                                            >
+                                                                                {t(langKeys.addvariable)}
+                                                                            </Button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                {(getValues(`carouseldata.${index}.buttons`)?.length < 2) && (
+                                                                    <div>
+                                                                        <AddButtonMenu
+                                                                            fastAnswer={() => onClickAddButtonTCard(index)}
+                                                                            urlWeb={() => onClickAddButtonLCard(index)}
+                                                                            callNumber={() => onClickAddButtonPCard(index)}
+                                                                            textbtn={getValues(`carouseldata.${index}.buttons`).filter((btn: Dictionary) => { return btn.type === 'text' })}
+                                                                            urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn: Dictionary) => { return btn.type === 'url' })}
+                                                                            phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn: Dictionary) => { return btn.type === 'phone' })}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                                <DragDropContext onDragEnd={(results) => handleDragDropCarrusel(results, index)}>
+                                                                    <Droppable droppableId="root3" type="group">
+                                                                        {(provided) => (
+                                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                                {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
+                                                                                    return (
+                                                                                        <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
+                                                                                            {(provided) => (
+                                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5 }}>
+                                                                                                        {getValues(`carouseldata.${index}.buttons`).length === 2 && (
+                                                                                                            <DragIndicatorIcon style={{ transform: 'rotate(90deg)' }} />
+                                                                                                        )}
+                                                                                                        {btn.type === 'text' ? (
+                                                                                                            <>
+                                                                                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.buttontext)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex' }}>
+                                                                                                                    <div style={{ backgroundColor: 'white' }}>
+                                                                                                                        <FieldEdit
+                                                                                                                            variant="outlined"
+                                                                                                                            size="small"
+                                                                                                                            maxLength={25}
+                                                                                                                            valueDefault={btn?.btn?.text}
+                                                                                                                            onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    <IconButton style={{ padding: 0 }} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                        <ClearIcon />
+                                                                                                                    </IconButton>
+                                                                                                                </div>
+                                                                                                            </>
+                                                                                                        ) : btn.type === 'url' ? (
+                                                                                                            <>
+                                                                                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.buttontext)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex' }}>
+                                                                                                                    <div style={{ backgroundColor: 'white' }}>
+                                                                                                                        <FieldEdit
+                                                                                                                            variant="outlined"
+                                                                                                                            size="small"
+                                                                                                                            maxLength={25}
+                                                                                                                            valueDefault={btn?.btn?.text}
+                                                                                                                            onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    <IconButton style={{ padding: 0 }} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                        <ClearIcon />
+                                                                                                                    </IconButton>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.urltype)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%', backgroundColor: 'white' }}>
+                                                                                                                    <FieldSelect
+                                                                                                                        data={dataURLType}
+                                                                                                                        variant="outlined"
+                                                                                                                        optionDesc="text"
+                                                                                                                        optionValue="value"
+                                                                                                                        valueDefault={btn?.btn?.type}
+                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "type", value?.value)}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%', display: 'flex' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.urlwebsite)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex', width: '100%' }}>
+                                                                                                                    <div style={{ backgroundColor: 'white', flex: 1 }}>
+                                                                                                                        <FieldEdit
+                                                                                                                            variant="outlined"
+                                                                                                                            size="small"
+                                                                                                                            valueDefault={btn?.btn?.url}
+                                                                                                                            onChange={(value) => onChangeCardsButton(index, btni, "url", value)}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    {btn?.btn?.type === 'dynamic' && (
+                                                                                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{'{{'}1{'}}'}</div>
+                                                                                                                    )}
+                                                                                                                </div>
+                                                                                                                {btn?.btn?.type === 'dynamic' && (
+                                                                                                                    <>
+                                                                                                                        <div style={{ width: '100%', display: 'flex' }}>
+                                                                                                                            <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.addexampletext)}</span>
+                                                                                                                        </div>
+                                                                                                                        <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                                                            <FieldEdit
+                                                                                                                                variant="outlined"
+                                                                                                                                size="small"
+                                                                                                                                onChange={(value) => onChangeCardsButton(index, btni, "variable", value)}
+                                                                                                                                valueDefault={btn?.btn?.variable || ""}
+                                                                                                                            />
+                                                                                                                        </div>
+                                                                                                                    </>
+                                                                                                                )}
+                                                                                                            </>
+                                                                                                        ) : (
+                                                                                                            <>
+                                                                                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.buttontext)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex' }}>
+                                                                                                                    <div style={{ backgroundColor: 'white' }}>
+                                                                                                                        <FieldEdit
+                                                                                                                            variant="outlined"
+                                                                                                                            size="small"
+                                                                                                                            maxLength={25}
+                                                                                                                            valueDefault={btn?.btn?.text}
+                                                                                                                            onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    <IconButton style={{ padding: 0 }} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                        <ClearIcon />
+                                                                                                                    </IconButton>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.country)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                                                    <FieldSelect
+                                                                                                                        data={dataCountryCodes}
+                                                                                                                        variant="outlined"
+                                                                                                                        optionDesc="text"
+                                                                                                                        optionValue="value"
+                                                                                                                        valueDefault={btn?.btn?.type}
+                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "type", value?.value)}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.telephonenumber)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                                                    <FieldEdit
+                                                                                                                        variant="outlined"
+                                                                                                                        size="small"
+                                                                                                                        type="number"
+                                                                                                                        maxLength={20}
+                                                                                                                        valueDefault={btn?.btn?.number}
+                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "number", value)}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            </>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </Draggable>
+                                                                                    )
+                                                                                })}
+                                                                            </div>
+                                                                        )}
+                                                                    </Droppable>
+                                                                </DragDropContext>
+                                                            </div>
+                                                        );
                                                     })}
-                                                </>
-                                            )}
+                                                    <div
+                                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer' }}
+                                                        onClick={onClickAddCard}
+                                                        className="col-4"
+                                                    >
+                                                        <AddIcon style={{ color: '#B6B6B6', height: 40, width: 'auto' }} />
+                                                    </div>
+                                                </React.Fragment>
+                                                {getValues('carouseldata').length > 0 && (
+                                                    <>
+                                                        {getValues('carouseldata').map((card, cindex: number) => {
+                                                            return (
+                                                                <>
+                                                                    {card.bodyvariables.length > 0 && (
+                                                                        <div style={{ marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                <span style={{ fontWeight: 'bold' }}>Variables del card {cindex + 1}</span>
+                                                                                <Button
+                                                                                    className={classes.button}
+                                                                                    startIcon={<CloseIcon />}
+                                                                                    onClick={() => deleteVariableCard(cindex)}
+                                                                                >
+                                                                                    {t(langKeys.deletevariable)}
+                                                                                </Button>
+                                                                            </div>
+                                                                            {getValues(`carouseldata.${cindex}.bodyvariables`).map((cv: Dictionary, vindex: number) => {
+                                                                                return (
+                                                                                    <div key={vindex} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                                                        <span>{'{{'}{cv.variable}{'}}'}</span>
+                                                                                        <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                            <FieldEdit
+                                                                                                variant="outlined"
+                                                                                                size="small"
+                                                                                                valueDefault={cv.text}
+                                                                                                onChange={(value) => {
+                                                                                                    setValue(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, value)
+                                                                                                    trigger('carouseldata')
+                                                                                                }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                );
+                                                                            })}
+                                                                            <div className={classes.warningContainer}>
+                                                                                <WarningIcon style={{ color: '#FF7575' }} />
+                                                                                {t(langKeys.addexampletext)}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        })}
+                                                    </>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div
+                                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer' }}
+                                                onClick={onClickAddCard}
+                                            >
+                                                <AddIcon style={{ color: '#B6B6B6', height: 40, width: 'auto' }} />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20 }}>
+                                        <span className={classes.title}>{t(langKeys.messagepreview)}</span>
+                                        <span style={{ marginBottom: 10 }}>Vista previa del mensaje configurado a enviar</span>
+                                        <div style={{ height: 'fit-content', width: '100%', border: '1px solid black' }}>
+                                            <MessagePreviewCarousel
+                                                body={getValues('body')}
+                                                carouselCards={getValues('carouseldata')}
+                                            />
                                         </div>
-                                    ) : (
-                                        <div 
-                                            style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
-                                            onClick={onClickAddCard}
-                                        >
-                                            <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
-                                        </div>
-                                    )}
-                                </div>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
-                                    <span className={classes.title}>{t(langKeys.messagepreview)}</span>
-                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
-                                        <MessagePreviewCarousel
-                                            body={getValues('body')}
-                                            carouselCards={getValues('carouseldata')}
-                                        />
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     {(getValues("type") === "SMS") && (
                         <div className="row-zyx">
                             <FieldEditMulti

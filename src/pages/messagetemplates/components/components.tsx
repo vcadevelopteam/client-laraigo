@@ -16,10 +16,10 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import NoImage from '../../../icons/noimage.jpg'
 
 const useStyles = makeStyles(() => ({
-	main: {
-		whiteSpace: "nowrap",
-		display: "flex"
-	},
+    main: {
+        whiteSpace: "nowrap",
+        display: "flex"
+    },
     button: {
         margin: "10px",
         backgroundColor: '#F3F3F3',
@@ -28,9 +28,9 @@ const useStyles = makeStyles(() => ({
         }
     },
     subtittles: {
-        fontSize: '1rem', 
-        fontWeight:"bold",
-    },   
+        fontSize: '1rem',
+        fontWeight: "bold",
+    },
     iconHelpText: {
         width: 15,
         height: 15,
@@ -69,8 +69,8 @@ const useStyles = makeStyles(() => ({
         marginBottom: 8,
     },
     media: {
-      maxWidth: '100%',
-      maxHeight: '100%',
+        maxWidth: '100%',
+        maxHeight: '100%',
     },
     cardMediaContainer: {
         height: 200,
@@ -166,7 +166,7 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
         setAnchorEl(e.currentTarget as HTMLElement);
         e.stopPropagation();
     };
-    const handleMenuFastAnswer= () => {
+    const handleMenuFastAnswer = () => {
         setAnchorEl(null);
         fastAnswer();
     };
@@ -182,7 +182,7 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
         e.stopPropagation();
         setAnchorEl(null);
     };
-    
+
     return (
         <div className={classes.main}>
             <Button
@@ -212,19 +212,19 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
             >
                 {textbtn?.length < 7 && (
                     <MenuItem onClick={handleMenuFastAnswer}>
-                        <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
+                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
                     </MenuItem>
                 )}
                 {urlbtn?.length < 2 && (
-                    <MenuItem onClick={handleMenuUrlWeb} style={{display: 'flex', flexDirection: 'column', alignItems: 'start'}}>
-                        <span style={{fontWeight: 'bold'}}>{t(langKeys.gotothewebsite)}</span>
-                        <span style={{fontSize: 13}}>2 botones como máximo</span>
+                    <MenuItem onClick={handleMenuUrlWeb} style={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.gotothewebsite)}</span>
+                        <span style={{ fontSize: 13 }}>2 botones como máximo</span>
                     </MenuItem>
                 )}
                 {phonebtn?.length < 1 && (
-                    <MenuItem onClick={handleMenuCallNumber} style={{display: 'flex', flexDirection: 'column', alignItems: 'start'}}>
-                        <span style={{fontWeight: 'bold'}}>{t(langKeys.callnumber)}</span>
-                        <span style={{fontSize: 13}}>1 botón como máximo</span>
+                    <MenuItem onClick={handleMenuCallNumber} style={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.callnumber)}</span>
+                        <span style={{ fontSize: 13 }}>1 botón como máximo</span>
                     </MenuItem>
                 )}
             </Menu>
@@ -234,9 +234,9 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
 
 interface CustomTitleHelperProps {
     title: string;
-    helperText?: string; 
+    helperText?: string;
 }
-  
+
 export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
     const classes = useStyles();
     return (
@@ -260,7 +260,7 @@ interface MessagePreviewMultimediaProps {
     buttonslink: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({headerType, header, body, footer, buttonstext, buttonslink}) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, body, footer, buttonstext, buttonslink }) => {
     const classes = useStyles();
     const combinedButtons = [
         ...buttonstext.map(text => ({ type: 'text', text: text })),
@@ -273,13 +273,13 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
 
         const bold = /\*(.*?)\*/g;
         text = text.replace(bold, '<strong>$1</strong>');
-    
+
         const italic = /_(.*?)_/g;
         text = text.replace(italic, '<em>$1</em>');
-    
+
         const strikethrough = /~(.*?)~/g;
         text = text.replace(strikethrough, '<del>$1</del>');
-    
+
         return text;
     };
 
@@ -288,32 +288,32 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
         switch (extension) {
             case 'pdf':
                 return (
-                    <div className={classes.fileHeader} style={{backgroundColor: '#F5D9D9'}}>
-                        <PdfIcon style={{color: '#D80000'}}/>
+                    <div className={classes.fileHeader} style={{ backgroundColor: '#F5D9D9' }}>
+                        <PdfIcon style={{ color: '#D80000' }} />
                         <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
                     </div>
                 );
             case 'doc':
             case 'docx':
                 return (
-                    <div className={classes.fileHeader} style={{backgroundColor: '#CDDEF5'}}>
-                        <DocIcon style={{color: '#001F4D'}}/>
+                    <div className={classes.fileHeader} style={{ backgroundColor: '#CDDEF5' }}>
+                        <DocIcon style={{ color: '#001F4D' }} />
                         <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
                     </div>
                 );
             case 'xls':
             case 'xlsx':
                 return (
-                    <div className={classes.fileHeader} style={{backgroundColor: '#B3E7E0'}}>
-                        <ExcelIcon style={{color: '#00493F'}}/>
+                    <div className={classes.fileHeader} style={{ backgroundColor: '#B3E7E0' }}>
+                        <ExcelIcon style={{ color: '#00493F' }} />
                         <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
                     </div>
                 );
             case 'ppt':
             case 'pptx':
                 return (
-                    <div className={classes.fileHeader} style={{backgroundColor: '#FAD3C7'}}>
-                        <PptIcon style={{color: '#CE3203'}}/>
+                    <div className={classes.fileHeader} style={{ backgroundColor: '#FAD3C7' }}>
+                        <PptIcon style={{ color: '#CE3203' }} />
                         <span>{header?.split('/')?.pop()?.replace(/%20/g, ' ')}</span>
                     </div>
                 );
@@ -324,7 +324,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
 
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container} style={{width: 350}}>
+            <div className={classes.container} style={{ width: 350 }}>
                 <div className={classes.messageCard}>
                     {headerType === 'text' ? (
                         <span className={classes.headerText}>{header}</span>
@@ -332,7 +332,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                         <>
                             {(header !== '' && headerType === 'image') ? (
                                 <div className={classes.cardMediaContainer}>
-                                    <img src={header} alt="Cabecera" className={classes.cardMedia}/>
+                                    <img src={header} alt="Cabecera" className={classes.cardMedia} />
                                 </div>
                             ) : (header !== '' && headerType === 'video') ? (
                                 <video controls className={classes.cardMedia}>
@@ -351,14 +351,14 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                         <></>
                     )}
                     {body !== '' && (
-                        <div className={classes.body} style={{ marginTop: 10 }} 
+                        <div className={classes.body} style={{ marginTop: 10 }}
                             dangerouslySetInnerHTML={{ __html: parseFormattedText(body) }}>
                         </div>
                     )}
                     {footer !== '' && (
                         <span className={classes.footer}>{footer}</span>
                     )}
-                    <span className={classes.chatTime} style={{color: 'black', marginTop: 10}}>16:59</span>
+                    <span className={classes.chatTime} style={{ color: 'black', marginTop: 10 }}>16:59</span>
                     <div>
                         {combinedButtons.map((btn, index) => {
                             let icon;
@@ -386,9 +386,9 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                                 </div>
                             );
                         })}
-                        {combinedButtons.length > 3 &&(
+                        {combinedButtons.length > 3 && (
                             <div className={classes.cardButton2}>
-                                <ListIcon className={classes.icon}/>
+                                <ListIcon className={classes.icon} />
                                 <span>See all options</span>
                             </div>
                         )}
@@ -404,7 +404,7 @@ interface MessagePreviewCarouselProps {
     carouselCards: Dictionary[];
 }
 
-export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({body, carouselCards}) => {
+export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ body, carouselCards }) => {
     const classes = useStyles();
 
     const parseFormattedText = (text: string) => {
@@ -413,36 +413,36 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
 
         const bold = /\*(.*?)\*/g;
         text = text.replace(bold, '<strong>$1</strong>');
-    
+
         const italic = /_(.*?)_/g;
         text = text.replace(italic, '<em>$1</em>');
-    
+
         const strikethrough = /~(.*?)~/g;
         text = text.replace(strikethrough, '<del>$1</del>');
-    
+
         return text;
     };
 
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container} style={{width: 350}}>
+            <div className={classes.container} style={{ width: 350 }}>
                 <div className={classes.messageCard}>
                     {body !== '' && (
-                        <div className={classes.body} style={{ marginTop: 10 }} 
+                        <div className={classes.body} style={{ marginTop: 10 }}
                             dangerouslySetInnerHTML={{ __html: parseFormattedText(body) }}>
                         </div>
                     )}
                     <span className={classes.chatTime}>11:54</span>
                 </div>
             </div>
-            <div style={{height: 6}}/>
+            <div style={{ height: 6 }} />
             {carouselCards.length > 0 && (
-                <div className={classes.container} style={{overflowX: 'auto', display: 'flex', width: 'fit-content', height: 'fit-content', maxWidth: 640}}>
+                <div className={classes.container} style={{ overflowX: 'auto', display: 'flex', width: 'fit-content', height: 'fit-content', maxWidth: 640 }}>
                     {carouselCards.map((card, index) => {
                         return (
                             <div key={index} className={classes.messageCard2}>
                                 <div className={classes.cardMediaContainer}>
-                                    <img src={card.image ? card.image : NoImage} alt="Selected Image" className={classes.cardMedia}/>
+                                    <img src={card.image ? card.image : NoImage} alt="Selected Image" className={classes.cardMedia} />
                                 </div>
                                 <div className={classes.bodyCar}>{card.body}</div>
                                 {card.buttons.length > 0 && (
@@ -451,11 +451,11 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({b
                                             return (
                                                 <div key={i} className={classes.cardButton2}>
                                                     {btn.type === 'text' ? (
-                                                        <ReplyIcon className={classes.icon}/>
+                                                        <ReplyIcon className={classes.icon} />
                                                     ) : btn.type === 'link' ? (
-                                                        <OpenInNewIcon className={classes.icon}/>
+                                                        <OpenInNewIcon className={classes.icon} />
                                                     ) : (
-                                                        <PhoneIcon className={classes.icon}/>
+                                                        <PhoneIcon className={classes.icon} />
                                                     )}
                                                     <span>{btn.btn.text}</span>
                                                 </div>
@@ -479,21 +479,21 @@ interface MessagePreviewAuthenticationProps {
     expiresValue: number;
 }
 
-export const MessagePreviewAuthentication: React.FC<MessagePreviewAuthenticationProps> = ({buttontext, safetyAdvice, dateAdvice, expiresValue}) => {
+export const MessagePreviewAuthentication: React.FC<MessagePreviewAuthenticationProps> = ({ buttontext, safetyAdvice, dateAdvice, expiresValue }) => {
     const classes = useStyles();
-    
+
     return (
         <div className={classes.messagePrevContainer}>
-            <div className={classes.container} style={{width: 350}}>
+            <div className={classes.container} style={{ width: 350 }}>
                 <div className={classes.messageCard}>
                     <div>Tu código de verificación es 123456.{safetyAdvice ? ' Por tu seguridad, no lo compartas' : ''}</div>
                     {dateAdvice && (
-                        <span style={{color: 'grey', fontSize: 13, marginTop: 5}}>Este código caduca en {expiresValue} minutos.</span>
+                        <span style={{ color: 'grey', fontSize: 13, marginTop: 5 }}>Este código caduca en {expiresValue} minutos.</span>
                     )}
                     <span className={classes.chatTime}>11:54</span>
                     {buttontext !== '' && (
                         <div className={classes.cardButton2}>
-                            <FileCopyIcon className={classes.icon}/>
+                            <FileCopyIcon className={classes.icon} />
                             <span>{buttontext}</span>
                         </div>
                     )}
