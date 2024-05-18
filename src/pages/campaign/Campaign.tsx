@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize, stopCampaign } from 'common/helpers';
-import { Dictionary } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
@@ -29,6 +29,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import BlockIcon from '@material-ui/icons/Block';
+import { getDateCleaned } from 'common/helpers';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -196,6 +197,7 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.startdate),
                 accessor: 'startdate',
                 NoFilter: false,
+                width: 'auto',
                 type: 'date',
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
@@ -209,6 +211,7 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.enddate),
                 accessor: 'enddate',
                 NoFilter: false,
+                width: 'auto',
                 type: 'date',
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
@@ -220,6 +223,7 @@ export const Campaign: FC = () => {
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
+                width: 'auto',
                 NoFilter: false,
                 prefixTranslation: 'status_',
                 Cell: (props: CellProps<Dictionary>) => {
@@ -233,6 +237,7 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.datetimestart_campaign),
                 accessor: 'datetimestart',
                 NoFilter: false,
+                width: 'auto',
                 prefixTranslation: 'datetimestart',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -245,6 +250,7 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
+                width: 'auto',
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -253,8 +259,10 @@ export const Campaign: FC = () => {
                 }                
             },
             {
+                Header: t(langKeys.delete),
                 accessor: 'stop',
                 isComponent: true,
+                width: 'auto',
                 maxWidth: '80px',
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
@@ -277,6 +285,8 @@ export const Campaign: FC = () => {
             {
                 Header: t(langKeys.action),
                 accessor: 'execute',
+                width: 'auto',
+                maxWidth:'80px',
                 isComponent: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -363,7 +373,13 @@ export const Campaign: FC = () => {
     //     </Dialog>
     // )}
 
-    const fetchData = () => dispatch(getCollection(getCampaignLst()));
+ 
+    
+    const fetchData = () => dispatch(getCollection(getCampaignLst(
+        dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
+        dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : "",
+    )));
+    
 
     const handleStatus = (id: number) => {
         if (!waitStatus) {
@@ -507,6 +523,7 @@ export const Campaign: FC = () => {
     const handleClickSeButtons = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElSeButtons(event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
+        event.stopPropagation();
     };
 
     const handleCloseSeButtons = () => {
@@ -563,17 +580,11 @@ export const Campaign: FC = () => {
                                 >
                                     <Button
                                         disabled={detailCustomReport.loading}
-                                        style={{
-                                            border: "1px solid #bfbfc0",
-                                            borderRadius: 4,
-                                            color: "rgb(143, 146, 161)",
-                                        }}
+                                        style={{ border: "1px solid #bfbfc0", borderRadius: 4, color: "rgb(143, 146, 161)",}}
                                         startIcon={<CalendarIcon />}
                                         onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                     >
-                                        {format(dateRange.startDate!) +
-                                            " - " +
-                                            format(dateRange.endDate!)}
+                                        {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                                     </Button>
                                 </DateRangePicker>
 
@@ -583,7 +594,7 @@ export const Campaign: FC = () => {
                                     color="primary"
                                     startIcon={<SearchIcon style={{ color: 'white' }} />}
                                     style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    //onClick={() => fetchData(fetchDataAux)}
+                                    onClick={fetchData}
                                 >
                                     {t(langKeys.search)}
                                 </Button>
@@ -620,52 +631,9 @@ export const Campaign: FC = () => {
                     style={{ backgroundColor: "#22b66e" }}
                 ><Trans i18nKey={langKeys.register} />
                 </Button>
-
-                <IconButton
-                    aria-label="more"
-                    id="long-button"
-                    onClick={handleClickSeButtons}
-                    style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                >
-                    <MoreVertIcon />
-                </IconButton>
-
-                <div style={{ display: 'flex', gap: 8 }}>                               
-                    <Menu
-                        open={openSeButtons}
-                        anchorEl={anchorElSeButtons}                      
-                      
-                        style={{marginRight:'1rem'}}
-                    >
-                       
-                      
-
-                        <MenuItem 
-                            disabled={mainResult.mainData.loading}
-                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                            //style={{ backgroundColor: "#ea2e49" }}
-                            onClick={() => setViewSelected("blacklist")}
-                        >
-                            <ListItemIcon>
-                                <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                            </ListItemIcon>
-                            <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
-                        </MenuItem>                             
-                        <Divider />
-                        <MenuItem 
-                            disabled={mainResult.mainData.loading}
-                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                            //nClick={() => setViewSelected("blacklist")}
-                        >
-                            <ListItemIcon>
-                                <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                            </ListItemIcon>
-                            <Typography variant="inherit">{t(langKeys.download)}</Typography>
-                        </MenuItem>                               
               
-                      
-                    </Menu>
-                </div> 
+
+               
                 
             </React.Fragment>
         )
@@ -678,19 +646,68 @@ export const Campaign: FC = () => {
         }
 
         return (
-            <TableZyx      
-                titlemodule={t(langKeys.campaign_plural, { count: 2 })}
-                columns={columns}
-                data={mainResult.mainData.data}              
-                useSelection={true}
-                setSelectedRows={setSelectedRows}
-                selectionKey={selectionKey}
-                onClickRow={handleEdit}
-                loading={mainResult.mainData.loading}                
-                ButtonsElement={AdditionalButtons}     
-                filterGeneral={true}
-             
-            />
+            
+           <div style={{display:'block', width:'100%'}}>
+                <div style={{display:'flex', alignContent:'center', textAlign:'center', justifyContent:'center'}}>
+                    <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        onClick={handleClickSeButtons}
+                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <div style={{ display: 'flex', gap: 8 }}>                               
+                    <Menu
+                        open={openSeButtons}
+                        anchorEl={anchorElSeButtons}                      
+                      
+                        style={{marginRight:'1rem'}}
+                    >                       
+                        <MenuItem 
+                            disabled={mainResult.mainData.loading}
+                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                            //style={{ backgroundColor: "#ea2e49" }}
+                            onClick={(e) => {setViewSelected("blacklist");  e.stopPropagation();}}
+                        >
+                            <ListItemIcon>
+                                <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                            </ListItemIcon>
+                            <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
+                        </MenuItem>                             
+                        <Divider />
+                        <MenuItem 
+                            disabled={mainResult.mainData.loading}
+                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                            onClick={() => {setViewSelected("blacklist")}}
+                        >
+                            <ListItemIcon>
+                                <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                            </ListItemIcon>
+                            <Typography variant="inherit">{t(langKeys.download)}</Typography>
+                        </MenuItem>                               
+              
+                      
+                    </Menu>
+                </div> 
+                </div>
+
+               
+                
+                <TableZyx      
+                    titlemodule={t(langKeys.campaign_plural, { count: 2 })}
+                    columns={columns}
+                    data={mainResult.mainData.data}              
+                    useSelection={true}
+                    setSelectedRows={setSelectedRows}
+                    selectionKey={selectionKey}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}                
+                    ButtonsElement={AdditionalButtons}     
+                    filterGeneral={true}
+                
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
