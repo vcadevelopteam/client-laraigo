@@ -1703,6 +1703,7 @@ const translation: LangKeys = {
   billingplan: "Billing Plan",
   defaultanswer: "Default answer",
   login_with_google: 'Login with Google',
+  login_with_saml: 'Login with SAML',
   insults: "Insults",
   entities: "Entities",
   links: "Links",

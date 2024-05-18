@@ -36,6 +36,7 @@ import { Helmet } from 'react-helmet';
 import { notCustomUrl } from './dashboard/constants';
 import { getCorpDetails } from 'store/corp/actions';
 import { Dictionary } from '@types';
+import SamlLogin from 'components/fields/SamlLogin';
 
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 // Declara la nueva propiedad en el objeto `window`
@@ -65,7 +66,7 @@ export const useStyles = makeStyles((theme) => ({
         paddingRight: 36,
         position: "relative",
         // maxHeight: '94vh',
-        height: 603,
+        height: 653,
         maxWidth: 420
     },
     copyright: {
@@ -223,6 +224,11 @@ type IAuth = {
 interface AuthResponse extends ReactFacebookLogin, ReactFacebookFailureResponse, GoogleLoginResponse, GoogleLoginResponseOffline {
     code: string;
     id: string;
+    error: string;
+}
+
+type ISamlAuthResponse = {
+    code: string;
     error: string;
 }
 
@@ -400,6 +406,21 @@ const SignIn = () => {
         }
     }, [resLogin]);
 
+    const onSamlLoginSuccess = (data: ISamlAuthResponse) => {
+        if (data && data.code){
+            setshowError(true);
+            dispatch(login(null, null, null, data.code));
+        }
+    }
+
+    const onSamlLoginError = (data: ISamlAuthResponse) => {
+        dispatch(showSnackbar({
+            message: data.error,
+            show: true,
+            severity: "error"
+        }));
+    }
+
     return (
         <>
             <Helmet>
@@ -529,6 +550,11 @@ const SignIn = () => {
                                                     cookiePolicy={'single_host_origin'}
                                                     onFailure={onGoogleLoginFailure}
                                                     onSuccess={onGoogleLoginSucess}
+                                                />
+                                                <SamlLogin
+                                                    buttonText={t(langKeys.login_with_saml)}
+                                                    onFailure={onSamlLoginError}
+                                                    onSuccess={onSamlLoginSuccess}
                                                 />
                                                 <Button
                                                     variant="outlined"
