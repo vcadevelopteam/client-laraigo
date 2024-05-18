@@ -277,7 +277,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     );
     const [category, setCategory] = useState(row ? row.category : '')
     const [isHeaderVariable, setIsHeaderVariable] = useState(false)
-    const [bodyVariables, setBodyVariables] = useState<Dictionary[]>([])
     const [headerType, setHeaderType] = useState(
         (row?.headertype === 'video' || row?.headertype === 'iamge' || row?.headertype === 'file') ? 'multimedia' :
         row?.headertype === 'text' ? 'text' : 'none')
@@ -287,6 +286,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const emojiButtonRef = useRef(null);
     const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
     const [cardAux, setCardAux] = useState<number | null>(null)
+    const [code, setCode] = useState<number | null>(null)
 
     useEffect(() => {
         if (showEmojiPicker && emojiButtonRef.current) {
@@ -847,7 +847,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("category", '');
         setCategory('')
 
-        setBodyVariables([])
+        setValue('bodyvariables', [])
         setValue("headertype", "none");
         setIsHeaderVariable(false)
         trigger("headertype");
@@ -856,6 +856,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('carouseldata', [])
 
         //trigger("body");
+        trigger("bodyvariables");
         trigger("category");
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
@@ -918,7 +919,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('buttonsgeneric');
         trigger('body');
         trigger('buttonsquickreply');
-        setBodyVariables([])
+        setValue('bodyvariables', [])
+        trigger('bodyvariables');
     };
     
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
@@ -980,8 +982,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('buttonsgeneric')
     };
     const onChangeButtonText = (index: number, value: string) => {
-        setValue(`buttonsquickreply.${index}.text`, value);
-        setValue(`buttonsquickreply.${index}.payload`, value);
+        setValue(`buttonsquickreply.${index}.btn.text`, value);
+        setValue(`buttonsquickreply.${index}.btn.payload`, value);
         trigger('buttonsquickreply')
     };
     const onChangeCardsButton = (cindex: number, bindex: number, param: string, value: string) => {
@@ -990,20 +992,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const onClickAddButton = async () => {
-        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'url'}).length < 2) {
-            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'url', btn: { text: "", type: "", url: "", variable: "" } }]);
+        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'URL'}).length < 2) {
+            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'URL', btn: { text: "", type: "", url: "", variables: [''] } }]);
         }
         trigger("buttonsgeneric");
     };
     const onClickAddButtonText = async () => {
         if (getValues("buttonsquickreply") && getValues("buttonsquickreply").length < 7) {
-            setValue("buttonsquickreply", [...getValues("buttonsquickreply"), { text: "", payload: "" }]);
+            setValue("buttonsquickreply", [...getValues("buttonsquickreply"), { btn: { text: "", payload: "" }, type: "QUICK_REPLY" }]);
         }
         trigger("buttonsquickreply");
     };
     const onClickAddButtonPhone = async () => {
-        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'phone'}).length < 1) {
-            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'phone', btn: { text: "", code: "", number: "" } }]);
+        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'PHONE'}).length < 1) {
+            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'PHONE', btn: { text: "", phone_number: "" } }]);
         }
         trigger("buttonsgeneric");
     };
@@ -1036,7 +1038,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'url', btn: { text: "", type: "", url: "", variable: "" }}]
+                        buttons: [...card.buttons, { type: 'url', btn: { text: "", type: "", url: "", variables: [''] }}]
                     };
                 }
                 return card;
@@ -1253,7 +1255,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
         setValue('footer', '')
         trigger('footer')
-        setBodyVariables([])
+        setValue('bodyvariables', [])
+        trigger('bodyvariables')
         setValue("headertype", "none");
         setIsHeaderVariable(false)
         trigger("headertype");
@@ -1389,21 +1392,23 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const addVariable = () => {
         const body = getValues('body');
-        const newVariableNumber = bodyVariables.length + 1;
+        const newVariableNumber = getValues('bodyvariables').length + 1;
         const newVariableTag = `{{${newVariableNumber}}}`;
 
         setValue('body', body + newVariableTag);
         trigger('body');
-        setBodyVariables([...bodyVariables, { variable: newVariableNumber, text: "" }]);
+        setValue('bodyvariables', [...getValues('bodyvariables'), { variable: newVariableNumber, text: "" }]);
+        trigger('bodyvariables');
     };
 
     const deleteVariable = () => {
-        const lastVariable = bodyVariables[bodyVariables.length - 1];
+        const lastVariable = getValues('bodyvariables')[getValues('bodyvariables').length - 1];
         const variablePattern = new RegExp(`\\{\\{${lastVariable.variable}\\}\\}`, 'g');
         const updatedBody = getValues('body').replace(variablePattern, '');
 
-        setBodyVariables(bodyVariables.slice(0, -1));
+        setValue('bodyvariables', getValues('bodyvariables').slice(0, -1));
         setValue('body', updatedBody);
+        trigger('bodyvariables')
         trigger('body');
     }
     
@@ -1441,6 +1446,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         } else {
             setValue('authenticationdata.configurevalidityperiod', false);
             trigger('authenticationdata')
+        }
+    }
+    console.log(code)
+    const changeCode = (value) => {
+        if(value) {
+            setCode(value.value)
+        } else {
+            setCode(null)
         }
     }
 
@@ -1920,7 +1933,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         >
                                             <FormatCodeIcon />
                                         </IconButton>
-                                        {bodyVariables.length < 20 &&(
+                                        {getValues('bodyvariables').length < 20 &&(
                                             <Button onClick={addVariable} startIcon={<AddIcon />}>
                                                 Añadir Variable
                                             </Button>
@@ -1933,10 +1946,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             {t(langKeys.deletevariable)}
                                         </Button>
                                     </div>
-                                    {bodyVariables.length > 0 && (
+                                    {getValues('bodyvariables').length > 0 && (
                                         <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                             <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {bodyVariables.map((v, index: number) => {
+                                            {getValues('bodyvariables').map((v: Dictionary, index: number) => {
                                                 return (
                                                     <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
                                                         <span>{'{{'}{v.variable}{'}}'}</span>
@@ -1946,9 +1959,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 size="small"
                                                                 valueDefault={v.text}
                                                                 onChange={(e) => {
-                                                                    const newBodyVariables = [...bodyVariables];
+                                                                    const newBodyVariables = [...getValues('bodyvariables')];
                                                                     newBodyVariables[index].text = e.target.value;
-                                                                    setBodyVariables(newBodyVariables);
+                                                                    setValue('bodyvariables', newBodyVariables);
+                                                                    trigger('bodyvariables')
                                                                 }}
                                                             />
                                                         </div>
@@ -1983,8 +1997,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     urlWeb={onClickAddButton}
                                                     callNumber={onClickAddButtonPhone}
                                                     textbtn={getValues('buttonsquickreply')}
-                                                    urlbtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'url'})}
-                                                    phonebtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'phone'})}
+                                                    urlbtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'URL'})}
+                                                    phonebtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'PHONE'})}
                                                 />
                                             </div>
                                         )}
@@ -2015,13 +2029,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                             <FieldEdit
                                                                                                 disabled={disableInput}
                                                                                                 label={t(langKeys.buttontext)}
-                                                                                                error={errors?.buttonsquickreply?.[i]?.text?.message}
+                                                                                                error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
                                                                                                 onChange={(value) => onChangeButtonText(i, value)}
-                                                                                                valueDefault={btn?.text || ""}
+                                                                                                valueDefault={btn?.btn?.text || ""}
                                                                                                 variant="outlined"
                                                                                                 maxLength={25}
                                                                                                 fregister={{
-                                                                                                    ...register(`buttonsquickreply.${i}.text`, {
+                                                                                                    ...register(`buttonsquickreply.${i}.btn.text`, {
                                                                                                         validate: (value) =>
                                                                                                             (value && value.length) || t(langKeys.field_required),
                                                                                                     }),
@@ -2060,7 +2074,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
                                                                             {(provided) => (
                                                                                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                    {btn.type === 'url' ? (
+                                                                                    {btn.type === 'URL' ? (
                                                                                         <>
                                                                                             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                                                                                                 <DragIndicatorIcon />
@@ -2133,8 +2147,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             <FieldEdit
                                                                                                                 variant="outlined"
                                                                                                                 size="small"
-                                                                                                                onChange={(value) => onChangeButton(i, "variable", value)}
-                                                                                                                valueDefault={btn?.btn?.variable || ""}
+                                                                                                                onChange={(value) => {
+                                                                                                                    setValue(`buttonsgeneric.${i}.btn.variables[0]`, value)
+                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                }}
+                                                                                                                valueDefault={btn?.btn?.variables[0] || ""}
                                                                                                             />
                                                                                                         </div>
                                                                                                     </div>
@@ -2170,29 +2187,23 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                         className='col-4'
                                                                                                         data={dataCountryCodes}
                                                                                                         label={t(langKeys.country)}
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
-                                                                                                        onChange={(value) => onChangeButton(i, "code", value?.value)}
+                                                                                                        onChange={(value) => changeCode(value)}
                                                                                                         optionDesc="text"
                                                                                                         optionValue="value"
-                                                                                                        valueDefault={btn?.btn?.code || ""}
+                                                                                                        error={!code}
+                                                                                                        valueDefault={code || ""}
                                                                                                         variant="outlined"
-                                                                                                        fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.code`, {
-                                                                                                                validate: (value) =>
-                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                            }),
-                                                                                                        }}
                                                                                                     />
                                                                                                     <FieldEdit
                                                                                                         className='col-4'
                                                                                                         type="number"
                                                                                                         label={t(langKeys.telephonenumber)}
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.number?.message}
-                                                                                                        onChange={(value) => onChangeButton(i, "number", value)}
-                                                                                                        valueDefault={btn?.btn?.number || ""}
+                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
+                                                                                                        onChange={(value) => onChangeButton(i, "phone_number", value)}
+                                                                                                        valueDefault={btn?.btn?.phone_number || ""}
                                                                                                         variant="outlined"
                                                                                                         fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.number`, {
+                                                                                                            ...register(`buttonsgeneric.${i}.btn.phone_number`, {
                                                                                                                 validate: (value) =>
                                                                                                                     (value && value.length) || t(langKeys.field_required),
                                                                                                             }),
@@ -2229,7 +2240,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             header={getValues('header')}
                                             body={getValues('body')}
                                             footer={getValues('footer')}
-                                            buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.text })}
+                                            buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
                                             buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
                                         />
                                     </div>
@@ -2419,7 +2430,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         >
                                             <FormatCodeIcon />
                                         </IconButton>
-                                        {bodyVariables.length < 20 &&(
+                                        {getValues('bodyvariables').length < 20 &&(
                                             <Button onClick={addVariable} startIcon={<AddIcon />}>
                                                 Añadir Variable
                                             </Button>
@@ -2432,10 +2443,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             {t(langKeys.deletevariable)}
                                         </Button>
                                     </div>
-                                    {bodyVariables.length > 0 && (
+                                    {getValues('bodyvariables').length > 0 && (
                                         <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                             <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {bodyVariables.map((v, index: number) => {
+                                            {getValues('bodyvariables').map((v: Dictionary, index: number) => {
                                                 return (
                                                     <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
                                                         <span>{'{{'}{v.variable}{'}}'}</span>
@@ -2445,9 +2456,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 size="small"
                                                                 valueDefault={v.text}
                                                                 onChange={(e) => {
-                                                                    const newBodyVariables = [...bodyVariables];
+                                                                    const newBodyVariables = [...getValues('bodyvariables')];
                                                                     newBodyVariables[index].text = e.target.value;
-                                                                    setBodyVariables(newBodyVariables);
+                                                                    setValue('bodyvariables', newBodyVariables);
                                                                 }}
                                                             />
                                                         </div>
@@ -2643,8 +2654,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         <FieldEdit
                                                                                                                             variant="outlined"
                                                                                                                             size="small"
-                                                                                                                            onChange={(value) => onChangeCardsButton(index, btni, "variable", value)}
-                                                                                                                            valueDefault={btn?.btn?.variable || ""}
+                                                                                                                            onChange={(value) => {
+                                                                                                                                setValue(`carouseldata.${index}.buttons.${btni}.btn.variables[0]`, value);
+                                                                                                                                trigger('carouseldata')
+                                                                                                                            }}
+                                                                                                                            valueDefault={btn?.btn?.variables[0] || ""}
                                                                                                                         />
                                                                                                                     </div>
                                                                                                                 </>
