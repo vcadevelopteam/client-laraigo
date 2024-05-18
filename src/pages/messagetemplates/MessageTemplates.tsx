@@ -109,7 +109,7 @@ const MessageTemplates: FC = () => {
                     if (!row || !row.original || !row.original.createdate) {
                         return null;
                     }
-                    return <div style={{textAlign: 'center'}}>{dateToLocalDate(row.original.createdate)}</div>;
+                    return <div style={{ textAlign: 'center' }}>{dateToLocalDate(row.original.createdate)}</div>;
                 },
             },
             ...(showId
@@ -120,7 +120,7 @@ const MessageTemplates: FC = () => {
                         type: "number",
                         Cell: (props: CellProps<Dictionary>) => {
                             const { row } = props.cell;
-                            return showId ? <div style={{textAlign: 'center'}}>{row.id}</div> : null;
+                            return showId ? <div style={{ textAlign: 'center' }}>{row.id}</div> : null;
                         }
                     },
                 ]
@@ -130,7 +130,7 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.channel),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{textAlign: 'center'}}>{row.original.communicationchanneltype}</div>;
+                    return <div style={{ textAlign: 'center' }}>{row.original.communicationchanneltype}</div>;
                 }
             },
             {
@@ -142,7 +142,7 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.language),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{textAlign: 'center'}}>{row.original.language}</div>;
+                    return <div style={{ textAlign: 'center' }}>{row.original.language}</div>;
                 }
             },
             {
@@ -159,10 +159,10 @@ const MessageTemplates: FC = () => {
                     if (category && type) {
                         return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
                     } else {
-                        return ''; 
+                        return '';
                     }
                 }
-                          
+
             },
             {
                 accessor: "externalstatus",
@@ -170,9 +170,9 @@ const MessageTemplates: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const { externalstatus, type } = row?.original || {};
-            
+
                     let statusText = '';
-            
+
                     if (type) {
                         switch (type) {
                             case "HSM":
@@ -182,9 +182,9 @@ const MessageTemplates: FC = () => {
                                 statusText = t('TEMPLATE_APPROVED');
                                 break;
                         }
-            
+
                         let color = '';
-            
+
                         switch (statusText) {
                             case 'PENDIENTE':
                                 color = '#E6C300';
@@ -199,14 +199,14 @@ const MessageTemplates: FC = () => {
                                 color = 'black';
                                 break;
                         }
-            
+
                         return (
                             <span style={{ color: color, textAlign: 'center' }}>
                                 {statusText.toUpperCase()}
                             </span>
                         );
                     } else {
-                        return ''; 
+                        return '';
                     }
                 }
             },
@@ -220,7 +220,7 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.quality),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{textAlign: 'center'}}>{row.original.priority}</div>;
+                    return <div style={{ textAlign: 'center' }}>{row.original.priority}</div>;
                 }
             },
             {
@@ -228,7 +228,7 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.messageslimit),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{textAlign: 'center'}}>{row.original.limit}</div>;
+                    return <div style={{ textAlign: 'center' }}>{row.original.limit}</div>;
                 }
             },
             {
@@ -237,14 +237,14 @@ const MessageTemplates: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const body = row?.original?.body;
-                    
-                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || ''; 
-                }     
+
+                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || '';
+                }
             },
         ],
         [showId]
     );
-    
+
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -441,7 +441,7 @@ const MessageTemplates: FC = () => {
             setWaitDelete(true);
         };
 
-        if(row.type === 'HSM') {
+        if (row.type === 'HSM') {
             dispatch(
                 manageConfirmation({
                     callback,
@@ -469,7 +469,7 @@ const MessageTemplates: FC = () => {
             setWaitDelete(true);
         };
 
-        if(hasHSMType) {
+        if (hasHSMType) {
             dispatch(
                 manageConfirmation({
                     callback,

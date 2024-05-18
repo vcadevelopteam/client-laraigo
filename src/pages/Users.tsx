@@ -2,8 +2,8 @@ import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo,} from "components";
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore} from "common/helpers";
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo, AntTab,} from "components";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore, getCustomVariableSelByTableName, getDomainByDomainNameList} from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -13,7 +13,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
 import Avatar from "@material-ui/core/Avatar";
-import { uploadFile } from "store/main/actions";
+import { getCollectionAux2, uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
 import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
@@ -28,14 +28,16 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import { Divider, Grid, ListItem, Box, IconButton } from "@material-ui/core";
+import { Divider, Grid, ListItem, Box, IconButton, Tabs, Tooltip } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import DeleteIcon from "@material-ui/icons/Delete";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { DuplicateIcon } from "icons";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { CellProps } from "react-table";
+import CustomTableZyxEditable from "components/fields/customtable-editable";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -105,6 +107,11 @@ const useStyles = makeStyles((theme) => ({
     badgeFailure: {
         color: "#fff",
         backgroundColor: "#fb5f5f",
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     },
 }));
 const ListItemSkeleton: FC = () => (
@@ -1034,7 +1041,8 @@ const DetailUsers: React.FC<DetailProps> = ({
 
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector((state) => state.activationuser.saveUser);
-    const detailRes = useSelector((state) => state.main.mainAux); //RESULTADO DEL DETALLE
+    const detailRes = useSelector((state) => state.main.mainAux);
+    const domainsCustomTable = useSelector((state) => state.main.mainAux2);
 
     const [dataOrganizations, setDataOrganizations] = useState<(Dictionary | null)[]>([]);
     const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
@@ -1050,7 +1058,27 @@ const DetailUsers: React.FC<DetailProps> = ({
     const [allIndex, setAllIndex] = useState([]);
     const [getOrganizations, setGetOrganizations] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [pageSelected, setPageSelected] = useState(0);
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
 
+    const updateCell = (rowIndex: number, columnId: string, value: string) => {
+        setSkipAutoReset(true);
+        debugger
+        const auxTableData = tableDataVariables
+        auxTableData[rowIndex][columnId] = value
+        setTableDataVariables(auxTableData)
+        setUpdatingDataTable(!updatingDataTable);
+    }
+    
+    useEffect(() => {
+        if (multiData[13]) {
+            const variableDataList = multiData[13].data ||[]
+            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+        }
+    }, [multiData]);
+    
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
     useEffect(() => {
@@ -1213,7 +1241,9 @@ const DetailUsers: React.FC<DetailProps> = ({
                 dispatch(
                     saveUser(
                         {
-                            header: insUser({ ...data, language: t(langKeys.currentlanguage) }),
+                            header: insUser({ ...data, language: t(langKeys.currentlanguage),
+                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                            }),
                             detail: [
                                 ...dataOrganizations.filter((x) => x && x?.operation).map((x) => x && insOrgUser(x)),
                                 ...orgsToDelete.map((x) => insOrgUser(x)),
@@ -1252,6 +1282,43 @@ const DetailUsers: React.FC<DetailProps> = ({
         setValue("status", value ? value.domainvalue : "");
         value && setOpenDialogStatus(true);
     };
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variablename',
+                NoFilter: true,
+                sortType: 'string'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: true,
+                sortType: 'string',
+            },
+            {
+                Header: t(langKeys.datatype),
+                accessor: 'variabletype',
+                NoFilter: true,
+                sortType: 'string',
+                prefixTranslation: 'datatype_',
+                Cell: (props: any) => {
+                    const { variabletype } = props.cell.row.original || {}; 
+                    return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: t(langKeys.value),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'string',
+                editable: true,
+                width: 250,
+                maxWidth: 250
+            },
+        ],
+        []
+    )
 
     return (
         <div style={{ width: "100%" }}>
@@ -1310,7 +1377,26 @@ const DetailUsers: React.FC<DetailProps> = ({
                         </>
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.userinformation)} />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.customvariables} />
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.customvariableslist_helper_lead)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        )}/>
+                </Tabs>
+                {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <div
                             className="col-6"
@@ -1460,10 +1546,24 @@ const DetailUsers: React.FC<DetailProps> = ({
                             helperText={t(langKeys.user_tooltip)}
                         />
                     </div>
-                </div>
+                </div>}
+                {pageSelected === 1 &&
+                <div className={classes.containerDetail}>                    
+                    <CustomTableZyxEditable
+                        columns={columns}
+                        data={tableDataVariables}
+                        download={false}
+                        dataDomains={domainsCustomTable?.data||[]}
+                        //loading={multiData.loading}
+                        register={false}
+                        filterGeneral={false}
+                        updateCell={updateCell}
+                        skipAutoReset={skipAutoReset}
+                    />
+                </div>}
             </form>
 
-            <div className={classes.containerDetail}>
+            <div className={classes.containerDetail} style={{display:pageSelected === 0?"":"None"}}>
                 {detailRes.error ? (
                     <h1>ERROR</h1>
                 ) : (
@@ -1737,6 +1837,11 @@ const Users: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+    useEffect(() => {
+        if(!mainMultiResult.loading && !mainMultiResult.error && mainMultiResult?.data?.[13]?.data){
+            dispatch(getCollectionAux2(getDomainByDomainNameList(mainMultiResult?.data?.[13]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
+        }
+    }, [mainMultiResult]);
 
     useEffect(() => {
         if (waitImport) {
@@ -2021,7 +2126,7 @@ const Users: FC = () => {
                                             bydefault: true,
                                             labels: "",
                                             warehouseid: "0",
-                                            groups: d.groups,
+                                            groups: d.groups || null,
                                             storeid: "0",
                                             channels: d.channels || "",
                                             status: "DESCONECTADO",

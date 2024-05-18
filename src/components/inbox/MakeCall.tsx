@@ -1,32 +1,33 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useState, MouseEventHandler } from 'react'
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import { createStyles, Theme } from '@material-ui/core/styles';
-import { Avatar, Fab, makeStyles, MenuItem, Typography } from "@material-ui/core";
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import DialpadIcon from '@material-ui/icons/Dialpad';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'hooks';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, geAdvisors, setPhoneNumber } from 'store/voximplant/actions';
-import TextField from '@material-ui/core/TextField';
-import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
-import PhoneIcon from '@material-ui/icons/Phone';
-import { AntTab, SearchField } from 'components';
-import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundValidate } from 'common/helpers';
-import { langKeys } from 'lang/keys';
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
-import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
-import { execute, resetExecute } from 'store/main/actions';
-import { ListItemSkeleton } from 'components';
-import { showSnackbar } from 'store/popus/actions';
+import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialpadIcon from '@material-ui/icons/Dialpad';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import PersonIcon from '@material-ui/icons/Person';
+import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
+import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
+import PhoneIcon from '@material-ui/icons/Phone';
+import React, { FC, MouseEventHandler, useState } from 'react'
+import TextField from '@material-ui/core/TextField';
+
+import { AntTab, FieldSelect, SearchField } from 'components';
+import { Avatar, Fab, makeStyles, MenuItem, Typography } from "@material-ui/core";
+import { conversationOutboundValidate, selCommunicationChannelVoice } from 'common/helpers';
+import { createStyles, Theme } from '@material-ui/core/styles';
+import { Dictionary } from "@types";
+import { execute, resetExecute, getMultiCollectionAux3, resetMultiMainAux3 } from 'store/main/actions';
+import { IconButton, Tabs } from '@material-ui/core';
+import { langKeys } from 'lang/keys';
+import { ListItemSkeleton } from 'components';
+import { makeCall, setModalCall, getHistory, geAdvisors, setPhoneNumber } from 'store/voximplant/actions';
+import { showSnackbar } from 'store/popus/actions';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
+import { useSelector } from 'hooks';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -76,7 +77,6 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         height: 35,
         border: '1px solid #EBEAED',
-        //backgroundColor: (props: any) => props.colorPlaceHolder || '#F9F9FA',
     },
     inputPlaceholder: {
         '&::placeholder': {
@@ -97,11 +97,6 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             alignItems: 'flex-start',
             textAlign: 'start',
             fontSize: '0.8rem',
-
-            // marginRight: 15,
-            // marginLeft: 15,
-            //width: "calc(100% - 30px)",
-            //borderBottom: '1px solid #bfbfc0',
         },
         row: {
             display: 'flex',
@@ -160,33 +155,37 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
 );
 
 function yesterdayOrToday(datadate: Date, t: any) {
-    const date = new Date(datadate)
+    const date = new Date(datadate);
     const yesterday = new Date();
+
     if (yesterday.toDateString() === date.toDateString()) {
         return t(langKeys.today);
     }
+
     yesterday.setDate(yesterday.getDate() - 1);
+
     if (yesterday.toDateString() === date.toDateString()) {
         return t(langKeys.yesterday);
     } else {
-        return formatDate(String(datadate))
+        return formatDate(String(datadate));
     }
 }
 
 interface NotificaionMenuItemProps {
-    title: React.ReactNode;
-    description: React.ReactNode;
-    // notification: LeadActivityNotification,
-    image: string;
-    user: string;
-    origin: string;
     date?: Date;
+    description: React.ReactNode;
+    image: string;
     onClick?: MouseEventHandler<HTMLLIElement>;
+    origin: string;
+    title: React.ReactNode;
+    user: string;
 }
 
-const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, user, image, origin, onClick }) => {
+const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, image, origin, onClick }) => {
     const classes = useNotificaionStyles();
+
     const { t } = useTranslation();
+
     return (
         <div>
             <MenuItem button className={classes.root} onClick={onClick}>
@@ -223,50 +222,79 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
 
 const MakeCall: React.FC = () => {
     const classes = useStyles();
+
     const { t } = useTranslation();
+
     const dispatch = useDispatch();
 
-    const personData = useSelector(state => state.inbox.person);
-
-    const [numberVox, setNumberVox] = useState("");
-    const resExecute = useSelector(state => state.main.execute);
-    const [pageSelected, setPageSelected] = useState(1);
-    const [filter, setfilter] = useState("");
+    const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const calls = useSelector(state => state.voximplant.calls);
-    const user = useSelector(state => state.login.validateToken.user);
-    const ringtone = React.useRef<HTMLAudioElement>(null);
+    const historial = useSelector(state => state.voximplant.requestGetHistory);
+    const history = useHistory();
+    const multiData = useSelector(state => state.main.multiDataAux3);
+    const personData = useSelector(state => state.inbox.person);
     const phonenumber = useSelector(state => state.voximplant.phoneNumber);
+    const resExecute = useSelector(state => state.main.execute);
+    const ringtone = React.useRef<HTMLAudioElement>(null);
     const showcall = useSelector(state => state.voximplant.showcall);
     const transferAction = useSelector(state => state.voximplant.transferAction);
-    const [callInLine, setCallInLine] = useState(true)
-    const historial = useSelector(state => state.voximplant.requestGetHistory);
-    const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
-    const [waiting2, setwaiting2] = useState(false)
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const [callInLine, setCallInLine] = useState(true);
+    const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
+    const [filter, setfilter] = useState("");
+    const [numberVox, setNumberVox] = useState("");
+    const [pageSelected, setPageSelected] = useState(1);
+    const [waiting2, setwaiting2] = useState(false);
+
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
-    const history = useHistory();
+
+    const [numberChannel, setNumberChannel] = useState(ccidvoxi || null);
+    const [numberSite, setNumberSite] = useState(sitevoxi || null);
+
+    React.useEffect(() => {
+        dispatch(getMultiCollectionAux3([
+            selCommunicationChannelVoice(),
+        ]))
+
+        return () => {
+            dispatch(resetMultiMainAux3());
+        }
+    }, [])
 
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_VALIDATE") {
-                const { v_voximplantrecording } = resExecute.data[0]
-                
+                const { v_voximplantrecording } = resExecute.data[0];
+
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${ccidvoxi}-0-0-.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+                let identifier = `${corpid}-${orgid}-${ccidvoxi}-0-0-.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+
+                if (numberChannel && numberSite) {
+                    identifier = `${corpid}-${orgid}-${numberChannel}-0-0-.${numberSite}.${userid}.${v_voximplantrecording}`;
+                }
 
                 dispatch(resetExecute());
                 dispatch(makeCall({ number: numberVox, site: identifier }));
                 history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
-            const errormessage = t(resExecute.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+            const errormessage = t(resExecute.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() });
             const messagetoshow = resExecute.code === "error_already_exists_record" ? t(langKeys.already_call_person) : errormessage;
-            dispatch(showSnackbar({ show: true, severity: "error", message: messagetoshow }))
-            setwaiting2(false)
+            dispatch(showSnackbar({ show: true, severity: "error", message: messagetoshow }));
+            setwaiting2(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resExecute])
 
-    //ring when the customer call
+    React.useEffect(() => {
+        if (multiData.data.length > 0) {
+            if (multiData.data[0] && multiData.data[0].success) {
+                setCommunicationChannelList(multiData.data[0].data || []);
+            }
+        }
+    }, [multiData.data]);
+
+    //Ring when the customer calls
     React.useEffect(() => {
         const isConnected = calls.some(call => call.statusCall === "CONNECTED");
 
@@ -278,7 +306,7 @@ const MakeCall: React.FC = () => {
             if (connecting) {
                 ringtone.current?.pause();
                 if (ringtone.current) {
-                    ringtone.current.volume = (user?.properties?.ringer_volume || 100) / 100
+                    ringtone.current.volume = (user?.properties?.ringer_volume || 100) / 100;
                     ringtone.current.currentTime = 0;
                 }
                 ringtone.current?.play();
@@ -286,33 +314,36 @@ const MakeCall: React.FC = () => {
                 ringtone.current?.pause();
             }
         }
-
     }, [calls])
 
     React.useEffect(() => {
         if (showcall && pageSelected === 2) {
-            dispatch(getHistory())
+            dispatch(getHistory());
         }
     }, [showcall, pageSelected, dispatch])
+
     React.useEffect(() => {
         if (showcall && pageSelected === 0) {
-            dispatch(geAdvisors())
+            dispatch(geAdvisors());
         }
     }, [showcall, pageSelected, dispatch])
 
     React.useEffect(() => {
         if (showcall) {
-            setwaiting2(false)
-            setNumberVox(transferAction ? "" : personData?.data?.phone || phonenumber || "")
-            dispatch(setPhoneNumber(""))
+            setwaiting2(false);
+            setNumberVox(transferAction ? "" : personData?.data?.phone || phonenumber || "");
+            setNumberChannel(ccidvoxi || null);
+            setNumberSite(sitevoxi || null);
+            dispatch(setPhoneNumber(""));
         } else {
-            setPageSelected(1)
+            setPageSelected(1);
         }
     }, [showcall])
 
     const setGlobalFilter = (value: string) => {
-        setfilter(value)
+        setfilter(value);
     }
+
     return (
         <>
             <Dialog
@@ -322,8 +353,10 @@ const MakeCall: React.FC = () => {
                 <MuiDialogTitle disableTypography className={classes.root}>
                     <Typography variant="h6">{t(langKeys.phone)}</Typography>
                     <IconButton aria-label="close" className={classes.closeButton} onClick={() => {
-                        dispatch(setModalCall(false))
+                        dispatch(setModalCall(false));
                         setNumberVox("");
+                        setNumberChannel(ccidvoxi || null);
+                        setNumberSite(sitevoxi || null);
                     }}>
                         <HighlightOffIcon style={{ width: 30, height: 30 }} />
                     </IconButton>
@@ -342,7 +375,7 @@ const MakeCall: React.FC = () => {
                         <AntTab label={<PhoneCallbackIcon style={{ color: pageSelected === 2 ? "gold" : "white" }} />} />
                     </Tabs>
                 </DialogContent>
-                <div style={{ height: 500 }}>
+                <div style={{ height: (Object.keys(communicationChannelList || []).length > 1) ? 560 : 500 }}>
                     {pageSelected === 0 &&
                         <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
                             <div style={{ padding: "12px 24px 0" }}>
@@ -367,11 +400,11 @@ const MakeCall: React.FC = () => {
                                 <NotificaionMenuItem
                                     onClick={() => {
                                         if (!callInLine && !waiting2) {
-                                            setwaiting2(true)
-                                            setNumberVox(e.phone)
+                                            setwaiting2(true);
+                                            setNumberVox(e.phone);
                                             dispatch(execute(conversationOutboundValidate({
                                                 number: e.phone,
-                                                communicationchannelid: ccidvoxi
+                                                communicationchannelid: numberChannel || ccidvoxi,
                                             })))
                                         }
                                     }}
@@ -387,15 +420,28 @@ const MakeCall: React.FC = () => {
                     }
                     {pageSelected === 1 &&
                         <div className={classes.tabs}>
+                            {(Object.keys(communicationChannelList || []).length > 1) && <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
+                                <FieldSelect
+                                    data={communicationChannelList}
+                                    label={t(langKeys.communicationchannel)}
+                                    optionDesc="communicationchanneldesc"
+                                    optionValue="communicationchannelid"
+                                    style={{ marginRight: "auto", marginLeft: "auto", width: "300px", marginBottom: 10, marginTop: 10 }}
+                                    variant="outlined"
+                                    valueDefault={numberChannel}
+                                    onChange={(value) => { setNumberChannel(value?.communicationchannelid || null); setNumberSite(value?.communicationchannelsite || null); }}
+                                    orderbylabel={true}
+                                />
+                            </div>}
                             <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
                                 <TextField
                                     label={t(langKeys.phone)}
                                     value={numberVox}
                                     disabled={resExecute.loading || callInLine}
-                                    style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
+                                    style={{ marginRight: "auto", marginLeft: "auto", width: "300px", marginBottom: 25 }}
                                     onInput={(e: any) => {
-                                        let val = e.target.value.replace(/[^0-9*#]/g, "")
-                                        e.target.value = String(val)
+                                        const val = e.target.value.replace(/[^0-9*#]/g, "");
+                                        e.target.value = String(val);
                                     }}
                                     onChange={(e) => setNumberVox(e.target.value)}
                                 />
@@ -484,24 +530,24 @@ const MakeCall: React.FC = () => {
                                 <Fab
                                     style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                     color="primary"
-                                    disabled={resExecute.loading || callInLine}
+                                    disabled={resExecute.loading || callInLine || !numberVox}
                                     onClick={() => {
                                         if (!callInLine) {
                                             dispatch(execute(conversationOutboundValidate({
                                                 number: numberVox,
-                                                communicationchannelid: ccidvoxi
+                                                communicationchannelid: numberChannel || ccidvoxi,
                                             })))
                                         }
-                                        // if (callInLine && transferAction) {
-                                        //     dispatch(transferCall({
-                                        //         url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}&name=${numberVox}`,
-                                        //         number: ticketSelected?.personcommunicationchannel,
-                                        //         conversationid: ticketSelected?.conversationid!!,
-                                        //         transfernumber: numberVox,
-                                        //         transfername: numberVox
-                                        //     }))
-                                        //     dispatch(setModalCall(false, false))
-                                        // }
+                                        /*if (callInLine && transferAction) {
+                                            dispatch(transferCall({
+                                                url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}&name=${numberVox}`,
+                                                number: ticketSelected?.personcommunicationchannel,
+                                                conversationid: ticketSelected?.conversationid!!,
+                                                transfernumber: numberVox,
+                                                transfername: numberVox
+                                            }))
+                                            dispatch(setModalCall(false, false))
+                                        }*/
                                     }}
                                 >
                                     <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -521,11 +567,11 @@ const MakeCall: React.FC = () => {
                                 <NotificaionMenuItem
                                     onClick={() => {
                                         if (!callInLine && !waiting2) {
-                                            setwaiting2(true)
-                                            setNumberVox(e.phone)
+                                            setwaiting2(true);
+                                            setNumberVox(e.phone);
                                             dispatch(execute(conversationOutboundValidate({
                                                 number: e.phone,
-                                                communicationchannelid: ccidvoxi
+                                                communicationchannelid: numberChannel || ccidvoxi,
                                             })))
                                         }
                                     }}
@@ -546,6 +592,7 @@ const MakeCall: React.FC = () => {
         </>
     )
 }
+
 export default MakeCall;
 
 const formatDate = (strDate: string) => {
@@ -558,4 +605,3 @@ const formatDate = (strDate: string) => {
 
     return `${day}/${month}/${year}`;
 }
-

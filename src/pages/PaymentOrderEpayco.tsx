@@ -234,7 +234,7 @@ export const PaymentOrderEpayco: FC = () => {
                 extra2: "${data.orgid}",
                 extra3: "${data.paymentorderid}",
                 lang: "${t(langKeys.current_language)}",
-                methodsDisable: ["PSE","SP","CASH","DP"],
+                methodsDisable: [],
                 name: "${data.description}",
                 name_billing: "${(data.userfirstname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")} ${(data.userlastname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}",
             }

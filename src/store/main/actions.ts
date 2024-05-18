@@ -238,6 +238,18 @@ export const getMultiCollectionAux2 = (requestBodies: IRequestBody[]): IActionCa
 
 export const resetMultiMainAux2 = (): IActionCall => ({ type: actionTypes.AUX2_MULTI_MAIN_RESET });
 
+export const getMultiCollectionAux3 = (requestBodies: IRequestBody[]): IActionCall => ({
+    callAPI: () => CommonService.multiMain(requestBodies),
+    types: {
+        loading: actionTypes.AUX3_MULTI_MAIN,
+        success: actionTypes.AUX3_MULTI_MAIN_SUCCESS,
+        failure: actionTypes.AUX3_MULTI_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMultiMainAux3 = (): IActionCall => ({ type: actionTypes.AUX3_MULTI_MAIN_RESET });
+
 export const getCollectionPaginated = (requestBody: IRequestBodyPaginated): IActionCall => ({
     callAPI: () => CommonService.mainPaginated(requestBody),
     types: {
