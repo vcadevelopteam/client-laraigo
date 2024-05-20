@@ -906,7 +906,8 @@ const Reports: FC = () => {
                             reporttype: "custom"
                         }))
                     ].filter((y: any) => superadmin ? true : !['invoice'].includes(y?.origin));
-                    const filteredReports = rr.filter(report => report.origin !== "conversationwhatsapp");
+                    
+                    const filteredReports = rr.filter(report => report.origin !== "conversationwhatsapp" && report.origin !== "hystoryhsm");
 
                     setAllReports(filteredReports);
                     setallReportsToShow(filteredReports);
