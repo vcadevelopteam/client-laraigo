@@ -54,6 +54,12 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    buttonProgrammed: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        backgroundColor: '#efe4b0'
+    },
     containerHeader: {
         display: "flex",
         flexWrap: "wrap",
@@ -145,7 +151,6 @@ export const Campaign: FC = () => {
         const callback = async () => {
             dispatch(showBackdrop(true));       
             dataSelected.map(async (row) => {     
-                console.log(row)         
                 dispatch(execute(delCampaign({ ...row, operation: 'DELETE', status: 'ELIMINADO', type: "NINGUNO", id: row.id })));
             });
             setWaitSave(true);
@@ -296,11 +301,11 @@ export const Campaign: FC = () => {
                         return null;
                     }
                 
-                    const { id, status, startdate, enddate } = row.original;
+                    const { id, status, startdate, enddate,executiontype } = row.original;
                 
                     if (
                         dateToLocalDate(startdate, 'date') <= todayDate() &&
-                        todayDate() <= dateToLocalDate(enddate, 'date')
+                        todayDate() <= dateToLocalDate(enddate, 'date') && executiontype ==="MANUAL"
                     ) {
                         if (status === 'EJECUTANDO') {
                             return (
@@ -335,8 +340,21 @@ export const Campaign: FC = () => {
                         } else {
                             return null;
                         }
-                    } else {
-                        return null;
+                    } else if(executiontype === "SCHEDULED" && status === 'EJECUTANDO'){
+                        return <Button
+                            className={classes.buttonProgrammed}
+                            variant="contained"
+                            color="primary"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatus(id);
+                            }}
+                            style={{ backgroundColor: "#efe4b0" }}
+                        >
+                            <Trans i18nKey={langKeys.programmed} />
+                        </Button>
+                    }else{
+                        return null
                     }
                 }
                 
@@ -733,6 +751,7 @@ export const Campaign: FC = () => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
+                handleStart={handleStart}
             />
         )
     }

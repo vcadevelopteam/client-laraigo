@@ -22,7 +22,8 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData: () => void
+    fetchData: () => void;
+    handleStart: (a:number)=>void;
 }
 
 export interface FrameProps {
@@ -73,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
+export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, handleStart }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -93,6 +94,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
 
     const [messageVariables, setMessageVariables] = useState<any[]>([]);
+    const [campaignid, setCampaignId] = useState(0);
+    const [campaignType, setCampaignType] = useState("");
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
@@ -462,6 +465,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         const callback = () => {
             dispatch(showBackdrop(true));
             setSave('PARENT');
+            setCampaignType(detaildata.executiontype||"")
             saveCampaign(detaildata);
         }
         let errormessage = false
@@ -502,6 +506,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             else if (save === 'PARENT') {
                 if (!executeRes.loading && !executeRes.error) {
                     setSave('MEMBERS');
+                    setCampaignId(executeRes.data[0]?.p_campaignid)
                     saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
@@ -515,6 +520,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                     fetchData();
                     dispatch(showBackdrop(false));
+                    if(campaignid && campaignType === "SCHEDULED") handleStart(campaignid)
                     setViewSelected("view-1");
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })

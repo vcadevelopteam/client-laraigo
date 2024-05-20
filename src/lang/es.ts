@@ -6088,7 +6088,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   campaign_execution_date: 'Fecha de ejecución de la campaña',
   campaign_execution_time: 'Hora de ejecución de la campaña',
 
-  campaign_templatepreview: 'Previsualización de la plantilla'
+  campaign_templatepreview: 'Previsualización de la plantilla',
+  programmed: 'Programado',
 
 };
 

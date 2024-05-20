@@ -6084,7 +6084,8 @@ export const langKeys = {
   campaign_execution_date: 'campaign_execution_date',
   campaign_execution_time: 'campaign_execution_time',
 
-  campaign_templatepreview: 'campaign_templatepreview'
+  campaign_templatepreview: 'campaign_templatepreview',
+  programmed: 'programmed',
 
 };
 

@@ -137,6 +137,8 @@ type FormFields = {
     buttons: Button[];
     buttonstext: { text: string }[];
     buttonsphone: { text: string }[];
+    date: string|null;
+    time: string | null;
 
 }
 
@@ -186,13 +188,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
             sourcechanged: false,           
-           
             headertype: row?.headertype || "none",
             buttonsphone: row ? row.buttonsphone || [] : [],
             buttonstext: row ? row.buttonstext || [] : [],
             header: row?.header || "",
             footer: row?.footer || "",
             buttons: row ? row.buttons || [] : [],
+            date: row?.date || null,
+            time: row?.time || null,
         }
     });
 
@@ -200,6 +203,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('startdate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('date', { validate: (value: any) => getValues('executiontype') === 'SCHEDULED'? ((value && value.length) || t(langKeys.field_required)):true });
+        register('time', { validate: (value: any) => getValues('executiontype') === 'SCHEDULED'? ((value && value.length) || t(langKeys.field_required)):true });
         register('enddate', {
             validate: {
                 value: (value: any) => (value && value.length) || t(langKeys.field_required),
@@ -438,7 +443,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
    
 
     
-    console.log(selectedTemplate)
 
 
 
@@ -605,9 +609,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     variant="outlined"                 
                                     type="date"                               
                                     className="col-6"
-                                    valueDefault={getValues('startdate')}
-                                    onChange={(value) => setValue('startdate', value)}
-                                    error={errors?.startdate?.message}
+                                    valueDefault={getValues('date')}
+                                    onChange={(value) => setValue('date', value)}
+                                    error={errors?.date?.message}
                                 />      
                             </FormControl>                      
                                                         
@@ -618,9 +622,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     variant="outlined"                 
                                     type="time"                            
                                     className="col-6"
-                                    valueDefault={getValues('enddate')}
-                                    onChange={(value) => setValue('enddate', value)}
-                                    error={errors?.enddate?.message}
+                                    valueDefault={getValues('time')}
+                                    onChange={(value) => setValue('time', value)}
+                                    error={errors?.time?.message}
                                 />         
                             </FormControl>                         
                         

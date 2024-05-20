@@ -6140,7 +6140,8 @@ const translation: LangKeys = {
   campaign_messagetype_desc: 'Select the type of message to be sent through your assigned channel',
   campaign_execution_date: 'Campaign execution date',
   campaign_execution_time: 'Campaign execution time',
-  campaign_templatepreview: 'Template Preview'
+  campaign_templatepreview: 'Template Preview',
+  programmed: 'Programmed',
 
 };
 
