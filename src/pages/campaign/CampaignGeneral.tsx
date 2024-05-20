@@ -15,7 +15,8 @@ import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
-
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -63,16 +64,21 @@ const useStyles = makeStyles((theme) => ({
        color: 'black' 
     },
     buttonPreview: {
-        backgroundColor: '#DDDDDD',
-        borderRadius: '0.5rem',
-        padding: '0.5rem 1rem',
+        color: '#009C8F',    
+        padding: '0.8rem 1rem',
         display: 'flex',
         justifyContent: 'center',
         textAlign: 'center',
         cursor: 'pointer',
-        margin: '0.5rem 0',
-        textDecoration: 'none', 
-        color: '#000000'
+   
+        textDecoration: 'none',
+        borderTop: '1px solid #D7D7D7',
+        '&:hover': {
+            backgroundColor: '#FBFBFB',
+        },
+    },
+    previewHour: {
+        display:'flex', justifyContent:'right', fontSize:'0.78rem', color:'grey', margin:'10px 0'
     }
 }));
 
@@ -552,7 +558,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                     {edit ?
-                       <FormControl className="col-6" >                       
+                        <FormControl className="col-6" >                       
                             <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.executiontype)} </div>
                             <div className={classes.subtitle}> {t(langKeys.campaign_executiontype_desc)} </div>
                             <FieldSelect
@@ -566,6 +572,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 optionDesc="value"
                                 optionValue="key"
                             />                       
+                              
+
                             {getValues('executiontype') === 'SCHEDULED' ?
                                 <IconButton
                                     style={{ flexGrow: 0 }}
@@ -578,7 +586,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     <EventIcon style={{ color: '#777777' }} />
                                 </IconButton>                                
                                 :
-                                null}                                 
+                                null
+                                
+                            }     
+
                         </FormControl>
                         :
                         <FieldView
@@ -587,6 +598,41 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-6"
                         />
                     }
+
+                    {getValues('executiontype') === 'SCHEDULED' ?
+
+                        <div className="row-zyx">
+                        <FormControl className="col-3">                          
+                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.date)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_execution_date)} </div>
+                                <FieldEdit   
+                                    variant="outlined"                 
+                                    type="date"                               
+                                    className="col-6"
+                                    valueDefault={getValues('startdate')}
+                                    onChange={(value) => setValue('startdate', value)}
+                                    error={errors?.startdate?.message}
+                                />      
+                            </FormControl>                      
+                                                        
+                            <FormControl className="col-3">                          
+                                <div className={classes.title}> {t(langKeys.hour)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
+                                <FieldEdit   
+                                    variant="outlined"                 
+                                    type="date"                            
+                                    className="col-6"
+                                    valueDefault={getValues('enddate')}
+                                    onChange={(value) => setValue('enddate', value)}
+                                    error={errors?.enddate?.message}
+                                />         
+                            </FormControl>                         
+                        
+                                            
+                        </div>                  
+
+                        : null                                
+                    }  
                     {edit ?
                         <FormControl className="col-6" >                      
                             <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.group)} </div>
@@ -779,65 +825,129 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 </div>
 
                 <div className={classes.containerDetail} style={{width:'50%'}}>             
-                    {t(langKeys.campaign_templatepreview)}   
-                    <div style={{display:'flex', justifyContent:'center', alignContent:'center'}}>
-                        
-                        <div style={{ maxWidth:'25rem', borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem' }}> 
+                    <h2 style={{margin:'1rem', fontWeight:'normal'}}>{t(langKeys.campaign_templatepreview)}  </h2> 
+                    <div className={classes.containerDetail} style={{height:'60%', display:'block', alignContent:'center'}}>             
+                        <div style={{display:'flex', justifyContent:'center', alignContent:'center', alignItems:'center'}}>
+                            <div style={{ maxWidth:'25rem', borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}> 
 
-                        <div className='container'>
-                            {selectedTemplate?.templatetype === "MULTIMEDIA" && selectedTemplate?.category === "MARKETING" && selectedTemplate?.externalstatus === "APPROVED" ? (
-                                <div>
-                                    <img 
-                                        src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                                        alt="Default Image"
-                                        style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
-                                    />
-                                    <p>{selectedTemplate.body}</p>
-                                    <p>{selectedTemplate.footer}</p>
-                                    {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
+                                <div className='templatePreview' style={{}}>
+                                    
+                                    {selectedTemplate?.category === "MARKETING" && selectedTemplate?.providerstatus === "approved" ||  selectedTemplate?.category === "UTILITY" ? (
                                         <div>
-                                            {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
-                                                <a className={classes.buttonPreview} key={index} href={button.payload} target="_blank" rel="noopener noreferrer">
-                                                    {button.title}
-                                                </a>
-                                            ))}
-                                        </div>                     
 
-                                    )}                                  
-                                </div>
-                            ) : selectedTemplate?.templatetype === "MULTIMEDIA" && selectedTemplate?.category === "UTILITY" && selectedTemplate?.externalstatus === "APPROVED" ? (
-                                <div>
-                                    <img 
-                                        src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                                        alt="Default Image"
-                                        style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
-                                    />
-                                    <p>{selectedTemplate.body}</p>
-                                    <p>{selectedTemplate.footer}</p>
-                                    {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
-                                        <div>
-                                            {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
-                                                <a className={classes.buttonPreview} key={index} href={button.payload} target="_blank" rel="noopener noreferrer">
-                                                    {button.title}
-                                                </a>
-                                            ))}
+                                            <img 
+                                                src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
+                                                alt="Default Image"
+                                                style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius:'0.5rem'}}
+                                            />
+
+                                            <p>{selectedTemplate.body}</p>
+
+                                            <p style={{color:'grey', fontSize:'0.8rem'}}>{selectedTemplate.footer}</p>
+                                            <span className={classes.previewHour}> 11:12</span>
+
+                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
+                                                <div>
+                                                    {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
+                                                        {button.title}
+                                                        {/* <OpenInNewIcon style={{height:'1.3rem', margin:'0 5px'}}/>*/}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
+                                                <div>
+                                                    {selectedTemplate.buttonsgeneric.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index} href={button.btn.url} target="_blank" rel="noopener noreferrer">
+                                                            {button.btn.text}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )} 
+
+                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsquickreply?.length > 0 && (
+                                                <div>
+                                                    {selectedTemplate.buttonsquickreply.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
+                                                        {button.btn.text}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}  
+
+                                        </div>               
+
+                                    ) :  selectedTemplate?.category === "AUTHENTICATION" &&  selectedTemplate?.providerstatus === "approved"? (
+                                        <div>                                 
+                                            <p>Tu codigo de verificación es 12345678.  
+                                                {selectedTemplate.authenticationdata?.safetyrecommendation && (
+                                                    <span> Por tu seguridad, no lo compartas</span>
+                                                )}
+                                            </p>                                    
+                                            {selectedTemplate.authenticationdata?.showexpirationdate && (
+                                                <div>
+                                                    <p>Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.</p>
+                                                </div>
+                                            )}
+
+                                            <span className={classes.previewHour}> 11:12</span>
+                                        
                                         </div>
-                                    )}                                  
+
+                                    ) :  selectedTemplate?.type === "SMS" ? (
+                                        <div>                                 
+                                            
+                                            <p>{selectedTemplate.body}</p>
+
+                                            <span className={classes.previewHour}> 11:12</span>
+
+                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
+                                                <div>
+                                                    {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
+                                                        {button.title}
+                                                        {/* <OpenInNewIcon style={{height:'1.3rem', margin:'0 5px'}}/>*/}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
+                                                <div>
+                                                    {selectedTemplate.buttonsgeneric.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index} href={button.btn.url} target="_blank" rel="noopener noreferrer">
+                                                            {button.btn.text}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )} 
+
+                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsquickreply?.length > 0 && (
+                                                <div>
+                                                    {selectedTemplate.buttonsquickreply.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
+                                                        {button.btn.text}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}  
+                                        
+                                        </div>
+
+                                    ) : (
+                                    
+                                        <div>
+                                            <p>No aprobado/ No ha seleccionado plantilla</p>             
+                                        </div>
+                                    )}
                                 </div>
-
-                            ) : (
-                                <p>Plantilla No Disponible</p>
-                            )}
-                        </div>
-
-                        </div>
-                        
-                        
-                    </div>    
+                            </div>   
+                        </div>  
+                    </div>
                 </div>
-
            </div>
-
 
             <ModalCampaignSchedule
                 openModal={openModal}

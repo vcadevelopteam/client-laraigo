@@ -194,6 +194,13 @@ export const Campaign: FC = () => {
                 maxWidth: '200px'
             },
             {
+                Header: t(langKeys.channel),
+                accessor: 'type',
+                NoFilter: false,
+                width: 'auto',
+                maxWidth: '200px'
+            },
+            {
                 Header: t(langKeys.startdate),
                 accessor: 'startdate',
                 NoFilter: false,
@@ -258,30 +265,30 @@ export const Campaign: FC = () => {
                     return executiontype ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }                
             },
-            {
-                Header: t(langKeys.delete),
-                accessor: 'stop',
-                isComponent: true,
-                width: 'auto',
-                maxWidth: '80px',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
-                    if (row?.status === 'EJECUTANDO') {
-                        return <StopIcon
-                            titleAccess={t(langKeys.stop)}
-                            fontSize='large'
-                            style={{ width:35, height:35, fill: '#ea2e49' }}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                handleStop(row)
-                            }}
-                        />
-                    }
-                    else {
-                        return null
-                    }
-                }
-            },
+            // {
+            //     Header: t(langKeys.delete),
+            //     accessor: 'stop',
+            //     isComponent: true,
+            //     width: 'auto',
+            //     maxWidth: '80px',
+            //     Cell: (props: CellProps<Dictionary>) => {
+            //         const row = props.cell.row.original;
+            //         if (row?.status === 'EJECUTANDO') {
+            //             return <StopIcon
+            //                 titleAccess={t(langKeys.stop)}
+            //                 fontSize='large'
+            //                 style={{ width:35, height:35, fill: '#ea2e49' }}
+            //                 onClick={(e) => {
+            //                     e.stopPropagation()
+            //                     handleStop(row)
+            //                 }}
+            //             />
+            //         }
+            //         else {
+            //             return null
+            //         }
+            //     }
+            // },
             {
                 Header: t(langKeys.action),
                 accessor: 'execute',
@@ -325,7 +332,7 @@ export const Campaign: FC = () => {
                                         color="primary"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setOpenConfirmationDialog(true);     
+                                            //setOpenConfirmationDialog(true);     
                                             //handleStart(id);                                        
                                         }}
                                         style={{ backgroundColor: "#55bd84" }}
@@ -519,22 +526,21 @@ export const Campaign: FC = () => {
 
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
     const [openSeButtons, setOpenSeButtons] = useState(false);
+    const open = Boolean(anchorElSeButtons);
 
-    const handleClickSeButtons = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElSeButtons(event.currentTarget);
-        setOpenSeButtons((prevOpen) => !prevOpen);
-        event.stopPropagation();
+
+    const handleClickSeButtons = (event: any) => {
+        setAnchorElSeButtons(event.currentTarget);      
     };
 
     const handleCloseSeButtons = () => {
-        setAnchorElSeButtons(null);
-        setOpenSeButtons(false);
+        setAnchorElSeButtons(null);     
     };
     
     useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
         if (anchorElSeButtons && !anchorElSeButtons.contains(event.target as Node)) {
-        handleCloseSeButtons();
+            handleCloseSeButtons();
         }
     };
     
@@ -564,7 +570,7 @@ export const Campaign: FC = () => {
         return (
             <React.Fragment>        
 
-                <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", backgroundColor:'white', padding:'0.5rem'}}>
                     <Box width={1}>
                         <Box
                             className={classes.containerHeader}
@@ -603,34 +609,7 @@ export const Campaign: FC = () => {
                     </Box>
                 </div>  
 
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type='button'       
-                    disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0 }
-                    startIcon={<DeleteIcon color="secondary" />}
-                    onClick={() => {
-                        handleDeleteSelection(rowWithDataSelected);
-                    }}
-                    style={{ 
-                        backgroundColor: mainResult.mainData.loading || Object.keys(selectedRows).length === 0 ? undefined : "#FB5F5F" 
-                    }}
-                >   
-                    <Trans i18nKey={langKeys.delete} />
-                </Button>
-
-
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    disabled={mainResult.mainData.loading}
-                    startIcon={<AddIcon color="secondary" />}
-                    onClick={() => handleRegister()}
-                    style={{ backgroundColor: "#22b66e" }}
-                ><Trans i18nKey={langKeys.register} />
-                </Button>
+            
               
 
                
@@ -648,54 +627,105 @@ export const Campaign: FC = () => {
         return (
             
            <div style={{display:'block', width:'100%'}}>
-                <div style={{display:'flex', alignContent:'center', textAlign:'center', justifyContent:'center'}}>
-                    <IconButton
-                        aria-label="more"
-                        id="long-button"
-                        onClick={handleClickSeButtons}
-                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                    >
-                        <MoreVertIcon />
-                    </IconButton>
-                    <div style={{ display: 'flex', gap: 8 }}>                               
-                    <Menu
-                        open={openSeButtons}
-                        anchorEl={anchorElSeButtons}                      
-                      
-                        style={{marginRight:'1rem'}}
-                    >                       
-                        <MenuItem 
+
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                    <div>
+                        <h2> <Trans i18nKey={langKeys.campaign_plural} /></h2>
+                    </div>
+
+                    <div style={{display:'flex', justifyContent:'right', gap:'0.5rem'}}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type='button'       
+                            disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0 }
+                            startIcon={<DeleteIcon color="secondary" />}
+                            onClick={() => {
+                                handleDeleteSelection(rowWithDataSelected);
+                            }}
+                            style={{ 
+                                backgroundColor: mainResult.mainData.loading || Object.keys(selectedRows).length === 0 ? undefined : "#FB5F5F" 
+                            }}
+                        >   
+                            <Trans i18nKey={langKeys.delete} />
+                        </Button>
+
+
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
                             disabled={mainResult.mainData.loading}
-                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                            //style={{ backgroundColor: "#ea2e49" }}
-                            onClick={(e) => {setViewSelected("blacklist");  e.stopPropagation();}}
+                            startIcon={<AddIcon color="secondary" />}
+                            onClick={() => handleRegister()}
+                            style={{ backgroundColor: "#22b66e" }}
+                        >   
+                            <Trans i18nKey={langKeys.register} />
+                        </Button>
+                        
+                        
+                        <IconButton
+                            aria-label="more"
+                            id="long-button"
+                            onClick={handleClickSeButtons}
+                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
                         >
-                            <ListItemIcon>
-                                <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                            </ListItemIcon>
-                            <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
-                        </MenuItem>                             
-                        <Divider />
-                        <MenuItem 
-                            disabled={mainResult.mainData.loading}
-                            style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                            onClick={() => {setViewSelected("blacklist")}}
+                            <MoreVertIcon />
+                        </IconButton>
+
+
+                        <Menu
+                            id="long-menu"
+                            anchorEl={anchorElSeButtons}
+                            open={open}
+                            onClose={handleCloseSeButtons}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: '16ch',
+                                    marginTop:'3.5rem'
+                                },
+                            }}
                         >
-                            <ListItemIcon>
-                                <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                            </ListItemIcon>
-                            <Typography variant="inherit">{t(langKeys.download)}</Typography>
-                        </MenuItem>                               
-              
+                            <MenuItem 
+                                disabled={mainResult.mainData.loading}
+                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
+                                onClick={(e) => {setViewSelected("blacklist");  e.stopPropagation();}}
+                            >
+                                <ListItemIcon>
+                                    <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                </ListItemIcon>
+                                <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
+                            </MenuItem>   
+
+                            <Divider />
+
+                            <a
+                                href="/templates/TemplateCampañas(2024-04-18).xlsx"
+                                download="TemplateCampañas(2024-04-18).xlsx"
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                            >
+                                <MenuItem 
+                                    disabled={mainResult.mainData.loading}
+                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
+                                >
+                                    <ListItemIcon>
+                                        <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
+                                    </ListItemIcon>
+                                    <Typography variant="inherit">{t(langKeys.download)}</Typography>
+                                </MenuItem>
+                            </a>
+                             
+                        </Menu>
+
                       
-                    </Menu>
-                </div> 
+                    </div>
                 </div>
 
                
                 
                 <TableZyx      
-                    titlemodule={t(langKeys.campaign_plural, { count: 2 })}
                     columns={columns}
                     data={mainResult.mainData.data}              
                     useSelection={true}
@@ -704,7 +734,7 @@ export const Campaign: FC = () => {
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}                
                     ButtonsElement={AdditionalButtons}     
-                    filterGeneral={true}
+                    filterGeneral={false} //antes true, preguntar si sirve
                 
                 />
             </div>

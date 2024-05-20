@@ -6085,6 +6085,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   campaign_comunicationtemplate_desc: 'Selecciona la plantilla de mensaje que se enviará en tu campaña',
   campaign_status_desc: 'Selecciona el estado de tu campaña',
   campaign_messagetype_desc: 'Selecciona el tipo de mensaje que se enviará por tu canal asignado',
+  campaign_execution_date: 'Fecha de ejecución de la campaña',
+  campaign_execution_time: 'Hora de ejecución de la campaña',
+
   campaign_templatepreview: 'Previsualización de la plantilla'
 
 };

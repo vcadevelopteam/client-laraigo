@@ -6081,6 +6081,8 @@ export const langKeys = {
   campaign_comunicationtemplate_desc: 'campaign_comunicationtemplate_desc',
   campaign_status_desc: 'campaign_status_desc',
   campaign_messagetype_desc: 'campaign_messagetype_desc',
+  campaign_execution_date: 'campaign_execution_date',
+  campaign_execution_time: 'campaign_execution_time',
 
   campaign_templatepreview: 'campaign_templatepreview'
 
