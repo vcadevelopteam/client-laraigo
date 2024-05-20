@@ -595,7 +595,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
 
-                    {/* {getValues('executiontype') === 'SCHEDULED' ?
+                    {getValues('executiontype') === 'SCHEDULED' ?
 
                         <div className="row-zyx">
                         <FormControl className="col-3">                          
@@ -628,7 +628,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         </div>                  
 
                         : null                                
-                    }   */}
+                    }  
                     
                     {edit ?
                         <FormControl className="col-6" >                      
@@ -962,6 +962,7 @@ interface ModalProps {
     data: any[];
     parentSetValue: (...param: any) => any;
 }
+
 
 const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, data = [], parentSetValue }) => {
     const { t } = useTranslation();
