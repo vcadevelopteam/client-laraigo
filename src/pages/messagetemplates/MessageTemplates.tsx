@@ -246,8 +246,7 @@ const MessageTemplates: FC = () => {
     );
 
     useEffect(() => {
-        dispatch(resetCollectionPaginated());
-        fetchData(fetchDataAux);
+        handleSynchronize()
 
         dispatch(
             getMultiCollection([
@@ -349,13 +348,6 @@ const MessageTemplates: FC = () => {
     useEffect(() => {
         if (waitSynchronize) {
             if (!mainSynchronize.loading && !mainSynchronize.error) {
-                dispatch(
-                    showSnackbar({
-                        message: t(mainSynchronize.code ?? "success"),
-                        severity: "success",
-                        show: true,
-                    })
-                );
                 dispatch(showBackdrop(false));
                 setWaitSynchronize(false);
                 fetchData(fetchDataAux);
@@ -403,24 +395,10 @@ const MessageTemplates: FC = () => {
         setRowSelected({ row, edit: true });
     };
 
-    const handleSynchronize = (channel: any, selectedData: any) => {
-        const callback = () => {
-            dispatch(synchronizeTemplate({ communicationchannel: channel, messagetemplatelist: selectedData }));
-            dispatch(showBackdrop(true));
-            setWaitSynchronize(true);
-        };
-
-        dispatch(
-            manageConfirmation({
-                callback,
-                question: channel
-                    ? t(langKeys.messagetemplate_synchronize_alert01) +
-                    `${channel.communicationchanneldesc} (${channel.phone})` +
-                    t(langKeys.messagetemplate_synchronize_alert02)
-                    : t(langKeys.messagetemplate_synchronize_alert03),
-                visible: true,
-            })
-        );
+    const handleSynchronize = () => {
+        dispatch(synchronizeTemplate());
+        dispatch(showBackdrop(true));
+        setWaitSynchronize(true);
     };
 
     const handleDelete = (row: Dictionary) => {
@@ -526,21 +504,6 @@ const MessageTemplates: FC = () => {
                             }}
                         >
                             {t(langKeys.delete)}
-                        </Button>
-                        <Button
-                            color="primary"
-                            startIcon={<RefreshIcon style={{ color: "white" }} />}
-                            style={{ width: 140, backgroundColor: "#55BD84" }}
-                            variant="contained"
-                            disabled={
-                                mainPaginated.loading ||
-                                (!communicationChannel && Object.keys(selectedRows).length === 0)
-                            }
-                            onClick={() => {
-                                handleSynchronize(communicationChannel, rowWithDataSelected);
-                            }}
-                        >
-                            {t(langKeys.messagetemplate_synchronize)}
                         </Button>
                     </div>
                 )}
