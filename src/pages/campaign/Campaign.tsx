@@ -182,21 +182,21 @@ export const Campaign: FC = () => {
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
-                NoFilter: false,
-                width: 'auto',
+                NoFilter: false,           
+                width: 'auto', 
                 maxWidth: '200px'
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: false,
-                width: 'auto',
+                NoFilter: false,     
+                width: 'auto',    
                 maxWidth: '200px'
             },
             {
                 Header: t(langKeys.channel),
-                accessor: 'type',
-                NoFilter: false,
+                accessor: 'communicationchannel',
+                NoFilter: false,         
                 width: 'auto',
                 maxWidth: '200px'
             },
@@ -230,7 +230,6 @@ export const Campaign: FC = () => {
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                width: 'auto',
                 NoFilter: false,
                 prefixTranslation: 'status_',
                 Cell: (props: CellProps<Dictionary>) => {
@@ -257,7 +256,6 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
                 NoFilter: false,
-                width: 'auto',
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -265,35 +263,32 @@ export const Campaign: FC = () => {
                     return executiontype ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }                
             },
-            // {
-            //     Header: t(langKeys.delete),
-            //     accessor: 'stop',
-            //     isComponent: true,
-            //     width: 'auto',
-            //     maxWidth: '80px',
-            //     Cell: (props: CellProps<Dictionary>) => {
-            //         const row = props.cell.row.original;
-            //         if (row?.status === 'EJECUTANDO') {
-            //             return <StopIcon
-            //                 titleAccess={t(langKeys.stop)}
-            //                 fontSize='large'
-            //                 style={{ width:35, height:35, fill: '#ea2e49' }}
-            //                 onClick={(e) => {
-            //                     e.stopPropagation()
-            //                     handleStop(row)
-            //                 }}
-            //             />
-            //         }
-            //         else {
-            //             return null
-            //         }
-            //     }
-            // },
+            {
+               
+                accessor: 'stop',
+                isComponent: true,
+                maxWidth: '80px',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    if (row?.status === 'EJECUTANDO') {
+                        return <StopIcon
+                            titleAccess={t(langKeys.stop)}
+                            fontSize='large'
+                            style={{ width:35, height:35, fill: '#ea2e49' }}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                handleStop(row)
+                            }}
+                        />
+                    }
+                    else {
+                        return null
+                    }
+                }
+            },
             {
                 Header: t(langKeys.action),
                 accessor: 'execute',
-                width: 'auto',
-                maxWidth:'80px',
                 isComponent: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -324,26 +319,18 @@ export const Campaign: FC = () => {
                             );
                         } else if (status === 'ACTIVO') {
                             return (
-                                <>
-                              
-                                    <Button
-                                        className={classes.button}
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            //setOpenConfirmationDialog(true);     
-                                            //handleStart(id);                                        
-                                        }}
-                                        style={{ backgroundColor: "#55bd84" }}
-                                    >
-                                        <Trans i18nKey={langKeys.ready_to_close} />
-                                    </Button>
-
-                                  
-
-                                   
-                                </>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStart(id);
+                                    }}
+                                    style={{ backgroundColor: "#55bd84" }}
+                                >
+                                    <Trans i18nKey={langKeys.execute} />
+                                </Button>
                             );
                         } else {
                             return null;

@@ -9,14 +9,10 @@ import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Event as EventIcon } from '@material-ui/icons';
 import { FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -599,7 +595,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
 
-                    {getValues('executiontype') === 'SCHEDULED' ?
+                    {/* {getValues('executiontype') === 'SCHEDULED' ?
 
                         <div className="row-zyx">
                         <FormControl className="col-3">                          
@@ -620,7 +616,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
                                 <FieldEdit   
                                     variant="outlined"                 
-                                    type="date"                            
+                                    type="time"                            
                                     className="col-6"
                                     valueDefault={getValues('enddate')}
                                     onChange={(value) => setValue('enddate', value)}
@@ -632,7 +628,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         </div>                  
 
                         : null                                
-                    }  
+                    }   */}
+                    
                     {edit ?
                         <FormControl className="col-6" >                      
                             <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.group)} </div>
@@ -1017,15 +1014,7 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
             <TableContainer>
                 <Table>
                     <TableHead>
-                        <TableRow>
-                            <TableCell>
-                                <IconButton
-                                    size="small"
-                                    onClick={() => onClickAddSchedule()}
-                                >
-                                    <AddIcon style={{ color: '#7721AD' }} />
-                                </IconButton>
-                            </TableCell>
+                        <TableRow>                            
                             <TableCell>{t(langKeys.date)}</TableCell>
                             <TableCell>{t(langKeys.hour)}</TableCell>
                             <TableCell>{t(langKeys.quantity)}</TableCell>
@@ -1033,15 +1022,7 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
                     </TableHead>
                     <TableBody>
                         {schedule.map((item: any, i) =>
-                            <TableRow key={item.id}>
-                                <TableCell>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => onClickDeleteSchedule(i)}
-                                    >
-                                        <DeleteIcon style={{ color: '#777777' }} />
-                                    </IconButton>
-                                </TableCell>
+                            <TableRow key={item.id}>                              
                                 <TableCell>
                                     <FieldEditArray
                                         fregister={{
