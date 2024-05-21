@@ -227,8 +227,8 @@ export const getInstagramDMPages = (accessToken: string, appId: string): IAction
 
 export const resetGetInstagramDMPages = () => ({ type: actionTypes.INSTAGRAMDM_PAGES_RESET });
 
-export const synchronizeTemplate = (request: unknown): IActionCall => ({
-    callAPI: () => ChannelsService.synchronizeTemplate(request),
+export const synchronizeTemplate = (): IActionCall => ({
+    callAPI: () => ChannelsService.synchronizeTemplate(),
     type: null,
     types: {
         failure: actionTypes.SYNCHRONIZE_TEMPLATE_FAILURE,

@@ -37,7 +37,7 @@ const Person = lazy(() => import('pages/Person'));
 const PersonDetail = lazy(() => import('pages/PersonDetail'));
 const Supervisor = lazy(() => import('pages/Supervisor'));
 const MessageInbox = lazy(() => import('pages/MessageInbox'));
-const MessageTemplates = lazy(() => import('pages/MessageTemplates'));
+const MessageTemplates = lazy(() => import('pages/messagetemplates/MessageTemplates'));
 const Tipifications = lazy(() => import('pages/Tipifications'));
 const InputValidation = lazy(() => import('pages/InputValidation'));
 const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
