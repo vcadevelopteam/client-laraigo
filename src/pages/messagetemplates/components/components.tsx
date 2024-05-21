@@ -442,7 +442,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
                         return (
                             <div key={index} className={classes.messageCard2}>
                                 <div className={classes.cardMediaContainer}>
-                                    <img src={card.image ? card.image : NoImage} alt="Selected Image" className={classes.cardMedia} />
+                                    <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
                                 </div>
                                 <div className={classes.bodyCar}>{card.body}</div>
                                 {card.buttons.length > 0 && (

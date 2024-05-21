@@ -1004,7 +1004,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
     const onClickAddCard = async () => {
         if(getValues("carouseldata") && getValues('carouseldata').length < 10) {
-            setValue('carouseldata', [...getValues('carouseldata'), { image: "", body: '', bodyvariables: [], buttons: [] }])
+            setValue('carouseldata', [...getValues('carouseldata'), { header: "", body: '', bodyvariables: [], buttons: [] }])
         }
         trigger("carouseldata");
     }
@@ -1266,7 +1266,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleImageRemove = (index: number) => {
-        setValue(`carouseldata.${index}.image`, "");
+        setValue(`carouseldata.${index}.header`, "");
         trigger('carouseldata')
     };
 
@@ -1286,7 +1286,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if (waitUploadFile3) {
             if (!uploadResult.loading && !uploadResult.error) {
                 const newCards = [...getValues("carouseldata")];
-                newCards[cardAux].image = uploadResult?.url;
+                newCards[cardAux].header = uploadResult?.url;
                 setValue(`carouseldata`, newCards)
                 trigger('carouseldata')
                 dispatch(showBackdrop(false))
@@ -2489,11 +2489,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     <ClearIcon className={classes.closeIcon}/>
                                                                 </IconButton>
                                                             </div>
-                                                            {card.image !== '' ? (
+                                                            {card.header !== '' ? (
                                                                 <div className={classes.uploadedImage}>
                                                                     <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
                                                                     <div style={{display: 'flex', gap: 10}}>
-                                                                        <span className={classes.imageName}>{card.image.split('/').pop().replace(/%20/g, ' ')}</span>
+                                                                        <span className={classes.imageName}>{card.header.split('/').pop().replace(/%20/g, ' ')}</span>
                                                                         <IconButton onClick={() => handleImageRemove(index)} style={{padding: 0}}>
                                                                             <ClearIcon className={classes.closeIcon}/>
                                                                         </IconButton>
@@ -2537,7 +2537,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         }),
                                                                     }}
                                                                 />
-                                                                {getValues(`carouseldata.${index}.bodyvariables`).length < 7 &&(
+                                                                {getValues(`carouseldata.${index}.bodyvariables`)?.length < 7 &&(
                                                                     <div style={{display: 'flex', justifyContent: 'end'}}>
                                                                         <Button
                                                                             className={classes.button}
@@ -2766,7 +2766,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     {getValues('carouseldata').map((card, cindex: number) => {
                                                         return (
                                                             <>
-                                                                {card.bodyvariables.length > 0 && (
+                                                                {card?.bodyvariables?.length > 0 && (
                                                                     <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                                                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                                                             <span style={{fontWeight: 'bold'}}>Variables del card {cindex + 1}</span>
