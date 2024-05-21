@@ -5,7 +5,9 @@ require(Modules.AI);
 require(Modules.ASR);
 require(Modules.IVR); // enable IVR module
 
-const URL_SERVICES = "https://cloudprdservices.laraigo.com/api/";
+const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
+const URL_APILARAIGO = "https://apix.laraigo.com/api/";
+const URL_APIVOXIMPLANT = "https://api.voximplant.com/platform_api/";
 const VOICE_ES = VoiceList.Microsoft.Neural.es_PE_CamilaNeural;
 //const VOICE_ES = {"language": VoiceList.Microsoft.Neural.es_PE_CamilaNeural, "ttsOptions": {"rate":"x-fast"}};
 
@@ -15,13 +17,17 @@ var call,
     list_id,
     task_id,
     phone_number,
+    inTransfer,
     message,
+    applicationID = "",
+    inboundCalls = [],
     caller_id, // Rented or verified phone number
     sessionID = "",
     accessURL = "",
     identifier,
     request,
     personName = "",
+    accountID = "",
     lastagentid = 2,
     messageBusy = "Adios",
     dataCampaign = {
@@ -33,6 +39,10 @@ var call,
     },
     corpid = 0,
     orgid = 0,
+    userQueueIndex = 0,
+    userQueueLimit = 10,
+    userQueueLength,
+    userQueueData = [],
     communicationchannelid = 0,
     welcomeTone = "http://cdn.voximplant.com/toto.mp3",
     holdTone = "http://cdn.voximplant.com/yodl.mp3",
@@ -209,6 +219,8 @@ function deliveryCall(success, message = "") {
 
 VoxEngine.addEventListener(AppEvents.Started, (ev) => {
     sessionID = ev.sessionId;
+    accountID = ev.accountId;
+    applicationID = ev.applicationId;
     accessURL = ev.accessSecureURL;
     Logger.write("voximplant: sessionID: " + sessionID);
 });
@@ -443,6 +455,210 @@ const cardIVR = async (call, variables, { output, id, type, inputLength, termina
     })
 )
 
+function handleSpreadCall() {
+    userQueueData
+        .slice(userQueueIndex * userQueueLimit, userQueueIndex * userQueueLimit + userQueueLimit)
+        .forEach((user) => {
+            Logger.write("spreadCall-user: " + JSON.stringify(user));
+            let incall = VoxEngine.callUser(user.user_name, phone_number, user.user_name, {
+                "X-identifier": identifier,
+                "X-createdatecall": new Date().toISOString(),
+                "X-site": site,
+                "X-personname": personName,
+                "X-accessURL": accessURL,
+                "X-method": "simultaneous",
+            });
+            incall.addEventListener(CallEvents.Connected, (e) => {
+                Logger.write("spreadCall-Connected: " + JSON.stringify(e));
+                inboundCalls
+                    .filter((ic) => ic.id !== e.id)
+                    .forEach((ic2) => {
+                        Logger.write("spreadCall-Connected-toHangup: " + JSON.stringify(ic2));
+                        ic2.call.sendMessage(
+                            JSON.stringify({
+                                operation: "SPREAD-HANGUP",
+                                conversationid: conversationid,
+                            })
+                        );
+                        ic2.call.hangup();
+                    });
+                // originalCall2 = e.call; // Call del agente
+                const agentid = parseInt(
+                    inboundCalls
+                        .find((ic) => ic.id === e.id)
+                        .destination.replace("user", "")
+                        .split(".")[0]
+                );
+                reasignAgent(agentid);
+                sendInteraction("LOG", "AGENTE CONTESTÓ LA LLAMADA");
+                lastagentid = agentid;
+                VoxEngine.sendMediaBetween(e.call, call);
+                holdCall(e.call, call);
+                e.call.removeEventListener(CallEvents.Failed);
+                e.call.removeEventListener(CallEvents.Disconnected);
+                e.call.addEventListener(CallEvents.Disconnected, (e2) => {
+                    Logger.write("spreadCall-Disconnected: " + JSON.stringify(e2));
+                    Logger.write("spreadCall-inTransfer: " + JSON.stringify(inTransfer));
+                    if (inTransfer) {
+                        inTransfer = null;
+                    } else {
+                        closeTicket("DESCONECTADO POR ASESOR");
+                        VoxEngine.terminate();
+                    }
+                });
+            });
+            incall.addEventListener(CallEvents.Failed, (e) => {
+                inboundCalls = inboundCalls.filter((ic) => ic.id !== e.id);
+                Logger.write("spreadCall-Failed-inboundCalls: " + JSON.stringify(inboundCalls));
+                if (inboundCalls.length === 0) {
+                    userQueueIndex += 1;
+                    if (userQueueIndex < userQueueLength) {
+                        handleSpreadCall();
+                    } else {
+                        closeTicket("NO HAY ASESORES");
+                        VoxEngine.terminate();
+                    }
+                }
+            });
+            inboundCalls.push({
+                id: incall.id(),
+                destination: user.user_name,
+                call: incall,
+            });
+        });
+    Logger.write("spreadCall-inboundCalls: " + JSON.stringify(inboundCalls));
+}
+
+function handleSimultaneousCall() {
+    Net.httpRequest(
+        `${URL_APILARAIGO}voximplant/getChildrenAccounts`,
+        (res1) => {
+            Logger.write("handleCallConnected: " + res1.text);
+            const laraigo_res = JSON.parse(res1.text).result;
+            const api_key = laraigo_res?.[0]?.api_key;
+            if (api_key) {
+                Logger.write("handleCallConnected-accountID: " + accountID);
+                Logger.write("handleCallConnected-applicationID: " + applicationID);
+                Net.httpRequest(
+                    `${URL_APIVOXIMPLANT}GetUsers/?account_id=${accountID}&application_id=${applicationID}&api_key=${api_key}&user_active=true&count=20&with_skills=true&with_queues=true&acd_status=READY`,
+                    (res2) => {
+                        Logger.write("handleCallConnected-GetUsers: " + res2.text);
+                        const voxi_res = JSON.parse(res2.text).result;
+                        if (voxi_res.length === 0) {
+                            closeTicket("NO HAY ASESORES");
+                            VoxEngine.terminate();
+                        } else {
+                            userQueueData = voxi_res.filter((user) =>
+                                user.acd_queues.map((aq) => aq.acd_queue_name.split(".")?.[1]).includes("laraigo")
+                            );
+                            userQueueLength = Math.ceil(userQueueData.length / userQueueLimit);
+                            // originalCall.say(messageWelcome, VoiceList.Amazon.es_MX_Mia);
+                            handleSpreadCall();
+                        }
+                    },
+                    { method: "GET" }
+                );
+            } else {
+                handleACDQueue();
+            }
+        },
+        {
+            method: "POST",
+            postData: JSON.stringify({
+                child_account_id: accountID,
+            }),
+            headers: ["Content-Type: application/json;charset=utf-8"],
+        }
+    );
+}
+
+const cardReassignAgent = (variables, { messageBusy: messageBusy1, retrytime, type }) => {
+    const messageBusy2 = messageBusy1 ? replaceTextWithVariables(messageBusy1, variables) : messageBusy;
+    Logger.write("derivar simultaneous: " + type);
+    if (type === "simultaneous") {
+
+        handleSimultaneousCall()
+    } else {
+        handleACDQueue({ messageBusy2, retrytime })
+    }
+}
+
+const handleACDQueue = ({ messageBusy2, retrytime }) => {
+    request = VoxEngine.enqueueACDRequest(`${site}.laraigo`, phone_number, {
+        headers: {
+            "X-identifier": identifier,
+            "X-createdatecall": new Date().toISOString(),
+            "X-site": site,
+            "X-personname": personName,
+            "X-accessURL": accessURL,
+        },
+    });
+    // Get call status in queue after it was put in the queue
+    request.addEventListener(ACDEvents.Queued, function (acdevent) {
+        Logger.write("ACDEvents-Queued: " + JSON.stringify(acdevent));
+        request.getStatus();
+    });
+    // Notify caller about his position in the queue
+    request.addEventListener(ACDEvents.Waiting, function (acdevent) {
+        Logger.write("ACDEvents-Waiting: " + JSON.stringify(acdevent));
+        // var minutesLeft = acdevent.ewt + 1;
+        // var minutesWord = " minuto.";
+        // if (minutesLeft > 1) {
+        //     minutesWord = " minutos.";
+        // }
+        //ordinal_suffix_of(acdevent.position)
+        //const speech = `Tú eres el número ${acdevent.position} en la cola. El asesor le responderá en ${(acdevent.ewt + 1)} ${minutesWord}`;
+        //const speech = `Tú eres el número ${acdevent.position} en la cola.`;
+        // call.say(messageWelcome, VoiceList.Amazon.es_MX_Mia);
+    });
+    // Connect caller with operator
+    request.addEventListener(ACDEvents.OperatorReached, function (acdevent) {
+        Logger.write("ACDEvents-OperatorReached: " + JSON.stringify(acdevent));
+        VoxEngine.sendMediaBetween(acdevent.operatorCall, call);
+        holdCall(acdevent.operatorCall, call);
+        acdevent.operatorCall.addEventListener(CallEvents.Disconnected, () => {
+            Logger.write("ACDEvents-OperatorReached-Disconnected: " + JSON.stringify(acdevent));
+            Logger.write("ACDEvents-OperatorReached-inTransfer: " + JSON.stringify(inTransfer));
+            if (inTransfer) {
+                inTransfer = null;
+            } else {
+                closeTicket("DESCONECTADO POR ASESOR");
+                VoxEngine.terminate();
+            }
+        });
+        clearInterval(statusInterval);
+        sendInteraction("LOG", "AGENTE CONTESTÓ LA LLAMADA");
+    });
+    request.addEventListener(ACDEvents.OperatorCallAttempt, function (acdevent) {
+        Logger.write("ACDEvents-OperatorCallAttempt: " + JSON.stringify(acdevent));
+        // call2 = acdevent.operatorCall; // Call del agente
+        const agentid = parseInt(acdevent.operatorCall.number().replace("user", "").split(".")[0]);
+        Logger.write("ACDEvents-agentid: " + agentid);
+        reasignAgent(agentid);
+        lastagentid = agentid;
+        //acdevent.operatorCall.customData()
+    });
+    request.addEventListener(ACDEvents.OperatorFailed, function (acdevent) {
+        Logger.write("ACDEvents-OperatorFailed: " + JSON.stringify(acdevent));
+        Logger.write("eventACD-OperatorCallAttempt: " + JSON.stringify(acdevent));
+        setTimeout(() => {
+            request.getStatus();
+        }, 1000);
+    });
+    // No operators are available
+    request.addEventListener(ACDEvents.Offline, function (acdevent) {
+        Logger.write("ACDEvents-Offline: " + JSON.stringify(acdevent));
+        closeTicket("NO HAY ASESORES");
+        call.say(messageBusy2, VoiceList.Amazon.es_MX_Mia);
+        call.addEventListener(CallEvents.PlaybackFinished, function (e) {
+
+            VoxEngine.terminate();
+        });
+    });
+    // Get current call status in a queue every 30 seconds
+    statusInterval = setInterval(request.getStatus, retrytime);
+}
+
 const cardMessage = async (variables, { message }) => (
     new Promise(async (resolve, reject) => {
         message = replaceTextWithVariables(message, variables);
@@ -521,6 +737,7 @@ const validateCondition = (variables, condition) => {
 }
 
 const loopInteractions = async (call, variables, flow, blockid = "genesis") => {
+    let next = "";
     for (let i = 0; i < flow[blockid].length; i++) {
         const { id, config, condition } = flow[blockid][i];
 
@@ -543,67 +760,30 @@ const loopInteractions = async (call, variables, flow, blockid = "genesis") => {
             break;
         } else if (id === "setup") {
             cardSetAttribute(variables, config);
+        } else if (id === "agenttransfer") {
+            if (config.waitingTone) {
+                const waitingTone = replaceTextWithVariables(config.waitingTone, variables);
+                call.startPlayback(waitingTone);
+            }
+            cardReassignAgent(variables, config);
+            next = "agenttransfer"
+            break;
         }
     }
+    return next;
 }
 
 // Call connected successfully
 async function handleCallConnected(e) {
     if (onlybot) {
         sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA");
-        await loopInteractions(call, variables, flow);
-        closeTicket("finish");
-        VoxEngine.terminate();
+        const next = await loopInteractions(call, variables, flow);
+        if (next !== "agenttransfer") {
+            closeTicket("finish");
+            VoxEngine.terminate();
+        }
     } else {
-        // Notify caller about his position in the queue
-        // Put the call into the queue 'MainQueue'
-        request = VoxEngine.enqueueACDRequest(`${caller_id}.laraigo`, phone_number, {
-            headers: {
-                "X-identifier": identifier,
-                "X-createdatecall": new Date().toISOString(),
-                "X-site": caller_id,
-                "X-personname": personName,
-                "X-accessURL": accessURL,
-            },
-        });
-        // Get call status in queue after it was put in the queue
-        request.addEventListener(ACDEvents.Queued, function (acdevent) {
-            Logger.write("eventACD-Queued: " + JSON.stringify(acdevent));
-            request.getStatus();
-        });
-
-        // Connect caller with operator
-        request.addEventListener(ACDEvents.OperatorReached, function (acdevent) {
-            VoxEngine.sendMediaBetween(acdevent.operatorCall, call);
-            holdCall(acdevent.operatorCall, call);
-            acdevent.operatorCall.addEventListener(CallEvents.Disconnected, () => {
-                Logger.write("eventACD-CallEvents.Disconnected: " + JSON.stringify(acdevent));
-                closeTicket("DESCONECTADO POR ASESOR");
-                VoxEngine.terminate();
-            });
-            clearInterval(statusInterval);
-            deliveryCall(true);
-            sendInteraction("LOG", "AGENTE CONTESTÓ LA LLAMADA");
-        });
-        // New agent to reassign
-        request.addEventListener(ACDEvents.OperatorCallAttempt, function (acdevent) {
-            const agentid = parseInt(acdevent.operatorCall.number().replace("user", "").split(".")[0]);
-            Logger.write("eventACD-agentid: " + agentid);
-            reasignAgent(agentid);
-            lastagentid = agentid;
-        });
-        // No operators are available
-        request.addEventListener(ACDEvents.Offline, function (acdevent) {
-            Logger.write("eventACD-Offline: " + JSON.stringify(acdevent));
-            deliveryCall(false, "there are no agents for the attention");
-            call.say(messageBusy, VOICE_ES);
-            call.addEventListener(CallEvents.PlaybackFinished, function (e) {
-                closeTicket("NO HAY ASESORES");
-                VoxEngine.terminate();
-            });
-        });
-        // Get current call status in a queue every 30 seconds
-        statusInterval = setInterval(request.getStatus, 30000);
+        cardReassignAgent();
     }
 }
 
