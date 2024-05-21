@@ -535,6 +535,7 @@ const MessageTemplates: FC = () => {
                 fetchData={() => fetchData(fetchDataAux)}
                 multiData={mainResult.multiData.data}
                 setViewSelected={setViewSelected}
+                handleSynchronize={handleSynchronize}
             />
         );
 };

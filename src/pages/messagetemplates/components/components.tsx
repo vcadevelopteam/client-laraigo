@@ -326,20 +326,20 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
         <div className={classes.messagePrevContainer}>
             <div className={classes.container} style={{ width: 350 }}>
                 <div className={classes.messageCard}>
-                    {headerType === 'text' ? (
+                    {headerType === 'TEXT' ? (
                         <span className={classes.headerText}>{header}</span>
-                    ) : (headerType !== 'text' && headerType !== 'none') ? (
+                    ) : (headerType !== 'TEXT' && headerType !== 'NONE') ? (
                         <>
-                            {(header !== '' && headerType === 'image') ? (
+                            {(header !== '' && headerType === 'IMAGE') ? (
                                 <div className={classes.cardMediaContainer}>
                                     <img src={header} alt="Cabecera" className={classes.cardMedia} />
                                 </div>
-                            ) : (header !== '' && headerType === 'video') ? (
+                            ) : (header !== '' && headerType === 'VIDEO') ? (
                                 <video controls className={classes.cardMedia}>
                                     <source src={header} type="video/mp4" />
                                     Tu navegador no soporta la etiqueta de video.
                                 </video>
-                            ) : (header !== '' && headerType === 'file') ? (
+                            ) : (header !== '' && headerType === 'FILE') ? (
                                 <>
                                     {getFileIcon(header)}
                                 </>

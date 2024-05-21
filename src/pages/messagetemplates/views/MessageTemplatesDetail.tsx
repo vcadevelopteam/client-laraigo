@@ -77,6 +77,7 @@ interface DetailProps {
     fetchData: () => void;
     multiData: MultiData[];
     setViewSelected: (view: string) => void;
+    handleSynchronize: () => void;
 }
 
 const arrayBread = (view1: string, view2: string) => [
@@ -244,6 +245,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     fetchData,
     multiData,
     setViewSelected,
+    handleSynchronize,
 }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -278,8 +280,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [category, setCategory] = useState(row ? row.category : '')
     const [isHeaderVariable, setIsHeaderVariable] = useState(row?.headervariables?.[0] ? true : false)
     const [headerType, setHeaderType] = useState(
-        (row?.headertype === 'video' || row?.headertype === 'image' || row?.headertype === 'file') ? 'multimedia' :
-        row?.headertype === 'text' ? 'text' : 'none')
+        (row?.headertype === 'VIDEO' || row?.headertype === 'IMAGE' || row?.headertype === 'FILE') ? 'multimedia' :
+        row?.headertype === 'TEXT' ? 'text' : 'none')
     const [filename, setFilename] = useState(row ? row?.header?.split('/')?.pop()?.replace(/%20/g, ' ') : '')
     const [uploading, setUploading] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -477,7 +479,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             footerenabled: row ? row.footerenabled : false,
             header: row?.header || "",
             headerenabled: row ? row.headerenabled : false,
-            headertype: row?.headertype || "none",
+            headertype: row?.headertype || "NONE",
             headervariables: row?.headervariables || [],
             id: row ? row.id : null,
             language: row?.language ? row.language.toUpperCase() : "",
@@ -655,7 +657,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 );
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
-                fetchData && fetchData();
+                handleSynchronize()
                 setWaitAdd(false);
             } else if (addRequest.error) {
                 dispatch(
@@ -743,7 +745,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if (isNew && isProvider) {
             const dataAux = {
                 ...data,
-                headerenabled: (data.headertype !== 'none' && data.header !== '') ? true : false,
+                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
                 footerenabled: data.footer !== '' ? true : false,
                 buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
             }
@@ -767,7 +769,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(addTemplate({ ...data, bodyobject: bodyObject }));
+                dispatch(addTemplate({
+                    ...dataAux,
+                    authenticationdata: JSON.stringify(dataAux.authenticationdata),
+                    bodyvariables: JSON.stringify(dataAux.bodyvariables),
+                    buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
+                    buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
+                    carouseldata: JSON.stringify(dataAux.carouseldata),
+                    headervariables: JSON.stringify(dataAux.headervariables)
+                }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
             };
@@ -839,7 +849,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setCategory('')
 
         setValue('bodyvariables', [])
-        setValue("headertype", "none");
+        setValue("headertype", "NONE");
         setIsHeaderVariable(false)
         trigger("headertype");
         setValue('buttonsgeneric', [])
@@ -892,7 +902,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('footer', '')
         setValue('buttonsgeneric', [])
         setValue('buttonsquickreply', [])
-        setValue("headertype", "none");
+        setValue("headertype", "NONE");
         setValue('body', '')
         setHeaderType('none')
         setValue('carouseldata', [])
@@ -947,22 +957,22 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if(data) {
             if(data.value === 'text') {
                 setHeaderType(data?.value || "");
-                setValue("headertype", data?.value || "")
+                setValue("headertype", data?.value.toUpperCase() || "")
                 setIsHeaderVariable(false)
                 setValue('header', '')
                 trigger("header")
                 trigger("headertype");
             } else {
-                setHeaderType(data?.value || "");
+                setHeaderType('multimedia' || "");
                 setIsHeaderVariable(false)
-                setValue('headertype', 'multimedia')
+                setValue('headertype', data?.value.toUpperCase())
                 setValue('header', '')
                 trigger("header")
                 trigger("headertype");
             }
         } else {
             setHeaderType("none");
-            setValue("headertype", "none")
+            setValue("headertype", "NONE")
             setIsHeaderVariable(false)
             setValue('header', '')
             trigger("header")
@@ -1235,7 +1245,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('footer')
         setValue('bodyvariables', [])
         trigger('bodyvariables')
-        setValue("headertype", "none");
+        setValue("headertype", "NONE");
         setIsHeaderVariable(false)
         trigger("headertype");
         setValue('buttonsgeneric', [])
@@ -1344,7 +1354,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('carouseldata')
         }
     }
-
+    
     const addEmoji = (emoji: EmojiData) => {
         const currentText = getValues('body');
         setValue('body', currentText + emoji.native);
@@ -1733,7 +1743,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 variant="outlined"
                                             />
                                         </div>
-                                        {getValues('headertype') === 'text' && (
+                                        {getValues('headertype') === 'TEXT' && (
                                             <div style={{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
                                                 <FieldEdit
                                                     variant="outlined"
@@ -1757,7 +1767,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         )}
                                     </div>
-                                    {getValues('headertype') === 'text' && isHeaderVariable && (
+                                    {getValues('headertype') === 'TEXT' && isHeaderVariable && (
                                         <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                             <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
                                             <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
@@ -1784,43 +1794,43 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     {(headerType !== 'text' && headerType !== 'none') && (
                                         <div style={{display: 'flex', flexDirection: 'column'}}>
                                             <div style={{display: 'flex', gap: 20, marginBottom: 20}}>
-                                                <div className={getValues('headertype') === 'image' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('image')}>
+                                                <div className={getValues('headertype') === 'IMAGE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('IMAGE')}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'image'} className={classes.checkboxHeadOption}/>
+                                                        <input type="checkbox" checked={getValues('headertype') === 'IMAGE'} className={classes.checkboxHeadOption}/>
                                                     </div>
                                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <ImageIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'image' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'image' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
+                                                        <ImageIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'IMAGE' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'IMAGE' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'video' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('video')}>
+                                                <div className={getValues('headertype') === 'VIDEO' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('VIDEO')}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'video'} className={classes.checkboxHeadOption} />
+                                                        <input type="checkbox" checked={getValues('headertype') === 'VIDEO'} className={classes.checkboxHeadOption} />
                                                     </div>
                                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'video' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'video' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
+                                                        <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'file' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('file')}>
+                                                <div className={getValues('headertype') === 'FILE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('FILE')}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'file'} className={classes.checkboxHeadOption} />
+                                                        <input type="checkbox" checked={getValues('headertype') === 'FILE'} className={classes.checkboxHeadOption} />
                                                     </div>
                                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'file' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'file' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
+                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'FILE' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'FILE' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {(getValues('headertype') !== 'text' && getValues('headertype') !== 'none') && (
+                                            {(getValues('headertype') !== 'TEXT' && getValues('headertype') !== 'NONE') && (
                                                 <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                                     <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
                                                     <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
                                                         {t(langKeys[getValues('headertype')])}
-                                                        {(getValues('headertype') === 'image' || getValues('headertype') === 'video' || getValues('headertype') === 'file') && (
+                                                        {(getValues('headertype') === 'IMAGE' || getValues('headertype') === 'VIDEO' || getValues('headertype') === 'FILE') && (
                                                             <input
                                                                 type="file"
-                                                                accept={getValues('headertype') === 'image' ? '.jpg,.png' : getValues('headertype') === 'video' ? '.mp4' : '.pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls'}
+                                                                accept={getValues('headertype') === 'IMAGE' ? '.jpg,.png' : getValues('headertype') === 'VIDEO' ? '.mp4' : '.pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls'}
                                                                 onChange={(e) => handleFileChange(e.target.files)}
                                                                 style={{ display: 'none' }}
                                                                 disabled={uploading}
@@ -1837,18 +1847,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     disabled={uploading}
                                                                     component="span" // Esto es necesario para que el botón funcione como un input de tipo file
                                                                 >
-                                                                    {getValues('headertype') === 'image' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'video' ? 'Elegir archivo MP4' : 'Elegir un documento'}
+                                                                    {getValues('headertype') === 'IMAGE' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'VIDEO' ? 'Elegir archivo MP4' : 'Elegir un documento'}
                                                                 </Button>
                                                             </label>
                                                         ) : (
-                                                            <div style={{display: 'flex', alignItems: 'center'}}>
-                                                                <div style={{padding: 10, border: '1px solid #888888', borderRadius: 4, width: 'fit-content', maxWidth: '100%'}}>
-                                                                    {filename}
+                                                            <div style={{display: 'flex', alignItems: 'center', flex: 1}}>
+                                                                <div style={{display: 'flex', padding: 10, border: '1px solid #888888', borderRadius: 4, flex: 1}}>
+                                                                    <span style={{color: 'black', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400}}>{filename}</span>
                                                                 </div>
-                                                                <IconButton onClick={() => {
-                                                                    setValue('header', '')
-                                                                    setFilename('')
-                                                                }}>
+                                                                <IconButton
+                                                                    onClick={() => {
+                                                                        setValue('header', '')
+                                                                        setFilename('')
+                                                                    }}
+                                                                >
                                                                     <ClearIcon />
                                                                 </IconButton>
                                                             </div>
@@ -2720,7 +2732,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                     fregister={{
                                                                                                                         ...register(`carouseldata.${index}.buttons.${btni}.btn.code`, {
                                                                                                                             validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                                (value && value !== 0) || t(langKeys.field_required),
                                                                                                                         }),
                                                                                                                     }}
                                                                                                                 />
