@@ -453,9 +453,9 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
                                         {card.buttons.map((btn, i) => {
                                             return (
                                                 <div key={i} className={classes.cardButton2}>
-                                                    {btn.type === 'text' ? (
+                                                    {btn.type === 'QUICK_REPLY' ? (
                                                         <ReplyIcon className={classes.icon} />
-                                                    ) : btn.type === 'link' ? (
+                                                    ) : btn.type === 'URL' ? (
                                                         <OpenInNewIcon className={classes.icon} />
                                                     ) : (
                                                         <PhoneIcon className={classes.icon} />

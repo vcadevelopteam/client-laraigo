@@ -6157,6 +6157,12 @@ export const langKeys = {
   errorIntegrationTrackinguplicates: 'errorIntegrationTrackinguplicates',
   repeated_code: 'repeated_code',
   repeated_person: 'repeated_person',
+  authtemplatemessage: 'authtemplatemessage',
+  template_HIGH: 'template_HIGH',
+  template_MEDIUM: 'template_MEDIUM',
+  template_LOW: 'template_LOW',
+  unlimited: 'unlimited',
+  limitmessagehelptext: 'limitmessagehelptext',
 };
 
 export type LangKeys = typeof langKeys;

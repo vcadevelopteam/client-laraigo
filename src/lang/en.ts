@@ -6207,6 +6207,12 @@ const translation: LangKeys = {
   errorIntegrationTrackinguplicates: 'Trace field names cannot be repeated.',
   repeated_code: 'Codes cannot be repeated',
   repeated_person: 'Persons cannot be repeated',
+  authtemplatemessage: 'It is recommended to set a validity period that is equal to or less than the expiration time of the code to ensure that the code can still be used when users receive the message.',
+  template_HIGH: 'High',
+  template_MEDIUM: 'Medium',
+  template_LOW: 'Low',
+  unlimited: 'Unlimited',
+  limitmessagehelptext: 'It shows the limit of shipments during 24h that is available for the business, this includes all the whatsapp numbers that you have registered.',
 };
 
 const enResource: ResourceLanguage = {
