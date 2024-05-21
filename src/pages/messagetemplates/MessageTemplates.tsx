@@ -279,10 +279,10 @@ const MessageTemplates: FC = () => {
                     if (type) {
                         if(type === 'HSM') {
                             switch (providermessagelimit) {
-                                case "TIER_50":
+                                case "TIER_0.05K":
                                     limit = `50 ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
                                     break;
-                                case "TIER_250":
+                                case "TIER_0.25K":
                                     limit = `250 ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
                                     break;
                                 case "TIER_1K":
