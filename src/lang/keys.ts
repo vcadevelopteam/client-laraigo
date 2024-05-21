@@ -6086,6 +6086,7 @@ export const langKeys = {
 
   campaign_templatepreview: 'campaign_templatepreview',
   programmed: 'programmed',
+  contactdetails: 'contactdetails',
 
 };
 

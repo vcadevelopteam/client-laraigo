@@ -702,15 +702,11 @@ export const Campaign: FC = () => {
                                     <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
                                 </ListItemIcon>
                                 <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
-                            </MenuItem>   
+                            </MenuItem>  
 
                             <Divider />
 
-                            <a
-                                href="/templates/TemplateCampañas(2024-04-18).xlsx"
-                                download="TemplateCampañas(2024-04-18).xlsx"
-                                style={{ textDecoration: 'none', color: 'inherit' }}
-                            >
+                            <a href="/templates/TemplateCampañas(2024-04-18).xlsx" download style={{ textDecoration: 'none', color: 'inherit' }} >
                                 <MenuItem 
                                     disabled={mainResult.mainData.loading}
                                     style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}

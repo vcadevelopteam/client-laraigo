@@ -539,7 +539,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         else {
             return <>
-
                 <Button                
                     variant="contained"
                     color="primary"
@@ -566,69 +565,62 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 >
                     {t(langKeys.delete)} 
                 </Button>
-                <Button                
+                <Button
+                    className={classes.button}
                     variant="contained"
                     color="primary"
-                    style={{ width: 110, backgroundColor: "#53A6FB" }}
+                    onClick={() => cleanData()}
+                    style={{  width: 110, backgroundColor: "#53a6fa" }}
                 >
-                    {t(langKeys.clean)} 
+                    {t(langKeys.clean)}                 
                 </Button>
-                
+                <p><span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b></p>
+
             </>
         }
     }
 
-
-
-   
-
-
     return (
         <React.Fragment>
-            <div className={classes.containerDetail}>           
-                
-                <input
-                    id="upload-file"
-                    name="file"
-                    type="file"
-                    accept=".xls,.xlsx"
-                    value={valuefile}
-                    style={{ display: 'none' }}
-                    onChange={(e) => handleUpload(e.target.files)}
-                />
-
-                <div style={{gap:'1rem', display:'flex', justifyContent:'right'}}>        
-                    
-                    <a href="/templates/Template Cabecera Texto con 3 Variables.xlsx" download
-                    >
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AssignmentIcon style={{ color: 'white' }} />}
-                            style={{ width: 250, backgroundColor: "#55BD84", marginLeft: '0.5rem' }}
-                        >
-                            Descargar formato de carga
-                        </Button>
-                    </a>
-
-                    <label htmlFor="upload-file">
-                        <Button   
-                            component="span"   
-                            className={classes.button}          
-                            variant="contained"
-                            color="primary"
-                            startIcon={<CloudDownloadIcon style={{ color: 'white' }} />}
-                            style={{ width: 150, backgroundColor: "#55BD84" }}
-                        >
-                            {t(langKeys.import)} Base
-                        </Button>
-                    </label>         
-                </div>
-
-
-              
-                   
-                
+            <div className={classes.containerDetail}>
+                {
+                    ['PERSON', 'LEAD'].includes(detaildata?.source || '') ?
+                        <TablePaginated
+                            columns={headers}
+                            data={jsonData}
+                            totalrow={totalrow}
+                            pageCount={pageCount}
+                            loading={paginatedAuxResult.loading}
+                            filterrange={true}
+                            FiltersElement={<></>}
+                            ButtonsElement={() => <>
+                                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+                            </>}
+                            fetchData={fetchPaginatedData}
+                            useSelection={true}
+                            selectionKey={selectionKey}
+                            initialSelectedRows={selectedRows}
+                            setSelectedRows={setSelectedRows}
+                            allRowsSelected={allRowsSelected}
+                            setAllRowsSelected={setAllRowsSelected}
+                        />
+                        :
+                        <TableZyx
+                            titlemodule=" "
+                            columns={headers}
+                            data={jsonData}
+                            download={false}
+                            loading={detaildata.source === 'INTERNAL' && auxResult.loading}
+                            filterGeneral={true}
+                            ButtonsElement={AdditionalButtons}
+                            useSelection={true}
+                            selectionKey={selectionKey}
+                            initialSelectedRows={selectedRows}
+                            setSelectedRows={setSelectedRows}
+                            allRowsSelected={allRowsSelected}
+                            setAllRowsSelected={setAllRowsSelected}
+                        />
+                }
 
             </div>
             <ModalCampaignColumns

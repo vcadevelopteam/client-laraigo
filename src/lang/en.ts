@@ -6142,6 +6142,7 @@ const translation: LangKeys = {
   campaign_execution_time: 'Campaign execution time',
   campaign_templatepreview: 'Template Preview',
   programmed: 'Programmed',
+  contactdetails: 'Contact Details',
 
 };
 

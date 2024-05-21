@@ -653,7 +653,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 onChange={(_, value) => setFrameProps({ ...frameProps, page: value, checkPage: true })}
             >
                 <AntTab label={t(langKeys.generalinformation)} />
-                <AntTab label={t(langKeys.person_plural)} />
+                <AntTab label={t(langKeys.contactdetails)} />
                 <AntTab label={t(langKeys.message)} />
             </Tabs>
             {pageSelected === 0 ?

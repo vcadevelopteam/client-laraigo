@@ -6090,6 +6090,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   campaign_templatepreview: 'Previsualización de la plantilla',
   programmed: 'Programado',
+  contactdetails: 'Datos de Contacto',
+
 
 };
 

@@ -439,12 +439,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const templateId = getValues('messagetemplateid');
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
-   
-   
-
-    
-
-
+    console.log('Template name: ', selectedTemplate.name, 'y cabecera tipo: ', selectedTemplate.headertype)
 
     return (
         <React.Fragment>
@@ -574,7 +569,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             />                       
                               
 
-                            {getValues('executiontype') === 'SCHEDULED' ?
+                            {/* {getValues('executiontype') === 'SCHEDULED' ?
                                 <IconButton
                                     style={{ flexGrow: 0 }}
                                     aria-label="more"
@@ -588,7 +583,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 :
                                 null
                                 
-                            }     
+                            }      */}
 
                         </FormControl>
                         :
@@ -940,7 +935,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     ) : (
                                     
                                         <div>
-                                            <p>No aprobado/ No ha seleccionado plantilla</p>             
+                                            <p>No se ha seleccionado una Plantilla</p>             
                                         </div>
                                     )}
                                 </div>
