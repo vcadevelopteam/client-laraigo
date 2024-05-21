@@ -141,7 +141,6 @@ const useStyles = makeStyles((theme) => ({
         padding: 10,
         backgroundColor: '#EEEEEE',
         flex: 1,
-        cursor: 'pointer',
         "&:hover": {
             backgroundColor: '#D8D8D8',
         },
@@ -1548,7 +1547,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <span>Elige la categoría que mejor describa tu plantilla de mensaje.</span>
                             </div>
                             <div style={{display: 'flex', flexDirection: 'row', gap: '0.5rem'}}>
-                                <div className={classes.categoryOption} onClick={() => changeCategory('MARKETING')}>
+                                <div className={classes.categoryOption} style={{cursor: !isNew ? '' : 'pointer'}} onClick={() => {if(isNew) changeCategory('MARKETING')}}>
                                     <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox}/>
                                     <VolumeUpIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1556,7 +1555,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span>Envía promociones o información sobre tus productos, servicios o negocio.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} onClick={() => changeCategory('UTILITY')}>
+                                <div className={classes.categoryOption} style={{cursor: !isNew ? '' : 'pointer'}} onClick={() => {if(isNew) changeCategory('UTILITY')}}>
                                     <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox}/>
                                     <NotificationsIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1564,7 +1563,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span>Envía mensajes sobre un pedido o cuenta existentes.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} onClick={() => changeCategory('AUTHENTICATION')}>
+                                <div className={classes.categoryOption} style={{cursor: !isNew ? '' : 'pointer'}} onClick={() => {if(isNew) changeCategory('AUTHENTICATION')}}>
                                     <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox}/>
                                     <VpnKeyIcon style={{marginLeft: 10, marginRight: 10}}/>
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -1741,6 +1740,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 optionValue="value"
                                                 valueDefault={headerType}
                                                 variant="outlined"
+                                                disabled={!isNew}
                                             />
                                         </div>
                                         {getValues('headertype') === 'TEXT' && (
@@ -1754,12 +1754,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         setValue('header', value)
                                                         trigger('header')
                                                     }}
+                                                    disabled={!isNew}
                                                 />
                                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
                                                     <Button
                                                         className={classes.button}
                                                         startIcon={isHeaderVariable ? <ClearIcon /> : <AddIcon />}
                                                         onClick={addHeaderVariable}
+                                                        disabled={!isNew}
                                                     >
                                                         {isHeaderVariable ? t(langKeys.deletevariable) : t(langKeys.addvariable)}
                                                     </Button>
@@ -1782,6 +1784,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                             setValue('headervariables.[0]', value)
                                                             trigger('headervariables')
                                                         }}
+                                                        disabled={!isNew}
                                                     />
                                                 </div>
                                             </div>
@@ -1794,7 +1797,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     {(headerType !== 'text' && headerType !== 'none') && (
                                         <div style={{display: 'flex', flexDirection: 'column'}}>
                                             <div style={{display: 'flex', gap: 20, marginBottom: 20}}>
-                                                <div className={getValues('headertype') === 'IMAGE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('IMAGE')}>
+                                                <div className={getValues('headertype') === 'IMAGE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('IMAGE')}}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
                                                         <input type="checkbox" checked={getValues('headertype') === 'IMAGE'} className={classes.checkboxHeadOption}/>
                                                     </div>
@@ -1803,7 +1806,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <span style={{ textAlign: 'center', color: getValues('headertype') === 'IMAGE' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'VIDEO' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('VIDEO')}>
+                                                <div className={getValues('headertype') === 'VIDEO' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('VIDEO')}}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
                                                         <input type="checkbox" checked={getValues('headertype') === 'VIDEO'} className={classes.checkboxHeadOption} />
                                                     </div>
@@ -1812,7 +1815,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <span style={{ textAlign: 'center', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'FILE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => changeHeaderType('FILE')}>
+                                                <div className={getValues('headertype') === 'FILE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('FILE')}}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
                                                         <input type="checkbox" checked={getValues('headertype') === 'FILE'} className={classes.checkboxHeadOption} />
                                                     </div>
@@ -1844,7 +1847,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     variant="outlined"
                                                                     style={{backgroundColor: '#F5F5F5'}}
                                                                     onClick={onClickAttachment}
-                                                                    disabled={uploading}
+                                                                    disabled={uploading || !isNew}
                                                                     component="span" // Esto es necesario para que el botón funcione como un input de tipo file
                                                                 >
                                                                     {getValues('headertype') === 'IMAGE' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'VIDEO' ? 'Elegir archivo MP4' : 'Elegir un documento'}
@@ -1860,6 +1863,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         setValue('header', '')
                                                                         setFilename('')
                                                                     }}
+                                                                    disabled={!isNew}
                                                                 >
                                                                     <ClearIcon />
                                                                 </IconButton>
@@ -1894,10 +1898,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 trigger('body')
                                             }}
                                             maxLength={1024}
+                                            disabled={!isNew}
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)} disabled={!isNew}>
                                             <EmojiEmotionsIcon />
                                         </IconButton>
                                         {showEmojiPicker && (
@@ -1910,6 +1915,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '**')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatBoldIcon />
                                         </IconButton>
@@ -1918,6 +1924,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '__')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatItalicIcon />
                                         </IconButton>
@@ -1926,6 +1933,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '~~')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatStrikethroughIcon />
                                         </IconButton>
@@ -1934,11 +1942,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '``````')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatCodeIcon />
                                         </IconButton>
                                         {getValues('bodyvariables').length < 20 &&(
-                                            <Button onClick={addVariable} startIcon={<AddIcon />}>
+                                            <Button onClick={addVariable} disabled={!isNew} startIcon={<AddIcon />}>
                                                 Añadir Variable
                                             </Button>
                                         )}
@@ -1946,6 +1955,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             className={classes.button}
                                             startIcon={<CloseIcon />}
                                             onClick={deleteVariable}
+                                            disabled={!isNew}
                                         >
                                             {t(langKeys.deletevariable)}
                                         </Button>
@@ -1968,6 +1978,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     setValue('bodyvariables', newBodyVariables);
                                                                     trigger('bodyvariables')
                                                                 }}
+                                                                disabled={!isNew}
                                                             />
                                                         </div>
                                                     </div>
@@ -1990,6 +2001,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         }}
                                         rows={2}
                                         valueDefault={getValues("footer")}
+                                        disabled={!isNew}
                                     />
                                     <span className={classes.title}>{t(langKeys.buttons)}</span>
                                     <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
@@ -2003,6 +2015,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     textbtn={getValues('buttonsquickreply')}
                                                     urlbtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'URL'})}
                                                     phonebtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'PHONE'})}
+                                                    isNew={isNew}
                                                 />
                                             </div>
                                         )}
@@ -2031,7 +2044,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                         <DragIndicatorIcon />
                                                                                         <div style={{flex: 1}}>
                                                                                             <FieldEdit
-                                                                                                disabled={disableInput}
+                                                                                                disabled={disableInput || !isNew}
                                                                                                 label={t(langKeys.buttontext)}
                                                                                                 error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
                                                                                                 onChange={(value) => onChangeButtonText(i, value)}
@@ -2046,7 +2059,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                 }}
                                                                                             />
                                                                                         </div>
-                                                                                        <IconButton onClick={() => onClickRemoveButtonText(i)}>
+                                                                                        <IconButton onClick={() => onClickRemoveButtonText(i)} disabled={!isNew}>
                                                                                             <CloseIcon/>
                                                                                         </IconButton>
                                                                                     </div>
@@ -2099,6 +2112,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                 }),
                                                                                                             }}
                                                                                                             size="small"
+                                                                                                            disabled={!isNew}
                                                                                                         />
                                                                                                         <FieldSelect
                                                                                                             className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}
@@ -2116,6 +2130,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         (value && value.length) || t(langKeys.field_required),
                                                                                                                 }),
                                                                                                             }}
+                                                                                                            disabled={!isNew}
                                                                                                         />
                                                                                                         <FieldEdit
                                                                                                             className='col-4'
@@ -2131,6 +2146,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                 }),
                                                                                                             }}
                                                                                                             size="small"
+                                                                                                            disabled={!isNew}
                                                                                                         />
                                                                                                         {btn?.type === 'dynamic' && (
                                                                                                             <div className="col-1">
@@ -2139,7 +2155,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                         )}
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <IconButton onClick={() => onClickRemoveButton(i)}>
+                                                                                                <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
                                                                                                     <CloseIcon/>
                                                                                                 </IconButton>
                                                                                             </div>
@@ -2156,6 +2172,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                     trigger('buttonsgeneric')
                                                                                                                 }}
                                                                                                                 valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                disabled={!isNew}
                                                                                                             />
                                                                                                         </div>
                                                                                                     </div>
@@ -2186,6 +2203,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             }),
                                                                                                         }}
                                                                                                         size="small"
+                                                                                                        disabled={!isNew}
                                                                                                     />
                                                                                                     <FieldSelect
                                                                                                         className='col-4'
@@ -2211,6 +2229,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                     (value && value !== 0) || t(langKeys.field_required),
                                                                                                             }),
                                                                                                         }}
+                                                                                                        disabled={!isNew}
                                                                                                     />
                                                                                                     <FieldEdit
                                                                                                         className='col-4'
@@ -2228,10 +2247,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                         }}
                                                                                                         maxLength={20}
                                                                                                         size="small"
+                                                                                                        disabled={!isNew}
                                                                                                     />
                                                                                                 </div>
                                                                                             </div>
-                                                                                            <IconButton onClick={() => onClickRemoveButton(i)}>
+                                                                                            <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
                                                                                                 <CloseIcon/>
                                                                                             </IconButton>
                                                                                         </div>
@@ -2280,6 +2300,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             checked={getValues('authenticationdata.safetyrecommendation')}
                                             color="primary"
                                             onChange={(e) => changeSafetyRecommendation(e)}
+                                            disabled={!isNew}
                                         />
                                         <span>{t(langKeys.addsecurityadvice)}</span>
                                     </div>
@@ -2288,6 +2309,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             checked={getValues('authenticationdata.showexpirationdate')}
                                             color="primary"
                                             onChange={(e) => showExpirationDate(e)}
+                                            disabled={!isNew}
                                         />
                                         <span>{t(langKeys.addlastdatecode)}</span>
                                     </div>
@@ -2304,6 +2326,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 label={t(langKeys.minutes)}
                                                 variant="outlined"
                                                 size="small"
+                                                disabled={!isNew}
                                             />
                                             <div className={classes.warningContainer}>
                                                 <WarningIcon style={{color: '#FF7575'}}/>
@@ -2324,6 +2347,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             maxLength={25}
                                             size="small"
                                             variant="outlined"
+                                            disabled={!isNew}
                                         />
                                     </div>
                                     <span className={classes.title} style={{marginBottom: 10}}>{t(langKeys.advanceconfig)}</span>
@@ -2334,6 +2358,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             checked={getValues('authenticationdata.configurevalidityperiod')}
                                             color="primary"
                                             onChange={(e) => configureValidityPeriod(e)}
+                                            disabled={!isNew}
                                         />
                                         <div style={{display: 'flex', flexDirection: 'column'}}>
                                             <span style={{fontWeight: 'bold'}}>{t(langKeys.configvalidityperiod)}</span>
@@ -2362,6 +2387,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                             trigger('authenticationdata')
                                                         }
                                                     }}
+                                                    disabled={!isNew}
                                                 />
                                             </div>
                                         </div>
@@ -2405,10 +2431,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 trigger('body')
                                             }}
                                             maxLength={1024}
+                                            disabled={!isNew}
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)} disabled={!isNew}>
                                             <EmojiEmotionsIcon />
                                         </IconButton>
                                         {showEmojiPicker && (
@@ -2421,6 +2448,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '**')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatBoldIcon />
                                         </IconButton>
@@ -2429,6 +2457,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '__')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatItalicIcon />
                                         </IconButton>
@@ -2437,6 +2466,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '~~')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatStrikethroughIcon />
                                         </IconButton>
@@ -2445,11 +2475,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 setValue('body', getValues('body') + '``````')
                                                 trigger('body')
                                             }}
+                                            disabled={!isNew}
                                         >
                                             <FormatCodeIcon />
                                         </IconButton>
                                         {getValues('bodyvariables').length < 20 &&(
-                                            <Button onClick={addVariable} startIcon={<AddIcon />}>
+                                            <Button onClick={addVariable} disabled={!isNew} startIcon={<AddIcon />}>
                                                 Añadir Variable
                                             </Button>
                                         )}
@@ -2457,6 +2488,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             className={classes.button}
                                             startIcon={<CloseIcon />}
                                             onClick={deleteVariable}
+                                            disabled={!isNew}
                                         >
                                             {t(langKeys.deletevariable)}
                                         </Button>
@@ -2477,6 +2509,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     setValue(`bodyvariables.${index}.text`, value);
                                                                     trigger('bodyvariables')
                                                                 }}
+                                                                disabled={!isNew}
                                                             />
                                                         </div>
                                                     </div>
@@ -2497,7 +2530,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     return (
                                                         <div key={`card-${index}`} className="col-4" style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', padding: '0px 8px 0px 8px'}}>
                                                             <div style={{display: 'flex', width: '100%', justifyContent: 'end'}}>
-                                                                <IconButton onClick={() => onClickRemoveCard(index)} style={{padding: 0}}>
+                                                                <IconButton onClick={() => onClickRemoveCard(index)} disabled={!isNew} style={{padding: 0}}>
                                                                     <ClearIcon className={classes.closeIcon}/>
                                                                 </IconButton>
                                                             </div>
@@ -2506,7 +2539,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
                                                                     <div style={{display: 'flex', gap: 10}}>
                                                                         <span className={classes.imageName}>{card.header.split('/').pop().replace(/%20/g, ' ')}</span>
-                                                                        <IconButton onClick={() => handleImageRemove(index)} style={{padding: 0}}>
+                                                                        <IconButton onClick={() => handleImageRemove(index)} disabled={!isNew} style={{padding: 0}}>
                                                                             <ClearIcon className={classes.closeIcon}/>
                                                                         </IconButton>
                                                                     </div>
@@ -2519,6 +2552,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         onChange={(e) => handleFileChangeAux(e.target.files, index)}
                                                                         style={{ display: 'none' }}
                                                                         id={`fileInput-${index}`}
+                                                                        disabled={!isNew}
                                                                     />
                                                                     <label htmlFor={`fileInput-${index}`}>
                                                                         <div className={classes.uploadImage}>
@@ -2548,6 +2582,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                 (value && value.length) || t(langKeys.field_required),
                                                                         }),
                                                                     }}
+                                                                    disabled={!isNew}
                                                                 />
                                                                 {getValues(`carouseldata.${index}.bodyvariables`)?.length < 7 &&(
                                                                     <div style={{display: 'flex', justifyContent: 'end'}}>
@@ -2555,6 +2590,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                             className={classes.button}
                                                                             startIcon={<AddIcon />}
                                                                             onClick={() => addVariableCard(index)}
+                                                                            disabled={!isNew}
                                                                         >
                                                                             {t(langKeys.addvariable)}
                                                                         </Button>
@@ -2570,6 +2606,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         textbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'QUICK_REPLY'})}
                                                                         urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'URL'})}
                                                                         phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'PHONE'})}
+                                                                        isNew={isNew}
                                                                     />
                                                                 </div>
                                                             )}
@@ -2604,9 +2641,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                             setValue(`carouseldata.${index}.buttons.${btni}.btn.payload`, value);
                                                                                                                             trigger('carouseldata')
                                                                                                                         }}
+                                                                                                                        disabled={!isNew}
                                                                                                                     />
                                                                                                                 </div>
-                                                                                                                <IconButton style={{padding: 0}} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
                                                                                                                     <ClearIcon />
                                                                                                                 </IconButton>
                                                                                                             </div>
@@ -2625,9 +2663,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         maxLength={25}
                                                                                                                         valueDefault={btn?.btn?.text}
                                                                                                                         onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
+                                                                                                                        disabled={!isNew}
                                                                                                                     />
                                                                                                                 </div>
-                                                                                                                <IconButton style={{padding: 0}} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
                                                                                                                     <ClearIcon />
                                                                                                                 </IconButton>
                                                                                                             </div>
@@ -2648,6 +2687,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                             onChangeCardsButton(index, btni, "type", "")
                                                                                                                         }
                                                                                                                     }}
+                                                                                                                    disabled={!isNew}
                                                                                                                     fregister={{
                                                                                                                         ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
                                                                                                                             validate: (value) =>
@@ -2666,6 +2706,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         size="small"
                                                                                                                         valueDefault={btn?.btn?.url}
                                                                                                                         onChange={(value) => onChangeCardsButton(index, btni, "url", value)}
+                                                                                                                        disabled={!isNew}
                                                                                                                     />
                                                                                                                 </div>
                                                                                                                 {btn?.btn?.type === 'dynamic' &&(
@@ -2686,6 +2727,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                 trigger('carouseldata')
                                                                                                                             }}
                                                                                                                             valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                            disabled={!isNew}
                                                                                                                         />
                                                                                                                     </div>
                                                                                                                 </>
@@ -2705,9 +2747,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         maxLength={25}
                                                                                                                         valueDefault={btn?.btn?.text}
                                                                                                                         onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
+                                                                                                                        disabled={!isNew}
                                                                                                                     />
                                                                                                                 </div>
-                                                                                                                <IconButton style={{padding: 0}} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
                                                                                                                     <ClearIcon />
                                                                                                                 </IconButton>
                                                                                                             </div>
@@ -2735,6 +2778,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                 (value && value !== 0) || t(langKeys.field_required),
                                                                                                                         }),
                                                                                                                     }}
+                                                                                                                    disabled={!isNew}
                                                                                                                 />
                                                                                                             </div>
                                                                                                             <div style={{width: '100%'}}>
@@ -2748,6 +2792,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                     maxLength={20}
                                                                                                                     valueDefault={btn?.btn?.phone_number}
                                                                                                                     onChange={(value) => onChangeCardsButton(index, btni, "phone_number", value)}
+                                                                                                                    disabled={!isNew}
                                                                                                                 />
                                                                                                             </div>
                                                                                                         </>
@@ -2767,7 +2812,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 })}
                                                 <div 
                                                     style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
-                                                    onClick={onClickAddCard}
+                                                    onClick={() => {if(isNew) onClickAddCard()}}
                                                     className="col-4"
                                                 >
                                                     <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
@@ -2786,6 +2831,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                 className={classes.button}
                                                                                 startIcon={<CloseIcon />}
                                                                                 onClick={() => deleteVariableCard(cindex)}
+                                                                                disabled={!isNew}
                                                                             >
                                                                                 {t(langKeys.deletevariable)}
                                                                             </Button>
@@ -2803,6 +2849,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                 setValue(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, value)
                                                                                                 trigger('carouseldata')
                                                                                             }}
+                                                                                            disabled={!isNew}
                                                                                         />
                                                                                     </div>
                                                                                 </div>
@@ -2823,7 +2870,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     ) : (
                                         <div 
                                             style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
-                                            onClick={onClickAddCard}
+                                            onClick={() => {if(isNew) onClickAddCard()}}
                                         >
                                             <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
                                         </div>

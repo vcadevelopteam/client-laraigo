@@ -148,6 +148,7 @@ interface TemplateIconsProps {
     textbtn: Dictionary[];
     urlbtn: Dictionary[];
     phonebtn: Dictionary[];
+    isNew: boolean;
 }
 
 export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
@@ -156,7 +157,8 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
     callNumber,
     textbtn,
     urlbtn,
-    phonebtn
+    phonebtn,
+    isNew
 }) => {
     const classes = useStyles();
     const { t } = useTranslation();
@@ -192,6 +194,7 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
                 className={classes.button}
                 type="button"
                 variant="outlined"
+                disabled={!isNew}
             >
                 {t(langKeys.addbutton)}
             </Button>
