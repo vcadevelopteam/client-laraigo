@@ -126,12 +126,8 @@ const MessageTemplates: FC = () => {
                 ]
                 : []),
             {
-                accessor: "communicationchanneltype",
+                accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;
-                    return <div style={{ textAlign: 'center' }}>{row.original.communicationchanneltype}</div>;
-                }
             },
             {
                 accessor: "name",
@@ -142,7 +138,7 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.language),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{ textAlign: 'center' }}>{row.original.language}</div>;
+                    return <div style={{ textAlign: 'center' }}>{row.original.language.toUpperCase()}</div>;
                 }
             },
             {
@@ -165,18 +161,18 @@ const MessageTemplates: FC = () => {
 
             },
             {
-                accessor: "externalstatus",
+                accessor: "providerstatus",
                 Header: t(langKeys.status),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    const { externalstatus, type } = row?.original || {};
+                    const { providerstatus, type } = row?.original || {};
 
                     let statusText = '';
 
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                statusText = t(`TEMPLATE_${externalstatus}`);
+                                statusText = t(`TEMPLATE_${providerstatus}`);
                                 break;
                             default:
                                 statusText = t('TEMPLATE_APPROVED');
@@ -214,21 +210,106 @@ const MessageTemplates: FC = () => {
                 accessor: "templatetype",
                 Header: t(langKeys.templatetype),
                 prefixTranslation: "messagetemplate_",
-            },
-            {
-                accessor: "priority",
-                Header: t(langKeys.quality),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{ textAlign: 'center' }}>{row.original.priority}</div>;
+                    const { category, type, templatetype } = row?.original || {};
+                    if (category && type) {
+                        return ((type === "HSM" && category !== 'AUTHENTICATION') ? templatetype.toUpperCase() : '');
+                    } else {
+                        return '';
+                    }
                 }
             },
             {
-                accessor: "limit",
-                Header: t(langKeys.messageslimit),
+                accessor: "providerquality",
+                Header: t(langKeys.quality),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{ textAlign: 'center' }}>{row.original.limit}</div>;
+                    const { providerquality, type } = row?.original || {};
+
+                    let qText = '';
+
+                    if (type) {
+                        switch (type) {
+                            case "HSM":
+                                qText = t(`template_${providerquality}`);
+                                break;
+                            default:
+                                qText = '-';
+                                break;
+                        }
+
+                        let color = '';
+
+                        switch (qText) {
+                            case 'Media':
+                                color = '#E6C300';
+                                break;
+                            case 'Baja':
+                                color = 'red';
+                                break;
+                            case 'Alta':
+                                color = 'green';
+                                break;
+                            default:
+                                color = 'black';
+                                break;
+                        }
+
+                        return (
+                            <span style={{ color: color, textAlign: 'center' }}>
+                                {qText.toUpperCase()}
+                            </span>
+                        );
+                    } else {
+                        return '';
+                    }
+                }
+            },
+            {
+                accessor: "providermessagelimit",
+                Header: t(langKeys.messageslimit),
+                helpText: t(langKeys.limitmessagehelptext),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const { providermessagelimit, type } = row?.original || {};
+
+                    let limit = '-';
+
+                    if (type) {
+                        if(type === 'HSM') {
+                            switch (providermessagelimit) {
+                                case "TIER_50":
+                                    limit = `50 ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
+                                    break;
+                                case "TIER_250":
+                                    limit = `250 ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
+                                    break;
+                                case "TIER_1K":
+                                    limit = `1K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
+                                    break;
+                                case "TIER_10K":
+                                    limit = `10K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
+                                    break;
+                                case "TIER_100K":
+                                    limit = `100K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
+                                    break;
+                                case "TIER_UNLIMITED":
+                                    limit = t(langKeys.unlimited);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        return (
+                            <span style={{ textAlign: 'center' }}>
+                                {limit}
+                            </span>
+                        );
+                    } else {
+                        return '-';
+                    }
                 }
             },
             {

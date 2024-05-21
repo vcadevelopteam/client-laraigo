@@ -6138,6 +6138,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   errorIntegrationTrackinguplicates: 'Los nombres de los campos de rastreo no se pueden repetir.',
   repeated_code: 'Los Codigos no pueden repetirse',
   repeated_person: 'Las Personas no pueden repetirse',
+  authtemplatemessage: 'Se recomienda configurar un periodo de validez que sea igual o inferior al tiempo de expiración del código para garantizar que este aún pueda usarse cuando los usuarios reciban el mensaje.',
+  template_HIGH: 'Alta',
+  template_MEDIUM: 'Media',
+  template_LOW: 'Baja',
+  unlimited: 'Ilimitado',
+  limitmessagehelptext: 'Muestra el límite de envíos durante 24h que se tiene disponible, para el negocio, este engloba todos los números whatsapp que tenga registrado.',
 };
 
 const esResource: ResourceLanguage = {

@@ -502,20 +502,51 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
     const [type] = watch(["type"]);
-
+    console.log(errors)
     React.useEffect(() => {
         register('authenticationdata');
         register("body");
         register("bodyvariables");
-        register("category");
-        register("communicationchannelid");
+        register("category", {
+            validate: (value) => {
+                if (type === "HSM") return (value && value.length) || t(langKeys.field_required);
+                return true;
+            },
+        });
+        register("communicationchannelid", {
+            validate: (value) => {
+                if (type === "HSM") return (value && value !== 0) || t(langKeys.field_required);
+                return true;
+            },
+        });
+        register("carouseldata", {
+            validate: (value) => {
+                if (type === "HSM" && getValues('templatetype') === 'CAROUSEL') return (value && value.length > 0) || t(langKeys.field_required);
+                return true;
+            },
+        });
         register("communicationchanneltype");
         register("footer");
-        register("header");
-        register("language");
+        register("header", {
+            validate: (value) => {
+                if (getValues('headertype') && getValues('headertype') !== 'NONE') return (value && value.length) || t(langKeys.field_required);
+                return true;
+            },
+        });
+        register("language", {
+            validate: (value) => {
+                if (type === "HSM") return (value && value.length) || t(langKeys.field_required);
+                return true;
+            },
+        });
         register("name");
         register("namespace");
-        register("templatetype");
+        register("templatetype", {
+            validate: (value) => {
+                if (type === "HSM" && getValues("category") !== 'AUTHENTICATION') return (value && value.length) || t(langKeys.field_required);
+                return true;
+            },
+        });
         register("type");
 
         register("body", {
@@ -545,11 +576,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 // register("namespace", {
                 //     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 // });
-                if (getValues("headerenabled") && getValues('templatetype') === 'MULTIMEDIA') {
-                    register("header", {
-                        validate: (value) => (value && value.length) || t(langKeys.field_required),
-                    });
-                }
                 if (getValues("footerenabled")) {
                     register("footer", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -596,12 +622,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             // register("namespace", {
             //     validate: (value) => (value && value.length) || t(langKeys.field_required),
             // });
-
-            if (row?.headerenabled && getValues('templatetype') === 'MULTIMEDIA') {
-                register("header", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
-            }
 
             if (row?.footerenabled) {
                 register("footer", {
@@ -861,7 +881,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
         trigger("footer");
-        trigger("header");
         trigger("language");
         //trigger("name");
         trigger("namespace");
@@ -870,14 +889,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
     
     const onChangeTemplateMedia = async () => {
-        if (getValues("headerenabled") && getValues('templatetype') === 'MULTIMEDIA') {
-            register("header", {
-                validate: (value) => (value && value.length) || t(langKeys.field_required),
-            });
-        } else {
-            register("header", {validate: () => true });
-        }
-
         if (getValues("footerenabled")) {
             register("footer", {
                 validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -888,7 +899,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         trigger("footer");
         trigger("footerenabled");
-        trigger("header");
         trigger("headerenabled");
     };
 
@@ -907,10 +917,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('carouseldata', [])
         trigger('carouseldata');
         trigger("headertype");
-        trigger("header");
         trigger("footer");
         trigger('buttonsgeneric');
-        trigger('body');
         trigger('buttonsquickreply');
         setValue('bodyvariables', [])
         trigger('bodyvariables');
@@ -959,14 +967,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("headertype", data?.value.toUpperCase() || "")
                 setIsHeaderVariable(false)
                 setValue('header', '')
-                trigger("header")
                 trigger("headertype");
             } else {
                 setHeaderType('multimedia' || "");
                 setIsHeaderVariable(false)
                 setValue('headertype', data?.value.toUpperCase())
                 setValue('header', '')
-                trigger("header")
                 trigger("headertype");
             }
         } else {
@@ -974,7 +980,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("headertype", "NONE")
             setIsHeaderVariable(false)
             setValue('header', '')
-            trigger("header")
             trigger("headertype");
         }
     };
@@ -1128,6 +1133,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if (waitUploadFile2) {
             if (!uploadResult.loading && !uploadResult.error) {
                 setValue('header', uploadResult?.url || '')
+                trigger('header')
                 setFilename(fileAttachment?.name || '')
                 setUploading(false);
                 setWaitUploadFile2(false);
@@ -1220,14 +1226,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setDisableNamespace(false);
         }
 
-        trigger("body");
         trigger("category");
         trigger("communicationchannelid");
         trigger("communicationchanneltype");
         trigger("communicationchanneldesc");
         trigger("communicationchannelphone")
         trigger("footer");
-        trigger("header");
         trigger("language");
         trigger("name");
         trigger("namespace");
@@ -1574,6 +1578,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         </>
                     )}
+                    {getValues('type') === 'HSM' && (
+                        <span style={{color: 'red'}}>{errors?.category?.message}</span>
+                    )}
                     <div className="row-zyx">
                         {(getValues("type") !== "HSM" && getValues("type") !== '') && (
                             <FieldSelect
@@ -1722,7 +1729,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === 'HSM' &&
-                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
+                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && getValues('communicationchannelid') !== 0 &&
+                    (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
                         <div>
                             <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
                                 <span className={classes.title}>{t(langKeys.templateedition)}</span>
@@ -1750,6 +1758,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     size="small"
                                                     maxLength={60}
                                                     valueDefault={getValues('header')}
+                                                    error={errors?.header?.message}
                                                     onChange={(value) => {
                                                         setValue('header', value)
                                                         trigger('header')
@@ -1872,6 +1881,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         {uploading && (
                                                             <span>Subiendo...</span>
                                                         )}
+                                                        <span style={{color: 'red'}}>{errors?.header?.message}</span>
                                                     </div>
                                                     {getValues('header') === '' && (
                                                         <div className={classes.warningContainer}>
@@ -1898,6 +1908,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 trigger('body')
                                             }}
                                             maxLength={1024}
+                                            error={errors?.body?.message}
                                             disabled={!isNew}
                                         />
                                     </div>
@@ -2286,7 +2297,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         </div>
                     )}
-                    {(getValues("type") === 'HSM' && getValues('category') === 'AUTHENTICATION' && getValues('name') !== '' && getValues('language') !== '') && (
+                    {(getValues("type") === 'HSM' && getValues('category') === 'AUTHENTICATION' && getValues('name') !== '' && getValues('language') !== '' && getValues('communicationchannelid') !== 0) && (
                         <div>
                             <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
                                 <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
@@ -2392,6 +2403,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         </div>
                                     )}
+                                    {getValues('authenticationdata.codeexpirationminutes') < getValues('authenticationdata.validityperiod') && (
+                                        <div style={{display: 'flex', padding: 10, borderRadius: 8, gap: 10, backgroundColor: '#FFF5D1', marginTop: 10}}>
+                                            <WarningIcon style={{color: '#D3A500'}}/>
+                                            <span>{t(langKeys.authtemplatemessage)}</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
@@ -2409,7 +2426,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </div>
                     )}
                     {getValues("type") === 'HSM' &&
-                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) &&(
+                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && getValues('communicationchannelid') !== 0 &&
+                    (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) &&(
                         <div>
                             <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
                                 <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
@@ -2432,6 +2450,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             }}
                                             maxLength={1024}
                                             disabled={!isNew}
+                                            error={errors?.body?.message}
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
@@ -2510,6 +2529,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     trigger('bodyvariables')
                                                                 }}
                                                                 disabled={!isNew}
+                                                                error={errors?.bodyvariables?.[index]?.text?.message}
+                                                                fregister={{
+                                                                    ...register(`bodyvariables.${index}.text`, {
+                                                                        validate: (value) =>
+                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                    }),
+                                                                }}
                                                             />
                                                         </div>
                                                     </div>
@@ -2521,8 +2547,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         </div>
                                     )}
+                                    <div style={{height: 20}}/>
                                     <span className={classes.title}>{t(langKeys.messagetemplate_carousel)}</span>
                                     <span style={{marginBottom: 10}}>Configura tus cards de carrusel añadiendo imágenes, texto, variables y botones</span>
+                                    <span style={{color: 'red', marginBottom: 10}}>{errors?.carouseldata?.message}</span>
                                     {getValues('carouseldata')?.length > 0 ? (
                                         <div className="row-zyx">
                                             <React.Fragment>
@@ -2576,6 +2604,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         setValue(`carouseldata.${index}.body`, value)
                                                                         trigger('carouseldata')
                                                                     }}
+                                                                    error={errors?.carouseldata?.[index]?.body?.message}
                                                                     fregister={{
                                                                         ...register(`carouseldata.${index}.body`, {
                                                                             validate: (value) =>
@@ -2642,6 +2671,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                             trigger('carouseldata')
                                                                                                                         }}
                                                                                                                         disabled={!isNew}
+                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.text?.message}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
                                                                                                                     />
                                                                                                                 </div>
                                                                                                                 <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
@@ -2664,6 +2700,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         valueDefault={btn?.btn?.text}
                                                                                                                         onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
                                                                                                                         disabled={!isNew}
+                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.text?.message}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
                                                                                                                     />
                                                                                                                 </div>
                                                                                                                 <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
@@ -2688,6 +2731,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         }
                                                                                                                     }}
                                                                                                                     disabled={!isNew}
+                                                                                                                    error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.type?.message}
                                                                                                                     fregister={{
                                                                                                                         ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
                                                                                                                             validate: (value) =>
@@ -2707,6 +2751,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         valueDefault={btn?.btn?.url}
                                                                                                                         onChange={(value) => onChangeCardsButton(index, btni, "url", value)}
                                                                                                                         disabled={!isNew}
+                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.url?.message}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.url`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
                                                                                                                     />
                                                                                                                 </div>
                                                                                                                 {btn?.btn?.type === 'dynamic' &&(
@@ -2728,6 +2779,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                             }}
                                                                                                                             valueDefault={btn?.btn?.variables[0] || ""}
                                                                                                                             disabled={!isNew}
+                                                                                                                            error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.variables?.[0]?.message}
+                                                                                                                            fregister={{
+                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.variables.${0}`, {
+                                                                                                                                    validate: (value) =>
+                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                }),
+                                                                                                                            }}
                                                                                                                         />
                                                                                                                     </div>
                                                                                                                 </>
@@ -2748,6 +2806,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         valueDefault={btn?.btn?.text}
                                                                                                                         onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
                                                                                                                         disabled={!isNew}
+                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.text?.message}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
                                                                                                                     />
                                                                                                                 </div>
                                                                                                                 <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
@@ -2772,6 +2837,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                             trigger('carouseldata')
                                                                                                                         }
                                                                                                                     }}
+                                                                                                                    error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.code?.message}
                                                                                                                     fregister={{
                                                                                                                         ...register(`carouseldata.${index}.buttons.${btni}.btn.code`, {
                                                                                                                             validate: (value) =>
@@ -2793,6 +2859,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                     valueDefault={btn?.btn?.phone_number}
                                                                                                                     onChange={(value) => onChangeCardsButton(index, btni, "phone_number", value)}
                                                                                                                     disabled={!isNew}
+                                                                                                                    error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.phone_number?.message}
+                                                                                                                    fregister={{
+                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.phone_number`, {
+                                                                                                                            validate: (value) =>
+                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                        }),
+                                                                                                                    }}
                                                                                                                 />
                                                                                                             </div>
                                                                                                         </>
@@ -2850,6 +2923,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                 trigger('carouseldata')
                                                                                             }}
                                                                                             disabled={!isNew}
+                                                                                            error={errors?.carouseldata?.[cindex]?.bodyvariables?.[vindex]?.text?.message}
+                                                                                            fregister={{
+                                                                                                ...register(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, {
+                                                                                                    validate: (value) =>
+                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                }),
+                                                                                            }}
                                                                                         />
                                                                                     </div>
                                                                                 </div>
