@@ -5,8 +5,8 @@ require(Modules.Player);
 require(Modules.ASR);
 require(Modules.Conference);
 
-const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxmetest/services/api/";
-const URL_APILARAIGO = "https://testapix.laraigo.com/api/";
+const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
+const URL_APILARAIGO = "https://apiprd.laraigo.com/api/";
 const URL_APIVOXIMPLANT = "https://api.voximplant.com/platform_api/";
 
 let conf;
@@ -167,7 +167,6 @@ function createTicket(content, callback) {
             afterHour = result.Properties?.AfterHours || afterHour;
             messageAfterHour = result.Properties?.MessageAfterHours || messageAfterHour;
 
-            
             callback(result.NewConversation, afterHour, messageAfterHour);
         },
         {
@@ -633,9 +632,9 @@ function handleACDQueue() {
     // No operators are available
     request.addEventListener(ACDEvents.Offline, function (acdevent) {
         Logger.write("ACDEvents-Offline: " + JSON.stringify(acdevent));
+        closeTicket("NO HAY ASESORES");
         originalCall.say(messageBusy, VoiceList.Amazon.es_MX_Mia);
         originalCall.addEventListener(CallEvents.PlaybackFinished, function (e) {
-            closeTicket("NO HAY ASESORES");
             VoxEngine.terminate();
         });
     });
