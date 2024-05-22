@@ -6144,6 +6144,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   template_LOW: 'Baja',
   unlimited: 'Ilimitado',
   limitmessagehelptext: 'Muestra el límite de envíos durante 24h que se tiene disponible, para el negocio, este engloba todos los números whatsapp que tenga registrado.',
+  synchronizeError: 'No se pudieron sincronizar las plantillas',
 };
 
 const esResource: ResourceLanguage = {

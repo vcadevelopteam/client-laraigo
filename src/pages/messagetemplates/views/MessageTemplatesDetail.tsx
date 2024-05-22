@@ -279,7 +279,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [category, setCategory] = useState(row ? row.category : '')
     const [isHeaderVariable, setIsHeaderVariable] = useState(row?.headervariables?.[0] ? true : false)
     const [headerType, setHeaderType] = useState(
-        (row?.headertype === 'VIDEO' || row?.headertype === 'IMAGE' || row?.headertype === 'FILE') ? 'multimedia' :
+        (row?.headertype === 'VIDEO' || row?.headertype === 'IMAGE' || row?.headertype === 'DOCUMENT') ? 'multimedia' :
         row?.headertype === 'TEXT' ? 'text' : 'none')
     const [filename, setFilename] = useState(row ? row?.header?.split('/')?.pop()?.replace(/%20/g, ' ') : '')
     const [uploading, setUploading] = useState(false)
@@ -500,9 +500,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     });
 
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
-
+    
     const [type] = watch(["type"]);
-    console.log(errors)
     React.useEffect(() => {
         register('authenticationdata');
         register("body");
@@ -521,7 +520,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         });
         register("carouseldata", {
             validate: (value) => {
-                if (type === "HSM" && getValues('templatetype') === 'CAROUSEL') return (value && value.length > 0) || t(langKeys.field_required);
+                if (type === "HSM" && getValues('templatetype') === 'CAROUSEL') {
+                    // Validar que value no esté vacío
+                    if (!value || value.length === 0) {
+                        return t(langKeys.field_required);
+                    }
+                    // Extraer todos los tipos de botones de todos los cards
+                    const buttonTypes = value.flatMap((card:Dictionary) => card.buttons.map((button:Dictionary) => button.type));
+                    // Validar que todos los tipos de botones sean iguales
+                    const allSameType = buttonTypes.every((type: string, index: number, array) => type === array[0]);
+                    if (!allSameType) {
+                        return 'No se puede tener tipos de botones diferentes en el mismo card';
+                    }
+                    return true;
+                }
                 return true;
             },
         });
@@ -768,6 +780,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 footerenabled: data.footer !== '' ? true : false,
                 buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
             }
+            
             const callback = () => {
                 if (data.type === "MAIL") {
                     data.body = renderToString(toElement(bodyObject));
@@ -915,7 +928,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('body', '')
         setHeaderType('none')
         setValue('carouseldata', [])
-        trigger('carouseldata');
         trigger("headertype");
         trigger("footer");
         trigger('buttonsgeneric');
@@ -967,12 +979,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("headertype", data?.value.toUpperCase() || "")
                 setIsHeaderVariable(false)
                 setValue('header', '')
+                setValue('headervariables', [''])
+                trigger("headervariables");
                 trigger("headertype");
             } else {
                 setHeaderType('multimedia' || "");
                 setIsHeaderVariable(false)
                 setValue('headertype', data?.value.toUpperCase())
                 setValue('header', '')
+                setValue('headervariables', [])
+                trigger("headervariables");
                 trigger("headertype");
             }
         } else {
@@ -980,6 +996,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("headertype", "NONE")
             setIsHeaderVariable(false)
             setValue('header', '')
+            setValue('headervariables', [])
+            trigger("headervariables");
             trigger("headertype");
         }
     };
@@ -1133,7 +1151,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if (waitUploadFile2) {
             if (!uploadResult.loading && !uploadResult.error) {
                 setValue('header', uploadResult?.url || '')
+                setValue('headervariables', [uploadResult?.url] || [''])
                 trigger('header')
+                trigger('headervariables')
                 setFilename(fileAttachment?.name || '')
                 setUploading(false);
                 setWaitUploadFile2(false);
@@ -1357,7 +1377,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('carouseldata')
         }
     }
-    
+    console.log(getValues('headervariables'))
     const addEmoji = (emoji: EmojiData) => {
         const currentText = getValues('body');
         setValue('body', currentText + emoji.native);
@@ -1412,6 +1432,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('headertype', type)
         trigger('headertype')
         setValue('header', '')
+        setValue('headervariables', [])
+        trigger('headervariables')
         trigger('header')
     }
 
@@ -1448,7 +1470,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const addHeaderVariable = () => {
         if(isHeaderVariable) {
             setIsHeaderVariable(false)
-            setValue('headervariables', [])
+            setValue('headervariables', [''])
             trigger('headervariables')
 
             const variablePattern = new RegExp('{{1}}', 'g');
@@ -1824,13 +1846,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <span style={{ textAlign: 'center', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'FILE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('FILE')}}>
+                                                <div className={getValues('headertype') === 'DOCUMENT' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('DOCUMENT')}}>
                                                     <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'FILE'} className={classes.checkboxHeadOption} />
+                                                        <input type="checkbox" checked={getValues('headertype') === 'DOCUMENT'} className={classes.checkboxHeadOption} />
                                                     </div>
                                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'FILE' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'FILE' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
+                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'DOCUMENT' ? '#0E60A0' : '#9B9B9B' }} />
+                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'DOCUMENT' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1839,7 +1861,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
                                                     <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
                                                         {t(langKeys[getValues('headertype')])}
-                                                        {(getValues('headertype') === 'IMAGE' || getValues('headertype') === 'VIDEO' || getValues('headertype') === 'FILE') && (
+                                                        {(getValues('headertype') === 'IMAGE' || getValues('headertype') === 'VIDEO' || getValues('headertype') === 'DOCUMENT') && (
                                                             <input
                                                                 type="file"
                                                                 accept={getValues('headertype') === 'IMAGE' ? '.jpg,.png' : getValues('headertype') === 'VIDEO' ? '.mp4' : '.pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls'}
@@ -1870,6 +1892,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 <IconButton
                                                                     onClick={() => {
                                                                         setValue('header', '')
+                                                                        setValue('headervariables', [])
                                                                         setFilename('')
                                                                     }}
                                                                     disabled={!isNew}

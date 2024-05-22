@@ -342,7 +342,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                                     <source src={header} type="video/mp4" />
                                     Tu navegador no soporta la etiqueta de video.
                                 </video>
-                            ) : (header !== '' && headerType === 'FILE') ? (
+                            ) : (header !== '' && headerType === 'DOCUMENT') ? (
                                 <>
                                     {getFileIcon(header)}
                                 </>

@@ -6141,6 +6141,7 @@ export const langKeys = {
   template_LOW: 'template_LOW',
   unlimited: 'unlimited',
   limitmessagehelptext: 'limitmessagehelptext',
+  synchronizeError: 'synchronizeError',
 };
 
 export type LangKeys = typeof langKeys;

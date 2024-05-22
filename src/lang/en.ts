@@ -6197,6 +6197,7 @@ const translation: LangKeys = {
   template_LOW: 'Low',
   unlimited: 'Unlimited',
   limitmessagehelptext: 'It shows the limit of shipments during 24h that is available for the business, this includes all the whatsapp numbers that you have registered.',
+  synchronizeError: 'Templates could not be synchronized',
 };
 
 const enResource: ResourceLanguage = {

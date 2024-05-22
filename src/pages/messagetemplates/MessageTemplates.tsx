@@ -23,6 +23,7 @@ import {
 
 import {
     dateToLocalDate,
+    exportExcel,
     getMessageTemplateExport,
     getPaginatedMessageTemplate,
     getValuesFromDomain,
@@ -431,7 +432,7 @@ const MessageTemplates: FC = () => {
             } else if (mainSynchronize.error) {
                 dispatch(
                     showSnackbar({
-                        message: t(mainSynchronize.code ?? "error_unexpected_error"),
+                        message: mainSynchronize.code === 'BAD REQUEST' ? t(langKeys.synchronizeError) : t(mainSynchronize.code ?? "error_unexpected_error"),
                         severity: "error",
                         show: true,
                     })
