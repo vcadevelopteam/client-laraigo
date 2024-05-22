@@ -112,19 +112,15 @@ const MessageTemplates: FC = () => {
                     return <div style={{ textAlign: 'center' }}>{dateToLocalDate(row.original.createdate)}</div>;
                 },
             },
-            ...(showId
-                ? [
-                    {
-                        accessor: "id",
-                        Header: t(langKeys.messagetemplateid),
-                        type: "number",
-                        Cell: (props: CellProps<Dictionary>) => {
-                            const { row } = props.cell;
-                            return showId ? <div style={{ textAlign: 'center' }}>{row.id}</div> : null;
-                        }
-                    },
-                ]
-                : []),
+            {
+                accessor: "id",
+                Header: t(langKeys.messagetemplateid),
+                type: "number",
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    return <div style={{ textAlign: 'center' }}>{row.id}</div>;
+                }
+            },
             {
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
