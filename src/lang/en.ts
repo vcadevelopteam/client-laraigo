@@ -1908,6 +1908,7 @@ const translation: LangKeys = {
     "5001: There was an error, contact the administrator ",
   error_unexpected_error:
     "5000: There was an error, contact the administrator ",
+  error_permission_no_granted: '42501: Permission not granted',
   error_null_not_allowed:
     "23502: There was an error, contact the administrator ",
   reasons_disconnection: "Reasons for disconnection",

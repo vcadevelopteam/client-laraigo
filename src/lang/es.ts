@@ -1896,6 +1896,7 @@ const translation: LangKeys = {
   error_not_function_error: '5002: Hubo un error, comuniquese con el administrador',
   error_variable_incompatibility_error: '5001: Hubo un error, comuniquese con el administrador',
   error_unexpected_error: '5000: Hubo un error, comuniquese con el administrador',
+  error_permission_no_granted: '42501: No se ha dado los permisos para realizar la acción',
   error_null_not_allowed: '23502: Hubo un error, comuniquese con el administrador',
   error_function_not_exists: '42883: Hubo un error, comuniquese con el administrador',
   error_parameter_is_missing: "5004: Hubo un error, comuniquese con el administrador",

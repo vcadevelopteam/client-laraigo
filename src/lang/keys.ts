@@ -2266,6 +2266,7 @@ export const langKeys = {
   error_not_function_error: 'error_not_function_error',
   error_variable_incompatibility_error: 'error_variable_incompatibility_error',
   error_unexpected_error: 'error_unexpected_error',
+  error_permission_no_granted: 'error_permission_no_granted',
   error_null_not_allowed: 'error_null_not_allowed',
   error_function_not_exists: 'error_function_not_exists',
   error_kpi_sql: 'error_kpi_sql',
