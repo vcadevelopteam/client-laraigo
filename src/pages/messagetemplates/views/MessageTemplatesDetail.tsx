@@ -1864,7 +1864,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         {(getValues('headertype') === 'IMAGE' || getValues('headertype') === 'VIDEO' || getValues('headertype') === 'DOCUMENT') && (
                                                             <input
                                                                 type="file"
-                                                                accept={getValues('headertype') === 'IMAGE' ? '.jpg,.png' : getValues('headertype') === 'VIDEO' ? '.mp4' : '.pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls'}
+                                                                accept={getValues('headertype') === 'IMAGE' ? '.jpg,.png' : getValues('headertype') === 'VIDEO' ? '.mp4' : '.pdf'}
                                                                 onChange={(e) => handleFileChange(e.target.files)}
                                                                 style={{ display: 'none' }}
                                                                 disabled={uploading}
