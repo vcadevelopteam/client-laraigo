@@ -12,6 +12,7 @@ import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { FieldEdit, TemplateIcons } from "components";
 import { execute, uploadFile } from "store/main/actions";
 import ClearIcon from '@material-ui/icons/Clear';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Dictionary } from "@types";
 import { useForm } from "react-hook-form";
 import { insAssistantAiDoc } from "common/helpers";
@@ -227,6 +228,22 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const executeFiles = useSelector((state) => state.gpt.gptResult);
     const llamaFiles = useSelector((state) => state.llama.llamaResult);
     const [waitSaveLlamaUploadFile, setWaitSaveLlamaUploadFile] = useState(false);
+    // const selectionKey = "id";    
+    // const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    // const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+
+    // useEffect(() => {
+    //     if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+    //         setRowWithDataSelected((prev) =>
+    //             Object.keys(selectedRows).map(
+    //                 (key) =>
+    //                     dataDocuments.data.find((item) => item.id === parseInt(key)) ??
+    //                     prev.find((item) => item.id === parseInt(key)) ??
+    //                     {}
+    //             )
+    //         );
+    //     }
+    // }, [selectedRows]);
   
     useEffect(() => {
         fetchData();
@@ -484,6 +501,17 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                   );
                 },
             },
+          
+            {
+                Header: t(langKeys.filename),
+                accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.datetimeupload),
+                accessor: 'createdate',
+                width: "auto",
+            },
             {
                 accessor: "viewDocument",
                 NoFilter: true,
@@ -500,16 +528,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     );
                 },
             },
-            {
-                Header: t(langKeys.name),
-                accessor: 'description',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.upload),
-                accessor: 'createdate',
-                width: "auto",
-            },
         ],
         []
     );
@@ -517,12 +535,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const columns2 = React.useMemo(
         () => [
             {
-                Header: t(langKeys.name),
+                Header: t(langKeys.filename),
                 accessor: 'description',
                 width: "auto",
             },
             {
-                Header: t(langKeys.upload),
+                Header: t(langKeys.datetimeupload),
                 accessor: 'createdate',
                 width: "auto",
             },
@@ -637,7 +655,20 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         </div>
                     </div>
                     <div className={classes.titleMargin}>
+                        <div style={{display:'flex', justifyContent:'right'}}>
+                            <Button
+                                    color="primary"
+                                    //disabled={Object.keys(selectedRows).length === 0}                                 
+                                    startIcon={<DeleteIcon style={{ color: 'white' }} />}
+                                    variant="contained"
+                                    //style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                >{t(langKeys.delete)}
+                            </Button>
+                        </div>
                         <TableZyx
+                            // useSelection={true}
+                            // setSelectedRows={setSelectedRows}
+                            // selectionKey={selectionKey}
                             columns={edit ? columns : columns2}
                             data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
                             filterGeneral={false}
@@ -700,7 +731,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         <div className={classes.block10}/>
                         <div>
                             <span className={classes.title}>
-                                {t(langKeys.upload)}
+                                {t(langKeys.import)}
                             </span>
                             <div className={classes.titleMargin}>
                                 <span>{t(langKeys.uploadFileText)}</span>
@@ -708,6 +739,18 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         </div>                    
                     </div>
                     <div>
+                        <div style={{display:'flex', justifyContent:'right', marginRight:'2px'}}>
+                            <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AttachFileIcon />}
+                                    onClick={edit ? (basemodel === 'llama-2-13b-chat.Q4_0' ? handleUploadLlama : handleUpload) : handleUploadCreatingAssistant}
+                                    className={classes.clipButton2}
+                                    disabled={fileAttachment === null || getValues('url') === ''}
+                                >
+                                    {t(langKeys.import)}
+                                </Button>
+                        </div>
                         <input
                             accept="text/doc"
                             style={{ display: 'none'}}
@@ -755,16 +798,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 )}
                             </>
                         )}
-                        <Button
-                            variant="contained"
-                            type="button"
-                            startIcon={<AttachFileIcon />}
-                            onClick={edit ? (basemodel === 'llama-2-13b-chat.Q4_0' ? handleUploadLlama : handleUpload) : handleUploadCreatingAssistant}
-                            className={classes.clipButton2}
-                            disabled={fileAttachment === null || getValues('url') === ''}
-                        >
-                            {t(langKeys.import)}
-                        </Button>
+                       
                     </div>
                 </div>
             </>

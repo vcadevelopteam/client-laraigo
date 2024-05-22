@@ -6099,6 +6099,13 @@ export const langKeys = {
   errorIntegrationTrackinguplicates: 'errorIntegrationTrackinguplicates',
   repeated_code: 'repeated_code',
   repeated_person: 'repeated_person',
+  recommendedresponse: 'recommendedresponse',
+  recommendedresponse_tooltip: 'recommendedresponse_tooltip', 
+  instructions: 'instructions',
+  exclusions:'exclusions',
+  filename: 'filename',
+  datetimeupload: 'datetimeupload',
+
 };
 
 export type LangKeys = typeof langKeys;

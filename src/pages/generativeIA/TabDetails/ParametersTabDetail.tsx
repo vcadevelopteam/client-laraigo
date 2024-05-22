@@ -8,9 +8,9 @@ import { useDispatch } from "react-redux";
 import { Button, Card, Grid } from "@material-ui/core";
 import { BaseAIPersonalityIcon, ClientServicePersonalityIcon, HelpDeskPersonalityIcon, PersonalizedPersonalityIcon, SalesPersonalityIcon, TechSupportPersonalityIcon } from "icons";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { FieldEdit, FieldSelect } from "components";
+import { FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { Dictionary } from "@types";
-import { FieldErrors } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -132,6 +132,10 @@ const useStyles = makeStyles((theme) => ({
     parameterDesc: {
         marginTop: 15
     },
+    multilineField: {
+       maxHeight: '240px',
+       overflow: 'auto',
+    },
 }));
 
 interface RowSelected {
@@ -199,15 +203,11 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     }, [executeResult, waitSave]);
 
     const languages = [
-        {
-            domainvalue: 'Español',
-            domaindesc: 'Español'
-        },
-        {
-            domainvalue: 'Inglés',
-            domaindesc: 'Inglés'
-        }
-    ]
+        { domainvalue: 'Todos', domaindesc: 'Todos' },
+        { domainvalue: 'Español', domaindesc: 'Español' },
+        { domainvalue: 'Inglés', domaindesc: 'Inglés' },
+        { domainvalue: 'Portugues', domaindesc: 'Portugues' }
+    ];
 
     const cardData = [
         {
@@ -290,6 +290,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         },
     ];
 
+ 
+
     const handleSelectCard = (cardIndex: number) => {  
         setSelectedCardData(cardData[cardIndex])
         setValue('language', cardData[cardIndex].language)
@@ -327,9 +329,10 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             {t(langKeys.personality)}
                         </span>
                         <div className={classes.block10}/>
-                        <div className="col-4">
+                        <div className="col-6">
                             <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
                             <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
+                            {/* FieldMultiSelect */}
                             <FieldSelect
                                 label={t(langKeys.language)}
                                 data={languages}
@@ -345,18 +348,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 optionValue='domainvalue'
                                 optionDesc='domaindesc'
                             />
-                        </div>
-                        <div className="col-4">
-                            <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                            <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
-                            <FieldEdit
-                                label={t(langKeys.organization)}
-                                valueDefault={getValues('organizationname')}
-                                onChange={(value) => setValue('organizationname', value)}
-                                error={errors?.organizationname?.message}
-                            />
-                        </div>
-                        <div className="col-4">
+                        </div>                      
+                        <div className="col-6">
                             <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
                             <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
                             <FieldSelect
@@ -399,20 +392,20 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                 </div>
                 <div className={`row-zyx ${classes.containerDetail2}`}>
                     <div className="col-8" style={{paddingRight:50}}>
-                        <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
+                        <span className={classes.detailTitle}>{t(langKeys.instructions)}</span>
                         <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
                         <FieldEdit
                             variant="outlined"
                             InputProps={{
                                 multiline: true,
-                                maxRows: 7
+                                className: 'multilineField'
                             }}
                             valueDefault={getValues('prompt')}
                             onChange={(value) => setValue('prompt', value)}
                             error={errors?.prompt?.message}
                         />
                         <div className={classes.block20}/>
-                        <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
+                        <span className={classes.detailTitle}>{t(langKeys.exclusions)}</span>
                         <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
                         <FieldEdit
                             variant="outlined"
@@ -529,9 +522,10 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 {selectedCardData?.title}
                             </span>
                             <div className={classes.block10}/>
-                            <div className="col-4">
+                            <div className="col-6">
                                 <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
                                 <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
+                                {/* FieldMultiSelect */}
                                 <FieldSelect
                                     label={t(langKeys.language)}
                                     data={languages}
@@ -546,22 +540,13 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     optionValue='domainvalue'
                                     optionDesc='domaindesc'
                                 />
-                            </div>
-                            <div className="col-4">
-                                <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
-                                <FieldEdit
-                                    label={t(langKeys.organization)}
-                                    valueDefault={selectedCardData?.organizationName}
-                                    onChange={(value) => setValue('organizationname', value)}
-                                />
-                            </div>
-                            <div className="col-4">
-                                <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
+                            </div>                          
+                            <div className="col-6">
+                                <span className={classes.detailTitle}>{t(langKeys.recommendedresponse)}</span>
                                 <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
                                 <FieldSelect
                                     label={t(langKeys.queries)}
-                                    data={(multiDataAux?.data?.[1]?.data||[])}
+                                    data={(multiDataAux?.data?.[1]?.data||[])} //reducir la data a  [Sin reacción, Mejor sugerencia, Respuesta sugerida]
                                     onChange={(value) => {
                                         if(value?.domainvalue) {
                                             setUnansweredQueries(value.domainvalue)
@@ -573,6 +558,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     }}
                                     valueDefault={selectedCardData?.querywithoutanswer}
                                     optionValue="domainvalue"
+                                    helperText={t(langKeys.recommendedresponse_tooltip)}
                                     optionDesc="domainvalue"
                                 />
                             </div>
@@ -597,19 +583,21 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                     </div>
                     <div className={`row-zyx ${classes.containerDetail2}`}>
                         <div className="col-8" style={{paddingRight:50}}>
-                            <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
+                            <span className={classes.detailTitle}>{t(langKeys.instructions)}</span>
                             <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
                             <FieldEdit
+                                style={{ height: '240px', overflow: 'auto',}}
                                 variant="outlined"
                                 InputProps={{
                                     multiline: true,
+                                    className: 'multilineField'
                                 }}
                                 valueDefault={selectedCardData?.prompt}
                                 onChange={(value) => setValue('prompt', value)}
                                 error={errors?.prompt?.message}
                             />
                             <div className={classes.block20}/>
-                            <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
+                            <span className={classes.detailTitle}>{t(langKeys.exclusions)}</span>
                             <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
                             <FieldEdit
                                 variant="outlined"
