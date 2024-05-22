@@ -9,6 +9,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -31,6 +32,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1094526090706564',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1872023336244866',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -53,6 +55,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -75,6 +78,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -97,6 +101,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -119,6 +124,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -141,6 +147,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyCDfPhg86YSt25QynLajl7GA5Ux6YEphoA",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -163,6 +170,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -182,6 +190,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -204,6 +213,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -228,6 +238,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -262,6 +273,7 @@ const NIUBIZSCRIPT = APIS_URL[ENV].NIUBIZSCRIPT
 const IZIPAYSCRIPT = APIS_URL[ENV].IZIPAYSCRIPT
 const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
+const APIKEY_GC = APIS_URL[ENV].APIKEY_GC
 const USELARAIGO = APIS_URL[ENV].USELARAIGO
 const BODEGAACME = APIS_URL[ENV].BODEGAACME
 const OPENPAYSANDBOX = APIS_URL[ENV].OPENPAYSANDBOX
@@ -282,6 +294,7 @@ export const apiUrls = {
     IZIPAYSCRIPT,
     WEBFORMCHANNEL_FORM,
     APIKEY_GMAPS,
+    APIKEY_GC,
     USELARAIGO,
     BODEGAACME,
     OPENPAYSANDBOX,

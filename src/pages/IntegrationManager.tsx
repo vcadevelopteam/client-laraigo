@@ -700,7 +700,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const handleOpenPicker = (token: string) => {
       openPicker({
          clientId: `${apiUrls.GOOGLECLIENTID_CHANNEL}`,
-         developerKey: 'AIzaSyB_xsVpmtbD7qrQ2WDXRkaGW9YZTOcn424',
+         developerKey: `${apiUrls.APIKEY_GC}`,
          viewId: "SPREADSHEETS",
          token: token,
          showUploadView: true,
