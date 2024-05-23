@@ -355,8 +355,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         register("status", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("labels");
         register("bydefault");
-        register('warehouseid');
-        register('storeid');
+        register('warehouseid', {
+            validate: (value) => {
+                const rolegroups = getValues('rolegroups');
+                const roleIds = rolegroups.split(',').map((id: string) => id.trim());
+                if (roleIds.includes('50')) return (value && value !== 0) || t(langKeys.field_required);
+                return true;
+            },
+        });
+        register('storeid', {
+            validate: (value) => {
+                const rolegroups = getValues('rolegroups');
+                const roleIds = rolegroups.split(',').map((id: string) => id.trim());
+                if (roleIds.includes('53') || roleIds.includes('51')) return (value && value !== 0) || t(langKeys.field_required);
+                return true;
+            },
+        });
 
         setDataOrganizations({
             loading: false,
@@ -371,7 +385,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             dispatch(getMultiCollectionAux([getApplicationsByRole(row.rolegroups, index + 1)]));
         }
     }, [preData]);
-
+    
     const onSubmit = handleSubmit((data) => {
         //GUARDAR MODAL
         if (!row) updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }]);
@@ -420,6 +434,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         setValue("rolegroups", value.map((o: Dictionary) => o.roleid).join());
         setValue("roledesc", value.map((o: Dictionary) => o.roledesc).join());
         setValue("redirect", "");
+        trigger('rolegroups')
         updatefield("redirect", "");
         switch (value.slice(-1)[0]?.roldesc) {
             case "GESTOR DE SEGURIDAD":
@@ -478,18 +493,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             } else {
                 setIsStore(false)
                 setValue('storeid', 0)
+                trigger('storeid')
             }
             if(value.some((v: Dictionary) => v.roleid === 50)) {
                 setIsWarehouse(true)
             } else {
                 setIsWarehouse(false)
                 setValue('warehouseid', 0)
+                trigger('warehouseid')
             }
         } else {
             setIsStore(false);
             setIsWarehouse(false)
             setValue('storeid', 0)
             setValue('warehouseid', 0)
+            trigger('storeid')
+            trigger('warehouseid')
         }
     };
     return (
@@ -563,7 +582,15 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                     valueDefault={getValues('storeid')}
                                     error={errors?.storeid?.message}
                                     data={dataStores.data}
-                                    onChange={(value) => setValue('storeid', value.storeid)}
+                                    onChange={(value) => {
+                                        if(value) {
+                                            setValue('storeid', value.storeid)
+                                            trigger('storeid')
+                                        } else {
+                                            setValue('storeid', 0)
+                                            trigger('storeid')
+                                        }
+                                    }}
                                     loading={dataStores.loading}
                                     triggerOnChangeOnFirst={true}
                                     optionDesc="description"
@@ -646,7 +673,15 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                     valueDefault={getValues('warehouseid')}
                                     error={errors?.warehouseid?.message}
                                     data={dataWarehouses.data}
-                                    onChange={(value) => setValue('warehouseid', value.warehouseid)}
+                                    onChange={(value) => {
+                                        if(value) {
+                                            setValue('warehouseid', value.warehouseid)
+                                            trigger('warehousei')
+                                        } else {
+                                            setValue('warehouseid', 0)
+                                            trigger('warehouseid')
+                                        }
+                                    }}
                                     loading={dataWarehouses.loading}
                                     triggerOnChangeOnFirst={true}
                                     optionDesc="description"
