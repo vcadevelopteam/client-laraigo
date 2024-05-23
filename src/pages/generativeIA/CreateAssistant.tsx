@@ -4,20 +4,22 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TemplateBreadcrumbs, AntTab, AntTabPanelAux, TitleDetail  } from "components";
 import { Trans, useTranslation } from "react-i18next";
-import { execute, getCollectionAux, getMultiCollectionAux } from 'store/main/actions';
+import { execute, getCollectionAux } from 'store/main/actions';
 import { langKeys } from "lang/keys";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import { Button, Tabs } from "@material-ui/core";
 import SaveIcon from '@material-ui/icons/Save';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ClearIcon from '@material-ui/icons/Clear';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import AssistantTabDetail from "./TabDetails/AssistantTabDetail";
 import ParametersTabDetail from "./TabDetails/ParametersTabDetail";
 import TrainingTabDetail from "./TabDetails/TrainingTabDetail";
 import { useForm } from "react-hook-form";
 import { Dictionary } from "@types";
-import { assistantAiDocumentSel, decrypt, encrypt, getValuesFromDomain, insAssistantAi, insAssistantAiDoc } from "common/helpers";
+import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
+import { createCollection, createCollectionDocument, editCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -40,12 +42,8 @@ const useStyles = makeStyles(() => ({
     buttonscontainer: {
         display: 'flex',
         justifyContent: 'flex-end',
-        gap: '1rem',
+        gap: '0.5rem',
         marginBottom: 10
-    },
-    purpleButton: {
-        backgroundColor: '#ffff',
-        color: '#7721AD'
     },
 }));
 
@@ -58,7 +56,6 @@ interface RowSelected {
     row: Dictionary | null;
     edit: boolean;
 }
-
 interface CreateAssistantProps {
     data: RowSelected;
     arrayBread: BreadCrumb[],
@@ -78,7 +75,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveInsFile, setWaitSaveInsFile] = useState(false);
-    const user = useSelector(state => state.login.validateToken.user);
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
@@ -91,7 +87,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [assistantaiid, setAssistantaiid] = useState('');
     const newArrayBread = [
         ...arrayBread,
-        { id: "createssistant", name: t(langKeys.createssistant) },       
+        { id: "createssistant", name: edit ? `${t(langKeys.edit)} ${t(langKeys.assistant_singular)}` : t(langKeys.createssistant) },       
     ];      
     const [encryptedApikey, setEncryptedApikey] = useState<string | null>(null)
     const [generalprompt, setGeneralPrompt] = useState<string | null>(null)
@@ -100,20 +96,22 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [waitSaveCreateAssistantFile, setWaitSaveCreateAssistantFile] = useState(false)
     const [waitSaveCreateAssistantAssignFile, setWaitSaveCreateAssistantAssignFile] = useState(false)
     const executeAssistant = useSelector(state => state.gpt.gptResult);
+    const metaResult = useSelector(state => state.llama.llamaResult);
     const [waitSaveCreateAssistant2, setWaitSaveCreateAssistant2] = useState(false)
     const [waitSaveUpdateAssistant, setWaitSaveUpdateAssistant] = useState(false)
-    const [selectedBaseModel, setSelectedBaseModel] = useState<string|null>(row?.basemodel || null);
+    const [waitSaveCreateMeta, setWaitSaveCreateMeta] = useState(false)
+    const [waitSaveCreateCollection, setWaitSaveCreateCollection] = useState(false)
+    const [waitSaveCreateCollectionDoc, setWaitSaveCreateCollectionDoc] = useState(false)
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [provider, setProvider] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid)?.provider : '')
+    const [firstData, setFirstData] = useState<Dictionary>({
+        name: row ? row.name : '',
+        description: row ? row.description : '',
+        basemodel: row ? row.basemodel : '',
+        intelligentmodelsid: row ? row.intelligentmodelsid : 0
+    })
+    const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
 
-    useEffect(() => {
-        dispatch(
-          getMultiCollectionAux([
-            getValuesFromDomain('ESTADOGENERICO'),
-            getValuesFromDomain('QUERYWITHOUTANSWER'),
-            getValuesFromDomain('BASEMODEL')
-          ])
-        );
-    }, []);
-    
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -135,7 +133,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
         }
     }, [executeResult, waitSave])
-    
+
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({        
         defaultValues: {
             id: row?.assistantaiid || 0,
@@ -145,6 +143,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             basemodel: row?.basemodel || '',
             language: row?.language || '',
             organizationname: row?.organizationname || '',
+            intelligentmodelsid: row?.intelligentmodelsid || 0,
             querywithoutanswer: row?.querywithoutanswer || '',
             response: row?.response || '',
             prompt: row?.prompt || '',
@@ -153,7 +152,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             temperature: row?.temperature || 0,
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
-            apikey: edit ? (row?.basemodel === 'llama-2-13b-chat.Q4_0' ? row?.apikey : decrypt(row?.apikey, PUBLICKEYPEM)) : '',
+            apikey: row?.basemodel.startsWith('gpt') ? (edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '') : (edit ? row?.apikey : ''),
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',
@@ -170,6 +169,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('basemodel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('language')
         register('organizationname');
+        register('intelligentmodelsid');
         register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('response');
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -187,7 +187,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     }, [register, setValue]);
 
     const fetchDocumentsByAssistant = () => dispatch(getCollectionAux(assistantAiDocumentSel({assistantaiid: getValues('id'), id: 0, all: true})));
-    
+
     useEffect(() => {
         fetchDocumentsByAssistant();
     }, [])
@@ -376,51 +376,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         );
     });
 
-    const onMainSubmitLlama = handleSubmit(async (data) => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));
-
-            let generalprompt;
-
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
-                }
-            }
-
-            if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
-            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
-            }
-
-            dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: 'llamacode' })));
-            setWaitSave(true);
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback,
-            })
-        );
-    });
-
     useEffect(() => {
         if (waitSaveInsFile) {
             if (!executeResult.loading && !executeResult.error) {
@@ -491,12 +446,238 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     }, [executeAssistant, waitSaveCreateAssistantAssignFile]);
 
 	const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
-        setTabIndex(newIndex);
+        if(!isDisabled()) {
+            setTabIndex(newIndex);
+        }
+    };
+
+    const onMainSubmitMeta = handleSubmit(async (data) => {
+        let generalprompt;
+
+        if (data.organizationname !== '') {
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
+            }
+            generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+        } else {
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                ', infórmales que solamente puedes comunicarte en ' + data.language;
+            }
+        }
+
+        if (data.querywithoutanswer === 'Mejor Sugerencia') {
+            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+        } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+            generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+        }
+
+        setGeneralPrompt(generalprompt)
+
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(createCollection({
+                collection: data.name,
+            }))
+            setWaitSaveCreateMeta(true)
+        };
+        const callbackEdit = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(editCollection({
+                name: row?.name,
+                new_name: data.name
+            }))
+            setWaitSaveCreateMeta(true)
+        };
+
+        if(!edit) {
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback,
+                })
+            );
+        } else {
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback: callbackEdit,
+                })
+            );
+        }
+    });
+
+    const onMainSubmitMetaWithFiles = handleSubmit(async (data) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+            let generalprompt;
+
+            if (data.organizationname !== '') {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                if (data.language !== '') {
+                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
+                }
+                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
+            } else {
+                generalprompt = data.prompt + '\n\n';
+                if (data.negativeprompt !== '') {
+                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
+                }
+                if (data.language !== '') {
+                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
+                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+                }
+            }
+
+            if (data.querywithoutanswer === 'Mejor Sugerencia') {
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
+                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+            }
+            setGeneralPrompt(generalprompt)
+
+            dispatch(createCollectionDocument({
+                url: cosFile.url,
+                collection: data.name
+            }))
+            setWaitSaveCreateCollection(true)
+        };
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback,
+            })
+        );
+    });
+
+    useEffect(() => {
+        if (waitSaveCreateMeta) {
+            if (!metaResult.loading && !metaResult.error) {
+                setWaitSaveCreateMeta(false);
+                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                setWaitSave(true);
+            } else if (metaResult.error) {
+                const errormessage = t(metaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateMeta(false);
+            }
+        }
+    }, [metaResult, waitSaveCreateMeta]);
+
+    useEffect(() => {
+        if (waitSaveCreateCollection) {
+            if (!metaResult.loading && !metaResult.error) {
+                setWaitSaveCreateCollection(false);
+                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                setWaitSaveCreateCollectionDoc(true);
+            } else if (metaResult.error) {
+                const errormessage = t(metaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateCollection(false);
+            }
+        }
+    }, [metaResult, waitSaveCreateCollection]);
+
+    useEffect(() => {
+        if (waitSaveCreateCollectionDoc) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveCreateCollectionDoc(false);
+                dispatch(execute(insAssistantAiDoc({
+                    assistantaiid: executeResult.data[0].p_assistantaiid,
+                    id: 0,
+                    description: cosFile.name,
+                    url: cosFile.url,
+                    fileid: 'llamatest',
+                    type: 'FILE',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })));
+                setWaitSave(true);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveCreateCollectionDoc(false);
+            }
+        }
+    }, [executeResult, waitSaveCreateCollectionDoc]);
+
+    const mainHandleSubmit = (e: ChangeEvent<NonNullable<unknown>>) => {
+        e.preventDefault();
+        if (tabIndex === 0) {
+            handleChangeTab(e, 1);
+        } else if (tabIndex === 1) {
+            handleChangeTab(e, 2);
+        } else {
+            if(provider === 'Open AI') {
+                if (cosFile.name === '' && cosFile.url === '') {
+                    onMainSubmit();
+                } else {
+                    onMainSubmitWithFiles();
+                }
+            } else {
+                if (cosFile.name === '' && cosFile.url === '') {
+                    onMainSubmitMeta();
+                } else {
+                    onMainSubmitMetaWithFiles();
+                }
+            }
+        }
+    }
+
+    const handleClose = () => {
+        const callback = () => {
+            setViewSelected('assistantdetail')
+        }
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: edit ? t(langKeys.cancelassistantedit) : t(langKeys.cancelassistantcreation),
+                callback,
+            })
+        );
+    }
+
+    const isDisabled = () => {
+        if (tabIndex === 0) {
+            return (firstData.name === '' || firstData.description === '' || firstData.intelligentmodelsid === 0 || firstData.basemodel === '');
+        } else if (tabIndex === 1) {
+            return validatePrompt === '';
+        } else {
+            return false;
+        }
     };
 
     return (
         <>
-            <form onSubmit={selectedBaseModel === 'llama-2-13b-chat.Q4_0' ? onMainSubmitLlama : (cosFile.name === '' && cosFile.url === '' ? onMainSubmit : onMainSubmitWithFiles)} className={classes.formcontainer}>
+            <form
+                onSubmit={mainHandleSubmit}
+                className={classes.formcontainer}
+            >
                 <div style={{ width: "100%" }}>
                     <div className={classes.titleandcrumbs}>
                         <div style={{ flexGrow: 1 }}>
@@ -504,7 +685,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                 breadcrumbs={newArrayBread}
                                 handleClick={setExternalViewSelected}
                             />
-                            <TitleDetail title={t(langKeys.createssistant)} />
+                            <TitleDetail title={edit ? row?.name : t(langKeys.createssistant)} />
                         </div>
                     </div>
                     <div className={classes.container}>     
@@ -513,22 +694,23 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                                 <Button
                                     variant="contained"
                                     type="button"
-                                    startIcon={<ArrowBackIcon color="primary" />}
-                                    className={classes.purpleButton}
-                                    onClick={() => {
-                                        setViewSelected('assistantdetail')
-                                    }}
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={handleClose}
                                 >
-                                    {t(langKeys.return)}
+                                    {t(langKeys.cancel)}
                                 </Button>
                                 <Button
                                     variant="contained"
                                     type="submit"
                                     color="primary"
-                                    startIcon={<SaveIcon color="secondary" />}
+                                    disabled={isDisabled()}
+                                    startIcon={tabIndex !== 2 ? <></> : <SaveIcon color="secondary" />}
+                                    endIcon={tabIndex !== 2 ? <ArrowForwardIcon color="secondary" /> : <></>}
                                     style={{ backgroundColor: '#55BD84' }}
                                 >
-                                    {t(langKeys.save)}
+                                    {tabIndex !== 2 ? t(langKeys.next) : t(langKeys.save)}
                                 </Button>
                             </div>
                         </div>
@@ -565,13 +747,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanelAux index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} basemodel={selectedBaseModel} setBasemodel={setSelectedBaseModel}/>
+                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} basemodel={selectedBaseModel} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
                 </AntTabPanelAux>
             </form>
         </>

@@ -12,7 +12,6 @@ import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { FieldEdit, TemplateIcons } from "components";
 import { execute, uploadFile } from "store/main/actions";
 import ClearIcon from '@material-ui/icons/Clear';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { Dictionary } from "@types";
 import { useForm } from "react-hook-form";
 import { insAssistantAiDoc } from "common/helpers";
@@ -23,8 +22,8 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
-import { addFile, assignFile } from "store/gpt/actions";
-import { uploadFileLlama } from "store/llama/actions";
+import { addFile, assignFile, verifyFile } from "store/gpt/actions";
+import { addFileLlama, deleteFileLlama } from "store/llama/actions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -195,7 +194,6 @@ interface TrainingTabDetailProps {
     fetchAssistants: () => void;
     edit: boolean;
     setFile: (data: {name: string, url: string}) => void;
-    basemodel: string | null;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -203,8 +201,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     fetchData,
     fetchAssistants,
     edit,
-    setFile,
-    basemodel
+    setFile
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -226,24 +223,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [waitSaveAddFile, setWaitSaveAddFile] = useState(false);
     const [waitSaveAssignFile, setWaitSaveAssignFile] = useState(false);
     const executeFiles = useSelector((state) => state.gpt.gptResult);
-    const llamaFiles = useSelector((state) => state.llama.llamaResult);
-    const [waitSaveLlamaUploadFile, setWaitSaveLlamaUploadFile] = useState(false);
-    // const selectionKey = "id";    
-    // const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    // const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
-
-    // useEffect(() => {
-    //     if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
-    //         setRowWithDataSelected((prev) =>
-    //             Object.keys(selectedRows).map(
-    //                 (key) =>
-    //                     dataDocuments.data.find((item) => item.id === parseInt(key)) ??
-    //                     prev.find((item) => item.id === parseInt(key)) ??
-    //                     {}
-    //             )
-    //         );
-    //     }
-    // }, [selectedRows]);
+    const llamaResult = useSelector((state) => state.llama.llamaResult);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
+    const [waitSaveAddFileLlama, setWaitSaveAddFileLlama] = useState(false)
+    const [waitSaveFileDeleteLlama, setWaitSaveFileDeleteLlama] = useState(false)
   
     useEffect(() => {
         fetchData();
@@ -292,7 +276,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     useEffect(() => {
         if (waitSaveAssignFile) {
             if (!executeFiles.loading && !executeFiles.error) {
-                setWaitSaveAssignFile(false);                
+                setWaitSaveAssignFile(false);
                 dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
                 setWaitSave(true);
             } else if (executeFiles.error) {
@@ -328,6 +312,28 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeFiles, waitSaveAddFile]);
 
+    useEffect(() => {
+        if (waitSaveAddFileLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveAddFileLlama(false);
+                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: 'llamatest' })));
+                setWaitSave(true);
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveAddFileLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveAddFileLlama]);
+
+    const handleUploadInNewAssistant = () => {
+        setViewSelected('main')
+        setFile({name: getValues('description'), url: getValues('url')})
+    }
+
     const handleUpload = handleSubmit(async (data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
@@ -338,47 +344,21 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             }))
             setWaitSaveAddFile(true);
         };
-      
-        dispatch(
-          manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback,
-          })
-        );
-    });
 
-    useEffect(() => {
-        if (waitSaveLlamaUploadFile) {
-            if (!llamaFiles.loading && !llamaFiles.error) {
-                setWaitSaveLlamaUploadFile(false);
-                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: llamaFiles.node_id })));
-                setWaitSave(true);
-            } else if (llamaFiles.error) {
-                const errormessage = t(llamaFiles.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveLlamaUploadFile(false);
-            }
-        }
-    }, [llamaFiles, waitSaveLlamaUploadFile]);
-
-    const handleUploadLlama = handleSubmit(async (data) => {
-        const callback = async () => {
+        const callbackMeta = async () => {
             dispatch(showBackdrop(true));
-            dispatch(uploadFileLlama({
-                file_url: data.url
+            dispatch(addFileLlama({
+                url: data.url,
+                collection: row?.name
             }))
-            setWaitSaveLlamaUploadFile(true);
-        };
+            setWaitSaveAddFileLlama(true);
+        }
       
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
-            callback,
+            callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
           })
         );
     });
@@ -428,25 +408,47 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             setRowAux(row2)
             setWaitSaveFileDelete(true)
         };
-        const callbackLlama: () => void = () => {
+        const callbackMeta = async () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insAssistantAiDoc({
-                ...row2,
-                id: row2.assistantaidocumentid,
-                operation: "DELETE",
-                status: "ELIMINADO",
-                type: "NINGUNO" 
-            })));
-            setWaitSave(true);
-        }
+            dispatch(deleteFileLlama({
+                collection: row?.name,
+                filename: row2?.description,
+            }))
+            setRowAux(row2)
+            setWaitSaveFileDeleteLlama(true)
+        };
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
-            callback: basemodel === 'llama-2-13b-chat.Q4_0' ? callbackLlama : callback,
+            callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
           })
         );
     };
+
+    useEffect(() => {
+        if (waitSaveFileDeleteLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveFileDeleteLlama(false);
+                dispatch(execute(insAssistantAiDoc({
+                    ...rowAux,
+                    id: rowAux?.assistantaidocumentid,
+                    operation: "DELETE",
+                    status: "ELIMINADO",
+                    type: "NINGUNO" 
+                })));
+                setWaitSave(true);
+                setRowAux(null)
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveFileDeleteLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveFileDeleteLlama]);
 
     const handleDownloadDocument = () => {
         if (selectedDocumentUrl) {
@@ -501,17 +503,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                   );
                 },
             },
-          
-            {
-                Header: t(langKeys.filename),
-                accessor: 'description',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.datetimeupload),
-                accessor: 'createdate',
-                width: "auto",
-            },
             {
                 accessor: "viewDocument",
                 NoFilter: true,
@@ -528,6 +519,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     );
                 },
             },
+            {
+                Header: t(langKeys.name),
+                accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.upload),
+                accessor: 'createdate',
+                width: "auto",
+            },
         ],
         []
     );
@@ -535,12 +536,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const columns2 = React.useMemo(
         () => [
             {
-                Header: t(langKeys.filename),
+                Header: t(langKeys.name),
                 accessor: 'description',
                 width: "auto",
             },
             {
-                Header: t(langKeys.datetimeupload),
+                Header: t(langKeys.upload),
                 accessor: 'createdate',
                 width: "auto",
             },
@@ -598,20 +599,15 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeFiles, waitSaveFileDelete]);
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (event) => {
         event.preventDefault();
         const files = event.dataTransfer.files;
         onChangeAttachment(files);
     };
     
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDragOver = (event) => {
         event.preventDefault();
     };
-
-    const handleUploadCreatingAssistant = () => {
-        setViewSelected('main')
-        setFile({name: getValues('description'), url: getValues('url')})
-    }
 
     if(viewSelected === 'main') {
         return (
@@ -655,20 +651,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         </div>
                     </div>
                     <div className={classes.titleMargin}>
-                        <div style={{display:'flex', justifyContent:'right'}}>
-                            <Button
-                                    color="primary"
-                                    //disabled={Object.keys(selectedRows).length === 0}                                 
-                                    startIcon={<DeleteIcon style={{ color: 'white' }} />}
-                                    variant="contained"
-                                    //style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                >{t(langKeys.delete)}
-                            </Button>
-                        </div>
                         <TableZyx
-                            // useSelection={true}
-                            // setSelectedRows={setSelectedRows}
-                            // selectionKey={selectionKey}
                             columns={edit ? columns : columns2}
                             data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
                             filterGeneral={false}
@@ -731,7 +714,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         <div className={classes.block10}/>
                         <div>
                             <span className={classes.title}>
-                                {t(langKeys.import)}
+                                {t(langKeys.upload)}
                             </span>
                             <div className={classes.titleMargin}>
                                 <span>{t(langKeys.uploadFileText)}</span>
@@ -739,18 +722,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         </div>                    
                     </div>
                     <div>
-                        <div style={{display:'flex', justifyContent:'right', marginRight:'2px'}}>
-                            <Button
-                                    variant="contained"
-                                    type="button"
-                                    startIcon={<AttachFileIcon />}
-                                    onClick={edit ? (basemodel === 'llama-2-13b-chat.Q4_0' ? handleUploadLlama : handleUpload) : handleUploadCreatingAssistant}
-                                    className={classes.clipButton2}
-                                    disabled={fileAttachment === null || getValues('url') === ''}
-                                >
-                                    {t(langKeys.import)}
-                                </Button>
-                        </div>
                         <input
                             accept="text/doc"
                             style={{ display: 'none'}}
@@ -798,7 +769,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 )}
                             </>
                         )}
-                       
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<AttachFileIcon />}
+                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
+                            className={classes.clipButton2}
+                            disabled={fileAttachment === null || getValues('url') === ''}
+                        >
+                            {t(langKeys.import)}
+                        </Button>
                     </div>
                 </div>
             </>

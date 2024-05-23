@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
@@ -8,11 +8,11 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import CloseIcon from '@material-ui/icons/Close';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import Avatar from '@material-ui/core/Avatar';
 import { Dictionary } from "@types";
-import { assistantAiDocumentSel, insMessageAi, insThread, messageAiSel, threadSel } from "common/helpers";
+import { insMessageAi, insThread, messageAiSel, threadSel } from "common/helpers";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
@@ -23,7 +23,7 @@ import { FieldEdit } from "components";
 import CachedIcon from '@material-ui/icons/Cached';
 import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
-import { messagesLlama } from "store/llama/actions";
+import { deleteThreadLlama, query } from "store/llama/actions";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -31,8 +31,12 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },  
     chatList: {
+        display: 'flex',
+        flexDirection: 'column',
         borderRight: `1px solid ${theme.palette.divider}`,
-        padding: theme.spacing(2),       
+        padding: theme.spacing(2),
+        width: 320,
+        height: '100%'
     },
     chatMain: {
         flex: 1,           
@@ -42,11 +46,6 @@ const useStyles = makeStyles((theme) => ({
         height: '81vh', 
         overflowY: 'auto',
     },
-    chatInput: {
-        display: 'flex',
-        gap: theme.spacing(1),
-        marginTop: theme.spacing(2),
-    },
     chatInputContainer: {
         bottom: 0,
         padding: theme.spacing(2),
@@ -54,36 +53,24 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
     },
     buttonscontainer: {
-        display: 'flex',      
-        gap: '1rem',
-        marginBottom: '2rem'
-    },
-    redbutton: {
-        backgroundColor: '#ffff',
-        color: 'red',
-        border: '1px solid red'
+        display: 'flex',
+        marginBottom: '2rem',
+        justifyContent: 'space-between',
     },
     purpleButton: {
+        width: 131,
         backgroundColor: '#7721AD',
-        color: '#fff'
+        color: '#fff',
+        '&:hover': {
+          backgroundColor: '#4C226E',
+        },
     },
     sendicon: {
         backgroundColor: 'none',
-
-    },
-    newChatContainer: {
-        backgroundColor: '#F4EDF8',
-        padding: '10px 10px 0',
-        marginBottom: '10px',
-        border: '1px solid #7721AD'
-    },
-    iconsContainer: {
-        display: 'flex',
-        justifyContent: 'flex-end'
     },
     threadContainer: {
         cursor: 'pointer',
-        marginBottom: '15px'
+        marginBottom: '15px',
     },
     threadNameContainer: {
         display: 'flex',
@@ -96,11 +83,14 @@ const useStyles = makeStyles((theme) => ({
     },
     threadName: {
         display:'flex',
-        flexDirection:'row'
+        flexDirection:'row',
+        alignItems: 'center',
     },
     chatIcon: {
         color: '#757377',
-        marginRight: '0.5rem'
+        paddingLeft: 2,
+        marginRight: '0.5rem',
+        width: 24,
     },
     messageContainer: {
         display: 'flex',
@@ -134,8 +124,12 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'pre-line'
     },
     initialText: {
+        height: '100%',
         display: 'flex',
-        justifyContent: 'center'
+        flexDirection: 'column',
+        gap: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     loadingIndicator: {
         display: 'flex',
@@ -143,15 +137,19 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         padding: '10px',
     },
+    backButton: {
+        width: 131,
+        backgroundColor: '#ffff',
+        color: '#7721AD',
+    },
 }));
 
 interface ChatAIProps {
     setViewSelected: (view: string) => void;
     row: Dictionary | null;
-    documents: string[];
 }
 
-const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
+const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -161,18 +159,31 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     const [waitSaveThread, setWaitSaveThread] = useState(false);
     const [waitSaveThreadDelete, setWaitSaveThreadDelete] = useState(false);
     const [waitSaveMessage, setWaitSaveMessage] = useState(false);
+    const [waitSaveMessage1, setWaitSaveMessage1] = useState(false);
+    const [waitSaveMessage2, setWaitSaveMessage2] = useState(false);
+    const [waitSaveMessage3, setWaitSaveMessage3] = useState(false);
+    const [waitSaveMessageLlama, setWaitSaveMessageLlama] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const executeThreads = useSelector((state) => state.gpt.gptResult);
+    const llamaResult = useSelector((state) => state.llama.llamaResult);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
     const messages = useSelector(state => state.main.mainAux2);
-    const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [messageText, setMessageText] = useState('');
+    const [messageAux, setMessageAux] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [cardDelete, setCardDelete] = useState<Dictionary | null>(null);
-    const [waitSaveMessageLlama, setWaitSaveMessageLlama] = useState(false)
-    const llamaFiles = useSelector((state) => state.llama.llamaResult);
+    const [waitSaveMessageAux, setWaitSaveMessageLlamaAux] = useState(false);
+    const [waitSaveThreadDeleteLlama, setWaitSaveThreadDeleteLlama] = useState(false)
+    const [date, setDate] = useState('');
+    const endOfMessagesRef = useRef(null);
+
+    useEffect(() => {
+        if (endOfMessagesRef.current) {
+            endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
@@ -197,7 +208,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
         register('assistantaiid');
         register('id');
         register('code');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
         register('type');
         register('status');
         register('operation');
@@ -229,6 +240,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     useEffect(() => {
         if (waitSaveCreateThread) {
             if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveCreateThread(false)
                 fetchThreadsByAssistant()
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
@@ -247,10 +259,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
             if (!executeThreads.loading && !executeThreads.error) {
                 setWaitSaveThread(false);
                 const data = getValues()
-                dispatch(execute(insThread({...data, code: executeThreads.data.id})));
-                setValue('description', '');
+                dispatch(execute(insThread({...data, code: executeThreads.data.id, description: date})));
+                setDate('')
                 setWaitSaveCreateThread(true);
-                dispatch(showBackdrop(false));
             } else if (executeThreads.error) {
                 const errormessage = t(executeThreads.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
@@ -269,7 +280,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
                 setWaitSaveCreateThread(true);
                 setCardDelete(null);
-                dispatch(showBackdrop(false));
             } else if (executeThreads.error) {
                 const errormessage = t(executeThreads.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
@@ -282,71 +292,91 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     }, [executeThreads, waitSaveThreadDelete]);
 
     useEffect(() => {
-        if (waitSaveMessage) {
-            if (!executeThreads.loading && !executeThreads.error) {
-                setWaitSaveMessage(false);
+        if (waitSaveThreadDeleteLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveThreadDeleteLlama(false);
+                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                setWaitSaveCreateThread(true);
+                setCardDelete(null);
+            } else if (llamaResult.error) {
+                setWaitSaveThreadDeleteLlama(false);
+                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                setWaitSaveCreateThread(true);
+                setCardDelete(null);
+            }
+        }
+    }, [llamaResult, waitSaveThreadDeleteLlama]);
+    
+    useEffect(() => {
+        if (waitSaveMessageLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveMessageLlama(false);
                 dispatch(execute(insMessageAi({
                     assistantaiid: row?.assistantaiid,
                     threadid: selectedChat?.threadid,
                     assistantaidocumentid: 0,
                     id: 0,
-                    messagetext: executeThreads.data.response,
+                    messagetext: llamaResult.data.result,
                     infosource: '',
                     type: 'BOT',
                     status: 'ACTIVO',
                     operation: 'INSERT',
                 })))
-                setIsLoading(false);
-                fetchThreadMessages(selectedChat?.threadid);
-
-                dispatch(showBackdrop(false));
-            } else if (executeThreads.error) {
-                const errormessage = t(executeThreads.code || "error_unexpected_error", {
+                setWaitSaveMessageLlamaAux(true)
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveMessage(false);
+                setIsLoading(false);
+                setWaitSaveMessageLlama(false);
             }
         }
-    }, [executeThreads, waitSaveMessage]);
+    }, [llamaResult, waitSaveMessageLlama]);
+
+    useEffect(() => {
+        if (waitSaveMessageAux) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveMessageLlamaAux(false);
+                setIsLoading(false);
+                fetchThreadMessages(selectedChat?.threadid);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessageLlamaAux(false);
+            }
+        }
+    }, [executeResult, waitSaveMessageAux]);
 
     useEffect(() => {
         handleChatClick(dataThreads.data[0]);
     }, [dataThreads.data]);
 
     const handleCreateChat = () => {
-        setIsCreatingChat(true);
-    };
+        const fecha = new Date();
+        const year = fecha.getFullYear();
+        const month = ('0' + (fecha.getMonth() + 1)).slice(-2);
+        const day = ('0' + fecha.getDate()).slice(-2);
+        const hours = ('0' + fecha.getHours()).slice(-2);
+        const minutes = ('0' + fecha.getMinutes()).slice(-2);
+        const seconds = ('0' + fecha.getSeconds()).slice(-2);
+        const dateAux = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 
-    const handleCancelCreateChat = () => {
-        setIsCreatingChat(false);
-        setValue('description', '');
-    };
-
-    const handleConfirmCreateChat = handleSubmit( async (data) => {
-        const callback = async () => {
+        if(row?.basemodel.startsWith('gpt')) {
             dispatch(showBackdrop(true));
+            setDate(dateAux)
             dispatch(createThread({
                 apikey: row?.apikey,
             }))
             setWaitSaveThread(true);
-        };
-        const callbackLlama: () => void = () => {
+        } else {
             dispatch(showBackdrop(true));
-            dispatch(execute(insThread({...data, code: 'llamathread'})));
-            setValue('description', '');
+            dispatch(execute(insThread({...getValues(), code: '', description: dateAux})));
             setWaitSaveCreateThread(true);
         }
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback: row?.basemodel === 'llama-2-13b-chat.Q4_0' ? callbackLlama : callback,
-            })
-        )
-        setIsCreatingChat(false);
-    });
+    };
 
     const handleSendMessage = async () => {
         setIsLoading(true);
@@ -365,47 +395,91 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 })
             )
         );
-        const message = messageText
+        setMessageAux(messageText)
         setMessageText('');
-        fetchThreadMessages(selectedChat?.threadid);
-        dispatch(sendMessages({
-            text: message,
-            assistant_id: row?.code,
-            thread_id: selectedChat?.code,
-            sources: false,
-            apikey: row?.apikey,
-        }))
-        setWaitSaveMessage(true)
+        setWaitSaveMessage1(true)
     };
 
     useEffect(() => {
-        if (waitSaveMessageLlama) {
-            if (!llamaFiles.loading && !llamaFiles.error) {
-                setWaitSaveMessageLlama(false);
+        if (waitSaveMessage1) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveMessage1(false);
+                fetchThreadMessages(selectedChat?.threadid);
+                setWaitSaveMessage2(true)
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessage1(false);
+            }
+        }
+    }, [executeResult, waitSaveMessage1]);
+
+    useEffect(() => {
+        if (waitSaveMessage2) {
+            if (!messages.loading && !messages.error) {
+                setWaitSaveMessage2(false);
+                dispatch(sendMessages({
+                    text: messageAux,
+                    assistant_id: row?.code,
+                    thread_id: selectedChat?.code,
+                    sources: false,
+                    apikey: row?.apikey,
+                }))
+                setMessageAux('')
+                setWaitSaveMessage(true)
+            } else if (messages.error) {
+                const errormessage = t(messages.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessage2(false);
+            }
+        }
+    }, [messages, waitSaveMessage2]);
+
+    useEffect(() => {
+        if (waitSaveMessage) {
+            if (!executeThreads.loading && !executeThreads.error) {
+                setWaitSaveMessage(false);
                 dispatch(execute(insMessageAi({
                     assistantaiid: row?.assistantaiid,
                     threadid: selectedChat?.threadid,
                     assistantaidocumentid: 0,
                     id: 0,
-                    messagetext: llamaFiles.data.response,
+                    messagetext: executeThreads.data.response,
                     infosource: '',
                     type: 'BOT',
                     status: 'ACTIVO',
                     operation: 'INSERT',
                 })))
-                setIsLoading(false);
-                fetchThreadMessages(selectedChat?.threadid);
-                dispatch(showBackdrop(false));
-            } else if (llamaFiles.error) {
-                const errormessage = t(llamaFiles.code || "error_unexpected_error", {
+                setWaitSaveMessage3(true)
+            } else if (executeThreads.error) {
+                const errormessage = t(executeThreads.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveMessageLlama(false);
+                setWaitSaveMessage(false);
             }
         }
-    }, [llamaFiles, waitSaveMessageLlama]);
+    }, [executeThreads, waitSaveMessage]);
+
+    useEffect(() => {
+        if (waitSaveMessage3) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveMessage3(false);
+                fetchThreadMessages(selectedChat?.threadid);
+                setIsLoading(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessage3(false);
+            }
+        }
+    }, [executeResult, waitSaveMessage3]);
 
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
@@ -425,13 +499,17 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
             )
         );
         const message = messageText
-        const extendedMessage = row?.generalprompt + '\n\nCon las instrucciones propuestas, respondeme la siguiente consulta: ' + message;
         setMessageText('');
         fetchThreadMessages(selectedChat?.threadid);
-        dispatch(messagesLlama({
-            text: extendedMessage,
-            assistant_id: 0,
-            node_id: documents[0]
+        dispatch(query({
+            assistant_name: row?.name,
+            query: message,
+            system_prompt: row?.generalprompt,
+            model: row?.basemodel,
+            thread_id: selectedChat?.code,
+            max_new_tokens: row?.max_tokens,
+            temperature: parseFloat(row?.temperature),
+            top_p: parseFloat(row?.top_p),
         }))
         setWaitSaveMessageLlama(true)
     };
@@ -440,7 +518,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
         const handleKeyUp = (event: KeyboardEvent) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                row?.basemodel === 'llama-2-13b-chat.Q4_0' ? handleSendMessageLlama() : handleSendMessage()
+                if(row?.basemodel.startsWith('gpt')) handleSendMessage();
+                else handleSendMessageLlama();
             }
         };
         
@@ -461,20 +540,22 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 apikey: row?.apikey,
             }))
             setCardDelete(chat)
-            setWaitSaveThreadDelete(true);     
+            setWaitSaveThreadDelete(true);
         };
-
-        const callbackLlama: () => void = () => {
+        const callbackMeta = async () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insThread({ ...chat, id: chat.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
-            setWaitSaveCreateThread(true);
-        }
+            dispatch(deleteThreadLlama({
+                threadid: selectedChat?.threadid
+            }))
+            setCardDelete(chat)
+            setWaitSaveThreadDeleteLlama(true);
+        };
       
         dispatch(
             manageConfirmation({
               visible: true,
               question: t(langKeys.confirmation_delete),
-              callback: row?.basemodel === 'llama-2-13b-chat.Q4_0' ? callbackLlama : callback,
+              callback: row?.basemodel.startsWith('gpt') ? callback : callbackMeta,
             })
         );
     };
@@ -483,7 +564,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
         setSelectedChatForEdit(chat.threadid);
         setValue('assistantaiid', chat.assistantaiid)
         setValue('id', chat.threadid)
-        setValue('description', chat.description)
+        setValue('description', chat.description === '' ? chat.createdate.split('.')[0] : chat.description)
         setValue('code', chat.code)
         setValue('type', chat.type)
     };
@@ -498,122 +579,91 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     };
 
     const handleSaveEdit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            dispatch(execute(insThread({...data, operation: 'UPDATE'})));
-            setWaitSaveCreateThread(true);
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback,
-            })
-        )
+        dispatch(showBackdrop(true));
+        dispatch(execute(insThread({...data, operation: 'UPDATE'})));
+        setWaitSaveCreateThread(true);
         handleCloseEdit()
     });
 
     const handleChatClick = (chat: Dictionary) => {
         setSelectedChat(chat);
         fetchThreadMessages(chat?.threadid)
-        setIsLoading(false);
     };
 
     return (
         <div className={classes.container}>
             <Paper className={classes.chatList}>
-                <div style={{marginBottom: 10, fontWeight: 'bold', textAlign: 'center'}}>{row?.name}</div>
-                <div className={classes.buttonscontainer}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        startIcon={<CloseIcon />}
-                        className={classes.redbutton}
-                        onClick={() => setViewSelected('assistantdetail')}
-                    >
-                        {t(langKeys.close)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        startIcon={<AddIcon color="secondary" />}
-                        className={classes.purpleButton}
-                        onClick={() => handleCreateChat()} 
-                    >
-                        {t(langKeys.newchat)}
-                    </Button>
+                <div style={{flex: '0 0 auto', height: 90}}>
+                    <div style={{marginBottom: 10, fontWeight: 'bold', textAlign: 'center'}}>{row?.name}</div>
+                    <div className={classes.buttonscontainer}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<ArrowBackIcon color="primary" />}
+                            className={classes.backButton}
+                            onClick={() => setViewSelected('assistantdetail')}
+                        >
+                            {t(langKeys.return)}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<AddIcon color="secondary" />}
+                            className={classes.purpleButton}
+                            onClick={() => handleCreateChat()} 
+                        >
+                            {t(langKeys.newchat)}
+                        </Button>
+                    </div>
                 </div>
-                {isCreatingChat && (
-                    <div className={classes.newChatContainer}>
-                        <FieldEdit
-                            label={t(langKeys.name)}
-                            variant="outlined"
-                            valueDefault={getValues('description')}
-                            onChange={(value) => setValue('description', value)}
-                            error={errors?.description?.message}
-                        />
-                        <div className={classes.iconsContainer}>
-                            <IconButton onClick={handleCancelCreateChat}>
-                                <ClearIcon style={{color: '#7721AD'}}/>
-                            </IconButton>
-                            <IconButton onClick={handleConfirmCreateChat}>
-                                <CheckIcon style={{color: '#7721AD'}}/>
-                            </IconButton>
+                <div style={{overflowY: 'auto', flex: 1, width: 'fit-content'}}>
+                    {dataThreads.data.filter(chat => chat.type === 'THREAD').map((chat) => (
+                        <div key={chat.threadid} onClick={() => handleChatClick(chat)} className={classes.threadContainer}>
+                            <div className={classes.threadNameContainer}>
+                                {selectedChatForEdit === chat.threadid ? (
+                                    <>
+                                        <div className={classes.threadNameInput}>
+                                            <FieldEdit
+                                                valueDefault={getValues('description')}
+                                                onChange={(value) => setValue('description', value)}
+                                                error={errors?.description?.message}
+                                            />
+                                        </div>
+                                        <div style={{marginLeft:'10px'}}>
+                                            <IconButton onClick={() => handleCloseEdit()}>
+                                                <ClearIcon style={{ color: '#757377'}}/>
+                                            </IconButton>
+                                            <IconButton onClick={() => handleSaveEdit()}>
+                                                <CheckIcon style={{ color: '#757377' }}/>
+                                            </IconButton>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className={classes.threadName} style={{ backgroundColor: chat.threadid === selectedChat?.threadid ? '#EEEEEE': ''}}>
+                                            <ChatBubbleIcon className={classes.chatIcon}/>
+                                            <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description}</Typography>
+                                            <IconButton onClick={() => handleEditChat(chat)} style={{paddingRight: 0, width: 36}}>
+                                                <EditIcon style={{ color: '#757377' }}/>
+                                            </IconButton>
+                                            <IconButton onClick={() => handleDeleteChat(chat)} style={{paddingRight: 0, width: 36}}>
+                                                <DeleteIcon style={{ color: '#757377' }}/>
+                                            </IconButton>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                )}
-                {dataThreads.data.map((chat) => (
-                    <div key={chat.threadid} onClick={() => handleChatClick(chat)} className={classes.threadContainer}>
-                        <Typography>
-                            {chat.createdate.split('.')[0]}
-                        </Typography>
-                        <div className={classes.threadNameContainer}>
-                            {selectedChatForEdit === chat.threadid ? (
-                                <>
-                                    <div className={classes.threadNameInput}>
-                                        <FieldEdit
-                                            valueDefault={getValues('description')}
-                                            onChange={(value) => setValue('description', value)}
-                                            error={errors?.description?.message}
-                                        />
-                                    </div>
-                                    <div style={{marginLeft:'10px'}}>
-                                        <IconButton onClick={() => handleCloseEdit()}>
-                                            <ClearIcon style={{ color: '#757377'}}/>
-                                        </IconButton>
-                                        <IconButton onClick={() => handleSaveEdit()}>
-                                            <CheckIcon style={{ color: '#757377' }}/>
-                                        </IconButton>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className={classes.threadName}>
-                                        <ChatBubbleIcon className={classes.chatIcon}/>
-                                        <Typography style={{ fontSize: '1.1rem' }}>{chat.description}</Typography>
-                                    </div>
-                                    <div>
-                                        <IconButton onClick={() => handleEditChat(chat)}>
-                                            <EditIcon style={{ color: '#757377'}}/>
-                                        </IconButton>
-                                        <IconButton onClick={() => handleDeleteChat(chat)}>
-                                            <DeleteIcon style={{ color: '#757377' }}/>
-                                        </IconButton>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </Paper>
-
             <div className={classes.chatMain}>
                 <div className={classes.chatMessages}>
                     {selectedChat && (
                         <>
                             {messages.data && messages.data.length > 0 ? (
                                 <>
-                                    {messages.data.map(message => (
+                                    {messages.data.map((message, index) => (
                                         <div key={message.messageaiid} className={classes.messageContainer} style={{ backgroundColor: message.type !== 'USER' ? '' : 'white' }}>
                                             <div className={classes.messageContainer2}>
                                                 <div className={classes.messageDate}>
@@ -630,17 +680,21 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                                                     </div>
                                                     <div className={classes.textContainer}>
                                                         <Typography variant="body1">
-                                                            {message.messagetext.trim()}
+                                                            {message.messagetext.trimStart()}
                                                         </Typography>
                                                     </div>
                                                 </div>
                                             </div>
+                                            {index === messages.data.length - 1 && (
+                                                <div ref={endOfMessagesRef}></div>
+                                            )}
                                         </div>
                                     ))}
                                 </>
                             ) : (
                                 <div className={classes.initialText}>
-                                    <Typography variant="body1">
+                                    <LaraigoChatProfileIcon />
+                                    <Typography variant="body1" style={{fontWeight: 'bold', fontSize: 22, color: '#2E2E2E'}}>
                                         {t(langKeys.howCanIHelpYouToday)}
                                     </Typography>
                                 </div>
@@ -670,7 +724,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                                     <InputAdornment position="end">
                                         <IconButton                                           
                                             className={classes.sendicon}
-                                            onClick={row?.basemodel === 'llama-2-13b-chat.Q4_0' ? handleSendMessageLlama : handleSendMessage}
+                                            onClick={() => {
+                                                if(row?.basemodel.startsWith('gpt')) handleSendMessage()
+                                                else handleSendMessageLlama()
+                                            }}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
                                           <SendMesageIcon color="secondary" />
@@ -680,7 +737,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                             }}
                         />
                     </div>
-                </div>
+                    </div>
             </div>
         </div>
     );

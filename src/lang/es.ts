@@ -6110,6 +6110,18 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   filename: 'Nombre Archivo',
   datetimeupload: 'Fecha y Hora de Subida',
 
+  corporate: 'EMPRESARIAL',
+  cancelassistantcreation: '¿Está seguro de cancelar la creación del asistente?',
+  cancelassistantedit: '¿Está seguro de cancelar la edición del asistente?',
+  personality_table: 'Empleado de mesa de ayuda',
+  personality_client: 'Servicio al Cliente',
+  personality_sales: 'Experto en Ventas',
+  personality_tech: 'Soporte Técnico',
+  personality_ai: 'Base AI',
+  personality_personalized: 'Modo Personalizado',
+  contextperconversation: 'Contexto por conversación',
+  firstinteraction: 'Primera interacción usuario',
+  conector: 'Conector',
 };
 
 const esResource: ResourceLanguage = {

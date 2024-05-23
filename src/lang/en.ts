@@ -6163,6 +6163,18 @@ const translation: LangKeys = {
   filename: 'File Name',
   datetimeupload: 'DateTime of Upload',
 
+  corporate: 'CORPORATE',
+  cancelassistantcreation: 'Are you sure to cancel the creation of the assistant?',
+  cancelassistantedit: 'Are you sure to cancel the edit of the assistant?',
+  personality_table: 'Help Desk Clerk',
+  personality_client: 'Customer Service',
+  personality_sales: 'Sales Expert',
+  personality_tech: 'Technical Support',
+  personality_ai: 'AI Base',
+  personality_personalized: 'Custom Mode',
+  contextperconversation: 'Context per conversation',
+  firstinteraction: 'First user interaction',
+  conector: 'Conector',
 };
 
 const enResource: ResourceLanguage = {
