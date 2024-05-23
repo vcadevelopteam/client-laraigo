@@ -13,6 +13,10 @@ import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import PhoneIcon from '@material-ui/icons/Phone';
+import ListIcon from '@material-ui/icons/List';
+import ReplyIcon from '@material-ui/icons/Reply';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -75,6 +79,14 @@ const useStyles = makeStyles((theme) => ({
     },
     previewHour: {
         display:'flex', justifyContent:'right', fontSize:'0.78rem', color:'grey', margin:'10px 0'
+    }, 
+    pdfPreview: {
+        width: '100%',
+        height: '500px', // Puedes ajustar la altura según tus necesidades
+        border: 'none',
+        display: 'block',
+        margin: '0 auto',
+        borderRadius: '0.5rem',
     }
 }));
 
@@ -439,8 +451,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const templateId = getValues('messagetemplateid');
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
-    console.log('Template name: ', selectedTemplate.name, 'y cabecera tipo: ', selectedTemplate.headertype)
-
+    //console.log('Template name: ', selectedTemplate.name, 'y cabecera tipo: ', selectedTemplate.headertype)
+    console.log (selectedTemplate) //cckm cjab comos esco  com ('0deie kk como eosd aomco kk d )
+    
     return (
         <React.Fragment>
            <div style={{display:'flex', gap: '1rem', width:'100%'}}>
@@ -828,14 +841,34 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                                 <div className='templatePreview' style={{}}>
                                     
-                                    {selectedTemplate?.category === "MARKETING" && selectedTemplate?.providerstatus === "approved" ||  selectedTemplate?.category === "UTILITY" ? (
+                                    {selectedTemplate?.category === "MARKETING" ||  selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS"  ? (
                                         <div>
+                                            
+                                            {selectedTemplate?.headertype === "DOCUMENT" ? (
+                                                <iframe
+                                                    src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
+                                                    className={classes.pdfPreview}
+                                                />
+                                            ) : selectedTemplate?.headertype === "MULTIMEDIA" ? (
+                                                <iframe
+                                                    src={selectedTemplate.header || "https://d36ai2hkxl16us.cloudfront.net/thoughtindustries/image/upload/a_exif,c_fill,w_750/v1/course-uploads/7a95ec5e-b843-4247-bc86-c6e2676404fd/15ax1uzck54z-NuxeoGeneric.png"}
+                                                    style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius:'0.5rem'}}
+                                                />
+                                            ) : (
+                                                <p></p>
+                                            )}
 
-                                            <img 
-                                                src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                                                alt="Default Image"
-                                                style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius:'0.5rem'}}
-                                            />
+                                            {selectedTemplate?.templatetype === "CAROUSEL" && selectedTemplate.carouseldata?.length > 0 && (
+                                                <img
+                                                    src={selectedTemplate.carouseldata[0].header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
+                                                    alt="Carousel Image"
+                                                    style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
+                                                />
+                                            )}
+
+
+                                           
+                                           
 
                                             <p>{selectedTemplate.body}</p>
 
@@ -845,7 +878,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
                                                 <div>
                                                     {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
+                                                        <a className={classes.buttonPreview} key={index}>
                                                         {button.title}
                                                         {/* <OpenInNewIcon style={{height:'1.3rem', margin:'0 5px'}}/>*/}
                                                         </a>
@@ -856,8 +889,18 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
                                                 <div>
                                                     {selectedTemplate.buttonsgeneric.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index} href={button.btn.url} target="_blank" rel="noopener noreferrer">
-                                                            {button.btn.text}
+                                                        <a className={classes.buttonPreview} key={index}>
+                                                            <OpenInNewIcon style={{height:'18px'}}/> {button.btn.text}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )} 
+
+                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
+                                                <div>
+                                                    {selectedTemplate.buttonsgeneric.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index}>
+                                                            <OpenInNewIcon style={{height:'18px'}}/> {button.btn.text}
                                                         </a>
                                                     ))}
                                                 </div>
@@ -866,8 +909,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             {selectedTemplate.buttonsenabled && selectedTemplate.buttonsquickreply?.length > 0 && (
                                                 <div>
                                                     {selectedTemplate.buttonsquickreply.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
-                                                        {button.btn.text}
+                                                        <a className={classes.buttonPreview} key={index}>
+                                                            <ReplyIcon style={{height:'18px'}}/> {button.btn.text}
                                                         </a>
                                                     ))}
                                                 </div>
@@ -875,7 +918,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                                         </div>               
 
-                                    ) :  selectedTemplate?.category === "AUTHENTICATION" &&  selectedTemplate?.providerstatus === "approved"? (
+                                    ) :  selectedTemplate?.category === "AUTHENTICATION" ? (
                                         <div>                                 
                                             <p>Tu codigo de verificación es 12345678.  
                                                 {selectedTemplate.authenticationdata?.safetyrecommendation && (
@@ -890,48 +933,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                                             <span className={classes.previewHour}> 11:12</span>
                                         
-                                        </div>
-
-                                    ) :  selectedTemplate?.type === "SMS" ? (
-                                        <div>                                 
-                                            
-                                            <p>{selectedTemplate.body}</p>
-
-                                            <span className={classes.previewHour}> 11:12</span>
-
-                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
-                                                <div>
-                                                    {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
-                                                        {button.title}
-                                                        {/* <OpenInNewIcon style={{height:'1.3rem', margin:'0 5px'}}/>*/}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
-                                                <div>
-                                                    {selectedTemplate.buttonsgeneric.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index} href={button.btn.url} target="_blank" rel="noopener noreferrer">
-                                                            {button.btn.text}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )} 
-
-                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsquickreply?.length > 0 && (
-                                                <div>
-                                                    {selectedTemplate.buttonsquickreply.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index} href={button.btn.payload} target="_blank" rel="noopener noreferrer">
-                                                        {button.btn.text}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )}  
-                                        
-                                        </div>
-
+                                        </div>                                  
+                                  
                                     ) : (
                                     
                                         <div>
