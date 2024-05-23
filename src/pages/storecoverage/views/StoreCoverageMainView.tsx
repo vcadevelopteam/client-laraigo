@@ -195,6 +195,11 @@ const StoreCoverageMainView: FC<InventoryMainViewProps> = ({
         Header: t(langKeys.warehouse),
         accessor: "warehouse",
         width: "auto",
+        Cell: (props: any) => {
+          const { warehouse, description } = props.cell.row.original;
+          if(warehouse !== null) return <div>{warehouse}</div>;
+          return <div>{description}</div>;
+        },
       },
       {
         Header: t(langKeys.coveragearea),
