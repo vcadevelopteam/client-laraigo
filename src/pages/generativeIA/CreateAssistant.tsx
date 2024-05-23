@@ -134,7 +134,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         }
     }, [executeResult, waitSave])
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({        
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({        
         defaultValues: {
             id: row?.assistantaiid || 0,
             code: row?.code || '',
@@ -750,7 +750,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
                     <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />

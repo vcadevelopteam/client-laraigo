@@ -8,9 +8,11 @@ import { useDispatch } from "react-redux";
 import { Button, Card, Grid } from "@material-ui/core";
 import { BaseAIPersonalityIcon, ClientServicePersonalityIcon, HelpDeskPersonalityIcon, PersonalizedPersonalityIcon, SalesPersonalityIcon, TechSupportPersonalityIcon } from "icons";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { FieldEdit, FieldSelect } from "components";
+import { FieldEdit, FieldEditMulti, FieldMultiSelect, FieldSelect } from "components";
 import { Dictionary } from "@types";
 import { FieldErrors } from "react-hook-form";
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -111,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
     },
     subTextContainer: {
         height: 80,
-        marginBottom: 35
+        marginBottom: 15
     },
     block10: {
         height: 10
@@ -131,6 +133,15 @@ const useStyles = makeStyles((theme) => ({
     },
     parameterDesc: {
         marginTop: 15
+    }, 
+    subtittles: {
+        fontSize: '1rem', 
+        fontWeight:"bold",
+    },
+    iconHelpText: {
+        width: 'auto',
+        height: 23,
+        cursor: 'pointer',
     },
 }));
 interface CardDataType {
@@ -156,7 +167,8 @@ interface ParametersTabDetailProps {
     setValue: any
     getValues: any,
     errors: FieldErrors
-    setValidatePrompt: (data: string) => void
+    setValidatePrompt: (data: string) => void,
+    trigger: any,
 }
 
 const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
@@ -165,6 +177,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     getValues,
     errors,
     setValidatePrompt,
+    trigger
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -328,7 +341,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValidatePrompt('')
         setViewSelected('main');
     }
-
+    console.log(getValues('language'))
     if(edit) {
         if(viewSelected === 'main') {
             return (
@@ -380,7 +393,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 {t(langKeys[`personality_${(getValues('type')).toLowerCase()}`])}
                             </span>
                             <div className={classes.block10}/>
-                            <div className="col-4">
+                            <div className="col-6">
                                 <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
                                 <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
                                 <FieldSelect
@@ -399,17 +412,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     optionDesc='domaindesc'
                                 />
                             </div>
-                            <div className="col-4">
-                                <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
-                                <FieldEdit
-                                    label={t(langKeys.organization)}
-                                    valueDefault={getValues('organizationname')}
-                                    onChange={(value) => setValue('organizationname', value)}
-                                    error={errors?.organizationname?.message}
-                                />
-                            </div>
-                            <div className="col-4">
+                            <div className="col-6">
                                 <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
                                 <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
                                 <FieldSelect
@@ -568,119 +571,126 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             );
         } else if(viewSelected === 'detail') {
             return (
-                <>
-                    <div className={classes.containerDetail}>
-                        <div className="row-zyx" style={{marginBottom:0}}>
-                            <div>
-                                <Button
-                                    type="button"
-                                    style={{color: '#7721AD'}}
-                                    startIcon={<ArrowBackIcon />}
-                                    onClick={handleBackCard}
-                                >
-                                    {t(langKeys.personality)}
-                                </Button>
-                            </div>
-                            <div className={classes.block10}/>
-                            <span className={classes.title}>
-                                {selectedCardData?.title}
-                            </span>
-                            <div className={classes.block10}/>
-                            <div className="col-4">
-                                <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
-                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
-                                <FieldSelect
-                                    label={t(langKeys.language)}
-                                    data={languages}
-                                    valueDefault={getValues('language')}
-                                    onChange={(value) => {
-                                        if(value) {
-                                            setValue('language', value.domainvalue)
-                                        } else {
-                                            setValue('language', '')
-                                        }
-                                    }}
-                                    optionValue='domainvalue'
-                                    optionDesc='domaindesc'
-                                />
-                            </div>
-                            <div className="col-4">
-                                <span className={classes.detailTitle}>{t(langKeys.orgname)}</span>
-                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.enterorgnametext)}</span></div>
-                                <FieldEdit
-                                    label={t(langKeys.organization)}
-                                    valueDefault={selectedCardData?.organizationName}
-                                    onChange={(value) => setValue('organizationname', value)}
-                                />
-                            </div>
-                            <div className="col-4">
-                                <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
-                                <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
-                                <FieldSelect
-                                    label={t(langKeys.queries)}
-                                    data={(multiDataAux?.data?.[1]?.data||[])}
-                                    onChange={(value) => {
-                                        if(value?.domainvalue) {
-                                            setUnansweredQueries(value.domainvalue)
-                                            setValue('querywithoutanswer', value.domainvalue)
-                                        } else {
-                                            setUnansweredQueries('')
-                                            setValue('querywithoutanswer', '')
-                                        }
-                                    }}
-                                    valueDefault={selectedCardData?.querywithoutanswer}
-                                    optionValue="domainvalue"
-                                    optionDesc="domainvalue"
-                                />
-                            </div>
-                            {unansweredQueries === 'Respuesta Sugerida' && (
-                                <>
-                                    <div className={classes.block20}/>
-                                    <div>
-                                        <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
-                                        <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.aianswer)}</span></div>
-                                        <FieldEdit
-                                            variant="outlined"
-                                            InputProps={{
-                                                multiline: true,
+                <div style={{display: 'flex', flexDirection: 'column', padding: 10, backgroundColor: 'white', marginTop: 20}}>
+                    <div>
+                        <div>
+                            <Button
+                                type="button"
+                                style={{color: '#7721AD'}}
+                                startIcon={<ArrowBackIcon />}
+                                onClick={handleBackCard}
+                            >
+                                {t(langKeys.personality)}
+                            </Button>
+                        </div>
+                        <div className={classes.block10}/>
+                        <span className={classes.title}>
+                            {selectedCardData?.title}
+                        </span>
+                    </div>
+                    <div style={{display: 'flex', gap: 10}}>
+                        <div style={{flex: 2, display: 'flex', flexDirection: 'column'}}>
+                            <div className={classes.containerDetail}>
+                                <div className="row-zyx" style={{marginBottom:0}}>
+                                    <div className="col-6">
+                                        <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
+                                        <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
+                                        <FieldMultiSelect
+                                            label={t(langKeys.language)}
+                                            data={languages}
+                                            valueDefault={getValues('language')}
+                                            onChange={(value) => {
+                                                if(value) {
+                                                    const languages = value.map((o: Dictionary) => o.domainvalue).join(',')
+                                                    setValue("language", languages)
+                                                    trigger('language')
+                                                } else {
+                                                    setValue('language', '')
+                                                    trigger('language')
+                                                }
                                             }}
-                                            valueDefault={selectedCardData?.response}
-                                            onChange={(value) => setValue('response', value)}
+                                            optionValue='domainvalue'
+                                            optionDesc='domaindesc'
                                         />
                                     </div>
-                                </>
-                            )}
+                                    <div className="col-6">
+                                        <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
+                                        <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
+                                        <div style={{display: 'flex', alignItems: 'end', gap: 5}}>
+                                            <div style={{flex: 1}}>
+                                                <FieldSelect
+                                                    label={t(langKeys.queries)}
+                                                    data={(multiDataAux?.data?.[1]?.data||[])}
+                                                    onChange={(value) => {
+                                                        if(value?.domainvalue) {
+                                                            setUnansweredQueries(value.domainvalue)
+                                                            setValue('querywithoutanswer', value.domainvalue)
+                                                        } else {
+                                                            setUnansweredQueries('')
+                                                            setValue('querywithoutanswer', '')
+                                                        }
+                                                    }}
+                                                    valueDefault={selectedCardData?.querywithoutanswer}
+                                                    optionValue="domainvalue"
+                                                    optionDesc="domainvalue"
+                                                />
+                                            </div>
+                                            <Tooltip title={'nirvana te encargas'} arrow placement="top" >
+                                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                            </Tooltip>
+                                        </div>
+                                    </div>
+                                    {unansweredQueries === 'Respuesta Sugerida' && (
+                                        <>
+                                            <div>
+                                                <span className={classes.detailTitle}>{t(langKeys.dashboard_managerial_survey3_answervalue)}</span>
+                                                <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.aianswer)}</span></div>
+                                                <FieldEdit
+                                                    variant="outlined"
+                                                    InputProps={{
+                                                        multiline: true,
+                                                    }}
+                                                    valueDefault={selectedCardData?.response}
+                                                    onChange={(value) => setValue('response', value)}
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            <div className={`row-zyx ${classes.containerDetail2}`}>
+                                <div>
+                                    <span className={classes.detailTitle}>{t(langKeys.instructions)}</span>
+                                    <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
+                                    <FieldEditMulti
+                                        variant="outlined"
+                                        inputProps={{
+                                            rows: 7,
+                                            maxRows: 40
+                                        }}
+                                        valueDefault={selectedCardData?.prompt}
+                                        onChange={(value) => {
+                                            setValue('prompt', value)
+                                            setValidatePrompt(value)
+                                        }}
+                                        error={errors?.prompt?.message}
+                                    />
+                                    <div className={classes.block20}/>
+                                    <span className={classes.detailTitle}>{t(langKeys.exclusions)}</span>
+                                    <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
+                                    <FieldEditMulti
+                                        variant="outlined"
+                                        inputProps={{
+                                            rows: 3,
+                                            maxRows: 10
+                                        }}
+                                        valueDefault={selectedCardData?.negativeprompt}
+                                        onChange={(value) => setValue('negativeprompt', value)}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className={`row-zyx ${classes.containerDetail2}`}>
-                        <div className="col-8" style={{paddingRight:50}}>
-                            <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
-                            <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
-                            <FieldEdit
-                                variant="outlined"
-                                InputProps={{
-                                    multiline: true,
-                                }}
-                                valueDefault={selectedCardData?.prompt}
-                                onChange={(value) => {
-                                    setValue('prompt', value)
-                                    setValidatePrompt(value)
-                                }}
-                                error={errors?.prompt?.message}
-                            />
-                            <div className={classes.block20}/>
-                            <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
-                            <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
-                            <FieldEdit
-                                variant="outlined"
-                                InputProps={{
-                                    multiline: true,
-                                }}
-                                valueDefault={selectedCardData?.negativeprompt}
-                                onChange={(value) => setValue('negativeprompt', value)}
-                            />
-                        </div>
-                        <div className="col-4">
+                        <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
                             <div className={classes.parameterContainer}>
                                 <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
                                 <div className={classes.widthBlock10}/>
@@ -731,7 +741,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
                         </div>
                     </div>
-                </>
+                </div>
             );
         } else return null;
     }
