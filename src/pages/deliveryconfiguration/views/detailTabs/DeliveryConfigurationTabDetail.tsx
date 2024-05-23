@@ -250,7 +250,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
           },
           {
             Header: t(langKeys.carriername),
-            accessor: "userid",
+            accessor: "usr",
             width: "auto",
           },
           {
