@@ -6119,6 +6119,10 @@ export const langKeys = {
   firstinteraction: 'firstinteraction',
   conector: 'conector',
   uploaddate: 'uploaddate',
+
+  noreaction_help: 'noreaction_help',
+  suggestedanswer_help: 'suggestedanswer_help',
+  bestsuggestion_help: 'bestsuggestion_help'
 };
 
 export type LangKeys = typeof langKeys;

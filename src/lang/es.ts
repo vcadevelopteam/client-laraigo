@@ -5851,7 +5851,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   orgname: "Nombre de la Organización",
   enterorgnametext: "Ingresa los nombres de la organizaciones, referencias o palabras claves que la IA deberá reconocer y solamente referirse a ella por cualquier consulta.",
   unansweredqueries: "Respuesta Recomendada",
-  aireaction: "Decide como debería reaccionar la IA cuando no puede responder a una consulta.",
+  aireaction: "Decide como debería reaccionar la IA cuando no cuenta con la información necesaría a consultas realizadas.",
   queries: "Consultas",
   aianswer: "Define una respuesta que la IA pueda sugerir al cliente, como un email, teléfono o página web.",
   prompt: "Prompt",
@@ -6123,6 +6123,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   firstinteraction: 'Primera interacción usuario',
   conector: 'Conector',
   uploaddate: 'Fecha y hora de subida',
+  noreaction_help: 'Deja que la IA responda según su criterio.',
+  suggestedanswer_help: 'La IA responderá de forma ingeniosa relacionado a la base de conocimiento actual que posea, para consultas que no pueda responder por falta de conocimiento.',
+  bestsuggestion_help: 'Para consultas que la IA no pueda responder por falta de conocimiento, responderá según la información que le compartas para que pueda brindar un correo, página web, celular o respuesta predefinida al usuario.'
+
 };
 
 const esResource: ResourceLanguage = {

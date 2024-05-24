@@ -463,8 +463,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     <div className="col-6">
                                         <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
                                         <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
-                                        <FieldMultiSelect
-                                            label={t(langKeys.language)}
+                                        <FieldMultiSelect                                                                                    
                                             data={getValues('language') === 'Todos' ? languages.filter((value) => {return value.domainvalue === 'Todos'}) : languages}
                                             valueDefault={getValues('language')}
                                             onChange={(value) => {
@@ -491,7 +490,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
                                         <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
                                         <FieldSelect
-                                            label={t(langKeys.queries)}
+                                            label=" "
+                                            helperText="Hola"    
                                             data={filteredData}
                                             onChange={(value) => {
                                                 if(value?.domainvalue) {
@@ -530,7 +530,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                             <div className={`row-zyx ${classes.containerDetail2}`}>
                                 <div>
-                                    <span className={classes.detailTitle}>{t(langKeys.prompt)}</span>
+                                    <span className={classes.detailTitle}>{t(langKeys.instructions)}</span>
                                     <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.promptinstructions)}</span></div>
                                     <FieldEditMulti
                                         variant="outlined"
@@ -546,7 +546,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         error={errors?.prompt?.message}
                                     />
                                     <div className={classes.block20}/>
-                                    <span className={classes.detailTitle}>{t(langKeys.negativeprompt)}</span>
+                                    <span className={classes.detailTitle}>{t(langKeys.exclusions)}</span>
                                     <div className={classes.textMarginBot}><span className={classes.text}>{t(langKeys.negativepromptinstructions)}</span></div>
                                     <FieldEditMulti
                                         variant="outlined"

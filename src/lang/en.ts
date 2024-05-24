@@ -5926,7 +5926,7 @@ const translation: LangKeys = {
   orgname: "Organization Name",
   enterorgnametext: "Enter the names of the organizations, references or keywords that the AI should recognize and only refer to for any queries.",
   unansweredqueries: "Recommended Answer",
-  aireaction: "Decide how the AI should react when it cannot respond to a query.",
+  aireaction: "Decide how the AI should react when it does not have the necessary information to queries made.",
   queries: "Queries",
   aianswer: "Define a response that the AI can suggest to the customer, such as an email, phone or web page.",
   prompt: "Prompt",
@@ -6176,6 +6176,11 @@ const translation: LangKeys = {
   firstinteraction: 'First user interaction',
   conector: 'Conector',
   uploaddate: 'Date and time of upload',
+  noreaction_help: 'Let the AI respond as it sees fit.',
+  suggestedanswer_help: 'The AI will respond in a resourceful manner related to the current knowledge base it possesses, for queries that it cannot answer due to lack of knowledge.',
+  bestsuggestion_help: 'For queries that the AI cannot answer due to lack of knowledge, it will respond based on the information you share with it so that it can provide an email, web page, cell phone or predefined response to the user.'
+
+
 };
 
 const enResource: ResourceLanguage = {
