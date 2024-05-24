@@ -1959,7 +1959,7 @@ const Users: FC = () => {
                                 (a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }),
                                 {}
                             )
-                        ).includes(String(f.billinggroup.replace(/\s+/g, '')))) &&
+                        ).includes(String(f.billinggroup))) &&
                     (f.twofactorauthentication === undefined ||
                         Object.keys(
                             domains.value?.genericstatus?.reduce(
@@ -2014,7 +2014,7 @@ const Users: FC = () => {
                                     (a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }),
                                     {}
                                 )
-                            ).includes(String(f.billinggroup.replace(/\s+/g, '')))
+                            ).includes(String(f.billinggroup))
                         ) ||
                         !(
                             f.twofactorauthentication === undefined ||
@@ -2117,7 +2117,7 @@ const Users: FC = () => {
                                         company: d.company,
                                         twofactorauthentication: d.twofactorauthentication === "ACTIVO",
                                         registercode: String(d.registercode),
-                                        billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup.replace(/\s+/g, '')))?.[0] ?? "0"),
+                                        billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                         image: d?.image || "",
                                         detail: {
                                             showbots: Boolean(showbots),
@@ -2126,7 +2126,7 @@ const Users: FC = () => {
                                             bydefault: true,
                                             labels: "",
                                             warehouseid: "0",
-                                            groups: d.groups || null,
+                                            groups: d.groups.replace(/\s+/g, '') || null,
                                             storeid: "0",
                                             channels: d.channels || "",
                                             status: "DESCONECTADO",
