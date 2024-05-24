@@ -724,8 +724,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
                             filterGeneral={false}
                             selectionKey={selectionKey}
-                            setSelectedRows={setSelectedRows}
-                            useSelection={true}
+                            setSelectedRows={edit ? setSelectedRows : () => {return}}
+                            useSelection={edit ? true : false}
                         />
                     </div>
                 </div>
