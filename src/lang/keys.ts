@@ -6104,9 +6104,6 @@ export const langKeys = {
   tmeDescription: 'tmeDescription',
   tmrDescription: 'tmrDescription',
 
-  transactionnumber: 'transactionnumber',
-  conversationTMO: 'TMO Conversación',
-  numbers: 'numbers',
   quality: 'quality',
   messageslimit: 'messageslimit',
   templatesdeletemessage: 'templatesdeletemessage',
@@ -6165,6 +6162,17 @@ export const langKeys = {
   unlimited: 'unlimited',
   limitmessagehelptext: 'limitmessagehelptext',
   synchronizeError: 'synchronizeError',
+  recommendedresponse: 'recommendedresponse',
+  recommendedresponse_tooltip: 'recommendedresponse_tooltip', 
+  instructions: 'instructions',
+  exclusions:'exclusions',
+  filename: 'filename',
+  datetimeupload: 'datetimeupload', 
+  uploaddate: 'uploaddate',
+  noreaction_help: 'noreaction_help',
+  suggestedanswer_help: 'suggestedanswer_help',
+  bestsuggestion_help: 'bestsuggestion_help',
+  nooptionselected: 'nooptionselected',
 };
 
 export type LangKeys = typeof langKeys;

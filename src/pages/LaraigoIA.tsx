@@ -9,7 +9,7 @@ import { langKeys } from 'lang/keys';
 import { getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
-import { IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa, RASATrainingIcon, WitIcon, AIGenerative, AIBussiness } from 'icons';
+import { IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa, RASATrainingIcon, GenerativeAIIcon, WitIcon, AIGenerative, AIBussiness } from 'icons';
 import { Intentions } from './assistant/Intentions';
 import { Entities } from './assistant/Entities';
 import { IntentionsRasa } from './rasa/IntentionsRasa';

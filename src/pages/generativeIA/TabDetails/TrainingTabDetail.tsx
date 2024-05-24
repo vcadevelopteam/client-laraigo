@@ -24,6 +24,7 @@ import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
 import { addFile, assignFile, verifyFile } from "store/gpt/actions";
 import { addFileLlama, deleteFileLlama } from "store/llama/actions";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -71,12 +72,6 @@ const useStyles = makeStyles((theme) => ({
     header: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    headerLeft: {
-        display: 'flex',
-        justifyContent: 'flex-start',
-        gap: '1rem',
         alignItems: 'center'
     },
     button: {
@@ -213,7 +208,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [viewSelected, setViewSelected] = useState('main');
     const dataDocuments = useSelector(state => state.main.mainAux);
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitUploadFile2, setWaitUploadFile2] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [isModalOpen, setModalOpen] = useState(false);
     const [documentUrl, setDocumentUrl] = useState("");
@@ -228,11 +223,29 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
     const [waitSaveAddFileLlama, setWaitSaveAddFileLlama] = useState(false)
     const [waitSaveFileDeleteLlama, setWaitSaveFileDeleteLlama] = useState(false)
-  
+    const selectionKey = "assistantaidocumentid";
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const [fileAttachments, setFileAttachments] = useState<any[]>([]);
+    const [filesAux, setFilesAux] = useState<any[]>([]);
+    
     useEffect(() => {
         fetchData();
     }, [])
 
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected((p) =>
+                Object.keys(selectedRows).map(
+                    (x) =>
+                        dataDocuments?.data.find((y) => y.assistantaidocumentid === parseInt(x)) ??
+                        p.find((y) => y.assistantaidocumentid === parseInt(x)) ??
+                        {}
+                )
+            );
+        }
+    }, [selectedRows]);
+    
     const { register, handleSubmit, setValue, getValues } = useForm({
         defaultValues: {
             assistantaiid: row?.assistantaiid,
@@ -263,21 +276,52 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     }, []);
 
     const onChangeAttachment = useCallback((files: any) => {
+        setFilesAux(files);
         const file = files?.item(0);
-        if (file) {
-            setFileAttachment(file);
-            const fd = new FormData();
-            fd.append('file', file, file.name);
-            dispatch(uploadFile(fd));
-            setWaitUploadFile(true);
-        }
+        setFileAttachment(file);
+        const fd = new FormData();
+        fd.append('file', file, file.name);
+        dispatch(uploadFile(fd));
+        setWaitUploadFile2(true);
     }, [])
+    
+    useEffect(() => {
+        if (waitUploadFile2) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                const files2 = fileAttachments
+                files2.push({file_url: uploadResult?.url || '', file_name: fileAttachment?.name || ''})
+                setFileAttachments(files2)
+
+                const filesArray = Array.from(filesAux);
+                filesArray.shift();
+                const dataTransfer = new DataTransfer();
+                filesArray.forEach(file => dataTransfer.items.add(file));
+                const newFilesAux = dataTransfer.files;
+                setWaitUploadFile2(false);
+                if (newFilesAux.length > 0) onChangeAttachment(newFilesAux);
+            } else if (uploadResult.error) {
+                setWaitUploadFile2(false);
+            }
+        }
+    }, [waitUploadFile2, uploadResult])
 
     useEffect(() => {
         if (waitSaveAssignFile) {
             if (!executeFiles.loading && !executeFiles.error) {
                 setWaitSaveAssignFile(false);
-                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
+                fileAttachments.map(async (file, index) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: row?.assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: executeFiles.data[index].id,
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
+                //dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
                 setWaitSave(true);
             } else if (executeFiles.error) {
                 const errormessage = t(executeFiles.code || "error_unexpected_error", {
@@ -294,10 +338,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         if (waitSaveAddFile) {
             if (!executeFiles.loading && !executeFiles.error) {
                 setWaitSaveAddFile(false);                 
-                const documentid = executeFiles.data.id;
+                const file_ids = executeFiles.data.map((item: Dictionary) => item.response.id);
                 dispatch(assignFile({
                     assistant_id: row?.code,
-                    file_id: documentid,
+                    file_ids: file_ids,
                     apikey: row?.apikey,
                 }))
                 setWaitSaveAssignFile(true);
@@ -338,8 +382,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         const callback = async () => {
             dispatch(showBackdrop(true));
             dispatch(addFile({
-                file_url: data.url,
-                file_name: data.description,
+                files: fileAttachments,
                 apikey: row?.apikey,
             }))
             setWaitSaveAddFile(true);
@@ -378,25 +421,77 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         )
     });
 
+    const handleMassiveDelete = () => {
+        if(rowWithDataSelected.every(obj => obj.fileid === 'llamatest')) {
+            const callback = async () => {
+                dispatch(showBackdrop(true));
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(deleteFileLlama({
+                        collection: row?.name,
+                        filename: row2?.description,
+                    }))
+                })
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        ...row2,
+                        id: row2?.assistantaidocumentid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    })));
+                })
+                setWaitSave(true);
+            }
+            dispatch(
+                manageConfirmation({
+                  visible: true,
+                  question: t(langKeys.confirmation_delete_all),
+                  callback,
+                })
+            );
+        } else {
+            const callback = async () => {
+                dispatch(showBackdrop(true));
+                dispatch(deleteFile({
+                    file_ids: rowWithDataSelected.map((item) => item.fileid),
+                    apikey: row?.apikey,
+                }))
+                setWaitSaveFileDelete(true)
+            }
+            dispatch(
+                manageConfirmation({
+                  visible: true,
+                  question: t(langKeys.confirmation_delete_all),
+                  callback,
+                })
+            );
+        }
+    }
+    
     useEffect(() => {
-        if (waitUploadFile) {
-            if (!uploadResult.loading && !uploadResult.error) {
-                setValue('url', uploadResult?.url || '')
-                setValue('description', fileAttachment?.name || '')
-                setWaitUploadFile(false);
-            } else if (uploadResult.error) {
-                setWaitUploadFile(false);
+        if (waitSaveFileDelete) {
+            if (!executeFiles.loading && !executeFiles.error) {
+                setWaitSaveFileDelete(false);
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        ...row2,
+                        id: row2?.assistantaidocumentid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    })));
+                })
+                setWaitSave(true);
+            } else if (executeFiles.error) {
+                const errormessage = t(executeFiles.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveFileDelete(false);
             }
         }
-    }, [waitUploadFile, uploadResult])
-
-    const handleClearFile = () => {
-        setFileAttachment(null);
-        setWaitUploadFile(false);
-        setValue('url', '')
-        setFile({name: '', url: ''})
-        setValue('description', '')
-    };
+    }, [executeFiles, waitSaveFileDelete]);
 
     const handleDelete = (row2: Dictionary) => {
         const callback = async () => {
@@ -487,7 +582,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     const columns = React.useMemo(
         () => [
-            {
+            /*{
                 accessor: "assistantaidocumentid",
                 NoFilter: true,
                 disableGlobalFilter: true,
@@ -502,6 +597,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     />
                   );
                 },
+            },*/
+            {
+                Header: t(langKeys.name),
+                accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.uploaddate),
+                accessor: 'createdate',
+                width: "auto",
             },
             {
                 accessor: "viewDocument",
@@ -513,21 +618,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <IconButton onClick={() => handleViewDocument(row.url, row.type)}>
+                        <IconButton onClick={() => handleViewDocument(row.url, row.type)} style={{padding: 0}}>
                             <VisibilityIcon />
                         </IconButton>
                     );
                 },
-            },
-            {
-                Header: t(langKeys.name),
-                accessor: 'description',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.upload),
-                accessor: 'createdate',
-                width: "auto",
             },
         ],
         []
@@ -541,7 +636,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 width: "auto",
             },
             {
-                Header: t(langKeys.upload),
+                Header: t(langKeys.uploaddate),
                 accessor: 'createdate',
                 width: "auto",
             },
@@ -562,7 +657,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 fetchData()
                 fetchAssistants()
                 setViewSelected('main')
-                handleClearFile()
+                setFileAttachments([])
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
@@ -575,30 +670,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
-    useEffect(() => {
-        if (waitSaveFileDelete) {
-            if (!executeFiles.loading && !executeFiles.error) {
-                setWaitSaveFileDelete(false);
-                dispatch(execute(insAssistantAiDoc({
-                    ...rowAux,
-                    id: rowAux?.assistantaidocumentid,
-                    operation: "DELETE",
-                    status: "ELIMINADO",
-                    type: "NINGUNO" 
-                })));
-                setWaitSave(true);
-                setRowAux(null)
-            } else if (executeFiles.error) {
-                const errormessage = t(executeFiles.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveFileDelete(false);
-            }
-        }
-    }, [executeFiles, waitSaveFileDelete]);
-
     const handleDrop = (event) => {
         event.preventDefault();
         const files = event.dataTransfer.files;
@@ -607,6 +678,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     
     const handleDragOver = (event) => {
         event.preventDefault();
+    };
+
+    const handleRemoveAttachment = (index) => {
+        setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     if(viewSelected === 'main') {
@@ -639,15 +714,25 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 </div>
                 <div className={classes.containerDetail}>
                     <div className={classes.header}>
-                        <div className={classes.headerLeft}>
-                            <div>
-                                <span className={classes.title}>
-                                    {t(langKeys.saved_documents)}
-                                </span>
-                                <div className={classes.titleMargin}>
-                                    <span>{t(langKeys.saved_documents_description)}</span>
-                                </div>
+                        <div>
+                            <span className={classes.title}>
+                                {t(langKeys.saved_documents)}
+                            </span>
+                            <div className={classes.titleMargin}>
+                                <span>{t(langKeys.saved_documents_description)}</span>
                             </div>
+                        </div>
+                        <div>
+                            <Button
+                                variant="contained"
+                                type="button"                              
+                                startIcon={<DeleteIcon color={rowWithDataSelected.length === 0 ? "secondary" : "primary"} />}
+                                className={classes.purpleButton}
+                                disabled={rowWithDataSelected.length === 0}
+                                onClick={handleMassiveDelete}
+                            >
+                                {t(langKeys.delete)}
+                            </Button>
                         </div>
                     </div>
                     <div className={classes.titleMargin}>
@@ -655,6 +740,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             columns={edit ? columns : columns2}
                             data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
                             filterGeneral={false}
+                            selectionKey={selectionKey}
+                            setSelectedRows={edit ? setSelectedRows : () => {return}}
+                            useSelection={edit ? true : false}
                         />
                     </div>
                 </div>
@@ -664,7 +752,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             {documentUrl && (
                                 <iframe title="Document Viewer" src={documentUrl} width="100%" height="700" />
                             )}
-
                             {!documentUrl && (
                                 <>
                                     <p>{t(langKeys.error_previewing_file)}</p>
@@ -681,7 +768,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     </Button>                            
                                 </>
                             )}
-
                             <Button
                                 style={{ border: '1px solid #7721AD' }}
                                 className={classes.button}
@@ -700,26 +786,41 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         return (
             <>
                 <div className={classes.containerDetail}>
-                    <div className={classes.container2}>
-                        <div>
-                            <Button
-                                type="button"
-                                style={{color: '#7721AD'}}
-                                startIcon={<ArrowBackIcon />}
-                                onClick={() => setViewSelected('main')}
-                            >
-                                {t(langKeys.knowledge_base)}
-                            </Button>
-                        </div>
-                        <div className={classes.block10}/>
-                        <div>
-                            <span className={classes.title}>
-                                {t(langKeys.upload)}
-                            </span>
-                            <div className={classes.titleMargin}>
-                                <span>{t(langKeys.uploadFileText)}</span>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'end'}}>
+                        <div className={classes.container2}>
+                            <div>
+                                <Button
+                                    type="button"
+                                    style={{color: '#7721AD'}}
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={() => {
+                                        setViewSelected('main')
+                                        setFileAttachments([])
+                                    }}
+                                >
+                                    {t(langKeys.knowledge_base)}
+                                </Button>
                             </div>
-                        </div>                    
+                            <div className={classes.block10}/>
+                            <div>
+                                <span className={classes.title}>
+                                    {t(langKeys.upload)}
+                                </span>
+                                <div className={classes.titleMargin}>
+                                    <span>{t(langKeys.uploadFileText)}</span>
+                                </div>
+                            </div>                    
+                        </div>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<AttachFileIcon />}
+                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
+                            className={classes.clipButton2}
+                            disabled={fileAttachments.length < 1 || waitUploadFile2}
+                        >
+                            {t(langKeys.import)}
+                        </Button>
                     </div>
                     <div>
                         <input
@@ -727,58 +828,53 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             style={{ display: 'none'}}
                             id="attachmentInput"
                             type="file"
+                            multiple
                             onChange={(e) => onChangeAttachment(e.target.files)}
                         />
-                        { waitUploadFile || fileAttachment === null && (
-                            <Card
-                                className={classes.uploadCard}
-                                onClick={onClickAttachment}
-                                onDrop={(e) => handleDrop(e)}
-                                onDragOver={(e) => handleDragOver(e)}
-                                draggable
-                            >
-                                <div className={classes.uploadCardContent}>
-                                    <UploadFileIcon className={classes.uploadIcon}/>
-                                    <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
-                                    <div>{t(langKeys.maximun10files)}</div>
-                                </div>
-                            </Card>
-                        )}
-                        {fileAttachment && (
+                        <Card
+                            className={classes.uploadCard}
+                            onClick={onClickAttachment}
+                            onDrop={(e) => handleDrop(e)}
+                            onDragOver={(e) => handleDragOver(e)}
+                            draggable
+                        >
+                            <div className={classes.uploadCardContent}>
+                                <UploadFileIcon className={classes.uploadIcon}/>
+                                <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
+                                <div>{t(langKeys.maximun10files)}</div>
+                            </div>
+                        </Card>
+                        {fileAttachments.length > 0 && (
                             <>
-                                <Card className={classes.fileInfoCard}>
-                                    <div className={classes.fileInfoCardContent}>
-                                        <div className={classes.fileCardText}>
-                                            <InsertDriveFileIcon style={{marginRight: 10}}/>
-                                            <Typography className={classes.fileCardName}>
-                                                {fileAttachment.name}
-                                            </Typography>
-                                        </div>
-                                        <IconButton
-                                            onClick={handleClearFile}
-                                        >
-                                            <ClearIcon style={{color: "#008439"}}/>
-                                        </IconButton>
-                                    </div>
-                                </Card>
-                                {getValues('url') === '' && (
-                                    <div className={classes.loadingIndicator}>
-                                        <CachedIcon color="primary" style={{marginRight: 8}}/>
-                                        <span>Cargando el documento...</span>
-                                    </div>
-                                )}
+                                {fileAttachments.map((file, index) => {
+                                    return (
+                                        <>
+                                            <Card className={classes.fileInfoCard}>
+                                                <div className={classes.fileInfoCardContent}>
+                                                    <div className={classes.fileCardText}>
+                                                        <InsertDriveFileIcon style={{marginRight: 10}}/>
+                                                        <Typography className={classes.fileCardName}>
+                                                            {file.file_name}
+                                                        </Typography>
+                                                    </div>
+                                                    <IconButton
+                                                        onClick={() => handleRemoveAttachment(index)}
+                                                    >
+                                                        <ClearIcon style={{color: "#008439"}}/>
+                                                    </IconButton>
+                                                </div>
+                                            </Card>
+                                        </>
+                                    )
+                                })}
                             </>
                         )}
-                        <Button
-                            variant="contained"
-                            type="button"
-                            startIcon={<AttachFileIcon />}
-                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
-                            className={classes.clipButton2}
-                            disabled={fileAttachment === null || getValues('url') === ''}
-                        >
-                            {t(langKeys.import)}
-                        </Button>
+                        {waitUploadFile2 && (
+                            <div className={classes.loadingIndicator}>
+                                <CachedIcon color="primary" style={{marginRight: 8}}/>
+                                <span>Cargando documentos...</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </>
@@ -832,7 +928,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                           {fileAttachment.name}
                         </Typography>
                       </div>
-                      <IconButton onClick={handleClearFile}>
+                      <IconButton>
                         <ClearIcon style={{ color: "#008439" }} />
                       </IconButton>
                     </div>

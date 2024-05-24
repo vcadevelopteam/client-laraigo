@@ -464,11 +464,6 @@ export const apiUrls = {
     GPT_ASSISTANTS_DELETE: `${BASE_URL}/gpt/assistants/delete`,
     GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
 
-    LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
-    LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
-
-    CORP_URL: `${BASE_URL}/corp`,
-    DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
     LLAMA_CREATE_COLLECTION: `${BASE_URL}/llama/create_collection`,
     LLAMA_CREATE_COLLECTION_DOCUMENT: `${BASE_URL}/llama/create_collection_document`,
     LLAMA_DELETE_COLLECTION: `${BASE_URL}/llama/delete_collection`,
@@ -479,6 +474,11 @@ export const apiUrls = {
     LLAMA_QUERY: `${BASE_URL}/llama/query`,
     LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
 
+    LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
+    LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
+    
+    CORP_URL: `${BASE_URL}/corp`,
+    DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,   
     PROCESSZIPINTEGRATION: `${BASE_URL}/integrationmanager/file_upload`,
     SAML_LOGIN: `${BASE_URL}/auth/idps/saml20/sso/login`,
 };
