@@ -42,8 +42,7 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: '#EBEAED',            
         }
-    },
-    
+    },    
     cardContent: {
         textAlign: 'center',
         alignContent: 'center',
@@ -188,7 +187,18 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
     const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
+    const [selectedOption, setSelectedOption] = useState('');
 
+    useEffect(() => {
+        const defaultValue = getValues('querywithoutanswer');
+        setSelectedOption(defaultValue);
+    }, []);
+
+    const handleSelectChange = (value: any) => {
+        console.log('Selected option:', value);
+        setSelectedOption(value?.domainvalue || '');
+    };
+    
     const filteredData = (multiDataAux?.data?.[1]?.data || []).reduce<Dictionary[]>((acc, item) => {
         if (!acc.find((i) => i.domainvalue === item.domainvalue)) {
             acc.push(item);
@@ -283,8 +293,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         {
             domainvalue: 'Urdu',
             domaindesc: 'Urdu'
-        },
-        
+        },        
     ]
 
     const cardData = [
@@ -488,25 +497,40 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     </div>
                                     <div className="col-6">
                                         <span className={classes.detailTitle}>{t(langKeys.unansweredqueries)}</span>
-                                        <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
-                                        <FieldSelect
-                                            label=" "
-                                            helperText="Hola"    
-                                            data={filteredData}
-                                            onChange={(value) => {
-                                                if(value?.domainvalue) {
-                                                    setUnansweredQueries(value.domainvalue)
-                                                    setValue('querywithoutanswer', value.domainvalue)
-                                                } else {
-                                                    setUnansweredQueries('')
-                                                    setValue('querywithoutanswer', '')
+                                        <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>                                        
+                                        <div style={{ display: 'flex', alignItems: 'end', gap: 5 }}>
+                                            <div style={{ flex: 1 }}>
+                                                <FieldSelect
+                                                    data={filteredData}
+                                                    onChange={(value) => {
+                                                        console.log('onChange value:', value);
+                                                        handleSelectChange(value);
+                                                        if (value?.domainvalue) {
+                                                            setUnansweredQueries(value.domainvalue);
+                                                            setValue('querywithoutanswer', value.domainvalue);
+                                                        } else {
+                                                            setUnansweredQueries('');
+                                                            setValue('querywithoutanswer', '');
+                                                        }
+                                                    }}
+                                                    error={errors?.querywithoutanswer?.message}
+                                                    valueDefault={getValues('querywithoutanswer')}
+                                                    optionValue="domainvalue"
+                                                    optionDesc="domainvalue"
+                                                />
+                                            </div>
+                                            <Tooltip
+                                                title={
+                                                    selectedOption === 'Sin reacción' ? t(langKeys.noreaction_help) :
+                                                    selectedOption === 'Respuesta Sugerida' ? t(langKeys.suggestedanswer_help) :
+                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.bestsuggestion_help) : t(langKeys.nooptionselected)
                                                 }
-                                            }}
-                                            error={errors?.querywithoutanswer?.message}
-                                            valueDefault={getValues('querywithoutanswer')}
-                                            optionValue="domainvalue"
-                                            optionDesc="domainvalue"
-                                        />
+                                                arrow
+                                                placement="top"
+                                            >
+                                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                            </Tooltip>
+                                        </div>
                                     </div>
                                     {unansweredQueries === 'Respuesta Sugerida' && (
                                         <>
@@ -702,24 +726,31 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.aireaction)}</span></div>
                                         <div style={{display: 'flex', alignItems: 'end', gap: 5}}>
                                             <div style={{flex: 1}}>
-                                                <FieldSelect
-                                                    label={t(langKeys.queries)}
+                                                <FieldSelect                                                   
                                                     data={filteredData}
                                                     onChange={(value) => {
+                                                        console.log('onChange value:', value);
+                                                        handleSelectChange(value);
                                                         if(value?.domainvalue) {
-                                                            setUnansweredQueries(value.domainvalue)
-                                                            setValue('querywithoutanswer', value.domainvalue)
+                                                            setUnansweredQueries(value.domainvalue);
+                                                            setValue('querywithoutanswer', value.domainvalue);
                                                         } else {
-                                                            setUnansweredQueries('')
-                                                            setValue('querywithoutanswer', '')
+                                                            setUnansweredQueries('');
+                                                            setValue('querywithoutanswer', '');
                                                         }
-                                                    }}
-                                                    valueDefault={selectedCardData?.querywithoutanswer}
+                                                    }}                                                   
+                                                    valueDefault={getValues('querywithoutanswer')}
                                                     optionValue="domainvalue"
                                                     optionDesc="domainvalue"
                                                 />
                                             </div>
-                                            <Tooltip title={'nirvana te encargas'} arrow placement="top" >
+                                            <Tooltip
+                                                title={selectedOption === 'Sin reacción' ? t(langKeys.noreaction_help) :
+                                                    selectedOption === 'Respuesta Sugerida' ? t(langKeys.suggestedanswer_help) :
+                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.bestsuggestion_help) : t(langKeys.nooptionselected)}
+                                                arrow
+                                                placement="top"
+                                            >
                                                 <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                             </Tooltip>
                                         </div>

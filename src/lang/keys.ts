@@ -6122,7 +6122,8 @@ export const langKeys = {
 
   noreaction_help: 'noreaction_help',
   suggestedanswer_help: 'suggestedanswer_help',
-  bestsuggestion_help: 'bestsuggestion_help'
+  bestsuggestion_help: 'bestsuggestion_help',
+  nooptionselected: 'nooptionselected',
 };
 
 export type LangKeys = typeof langKeys;

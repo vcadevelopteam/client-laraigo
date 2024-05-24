@@ -6178,8 +6178,8 @@ const translation: LangKeys = {
   uploaddate: 'Date and time of upload',
   noreaction_help: 'Let the AI respond as it sees fit.',
   suggestedanswer_help: 'The AI will respond in a resourceful manner related to the current knowledge base it possesses, for queries that it cannot answer due to lack of knowledge.',
-  bestsuggestion_help: 'For queries that the AI cannot answer due to lack of knowledge, it will respond based on the information you share with it so that it can provide an email, web page, cell phone or predefined response to the user.'
-
+  bestsuggestion_help: 'For queries that the AI cannot answer due to lack of knowledge, it will respond based on the information you share with it so that it can provide an email, web page, cell phone or predefined response to the user.',
+  nooptionselected: 'No Option Selected ',
 
 };
 

@@ -6125,8 +6125,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   uploaddate: 'Fecha y hora de subida',
   noreaction_help: 'Deja que la IA responda según su criterio.',
   suggestedanswer_help: 'La IA responderá de forma ingeniosa relacionado a la base de conocimiento actual que posea, para consultas que no pueda responder por falta de conocimiento.',
-  bestsuggestion_help: 'Para consultas que la IA no pueda responder por falta de conocimiento, responderá según la información que le compartas para que pueda brindar un correo, página web, celular o respuesta predefinida al usuario.'
-
+  bestsuggestion_help: 'Para consultas que la IA no pueda responder por falta de conocimiento, responderá según la información que le compartas para que pueda brindar un correo, página web, celular o respuesta predefinida al usuario.',
+  nooptionselected: 'Ninguna Opcion Seleccionada',
 };
 
 const esResource: ResourceLanguage = {
