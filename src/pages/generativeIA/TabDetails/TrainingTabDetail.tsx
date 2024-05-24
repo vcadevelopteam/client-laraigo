@@ -208,7 +208,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [viewSelected, setViewSelected] = useState('main');
     const dataDocuments = useSelector(state => state.main.mainAux);
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitUploadFile2, setWaitUploadFile2] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [isModalOpen, setModalOpen] = useState(false);
     const [documentUrl, setDocumentUrl] = useState("");
@@ -226,6 +226,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const selectionKey = "assistantaidocumentid";
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const [fileAttachments, setFileAttachments] = useState<any[]>([]);
+    const [filesAux, setFilesAux] = useState<any[]>([]);
     
     useEffect(() => {
         fetchData();
@@ -274,16 +276,34 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     }, []);
 
     const onChangeAttachment = useCallback((files: any) => {
-        handleClearFile()
+        setFilesAux(files);
         const file = files?.item(0);
-        if (file) {
-            setFileAttachment(file);
-            const fd = new FormData();
-            fd.append('file', file, file.name);
-            dispatch(uploadFile(fd));
-            setWaitUploadFile(true);
-        }
+        setFileAttachment(file);
+        const fd = new FormData();
+        fd.append('file', file, file.name);
+        dispatch(uploadFile(fd));
+        setWaitUploadFile2(true);
     }, [])
+    
+    useEffect(() => {
+        if (waitUploadFile2) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                const files2 = fileAttachments
+                files2.push({url: uploadResult?.url || '', description: fileAttachment?.name || ''})
+                setFileAttachments(files2)
+
+                const filesArray = Array.from(filesAux);
+                filesArray.shift();
+                const dataTransfer = new DataTransfer();
+                filesArray.forEach(file => dataTransfer.items.add(file));
+                const newFilesAux = dataTransfer.files;
+                setWaitUploadFile2(false);
+                if (newFilesAux.length > 0) onChangeAttachment(newFilesAux);
+            } else if (uploadResult.error) {
+                setWaitUploadFile2(false);
+            }
+        }
+    }, [waitUploadFile2, uploadResult])
 
     useEffect(() => {
         if (waitSaveAssignFile) {
@@ -389,26 +409,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             })
         )
     });
-
-    useEffect(() => {
-        if (waitUploadFile) {
-            if (!uploadResult.loading && !uploadResult.error) {
-                setValue('url', uploadResult?.url || '')
-                setValue('description', fileAttachment?.name || '')
-                setWaitUploadFile(false);
-            } else if (uploadResult.error) {
-                setWaitUploadFile(false);
-            }
-        }
-    }, [waitUploadFile, uploadResult])
-
-    const handleClearFile = () => {
-        setFileAttachment(null);
-        setWaitUploadFile(false);
-        setValue('url', '')
-        setFile({name: '', url: ''})
-        setValue('description', '')
-    };
 
     const handleMassiveDelete = () => {
         if(rowWithDataSelected.length < 2) {
@@ -620,7 +620,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 fetchData()
                 fetchAssistants()
                 setViewSelected('main')
-                handleClearFile()
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
@@ -665,6 +664,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     
     const handleDragOver = (event) => {
         event.preventDefault();
+    };
+
+    const handleRemoveAttachment = (index) => {
+        setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     if(viewSelected === 'main') {
@@ -776,7 +779,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     type="button"
                                     style={{color: '#7721AD'}}
                                     startIcon={<ArrowBackIcon />}
-                                    onClick={() => setViewSelected('main')}
+                                    onClick={() => {
+                                        setViewSelected('main')
+                                        setFileAttachments([])
+                                    }}
                                 >
                                     {t(langKeys.knowledge_base)}
                                 </Button>
@@ -797,7 +803,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             startIcon={<AttachFileIcon />}
                             onClick={edit ? handleUpload : handleUploadInNewAssistant}
                             className={classes.clipButton2}
-                            disabled={fileAttachment === null || getValues('url') === ''}
+                            disabled={fileAttachments.length < 1 || waitUploadFile2}
                         >
                             {t(langKeys.import)}
                         </Button>
@@ -808,6 +814,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             style={{ display: 'none'}}
                             id="attachmentInput"
                             type="file"
+                            multiple
                             onChange={(e) => onChangeAttachment(e.target.files)}
                         />
                         <Card
@@ -823,30 +830,36 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 <div>{t(langKeys.maximun10files)}</div>
                             </div>
                         </Card>
-                        {fileAttachment && (
+                        {fileAttachments.length > 0 && (
                             <>
-                                <Card className={classes.fileInfoCard}>
-                                    <div className={classes.fileInfoCardContent}>
-                                        <div className={classes.fileCardText}>
-                                            <InsertDriveFileIcon style={{marginRight: 10}}/>
-                                            <Typography className={classes.fileCardName}>
-                                                {fileAttachment.name}
-                                            </Typography>
-                                        </div>
-                                        <IconButton
-                                            onClick={handleClearFile}
-                                        >
-                                            <ClearIcon style={{color: "#008439"}}/>
-                                        </IconButton>
-                                    </div>
-                                </Card>
-                                {getValues('url') === '' && (
-                                    <div className={classes.loadingIndicator}>
-                                        <CachedIcon color="primary" style={{marginRight: 8}}/>
-                                        <span>Cargando el documento...</span>
-                                    </div>
-                                )}
+                                {fileAttachments.map((file, index) => {
+                                    return (
+                                        <>
+                                            <Card className={classes.fileInfoCard}>
+                                                <div className={classes.fileInfoCardContent}>
+                                                    <div className={classes.fileCardText}>
+                                                        <InsertDriveFileIcon style={{marginRight: 10}}/>
+                                                        <Typography className={classes.fileCardName}>
+                                                            {file.description}
+                                                        </Typography>
+                                                    </div>
+                                                    <IconButton
+                                                        onClick={() => handleRemoveAttachment(index)}
+                                                    >
+                                                        <ClearIcon style={{color: "#008439"}}/>
+                                                    </IconButton>
+                                                </div>
+                                            </Card>
+                                        </>
+                                    )
+                                })}
                             </>
+                        )}
+                        {waitUploadFile2 && (
+                            <div className={classes.loadingIndicator}>
+                                <CachedIcon color="primary" style={{marginRight: 8}}/>
+                                <span>Cargando documentos...</span>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -901,7 +914,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                           {fileAttachment.name}
                         </Typography>
                       </div>
-                      <IconButton onClick={handleClearFile}>
+                      <IconButton>
                         <ClearIcon style={{ color: "#008439" }} />
                       </IconButton>
                     </div>
