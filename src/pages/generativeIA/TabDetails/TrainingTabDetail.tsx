@@ -289,7 +289,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         if (waitUploadFile2) {
             if (!uploadResult.loading && !uploadResult.error) {
                 const files2 = fileAttachments
-                files2.push({url: uploadResult?.url || '', description: fileAttachment?.name || ''})
+                files2.push({file_url: uploadResult?.url || '', file_name: fileAttachment?.name || ''})
                 setFileAttachments(files2)
 
                 const filesArray = Array.from(filesAux);
@@ -309,7 +309,19 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         if (waitSaveAssignFile) {
             if (!executeFiles.loading && !executeFiles.error) {
                 setWaitSaveAssignFile(false);
-                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
+                fileAttachments.map(async (file, index) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: row?.assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: executeFiles.data[index].id,
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
+                //dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
                 setWaitSave(true);
             } else if (executeFiles.error) {
                 const errormessage = t(executeFiles.code || "error_unexpected_error", {
@@ -326,10 +338,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         if (waitSaveAddFile) {
             if (!executeFiles.loading && !executeFiles.error) {
                 setWaitSaveAddFile(false);                 
-                const documentid = executeFiles.data.id;
+                const file_ids = executeFiles.data.map((item: Dictionary) => item.response.id);
                 dispatch(assignFile({
                     assistant_id: row?.code,
-                    file_id: documentid,
+                    file_ids: file_ids,
                     apikey: row?.apikey,
                 }))
                 setWaitSaveAssignFile(true);
@@ -370,8 +382,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         const callback = async () => {
             dispatch(showBackdrop(true));
             dispatch(addFile({
-                file_url: data.url,
-                file_name: data.description,
+                files: fileAttachments,
                 apikey: row?.apikey,
             }))
             setWaitSaveAddFile(true);
@@ -411,50 +422,76 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     });
 
     const handleMassiveDelete = () => {
-        if(rowWithDataSelected.length < 2) {
-            handleDelete(rowWithDataSelected[0])
-        } else {
-            if(rowWithDataSelected.every(obj => obj.fileid === 'llamatest')) {
-                const callback = async () => {
-                    dispatch(showBackdrop(true));
-                    rowWithDataSelected.map(async (row2) => {
-                        dispatch(deleteFileLlama({
-                            collection: row?.name,
-                            filename: row2?.description,
-                        }))
-                    })
-                    rowWithDataSelected.map(async (row2) => {
-                        dispatch(execute(insAssistantAiDoc({
-                            ...row2,
-                            id: row2?.assistantaidocumentid,
-                            operation: "DELETE",
-                            status: "ELIMINADO",
-                            type: "NINGUNO" 
-                        })));
-                    })
-                    setWaitSave(true);
-                }
-                dispatch(
-                    manageConfirmation({
-                      visible: true,
-                      question: t(langKeys.confirmation_delete_all),
-                      callback,
-                    })
-                );
-            } else {
-                const callback = async () => {
-                    dispatch(showBackdrop(true));
-                }
-                dispatch(
-                    manageConfirmation({
-                      visible: true,
-                      question: t(langKeys.confirmation_delete_all),
-                      callback,
-                    })
-                );
+        if(rowWithDataSelected.every(obj => obj.fileid === 'llamatest')) {
+            const callback = async () => {
+                dispatch(showBackdrop(true));
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(deleteFileLlama({
+                        collection: row?.name,
+                        filename: row2?.description,
+                    }))
+                })
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        ...row2,
+                        id: row2?.assistantaidocumentid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    })));
+                })
+                setWaitSave(true);
             }
+            dispatch(
+                manageConfirmation({
+                  visible: true,
+                  question: t(langKeys.confirmation_delete_all),
+                  callback,
+                })
+            );
+        } else {
+            const callback = async () => {
+                dispatch(showBackdrop(true));
+                dispatch(deleteFile({
+                    file_ids: rowWithDataSelected.map((item) => item.fileid),
+                    apikey: row?.apikey,
+                }))
+                setWaitSaveFileDelete(true)
+            }
+            dispatch(
+                manageConfirmation({
+                  visible: true,
+                  question: t(langKeys.confirmation_delete_all),
+                  callback,
+                })
+            );
         }
     }
+    
+    useEffect(() => {
+        if (waitSaveFileDelete) {
+            if (!executeFiles.loading && !executeFiles.error) {
+                setWaitSaveFileDelete(false);
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        ...row2,
+                        id: row2?.assistantaidocumentid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    })));
+                })
+                setWaitSave(true);
+            } else if (executeFiles.error) {
+                const errormessage = t(executeFiles.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveFileDelete(false);
+            }
+        }
+    }, [executeFiles, waitSaveFileDelete]);
 
     const handleDelete = (row2: Dictionary) => {
         const callback = async () => {
@@ -620,6 +657,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 fetchData()
                 fetchAssistants()
                 setViewSelected('main')
+                setFileAttachments([])
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
@@ -631,30 +669,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             }
         }
     }, [executeResult, waitSave]);
-
-    useEffect(() => {
-        if (waitSaveFileDelete) {
-            if (!executeFiles.loading && !executeFiles.error) {
-                setWaitSaveFileDelete(false);
-                dispatch(execute(insAssistantAiDoc({
-                    ...rowAux,
-                    id: rowAux?.assistantaidocumentid,
-                    operation: "DELETE",
-                    status: "ELIMINADO",
-                    type: "NINGUNO" 
-                })));
-                setWaitSave(true);
-                setRowAux(null)
-            } else if (executeFiles.error) {
-                const errormessage = t(executeFiles.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveFileDelete(false);
-            }
-        }
-    }, [executeFiles, waitSaveFileDelete]);
 
     const handleDrop = (event) => {
         event.preventDefault();
@@ -840,7 +854,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                                     <div className={classes.fileCardText}>
                                                         <InsertDriveFileIcon style={{marginRight: 10}}/>
                                                         <Typography className={classes.fileCardName}>
-                                                            {file.description}
+                                                            {file.file_name}
                                                         </Typography>
                                                     </div>
                                                     <IconButton
