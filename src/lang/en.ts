@@ -5928,11 +5928,11 @@ const translation: LangKeys = {
   unansweredqueries: "Recommended Answer",
   aireaction: "Decide how the AI should react when it cannot respond to a query.",
   queries: "Queries",
-  aianswer: "Define a response for the AI to suggest to the customer, it is suggested to share an email, phone, website, etc.",
+  aianswer: "Define a response that the AI can suggest to the customer, such as an email, phone or web page.",
   prompt: "Prompt",
   promptinstructions: "Provide detailed instructions to guide the behavior of your AI.",
   negativeprompt: "Negative Prompt",
-  negativepromptinstructions: "Provide keywords, to indicate to the AI, which topics it should not mention or touch upon within the conversation.",
+  negativepromptinstructions: "Indicates topics that the AI should avoid mentioning or talking about during the conversation.",
   selectpersonality: "Select a personality for your assistant.",
   maxtokens: "Max Tokens",
   temperature: "Temperature",
@@ -6175,6 +6175,7 @@ const translation: LangKeys = {
   contextperconversation: 'Context per conversation',
   firstinteraction: 'First user interaction',
   conector: 'Conector',
+  uploaddate: 'Date and time of upload',
 };
 
 const enResource: ResourceLanguage = {

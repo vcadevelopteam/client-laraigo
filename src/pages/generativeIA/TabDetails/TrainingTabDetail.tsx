@@ -24,6 +24,7 @@ import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
 import { addFile, assignFile, verifyFile } from "store/gpt/actions";
 import { addFileLlama, deleteFileLlama } from "store/llama/actions";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -71,12 +72,6 @@ const useStyles = makeStyles((theme) => ({
     header: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    headerLeft: {
-        display: 'flex',
-        justifyContent: 'flex-start',
-        gap: '1rem',
         alignItems: 'center'
     },
     button: {
@@ -228,11 +223,27 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
     const [waitSaveAddFileLlama, setWaitSaveAddFileLlama] = useState(false)
     const [waitSaveFileDeleteLlama, setWaitSaveFileDeleteLlama] = useState(false)
-  
+    const selectionKey = "assistantaidocumentid";
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    
     useEffect(() => {
         fetchData();
     }, [])
 
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected((p) =>
+                Object.keys(selectedRows).map(
+                    (x) =>
+                        dataDocuments?.data.find((y) => y.assistantaidocumentid === parseInt(x)) ??
+                        p.find((y) => y.assistantaidocumentid === parseInt(x)) ??
+                        {}
+                )
+            );
+        }
+    }, [selectedRows]);
+    
     const { register, handleSubmit, setValue, getValues } = useForm({
         defaultValues: {
             assistantaiid: row?.assistantaiid,
@@ -263,6 +274,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     }, []);
 
     const onChangeAttachment = useCallback((files: any) => {
+        handleClearFile()
         const file = files?.item(0);
         if (file) {
             setFileAttachment(file);
@@ -398,6 +410,52 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         setValue('description', '')
     };
 
+    const handleMassiveDelete = () => {
+        if(rowWithDataSelected.length < 2) {
+            handleDelete(rowWithDataSelected[0])
+        } else {
+            if(rowWithDataSelected.every(obj => obj.fileid === 'llamatest')) {
+                const callback = async () => {
+                    dispatch(showBackdrop(true));
+                    rowWithDataSelected.map(async (row2) => {
+                        dispatch(deleteFileLlama({
+                            collection: row?.name,
+                            filename: row2?.description,
+                        }))
+                    })
+                    rowWithDataSelected.map(async (row2) => {
+                        dispatch(execute(insAssistantAiDoc({
+                            ...row2,
+                            id: row2?.assistantaidocumentid,
+                            operation: "DELETE",
+                            status: "ELIMINADO",
+                            type: "NINGUNO" 
+                        })));
+                    })
+                    setWaitSave(true);
+                }
+                dispatch(
+                    manageConfirmation({
+                      visible: true,
+                      question: t(langKeys.confirmation_delete_all),
+                      callback,
+                    })
+                );
+            } else {
+                const callback = async () => {
+                    dispatch(showBackdrop(true));
+                }
+                dispatch(
+                    manageConfirmation({
+                      visible: true,
+                      question: t(langKeys.confirmation_delete_all),
+                      callback,
+                    })
+                );
+            }
+        }
+    }
+
     const handleDelete = (row2: Dictionary) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
@@ -487,7 +545,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     const columns = React.useMemo(
         () => [
-            {
+            /*{
                 accessor: "assistantaidocumentid",
                 NoFilter: true,
                 disableGlobalFilter: true,
@@ -502,6 +560,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     />
                   );
                 },
+            },*/
+            {
+                Header: t(langKeys.name),
+                accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.uploaddate),
+                accessor: 'createdate',
+                width: "auto",
             },
             {
                 accessor: "viewDocument",
@@ -513,21 +581,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <IconButton onClick={() => handleViewDocument(row.url, row.type)}>
+                        <IconButton onClick={() => handleViewDocument(row.url, row.type)} style={{padding: 0}}>
                             <VisibilityIcon />
                         </IconButton>
                     );
                 },
-            },
-            {
-                Header: t(langKeys.name),
-                accessor: 'description',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.upload),
-                accessor: 'createdate',
-                width: "auto",
             },
         ],
         []
@@ -541,7 +599,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 width: "auto",
             },
             {
-                Header: t(langKeys.upload),
+                Header: t(langKeys.uploaddate),
                 accessor: 'createdate',
                 width: "auto",
             },
@@ -639,15 +697,25 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 </div>
                 <div className={classes.containerDetail}>
                     <div className={classes.header}>
-                        <div className={classes.headerLeft}>
-                            <div>
-                                <span className={classes.title}>
-                                    {t(langKeys.saved_documents)}
-                                </span>
-                                <div className={classes.titleMargin}>
-                                    <span>{t(langKeys.saved_documents_description)}</span>
-                                </div>
+                        <div>
+                            <span className={classes.title}>
+                                {t(langKeys.saved_documents)}
+                            </span>
+                            <div className={classes.titleMargin}>
+                                <span>{t(langKeys.saved_documents_description)}</span>
                             </div>
+                        </div>
+                        <div>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                startIcon={<DeleteIcon color="primary" />}
+                                className={classes.purpleButton}
+                                disabled={rowWithDataSelected.length === 0}
+                                onClick={handleMassiveDelete}
+                            >
+                                {t(langKeys.delete)}
+                            </Button>
                         </div>
                     </div>
                     <div className={classes.titleMargin}>
@@ -655,6 +723,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             columns={edit ? columns : columns2}
                             data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
                             filterGeneral={false}
+                            selectionKey={selectionKey}
+                            setSelectedRows={setSelectedRows}
+                            useSelection={true}
                         />
                     </div>
                 </div>
@@ -664,7 +735,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             {documentUrl && (
                                 <iframe title="Document Viewer" src={documentUrl} width="100%" height="700" />
                             )}
-
                             {!documentUrl && (
                                 <>
                                     <p>{t(langKeys.error_previewing_file)}</p>
@@ -681,7 +751,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     </Button>                            
                                 </>
                             )}
-
                             <Button
                                 style={{ border: '1px solid #7721AD' }}
                                 className={classes.button}
@@ -700,26 +769,38 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         return (
             <>
                 <div className={classes.containerDetail}>
-                    <div className={classes.container2}>
-                        <div>
-                            <Button
-                                type="button"
-                                style={{color: '#7721AD'}}
-                                startIcon={<ArrowBackIcon />}
-                                onClick={() => setViewSelected('main')}
-                            >
-                                {t(langKeys.knowledge_base)}
-                            </Button>
-                        </div>
-                        <div className={classes.block10}/>
-                        <div>
-                            <span className={classes.title}>
-                                {t(langKeys.upload)}
-                            </span>
-                            <div className={classes.titleMargin}>
-                                <span>{t(langKeys.uploadFileText)}</span>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'end'}}>
+                        <div className={classes.container2}>
+                            <div>
+                                <Button
+                                    type="button"
+                                    style={{color: '#7721AD'}}
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={() => setViewSelected('main')}
+                                >
+                                    {t(langKeys.knowledge_base)}
+                                </Button>
                             </div>
-                        </div>                    
+                            <div className={classes.block10}/>
+                            <div>
+                                <span className={classes.title}>
+                                    {t(langKeys.upload)}
+                                </span>
+                                <div className={classes.titleMargin}>
+                                    <span>{t(langKeys.uploadFileText)}</span>
+                                </div>
+                            </div>                    
+                        </div>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            startIcon={<AttachFileIcon />}
+                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
+                            className={classes.clipButton2}
+                            disabled={fileAttachment === null || getValues('url') === ''}
+                        >
+                            {t(langKeys.import)}
+                        </Button>
                     </div>
                     <div>
                         <input
@@ -729,21 +810,19 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             type="file"
                             onChange={(e) => onChangeAttachment(e.target.files)}
                         />
-                        { waitUploadFile || fileAttachment === null && (
-                            <Card
-                                className={classes.uploadCard}
-                                onClick={onClickAttachment}
-                                onDrop={(e) => handleDrop(e)}
-                                onDragOver={(e) => handleDragOver(e)}
-                                draggable
-                            >
-                                <div className={classes.uploadCardContent}>
-                                    <UploadFileIcon className={classes.uploadIcon}/>
-                                    <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
-                                    <div>{t(langKeys.maximun10files)}</div>
-                                </div>
-                            </Card>
-                        )}
+                        <Card
+                            className={classes.uploadCard}
+                            onClick={onClickAttachment}
+                            onDrop={(e) => handleDrop(e)}
+                            onDragOver={(e) => handleDragOver(e)}
+                            draggable
+                        >
+                            <div className={classes.uploadCardContent}>
+                                <UploadFileIcon className={classes.uploadIcon}/>
+                                <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
+                                <div>{t(langKeys.maximun10files)}</div>
+                            </div>
+                        </Card>
                         {fileAttachment && (
                             <>
                                 <Card className={classes.fileInfoCard}>
@@ -769,16 +848,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 )}
                             </>
                         )}
-                        <Button
-                            variant="contained"
-                            type="button"
-                            startIcon={<AttachFileIcon />}
-                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
-                            className={classes.clipButton2}
-                            disabled={fileAttachment === null || getValues('url') === ''}
-                        >
-                            {t(langKeys.import)}
-                        </Button>
                     </div>
                 </div>
             </>

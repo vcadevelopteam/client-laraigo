@@ -6118,6 +6118,7 @@ export const langKeys = {
   contextperconversation: 'contextperconversation',
   firstinteraction: 'firstinteraction',
   conector: 'conector',
+  uploaddate: 'uploaddate',
 };
 
 export type LangKeys = typeof langKeys;

@@ -167,7 +167,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('basemodel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('language')
+        register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
         register('organizationname');
         register('intelligentmodelsid');
         register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -256,31 +256,27 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
             let generalprompt;
 
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                if(data.language.includes(',')){
+                    const formattedLanguages = data.language.split(',').join(', ');
+                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+                } else {
+                    if(data.language === 'Todos') {
+                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                    } else {
+                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                    }
                 }
             }
 
             if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
             } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
             }
 
             setEncryptedApikey(encryptedApikey)
@@ -327,31 +323,27 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
             let generalprompt;
 
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                if(data.language.includes(',')){
+                    const formattedLanguages = data.language.split(',').join(', ');
+                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+                } else {
+                    if(data.language === 'Todos') {
+                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                    } else {
+                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                    }
                 }
             }
 
             if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
             } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
             }
 
             setEncryptedApikey(encryptedApikey2)
@@ -454,31 +446,27 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const onMainSubmitMeta = handleSubmit(async (data) => {
         let generalprompt;
 
-        if (data.organizationname !== '') {
-            generalprompt = data.prompt + '\n\n';
-            if (data.negativeprompt !== '') {
-                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-            }
-            if (data.language !== '') {
-                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-            }
-            generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-        } else {
-            generalprompt = data.prompt + '\n\n';
-            if (data.negativeprompt !== '') {
-                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-            }
-            if (data.language !== '') {
-                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                ', infórmales que solamente puedes comunicarte en ' + data.language;
+        generalprompt = data.prompt + '\n\n';
+        if (data.negativeprompt !== '') {
+            generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+        }
+        if (data.language !== '') {
+            if(data.language.includes(',')){
+                const formattedLanguages = data.language.split(',').join(', ');
+                generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+            } else {
+                if(data.language === 'Todos') {
+                    generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                } else {
+                    generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                }
             }
         }
 
         if (data.querywithoutanswer === 'Mejor Sugerencia') {
-            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
         } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-            generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
         }
 
         setGeneralPrompt(generalprompt)
@@ -523,31 +511,27 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             dispatch(showBackdrop(true));
             let generalprompt;
 
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                if(data.language.includes(',')){
+                    const formattedLanguages = data.language.split(',').join(', ');
+                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+                } else {
+                    if(data.language === 'Todos') {
+                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                    } else {
+                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                    }
                 }
             }
 
             if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
             } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
             }
             setGeneralPrompt(generalprompt)
 
