@@ -699,7 +699,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         <span className={classes.detailTitle}>{t(langKeys.language2)}</span>
                                         <div className={classes.subTextContainer}><span className={classes.text}>{t(langKeys.selectAILang)}</span></div>
                                         <FieldMultiSelect
-                                            label={t(langKeys.language)}
                                             data={getValues('language') === 'Todos' ? languages.filter((value) => {return value.domainvalue === 'Todos'}) : languages}
                                             valueDefault={getValues('language')}
                                             onChange={(value) => {
@@ -747,7 +746,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             <Tooltip
                                                 title={selectedOption === 'Sin reacción' ? t(langKeys.noreaction_help) :
                                                     selectedOption === 'Respuesta Sugerida' ? t(langKeys.suggestedanswer_help) :
-                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.bestsuggestion_help) : t(langKeys.nooptionselected)}
+                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.bestsuggestion_help) : t(langKeys.noreaction_help)}
                                                 arrow
                                                 placement="top"
                                             >
