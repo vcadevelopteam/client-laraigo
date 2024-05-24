@@ -739,7 +739,7 @@ const translation: LangKeys = {
   firstandlastname: "Nombres y apellidos",
   companybusinessname: "Nombre de la Empresa o Compañia",
   signupstep1title2: 'Complete su Información personal y comercial',
-  tos1: "Al registrarte aceptas nuestras ",
+  tos1: "Al registrarte aceptas nuestros ",
   tos2: " y ",
   signupstep1title: '¡Registrate en menos de un minuto!',
   signupfacebookbutton: 'Registrate por Facebook',
@@ -6102,6 +6102,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   errorIntegrationTrackinguplicates: 'Los nombres de los campos de rastreo no se pueden repetir.',
   repeated_code: 'Los Codigos no pueden repetirse',
   repeated_person: 'Las Personas no pueden repetirse',
+  signupfirststepasscond: 'Mínimo 8 caracteres, contener un carácter especial, mayúscula, minúscula y número.',
+  signupstep2ms1: 'Impulsa tu negocio ¡Hoy!',
+  signupstep2ms2: 'Empieza a optimizar procesos con el PLAN {{plan}} con Laraigo.',
 };
 
 const esResource: ResourceLanguage = {

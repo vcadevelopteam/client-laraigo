@@ -6099,6 +6099,9 @@ export const langKeys = {
   errorIntegrationTrackinguplicates: 'errorIntegrationTrackinguplicates',
   repeated_code: 'repeated_code',
   repeated_person: 'repeated_person',
+  signupfirststepasscond: 'signupfirststepasscond',
+  signupstep2ms1: 'signupstep2ms1',
+  signupstep2ms2: 'signupstep2ms2',
 };
 
 export type LangKeys = typeof langKeys;

@@ -140,7 +140,21 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
     }, [dispatch]);
 
     return (
-        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%", paddingRight:"20px" }}>
+        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link
+                    color="textSecondary"
+                    href="/"
+                    key={"mainview"}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setOpenWarning(true);
+                    }}
+                >
+                    {"<< "}
+                    <Trans i18nKey={langKeys.previoustext} />
+                </Link>
+            </Breadcrumbs>
             <h1 className={classes.title}>{t(langKeys.addpaymentmethod)}</h1>
             <div style={{ padding: "0px", paddingBottom: "12px" }}>{t(langKeys.addpaymentmethodsub)}</div>
             <div className={classes.containerBorder}>

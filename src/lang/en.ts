@@ -6155,6 +6155,9 @@ const translation: LangKeys = {
   errorIntegrationTrackinguplicates: 'Trace field names cannot be repeated.',
   repeated_code: 'Codes cannot be repeated',
   repeated_person: 'Persons cannot be repeated',
+  signupfirststepasscond: 'Minimum 8 characters, contains a special character, uppercase, lowercase and number.',
+  signupstep2ms1: 'Boost your business Today!',
+  signupstep2ms2: 'Start optimizing processes with the PLAN {{plan}} with Laraigo.',
 };
 
 const enResource: ResourceLanguage = {
