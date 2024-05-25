@@ -19,7 +19,7 @@ import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
-import { createCollection, createCollectionDocument, editCollection } from "store/llama/actions";
+import { createCollection, createCollectionDocument, createCollectionDocuments, editCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -537,8 +537,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
             setGeneralPrompt(generalprompt)
 
-            dispatch(createCollectionDocument({
-                url: cosFile[0].file_url,
+            dispatch(createCollectionDocuments({
+                urls: cosFile.map((item: Dictionary) => item.file_url),
                 collection: data.name
             }))
             setWaitSaveCreateCollection(true)
@@ -590,16 +590,18 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (waitSaveCreateCollectionDoc) {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSaveCreateCollectionDoc(false);
-                dispatch(execute(insAssistantAiDoc({
-                    assistantaiid: executeResult.data[0].p_assistantaiid,
-                    id: 0,
-                    description: cosFile[0].file_name,
-                    url: cosFile[0].file_url,
-                    fileid: 'llamatest',
-                    type: 'FILE',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                })));
+                cosFile.map(async (file) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: executeResult.data[0].p_assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: 'llamatest',
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
                 setWaitSave(true);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
