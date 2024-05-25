@@ -188,7 +188,7 @@ interface TrainingTabDetailProps {
     fetchData: () => void;
     fetchAssistants: () => void;
     edit: boolean;
-    setFile: (data: {name: string, url: string}) => void;
+    setFile: (data: Dictionary[]) => void;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -228,6 +228,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [fileAttachments, setFileAttachments] = useState<any[]>([]);
     const [filesAux, setFilesAux] = useState<any[]>([]);
+    const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
     
     useEffect(() => {
         fetchData();
@@ -315,7 +316,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         id: 0,
                         description: file.file_name,
                         url: file.file_url,
-                        fileid: executeFiles.data[index].id,
+                        fileid: fileIdsAux[index],
                         type: 'FILE',
                         status: 'ACTIVO',
                         operation: 'INSERT',
@@ -339,6 +340,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             if (!executeFiles.loading && !executeFiles.error) {
                 setWaitSaveAddFile(false);                 
                 const file_ids = executeFiles.data.map((item: Dictionary) => item.response.id);
+                setFileIdsAux(file_ids);
                 dispatch(assignFile({
                     assistant_id: row?.code,
                     file_ids: file_ids,
@@ -375,7 +377,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     const handleUploadInNewAssistant = () => {
         setViewSelected('main')
-        setFile({name: getValues('description'), url: getValues('url')})
+        setFile(fileAttachments)
     }
 
     const handleUpload = handleSubmit(async (data) => {
@@ -658,6 +660,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 fetchAssistants()
                 setViewSelected('main')
                 setFileAttachments([])
+                setFileIdsAux([])
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
@@ -738,7 +741,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     <div className={classes.titleMargin}>
                         <TableZyx
                             columns={edit ? columns : columns2}
-                            data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
+                            data={edit ? dataDocuments.data : fileAttachments.map((file: Dictionary) => ({ description: file.file_name, createdate: 'Por subir' }))}
                             filterGeneral={false}
                             selectionKey={selectionKey}
                             setSelectedRows={edit ? setSelectedRows : () => {return}}
