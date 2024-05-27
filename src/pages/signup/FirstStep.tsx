@@ -2,7 +2,7 @@ import { apiUrls } from "common/constants";
 import { Button, CircularProgress, InputAdornment, IconButton, makeStyles, TextField, Container } from "@material-ui/core";
 import { Controller, useFormContext } from "react-hook-form";
 import { executeCheckNewUser } from "store/signup/actions";
-import { Facebook, Visibility, VisibilityOff } from "@material-ui/icons";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { MainData, SubscriptionContext } from "./context";
 import { showSnackbar } from "store/popus/actions";
@@ -12,7 +12,7 @@ import { useSelector } from "hooks";
 import FacebookIcon from '@material-ui/icons/Facebook';
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin, { GoogleLoginResponse, GoogleLoginResponseOffline } from "react-google-login";
-import React, { CSSProperties, FC, MouseEvent, useContext, useEffect, useState } from "react";
+import { CSSProperties, FC, MouseEvent, useContext, useEffect, useState } from "react";
 import { LaraigoLogo } from "icons";
 import { OnlyCheckbox } from "components";
 

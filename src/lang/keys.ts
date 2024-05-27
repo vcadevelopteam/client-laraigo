@@ -6102,6 +6102,7 @@ export const langKeys = {
   signupfirststepasscond: 'signupfirststepasscond',
   signupstep2ms1: 'signupstep2ms1',
   signupstep2ms2: 'signupstep2ms2',
+  billingforinformation:'billingforinformation',
 };
 
 export type LangKeys = typeof langKeys;

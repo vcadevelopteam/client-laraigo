@@ -338,6 +338,7 @@ export interface MainData {
     loginpassword: string;
     loginpasswordrepeat: string;
     loginusername: string;
+    clienttype: string;
 }
 
 const defaultListChannels: ListChannels = {
@@ -478,6 +479,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             loginpassword: "",
             loginpasswordrepeat: "",
             loginusername: "",
+            clienttype: "business"
         },
     });
 
@@ -645,6 +647,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 loginusername: mainData.loginusername,
                 paymentplan: planData.data[0].plan,
                 paymentplanid: planData.data[0].paymentplanid,
+                clienttype: planData.data[0].clienttype,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
             },

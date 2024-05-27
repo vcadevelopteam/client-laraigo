@@ -2,7 +2,7 @@ import { SubscriptionContext } from "./context";
 
 import FirstStep from "./FirstStep";
 import RateExperience from "./Rating";
-import React, { FC, useContext } from "react";
+import { FC, useContext } from "react";
 import SecondStep from "./SecondStep";
 import ThirdStep from "./ThirdStep";
 

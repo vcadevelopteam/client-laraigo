@@ -44,17 +44,16 @@ const useSignUpStyles = makeStyles((theme) => ({
         paddingTop: 16,
     },
     containerLogo: {
-        alignItems: "center",
-        backgroundColor: "white",
+        background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)", 
+        height: "100%",
         display: "flex",
-        flex: 1,
+        width: "40%",
         margin: 0,
         [theme.breakpoints.down("sm")]: {
             display: "none",
         },
     },
     container: {
-        background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)", height: "100vh",
         display: "flex",
         justifyContent: "center",
         margin: 0
@@ -251,6 +250,12 @@ const SignUpFunc: FC = () => {
                                 </div>
                                 <div style={{color:"white", fontSize:"1.5em", textAlign:"center", margin: "20px 10%"}}>
                                     {t(langKeys.signupstep2ms2, { plan: planData?.plan?.plan})}  
+                                </div>
+                                <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                    <video width="80%" controls //autoPlay
+                                    >
+                                        <source src="http://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/4a78ff62-dc91-49b3-b8d6-84dda5a0420a/Laraigo%20%EF%BD%9C%20CRM%20Omnicanal%20100%25%20Cloud.mp4" type="video/mp4"/>
+                                    </video>
                                 </div>
                             </div>
                         </div>

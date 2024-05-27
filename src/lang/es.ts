@@ -6105,6 +6105,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   signupfirststepasscond: 'Mínimo 8 caracteres, contener un carácter especial, mayúscula, minúscula y número.',
   signupstep2ms1: 'Impulsa tu negocio ¡Hoy!',
   signupstep2ms2: 'Empieza a optimizar procesos con el PLAN {{plan}} con Laraigo.',
+  billingforinformation:'Información para facturación',
 };
 
 const esResource: ResourceLanguage = {

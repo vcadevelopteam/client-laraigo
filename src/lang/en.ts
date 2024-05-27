@@ -6158,6 +6158,7 @@ const translation: LangKeys = {
   signupfirststepasscond: 'Minimum 8 characters, contains a special character, uppercase, lowercase and number.',
   signupstep2ms1: 'Boost your business Today!',
   signupstep2ms2: 'Start optimizing processes with the PLAN {{plan}} with Laraigo.',
+  billingforinformation:'Billing information',
 };
 
 const enResource: ResourceLanguage = {

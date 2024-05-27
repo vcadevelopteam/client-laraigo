@@ -1,4 +1,4 @@
-import { Breadcrumbs, Button, makeStyles, TextField } from "@material-ui/core";
+import { Button, FormControl, FormControlLabel, FormLabel, makeStyles, Radio, RadioGroup, TextField } from "@material-ui/core";
 import { Controller, useFormContext } from "react-hook-form";
 import { FieldSelect } from "components";
 import { getCollectionPublic, resetMain } from "store/main/actions";
@@ -11,7 +11,6 @@ import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 
-import Link from "@material-ui/core/Link";
 import MuiPhoneNumber from "material-ui-phone-number";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 
@@ -140,11 +139,24 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
     }, [dispatch]);
 
     return (
-        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%", paddingRight:"20px" }}>
-            <h1 className={classes.title}>{t(langKeys.addpaymentmethod)}</h1>
-            <div style={{ padding: "0px", paddingBottom: "12px" }}>{t(langKeys.addpaymentmethodsub)}</div>
+        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%", padding:"30px 4%" }}>
             <div className={classes.containerBorder}>
-                <h3 style={{ margin: "0px" }}>{t(langKeys.subscription_billingregister)}</h3>
+                <div style={{display:"flex", justifyContent:"space-between"}}>
+                    <h3 style={{ margin: "0px", alignContent: "center" }}>{t(langKeys.billingforinformation)}</h3>                    
+                    <FormControl component="fieldset">
+                        <Controller
+                            name="clienttype"
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <RadioGroup {...field} row>
+                                    <FormControlLabel value="business" control={<Radio color="primary"/>} label={t(langKeys.business)} />
+                                    <FormControlLabel value="person" control={<Radio color="primary"/>} label={t(langKeys.person)} />
+                                </RadioGroup>
+                            )}
+                        />
+                    </FormControl>
+                </div>
                 <div className="row-zyx" style={{ marginBottom: "-10px" }}>
                     <Controller
                         control={control}
