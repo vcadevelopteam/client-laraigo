@@ -522,8 +522,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             <Tooltip
                                                 title={
                                                     selectedOption === 'Sin reacción' ? t(langKeys.noreaction_help) :
-                                                    selectedOption === 'Respuesta Sugerida' ? t(langKeys.suggestedanswer_help) :
-                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.bestsuggestion_help) : t(langKeys.nooptionselected)
+                                                    selectedOption === 'Respuesta Sugerida' ? t(langKeys.bestsuggestion_help) :
+                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.suggestedanswer_help) : t(langKeys.nooptionselected)
                                                 }
                                                 arrow
                                                 placement="top"
@@ -559,8 +559,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     <FieldEditMulti
                                         variant="outlined"
                                         inputProps={{
-                                            rows: 3,
-                                            maxRows: 10
+                                            rows: 7,
+                                            maxRows: 40
                                         }}
                                         valueDefault={getValues('prompt')}
                                         onChange={(value) => {
@@ -745,8 +745,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             </div>
                                             <Tooltip
                                                 title={selectedOption === 'Sin reacción' ? t(langKeys.noreaction_help) :
-                                                    selectedOption === 'Respuesta Sugerida' ? t(langKeys.suggestedanswer_help) :
-                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.bestsuggestion_help) : t(langKeys.noreaction_help)}
+                                                    selectedOption === 'Respuesta Sugerida' ? t(langKeys.bestsuggestion_help) :
+                                                    selectedOption === 'Mejor Sugerencia' ? t(langKeys.suggestedanswer_help) : t(langKeys.noreaction_help)}
                                                 arrow
                                                 placement="top"
                                             >
