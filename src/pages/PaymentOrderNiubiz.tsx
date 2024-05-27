@@ -176,13 +176,13 @@ export const PaymentOrderNiubiz: FC = () => {
                         }
                         else {
                             setPaymentData(resultSessionToken.data);
-                            importUrlScript(`${apiUrls.NIUBIZSCRIPT}`);
+                            importUrlScript(`${resultSessionToken.data.sessionscript}`);
                             importManualScript(resultSessionToken.data);
                         }
                     }
                     else {
                         setPaymentData(resultSessionToken.data);
-                        importUrlScript(`${apiUrls.NIUBIZSCRIPT}`);
+                        importUrlScript(`${resultSessionToken.data.sessionscript}`);
                         importManualScript(resultSessionToken.data);
                     }
                 }

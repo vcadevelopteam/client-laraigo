@@ -317,7 +317,7 @@ export const PaymentOrderIzipay: FC = () => {
 
                 if (resultGetPaymentOrder.data) {
                     setPaymentData(resultGetPaymentOrder.data);
-                    importUrlScript(`${apiUrls.IZIPAYSCRIPT}`);
+                    importUrlScript(`${resultGetPaymentOrder.data.sessionscript}`);
                 }
             } else if (resultGetPaymentOrder.error) {
                 dispatch(
