@@ -19,7 +19,7 @@ import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
-import { createCollection, createCollectionDocument, editCollection } from "store/llama/actions";
+import { createCollection, createCollectionDocuments, editCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -80,10 +80,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [tabIndex, setTabIndex] = useState(0);
     const [registerError, setRegisterError] = useState(false);
     const dataDocuments = useSelector(state => state.main.mainAux);
-    const [cosFile, setCosFile] = useState({
-        name: '',
-        url: ''
-    });
+    const [cosFile, setCosFile] = useState<Dictionary[]>([]);
     const [assistantaiid, setAssistantaiid] = useState('');
     const newArrayBread = [
         ...arrayBread,
@@ -111,6 +108,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         intelligentmodelsid: row ? row.intelligentmodelsid : 0
     })
     const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
+    const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
 
     useEffect(() => {
         if (waitSave) {
@@ -124,6 +122,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                 setViewSelected('assistantdetail')
                 dispatch(showBackdrop(false));
                 setRegisterError(false)
+                setCosFile([])
+                setFileIdsAux([])
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
@@ -373,8 +373,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSaveInsFile(false);
                 dispatch(addFile({
-                    file_url: cosFile.url,
-                    file_name: cosFile.name,
+                    files: cosFile,
                     apikey: encryptedApikey,
                 }))
                 setWaitSaveCreateAssistantFile(true);
@@ -393,10 +392,11 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (waitSaveCreateAssistantFile) {
             if (!executeAssistant.loading && !executeAssistant.error) {
                 setWaitSaveCreateAssistantFile(false);
-                setDocumentId(executeAssistant.data.id)
+                const file_ids = executeAssistant.data.map((item: Dictionary) => item.response.id);
+                setFileIdsAux(file_ids)
                 dispatch(assignFile({
                     assistant_id: assistantaiid,
-                    file_id: executeAssistant.data.id,
+                    file_ids: file_ids,
                     apikey: encryptedApikey,
                 }))
                 setWaitSaveCreateAssistantAssignFile(true)
@@ -415,16 +415,18 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (waitSaveCreateAssistantAssignFile) {
             if (!executeAssistant.loading && !executeAssistant.error) {
                 setWaitSaveCreateAssistantAssignFile(false);
-                dispatch(execute(insAssistantAiDoc({
-                    assistantaiid: executeResult.data[0].p_assistantaiid,
-                    id: 0,
-                    description: cosFile.name,
-                    url: cosFile.url,
-                    fileid: documentId,
-                    type: 'FILE',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                })));
+                cosFile.map(async (file, index) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: executeResult.data[0].p_assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: fileIdsAux[index],
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
                 setWaitSave(true);
             } else if (executeAssistant.error) {
                 const errormessage = t(executeAssistant.code || "error_unexpected_error", {
@@ -535,8 +537,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
             setGeneralPrompt(generalprompt)
 
-            dispatch(createCollectionDocument({
-                url: cosFile.url,
+            dispatch(createCollectionDocuments({
+                urls: cosFile.map((item: Dictionary) => item.file_url),
                 collection: data.name
             }))
             setWaitSaveCreateCollection(true)
@@ -588,16 +590,18 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (waitSaveCreateCollectionDoc) {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSaveCreateCollectionDoc(false);
-                dispatch(execute(insAssistantAiDoc({
-                    assistantaiid: executeResult.data[0].p_assistantaiid,
-                    id: 0,
-                    description: cosFile.name,
-                    url: cosFile.url,
-                    fileid: 'llamatest',
-                    type: 'FILE',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                })));
+                cosFile.map(async (file) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: executeResult.data[0].p_assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: 'llamatest',
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
                 setWaitSave(true);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
@@ -618,13 +622,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             handleChangeTab(e, 2);
         } else {
             if(provider === 'Open AI') {
-                if (cosFile.name === '' && cosFile.url === '') {
+                if (cosFile.length < 1) {
                     onMainSubmit();
                 } else {
                     onMainSubmitWithFiles();
                 }
             } else {
-                if (cosFile.name === '' && cosFile.url === '') {
+                if (cosFile.length < 1) {
                     onMainSubmitMeta();
                 } else {
                     onMainSubmitMetaWithFiles();

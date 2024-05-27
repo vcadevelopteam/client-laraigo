@@ -345,6 +345,7 @@ interface InputProps {
     width?: number | "string";
     helperText?: "string";
     placeholder?: string;
+    resize?: string;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -449,6 +450,90 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
         </div>
     )
 }
+
+export const FieldEditMultiAux: React.FC<InputProps> = ({
+    label,
+    className,
+    disabled = false,
+    valueDefault = "",
+    onChange,
+    onBlur,
+    error,
+    type = "text",
+    rows = 4,
+    maxLength = 0,
+    fregister = {},
+    inputProps = {},
+    variant = "standard",
+    resize = "none",
+    style,
+}) => {
+    const [value, setValue] = useState("");
+    const [currentHeight, setCurrentHeight] = useState<string | number>('auto');
+
+    useEffect(() => {
+        setValue(valueDefault || "");
+    }, [valueDefault]);
+
+    useEffect(() => {
+        const textarea = document.querySelector('.MuiInputBase-input') as HTMLTextAreaElement;
+        if (textarea) {
+            textarea.style.height = `${currentHeight}px`;
+            textarea.style.maxHeight = `${currentHeight}px`;
+            textarea.addEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            if (textarea) {
+                textarea.removeEventListener('mouseup', handleMouseUp);
+            }
+        };
+    }, [currentHeight]);
+
+    const handleMouseUp = (e: MouseEvent) => {
+        const textarea = e.target as HTMLTextAreaElement;
+        if (textarea) {
+            const newHeight = textarea.clientHeight;
+            setCurrentHeight(newHeight);
+        }
+    };
+
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                {label}
+            </Box>
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                variant={variant}
+                type={type}
+                error={!!error}
+                value={value}
+                multiline
+                minRows={rows}
+                helperText={error || null}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={{ ...inputProps, style: { resize, overflowY: 'auto' } }}
+                style={{ border: '1px solid #762AA9', ...style, maxHeight: currentHeight }}
+            />
+            {maxLength !== 0 && (
+                <FormHelperText style={{ textAlign: 'right' }}>
+                    {maxLength - value.length}/{maxLength}
+                </FormHelperText>
+            )}
+        </div>
+    );
+};
 
 export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false }) => {
     const [value, setvalue] = useState("");

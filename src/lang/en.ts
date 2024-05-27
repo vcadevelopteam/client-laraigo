@@ -6215,12 +6215,14 @@ const translation: LangKeys = {
   unlimited: 'Unlimited',
   limitmessagehelptext: 'It shows the limit of shipments during 24h that is available for the business, this includes all the whatsapp numbers that you have registered.',
   synchronizeError: 'Templates could not be synchronized',
+
   recommendedresponse: 'Recommended Answer',
   recommendedresponse_tooltip: 'The AI will respond in a resourceful way related to the current knowledge base it possesses, for queries that it cannot answer due to lack of knowledge.', 
   instructions: 'Instructions',
   exclusions:'Exclusions',
   filename: 'File Name',
   datetimeupload: 'DateTime of Upload',
+
   uploaddate: 'Date and time of upload',
   noreaction_help: 'Let the AI respond as it sees fit.',
   suggestedanswer_help: 'The AI will respond in a resourceful manner related to the current knowledge base it possesses, for queries that it cannot answer due to lack of knowledge.',

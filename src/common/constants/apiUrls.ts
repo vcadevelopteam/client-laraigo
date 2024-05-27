@@ -488,6 +488,7 @@ export const apiUrls = {
 
     LLAMA_CREATE_COLLECTION: `${BASE_URL}/llama/create_collection`,
     LLAMA_CREATE_COLLECTION_DOCUMENT: `${BASE_URL}/llama/create_collection_document`,
+    LLAMA_CREATE_COLLECTION_DOCUMENTS: `${BASE_URL}/llama/create_collection_documents`,
     LLAMA_DELETE_COLLECTION: `${BASE_URL}/llama/delete_collection`,
     LLAMA_MASSIVE_DELETE_COLLECTION: `${BASE_URL}/llama/massive_delete`,
     LLAMA_EDIT_COLLECTION: `${BASE_URL}/llama/edit_collection`,
@@ -495,6 +496,7 @@ export const apiUrls = {
     LLAMA_DELETE_FILE: `${BASE_URL}/llama/delete_file`,
     LLAMA_QUERY: `${BASE_URL}/llama/query`,
     LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
+    LLAMA_ADD_FILES: `${BASE_URL}/llama/add_files`,
 
     LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
     LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
