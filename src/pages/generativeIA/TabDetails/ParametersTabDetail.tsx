@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { Button, Card, Grid } from "@material-ui/core";
 import { BaseAIPersonalityIcon, ClientServicePersonalityIcon, HelpDeskPersonalityIcon, PersonalizedPersonalityIcon, SalesPersonalityIcon, TechSupportPersonalityIcon } from "icons";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { FieldEdit, FieldEditMultiAux, FieldMultiSelect, FieldSelect } from "components";
+import { FieldEdit, FieldEditMulti, FieldEditMultiAux, FieldMultiSelect, FieldSelect } from "components";
 import { Dictionary } from "@types";
 import { FieldErrors } from "react-hook-form";
 import Tooltip from '@material-ui/core/Tooltip';
@@ -568,7 +568,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             setValidatePrompt(value)
                                         }}
                                         error={errors?.prompt?.message}
-                                        resize="vertical"
                                     />
                                     <div className={classes.block20}/>
                                     <span className={classes.detailTitle}>{t(langKeys.exclusions)}</span>
@@ -577,12 +576,11 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         variant="outlined"
                                         inputProps={{
                                             rows: 3,
-                                            maxRows: 10
+                                            maxRows: 10,
                                         }}
                                         valueDefault={getValues('negativeprompt')}
                                         onChange={(value) => setValue('negativeprompt', value)}
                                         error={errors?.negativeprompt?.message}
-                                        resize="vertical"
                                     />
                                 </div>
                             </div>
@@ -790,7 +788,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             setValidatePrompt(value)
                                         }}
                                         error={errors?.prompt?.message}
-                                        resize="vertical"
                                     />
                                     <div className={classes.block20}/>
                                     <span className={classes.detailTitle}>{t(langKeys.exclusions)}</span>
@@ -803,7 +800,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         }}
                                         valueDefault={selectedCardData?.negativeprompt}
                                         onChange={(value) => setValue('negativeprompt', value)}
-                                        resize="vertical"
                                     />
                                 </div>
                             </div>

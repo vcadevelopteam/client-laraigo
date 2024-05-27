@@ -708,7 +708,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     if(row?.codeinterpreter) {
                         handleUpload()
                     } else {
-                        dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir archivos excel a asistentes de Open AI se necesita que code interpreter este activo" }));
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir archivos excel a asistentes de Open AI se necesita que code interpreter este activo, activa el code interpreter y guarda el asistente antes de subir este tipo de archivos" }));
                     }
                 } else {
                     handleUpload()
@@ -742,7 +742,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     <div className={classes.cardContent}>
                                         <UploadFileIcon className={classes.logo} />
                                         <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.upload_document_description)}</div>
+                                        <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
                                     </div>
                                 </Card>
                             </Grid>

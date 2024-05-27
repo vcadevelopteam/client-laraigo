@@ -39,15 +39,19 @@ const useStyles = makeStyles((theme) => ({
         height: '100%'
     },
     chatMain: {
-        flex: 1,           
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
         paddingLeft: theme.spacing(2),      
     },     
     chatMessages: {
+        flex: 1,
         height: '81vh', 
         overflowY: 'auto',
     },
     chatInputContainer: {
         bottom: 0,
+        height: 'fit-content',
         padding: theme.spacing(2),
         display: 'flex',
         justifyContent: 'center',
@@ -708,7 +712,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                         </div>
                     )}
                 </div>
-
                 <div className={classes.chatInputContainer}>
                     <div style={{ width: '700px' }}>
                         <FieldEdit
@@ -719,7 +722,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             disabled={!selectedChat || isLoading}
                             InputProps={{
                                 multiline: true,
-                                maxRows: 2,
+                                maxRows: 7,
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton                                           
