@@ -700,7 +700,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const handleRemoveAttachment = (index) => {
         setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
-
+//get values code inter true
     const handleUploadGeneral = () => {        
         if(edit) {
             if(conector?.provider === 'Open AI') {
@@ -708,7 +708,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     if(row?.codeinterpreter) {
                         handleUpload()
                     } else {
-                        dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir archivos excel a asistentes de Open AI se necesita que code interpreter este activo, activa el code interpreter y guarda el asistente antes de subir este tipo de archivos" }));
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir excel a un asistente Open AI se necesita activar code interpreter. Si desea lograrlo, active code interpreter y guarde el asistente antes de subir este tipo de archivo." }));
                     }
                 } else {
                     handleUpload()

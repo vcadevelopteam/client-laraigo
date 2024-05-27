@@ -468,7 +468,7 @@ export const FieldEditMultiAux: React.FC<InputProps> = ({
     variant = "standard"
   }) => {
     const [value, setValue] = useState("");
-    const [height, setHeight] = useState(100); // Estado para la altura del componente
+    const [height, setHeight] = useState(100); 
     const resizerRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
   
@@ -525,7 +525,7 @@ export const FieldEditMultiAux: React.FC<InputProps> = ({
             onBlur && onBlur(e.target.value);
           }}
           inputProps={inputProps}
-          style={{ border: '1px solid #762AA9', resize: 'none' }} // Desactivar el resizer nativo
+          style={{ border: '1px solid #762AA9', resize: 'none' }}
           inputRef={textareaRef}
         />
         {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
@@ -548,7 +548,7 @@ export const FieldEditMultiAux: React.FC<InputProps> = ({
             margin: 4
           }}
         >
-          <DragHandleIcon style={{ transform: 'rotate(135deg)' }}/>
+          <DragHandleIcon style={{ transform: 'rotate(135deg)', color:'#783BA5', height:'17px' }}/>
         </div>
       </div>
     );
