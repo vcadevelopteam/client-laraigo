@@ -628,7 +628,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     onMainSubmitWithFiles();
                 }
             } else {
-                if (cosFile[0].file_name === '' && cosFile[0].file_url === '') {
+                if (cosFile.length < 1) {
                     onMainSubmitMeta();
                 } else {
                     onMainSubmitMetaWithFiles();

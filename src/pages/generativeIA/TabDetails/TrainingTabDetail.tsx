@@ -701,6 +701,26 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
+    const handleUploadGeneral = () => {        
+        if(edit) {
+            if(conector?.provider === 'Open AI') {
+                if(fileAttachments.some((attachment) => attachment.file_name.endsWith('.xlsx'))) {
+                    if(row?.codeinterpreter) {
+                        handleUpload()
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir archivos excel a asistentes de Open AI se necesita que code interpreter este activo" }));
+                    }
+                } else {
+                    handleUpload()
+                }
+            } else {
+                handleUpload()
+            }
+        } else {
+            handleUploadInNewAssistant()
+        }
+    }
+
     if (viewSelected === 'main') {
         return (
             <>
@@ -832,7 +852,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             variant="contained"
                             type="button"
                             startIcon={<AttachFileIcon />}
-                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
+                            onClick={handleUploadGeneral}
                             className={classes.clipButton2}
                             disabled={fileAttachments.length < 1 || waitUploadFile2}
                         >
