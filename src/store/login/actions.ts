@@ -2,8 +2,8 @@ import { IActionCall } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
-export const login = (usr: string | null, password: string | null, facebookid?: string | null, googleid?: string | null, token_recaptcha?: string | null): IActionCall => ({
-    callAPI: () => CommonService.login(usr || "", password || "", facebookid || "", googleid || "", token_recaptcha || ""),
+export const login = (usr: string | null, password: string | null, facebookid?: string | null, googleid?: string | null, token_recaptcha?: string | null, samlCode?: string | null): IActionCall => ({
+    callAPI: () => CommonService.login(usr || "", password || "", facebookid || "", googleid || "", token_recaptcha || "", samlCode || ""),
     types: {
         loading: actionTypes.LOGIN,
         success: actionTypes.LOGIN_SUCCESS,

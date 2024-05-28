@@ -409,7 +409,7 @@ const SignIn = () => {
     const onSamlLoginSuccess = (data: ISamlAuthResponse) => {
         if (data && data.code){
             setshowError(true);
-            dispatch(login(null, null, null, data.code));
+            dispatch(login(null, null, null, null, null, data.code));
         }
     }
 
