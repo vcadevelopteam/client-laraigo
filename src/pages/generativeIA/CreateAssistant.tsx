@@ -19,7 +19,7 @@ import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
-import { createCollection, createCollectionDocuments, editCollection } from "store/llama/actions";
+import { createCollection, createCollectionDocument, createCollectionDocuments, editCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -263,12 +263,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if (data.language !== '') {
                 if(data.language.includes(',')){
                     const formattedLanguages = data.language.split(',').join(', ');
-                    generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en [' + formattedLanguages + '], no añadas mas texto o información a tu respuesta.';
+                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
                 } else {
                     if(data.language === 'Todos') {
-                        generalprompt += ' ';
+                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
                     } else {
-                        generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ', no añadas mas texto o información a tu respuesta.';
+                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
                     }
                 }
             }
@@ -330,12 +330,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if (data.language !== '') {
                 if(data.language.includes(',')){
                     const formattedLanguages = data.language.split(',').join(', ');
-                    generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en [' + formattedLanguages + '], no añadas mas texto o información a tu respuesta.';
+                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
                 } else {
                     if(data.language === 'Todos') {
-                        generalprompt += ' ';
+                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
                     } else {
-                        generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ', no añadas mas texto o información a tu respuesta.';
+                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
                     }
                 }
             }
@@ -455,12 +455,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (data.language !== '') {
             if(data.language.includes(',')){
                 const formattedLanguages = data.language.split(',').join(', ');
-                generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en Español, Inglés", y no añadas más texto o información a tu respuesta.';
+                generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
             } else {
                 if(data.language === 'Todos') {
-                    generalprompt += ' ';
+                    generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
                 } else {
-                    generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ' y no añadas más texto a tu respuesta.';
+                    generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
                 }
             }
         }
@@ -520,12 +520,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if (data.language !== '') {
                 if(data.language.includes(',')){
                     const formattedLanguages = data.language.split(',').join(', ');
-                    generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en Español, Inglés", y no añadas más texto o información a tu respuesta.';
+                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
                 } else {
                     if(data.language === 'Todos') {
-                        generalprompt += ' ';
+                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
                     } else {
-                        generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ' y no añadas más texto a tu respuesta.';
+                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
                     }
                 }
             }
