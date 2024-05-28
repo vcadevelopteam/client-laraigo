@@ -21,6 +21,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ImageIcon from '@material-ui/icons/Image';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd"
@@ -39,6 +41,8 @@ import {
 
 import {
     FieldEdit,
+    FieldEditAdvanced,
+    FieldEditAdvancedAux,
     FieldEditMulti,
     FieldSelect,
     FieldView,
@@ -237,6 +241,11 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid red',
         borderRadius: 10
     },
+    iconHelpText: {
+        width: 'auto',
+        height: 17,
+        cursor: 'pointer',
+    },
 }));
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
@@ -401,7 +410,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const dataMessageType = [
         { value: "HSM", text: t(langKeys.messagetemplate_hsm) },
         { value: "HTML", text: t(langKeys.messagetemplate_html) },
-        { value: "MAIL", text: t(langKeys.messagetemplate_mail) },
+        { value: "MAIL", text: t(langKeys.messagetemplate_mail).toUpperCase() },
         { value: "SMS", text: t(langKeys.messagetemplate_sms) },
     ];
 
@@ -879,6 +888,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue("type", data?.value || "");
         setValue("category", '');
         setCategory('')
+        setValue("templatetype", '')
 
         setValue('bodyvariables', [])
         setValue("headertype", "NONE");
@@ -1302,14 +1312,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue(`carouseldata.${index}.header`, "");
         trigger('carouseldata')
     };
-
+    
     const handleFileChangeAux = (files: FileList | null, index: number) => {
         const file = files?.item(0);
         if (file) {
+            const maxSizeMB = 5;
+            const maxSizeBytes = maxSizeMB * 1024 * 1024;
+            if (file.size > maxSizeBytes) {
+                alert(`El archivo excede el tamaño máximo de ${maxSizeMB} MB.`);
+                return;
+            }
             const fd = new FormData();
             fd.append("file", file, file.name);
-            setCardAux(index)
-            dispatch(showBackdrop(true))
+            setCardAux(index);
+            dispatch(showBackdrop(true));
             dispatch(uploadFile(fd));
             setWaitUploadFile3(true);
         }
@@ -1377,22 +1393,26 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('carouseldata')
         }
     }
-    console.log(getValues('headervariables'))
+    
     const addEmoji = (emoji: EmojiData) => {
-        const currentText = getValues('body');
-        setValue('body', currentText + emoji.native);
-        trigger('body');
+        if(getValues('body').length <= 1022) {
+            const currentText = getValues('body');
+            setValue('body', currentText + emoji.native);
+            trigger('body');
+        }
         setShowEmojiPicker(false);
     };
 
     const addVariableCard = (index: number) => {
-        const body = getValues(`carouseldata.${index}.body`);
         const newVariableNumber = getValues(`carouseldata.${index}.bodyvariables`).length + 1;
-        const newVariableTag = `{{${newVariableNumber}}}`;
-
-        setValue(`carouseldata.${index}.body`, body + newVariableTag);
-        setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), {variable: newVariableNumber, text: ''}])
-        trigger('carouseldata')
+        if((getValues(`carouseldata.${index}.body`).length + newVariableNumber.toString().length) <= 156) {
+            const body = getValues(`carouseldata.${index}.body`);
+            const newVariableTag = `{{${newVariableNumber}}}`;
+    
+            setValue(`carouseldata.${index}.body`, body + newVariableTag);
+            setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), {variable: newVariableNumber, text: ''}])
+            trigger('carouseldata')
+        }
     }
 
     const deleteVariableCard = (index: number) => {
@@ -1407,14 +1427,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const addVariable = () => {
-        const body = getValues('body');
         const newVariableNumber = getValues('bodyvariables').length + 1;
-        const newVariableTag = `{{${newVariableNumber}}}`;
-
-        setValue('body', body + newVariableTag);
-        trigger('body');
-        setValue('bodyvariables', [...getValues('bodyvariables'), { variable: newVariableNumber, text: "" }]);
-        trigger('bodyvariables');
+        if((getValues('body').length + newVariableNumber.toString().length) <= 1020) {
+            const body = getValues('body');
+            const newVariableTag = `{{${newVariableNumber}}}`;
+    
+            setValue('body', body + newVariableTag);
+            trigger('body');
+            setValue('bodyvariables', [...getValues('bodyvariables'), { variable: newVariableNumber, text: "" }]);
+            trigger('bodyvariables');
+        }
     };
 
     const deleteVariable = () => {
@@ -1485,6 +1507,57 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('headervariables')
             trigger('header')
         }
+    }
+
+    const handleInput = (e) => {
+        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        if (val.length > 60) {
+            val = val.substring(0, 60);
+        }
+        setValue('footer', val);
+        e.target.value = val;
+        trigger('footer');
+    };
+
+    const handleQuickReply = (e, index: number) => {
+        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        if (val.length > 25) {
+            val = val.substring(0, 25);
+        }
+        setValue(`buttonsquickreply.${index}.btn.text`, val);
+        setValue(`buttonsquickreply.${index}.btn.payload`, val);
+        e.target.value = val;
+        trigger('buttonsquickreply')
+    }
+
+    const handleActionButtonText = (e, index: number) => {
+        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        if (val.length > 25) {
+            val = val.substring(0, 25);
+        }
+        setValue(`buttonsgeneric.${index}.btn.text`, val);
+        e.target.value = val;
+        trigger('buttonsgeneric')
+    }
+
+    const handleActionButtonUrl = (e, index: number) => {
+        let val = e.target.value.replace(/[^a-zA-Z0-9 /.:-]/g, "");
+        if (val.length > 2000) {
+            val = val.substring(0, 2000);
+        }
+        setValue(`buttonsgeneric.${index}.btn.url`, val);
+        e.target.value = val;
+        trigger('buttonsgeneric')
+    }
+
+    const handleActionButtonPhone = (e, index: number) => {
+        let val = e.target.value.replace(/[^0-9 ]/g, "");
+        if (val.length > 20) {
+            val = val.substring(0, 20);
+        }
+        setValue(`buttonsgeneric.${index}.btn.phone_number`, val);
+        e.target.value = val;
+        trigger('buttonsgeneric')
     }
 
     return (
@@ -1611,7 +1684,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled={disableInput}
                                 error={errors?.category?.message}
                                 label={t(langKeys.category)}
-                                onChange={(value) => setValue("category", value?.domainvalue)}
+                                onChange={(value) => {
+                                    setValue("category", value?.domainvalue)
+                                    trigger("category")
+                                }}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                                 valueDefault={getValues("category")}
@@ -1622,11 +1698,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         <div style={{display: 'flex', marginBottom: 10}}>
                             <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
                                 <span style={{fontWeight: 'bold'}}>{t(langKeys.name)}</span>
-                                <span>Asigna un nombre a la plantilla de mensaje</span>
+                                <span>{t(langKeys.assignnametotemplate)}</span>
                             </div>
                             <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
                                 <span style={{fontWeight: 'bold'}}>{t(langKeys.language)}</span>
-                                <span>Elige idiomas para tu plantilla de mensaje</span>
+                                <span>{t(langKeys.chooseyourlanguage)}</span>
                             </div>
                         </div>
                     )}
@@ -1678,20 +1754,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 {getValues("type") !== '' && (
                                     <FieldSelect
                                         className="col-6"
-                                        data={dataLanguage}
+                                        data={dataExternalLanguage}
                                         disabled={disableInput}
                                         error={errors?.language?.message}
                                         onChange={(value) => {
                                             if(value) {
-                                                setValue("language", value.domainvalue)
+                                                setValue("language", value.value)
                                                 trigger("language")
                                             } else {
                                                 setValue("language", '')
                                                 trigger("language")
                                             }
                                         }}
-                                        optionDesc="domaindesc"
-                                        optionValue="domainvalue"
+                                        optionDesc="description"
+                                        optionValue="value"
                                         uset={true}
                                         valueDefault={getValues("language")}
                                         label={getValues('type') !== 'HSM' ? t(langKeys.language) : ''}
@@ -1919,11 +1995,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.body)}</span>
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
                                     <div>
-                                        <FieldEditMulti
-                                            variant="outlined"
+                                        <FieldEditAdvanced
                                             inputProps={{
-                                                rows: 7,
-                                                maxRows: 7
+                                                rows: 8,
+                                                maxRows: 8
                                             }}
                                             valueDefault={getValues('body')}
                                             onChange={(value) => {
@@ -1932,6 +2007,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             }}
                                             maxLength={1024}
                                             error={errors?.body?.message}
+                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                             disabled={!isNew}
                                         />
                                     </div>
@@ -1946,8 +2022,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         )}
                                         <IconButton
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '**')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1022) {
+                                                    setValue('body', getValues('body') + '**')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -1955,8 +2033,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </IconButton>
                                         <IconButton 
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '__')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1022) {
+                                                    setValue('body', getValues('body') + '__')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -1964,8 +2044,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </IconButton>
                                         <IconButton
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '~~')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1022) {
+                                                    setValue('body', getValues('body') + '~~')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -1973,8 +2055,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </IconButton>
                                         <IconButton
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '``````')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1018) {
+                                                    setValue('body', getValues('body') + '``````')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -2003,6 +2087,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <span>{'{{'}{v.variable}{'}}'}</span>
                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
                                                             <FieldEdit
+                                                                label={`Introduce el contenido para {{${v.variable}}}`}
                                                                 variant="outlined"
                                                                 size="small"
                                                                 valueDefault={v.text}
@@ -2024,17 +2109,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         </div>
                                     )}
-                                    <span className={classes.title} style={{marginTop: 20}}>{t(langKeys.footer)}</span>
+                                    <span className={classes.title} style={{marginTop: 20}}>{t(langKeys.footerpage)}</span>
                                     <span style={{marginBottom: 5}}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
-                                    <FieldEditMulti
+                                    <FieldEditAdvancedAux
                                         error={errors?.footer?.message}
                                         maxLength={60}
-                                        onChange={(value) => {
-                                            setValue("footer", value)
-                                            trigger('footer')
-                                        }}
-                                        rows={2}
+                                        onInput={handleInput}
+                                        onChange={handleInput}
+                                        rows={1}
                                         valueDefault={getValues("footer")}
+                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                         disabled={!isNew}
                                     />
                                     <span className={classes.title}>{t(langKeys.buttons)}</span>
@@ -2077,14 +2161,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                     <div style={{display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5}}>
                                                                                         <DragIndicatorIcon />
                                                                                         <div style={{flex: 1}}>
-                                                                                            <FieldEdit
+                                                                                            <FieldEditAdvancedAux
                                                                                                 disabled={disableInput || !isNew}
                                                                                                 label={t(langKeys.buttontext)}
                                                                                                 error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
-                                                                                                onChange={(value) => onChangeButtonText(i, value)}
+                                                                                                onInput={(e) => handleQuickReply(e, i)}
+                                                                                                onChange={(e) => handleQuickReply(e, i)}
                                                                                                 valueDefault={btn?.btn?.text || ""}
                                                                                                 variant="outlined"
                                                                                                 maxLength={25}
+                                                                                                rows={1}
+                                                                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                                                                                 fregister={{
                                                                                                     ...register(`buttonsquickreply.${i}.btn.text`, {
                                                                                                         validate: (value) =>
@@ -2130,61 +2217,77 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                                                                                                 <DragIndicatorIcon />
                                                                                                 <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
-                                                                                                    <div className="row-zyx" style={{width: '100%', marginBottom: 0, display: 'flex', alignItems: 'center'}}>
-                                                                                                        <FieldEdit
+                                                                                                    <div className="row-zyx" style={{width: '100%', marginBottom: 0, display: 'flex'}}>
+                                                                                                        <FieldEditAdvancedAux
                                                                                                             className='col-4'
                                                                                                             label={t(langKeys.buttontext)}
                                                                                                             error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                            onChange={(value) => onChangeButton(i, "text", value)}
+                                                                                                            onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                            onChange={(e) => handleActionButtonText(e, i)}
                                                                                                             valueDefault={btn?.btn?.text || ""}
-                                                                                                            variant="outlined"
                                                                                                             maxLength={25}
+                                                                                                            rows={1}
+                                                                                                            inputProps={{
+                                                                                                                rows: 1,
+                                                                                                                maxRows: 1
+                                                                                                            }}
                                                                                                             fregister={{
                                                                                                                 ...register(`buttonsgeneric.${i}.btn.text`, {
                                                                                                                     validate: (value) =>
                                                                                                                         (value && value.length) || t(langKeys.field_required),
                                                                                                                 }),
                                                                                                             }}
-                                                                                                            size="small"
                                                                                                             disabled={!isNew}
+                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
                                                                                                         />
-                                                                                                        <FieldSelect
-                                                                                                            className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}
-                                                                                                            data={dataURLType}
-                                                                                                            label={t(langKeys.urltype)}
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
-                                                                                                            onChange={(value) => onChangeButton(i, "type", value?.value)}
-                                                                                                            optionDesc="text"
-                                                                                                            optionValue="value"
-                                                                                                            valueDefault={btn?.btn?.type || ""}
-                                                                                                            variant="outlined"
-                                                                                                            fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.type`, {
-                                                                                                                    validate: (value) =>
-                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                }),
-                                                                                                            }}
-                                                                                                            disabled={!isNew}
-                                                                                                        />
-                                                                                                        <FieldEdit
+                                                                                                        <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
+                                                                                                            <span>{t(langKeys.urltype)}</span>
+                                                                                                            <FieldSelect
+                                                                                                                data={dataURLType}
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
+                                                                                                                onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                optionDesc="text"
+                                                                                                                optionValue="value"
+                                                                                                                valueDefault={btn?.btn?.type || ""}
+                                                                                                                variant="outlined"
+                                                                                                                fregister={{
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                        validate: (value) =>
+                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                    }),
+                                                                                                                }}
+                                                                                                                disabled={!isNew}
+                                                                                                                size="normal"
+                                                                                                            />
+                                                                                                        </div>
+                                                                                                        <FieldEditAdvancedAux
                                                                                                             className='col-4'
                                                                                                             label={t(langKeys.urlwebsite)}
                                                                                                             error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
-                                                                                                            onChange={(value) => onChangeButton(i, "url", value)}
+                                                                                                            onInput={(e) => handleActionButtonUrl(e, i)}
+                                                                                                            onChange={(e) => handleActionButtonUrl(e, i)}
                                                                                                             valueDefault={btn?.btn?.url || ""}
-                                                                                                            variant="outlined"
+                                                                                                            rows={1}
+                                                                                                            inputProps={{
+                                                                                                                rows: 1,
+                                                                                                                maxRows: 1
+                                                                                                            }}
+                                                                                                            maxLength={2000}
                                                                                                             fregister={{
                                                                                                                 ...register(`buttonsgeneric.${i}.btn.url`, {
                                                                                                                     validate: (value) =>
                                                                                                                         (value && value.length) || t(langKeys.field_required),
                                                                                                                 }),
                                                                                                             }}
-                                                                                                            size="small"
                                                                                                             disabled={!isNew}
+                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
                                                                                                         />
-                                                                                                        {btn?.type === 'dynamic' && (
-                                                                                                            <div className="col-1">
+                                                                                                        {btn?.btn?.type === 'dynamic' && (
+                                                                                                            <div className="col-1" style={{display: 'flex', alignItems: 'center', gap: 5}}>
                                                                                                                 <span>{'{{'}1{'}}'}</span>
+                                                                                                                <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
+                                                                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                                                                </Tooltip>
                                                                                                             </div>
                                                                                                         )}
                                                                                                     </div>
@@ -2199,6 +2302,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                         <span>{'{{'}1{'}}'}</span>
                                                                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
                                                                                                             <FieldEdit
+                                                                                                                label={btn?.btn?.url !== '' ? `Introcue la URL completa de ${btn?.btn?.url}{{1}}` : ''}
                                                                                                                 variant="outlined"
                                                                                                                 size="small"
                                                                                                                 onChange={(value) => {
@@ -2222,14 +2326,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                             <DragIndicatorIcon />
                                                                                             <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
                                                                                                 <div className="row-zyx" style={{width: '100%', marginBottom: 0}}>
-                                                                                                    <FieldEdit
+                                                                                                    <FieldEditAdvancedAux
                                                                                                         className='col-4'
                                                                                                         label={t(langKeys.buttontext)}
                                                                                                         error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                        onChange={(value) => onChangeButton(i, "text", value)}
+                                                                                                        onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                        onChange={(e) => handleActionButtonText(e, i)}
                                                                                                         valueDefault={btn?.btn?.text || ""}
                                                                                                         variant="outlined"
                                                                                                         maxLength={25}
+                                                                                                        rows={1}
+                                                                                                        inputProps={{
+                                                                                                            rows: 1,
+                                                                                                            maxRows: 1
+                                                                                                        }}
                                                                                                         fregister={{
                                                                                                             ...register(`buttonsgeneric.${i}.btn.text`, {
                                                                                                                 validate: (value) =>
@@ -2238,51 +2348,61 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                         }}
                                                                                                         size="small"
                                                                                                         disabled={!isNew}
+                                                                                                        style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
                                                                                                     />
-                                                                                                    <FieldSelect
-                                                                                                        className='col-4'
-                                                                                                        data={dataCountryCodes}
-                                                                                                        label={t(langKeys.country)}
-                                                                                                        onChange={(value) => {
-                                                                                                            if(value) {
-                                                                                                                setValue(`buttonsgeneric.${i}.btn.code`, value.value);
-                                                                                                                trigger('buttonsgeneric')
-                                                                                                            } else {
-                                                                                                                setValue(`buttonsgeneric.${i}.btn.code`, null);
-                                                                                                                trigger('buttonsgeneric')
-                                                                                                            }
-                                                                                                        }}
-                                                                                                        optionDesc="text"
-                                                                                                        optionValue="value"
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
-                                                                                                        valueDefault={btn?.btn?.code || ""}
-                                                                                                        variant="outlined"
-                                                                                                        fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.code`, {
-                                                                                                                validate: (value) =>
-                                                                                                                    (value && value !== 0) || t(langKeys.field_required),
-                                                                                                            }),
-                                                                                                        }}
-                                                                                                        disabled={!isNew}
-                                                                                                    />
-                                                                                                    <FieldEdit
-                                                                                                        className='col-4'
-                                                                                                        type="number"
-                                                                                                        label={t(langKeys.telephonenumber)}
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
-                                                                                                        onChange={(value) => onChangeButton(i, "phone_number", value)}
-                                                                                                        valueDefault={btn?.btn?.phone_number || ""}
-                                                                                                        variant="outlined"
-                                                                                                        fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.phone_number`, {
-                                                                                                                validate: (value) =>
-                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                            }),
-                                                                                                        }}
-                                                                                                        maxLength={20}
-                                                                                                        size="small"
-                                                                                                        disabled={!isNew}
-                                                                                                    />
+                                                                                                    <div className='col-4'>
+                                                                                                        <span>{t(langKeys.country)}</span>
+                                                                                                        <FieldSelect
+                                                                                                            data={dataCountryCodes}
+                                                                                                            onChange={(value) => {
+                                                                                                                if(value) {
+                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, value.value);
+                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                } else {
+                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, null);
+                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                }
+                                                                                                            }}
+                                                                                                            optionDesc="text"
+                                                                                                            optionValue="value"
+                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
+                                                                                                            valueDefault={btn?.btn?.code || ""}
+                                                                                                            variant="outlined"
+                                                                                                            fregister={{
+                                                                                                                ...register(`buttonsgeneric.${i}.btn.code`, {
+                                                                                                                    validate: (value) =>
+                                                                                                                        (value && value !== 0) || t(langKeys.field_required),
+                                                                                                                }),
+                                                                                                            }}
+                                                                                                            disabled={!isNew}
+                                                                                                            size="normal"
+                                                                                                        />
+                                                                                                    </div>
+                                                                                                    <div className='col-4'>
+                                                                                                        <span>{t(langKeys.telephonenumber)}</span>
+                                                                                                        <FieldEditAdvancedAux
+                                                                                                            type="number"
+                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
+                                                                                                            onInput={(e) => handleActionButtonPhone(e, i)}
+                                                                                                            onChange={(e) => handleActionButtonPhone(e, i)}
+                                                                                                            valueDefault={btn?.btn?.phone_number || ""}
+                                                                                                            variant="outlined"
+                                                                                                            fregister={{
+                                                                                                                ...register(`buttonsgeneric.${i}.btn.phone_number`, {
+                                                                                                                    validate: (value) =>
+                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                }),
+                                                                                                            }}
+                                                                                                            maxLength={20}
+                                                                                                            rows={1}
+                                                                                                            inputProps={{
+                                                                                                                rows: 1,
+                                                                                                                maxRows: 1
+                                                                                                            }}
+                                                                                                            disabled={!isNew}
+                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                        />
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
@@ -2460,11 +2580,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
                                     <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
                                     <div>
-                                        <FieldEditMulti
+                                        <FieldEditAdvanced
                                             variant="outlined"
                                             inputProps={{
-                                                rows: 7,
-                                                maxRows: 7
+                                                rows: 8,
+                                                maxRows: 8
                                             }}
                                             valueDefault={getValues('body')}
                                             onChange={(value) => {
@@ -2474,6 +2594,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             maxLength={1024}
                                             disabled={!isNew}
                                             error={errors?.body?.message}
+                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
@@ -2487,8 +2608,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         )}
                                         <IconButton
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '**')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1022) {
+                                                    setValue('body', getValues('body') + '**')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -2496,8 +2619,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </IconButton>
                                         <IconButton 
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '__')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1022) {
+                                                    setValue('body', getValues('body') + '__')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -2505,8 +2630,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </IconButton>
                                         <IconButton
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '~~')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1022) {
+                                                    setValue('body', getValues('body') + '~~')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -2514,8 +2641,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </IconButton>
                                         <IconButton
                                             onClick={() => {
-                                                setValue('body', getValues('body') + '``````')
-                                                trigger('body')
+                                                if(getValues('body').length <= 1018) {
+                                                    setValue('body', getValues('body') + '``````')
+                                                    trigger('body')
+                                                }
                                             }}
                                             disabled={!isNew}
                                         >
@@ -2544,6 +2673,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         <span>{'{{'}{v.variable}{'}}'}</span>
                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
                                                             <FieldEdit
+                                                                label={`Introduce el contenido para {{${v.variable}}}`}
                                                                 variant="outlined"
                                                                 size="small"
                                                                 valueDefault={v.text}
@@ -2552,7 +2682,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     trigger('bodyvariables')
                                                                 }}
                                                                 disabled={!isNew}
-                                                                error={errors?.bodyvariables?.[index]?.text?.message}
                                                                 fregister={{
                                                                     ...register(`bodyvariables.${index}.text`, {
                                                                         validate: (value) =>
@@ -2616,18 +2745,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                             )}
                                                             <div style={{width: '90%', fontWeight: 'bold'}}>
                                                                 {t(langKeys.body)}
-                                                                <FieldEdit
+                                                                <FieldEditAdvanced
                                                                     variant="outlined"
-                                                                    InputProps={{
-                                                                        multiline: true,
+                                                                    inputProps={{
+                                                                        rows: 4,
+                                                                        maxRows: 4
                                                                     }}
                                                                     maxLength={160}
+                                                                    rows={4}
                                                                     valueDefault={card?.body || ""}
                                                                     onChange={(value) => {
                                                                         setValue(`carouseldata.${index}.body`, value)
                                                                         trigger('carouseldata')
                                                                     }}
-                                                                    error={errors?.carouseldata?.[index]?.body?.message}
+                                                                    error={errors?.carouseldata?.[index]?.body?.message ? true : false}
                                                                     fregister={{
                                                                         ...register(`carouseldata.${index}.body`, {
                                                                             validate: (value) =>
@@ -2635,8 +2766,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         }),
                                                                     }}
                                                                     disabled={!isNew}
+                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                                                 />
-                                                                {getValues(`carouseldata.${index}.bodyvariables`)?.length < 7 &&(
+                                                                {getValues(`carouseldata.${index}.bodyvariables`)?.length < 20 &&(
                                                                     <div style={{display: 'flex', justifyContent: 'end'}}>
                                                                         <Button
                                                                             className={classes.button}
@@ -2922,7 +3054,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 {card?.bodyvariables?.length > 0 && (
                                                                     <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
                                                                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                                            <span style={{fontWeight: 'bold'}}>Variables del card {cindex + 1}</span>
+                                                                            <span style={{fontWeight: 'bold'}}>Texto {cindex + 1}</span>
                                                                             <Button
                                                                                 className={classes.button}
                                                                                 startIcon={<CloseIcon />}
@@ -2938,6 +3070,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                     <span>{'{{'}{cv.variable}{'}}'}</span>
                                                                                     <div style={{backgroundColor: 'white', width: '100%'}}>
                                                                                         <FieldEdit
+                                                                                            label={`Introduce contenido para {{${cv.variable}}}`}
                                                                                             variant="outlined"
                                                                                             size="small"
                                                                                             valueDefault={cv.text}
@@ -2946,7 +3079,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                 trigger('carouseldata')
                                                                                             }}
                                                                                             disabled={!isNew}
-                                                                                            error={errors?.carouseldata?.[cindex]?.bodyvariables?.[vindex]?.text?.message}
                                                                                             fregister={{
                                                                                                 ...register(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, {
                                                                                                     validate: (value) =>

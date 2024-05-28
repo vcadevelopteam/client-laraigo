@@ -119,7 +119,12 @@ const MessageTemplates: FC = () => {
                 type: "number",
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{ textAlign: 'center' }}>{row.id}</div>;
+                    const { providerstatus } = row?.original || {};
+                    if (providerstatus !== 'REJECTED') {
+                        return <div style={{ textAlign: 'center' }}>{row.id}</div>;
+                    } else {
+                        return '';
+                    }
                 }
             },
             {
@@ -141,7 +146,10 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "type",
                 Header: t(langKeys.messagetype),
-                prefixTranslation: "messagetemplate_",
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    return <div>{t(`messagetemplate_${row.original.type.toLowerCase()}`).toUpperCase()}</div>;
+                }
             },
             {
                 accessor: "category",
@@ -169,7 +177,8 @@ const MessageTemplates: FC = () => {
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                statusText = t(`TEMPLATE_${providerstatus}`);
+                                if(providerstatus === "CREATED" || providerstatus === "SUBMITTED") statusText = t(`TEMPLATE_PENDING`);
+                                else statusText = t(`TEMPLATE_${providerstatus}`);
                                 break;
                             default:
                                 statusText = t('TEMPLATE_APPROVED');
@@ -211,7 +220,7 @@ const MessageTemplates: FC = () => {
                     const { row } = props.cell;
                     const { category, type, templatetype } = row?.original || {};
                     if (category && type) {
-                        return ((type === "HSM" && category !== 'AUTHENTICATION') ? templatetype.toUpperCase() : '');
+                        return ((type === "HSM" && category !== 'AUTHENTICATION') ? t(`messagetemplate_${templatetype.toLowerCase()}`).toUpperCase() : '');
                     } else {
                         return '';
                     }
@@ -239,13 +248,13 @@ const MessageTemplates: FC = () => {
                         let color = '';
 
                         switch (qText) {
-                            case 'Media':
+                            case 'Medio':
                                 color = '#E6C300';
                                 break;
-                            case 'Baja':
+                            case 'Bajo':
                                 color = 'red';
                                 break;
-                            case 'Alta':
+                            case 'Alto':
                                 color = 'green';
                                 break;
                             default:
@@ -553,6 +562,7 @@ const MessageTemplates: FC = () => {
                         ...filters,
                     },
                     sorts,
+                    translation: 'es',
                 }),
                 "",
                 "excel",

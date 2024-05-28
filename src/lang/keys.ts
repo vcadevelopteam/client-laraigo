@@ -6142,6 +6142,10 @@ export const langKeys = {
   unlimited: 'unlimited',
   limitmessagehelptext: 'limitmessagehelptext',
   synchronizeError: 'synchronizeError',
+  chooseyourlanguage: 'chooseyourlanguage',
+  assignnametotemplate: 'assignnametotemplate',
+  footerpage: 'footerpage',
+  dynamicbuttontext: 'dynamicbuttontext',
 };
 
 export type LangKeys = typeof langKeys;

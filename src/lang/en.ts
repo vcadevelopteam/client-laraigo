@@ -6198,6 +6198,10 @@ const translation: LangKeys = {
   unlimited: 'Unlimited',
   limitmessagehelptext: 'It shows the limit of shipments during 24h that is available for the business, this includes all the whatsapp numbers that you have registered.',
   synchronizeError: 'Templates could not be synchronized',
+  chooseyourlanguage: 'Choose the language for your message template',
+  assignnametotemplate: 'Assign a name to the message template',
+  footerpage: 'Footer',
+  dynamicbuttontext: 'Adding a variable creates a custom link for the customer to query your information. You can only add a variable at the end of the URL.',
 };
 
 const enResource: ResourceLanguage = {
