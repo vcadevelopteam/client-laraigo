@@ -6106,6 +6106,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   signupstep2ms1: 'Impulsa tu negocio ¡Hoy!',
   signupstep2ms2: 'Empieza a optimizar procesos con el PLAN {{plan}} con Laraigo.',
   billingforinformation:'Información para facturación',
+  taxidentifier:'Identificador fiscal',
+  monthlys: "Mensuales",
+  summaryofplan:'Resumen  de tu plan',
+  crmomnichannel:'CRM Omnicanal hasta ',
+  sinupfeature1: 'Chatbot con flujos de atención',
+  sinupfeature2: 'asesores ilimitados',
+  sinupfeature3: 'soporte 24/7',
+  sinupfeature4: 'API para IA',
 };
 
 const esResource: ResourceLanguage = {

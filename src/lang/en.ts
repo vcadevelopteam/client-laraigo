@@ -6159,6 +6159,14 @@ const translation: LangKeys = {
   signupstep2ms1: 'Boost your business Today!',
   signupstep2ms2: 'Start optimizing processes with the PLAN {{plan}} with Laraigo.',
   billingforinformation:'Billing information',
+  taxidentifier:'Tax identifier',
+  monthlys: "Monthly",
+  summaryofplan:'Summary of your plan',
+  crmomnichannel:'CRM Omnichannel ',
+  sinupfeature1: 'Chatbot with attention flows',
+  sinupfeature2: 'unlimited advisors',
+  sinupfeature3: '24/7 support',
+  sinupfeature4: 'AI API',
 };
 
 const enResource: ResourceLanguage = {

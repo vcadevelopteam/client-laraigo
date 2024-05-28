@@ -6103,6 +6103,14 @@ export const langKeys = {
   signupstep2ms1: 'signupstep2ms1',
   signupstep2ms2: 'signupstep2ms2',
   billingforinformation:'billingforinformation',
+  taxidentifier:'taxidentifier',
+  monthlys: "monthlys",
+  summaryofplan:'summaryofplan',
+  crmomnichannel:'crmomnichannel',
+  sinupfeature1: 'sinupfeature1',
+  sinupfeature2: 'sinupfeature2',
+  sinupfeature3: 'sinupfeature3',
+  sinupfeature4: 'sinupfeature4',
 };
 
 export type LangKeys = typeof langKeys;

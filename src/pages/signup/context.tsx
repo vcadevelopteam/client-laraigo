@@ -339,6 +339,8 @@ export interface MainData {
     loginpasswordrepeat: string;
     loginusername: string;
     clienttype: string;
+    businessname: string;
+    taxidentifier: string;
 }
 
 const defaultListChannels: ListChannels = {
@@ -479,7 +481,9 @@ export const SubscriptionProvider: FC = ({ children }) => {
             loginpassword: "",
             loginpasswordrepeat: "",
             loginusername: "",
-            clienttype: "business"
+            clienttype: "business",
+            businessname: "",
+            taxidentifier: "",
         },
     });
 
@@ -632,6 +636,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
             parameters: {
                 ...mainData,
                 contactaddress: mainData.contactaddress,
+                taxidentifier: mainData.taxidentifier,
+                businessname: mainData.businessname,
                 contactcountry: mainData.contactcountry,
                 contactcountryname: mainData.contactcountryname,
                 contactcurrency: mainData.contactcurrency,
