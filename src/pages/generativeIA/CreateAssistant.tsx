@@ -263,12 +263,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if (data.language !== '') {
                 if(data.language.includes(',')){
                     const formattedLanguages = data.language.split(',').join(', ');
-                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+                    generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en [' + formattedLanguages + '], no añadas mas texto o información a tu respuesta.';
                 } else {
                     if(data.language === 'Todos') {
-                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                        generalprompt += ' ';
                     } else {
-                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                        generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ', no añadas mas texto o información a tu respuesta.';
                     }
                 }
             }
@@ -330,12 +330,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if (data.language !== '') {
                 if(data.language.includes(',')){
                     const formattedLanguages = data.language.split(',').join(', ');
-                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+                    generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en [' + formattedLanguages + '], no añadas mas texto o información a tu respuesta.';
                 } else {
                     if(data.language === 'Todos') {
-                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                        generalprompt += ' ';
                     } else {
-                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                        generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ', no añadas mas texto o información a tu respuesta.';
                     }
                 }
             }
@@ -455,12 +455,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (data.language !== '') {
             if(data.language.includes(',')){
                 const formattedLanguages = data.language.split(',').join(', ');
-                generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+                generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en Español, Inglés", y no añadas más texto o información a tu respuesta.';
             } else {
                 if(data.language === 'Todos') {
-                    generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                    generalprompt += ' ';
                 } else {
-                    generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                    generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ' y no añadas más texto a tu respuesta.';
                 }
             }
         }
@@ -520,12 +520,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if (data.language !== '') {
                 if(data.language.includes(',')){
                     const formattedLanguages = data.language.split(',').join(', ');
-                    generalprompt += 'Los idiomas que empleas y conoces para comunicarte con el usuario son los siguientes: [' + formattedLanguages + ']';
+                    generalprompt += 'Empleas los siguientes idiomas para responder: [' + formattedLanguages + ']. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en Español, Inglés", y no añadas más texto o información a tu respuesta.';
                 } else {
                     if(data.language === 'Todos') {
-                        generalprompt += 'El idioma que emplearás para comunicarte, deberá ser el mismo que el usuario emplea para comunicarse contigo.';
+                        generalprompt += ' ';
                     } else {
-                        generalprompt += 'Tu idioma natal y el único que empleas para comunicarte es el ' + data.language + '. No te puedes comunicar en otro idioma que no sea ' + data.language + '.';
+                        generalprompt += 'Empleas el ' + data.language + ' para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + ' y no añadas más texto a tu respuesta.';
                     }
                 }
             }

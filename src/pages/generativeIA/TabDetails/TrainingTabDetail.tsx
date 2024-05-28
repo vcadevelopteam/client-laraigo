@@ -763,7 +763,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             <Button
                                 variant="contained"
                                 type="button"
-                                startIcon={<DeleteIcon color="primary" />}
+                                startIcon={<DeleteIcon color={rowWithDataSelected.length === 0 ? "#A7A5A5" : "primary"} />}
                                 className={classes.purpleButton}
                                 disabled={rowWithDataSelected.length === 0}
                                 onClick={handleMassiveDelete}
