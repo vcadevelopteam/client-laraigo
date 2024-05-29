@@ -457,7 +457,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: 1, text: 'US +1' },
         { value: 44, text: 'UK +44' }
     ]
-
+    
     const {
         formState: { errors },
         getValues,
@@ -507,9 +507,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             type: row?.type || "",
         },
     });
-
-    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
     
+    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
+    console.log(getValues("body"))
     const [type] = watch(["type"]);
     React.useEffect(() => {
         register('authenticationdata');
@@ -782,7 +782,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
 
-        if (isNew && isProvider) {
+        if (isNew && data.type === 'HSM') {
             const dataAux = {
                 ...data,
                 headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
@@ -831,10 +831,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 })
             );
         } else {
+            const dataAux = {
+                ...data,
+                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
+                footerenabled: data.footer !== '' ? true : false,
+                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
+            }
+
             const callback = () => {
-                if (data.type === "MAIL") {
-                    data.body = renderToString(toElement(bodyObject));
-                    if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
+                if (dataAux.type === "MAIL") {
+                    dataAux.body = renderToString(toElement(bodyObject));
+                    if (dataAux.body === '<div data-reactroot=""><p><span></span></p></div>') {
                         setBodyAlert(t(langKeys.field_required));
                         return;
                     } else {
@@ -842,8 +849,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                if (data.type === "HTML") {
-                    if (data.body) {
+                if (dataAux.type === "HTML") {
+                    if (dataAux.body) {
                         setBodyAlert("");
                     } else {
                         setBodyAlert(t(langKeys.field_required));
@@ -851,7 +858,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject })));
+                dispatch(execute(insMessageTemplate({ ...dataAux })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             };
@@ -926,24 +933,26 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onChangeTemplateType = async (data: Dictionary) => {
-        setValue("templatetype", data?.value || "");
-        trigger("templatetype");
+        if(isNew) {
+            setValue("templatetype", data?.value || "");
+            trigger("templatetype");
 
-        setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
-        setValue('header', '')
-        setValue('footer', '')
-        setValue('buttonsgeneric', [])
-        setValue('buttonsquickreply', [])
-        setValue("headertype", "NONE");
-        setValue('body', '')
-        setHeaderType('none')
-        setValue('carouseldata', [])
-        trigger("headertype");
-        trigger("footer");
-        trigger('buttonsgeneric');
-        trigger('buttonsquickreply');
-        setValue('bodyvariables', [])
-        trigger('bodyvariables');
+            setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
+            setValue('header', '')
+            setValue('footer', '')
+            setValue('buttonsgeneric', [])
+            setValue('buttonsquickreply', [])
+            setValue("headertype", "NONE");
+            setValue('body', '')
+            setHeaderType('none')
+            setValue('carouseldata', [])
+            trigger("headertype");
+            trigger("footer");
+            trigger('buttonsgeneric');
+            trigger('buttonsquickreply');
+            setValue('bodyvariables', [])
+            trigger('bodyvariables');
+        }
     };
     
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {

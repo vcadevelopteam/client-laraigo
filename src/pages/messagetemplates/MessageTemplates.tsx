@@ -220,7 +220,7 @@ const MessageTemplates: FC = () => {
                     const { row } = props.cell;
                     const { category, type, templatetype } = row?.original || {};
                     if (category && type) {
-                        return ((type === "HSM" && category !== 'AUTHENTICATION') ? t(`messagetemplate_${templatetype.toLowerCase()}`).toUpperCase() : '');
+                        return (((type === "HSM" && category !== 'AUTHENTICATION') || type !== 'HSM') ? t(`messagetemplate_${templatetype.toLowerCase()}`).toUpperCase() : '');
                     } else {
                         return '';
                     }
