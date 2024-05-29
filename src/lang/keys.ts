@@ -6146,6 +6146,7 @@ export const langKeys = {
   assignnametotemplate: 'assignnametotemplate',
   footerpage: 'footerpage',
   dynamicbuttontext: 'dynamicbuttontext',
+  validtyperiodtitlehelptext: 'validtyperiodtitlehelptext',
 };
 
 export type LangKeys = typeof langKeys;

@@ -6202,6 +6202,7 @@ const translation: LangKeys = {
   assignnametotemplate: 'Assign a name to the message template',
   footerpage: 'Footer',
   dynamicbuttontext: 'Adding a variable creates a custom link for the customer to query your information. You can only add a variable at the end of the URL.',
+  validtyperiodtitlehelptext: 'The validity period of the message is different from the code expiration time. The code expiration date is content that you can add to your messages to let customers know when the OTP access code expires.',
 };
 
 const enResource: ResourceLanguage = {

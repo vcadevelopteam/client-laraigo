@@ -438,7 +438,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     ];
 
     const dataValidityPeriod = [
-        { value: 1, text: `1 ${t(langKeys.minutes)}`},
+        { value: 1, text: `1 ${t(langKeys.minute)}`},
         { value: 2, text: `2 ${t(langKeys.minutes)}`},
         { value: 3, text: `3 ${t(langKeys.minutes)}`},
         { value: 5, text: `5 ${t(langKeys.minutes)}`},
@@ -1148,13 +1148,24 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         const file = files?.item(0);
 
         if (file) {
-            setFileAttachment(file);
-            const fd = new FormData();
-            fd.append("file", file, file.name);
-            dispatch(uploadFile(fd));
-            setUploading(true);
-            setWaitUploadFile2(true);
-        }
+            const fileType = getValues('headertype');
+            const validTypes = {
+              IMAGE: ['image/jpeg', 'image/png'],
+              VIDEO: ['video/mp4'],
+              DOCUMENT: ['application/pdf']
+            };
+        
+            if (validTypes[fileType]?.includes(file.type)) {
+              setFileAttachment(file);
+              const fd = new FormData();
+              fd.append("file", file, file.name);
+              dispatch(uploadFile(fd));
+              setUploading(true);
+              setWaitUploadFile2(true);
+            } else {
+              alert(`Invalid file type. Please upload a ${fileType.toLowerCase()} file.`);
+            }
+          }
     }, [])
 
     useEffect(() => {
@@ -1558,6 +1569,47 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue(`buttonsgeneric.${index}.btn.phone_number`, val);
         e.target.value = val;
         trigger('buttonsgeneric')
+    }
+
+    const handleQuickReplyCard = (e, index: number, bindex: number) => {
+        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        if (val.length > 25) {
+            val = val.substring(0, 25);
+        }
+        setValue(`carouseldata.${index}.buttons.${bindex}.btn.text`, val);
+        setValue(`carouseldata.${index}.buttons.${bindex}.btn.payload`, val);
+        e.target.value = val;
+        trigger('carouseldata')
+    }
+
+    const handleActionButtonTextCard = (e, index: number, bindex: number) => {
+        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        if (val.length > 25) {
+            val = val.substring(0, 25);
+        }
+        setValue(`carouseldata.${index}.buttons.${bindex}.btn.text`, val);
+        e.target.value = val;
+        trigger('carouseldata')
+    }
+
+    const handleActionButtonUrlCard = (e, index: number, bindex: number) => {
+        let val = e.target.value.replace(/[^a-zA-Z0-9 /.:-]/g, "");
+        if (val.length > 2000) {
+            val = val.substring(0, 2000);
+        }
+        setValue(`carouseldata.${index}.buttons.${bindex}.btn.url`, val);
+        e.target.value = val;
+        trigger('carouseldata')
+    }
+
+    const handleActionButtonPhoneCard = (e, index: number, bindex: number) => {
+        let val = e.target.value.replace(/[^0-9 ]/g, "");
+        if (val.length > 20) {
+            val = val.substring(0, 20);
+        }
+        setValue(`carouseldata.${index}.buttons.${bindex}.btn.phone_number`, val);
+        e.target.value = val;
+        trigger('carouseldata')
     }
 
     return (
@@ -2116,6 +2168,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         maxLength={60}
                                         onInput={handleInput}
                                         onChange={handleInput}
+                                        inputProps={{
+                                            rows: 1,
+                                            maxRows: 1
+                                        }}
                                         rows={1}
                                         valueDefault={getValues("footer")}
                                         style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
@@ -2469,19 +2525,41 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     </div>
                                     <div style={{display: 'flex', flexDirection: 'column', border: '1px solid #B4B4B4', backgroundColor: '#F1F1F1', padding: 15, borderRadius: 10, marginTop: 10, marginBottom: 20}}>
                                         <span style={{fontWeight: 'bold', marginBottom: 8}}>{t(langKeys.expiresin)}</span>
-                                        <div style={{display: 'flex', gap: 20, alignItems: 'center'}}>
-                                            <FieldEdit
-                                                type="number"
-                                                valueDefault={getValues('authenticationdata.codeexpirationminutes')}
-                                                onChange={(value) => {
-                                                    setValue('authenticationdata.codeexpirationminutes', value)
-                                                    trigger('authenticationdata')
-                                                }}
-                                                label={t(langKeys.minutes)}
-                                                variant="outlined"
-                                                size="small"
-                                                disabled={!isNew}
-                                            />
+                                        <div style={{display: 'flex', gap: 20, alignItems: 'end'}}>
+                                            <div style={{width: 150}}>
+                                                <span style={{fontSize: 10}}>{t(langKeys.minutes)}</span>
+                                                <FieldEditAdvancedAux
+                                                    type="number"
+                                                    valueDefault={getValues('authenticationdata.codeexpirationminutes')}
+                                                    onInput={(e) => {
+                                                        let val = e.target.value.replace(/[^0-9 ]/g, "");
+                                                        if (val !== "") {
+                                                            val = Math.max(0, Math.min(91, parseInt(val, 10))); // Asegura que el valor esté entre 0 y 91
+                                                        }
+                                                        setValue('authenticationdata.codeexpirationminutes', Number(val));
+                                                        e.target.value = val;
+                                                        trigger('authenticationdata');
+                                                    }}
+                                                    onChange={(e) => {
+                                                        let val = e.target.value.replace(/[^0-9 ]/g, "");
+                                                        if (val !== "") {
+                                                            val = Math.max(0, Math.min(91, parseInt(val, 10))); // Asegura que el valor esté entre 0 y 91
+                                                        }
+                                                        setValue('authenticationdata.codeexpirationminutes', Number(val));
+                                                        e.target.value = val;
+                                                        trigger('authenticationdata');
+                                                    }}
+                                                    disabled={!isNew}
+                                                    rows={1}
+                                                    style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '5px' }}
+                                                    fregister={{
+                                                        ...register(`authenticationdata.codeexpirationminutes`, {
+                                                            validate: (value) =>
+                                                                (value && value >= Number(getValues('authenticationdata.validityperiod'))) || t(langKeys.field_nonnegative),
+                                                        }),
+                                                    }}
+                                                />
+                                            </div>
                                             <div className={classes.warningContainer}>
                                                 <WarningIcon style={{color: '#FF7575'}}/>
                                                 <span>{t(langKeys.introudceavalue)}</span>
@@ -2504,7 +2582,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             disabled={!isNew}
                                         />
                                     </div>
-                                    <span className={classes.title} style={{marginBottom: 10}}>{t(langKeys.advanceconfig)}</span>
+                                    <div style={{display: 'flex', gap: 10, alignItems: 'center', marginBottom: 5}}>
+                                        <span className={classes.title}>{t(langKeys.advanceconfig)}</span>
+                                        <Tooltip title={t(langKeys.validtyperiodtitlehelptext)} arrow placement="top">
+                                            <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                        </Tooltip>
+                                    </div>
                                     <span className={classes.title}>{t(langKeys.validityperiodmessages)}</span>
                                     <span style={{marginBottom: 10}}>{t(langKeys.validityperiodtext)}</span>
                                     <div style={{display: 'flex', alignItems: 'start', marginTop: 10}}>
@@ -2813,29 +2896,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             <div style={{width: '100%'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{display: 'flex'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onChange={(value) => {
-                                                                                                                            setValue(`carouseldata.${index}.buttons.${btni}.btn.text`, value);
-                                                                                                                            setValue(`carouseldata.${index}.buttons.${btni}.btn.payload`, value);
-                                                                                                                            trigger('carouseldata')
-                                                                                                                        }}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.text?.message}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                            <div style={{display: 'flex', alignItems: 'start'}}>
+                                                                                                                <FieldEditAdvancedAux
+                                                                                                                    inputProps={{
+                                                                                                                        rows: 1,
+                                                                                                                        maxRows: 1
+                                                                                                                    }}
+                                                                                                                    rows={1}
+                                                                                                                    maxLength={25}
+                                                                                                                    valueDefault={btn?.btn?.text}
+                                                                                                                    onInput={(e) => handleQuickReplyCard(e, index, btni)}
+                                                                                                                    onChange={(e) => handleQuickReplyCard(e, index, btni)}
+                                                                                                                    disabled={!isNew}
+                                                                                                                    fregister={{
+                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                            validate: (value) =>
+                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                        }),
+                                                                                                                    }}
+                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                />
+                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
                                                                                                                     <ClearIcon />
                                                                                                                 </IconButton>
                                                                                                             </div>
@@ -2846,32 +2927,34 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             <div style={{width: '100%'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{display: 'flex'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.text?.message}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                            <div style={{display: 'flex', alignItems: 'start'}}>
+                                                                                                                <FieldEditAdvancedAux
+                                                                                                                    inputProps={{
+                                                                                                                        rows: 1,
+                                                                                                                        maxRows: 1
+                                                                                                                    }}
+                                                                                                                    rows={1}
+                                                                                                                    maxLength={25}
+                                                                                                                    valueDefault={btn?.btn?.text}
+                                                                                                                    onInput={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                    onChange={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                    disabled={!isNew}
+                                                                                                                    fregister={{
+                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                            validate: (value) =>
+                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                        }),
+                                                                                                                    }}
+                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                />
+                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
                                                                                                                     <ClearIcon />
                                                                                                                 </IconButton>
                                                                                                             </div>
                                                                                                             <div style={{width: '100%'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urltype)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{width: '100%', backgroundColor: 'white'}}>
+                                                                                                            <div style={{width: '100%', backgroundColor: 'white', marginBottom: 20}}>
                                                                                                                 <FieldSelect
                                                                                                                     data={dataURLType}
                                                                                                                     variant="outlined"
@@ -2886,7 +2969,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         }
                                                                                                                     }}
                                                                                                                     disabled={!isNew}
-                                                                                                                    error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.type?.message}
                                                                                                                     fregister={{
                                                                                                                         ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
                                                                                                                             validate: (value) =>
@@ -2898,25 +2980,30 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             <div style={{width: '100%', display:'flex'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{display: 'flex', width: '100%'}}>
-                                                                                                                <div style={{backgroundColor: 'white', flex: 1}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
+                                                                                                            <div style={{display: 'flex', width: '100%', alignItems: 'start'}}>
+                                                                                                                <div style={{flex: 1}}>
+                                                                                                                    <FieldEditAdvancedAux
+                                                                                                                        inputProps={{
+                                                                                                                            rows: 1,
+                                                                                                                            maxRows: 1
+                                                                                                                        }}
+                                                                                                                        rows={1}
+                                                                                                                        maxLength={2000}
                                                                                                                         valueDefault={btn?.btn?.url}
-                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "url", value)}
+                                                                                                                        onInput={(e) => handleActionButtonUrlCard(e, index, btni)}
+                                                                                                                        onChange={(e) => handleActionButtonUrlCard(e, index, btni)}
                                                                                                                         disabled={!isNew}
-                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.url?.message}
                                                                                                                         fregister={{
                                                                                                                             ...register(`carouseldata.${index}.buttons.${btni}.btn.url`, {
                                                                                                                                 validate: (value) =>
                                                                                                                                     (value && value.length) || t(langKeys.field_required),
                                                                                                                             }),
                                                                                                                         }}
+                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
                                                                                                                     />
                                                                                                                 </div>
                                                                                                                 {btn?.btn?.type === 'dynamic' &&(
-                                                                                                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{'{{'}1{'}}'}</div>
+                                                                                                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 15}}>{'{{'}1{'}}'}</div>
                                                                                                                 )}
                                                                                                             </div>
                                                                                                             {btn?.btn?.type === 'dynamic' && (
@@ -2934,7 +3021,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                             }}
                                                                                                                             valueDefault={btn?.btn?.variables[0] || ""}
                                                                                                                             disabled={!isNew}
-                                                                                                                            error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.variables?.[0]?.message}
                                                                                                                             fregister={{
                                                                                                                                 ...register(`carouseldata.${index}.buttons.${btni}.btn.variables.${0}`, {
                                                                                                                                     validate: (value) =>
@@ -2952,32 +3038,34 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             <div style={{width: '100%'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{display: 'flex'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldEdit
-                                                                                                                        variant="outlined"
-                                                                                                                        size="small"
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onChange={(value) => onChangeCardsButton(index, btni, "text", value)}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.text?.message}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                            <div style={{display: 'flex', alignItems: 'start'}}>
+                                                                                                                <FieldEditAdvancedAux
+                                                                                                                    inputProps={{
+                                                                                                                        rows: 1,
+                                                                                                                        maxRows: 1
+                                                                                                                    }}
+                                                                                                                    rows={1}
+                                                                                                                    maxLength={25}
+                                                                                                                    valueDefault={btn?.btn?.text}
+                                                                                                                    onInput={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                    onChange={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                    disabled={!isNew}
+                                                                                                                    fregister={{
+                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                            validate: (value) =>
+                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                        }),
+                                                                                                                    }}
+                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                />
+                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
                                                                                                                     <ClearIcon />
                                                                                                                 </IconButton>
                                                                                                             </div>
                                                                                                             <div style={{width: '100%'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.country)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{backgroundColor: 'white', width: '100%'}}>
+                                                                                                            <div style={{backgroundColor: 'white', width: '100%', marginBottom: 20}}>
                                                                                                                 <FieldSelect
                                                                                                                     data={dataCountryCodes}
                                                                                                                     variant="outlined"
@@ -2992,7 +3080,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                             trigger('carouseldata')
                                                                                                                         }
                                                                                                                     }}
-                                                                                                                    error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.code?.message}
                                                                                                                     fregister={{
                                                                                                                         ...register(`carouseldata.${index}.buttons.${btni}.btn.code`, {
                                                                                                                             validate: (value) =>
@@ -3005,22 +3092,26 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             <div style={{width: '100%'}}>
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.telephonenumber)}</span>
                                                                                                             </div>
-                                                                                                            <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                                                <FieldEdit
-                                                                                                                    variant="outlined"
-                                                                                                                    size="small"
+                                                                                                            <div style={{width: '100%'}}>
+                                                                                                                <FieldEditAdvancedAux
+                                                                                                                    inputProps={{
+                                                                                                                        rows: 1,
+                                                                                                                        maxRows: 1
+                                                                                                                    }}
+                                                                                                                    rows={1}
                                                                                                                     type="number"
                                                                                                                     maxLength={20}
                                                                                                                     valueDefault={btn?.btn?.phone_number}
-                                                                                                                    onChange={(value) => onChangeCardsButton(index, btni, "phone_number", value)}
+                                                                                                                    onInput={(e) => handleActionButtonPhoneCard(e, index, btni)}
+                                                                                                                    onChange={(e) => handleActionButtonPhoneCard(e, index, btni)}
                                                                                                                     disabled={!isNew}
-                                                                                                                    error={errors?.carouseldata?.[index]?.buttons?.[btni]?.btn?.phone_number?.message}
                                                                                                                     fregister={{
                                                                                                                         ...register(`carouseldata.${index}.buttons.${btni}.btn.phone_number`, {
                                                                                                                             validate: (value) =>
                                                                                                                                 (value && value.length) || t(langKeys.field_required),
                                                                                                                         }),
                                                                                                                     }}
+                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
                                                                                                                 />
                                                                                                             </div>
                                                                                                         </>
