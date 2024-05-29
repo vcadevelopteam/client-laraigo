@@ -269,7 +269,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
         ...buttonstext.map(text => ({ type: 'text', text: text })),
         ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
     ];
-
+    
     const parseFormattedText = (text: string) => {
         const monospace = /```(.*?)```/g;
         text = text.replace(monospace, '<code>$1</code>');
@@ -369,10 +369,10 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                                 case 'text':
                                     icon = <ReplyIcon className={classes.icon} />;
                                     break;
-                                case 'link':
+                                case 'URL':
                                     icon = <OpenInNewIcon className={classes.icon} />;
                                     break;
-                                case 'phone':
+                                case 'PHONE':
                                     icon = <PhoneIcon className={classes.icon} />;
                                     break;
                                 default:

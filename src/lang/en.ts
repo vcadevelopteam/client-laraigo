@@ -6228,6 +6228,11 @@ const translation: LangKeys = {
   suggestedanswer_help: 'The AI will respond in a resourceful manner related to the current knowledge base it possesses, for queries that it cannot answer due to lack of knowledge.',
   bestsuggestion_help: 'For queries that the AI cannot answer due to lack of knowledge, it will respond based on the information you share with it so that it can provide an email, web page, cell phone or predefined response to the user.',
   nooptionselected: 'No Option Selected ',
+  chooseyourlanguage: 'Choose the language for your message template',
+  assignnametotemplate: 'Assign a name to the message template',
+  footerpage: 'Footer',
+  dynamicbuttontext: 'Adding a variable creates a custom link for the customer to query your information. You can only add a variable at the end of the URL.',
+  validtyperiodtitlehelptext: 'The validity period of the message is different from the code expiration time. The code expiration date is content that you can add to your messages to let customers know when the OTP access code expires.',
 };
 
 const enResource: ResourceLanguage = {

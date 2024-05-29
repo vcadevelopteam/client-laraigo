@@ -6174,6 +6174,11 @@ export const langKeys = {
   suggestedanswer_help: 'suggestedanswer_help',
   bestsuggestion_help: 'bestsuggestion_help',
   nooptionselected: 'nooptionselected',
+  chooseyourlanguage: 'chooseyourlanguage',
+  assignnametotemplate: 'assignnametotemplate',
+  footerpage: 'footerpage',
+  dynamicbuttontext: 'dynamicbuttontext',
+  validtyperiodtitlehelptext: 'validtyperiodtitlehelptext',
 };
 
 export type LangKeys = typeof langKeys;

@@ -4050,13 +4050,14 @@ export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody 
     }
 });
 
-export const getMessageTemplateExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+export const getMessageTemplateExport = ({ filters, sorts, translation }: Dictionary): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_EXPORT",
     key: "UFN_MESSAGETEMPLATE_EXPORT",
     parameters: {
         origin: "messagetemplate",
         filters,
         sorts,
+        translation,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
