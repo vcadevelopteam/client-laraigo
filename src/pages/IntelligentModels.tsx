@@ -57,14 +57,16 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const [service, setService] = useState( row ? row.type.trim() : '')
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { getValues, register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            type: 'NINGUNO',
+            type: row ? (row.type || '') : '',
             id: row ? row.id : 0,
             endpoint: row ? (row.endpoint || '') : '',
             modelid: row ? (row.modelid || '') : '',
             apikey: row ? (row.apikey || '') : '',
+            name: row ? (row.name || '') : '',
             description: row ? (row.description || '') : '',
             provider: row ? (row.provider || '') : '',
             status: row ? row.status : 'ACTIVO',
@@ -75,11 +77,27 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     React.useEffect(() => {
         register('type');
         register('id');
-        register('endpoint', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('endpoint', { 
+            validate: (value) =>
+                getValues('type') !== 'LARGE LANGUAGE MODEL'
+                    ? (value && value.length) || String(t(langKeys.field_required))
+                    : true,
+        });
+        register('apikey', {
+            validate: (value) =>
+                getValues('type') !== 'RASA'    
+                    ? (value && value.length) || String(t(langKeys.field_required))
+                    : true,
+        });
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('modelid');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('provider', {
+            validate: (value) =>
+                getValues('type') !== 'RASA' && getValues('type') !== 'WATSON ASSISTANT'
+                    ? (value && value.length) || String(t(langKeys.field_required))
+                    : true,
+        });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -113,6 +131,21 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
         }))
     });
 
+    const providers = [
+        {
+            domaindesc: 'Open AI',
+            domainvalue: 'Open AI',
+        },
+        {
+            domaindesc: 'Meta',
+            domainvalue: 'Meta',
+        },
+        {
+            domaindesc: 'Mistral',
+            domainvalue: 'Mistral',
+        },
+    ]
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -126,7 +159,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.endpoint}` : t(langKeys.newintelligentmodel)}
+                            title={row ? `${row.name}` : t(langKeys.newintelligentmodel)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -138,107 +171,208 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.save)}
+                        </Button>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.endpoint)}
-                                className="col-6"
-                                onChange={(value) => setValue('endpoint', value)}
-                                valueDefault={row ? (row.endpoint || "") : ""}
-                                error={errors?.endpoint?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.endpoint)}
-                                value={row ? (row.endpoint || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.modelid)}
-                                className="col-6"
-                                onChange={(value) => setValue('modelid', value)}
-                                valueDefault={row ? (row.modelid || "") : ""}
-                                error={errors?.modelid?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.modelid)}
-                                value={row ? (row.modelid || "") : ""}
-                                className="col-6"
-                            />}
+                    <div className='row-zyx'>
+                        <FieldSelect
+                            className='col-6'
+                            disabled={edit}
+                            label={t(langKeys.type_service)}
+                            valueDefault={service}
+                            onChange={(value) => {
+                                if(value) {
+                                    setService(value.domainvalue)
+                                    setValue('type', value.domainvalue)
+                                } else {
+                                    setService('')
+                                    setValue('type', '')
+                                }
+                            }}
+                            data={dataDomainStatus || []}
+                            optionDesc='domaindesc'
+                            optionValue='domainvalue'
+                        />
                     </div>
-                    <div className="row-zyx">
-                        {edit ?
+                    {service === 'WATSON ASSISTANT' ? (
+                        <>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.endpoint)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('endpoint', value)}
+                                    valueDefault={row ? (row.endpoint || "") : ""}
+                                    error={errors?.endpoint?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.apikey)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('apikey', value)}
+                                    valueDefault={row ? (row.apikey || "") : ""}
+                                    error={errors?.apikey?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.modelid)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('modelid', value)}
+                                    valueDefault={row ? (row.modelid || "") : ""}
+                                    error={errors?.modelid?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    className='col-6'
+                                    label={t(langKeys.name)}
+                                    onChange={(value) => setValue('name', value)}
+                                    valueDefault={row ? (row.name || "") : ""}
+                                    error={errors?.name?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.description)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={row ? (row.description || "") : ""}
+                                    error={errors?.description?.message}
+                                />
+                            </div>
+                        </>
+                    ) : service === 'LARGE LANGUAGE MODEL' ? (
+                        <div className='row-zyx'>
                             <FieldEdit
+                                className='col-6'
+                                type='password'
                                 label={t(langKeys.apikey)}
-                                className="col-6"
                                 onChange={(value) => setValue('apikey', value)}
-                                valueDefault={row ? (row.apikey || "") : ""}
+                                valueDefault={getValues('apikey')}
                                 error={errors?.apikey?.message}
+                                InputProps={{
+                                    autoComplete: 'off',
+                                }}
                             />
-                            : <FieldView
-                                label={t(langKeys.apikey)}
-                                value={row ? (row.apikey || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className="col-6"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
+                            <FieldSelect
+                                className='col-6'
                                 label={t(langKeys.provider)}
-                                className="col-6"
-                                onChange={(value) => setValue('provider', value)}
-                                valueDefault={row ? (row.provider || "") : ""}
+                                data={providers}
+                                optionDesc='domaindesc'
+                                optionValue='domainvalue'
+                                onChange={(value) => {
+                                    if(value) {
+                                        setValue('provider', value.domaindesc)
+                                    } else {
+                                        setValue('provider', '')
+                                    }
+                                }}
+                                valueDefault={getValues('provider')}
                                 error={errors?.provider?.message}
                             />
-                            : <FieldView
-                                label={t(langKeys.provider)}
-                                value={row ? (row.provider || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.type)}
-                                className="col-6"
-                                valueDefault={row ? (row.type || "") : ""}
-                                onChange={(value) => setValue('type', value ? value.domainvalue : 0)}
-                                error={errors?.type?.message}
-                                data={dataDomainStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                            <FieldEdit
+                                className='col-6'
+                                label={t(langKeys.name)}
+                                onChange={(value) => setValue('name', value)}
+                                valueDefault={getValues('name')}
+                                error={errors?.name?.message}
                             />
-                            : <FieldView
-                                label={t(langKeys.type)}
-                                value={row ? (row.type || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
+                            <FieldEdit
+                                className='col-6'
+                                label={t(langKeys.description)}
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={getValues('description')}
+                                error={errors?.description?.message}
+                            />
+                        </div>
+                    ): service === 'RASA' ? (
+                        <>
+                            <div className='row-zyx'>
+                                <FieldEdit
+                                    className='col-6'
+                                    label={t(langKeys.endpoint)}
+                                    onChange={(value) => setValue('endpoint', value)}
+                                    valueDefault={row ? (row.endpoint || "") : ""}
+                                    error={errors?.endpoint?.message}
+                                />
+                            </div>
+                            <div className='row-zyx'>
+                                <FieldEdit
+                                    className='col-6'
+                                    label={t(langKeys.name)}
+                                    onChange={(value) => setValue('name', value)}
+                                    valueDefault={row ? (row.name || "") : ""}
+                                    error={errors?.name?.message}
+                                />
+                                <FieldEdit
+                                    className='col-6'
+                                    label={t(langKeys.description)}
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={row ? (row.description || "") : ""}
+                                    error={errors?.description?.message}
+                                />
+                            </div>
+                        </>
+                    ): service !== '' ? (
+                        <>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.endpoint)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('endpoint', value)}
+                                    valueDefault={row ? (row.endpoint || "") : ""}
+                                    error={errors?.endpoint?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.modelid)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('modelid', value)}
+                                    valueDefault={row ? (row.modelid || "") : ""}
+                                    error={errors?.modelid?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.apikey)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('apikey', value)}
+                                    valueDefault={row ? (row.apikey || "") : ""}
+                                    error={errors?.apikey?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.provider)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('provider', value)}
+                                    valueDefault={row ? (row.provider || "") : ""}
+                                    error={errors?.provider?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">   
+                                <FieldEdit
+                                    label={t(langKeys.description)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={row ? (row.description || "") : ""}
+                                    error={errors?.description?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.name)}
+                                    className="col-6"
+                                    onChange={(value) => setValue('name', value)}
+                                    valueDefault={row ? (row.name || "") : ""}
+                                    error={errors?.name?.message}
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <></>
+                    )}
                 </div>
             </form>
         </div>
@@ -289,34 +423,37 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                 }
             },
             {
-                Header: t(langKeys.endpoint),
-                accessor: 'endpoint',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.modelid),
-                accessor: 'modelid',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.apikey),
-                accessor: 'apikey',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.provider),
-                accessor: 'provider',
-                NoFilter: true
+                Header: t(langKeys.name),
+                accessor: 'name',
+                NoFilter: true,
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true
+                NoFilter: true,
             },
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.endpoint),
+                accessor: 'endpoint',
+                NoFilter: true,
+                Cell: (props: Dictionary) => {
+                    const { endpoint } = props.cell.row.original;
+                    return endpoint !== '' ? endpoint : t(langKeys.none);
+                }
+            },
+            {
+                Header: t(langKeys.provider),
+                accessor: 'provider',
+                NoFilter: true,
+                Cell: (props: Dictionary) => {
+                    const { provider } = props.cell.row.original;
+                    return provider !== '' ? provider : t(langKeys.none);
+                }
             },
             {
                 Header: t(langKeys.status),
@@ -363,7 +500,7 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
 
     const handleRegister = () => {
         setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
+        setRowSelected({ row: null, edit: false });
     }
 
     const handleView = (row: Dictionary) => {

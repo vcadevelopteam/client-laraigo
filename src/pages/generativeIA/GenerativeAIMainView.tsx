@@ -14,11 +14,12 @@ import AddIcon from '@material-ui/icons/Add';
 import { Delete } from "@material-ui/icons";
 import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
-import { execute, getCollection, getCollectionAux } from "store/main/actions";
-import { assistantAiDocumentSel, assistantAiSel, exportExcel, insAssistantAi } from "common/helpers";
+import { execute, getCollection, getMultiCollectionAux } from "store/main/actions";
+import { assistantAiSel, exportExcel, getIntelligentModelsSel, getValuesFromDomain, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
 import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
+import { deleteCollection, massiveDeleteCollection } from "store/llama/actions";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -71,7 +72,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     arrayBread,
 }) => {
     const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
     const { t } = useTranslation();
     const [viewSelectedTraining, setViewSelectedTraining] = useState("assistantdetail")
     const executeResult = useSelector(state => state.main.execute);
@@ -90,13 +90,11 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         { id: "generativeia", name: t(langKeys.generativeailow) },       
     ];
     const [waitSave, setWaitSave] = useState(false);
-
     const executeAssistants = useSelector((state) => state.gpt.gptResult);
+    const llamaResult = useSelector((state) => state.llama.llamaResult);
     const [waitSaveAssistantsDelete, setWaitSaveAssistantDelete] = useState(false);
     const [assistantDelete, setAssistantDelete] = useState<Dictionary | null>(null);
-    const [filesIds, setFilesIds] = useState<string[]>([])
-    const [waitSaveFiles, setWaitSaveFiles] = useState(false)
-    const [auxRow, setAuxRow] = useState<Dictionary|null>(null)
+    const [waitSaveAssistantDeleteLlama, setWaitSaveAssistantDeleteLlama] = useState(false)
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -175,6 +173,31 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         }
     }, [executeAssistants, waitSaveAssistantsDelete]);
 
+    useEffect(() => {
+        if (waitSaveAssistantDeleteLlama) {
+            if (!llamaResult.loading && !llamaResult.error) {
+                setWaitSaveAssistantDeleteLlama(false);
+                dispatch(execute(insAssistantAi({
+                        ...assistantDelete,
+                        id: assistantDelete?.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+                setAssistantDelete(null);
+                setWaitSave(true);
+            } else if (llamaResult.error) {
+                const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveAssistantDeleteLlama(false);
+            }
+        }
+    }, [llamaResult, waitSaveAssistantDeleteLlama]);
+
     const handleDelete = (row: Dictionary) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
@@ -186,23 +209,20 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             setWaitSaveAssistantDelete(true);  
         };
 
-        const callbackLlama: () => void = () => {
+        const callbackLlama = async () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insAssistantAi({
-                ...row,
-                id: row.assistantaiid,
-                operation: "DELETE",
-                status: "ELIMINADO",
-                type: "NINGUNO" 
-            })));
-            setWaitSave(true);
-        }
+            dispatch(deleteCollection({
+                name: row.name,
+            }))
+            setAssistantDelete(row)
+            setWaitSaveAssistantDeleteLlama(true);
+        };
     
         dispatch(
           manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
-            callback: row.basemodel === 'llama-2-13b-chat.Q4_0' ? callbackLlama : callback,
+            callback: row.basemodel.startsWith('gpt') ? callback : callbackLlama,
           })
         );
     };
@@ -214,7 +234,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             dispatch(deleteMassiveAssistant({
                 ids: codes,
                 apikey: dataSelected[0].apikey,            
-            }))    
+            }))
 
             dataSelected.map(async (row) => {          
                 dispatch(
@@ -238,6 +258,73 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             })
         );
     };
+
+    const handleDeleteSelection2 = async (dataSelected: Dictionary[]) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));  
+            const collections = dataSelected.map(obj=> obj.name)
+            dispatch(massiveDeleteCollection({
+                names: collections,
+            }))
+
+            dataSelected.map(async (row) => {
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+            });
+            setWaitSave(true);
+        }
+
+        dispatch(
+            manageConfirmation({
+              visible: true,
+              question: t(langKeys.confirmation_delete_all),
+              callback,
+            })
+        );
+    };
+
+    const handleDeleteBothSelection = (gptObjects: Dictionary[], nonGptObjects: Dictionary[]) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));  
+            const collections = nonGptObjects.map(obj=> obj.name)
+            dispatch(massiveDeleteCollection({
+                names: collections,
+            }))
+            const codes = gptObjects.map(obj=> obj.code)
+            dispatch(deleteMassiveAssistant({
+                ids: codes,
+                apikey: gptObjects[0].apikey,            
+            }))
+            const dataSelected = gptObjects.concat(nonGptObjects)
+            dataSelected.map(async (row) => {
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+            });
+            setWaitSave(true);
+        }
+
+        dispatch(
+            manageConfirmation({
+              visible: true,
+              question: t(langKeys.confirmation_delete_all),
+              callback,
+            })
+        );
+    }
     
     const columnsGenerativeIA = React.useMemo(
         () => [
@@ -252,7 +339,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                   const row = props.cell.row.original;
                   return (
                     <TemplateIcons
-                      deleteFunction={() => handleDelete(row)}
                       editFunction={() => handleEdit(row)}
                     />
                   );
@@ -349,7 +435,27 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
 
     useEffect(() => {
         fetchData();
+        dispatch(
+            getMultiCollectionAux([
+              getValuesFromDomain('ESTADOGENERICO'),
+              getValuesFromDomain('QUERYWITHOUTANSWER'),
+              getValuesFromDomain('BASEMODEL'),
+              getIntelligentModelsSel(0),
+            ])
+          );
     }, []);
+
+    const handleMassiveDelete = () => {
+        if (rowWithDataSelected.every(obj => obj.basemodel.startsWith('gpt'))) {
+            handleDeleteSelection(rowWithDataSelected);
+        } else if (rowWithDataSelected.every(obj => !obj.basemodel.startsWith('gpt'))) {
+            handleDeleteSelection2(rowWithDataSelected);
+        } else {
+            const gptObjects = rowWithDataSelected.filter(obj => obj.basemodel.startsWith('gpt'));
+            const nonGptObjects = rowWithDataSelected.filter(obj => !obj.basemodel.startsWith('gpt'));
+            handleDeleteBothSelection(gptObjects, nonGptObjects)
+        }
+    }
 
     const ButtonsElement = () => {
         return (
@@ -369,9 +475,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     startIcon={<Delete style={{ color: "white" }} />}
                     variant="contained"
                     style={{marginLeft: 9}}
-                    onClick={() => {
-                        handleDeleteSelection(rowWithDataSelected);
-                    }}
+                    onClick={handleMassiveDelete}
                 >
                     {t(langKeys.delete)}
                 </Button>

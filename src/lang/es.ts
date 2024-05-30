@@ -6102,6 +6102,18 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   errorIntegrationTrackinguplicates: 'Los nombres de los campos de rastreo no se pueden repetir.',
   repeated_code: 'Los Codigos no pueden repetirse',
   repeated_person: 'Las Personas no pueden repetirse',
+  corporate: 'EMPRESARIAL',
+  cancelassistantcreation: '¿Está seguro de cancelar la creación del asistente?',
+  cancelassistantedit: '¿Está seguro de cancelar la edición del asistente?',
+  personality_table: 'Empleado de mesa de ayuda',
+  personality_client: 'Servicio al Cliente',
+  personality_sales: 'Experto en Ventas',
+  personality_tech: 'Soporte Técnico',
+  personality_ai: 'Base AI',
+  personality_personalized: 'Modo Personalizado',
+  contextperconversation: 'Contexto por conversación',
+  firstinteraction: 'Primera interacción usuario',
+  conector: 'Conector',
 };
 
 const esResource: ResourceLanguage = {
