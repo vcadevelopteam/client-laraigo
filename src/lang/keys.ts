@@ -6111,6 +6111,14 @@ export const langKeys = {
   sinupfeature2: 'sinupfeature2',
   sinupfeature3: 'sinupfeature3',
   sinupfeature4: 'sinupfeature4',
+  safepurchase: 'safepurchase',
+  signupcond1: 'signupcond1',
+  signupcond2: 'signupcond2',
+  signupcond3: 'signupcond3',
+  suggestedamount: 'suggestedamount',
+  addminimum:'addminimum',
+  sutaxes:'sutaxes',
+  errorvaluebiggerthan: "errorvaluebiggerthan",
 };
 
 export type LangKeys = typeof langKeys;

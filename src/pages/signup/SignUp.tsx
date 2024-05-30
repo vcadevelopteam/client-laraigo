@@ -1,7 +1,6 @@
-import React, { FC, useContext, useState, useEffect } from 'react';
-import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
+import { FC, useContext, useState, useEffect } from 'react';
+import { Button, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
 import { langKeys } from "lang/keys";
-import { LogoSuscription } from "icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { RouteParams, SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
 import { Trans, useTranslation } from "react-i18next";
@@ -12,7 +11,6 @@ import { LaraigoLogo } from "icons";
 
 import Popus from "components/layout/Popus";
 import RightSideMenu from "./RightSideMenu";
-import ThirdStep from "./ThirdStep";
 
 const useSignUpStyles = makeStyles((theme) => ({
     root: {
@@ -119,80 +117,11 @@ export const SignUp: FC = () => {
 
 const SignUpFunc: FC = () => {
     const classes = useSignUpStyles();
-    const { step, setStep } = useContext(SubscriptionContext);
+    const { step } = useContext(SubscriptionContext);
     const { t } = useTranslation();
-    const { getValues, reset } = useFormContext();
     const planData = usePlanData();
 
-    const [openWarning, setOpenWarning] = useState(false);
     const match = useRouteMatch<RouteParams>();
-
-
-    function setDefaultMainData() {
-        reset({
-            ...getValues(),
-            autosendinvoice: true,
-            billingcontact: "",
-            billingcontactmail: "",
-            businessname: "",
-            companybusinessname: "",
-            confirmpassword: "",
-            country: "",
-            creditcard: "",
-            docnumber: "",
-            doctype: 0,
-            email: "",
-            facebookid: "",
-            firstandlastname: "",
-            firstnamecard: "",
-            fiscaladdress: "",
-            googleid: "",
-            join_reason: "",
-            lastnamecard: "",
-            mm: 0,
-            mobilephone: "",
-            password: "",
-            pmemail: "",
-            pmphone: "",
-            securitycode: "",
-            yyyy: "",
-        });
-    }
-
-    function setDefaultMainDataAlternate() {
-        reset({
-            ...getValues(),
-            billingcontact: "",
-            billingcontactmail: "",
-            businessname: "",
-            docnumber: "",
-            doctype: 0,
-            fiscaladdress: "",
-        });
-    }
-
-    const handleClose = () => {
-        setOpenWarning(false);
-    };
-
-    const handleStepClose = () => {
-        if (step === 4) {
-            setStep(step - 1);
-        } else if (step === 3) {
-            setStep(2.5);
-        } else if (step === 2.5) {
-            setDefaultMainDataAlternate();
-            setStep(2);
-        } else if (step === 2.6) {
-            setStep(2.5);
-        } else if (step === 2) {
-            setDefaultMainData();
-            setStep(step - 1);
-        } else {
-            setStep(step - 1);
-        }
-        setOpenWarning(false);
-    };
 
     useEffect(() => {
         if (["BUSINESS START", "BUSINESS BASIC", "BUSINESS PRO", "BUSINESS PRO+"].includes(match.params.token)) {
@@ -211,24 +140,6 @@ const SignUpFunc: FC = () => {
     
     return (
         <div className={classes.root}>
-            <Dialog
-                aria-describedby="alert-dialog-description"
-                aria-labelledby="alert-dialog-title"
-                onClose={handleClose}
-                open={openWarning}
-            >
-                <DialogTitle id="alert-dialog-title">
-                    <Trans i18nKey={langKeys.goback} />
-                </DialogTitle>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        <Trans i18nKey={langKeys.no} />
-                    </Button>
-                    <Button onClick={handleStepClose} color="primary" autoFocus>
-                        <Trans i18nKey={langKeys.yes} />
-                    </Button>
-                </DialogActions>
-            </Dialog>
             <div
                 style={{
                     display: "flex",
@@ -262,7 +173,7 @@ const SignUpFunc: FC = () => {
                     </div>
                 )}
                 <div className={classes.containerLeft}> 
-                    <RightSideMenu setOpenWarning={setOpenWarning} />
+                    <RightSideMenu/>
                 </div>
             </div>
         </div>

@@ -163,22 +163,8 @@ const useChannelAddStyles = makeStyles((theme) => ({
     },
 }));
 
-const FacebookCustomButtonStyle: CSSProperties = {
-    alignItems: "center",
-    borderRadius: "3px",
-    display: "flex",
-    fontSize: 20,
-    fontStyle: "normal",
-    fontWeight: 400,
-    height: 50,
-    justifyContent: "center",
-    marginBottom: 16,
-    textTransform: "none",
-    width: "100%",
-};
-
 const FirstStep: FC = () => {
-    const { control, getValues, setValue, trigger, formState: { errors } } = useFormContext<MainData>();
+    const { control, getValues, setValue, trigger } = useFormContext<MainData>();
     const { setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
 
@@ -329,18 +315,6 @@ const FirstStep: FC = () => {
                         </div>
                         
                         <div className={classes.paper} style={{ flex: 1 }}>
-                            {/*<div
-                                style={{
-                                    textAlign: "center",
-                                    color: "#7721ad",
-                                    fontSize: 32,
-                                    fontWeight: 500,
-                                    marginBottom: 32,
-                                    marginTop: 15,
-                                }}
-                            >
-                                {t(langKeys.signupstep1title)}
-                            </div>*/}
                             {showLogin ? (<div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.02rem" }}>
                                 <FacebookLogin
                                     appId={`${apiUrls.FACEBOOKAPP}`}

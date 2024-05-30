@@ -10,6 +10,7 @@ import { styled } from "@material-ui/core/styles";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
+import LockIcon from '@material-ui/icons/Lock';
 
 import MuiPhoneNumber from "material-ui-phone-number";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
@@ -49,6 +50,27 @@ const useChannelAddStyles = makeStyles((theme) => ({
             flexWrap: "wrap",
         },
     },
+    noBorder: {
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          border: 'none',
+        },
+      },
+    },
+    customFontSize: {
+      '& .MuiInputBase-input': {
+        fontSize: '25px', // Cambia este valor al tamaño de fuente deseado
+      },
+      '& .MuiFormHelperText-root': {
+        fontSize: '25px', // Cambia este valor al tamaño de fuente del texto de ayuda
+      },
+    },
+    centeredPlaceholder: {
+      '&::placeholder': {
+        textAlign: 'center', // Centrar el placeholder
+      },
+    },
+    
 }));
 
 const CssPhonemui = styled(MuiPhoneNumber)({
@@ -67,7 +89,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 
 const URL = "https://ipapi.co/json/";
 
-const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenWarning }) => {
+const SecondStep = () => {
     const { commonClasses, finishRegister } = useContext(SubscriptionContext);
     const { control, getValues, setValue, watch } = useFormContext<MainData>();
     const { t } = useTranslation();
@@ -76,13 +98,21 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
     const [limitNumbers, setLimitNumbers] = useState(24);
     const [phoneCountry, setPhoneCountry] = useState("");
     const values = watch();
-
+    const remainingDaysFromSubscription = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate() + 1
+    const daysInCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    
+    
     const classes = useChannelAddStyles();
     const countryResult = useSelector((state) => state.signup.countryList);
     const dispatch = useDispatch();
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     const insertResult = useSelector((state) => state.signup.insertChannel);
     const planData = usePlanData();
+    const [accounting, setAccounting] = useState({
+        total: ((remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription))*1.18).toFixed(2),
+        taxes: ((remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription))*0.18).toFixed(2),
+        subtotal: (remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)).toFixed(2),
+    });
 
     const validateDocumentType = (documentNumber: string, documentType: number) => {
         if (!documentNumber) {
@@ -138,21 +168,42 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
             dispatch(resetMain());
         };
     }, [dispatch]);
-
+    useEffect(() => {
+        let subtotal= (remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription))
+        if(values.contactcountry==="PE"){
+            setAccounting({
+                subtotal:subtotal.toFixed(2),
+                taxes: (subtotal*0.18).toFixed(2),
+                total: (subtotal*1.18).toFixed(2),
+            })
+        } else if(values.contactcountry==="CO"){
+            setAccounting({
+                subtotal:subtotal.toFixed(2),
+                taxes: (subtotal*0.19).toFixed(2),
+                total: (subtotal*1.19).toFixed(2),
+            })
+        }else{
+            setAccounting({
+                subtotal:subtotal.toFixed(2),
+                taxes: "0.00",
+                total: subtotal.toFixed(2),
+            })
+        }
+    }, [values.contactcountry]);
     return (
-        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%", padding: "30px 4%" }}>
+        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100vh", padding: "30px 4%", overflowY: "auto" }}>
             <div className={classes.containerBorder}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <h3 style={{ margin: "0px", alignContent: "center" }}>{t(langKeys.billingforinformation)}</h3>
                     <FormControl component="fieldset">
                         <Controller
-                            name="clienttype"
+                            name="iscompany"
                             control={control}
-                            defaultValue=""
+                            defaultValue={true}
                             render={({ field }) => (
                                 <RadioGroup {...field} row>
-                                    <FormControlLabel value="business" control={<Radio color="primary" />} label={t(langKeys.business)} />
-                                    <FormControlLabel value="person" control={<Radio color="primary" />} label={t(langKeys.person)} />
+                                    <FormControlLabel value={true} control={<Radio color="primary" />} label={t(langKeys.business)} />
+                                    <FormControlLabel value={false} control={<Radio color="primary" />} label={t(langKeys.person)} />
                                 </RadioGroup>
                             )}
                         />
@@ -365,10 +416,10 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                         }}
                     />
                 </div>
-                {getValues("clienttype") === "business" && <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                {getValues("iscompany") && <div className="row-zyx" style={{ marginBottom: "-10px" }}>
                     <Controller
                         control={control}
-                        name="businessname"
+                        name="companyname"
                         render={({ field, formState: { errors } }) => (
                             <div className="col-9">
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
@@ -376,10 +427,10 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                                 </Box>
                                 <TextField
                                     {...field}
-                                    error={Boolean(errors.businessname)}
+                                    error={Boolean(errors.companyname)}
                                     fullWidth
                                     style={{ marginTop: 0 }}
-                                    helperText={errors.businessname?.message}
+                                    helperText={errors.companyname?.message}
                                     margin="normal"
                                     size="small"
                                     variant="outlined"
@@ -389,7 +440,7 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                         )}
                         rules={{
                             validate: (value) => {
-                                if (getValues("clienttype") !== "business") return true
+                                if (getValues("iscompany")) return true
                                 if (value.length === 0) {
                                     return `${t(langKeys.field_required)}`;
                                 }
@@ -398,7 +449,7 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                     />
                     <Controller
                         control={control}
-                        name="taxidentifier"
+                        name="companydocument"
                         render={({ field, formState: { errors } }) => (
                             <div className="col-3">
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
@@ -406,10 +457,10 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                                 </Box>
                                 <TextField
                                     {...field}
-                                    error={Boolean(errors.taxidentifier)}
+                                    error={Boolean(errors.companydocument)}
                                     fullWidth
                                     style={{ marginTop: 0 }}
-                                    helperText={errors.taxidentifier?.message}
+                                    helperText={errors.companydocument?.message}
                                     margin="normal"
                                     size="small"
                                     type="number"
@@ -419,7 +470,7 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                         )}
                         rules={{
                             validate: (value) => {
-                                if (getValues("clienttype") !== "business") return true
+                                if (getValues("iscompany")) return true
                                 if (value === null || value === undefined) return `${t(langKeys.field_required)}`;
                             },
                         }}
@@ -544,7 +595,7 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                             <div className="row-zyx" style={{ marginBottom: "-10px" }}>
                                 <Controller
                                     control={control}
-                                    name="contactnameorcompany"
+                                    name="cardname"
                                     render={({ field, formState: { errors } }) => (
                                         <div className="col-12">
                                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
@@ -553,9 +604,9 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                                             <TextField
                                                 {...field}
                                                 style={{ marginTop: 0 }}
-                                                error={Boolean(errors.contactnameorcompany)}
+                                                error={Boolean(errors.cardname)}
                                                 fullWidth
-                                                helperText={errors.contactnameorcompany?.message}
+                                                helperText={errors.cardname?.message}
                                                 margin="normal"
                                                 size="small"
                                                 variant="outlined"
@@ -680,10 +731,10 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                                 />
                             </div>
                             </div>
-                            <div className="row-zyx">                                
-                                <div className="row-zyx col-12" >
-                                    <div className="row-zyx col-6">
-                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                            <div className="row-zyx" style={{marginBottom: 0}}>                                
+                                <div className="row-zyx col-12" style={{marginBottom: 0}} >
+                                    <div className="row-zyx col-6" style={{marginBottom: 0}}>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex" }}>
                                             {t(langKeys.dueDate)}
                                         </Box>
                                         <Controller
@@ -748,7 +799,7 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                                         name="cardsecuritycode"
                                         render={({ field, formState: { errors } }) => (
                                             <div className="col-6">
-                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex" }}>
                                                     CCV
                                                 </Box>
                                                 <TextField
@@ -782,28 +833,98 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                                 <div
                                     style={{
                                         textAlign: "center",
-                                        border: "1px solid #7721ad",
+                                        border: "1px solid #50ab54",
                                         borderRadius: "15px",
                                         margin: "10px",
                                         padding: "20px",
                                         paddingTop: "auto",
+                                        color: "#50ab54"
                                     }}
                                 >
-                                    {t(langKeys.finishregwarn)}
-                                </div>
-                                <div
-                                    style={{
-                                        textAlign: "center",
-                                        color: "#7721ad",
-                                        margin: "10px",
-                                        padding: "20px",
-                                        paddingBottom: "auto",
-                                    }}
-                                >
-                                    {t(langKeys.finishregwarn2)}
+                                    <LockIcon style={{height: 60, width: 60}}/>
+                                    <h3>{t(langKeys.safepurchase)}</h3>
+                                    <p>{t(langKeys.finishregwarn2)}</p>                                    
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <p>{t(langKeys.signupcond1)}</p>
+            
+            <div className={classes.containerBorder}>
+                <h3 style={{fontWeight: "bold", marginTop: 0}}>{t(langKeys.signupcond2)}</h3>
+                <p style={{margin:0}}>{t(langKeys.signupcond3)}</p>
+                <div style={{display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between"}}>
+                    <div className={classes.containerBorder} style={{width: 300, cursor: "pointer"}}
+                    onClick={()=>{
+                        let currentval = getValues("recharge.rechargeamount")||0
+                        setValue("recharge.rechargeamount", currentval + 100)
+                    }}>
+                        <h3 style={{fontWeight: "bold", color: "#7721ad", textAlign:"center", margin: 0, fontSize: 25, paddingTop: 10.5}}>$100 USD</h3>
+                    </div>
+                    <div className={classes.containerBorder} style={{width: 300}}>
+                    <Controller
+                        control={control}
+                        name="recharge.rechargeamount"
+                        render={({ field, formState: { errors } }) => (
+                            <div className="col-12">
+                                <TextField
+                                    {...field}
+                                    error={Boolean(errors?.recharge?.rechargeamount)}
+                                    fullWidth
+                                    style={{ marginTop: 0 }}
+                                    helperText={errors?.recharge?.rechargeamount?.message}
+                                    margin="normal"
+                                    size="small"
+                                    variant="outlined"
+                                    type="number"
+                                    inputProps={{ className: classes.centeredPlaceholder }}
+                                    placeholder="$ 20 USD"
+                                    className={`${classes.noBorder} ${classes.customFontSize}`}
+                                />
+                            </div>
+                        )}
+                        rules={{
+                            validate: (value) => {
+                                if (value) {
+                                    if (value < 20) {
+
+                                        return `${t(langKeys.errorvaluebiggerthan, { value: 20})} `;
+                                    }
+                                }else{
+                                    return `${t(langKeys.field_required)}`;
+                                }
+                            },
+                        }}
+                    /></div>
+                </div>
+                <div style={{display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between"}}>
+                    <div style={{width: 300, textAlign: "center", margin:0}}>
+                        <p style={{margin:0}}>{t(langKeys.suggestedamount)}</p>
+                    </div>
+                    <div style={{width: 300, textAlign: "center", margin:0}}>
+                        <p style={{margin:0}}>{t(langKeys.addminimum)} $20</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style={{marginTop: 10,display: "flex", justifyContent: "end"}}>                    
+                    <p style={{fontWeight: "bold", textAlign:"center", margin: 5}}>Sub Total</p>
+                    <div className={classes.containerBorder} style={{width: 150, padding: 5, }}>
+                        <p style={{fontWeight: "bold", textAlign:"center", margin: 0}}>${accounting.subtotal} USD</p>
+                    </div>
+                </div>
+                <div style={{marginTop: 10,display: "flex", justifyContent: "end"}}>                    
+                    <p style={{fontWeight: "bold", textAlign:"center", margin: 5}}>{t(langKeys.sutaxes)}</p>
+                    <div className={classes.containerBorder} style={{width: 150, padding: 5, border: "0px solid"}}>
+                        <p style={{fontWeight: "bold", textAlign:"center", margin: 0}}>${accounting.taxes} USD</p>
+                    </div>
+                </div>
+                <div style={{marginTop: 10,display: "flex", justifyContent: "end"}}>                    
+                    <p style={{fontWeight: "bold", textAlign:"center", margin: 5}}>Total</p>
+                    <div className={classes.containerBorder} style={{width: 150, padding: 5,}}>
+                        <p style={{fontWeight: "bold", textAlign:"center", margin: 0}}>${accounting.total} USD</p>
                     </div>
                 </div>
             </div>
@@ -811,14 +932,14 @@ const SecondStep: FC<{ setOpenWarning: (param: boolean) => void }> = ({ setOpenW
                 className={commonClasses.button}
                 color="primary"
                 disabled={insertResult.loading}
-                style={{ marginTop: "3em" }}
+                style={{ marginTop: "10px" }}
                 variant="contained"
                 onClick={(e) => {
                     e.preventDefault();
                     finishRegister();
                 }}
             >
-                <Trans i18nKey={langKeys.finishreg} />
+                <Trans i18nKey={langKeys.pay} />
             </Button>
         </div>
     );

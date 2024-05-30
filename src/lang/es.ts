@@ -6114,6 +6114,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   sinupfeature2: 'asesores ilimitados',
   sinupfeature3: 'soporte 24/7',
   sinupfeature4: 'API para IA',
+  safepurchase: 'Compra segura',
+  signupcond1: 'La primera facturación corresponderá a los contactos gestiados durante el primer mes*',
+  signupcond2: 'Recarga saldo para envío de conversaciones',
+  signupcond3: 'Seleccionar o escribir el monto de saldo que deseas recargar para ser consumidos en cada canal.',
+  suggestedamount: 'Monto sugerido',
+  addminimum:'Agrega mínimo',
+  sutaxes:'Impuestos',
+  errorvaluebiggerthan: "El valor debe ser mayor a {{value}}",
 };
 
 const esResource: ResourceLanguage = {

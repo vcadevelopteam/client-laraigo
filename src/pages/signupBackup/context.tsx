@@ -319,8 +319,9 @@ export interface Channels {
 }
 
 export interface MainData {
-    activechannels: ListChannels;
+    activechannels: ListChannels|null;
     cardmonth: string;
+    cardname: string;
     cardnumber: string;
     cardsecuritycode: string;
     cardyear: string;
@@ -459,8 +460,9 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
     const form = useForm<MainData>({
         defaultValues: {
-            activechannels: listChannels,
+            activechannels: null,
             cardmonth: "",
+            cardname: "",
             cardnumber: "",
             cardsecuritycode: "",
             cardyear: "",

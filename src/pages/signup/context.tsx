@@ -67,6 +67,9 @@ export interface RouteParams {
     token: string;
 }
 
+export interface RechargeData {
+    rechargeamount: number|null;
+}
 export interface ListChannels {
     android: boolean;
     apple: boolean;
@@ -319,8 +322,9 @@ export interface Channels {
 }
 
 export interface MainData {
-    activechannels: ListChannels;
+    activechannels: ListChannels|null;
     cardmonth: string;
+    cardname: string;
     cardnumber: string;
     cardsecuritycode: string;
     cardyear: string;
@@ -338,9 +342,10 @@ export interface MainData {
     loginpassword: string;
     loginpasswordrepeat: string;
     loginusername: string;
-    clienttype: string;
-    businessname: string;
-    taxidentifier: string;
+    iscompany: boolean;
+    companyname: string;
+    companydocument: string;
+    recharge: RechargeData
 }
 
 const defaultListChannels: ListChannels = {
@@ -462,8 +467,9 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
     const form = useForm<MainData>({
         defaultValues: {
-            activechannels: listChannels,
+            activechannels: null,
             cardmonth: "",
+            cardname: "",
             cardnumber: "",
             cardsecuritycode: "",
             cardyear: "",
@@ -481,9 +487,12 @@ export const SubscriptionProvider: FC = ({ children }) => {
             loginpassword: "",
             loginpasswordrepeat: "",
             loginusername: "",
-            clienttype: "business",
-            businessname: "",
-            taxidentifier: "",
+            iscompany: true,
+            companyname: "",
+            companydocument: "",
+            recharge: {
+                rechargeamount: null
+            },
         },
     });
 
@@ -632,12 +641,16 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 cardnumber: (mainData.cardnumber || "").replace(/\D/g, ""),
                 cardsecuritycode: mainData.cardsecuritycode,
                 cardyear: mainData.cardyear,
+                cardname: mainData.cardname,
             },
             parameters: {
                 ...mainData,
                 contactaddress: mainData.contactaddress,
-                taxidentifier: mainData.taxidentifier,
-                businessname: mainData.businessname,
+                companydocument: mainData.companydocument,
+                companyname: mainData.companyname,
+                recharge: {
+                    rechargeamount: mainData.recharge.rechargeamount
+                },
                 contactcountry: mainData.contactcountry,
                 contactcountryname: mainData.contactcountryname,
                 contactcurrency: mainData.contactcurrency,
@@ -653,7 +666,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 loginusername: mainData.loginusername,
                 paymentplan: planData.data[0].plan,
                 paymentplanid: planData.data[0].paymentplanid,
-                clienttype: planData.data[0].clienttype,
+                iscompany: planData.data[0].iscompany,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
             },

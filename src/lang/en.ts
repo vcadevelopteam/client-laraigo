@@ -6167,6 +6167,14 @@ const translation: LangKeys = {
   sinupfeature2: 'unlimited advisors',
   sinupfeature3: '24/7 support',
   sinupfeature4: 'AI API',
+  safepurchase: 'Safe purchase',
+  signupcond1: 'The first billing will correspond to the contacts managed during the first month*',
+  signupcond2: 'Recharge balance to send conversations',
+  signupcond3: 'Select or write the balance amount you want to recharge to be consumed in each channel.',
+  suggestedamount: 'Suggested amount',
+  addminimum:'Add minimum',
+  sutaxes:'Taxes',
+  errorvaluebiggerthan: "The value must be higher than {{value}}",
 };
 
 const enResource: ResourceLanguage = {

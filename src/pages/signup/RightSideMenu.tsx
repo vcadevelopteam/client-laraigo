@@ -6,17 +6,13 @@ import { FC, useContext } from "react";
 import SecondStep from "./SecondStep";
 import ThirdStep from "./ThirdStep";
 
-interface RightSideMenuProps {
-    setOpenWarning: (param: boolean) => void;
-}
-
-const RightSideMenu: FC<RightSideMenuProps> = ({ setOpenWarning }) => {
+const RightSideMenu = () => {
     const { step } = useContext(SubscriptionContext);
 
     if (step === 1) {
         return <FirstStep />;
     } else if (step === 2) {
-        return <SecondStep setOpenWarning={setOpenWarning} />;
+        return <SecondStep />;
     } else if (step === 3) {
         return <ThirdStep />;
     }
