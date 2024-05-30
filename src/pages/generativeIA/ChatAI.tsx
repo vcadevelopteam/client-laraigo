@@ -312,6 +312,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             }
         }
     }, [llamaResult, waitSaveThreadDeleteLlama]);
+
     useEffect(() => {
         if (waitSaveMessageLlama) {
             if (!llamaResult.loading && !llamaResult.error) {
@@ -462,7 +463,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     threadid: activeThreadId,
                     assistantaidocumentid: 0,
                     id: 0,
-                    messagetext: llamaResult.data.result,
+                    messagetext: executeThreads.data.response,
                     infosource: '',
                     type: 'BOT',
                     status: 'ACTIVO',
@@ -477,23 +478,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 setWaitSaveMessage(false);
             }
         }
-    }, [llamaResult, waitSaveMessageLlama]);
-
-    useEffect(() => {
-        if (waitSaveMessageAux) {
-            if (!executeResult.loading && !executeResult.error) {
-                setWaitSaveMessageLlamaAux(false);
-                setIsLoading(false);
-                fetchThreadMessages(selectedChat?.threadid);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSaveMessageLlamaAux(false);
-            }
-        }
-    }, [executeResult, waitSaveMessageAux]);
+    }, [executeThreads, waitSaveMessage]);
 
     useEffect(() => {
         if (waitSaveMessage3) {
