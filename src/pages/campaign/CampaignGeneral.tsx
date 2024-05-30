@@ -457,6 +457,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     return (
         <React.Fragment>
            <div style={{display:'flex', gap: '1rem', width:'100%'}}>
+            
                 <div className={classes.containerDetail}  style={{width:'50%'}}>
 
                 <div className="row-zyx">

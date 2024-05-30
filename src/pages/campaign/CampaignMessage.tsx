@@ -8,6 +8,10 @@ import { filterPipe } from 'common/helpers';
 import { FrameProps } from './CampaignDetail';
 import { CircularProgress, IconButton, Paper, Box } from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import PhoneIcon from '@material-ui/icons/Phone';
+import ListIcon from '@material-ui/icons/List';
+import ReplyIcon from '@material-ui/icons/Reply';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -44,6 +48,31 @@ const useStyles = makeStyles((theme) => ({
     mb1: {
         marginBottom: '0.25rem',
     },
+    buttonPreview: {
+        color: '#009C8F',    
+        padding: '0.8rem 1rem',
+        display: 'flex',
+        justifyContent: 'center',
+        textAlign: 'center',
+        cursor: 'pointer',
+   
+        textDecoration: 'none',
+        borderTop: '1px solid #D7D7D7',
+        '&:hover': {
+            backgroundColor: '#FBFBFB',
+        },
+    },
+    previewHour: {
+        display:'flex', justifyContent:'right', fontSize:'0.78rem', color:'grey', margin:'10px 0'
+    }, 
+    pdfPreview: {
+        width: '100%',
+        height: '500px', // Puedes ajustar la altura según tus necesidades
+        border: 'none',
+        display: 'block',
+        margin: '0 auto',
+        borderRadius: '0.5rem',
+    }
 }));
 
 class VariableHandler {
@@ -160,145 +189,59 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     return (
         <React.Fragment>
-            <div className={classes.containerDetail}>
-                {detaildata.communicationchanneltype?.startsWith('MAI') ?
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.subject)}
-                            className="col-12"
-                            valueDefault={detaildata.messagetemplateheader?.value}
-                            onChange={(value) => setDetaildata({ ...detaildata, subject: value })}
-                            inputProps={{
-                                readOnly: ['HSM', 'SMS', 'MAIL'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0
-                            }}
-                        />
-                    </div> : null}
-                {(detaildata.messagetemplatetype === 'MULTIMEDIA'
-                    && (detaildata?.messagetemplateheader?.type || '') !== '') ?
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.header)}
-                            className="col-12"
-                            valueDefault={detaildata.messagetemplateheader?.value}
-                            onChange={(value) => setDetaildata({
-                                ...detaildata,
-                                messagetemplateheader: { ...detaildata.messagetemplateheader, value: value }
-                            })}
-                            inputProps={{
-                                readOnly: detaildata.messagetemplateid !== 0
-                            }}
-                        />
-                    </div> : null}
-                {detaildata.communicationchanneltype?.startsWith('MAI')
-                    && ['MAIL', 'HTML'].includes(detaildata.type!!) ?
-                    <div className="row-zyx">
-                        <React.Fragment>
-                            <div style={{ display: 'flex', justifyContent: 'center', flexFlow: 'row wrap', gap: '20px' }}>
-                                <div className="col-8" style={{ overflow: 'auto', borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "20px" }}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
-                                    <div
-                                        onClick={(e) => console.log(e)}
-                                        dangerouslySetInnerHTML={{ __html: detaildata?.message || '' }}
-                                    />
+
+            <div className={classes.containerDetail} style={{display:'flex', width:'100%'}}>
+
+               
+
+                <div style={{width:'50%'}}>
+                    Hola 
+                </div>  
+
+                <div className={classes.containerDetail} style={{width:'50%'}}>             
+                    <h2 style={{margin:'1rem', fontWeight:'normal'}}>{t(langKeys.campaign_templatepreview)}  </h2> 
+                    <div className={classes.containerDetail} style={{height:'60%', display:'block', alignContent:'center'}}>             
+                        <div style={{display:'flex', justifyContent:'center', alignContent:'center', alignItems:'center'}}>
+                            <div style={{ maxWidth:'25rem', borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}> 
+
+                                <div className='templatePreview' style={{}}>
+                                    
+                                    {detaildata.messagetemplatetype === 'MULTIMEDIA'  ? (
+                                        <div>                                          
+                                          
+                                            <p>{detaildata?.message}</p>
+
+                                            <p style={{color:'grey', fontSize:'0.8rem'}}>{detaildata.messagetemplatefooter}</p>
+                                            <span className={classes.previewHour}> 11:12</span>
+
+                                            {Array.isArray(detaildata.messagetemplatebuttons) && detaildata.messagetemplatebuttons.length > 0 && (
+                                                <div>
+                                                    {detaildata.messagetemplatebuttons.map((button: Dictionary, index: number) => (
+                                                        <a className={classes.buttonPreview} key={index}>
+                                                            {button.title}
+                                                            {button.type === 'url' && <OpenInNewIcon style={{height:'18px', marginLeft: '5px'}} />}
+                                                            {button.type === 'quick_reply' && <ReplyIcon style={{height:'18px', marginLeft: '5px'}} />}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}                                         
+                                        </div>             
+
+                                    ) : (
+                                    
+                                        <div>
+                                            <p>No se ha seleccionado una Plantilla</p>             
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="col-4" style={{ width: '400px', borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "20px" }}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.parameters)}</Box>
-                                    {messageVariables.map((item: Dictionary, i) => (
-                                        <React.Fragment key={"param_" + i}>
-                                            <FieldSelect
-                                                key={"var_" + i}
-                                                label={`${i + 1}. ${t(langKeys.variable)} #${item.name}`}
-                                                valueDefault={messageVariables[i].text}
-                                                onChange={(value: { description: any; }) => {
-                                                    const datatemp = [...messageVariables];
-                                                    datatemp[i].text = value?.description;
-                                                    setMessageVariables(datatemp)
-                                                }}
-                                                data={tablevariable}
-                                                optionDesc="label"
-                                                optionValue="description"
-                                            />
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-                            </div>
-                        </React.Fragment>
-                    </div> :
-                    <div className="row-zyx">
-                        <FieldEditWithSelect
-                            label={t(langKeys.body)}
-                            className="col-12"
-                            rows={10}
-                            valueDefault={detaildata.message}
-                            onChange={(value) => setDetaildata({ ...detaildata, message: value })}
-                            inputProps={{
-                                readOnly: ['HSM', 'SMS', 'MAIL'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0,
-                                onClick: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetaildata, detaildata.type === 'TEXTO'),
-                                onInput: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetaildata, detaildata.type === 'TEXTO'),
-                            }}
-                            show={variableHandler.show}
-                            data={tablevariableShow}
-                            datalabel="label"
-                            datakey="description"
-                            top={variableHandler.top}
-                            left={variableHandler.left}
-                            onClickSelection={(e, value) => selectionVariableSelect(e, value)}
-                            onClickAway={(variableHandler) => setVariableHandler({ ...variableHandler, show: false })}
-                        />
-                    </div>}
-                {(detaildata.messagetemplatetype === 'MULTIMEDIA'
-                    && (detaildata?.messagetemplatefooter || '') !== '') ?
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.footer)}
-                            className="col-12"
-                            valueDefault={detaildata.messagetemplatefooter}
-                            onChange={(value) => setDetaildata({
-                                ...detaildata,
-                                messagetemplatefooter: value
-                            })}
-                            inputProps={{
-                                readOnly: detaildata.messagetemplateid !== 0
-                            }}
-                        />
-                    </div> : null}
-                {(detaildata.messagetemplatetype === 'MULTIMEDIA' && (detaildata?.messagetemplatebuttons || detaildata?.messagetemplatebuttons !== null)) && <div className="row-zyx">
-                    <FieldView
-                        label={t(langKeys.buttons)}
-                        className="col-12"
-                        value=''
-                    />
-                    <React.Fragment>
-                        {detaildata?.messagetemplatebuttons?.map((btn: any, i: number) => {
-                            return (<div key={`btn-${i}`} className="col-4">
-                                <FieldView
-                                    label={t(langKeys.title)}
-                                    value={btn?.title || ""}
-                                    className={classes.mb1}
-                                />
-                                <FieldView
-                                    label={t(langKeys.type)}
-                                    value={t(`messagetemplate_${btn?.type || ""}`)}
-                                    className={classes.mb1}
-                                />
-                                <FieldView
-                                    label={t(langKeys.payload)}
-                                    value={btn?.payload || ""}
-                                    className={classes.mb1}
-                                />
-                            </div>)
-                        })}
-                    </React.Fragment>
-                </div>}
-                {(detaildata.communicationchanneltype === 'MAIL' && detaildata?.messagetemplateattachment) && <div className="row-zyx">
-                    <FieldView label={t(langKeys.messagetemplate_attachment)} />
-                    <React.Fragment>
-                        {!!detaildata?.messagetemplateattachment && detaildata?.messagetemplateattachment?.split(',').map((f: string, i: number) => (
-                            <FilePreview key={`attachment-${i}`} src={f} />
-                        ))}
-                    </React.Fragment>
-                </div>}
+                            </div>   
+                        </div>  
+                    </div>
+                </div> 
+
+
             </div>
+
         </React.Fragment>
     )
 }
