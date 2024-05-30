@@ -6,13 +6,15 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { filterPipe } from 'common/helpers';
 import { FrameProps } from './CampaignDetail';
-import { CircularProgress, IconButton, Paper, Box } from '@material-ui/core';
+import { CircularProgress, IconButton, Paper, Box, FormControl } from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ListIcon from '@material-ui/icons/List';
 import ReplyIcon from '@material-ui/icons/Reply';
-
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import AddIcon from '@material-ui/icons/Add';
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
@@ -67,12 +69,22 @@ const useStyles = makeStyles((theme) => ({
     }, 
     pdfPreview: {
         width: '100%',
-        height: '500px', // Puedes ajustar la altura según tus necesidades
+        height: '500px',
         border: 'none',
         display: 'block',
         margin: '0 auto',
         borderRadius: '0.5rem',
-    }
+    },
+    subtitle: {
+        fontSize: '0.9rem',       
+        color: 'grey', 
+        marginBottom:'0.5rem',
+    },
+    iconHelpText: {
+        width: 'auto',
+        height: 23,
+        cursor: 'pointer',
+    },
 }));
 
 class VariableHandler {
@@ -195,11 +207,115 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                
 
                 <div style={{width:'50%'}}>
-                    Hola 
+                    <div className="row-zyx">
+                       
+                        <FormControl className="col-12">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
+                            <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>                        
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <div style={{ flex: 1 }}>
+                                <FieldSelect
+                                        variant="outlined"       
+                                        uset={true}       
+                                        label='Campos archivo'                     
+                                        className="col-12"
+                                        data={[]}
+                                        optionDesc="value"
+                                        optionValue="key"
+                                    />    
+                                </div>                                   
+                                <Tooltip
+                                    title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
+                                    arrow
+                                    placement="top"
+                                >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>        
+                            </div>         
+                        </FormControl>                                          
+                           
+                        <FormControl className="col-12">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
+                            <div className={classes.subtitle}> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>                        
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <div style={{ flex: 1 }}>
+                                    <p>{'Variable {{1}}'}</p>
+                                    <div  style={{ flex: 1 }}>
+                                    <FieldSelect
+                                            variant="outlined"       
+                                            uset={true}       
+                                            label='Variable 1'                     
+                                            className="col-12"
+                                            data={[]}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                        />    
+                                    </div>    
+                                </div>       
+                                <div style={{ flex: 1 }}>
+                                    <p>{'Variable {{2}}'}</p>
+                                    <div  style={{ flex: 1 }}>
+                                    <FieldSelect
+                                            variant="outlined"       
+                                            uset={true}       
+                                            label='Variable 2'                     
+                                            className="col-12"
+                                            data={[]}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                        />    
+                                    </div>    
+                                </div>                            
+                                    
+                            </div>         
+                        </FormControl>     
+
+                        <FormControl className="col-12">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
+                            <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>                        
+                            
+                            <div style={{width:'50%', display:'flex', alignItems:'center', gap:'5px'}}><AddIcon/> Añadir variable adicional</div>
+                           
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <div style={{ flex: 1 }}>
+                                    <p>{'Variable {{1}}'}</p>
+                                    <div  style={{ flex: 1 }}>
+                                    <FieldSelect
+                                            variant="outlined"       
+                                            uset={true}       
+                                            label='Variable 3'                     
+                                            className="col-12"
+                                            data={[]}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                        />    
+                                    </div>    
+                                </div>       
+                                <div style={{ flex: 1 }}>
+                                    <p>{'Variable {{2}}'}</p>
+                                    <div  style={{ flex: 1 }}>
+                                    <FieldSelect
+                                            variant="outlined"       
+                                            uset={true}       
+                                            label='Variable 4'                     
+                                            className="col-12"
+                                            data={[]}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                        />    
+                                    </div>    
+                                </div>                            
+                                    
+                            </div>         
+                        </FormControl>     
+                      
+                      
+                    </div> 
                 </div>  
 
                 <div className={classes.containerDetail} style={{width:'50%'}}>             
-                    <h2 style={{margin:'1rem', fontWeight:'normal'}}>{t(langKeys.campaign_templatepreview)}  </h2> 
+                    <div style={{marginLeft:'1rem', fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}  </div> 
+                    <div style={{marginLeft:'1rem'}}>{'Podrás visualizar como se previsualizará tu plantilla, según los campos que asignes a las variables'} </div>
                     <div className={classes.containerDetail} style={{height:'60%', display:'block', alignContent:'center'}}>             
                         <div style={{display:'flex', justifyContent:'center', alignContent:'center', alignItems:'center'}}>
                             <div style={{ maxWidth:'25rem', borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}> 
@@ -237,8 +353,47 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>   
                         </div>  
                     </div>
+
+                    <FormControl className="col-12">                          
+                    <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
+                    <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>                        
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <div style={{ flex: 1 }}>
+                            <p>{'Variable 1'}</p>
+                            <div  style={{ flex: 1 }}>
+                            <FieldSelect
+                                    variant="outlined"       
+                                    uset={true}       
+                                    label='Variable 3'                    
+                                    className="col-12"                                  
+                                    data={[]}
+                                    optionDesc="value"
+                                    optionValue="key"
+                                    disabled 
+                                />    
+                            </div>    
+                        </div>       
+                        <div style={{ flex: 1 }}>
+                            <p>{'Variable 2'}</p>
+                            <div  style={{ flex: 1 }}>
+                            <FieldSelect
+                                    variant="outlined"       
+                                    uset={true}       
+                                    label='Variable 4'                     
+                                    className="col-12"
+                                    data={[]}
+                                    optionDesc="value"
+                                    optionValue="key"
+                                    disabled 
+                                />    
+                            </div>    
+                        </div>                            
+                            
+                    </div>         
+                </FormControl>       
                 </div> 
 
+                                
 
             </div>
 
