@@ -27,6 +27,11 @@ export default createReducer<IState>(initialState, {
     [actionType.CREATE_COLLECTION_DOCUMENT_FAILURE]: caseFunctions.llamaFailure,
     [actionType.CREATE_COLLECTION_DOCUMENT_RESET]: caseFunctions.llamaReset,
 
+    [actionType.CREATE_COLLECTION_DOCUMENTS]: caseFunctions.llamaLoading,
+    [actionType.CREATE_COLLECTION_DOCUMENTS_SUCCESS]: caseFunctions.llamaSuccess,
+    [actionType.CREATE_COLLECTION_DOCUMENTS_FAILURE]: caseFunctions.llamaFailure,
+    [actionType.CREATE_COLLECTION_DOCUMENTS_RESET]: caseFunctions.llamaReset,
+
     [actionType.DELETE_COLLECTION]: caseFunctions.llamaLoading,
     [actionType.DELETE_COLLECTION_SUCCESS]: caseFunctions.llamaSuccess,
     [actionType.DELETE_COLLECTION_FAILURE]: caseFunctions.llamaFailure,
@@ -46,6 +51,11 @@ export default createReducer<IState>(initialState, {
     [actionType.ADD_FILE_SUCCESS]: caseFunctions.llamaSuccess,
     [actionType.ADD_FILE_FAILURE]: caseFunctions.llamaFailure,
     [actionType.ADD_FILE_RESET]: caseFunctions.llamaReset,
+
+    [actionType.ADD_FILES]: caseFunctions.llamaLoading,
+    [actionType.ADD_FILES_SUCCESS]: caseFunctions.llamaSuccess,
+    [actionType.ADD_FILES_FAILURE]: caseFunctions.llamaFailure,
+    [actionType.ADD_FILES_RESET]: caseFunctions.llamaReset,
 
     [actionType.DELETE_FILE]: caseFunctions.llamaLoading,
     [actionType.DELETE_FILE_SUCCESS]: caseFunctions.llamaSuccess,

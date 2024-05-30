@@ -12,7 +12,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import Avatar from '@material-ui/core/Avatar';
 import { Dictionary } from "@types";
-import { assistantAiDocumentSel, insMessageAi, insThread, messageAiSel, threadSel } from "common/helpers";
+import { insMessageAi, insThread, messageAiSel, threadSel } from "common/helpers";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
@@ -39,15 +39,19 @@ const useStyles = makeStyles((theme) => ({
         height: '100%'
     },
     chatMain: {
-        flex: 1,           
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
         paddingLeft: theme.spacing(2),      
     },     
     chatMessages: {
+        flex: 1,
         height: '81vh', 
         overflowY: 'auto',
     },
     chatInputContainer: {
         bottom: 0,
+        height: 'fit-content',
         padding: theme.spacing(2),
         display: 'flex',
         justifyContent: 'center',
@@ -147,10 +151,9 @@ const useStyles = makeStyles((theme) => ({
 interface ChatAIProps {
     setViewSelected: (view: string) => void;
     row: Dictionary | null;
-    documents: string[];
 }
 
-const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
+const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -179,6 +182,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     const [waitSaveThreadDeleteLlama, setWaitSaveThreadDeleteLlama] = useState(false)
     const [date, setDate] = useState('');
     const endOfMessagesRef = useRef(null);
+    const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
+
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
@@ -307,23 +312,27 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
             }
         }
     }, [llamaResult, waitSaveThreadDeleteLlama]);
-    
     useEffect(() => {
         if (waitSaveMessageLlama) {
             if (!llamaResult.loading && !llamaResult.error) {
                 setWaitSaveMessageLlama(false);
-                dispatch(execute(insMessageAi({
-                    assistantaiid: row?.assistantaiid,
-                    threadid: selectedChat?.threadid,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: llamaResult.data.result,
-                    infosource: '',
-                    type: 'BOT',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                })))
-                setWaitSaveMessageLlamaAux(true)
+                if (llamaResult.data && llamaResult.data.result) {
+                    dispatch(execute(insMessageAi({
+                        assistantaiid: row?.assistantaiid,
+                        threadid: activeThreadId,
+                        assistantaidocumentid: 0,
+                        id: 0,
+                        messagetext: llamaResult.data.result,
+                        infosource: '',
+                        type: 'BOT',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })));
+                    setWaitSaveMessageLlamaAux(true);
+                } else {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
+                    setIsLoading(false);
+                }
             } else if (llamaResult.error) {
                 const errormessage = t(llamaResult.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
@@ -334,6 +343,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
             }
         }
     }, [llamaResult, waitSaveMessageLlama]);
+    
 
     useEffect(() => {
         if (waitSaveMessageAux) {
@@ -381,11 +391,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
 
     const handleSendMessage = async () => {
         setIsLoading(true);
+        const currentThreadId = selectedChat?.threadid;
         dispatch(
             execute(
                 insMessageAi({
                     assistantaiid: row?.assistantaiid,
-                    threadid: selectedChat?.threadid,
+                    threadid: currentThreadId,
                     assistantaidocumentid: 0,
                     id: 0,
                     messagetext: messageText,
@@ -396,10 +407,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 })
             )
         );
-        setMessageAux(messageText)
+        setMessageAux(messageText);
         setMessageText('');
-        setWaitSaveMessage1(true)
+        setWaitSaveMessage1(true);    
+        setActiveThreadId(currentThreadId);
     };
+    
 
     useEffect(() => {
         if (waitSaveMessage1) {
@@ -446,10 +459,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 setWaitSaveMessage(false);
                 dispatch(execute(insMessageAi({
                     assistantaiid: row?.assistantaiid,
-                    threadid: selectedChat?.threadid,
+                    threadid: activeThreadId,
                     assistantaidocumentid: 0,
                     id: 0,
-                    messagetext: executeThreads.data.response,
+                    messagetext: llamaResult.data.result,
                     infosource: '',
                     type: 'BOT',
                     status: 'ACTIVO',
@@ -464,7 +477,23 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                 setWaitSaveMessage(false);
             }
         }
-    }, [executeThreads, waitSaveMessage]);
+    }, [llamaResult, waitSaveMessageLlama]);
+
+    useEffect(() => {
+        if (waitSaveMessageAux) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveMessageLlamaAux(false);
+                setIsLoading(false);
+                fetchThreadMessages(selectedChat?.threadid);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveMessageLlamaAux(false);
+            }
+        }
+    }, [executeResult, waitSaveMessageAux]);
 
     useEffect(() => {
         if (waitSaveMessage3) {
@@ -484,11 +513,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
 
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
+        const currentThreadLlamaId = selectedChat?.threadid;
         dispatch(
             execute(
                 insMessageAi({
                     assistantaiid: row?.assistantaiid,
-                    threadid: selectedChat?.threadid,
+                    threadid: currentThreadLlamaId,
                     assistantaidocumentid: 0,
                     id: 0,
                     messagetext: messageText,
@@ -508,10 +538,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
             system_prompt: row?.generalprompt,
             model: row?.basemodel,
             thread_id: selectedChat?.code,
-            sources: false,
-            apikey: row?.apikey,
+            max_new_tokens: row?.max_tokens,
+            temperature: parseFloat(row?.temperature),
+            top_p: parseFloat(row?.top_p),
         }))
         setWaitSaveMessageLlama(true)
+        setActiveThreadId(currentThreadLlamaId);
     };
 
     useEffect(() => {
@@ -588,7 +620,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
     const handleChatClick = (chat: Dictionary) => {
         setSelectedChat(chat);
         fetchThreadMessages(chat?.threadid)
-        setIsLoading(false);
     };
 
     return (
@@ -702,14 +733,14 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                             )}
                         </>
                     )}
-                    {isLoading && (
+                   {isLoading && activeThreadId === selectedChat?.threadid && (
                         <div className={classes.loadingIndicator}>
                             <CachedIcon color="primary" style={{marginRight: 8}}/>
                             <span>Cargando respuesta...</span>
                         </div>
                     )}
-                </div>
 
+                </div>
                 <div className={classes.chatInputContainer}>
                     <div style={{ width: '700px' }}>
                         <FieldEdit
@@ -720,7 +751,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                             disabled={!selectedChat || isLoading}
                             InputProps={{
                                 multiline: true,
-                                maxRows: 2,
+                                maxRows: 7,
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton                                           
@@ -738,7 +769,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row, documents}) => {
                             }}
                         />
                     </div>
-                </div>
+                    </div>
             </div>
         </div>
     );

@@ -69,12 +69,6 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
             "domainvalue": "gpt-4-1106-preview",
             "domaindesc": "gpt-4-1106-preview",
             "bydefault": null
-        },
-        {
-            "domainid": 438403,
-            "domainvalue": "llama-2-13b-chat.Q4_0",
-            "domaindesc": "llama-2-13b-chat.Q4_0",
-            "bydefault": null
         }
     ];
 

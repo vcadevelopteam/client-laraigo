@@ -81,7 +81,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         edit: false,
     });
     const main = useSelector((state) => state.main.mainData);
-    const dataDocuments = useSelector(state => state.main.mainAux);
     const selectionKey = "assistantaiid";
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
@@ -109,32 +108,10 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         }
     }, [selectedRows]);
 
-    const fetchDocumentsByAssistant = (id: number) => dispatch(getCollectionAux(assistantAiDocumentSel({assistantaiid: id, id: 0, all: true})));
-
     const handleRegister = () => {
         setViewSelectedTraining("createassistant")
         setRowSelected({ row: null, edit: false });
     };
-
-    useEffect(() => {
-        if (waitSaveFiles) {
-            if (!dataDocuments.loading && !dataDocuments.error) {
-                setWaitSaveFiles(false);
-                setFilesIds(dataDocuments.data.map(item => item.fileid));
-                setViewSelectedTraining("chatai")
-                setRowSelected({ row: auxRow, edit: false });
-                setAuxRow(null)
-                dispatch(showBackdrop(false));
-            } else if (dataDocuments.error) {
-                const errormessage = t(dataDocuments.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveFiles(false);
-            }
-        }
-    }, [dataDocuments, waitSaveFiles]);
 
     const handleEdit = (row: Dictionary) => {
         setViewSelectedTraining("createassistant")
@@ -142,10 +119,8 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     };
 
     const handleChat = (row: Dictionary) => {
-        dispatch(showBackdrop(true));
-        fetchDocumentsByAssistant(row.assistantaiid);
-        setAuxRow(row);
-        setWaitSaveFiles(true);
+        setViewSelectedTraining("chatai")
+        setRowSelected({ row, edit: false });
     }
 
     useEffect(() => {
@@ -552,7 +527,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         return <ChatAI
             setViewSelected={setViewSelectedTraining}
             row={rowSelected.row}
-            documents={filesIds}
         />
     } else return null;
 }

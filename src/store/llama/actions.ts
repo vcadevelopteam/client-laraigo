@@ -22,6 +22,16 @@ export const createCollectionDocument = (requestBody: any): IActionCall => ({
     type: null,
 })
 
+export const createCollectionDocuments = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService.createCollectionDocuments(requestBody),
+    types: {
+        loading: actionTypes.CREATE_COLLECTION_DOCUMENTS,
+        success: actionTypes.CREATE_COLLECTION_DOCUMENTS_SUCCESS,
+        failure: actionTypes.CREATE_COLLECTION_DOCUMENTS_FAILURE,
+    },
+    type: null,
+})
+
 export const deleteCollection = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService.deleteCollection(requestBody),
     types: {
@@ -58,6 +68,16 @@ export const addFileLlama = (requestBody: any): IActionCall => ({
         loading: actionTypes.ADD_FILE,
         success: actionTypes.ADD_FILE_SUCCESS,
         failure: actionTypes.ADD_FILE_FAILURE,
+    },
+    type: null,
+})
+
+export const addFilesLlama = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService.addFiles(requestBody),
+    types: {
+        loading: actionTypes.ADD_FILES,
+        success: actionTypes.ADD_FILES_SUCCESS,
+        failure: actionTypes.ADD_FILES_FAILURE,
     },
     type: null,
 })

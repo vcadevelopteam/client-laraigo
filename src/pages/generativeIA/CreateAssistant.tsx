@@ -19,7 +19,7 @@ import { Dictionary } from "@types";
 import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantAiDoc } from "common/helpers";
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
-import { createCollection, createCollectionDocument, editCollection } from "store/llama/actions";
+import { createCollection, createCollectionDocuments, editCollection } from "store/llama/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -80,10 +80,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [tabIndex, setTabIndex] = useState(0);
     const [registerError, setRegisterError] = useState(false);
     const dataDocuments = useSelector(state => state.main.mainAux);
-    const [cosFile, setCosFile] = useState({
-        name: '',
-        url: ''
-    });
+    const [cosFile, setCosFile] = useState<Dictionary[]>([]);
     const [assistantaiid, setAssistantaiid] = useState('');
     const newArrayBread = [
         ...arrayBread,
@@ -111,6 +108,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         intelligentmodelsid: row ? row.intelligentmodelsid : 0
     })
     const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
+    const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
 
     useEffect(() => {
         if (waitSave) {
@@ -124,6 +122,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                 setViewSelected('assistantdetail')
                 dispatch(showBackdrop(false));
                 setRegisterError(false)
+                setCosFile([])
+                setFileIdsAux([])
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
@@ -133,8 +133,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
         }
     }, [executeResult, waitSave])
-    
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({        
+
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({        
         defaultValues: {
             id: row?.assistantaiid || 0,
             code: row?.code || '',
@@ -167,7 +167,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('basemodel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('language')
+        register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
         register('organizationname');
         register('intelligentmodelsid');
         register('querywithoutanswer', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -187,7 +187,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     }, [register, setValue]);
 
     const fetchDocumentsByAssistant = () => dispatch(getCollectionAux(assistantAiDocumentSel({assistantaiid: getValues('id'), id: 0, all: true})));
-    
+
     useEffect(() => {
         fetchDocumentsByAssistant();
     }, [])
@@ -256,31 +256,25 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
             let generalprompt;
 
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                if(data.language.includes(',')){
+                    const formattedLanguages = data.language.split(',').join(', ');
+                    generalprompt += 'Empleas los siguientes idiomas para responder: <<' + formattedLanguages + '>>. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + formattedLanguages + '" no añadas mas texto o información a tu respuesta.';
+                } else {
+                    if(data.language !== 'Todos') {
+                        generalprompt += 'Empleas el <<' + data.language + '>> para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + '" no añadas mas texto o información a tu respuesta.';
+                    }
                 }
             }
 
             if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
             } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
             }
 
             setEncryptedApikey(encryptedApikey)
@@ -327,31 +321,25 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
             let generalprompt;
 
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                if(data.language.includes(',')){
+                    const formattedLanguages = data.language.split(',').join(', ');
+                    generalprompt += 'Empleas los siguientes idiomas para responder: <<' + formattedLanguages + '>>. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + formattedLanguages + '" no añadas mas texto o información a tu respuesta.';
+                } else {
+                    if(data.language !== 'Todos') {
+                        generalprompt += 'Empleas el <<' + data.language + '>> para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + '" no añadas mas texto o información a tu respuesta.';
+                    }
                 }
             }
 
             if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
             } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
             }
 
             setEncryptedApikey(encryptedApikey2)
@@ -376,58 +364,12 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         );
     });
 
-    const onMainSubmitLlama = handleSubmit(async (data) => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));
-
-            let generalprompt;
-
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
-                }
-            }
-
-            if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
-            } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
-            }
-
-            dispatch(execute(insAssistantAi({ ...data, generalprompt: generalprompt, code: 'llamacode' })));
-            setWaitSave(true);
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback,
-            })
-        );
-    });
-
     useEffect(() => {
         if (waitSaveInsFile) {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSaveInsFile(false);
                 dispatch(addFile({
-                    file_url: cosFile.url,
-                    file_name: cosFile.name,
+                    files: cosFile,
                     apikey: encryptedApikey,
                 }))
                 setWaitSaveCreateAssistantFile(true);
@@ -446,10 +388,11 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (waitSaveCreateAssistantFile) {
             if (!executeAssistant.loading && !executeAssistant.error) {
                 setWaitSaveCreateAssistantFile(false);
-                setDocumentId(executeAssistant.data.id)
+                const file_ids = executeAssistant.data.map((item: Dictionary) => item.response.id);
+                setFileIdsAux(file_ids)
                 dispatch(assignFile({
                     assistant_id: assistantaiid,
-                    file_id: executeAssistant.data.id,
+                    file_ids: file_ids,
                     apikey: encryptedApikey,
                 }))
                 setWaitSaveCreateAssistantAssignFile(true)
@@ -468,16 +411,18 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (waitSaveCreateAssistantAssignFile) {
             if (!executeAssistant.loading && !executeAssistant.error) {
                 setWaitSaveCreateAssistantAssignFile(false);
-                dispatch(execute(insAssistantAiDoc({
-                    assistantaiid: executeResult.data[0].p_assistantaiid,
-                    id: 0,
-                    description: cosFile.name,
-                    url: cosFile.url,
-                    fileid: documentId,
-                    type: 'FILE',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                })));
+                cosFile.map(async (file, index) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: executeResult.data[0].p_assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: fileIdsAux[index],
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
                 setWaitSave(true);
             } else if (executeAssistant.error) {
                 const errormessage = t(executeAssistant.code || "error_unexpected_error", {
@@ -499,31 +444,25 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const onMainSubmitMeta = handleSubmit(async (data) => {
         let generalprompt;
 
-        if (data.organizationname !== '') {
-            generalprompt = data.prompt + '\n\n';
-            if (data.negativeprompt !== '') {
-                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-            }
-            if (data.language !== '') {
-                generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-            }
-            generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-        } else {
-            generalprompt = data.prompt + '\n\n';
-            if (data.negativeprompt !== '') {
-                generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-            }
-            if (data.language !== '') {
-                generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                ', infórmales que solamente puedes comunicarte en ' + data.language;
+        generalprompt = data.prompt + '\n\n';
+        if (data.negativeprompt !== '') {
+            generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+        }
+        if (data.language !== '') {
+            if(data.language.includes(',')){
+                const formattedLanguages = data.language.split(',').join(', ');
+                generalprompt += 'Empleas los siguientes idiomas para responder: <<' + formattedLanguages + '>>. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + formattedLanguages + '" no añadas mas texto o información a tu respuesta.';
+            } else {
+                if(data.language !== 'Todos') {
+                    generalprompt += 'Empleas el <<' + data.language + '>> para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + '" no añadas mas texto o información a tu respuesta.';
+                }
             }
         }
 
         if (data.querywithoutanswer === 'Mejor Sugerencia') {
-            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
         } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-            generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+            generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
         }
 
         setGeneralPrompt(generalprompt)
@@ -568,36 +507,30 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             dispatch(showBackdrop(true));
             let generalprompt;
 
-            if (data.organizationname !== '') {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language + '\n\n'
-                }
-                generalprompt += 'Solamente debes contestar o informar temas referidos a: ' + data.organizationname;
-            } else {
-                generalprompt = data.prompt + '\n\n';
-                if (data.negativeprompt !== '') {
-                    generalprompt += 'Tus respuestas no deben de contener o informar lo siguiente:\n' + data.negativeprompt + '\n\n';
-                }
-                if (data.language !== '') {
-                    generalprompt += 'El idioma que empleas para comunicarte es el  ' + data.language + '. Si te piden que hables en otro idioma que no sea ' + data.language +
-                    ', infórmales que solamente puedes comunicarte en ' + data.language;
+            generalprompt = data.prompt + '\n\n';
+            if (data.negativeprompt !== '') {
+                generalprompt += 'Considera inapropiado y evita mencionar los siguientes temas:\n' + data.negativeprompt + '\n\n';
+            }
+            if (data.language !== '') {
+                if(data.language.includes(',')){
+                    const formattedLanguages = data.language.split(',').join(', ');
+                    generalprompt += 'Empleas los siguientes idiomas para responder: <<' + formattedLanguages + '>>. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + formattedLanguages + '" no añadas mas texto o información a tu respuesta.';
+                } else {
+                    if(data.language !== 'Todos') {
+                        generalprompt += 'Empleas el <<' + data.language + '>> para responder. Si te escriben en cualquier otro idioma, responde de la siguiente manera: "Perdón ☹, solamente puedo comunicarme en ' + data.language + '" no añadas mas texto o información a tu respuesta.';
+                    }
                 }
             }
 
             if (data.querywithoutanswer === 'Mejor Sugerencia') {
-                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda la mejor sugerencia que tengas referente a lo consultado.';
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, brinda una sugerencia divertida, alegre o interesante relacionada con tu base de conocimiento actual.';
             } else if (data.querywithoutanswer === 'Respuesta Sugerida') {
-                generalprompt += '\n\nCuando no puedas responder alguna consulta o pregunta, sugiere lo siguiente: ' + data.response;
+                generalprompt += '\n\nPara consultas o preguntas que no puedas responder o no tengas la base de conocimiento necesaria, sugiere al usuario que siga lo siguiente: ' + data.response;
             }
             setGeneralPrompt(generalprompt)
 
-            dispatch(createCollectionDocument({
-                url: cosFile.url,
+            dispatch(createCollectionDocuments({
+                urls: cosFile.map((item: Dictionary) => item.file_url),
                 collection: data.name
             }))
             setWaitSaveCreateCollection(true)
@@ -649,16 +582,18 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         if (waitSaveCreateCollectionDoc) {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSaveCreateCollectionDoc(false);
-                dispatch(execute(insAssistantAiDoc({
-                    assistantaiid: executeResult.data[0].p_assistantaiid,
-                    id: 0,
-                    description: cosFile.name,
-                    url: cosFile.url,
-                    fileid: 'llamatest',
-                    type: 'FILE',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                })));
+                cosFile.map(async (file) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: executeResult.data[0].p_assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: 'llamatest',
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
                 setWaitSave(true);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
@@ -679,13 +614,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             handleChangeTab(e, 2);
         } else {
             if(provider === 'Open AI') {
-                if (cosFile.name === '' && cosFile.url === '') {
+                if (cosFile.length < 1) {
                     onMainSubmit();
                 } else {
                     onMainSubmitWithFiles();
                 }
             } else {
-                if (cosFile.name === '' && cosFile.url === '') {
+                if (cosFile.length < 1) {
                     onMainSubmitMeta();
                 } else {
                     onMainSubmitMetaWithFiles();
@@ -795,10 +730,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} basemodel={selectedBaseModel} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
                 </AntTabPanelAux>
             </form>
         </>

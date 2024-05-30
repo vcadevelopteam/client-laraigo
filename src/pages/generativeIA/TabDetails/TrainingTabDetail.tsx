@@ -23,7 +23,8 @@ import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
 import { addFile, assignFile, verifyFile } from "store/gpt/actions";
-import { addFileLlama, deleteFileLlama } from "store/llama/actions";
+import { addFileLlama, addFilesLlama, deleteFileLlama } from "store/llama/actions";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -32,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: "#fff",
     },
-    containerHeader: {      
-        marginTop: '1rem',      
+    containerHeader: {
+        marginTop: '1rem',
     },
     title: {
         fontSize: '22px',
@@ -46,17 +47,17 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center'
     },
     cardsContainer: {
-        marginTop:"1.5rem",
+        marginTop: "1.5rem",
         justifyContent: 'center',
         alignItems: 'center',
-        gap:"1.5rem",
+        gap: "1.5rem",
         display: 'flex'
     },
     card: {
         position: 'relative',
         width: '100%',
-        padding:"1rem",
-        backgroundColor: '#F5F5F5', 
+        padding: "1rem",
+        backgroundColor: '#F5F5F5',
         cursor: 'pointer'
     },
     cardContent: {
@@ -65,18 +66,12 @@ const useStyles = makeStyles((theme) => ({
     },
     cardTitle: {
         fontWeight: 'bold',
-        paddingBottom:'1rem',
+        paddingBottom: '1rem',
         fontSize: '20px'
     },
     header: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    headerLeft: {
-        display: 'flex',
-        justifyContent: 'flex-start',
-        gap: '1rem',
         alignItems: 'center'
     },
     button: {
@@ -89,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     },
     logo: {
         height: 80,
-        width:"100%",
+        width: "100%",
         justifyContent: 'center',
         marginBottom: 5,
     },
@@ -114,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
     clipButton: {
         backgroundColor: '#ffff',
         color: 'blue',
-        border: '1px solid blue',      
+        border: '1px solid blue',
     },
     clipButton2: {
         backgroundColor: '#ffff',
@@ -163,7 +158,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center'
     },
     fileCardName: {
-        fontWeight:'bold',
+        fontWeight: 'bold',
         fontSize: 20
     },
     block20: {
@@ -193,8 +188,7 @@ interface TrainingTabDetailProps {
     fetchData: () => void;
     fetchAssistants: () => void;
     edit: boolean;
-    setFile: (data: {name: string, url: string}) => void;
-    basemodel: string | null;
+    setFile: (data: Dictionary[]) => void;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -202,8 +196,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     fetchData,
     fetchAssistants,
     edit,
-    setFile,
-    basemodel
+    setFile
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -215,7 +208,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [viewSelected, setViewSelected] = useState('main');
     const dataDocuments = useSelector(state => state.main.mainAux);
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitUploadFile2, setWaitUploadFile2] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [isModalOpen, setModalOpen] = useState(false);
     const [documentUrl, setDocumentUrl] = useState("");
@@ -230,10 +223,29 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
     const [waitSaveAddFileLlama, setWaitSaveAddFileLlama] = useState(false)
     const [waitSaveFileDeleteLlama, setWaitSaveFileDeleteLlama] = useState(false)
-  
+    const selectionKey = "assistantaidocumentid";
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const [fileAttachments, setFileAttachments] = useState<any[]>([]);
+    const [filesAux, setFilesAux] = useState<any[]>([]);
+    const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
+
     useEffect(() => {
         fetchData();
     }, [])
+
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected((p) =>
+                Object.keys(selectedRows).map(
+                    (x) =>
+                        dataDocuments?.data.find((y) => y.assistantaidocumentid === parseInt(x)) ??
+                        p.find((y) => y.assistantaidocumentid === parseInt(x)) ??
+                        {}
+                )
+            );
+        }
+    }, [selectedRows]);
 
     const { register, handleSubmit, setValue, getValues } = useForm({
         defaultValues: {
@@ -265,21 +277,52 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     }, []);
 
     const onChangeAttachment = useCallback((files: any) => {
+        setFilesAux(files);
         const file = files?.item(0);
-        if (file) {
-            setFileAttachment(file);
-            const fd = new FormData();
-            fd.append('file', file, file.name);
-            dispatch(uploadFile(fd));
-            setWaitUploadFile(true);
-        }
+        setFileAttachment(file);
+        const fd = new FormData();
+        fd.append('file', file, file.name);
+        dispatch(uploadFile(fd));
+        setWaitUploadFile2(true);
     }, [])
+
+    useEffect(() => {
+        if (waitUploadFile2) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                const files2 = fileAttachments
+                files2.push({ file_url: uploadResult?.url || '', file_name: fileAttachment?.name || '' })
+                setFileAttachments(files2)
+
+                const filesArray = Array.from(filesAux);
+                filesArray.shift();
+                const dataTransfer = new DataTransfer();
+                filesArray.forEach(file => dataTransfer.items.add(file));
+                const newFilesAux = dataTransfer.files;
+                setWaitUploadFile2(false);
+                if (newFilesAux.length > 0) onChangeAttachment(newFilesAux);
+            } else if (uploadResult.error) {
+                setWaitUploadFile2(false);
+            }
+        }
+    }, [waitUploadFile2, uploadResult])
 
     useEffect(() => {
         if (waitSaveAssignFile) {
             if (!executeFiles.loading && !executeFiles.error) {
                 setWaitSaveAssignFile(false);
-                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
+                fileAttachments.map(async (file, index) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: row?.assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: fileIdsAux[index],
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
+                //dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: executeFiles.data.id })));
                 setWaitSave(true);
             } else if (executeFiles.error) {
                 const errormessage = t(executeFiles.code || "error_unexpected_error", {
@@ -295,11 +338,12 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     useEffect(() => {
         if (waitSaveAddFile) {
             if (!executeFiles.loading && !executeFiles.error) {
-                setWaitSaveAddFile(false);                 
-                const documentid = executeFiles.data.id;
+                setWaitSaveAddFile(false);
+                const file_ids = executeFiles.data.map((item: Dictionary) => item.response.id);
+                setFileIdsAux(file_ids);
                 dispatch(assignFile({
                     assistant_id: row?.code,
-                    file_id: documentid,
+                    file_ids: file_ids,
                     apikey: row?.apikey,
                 }))
                 setWaitSaveAssignFile(true);
@@ -318,7 +362,18 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         if (waitSaveAddFileLlama) {
             if (!llamaResult.loading && !llamaResult.error) {
                 setWaitSaveAddFileLlama(false);
-                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: 'llamatest' })));
+                fileAttachments.map(async (file) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        assistantaiid: row?.assistantaiid,
+                        id: 0,
+                        description: file.file_name,
+                        url: file.file_url,
+                        fileid: 'llamatest',
+                        type: 'FILE',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                    })))
+                })
                 setWaitSave(true);
             } else if (llamaResult.error) {
                 const errormessage = t(llamaResult.code || "error_unexpected_error", {
@@ -333,15 +388,14 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     const handleUploadInNewAssistant = () => {
         setViewSelected('main')
-        setFile({name: getValues('description'), url: getValues('url')})
+        setFile(fileAttachments)
     }
 
     const handleUpload = handleSubmit(async (data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
             dispatch(addFile({
-                file_url: data.url,
-                file_name: data.description,
+                files: fileAttachments,
                 apikey: row?.apikey,
             }))
             setWaitSaveAddFile(true);
@@ -349,61 +403,26 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
         const callbackMeta = async () => {
             dispatch(showBackdrop(true));
-            dispatch(addFileLlama({
-                url: data.url,
+            dispatch(addFilesLlama({
+                urls: fileAttachments.map((item: Dictionary) => item.file_url),
                 collection: row?.name
             }))
             setWaitSaveAddFileLlama(true);
         }
-      
+
         dispatch(
-          manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
-          })
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
+            })
         );
     });
 
-    useEffect(() => {
-        if (waitSaveLlamaUploadFile) {
-            if (!llamaFiles.loading && !llamaFiles.error) {
-                setWaitSaveLlamaUploadFile(false);
-                dispatch(execute(insAssistantAiDoc({ ...getValues(), fileid: llamaFiles.node_id })));
-                setWaitSave(true);
-            } else if (llamaFiles.error) {
-                const errormessage = t(llamaFiles.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveLlamaUploadFile(false);
-            }
-        }
-    }, [llamaFiles, waitSaveLlamaUploadFile]);
-
-    const handleUploadLlama = handleSubmit(async (data) => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));
-            dispatch(uploadFileLlama({
-                file_url: data.url
-            }))
-            setWaitSaveLlamaUploadFile(true);
-        };
-      
-        dispatch(
-          manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback,
-          })
-        );
-    });
-      
     const handleUploadURL = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute(insAssistantAiDoc({...data, type:"WEB"})));
+            dispatch(execute(insAssistantAiDoc({ ...data, type: "WEB" })));
             setWaitSave(true);
         };
         dispatch(
@@ -415,25 +434,77 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         )
     });
 
+    const handleMassiveDelete = () => {
+        if (rowWithDataSelected.every(obj => obj.fileid === 'llamatest')) {
+            const callback = async () => {
+                dispatch(showBackdrop(true));
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(deleteFileLlama({
+                        collection: row?.name,
+                        filename: row2?.description,
+                    }))
+                })
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        ...row2,
+                        id: row2?.assistantaidocumentid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO"
+                    })));
+                })
+                setWaitSave(true);
+            }
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_delete_all),
+                    callback,
+                })
+            );
+        } else {
+            const callback = async () => {
+                dispatch(showBackdrop(true));
+                dispatch(deleteFile({
+                    file_ids: rowWithDataSelected.map((item) => item.fileid),
+                    apikey: row?.apikey,
+                }))
+                setWaitSaveFileDelete(true)
+            }
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_delete_all),
+                    callback,
+                })
+            );
+        }
+    }
+
     useEffect(() => {
-        if (waitUploadFile) {
-            if (!uploadResult.loading && !uploadResult.error) {
-                setValue('url', uploadResult?.url || '')
-                setValue('description', fileAttachment?.name || '')
-                setWaitUploadFile(false);
-            } else if (uploadResult.error) {
-                setWaitUploadFile(false);
+        if (waitSaveFileDelete) {
+            if (!executeFiles.loading && !executeFiles.error) {
+                setWaitSaveFileDelete(false);
+                rowWithDataSelected.map(async (row2) => {
+                    dispatch(execute(insAssistantAiDoc({
+                        ...row2,
+                        id: row2?.assistantaidocumentid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO"
+                    })));
+                })
+                setWaitSave(true);
+            } else if (executeFiles.error) {
+                const errormessage = t(executeFiles.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSaveFileDelete(false);
             }
         }
-    }, [waitUploadFile, uploadResult])
-
-    const handleClearFile = () => {
-        setFileAttachment(null);
-        setWaitUploadFile(false);
-        setValue('url', '')
-        setFile({name: '', url: ''})
-        setValue('description', '')
-    };
+    }, [executeFiles, waitSaveFileDelete]);
 
     const handleDelete = (row2: Dictionary) => {
         const callback = async () => {
@@ -455,11 +526,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             setWaitSaveFileDeleteLlama(true)
         };
         dispatch(
-          manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
-          })
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_delete),
+                callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
+            })
         );
     };
 
@@ -472,7 +543,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     id: rowAux?.assistantaidocumentid,
                     operation: "DELETE",
                     status: "ELIMINADO",
-                    type: "NINGUNO" 
+                    type: "NINGUNO"
                 })));
                 setWaitSave(true);
                 setRowAux(null)
@@ -491,26 +562,26 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         if (selectedDocumentUrl) {
             const downloadLink = document.createElement('a');
             const fileNameMatch = selectedDocumentUrl.match(/\/([^/]+)$/);
-            const fileName = fileNameMatch ? fileNameMatch[1] : 'downloaded_file';      
-            
-            downloadLink.download = fileName;      
+            const fileName = fileNameMatch ? fileNameMatch[1] : 'downloaded_file';
 
-            document.body.appendChild(downloadLink);      
-            downloadLink.href = selectedDocumentUrl;    
-            downloadLink.click();      
+            downloadLink.download = fileName;
+
+            document.body.appendChild(downloadLink);
+            downloadLink.href = selectedDocumentUrl;
+            downloadLink.click();
             document.body.removeChild(downloadLink);
 
         } else {
             console.error('Intento de descarga fallido. URL del documento no disponible.');
         }
     };
-      
+
     const handleViewDocument = (url: string, type: string) => {
         if (type === "WEB") {
             window.open(url, "_blank");
         } else {
             const isPreviewableType = url.endsWith('.pdf') || url.endsWith('.txt');
-            
+
             if (isPreviewableType) {
                 setDocumentUrl(url);
                 setModalOpen(true);
@@ -524,7 +595,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     const columns = React.useMemo(
         () => [
-            {
+            /*{
                 accessor: "assistantaidocumentid",
                 NoFilter: true,
                 disableGlobalFilter: true,
@@ -539,6 +610,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                     />
                   );
                 },
+            },*/
+            {
+                Header: t(langKeys.name),
+                accessor: 'description',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.uploaddate),
+                accessor: 'createdate',
+                width: "auto",
             },
             {
                 accessor: "viewDocument",
@@ -550,21 +631,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <IconButton onClick={() => handleViewDocument(row.url, row.type)}>
+                        <IconButton onClick={() => handleViewDocument(row.url, row.type)} style={{ padding: 0 }}>
                             <VisibilityIcon />
                         </IconButton>
                     );
                 },
-            },
-            {
-                Header: t(langKeys.name),
-                accessor: 'description',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.upload),
-                accessor: 'createdate',
-                width: "auto",
             },
         ],
         []
@@ -574,13 +645,16 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         () => [
             {
                 Header: t(langKeys.name),
-                accessor: 'description',
+                accessor: 'file_name',
                 width: "auto",
             },
             {
-                Header: t(langKeys.upload),
+                Header: t(langKeys.uploaddate),
                 accessor: 'createdate',
                 width: "auto",
+                Cell: () => {
+                    return <div>Por subir</div>
+                }
             },
         ],
         []
@@ -599,7 +673,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 fetchData()
                 fetchAssistants()
                 setViewSelected('main')
-                handleClearFile()
+                setFileAttachments([])
+                setFileIdsAux([])
                 dispatch(showBackdrop(false));
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
@@ -612,46 +687,41 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
-    useEffect(() => {
-        if (waitSaveFileDelete) {
-            if (!executeFiles.loading && !executeFiles.error) {
-                setWaitSaveFileDelete(false);
-                dispatch(execute(insAssistantAiDoc({
-                    ...rowAux,
-                    id: rowAux?.assistantaidocumentid,
-                    operation: "DELETE",
-                    status: "ELIMINADO",
-                    type: "NINGUNO" 
-                })));
-                setWaitSave(true);
-                setRowAux(null)
-            } else if (executeFiles.error) {
-                const errormessage = t(executeFiles.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveFileDelete(false);
-            }
-        }
-    }, [executeFiles, waitSaveFileDelete]);
-
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDrop = (event) => {
         event.preventDefault();
         const files = event.dataTransfer.files;
         onChangeAttachment(files);
     };
-    
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+
+    const handleDragOver = (event) => {
         event.preventDefault();
     };
 
-    const handleUploadCreatingAssistant = () => {
-        setViewSelected('main')
-        setFile({name: getValues('description'), url: getValues('url')})
+    const handleRemoveAttachment = (index) => {
+        setFileAttachments(prev => prev.filter((_, i) => i !== index));
+    };
+//get values code inter true
+    const handleUploadGeneral = () => {        
+        if(edit) {
+            if(conector?.provider === 'Open AI') {
+                if(fileAttachments.some((attachment) => attachment.file_name.endsWith('.xlsx'))) {
+                    if(row?.codeinterpreter) {
+                        handleUpload()
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir excel a un asistente Open AI se necesita activar code interpreter. Si desea lograrlo, active code interpreter y guarde el asistente antes de subir este tipo de archivo." }));
+                    }
+                } else {
+                    handleUpload()
+                }
+            } else {
+                handleUpload()
+            }
+        } else {
+            handleUploadInNewAssistant()
+        }
     }
 
-    if(viewSelected === 'main') {
+    if (viewSelected === 'main') {
         return (
             <>
                 <div className={classes.containerDetail}>
@@ -664,7 +734,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 <div className={classes.titleMargin}>
                                     <span>{t(langKeys.knowledge_based_description)}</span>
                                 </div>
-                            </div>                    
+                            </div>
                         </div>
                         <div className={classes.cardsContainer}>
                             <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
@@ -672,7 +742,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     <div className={classes.cardContent}>
                                         <UploadFileIcon className={classes.logo} />
                                         <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                        <div className={classes.cardText}>{t(langKeys.upload_document_description)}</div>
+                                        <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
                                     </div>
                                 </Card>
                             </Grid>
@@ -681,53 +751,64 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 </div>
                 <div className={classes.containerDetail}>
                     <div className={classes.header}>
-                        <div className={classes.headerLeft}>
-                            <div>
-                                <span className={classes.title}>
-                                    {t(langKeys.saved_documents)}
-                                </span>
-                                <div className={classes.titleMargin}>
-                                    <span>{t(langKeys.saved_documents_description)}</span>
-                                </div>
+                        <div>
+                            <span className={classes.title}>
+                                {t(langKeys.saved_documents)}
+                            </span>
+                            <div className={classes.titleMargin}>
+                                <span>{t(langKeys.saved_documents_description)}</span>
                             </div>
+                        </div>
+                        <div>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                startIcon={<DeleteIcon color={rowWithDataSelected.length === 0 ? "#A7A5A5" : "primary"} />}
+                                className={classes.purpleButton}
+                                disabled={rowWithDataSelected.length === 0}
+                                onClick={handleMassiveDelete}
+                            >
+                                {t(langKeys.delete)}
+                            </Button>
                         </div>
                     </div>
                     <div className={classes.titleMargin}>
                         <TableZyx
                             columns={edit ? columns : columns2}
-                            data={edit ? dataDocuments.data : [{description: getValues('description'), createdate: getValues('url') === '' ? '' : 'Por subir'}]}
+                            data={edit ? dataDocuments.data : fileAttachments}
                             filterGeneral={false}
+                            selectionKey={edit ? selectionKey : ''}
+                            setSelectedRows={edit ? setSelectedRows : () => { return }}
+                            useSelection={edit ? true : false}
                         />
                     </div>
                 </div>
                 <Modal open={isModalOpen}>
-                    <div style={{ padding: '15vh 4%', alignItems: 'center', justifyContent: 'center'}}>
+                    <div style={{ padding: '15vh 4%', alignItems: 'center', justifyContent: 'center' }}>
                         <div className={!documentUrl ? classes.errorModalContent : ''}>
                             {documentUrl && (
                                 <iframe title="Document Viewer" src={documentUrl} width="100%" height="700" />
                             )}
-
                             {!documentUrl && (
                                 <>
                                     <p>{t(langKeys.error_previewing_file)}</p>
-                                    <p>{t(langKeys.download_file_instead)}</p>   
-                                                        
+                                    <p>{t(langKeys.download_file_instead)}</p>
+
                                     <Button
                                         className={classes.button}
                                         style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
                                         variant="contained"
                                         onClick={() => handleDownloadDocument()}
                                         startIcon={<CloudDownloadIcon />}
-                                        >
+                                    >
                                         {t(langKeys.download)}
-                                    </Button>                            
+                                    </Button>
                                 </>
                             )}
-
                             <Button
                                 style={{ border: '1px solid #7721AD' }}
                                 className={classes.button}
-                                variant="contained"                                
+                                variant="contained"
                                 startIcon={<ArrowBackIcon />}
                                 onClick={() => setModalOpen(false)}
                             >
@@ -738,181 +819,192 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 </Modal>
             </>
         );
-    } else if(viewSelected === 'uploadFile') {
+    } else if (viewSelected === 'uploadFile') {
         return (
             <>
                 <div className={classes.containerDetail}>
-                    <div className={classes.container2}>
-                        <div>
-                            <Button
-                                type="button"
-                                style={{color: '#7721AD'}}
-                                startIcon={<ArrowBackIcon />}
-                                onClick={() => setViewSelected('main')}
-                            >
-                                {t(langKeys.knowledge_base)}
-                            </Button>
-                        </div>
-                        <div className={classes.block10}/>
-                        <div>
-                            <span className={classes.title}>
-                                {t(langKeys.upload)}
-                            </span>
-                            <div className={classes.titleMargin}>
-                                <span>{t(langKeys.uploadFileText)}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
+                        <div className={classes.container2}>
+                            <div>
+                                <Button
+                                    type="button"
+                                    style={{ color: '#7721AD' }}
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={() => {
+                                        setViewSelected('main')
+                                        setFileAttachments([])
+                                    }}
+                                >
+                                    {t(langKeys.knowledge_base)}
+                                </Button>
                             </div>
-                        </div>                    
-                    </div>
-                    <div>
-                        <input
-                            accept="text/doc"
-                            style={{ display: 'none'}}
-                            id="attachmentInput"
-                            type="file"
-                            onChange={(e) => onChangeAttachment(e.target.files)}
-                        />
-                        { waitUploadFile || fileAttachment === null && (
-                            <Card
-                                className={classes.uploadCard}
-                                onClick={onClickAttachment}
-                                onDrop={(e) => handleDrop(e)}
-                                onDragOver={(e) => handleDragOver(e)}
-                                draggable
-                            >
-                                <div className={classes.uploadCardContent}>
-                                    <UploadFileIcon className={classes.uploadIcon}/>
-                                    <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
-                                    <div>{t(langKeys.maximun10files)}</div>
+                            <div className={classes.block10} />
+                            <div>
+                                <span className={classes.title}>
+                                    {t(langKeys.upload)}
+                                </span>
+                                <div className={classes.titleMargin}>
+                                    <span>{t(langKeys.uploadFileText)}</span>
                                 </div>
-                            </Card>
-                        )}
-                        {fileAttachment && (
-                            <>
-                                <Card className={classes.fileInfoCard}>
-                                    <div className={classes.fileInfoCardContent}>
-                                        <div className={classes.fileCardText}>
-                                            <InsertDriveFileIcon style={{marginRight: 10}}/>
-                                            <Typography className={classes.fileCardName}>
-                                                {fileAttachment.name}
-                                            </Typography>
-                                        </div>
-                                        <IconButton
-                                            onClick={handleClearFile}
-                                        >
-                                            <ClearIcon style={{color: "#008439"}}/>
-                                        </IconButton>
-                                    </div>
-                                </Card>
-                                {getValues('url') === '' && (
-                                    <div className={classes.loadingIndicator}>
-                                        <CachedIcon color="primary" style={{marginRight: 8}}/>
-                                        <span>Cargando el documento...</span>
-                                    </div>
-                                )}
-                            </>
-                        )}
+                            </div>
+                        </div>
                         <Button
                             variant="contained"
                             type="button"
                             startIcon={<AttachFileIcon />}
-                            onClick={edit ? handleUpload : handleUploadInNewAssistant}
+                            onClick={handleUploadGeneral}
                             className={classes.clipButton2}
-                            disabled={fileAttachment === null || getValues('url') === ''}
+                            disabled={fileAttachments.length < 1 || waitUploadFile2}
                         >
                             {t(langKeys.import)}
                         </Button>
                     </div>
+                    <div>
+                        <input
+                            accept="text/doc"
+                            style={{ display: 'none' }}
+                            id="attachmentInput"
+                            type="file"
+                            multiple
+                            onChange={(e) => onChangeAttachment(e.target.files)}
+                            disabled={waitUploadFile2}
+                        />
+                        <Card
+                            className={classes.uploadCard}
+                            onClick={onClickAttachment}
+                            onDrop={(e) => handleDrop(e)}
+                            onDragOver={(e) => handleDragOver(e)}
+                            draggable
+                        >
+                            <div className={classes.uploadCardContent}>
+                                <UploadFileIcon className={classes.uploadIcon} />
+                                <div className={classes.uploadTitle}>{t(langKeys.clicktouploadfiles)}</div>
+                                <div>{t(langKeys.maximun10files)}</div>
+                            </div>
+                        </Card>
+                        {fileAttachments.length > 0 && (
+                            <>
+                                {fileAttachments.map((file, index) => {
+                                    return (
+                                        <>
+                                            <Card className={classes.fileInfoCard}>
+                                                <div className={classes.fileInfoCardContent}>
+                                                    <div className={classes.fileCardText}>
+                                                        <InsertDriveFileIcon style={{ marginRight: 10 }} />
+                                                        <Typography className={classes.fileCardName}>
+                                                            {file.file_name}
+                                                        </Typography>
+                                                    </div>
+                                                    <IconButton
+                                                        onClick={() => handleRemoveAttachment(index)}
+                                                    >
+                                                        <ClearIcon style={{ color: "#008439" }} />
+                                                    </IconButton>
+                                                </div>
+                                            </Card>
+                                        </>
+                                    )
+                                })}
+                            </>
+                        )}
+                        {waitUploadFile2 && (
+                            <div className={classes.loadingIndicator}>
+                                <CachedIcon color="primary" style={{ marginRight: 8 }} />
+                                <span>Cargando documentos...</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </>
         );
-    } else if(viewSelected === 'uploadURL') {
+    } else if (viewSelected === 'uploadURL') {
         return (
             <div className={classes.containerDetail}>
-              <div className={classes.container2}>
-                <div>
-                  <Button
-                    type="button"
-                    style={{ color: '#7721AD' }}
-                    startIcon={<ArrowBackIcon />}
-                    onClick={() => setViewSelected('main')}
-                  >
-                    {t(langKeys.knowledge_base)}
-                  </Button>
-                </div>
-                <div className={classes.block10} />
-                <div>
-                  <span className={classes.title}>
-                    {t(langKeys.importWebsite)}
-                  </span>
-                  <div className={classes.titleMargin}>
-                    <span>{t(langKeys.uploadURLText)}</span>
-                  </div>
-                </div>
-              </div>
-              <div className={classes.block20} />
-              <div className="row-zyx">
-                <FieldEdit
-                  className="col-12"
-                  variant="outlined"
-                  onChange={(value) => setValue("description", value)}
-                  label={t(langKeys.name)}
-                />
-                <FieldEdit
-                  className="col-12"
-                  variant="outlined"
-                  onChange={(value) => setValue("url", value)}
-                  label={t(langKeys.website)}
-                />
-              </div>
-              {fileAttachment && (
-                <>
-                  <Card className={classes.fileInfoCard}>
-                    <div className={classes.fileInfoCardContent}>
-                      <div className={classes.fileCardText}>
-                        <InsertDriveFileIcon style={{ marginRight: 10 }} />
-                        <Typography className={classes.fileCardName}>
-                          {fileAttachment.name}
-                        </Typography>
-                      </div>
-                      <IconButton onClick={handleClearFile}>
-                        <ClearIcon style={{ color: "#008439" }} />
-                      </IconButton>
+                <div className={classes.container2}>
+                    <div>
+                        <Button
+                            type="button"
+                            style={{ color: '#7721AD' }}
+                            startIcon={<ArrowBackIcon />}
+                            onClick={() => setViewSelected('main')}
+                        >
+                            {t(langKeys.knowledge_base)}
+                        </Button>
                     </div>
-                  </Card>
-                  <div className={classes.block20} />
-                  {loading ? (
-                    <div className={classes.loadingIndicator}>
-                      <CachedIcon color="primary" style={{ marginRight: 8 }} />
-                      <span>Cargando respuesta...</span>
+                    <div className={classes.block10} />
+                    <div>
+                        <span className={classes.title}>
+                            {t(langKeys.importWebsite)}
+                        </span>
+                        <div className={classes.titleMargin}>
+                            <span>{t(langKeys.uploadURLText)}</span>
+                        </div>
                     </div>
-                  ) : (
-                    <>
-                      <div className={classes.loadingIndicator}>
-                        <CachedIcon color="primary" style={{ marginRight: 8 }} />
-                        <span>Cargado con éxito!</span>
-                      </div>
-                      <FieldEdit
+                </div>
+                <div className={classes.block20} />
+                <div className="row-zyx">
+                    <FieldEdit
+                        className="col-12"
                         variant="outlined"
-                        label="URL"
-                        valueDefault={getValues('url')}
-                        style={{ flexGrow: 1 }}
-                        disabled={true}
-                      />
+                        onChange={(value) => setValue("description", value)}
+                        label={t(langKeys.name)}
+                    />
+                    <FieldEdit
+                        className="col-12"
+                        variant="outlined"
+                        onChange={(value) => setValue("url", value)}
+                        label={t(langKeys.website)}
+                    />
+                </div>
+                {fileAttachment && (
+                    <>
+                        <Card className={classes.fileInfoCard}>
+                            <div className={classes.fileInfoCardContent}>
+                                <div className={classes.fileCardText}>
+                                    <InsertDriveFileIcon style={{ marginRight: 10 }} />
+                                    <Typography className={classes.fileCardName}>
+                                        {fileAttachment.name}
+                                    </Typography>
+                                </div>
+                                <IconButton>
+                                    <ClearIcon style={{ color: "#008439" }} />
+                                </IconButton>
+                            </div>
+                        </Card>
+                        <div className={classes.block20} />
+                        {loading ? (
+                            <div className={classes.loadingIndicator}>
+                                <CachedIcon color="primary" style={{ marginRight: 8 }} />
+                                <span>Cargando respuesta...</span>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={classes.loadingIndicator}>
+                                    <CachedIcon color="primary" style={{ marginRight: 8 }} />
+                                    <span>Cargado con éxito!</span>
+                                </div>
+                                <FieldEdit
+                                    variant="outlined"
+                                    label="URL"
+                                    valueDefault={getValues('url')}
+                                    style={{ flexGrow: 1 }}
+                                    disabled={true}
+                                />
+                            </>
+                        )}
                     </>
-                  )}
-                </>
-              )}
-              <Button
-                variant="contained"
-                type="button"
-                startIcon={<AttachFileIcon />}
-                className={classes.clipButton}
-                onClick={handleUploadURL}
-              >
-                {t(langKeys.import)}
-              </Button>
+                )}
+                <Button
+                    variant="contained"
+                    type="button"
+                    startIcon={<AttachFileIcon />}
+                    className={classes.clipButton}
+                    onClick={handleUploadURL}
+                >
+                    {t(langKeys.import)}
+                </Button>
             </div>
-          );
+        );
     } else return null;
 };
 

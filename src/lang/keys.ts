@@ -6099,6 +6099,13 @@ export const langKeys = {
   errorIntegrationTrackinguplicates: 'errorIntegrationTrackinguplicates',
   repeated_code: 'repeated_code',
   repeated_person: 'repeated_person',
+  recommendedresponse: 'recommendedresponse',
+  recommendedresponse_tooltip: 'recommendedresponse_tooltip', 
+  instructions: 'instructions',
+  exclusions:'exclusions',
+  filename: 'filename',
+  datetimeupload: 'datetimeupload',
+
   corporate: 'corporate',
   cancelassistantcreation: 'cancelassistantcreation',
   cancelassistantedit: 'cancelassistantedit',
@@ -6111,6 +6118,12 @@ export const langKeys = {
   contextperconversation: 'contextperconversation',
   firstinteraction: 'firstinteraction',
   conector: 'conector',
+  uploaddate: 'uploaddate',
+
+  noreaction_help: 'noreaction_help',
+  suggestedanswer_help: 'suggestedanswer_help',
+  bestsuggestion_help: 'bestsuggestion_help',
+  nooptionselected: 'nooptionselected',
 };
 
 export type LangKeys = typeof langKeys;

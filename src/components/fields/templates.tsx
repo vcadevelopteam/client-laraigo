@@ -38,12 +38,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import QuickReactions from "react-quick-reactions";
-import React, { CSSProperties, FC, ReactNode, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useEffect, useState, useRef } from 'react';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -345,6 +346,7 @@ interface InputProps {
     width?: number | "string";
     helperText?: "string";
     placeholder?: string;
+    resize?: string;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -449,6 +451,109 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
         </div>
     )
 }
+
+export const FieldEditMultiAux: React.FC<InputProps> = ({
+    label,
+    className,
+    disabled = false,
+    valueDefault = "",
+    onChange,
+    onBlur,
+    error,
+    type = "text",
+    rows = 4,
+    maxLength = 0,
+    fregister = {},
+    inputProps = {},
+    variant = "standard"
+  }) => {
+    const [value, setValue] = useState("");
+    const [height, setHeight] = useState(100); 
+    const resizerRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+    useEffect(() => {
+      setValue(valueDefault || "");
+    }, [valueDefault]);
+  
+    useEffect(() => {
+      if (textareaRef.current) {
+        textareaRef.current.style.height = `${height}px`;
+      }
+    }, [height]);
+  
+    const handleMouseDown = (e: React.MouseEvent) => {
+      e.preventDefault();
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    };
+  
+    const handleMouseMove = (e: MouseEvent) => {
+      if (textareaRef.current) {
+        const newHeight = e.clientY - textareaRef.current.getBoundingClientRect().top;
+        setHeight(newHeight);
+      }
+    };
+  
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  
+    return (
+      <div className={className} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+        <TextField
+          {...fregister}
+          color="primary"
+          fullWidth
+          disabled={disabled}
+          variant={variant}
+          type={type}
+          error={!!error}
+          value={value}
+          multiline
+          minRows={rows}
+          helperText={error || null}
+          onChange={(e) => {
+            if (maxLength === 0 || e.target.value.length <= maxLength) {
+              setValue(e.target.value);
+              onChange && onChange(e.target.value);
+            }
+          }}
+          onBlur={(e) => {
+            onBlur && onBlur(e.target.value);
+          }}
+          inputProps={inputProps}
+          style={{ border: '1px solid #762AA9', resize: 'none' }}
+          inputRef={textareaRef}
+        />
+        {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
+        <div
+          ref={resizerRef}
+          onMouseDown={handleMouseDown}
+          style={{
+            position: 'absolute',
+            bottom: '0',
+            right: '0',
+            cursor: 'row-resize',
+            width: '15px',
+            height: '15px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#F9F9FA',
+            borderTopRightRadius: '4px',
+            borderBottomLeftRadius: '4px',
+            margin: 4
+          }}
+        >
+          <DragHandleIcon style={{ transform: 'rotate(135deg)', color:'#783BA5', height:'17px' }}/>
+        </div>
+      </div>
+    );
+  };
+
 
 export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false }) => {
     const [value, setvalue] = useState("");
