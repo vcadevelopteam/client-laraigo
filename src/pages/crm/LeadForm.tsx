@@ -1890,7 +1890,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                         <div className={clsx(classes.row, classes.centerRow)}>
                                             <span className={classes.logOwnerName}>{note.createby}</span>
                                             <div style={{ width: '1em' }} />
-                                            <span className={classes.logDate}>{formatDate(note.createdate)}</span>
+                                            <span className={classes.logDate}>{formatDate(note.createdate, { withTime: true, modhours: -5 })}</span>
                                         </div>
                                         <div style={{ height: 4 }} />
                                         <span>{note.description}</span>
