@@ -2189,7 +2189,7 @@ const Users: FC = () => {
                                             warehouseid: "0",
                                             groups: d?.groups?.replace(/\s+/g, '') || null,
                                             storeid: "0",
-                                            channels: d?.channels?.replace(/\s+/g, '') || "",
+                                            channels: d?.channels? String(d?.channels).replace(/\s+/g, ''): "",
                                             status: "DESCONECTADO",
                                             type: type,
                                             supervisor: "",
