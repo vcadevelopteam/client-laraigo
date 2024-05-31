@@ -17,7 +17,7 @@ import { FrameProps } from './CampaignDetail';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DescriptionIcon from '@material-ui/icons/Description';
 import DeleteIcon from '@material-ui/icons/Delete';
-
+import * as XLSX from 'xlsx';
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
@@ -100,8 +100,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         });
     }
 
-    const handleDeleteConfirmed = () => {
-        deleteSelectedRows();
+    const handleDeleteSelectedRows = () => {
+        const updatedJsonData = jsonData.filter(item => !selectedRows[item.Destinatarios]);
+        setJsonData(updatedJsonData);
+        setSelectedRows({});
         setOpenDeleteDialog(false);
     };
   
@@ -132,7 +134,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 break;
         }
     };
-
+    
     useEffect(() => {
         if (frameProps.checkPage) {
             const valid = changeStep(frameProps.page);
@@ -297,15 +299,78 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     }, [paginatedAuxResult]);
 
+
     // External Data Logic //
-    const handleUpload = async (files: any) => {
-        const file = files[0];
-        const data = await uploadExcel(file);
-        setvaluefile('')
-        if (data) {
-            uploadData(data);
+    const handleUpload = (files: FileList | null) => {
+        if (!files || files.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
+            return;
         }
-    }
+
+        const file = files[0];
+        if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const data = e.target?.result;
+            if (!data) return;
+
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const json = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
+
+            const headers: string[] = json[0] as string[];
+            const rows = json.slice(1);
+
+            const filteredRows = rows.filter(row => {
+                return headers.every((header, index) => row[index] !== undefined && row[index] !== null && row[index] !== '');
+            });
+
+            const uniqueRows: { [key: string]: boolean } = {};
+            const deduplicatedRows: string[][] = [];
+            let duplicatesFound = false;
+
+            filteredRows.forEach(row => {
+                const rowString = JSON.stringify(row);
+                if (!uniqueRows[rowString]) {
+                    uniqueRows[rowString] = true;
+                    deduplicatedRows.push(row);
+                } else {
+                    duplicatesFound = true;
+                }
+            });
+
+            if (duplicatesFound) {
+                dispatch(showSnackbar({ show: true, severity: "warning", message: "Se encontraron filas duplicadas y se eliminaron." }));
+            }
+
+            setJsonData(deduplicatedRows.map(row => {
+                const obj: { [key: string]: any } = {};
+                headers.forEach((header: string, index: number) => {
+                    obj[header] = row[index];
+                });
+                return obj;
+            }));
+
+            setColumnList(headers);
+            setSelectedColumns({
+                primarykey: headers[0],
+                columns: headers.slice(1),
+            } as SelectedColumns);
+            
+            setHeaders(headers.map(c => ({
+                Header: c,
+                accessor: c
+            })));
+        };
+
+        reader.readAsBinaryString(file);
+    };  
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
@@ -444,36 +509,30 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     useEffect(() => {
-        if (openModal === false) {
+        if (openModal === false && selectedColumns.primarykey !== '') {
             setHeaderTableData(selectedColumns);
-            setAllRowsSelected(true)
+            setAllRowsSelected(true);
         }
-    }, [openModal])
+    }, [openModal, selectedColumns]);
 
     const setHeaderTableData = (localSelectedColumns: SelectedColumns) => {
-        if (openModal === false && selectedColumns.primarykey !== '') {
-            setSelectionKey(selectedColumns.primarykey);
-            let headers = [
+        if (localSelectedColumns.primarykey !== '') {
+            const headers = [
                 localSelectedColumns.primarykey,
                 ...localSelectedColumns.columns
-            ].map(c => {
-                return {
-                    Header: c,
-                    accessor: c
-                }
-            });
+            ].map(c => ({
+                Header: c,
+                accessor: c
+            }));
             setHeaders(headers);
-            // setDetaildata({...detaildata, headers: headers});
             return headers;
         }
-    }
+    };
     // External Data Logic //
 
-    const changeStep = (step: number) => {
-        if (Object.keys(selectedRows).length === 0) {
-            if (step === 2) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected) }));
-            }
+    const changeStep = (step) => {
+        if (Object.keys(selectedRows).length === 0 && step === 2) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected) }));
             return false;
         }
         switch (detaildata.source) {
@@ -481,29 +540,26 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 setDetaildata({
                     ...detaildata,
                     headers: setHeaderTableData(selectedColumns),
-                    jsonData: jsonData,
-                    selectedColumns: selectedColumns,
-                    selectedRows: selectedRows,
-                    person: jsonData.map(j =>
-                        Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' }
-                    )
+                    jsonData,
+                    selectedColumns,
+                    selectedRows,
+                    person: jsonData.map(j => Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' })
                 });
                 break;
             case 'EXTERNAL':
                 setDetaildata({
                     ...detaildata,
-                    // Update headers only where upload has used
-                    headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
-                    jsonData: jsonData,
-                    selectedColumns: selectedColumns,
-                    selectedRows: selectedRows,
+                    headers: setHeaderTableData(selectedColumns),
+                    jsonData,
+                    selectedColumns,
+                    selectedRows,
                     person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
                 });
                 break;
             case 'PERSON':
                 setDetaildata({
                     ...detaildata,
-                    selectedRows: selectedRows,
+                    selectedRows,
                     person: Array.from(
                         new Map([
                             ...(detaildata.person || []),
@@ -514,7 +570,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             case 'LEAD':
                 setDetaildata({
                     ...detaildata,
-                    selectedRows: selectedRows,
+                    selectedRows,
                     person: Array.from(
                         new Map([
                             ...(detaildata.person || []),
@@ -525,6 +581,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
+
+    //console.log(selectedRows)
 
     const AdditionalButtons = () => {
         if (detaildata.source === 'EXTERNAL') {
@@ -603,7 +661,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                         buttonText1={t(langKeys.cancel)}                   
                         buttonText2={t(langKeys.accept)}
                         handleClickButton1={() => setOpenDeleteDialog(false)}                    
-                        handleClickButton2={handleDeleteConfirmed}
+                        handleClickButton2={handleDeleteSelectedRows}
                         maxWidth={'xs'}
                     >
                         <div>{' ¿Está seguro que desea eliminar a esta(s) persona(s)?'}</div>
@@ -682,96 +740,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 }
 
             </div>
-            <ModalCampaignColumns
-                columnList={columnList}
-                selectedColumns={selectedColumns}
-                setSelectedColumns={setSelectedColumns}
-                openModal={openModal}
-                handleCancelModal={handleCancelModal}
-                handleSaveModal={handleSaveModal}
-            />
+          
         </React.Fragment>
-    )
-}
-
-interface ModalProps {
-    columnList: string[];
-    selectedColumns: SelectedColumns;
-    setSelectedColumns: (data: SelectedColumns) => void;
-    openModal: boolean | null;
-    handleCancelModal: () => void;
-    handleSaveModal: () => void;
-}
-
-const ModalCampaignColumns: React.FC<ModalProps> = ({ columnList, selectedColumns, setSelectedColumns, openModal, handleCancelModal, handleSaveModal }) => {
-    const { t } = useTranslation();
-
-    const [checkboxEnable, setCheckboxEnable] = useState(true);
-
-    const handleMaxColumns = () => {
-        setCheckboxEnable(selectedColumns.column.filter(c => c === true).length < 14 ? true : false);
-    }
-
-    useEffect(() => {
-        handleMaxColumns();
-    }, [selectedColumns])
-
-    return (
-        <DialogZyx
-            open={openModal || false}
-            title={t(langKeys.select_column_plural)}
-            button1Type="button"
-            buttonText1={t(langKeys.cancel)}
-            handleClickButton1={handleCancelModal}
-            button2Type="button"
-            buttonText2={t(langKeys.save)}
-            handleClickButton2={handleSaveModal}
-        >
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>{t(langKeys.name)}</TableCell>
-                            <TableCell>{t(langKeys.key)}</TableCell>
-                            <TableCell>{t(langKeys.column)}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {columnList.map((c, i) =>
-                            <TableRow key={i}>
-                                <TableCell>{c}</TableCell>
-                                <TableCell>
-                                    <input
-                                        type="radio"
-                                        value={c}
-                                        checked={selectedColumns.primarykey === c || false}
-                                        onChange={(e) => {
-                                            setSelectedColumns({
-                                                ...selectedColumns,
-                                                primarykey: c || '',
-                                                column: selectedColumns.column.map((sc, sci) => sci === i ? false : sc) || []
-                                            });
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedColumns.column[i] || false}
-                                        disabled={selectedColumns.primarykey === c || (!checkboxEnable && selectedColumns.column[i] === false)}
-                                        onChange={(e) => {
-                                            setSelectedColumns({
-                                                ...selectedColumns,
-                                                column: selectedColumns.column.map((sc, sci) => sci === i ? e.target.checked : sc) || []
-                                            });
-                                        }}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </DialogZyx>
     )
 }

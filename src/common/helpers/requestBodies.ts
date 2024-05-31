@@ -1764,10 +1764,19 @@ export const getCampaignStart = (id: number): IRequestBody => ({
     },
 });
 
-export const getCampaignStatus = (id: number): IRequestBody => ({
+export const getCampaignStatus = (id: number): IRequestBody => ({ // query: "SELECT * FROM ufn_campaign_status($corpid, $orgid, $id)",
     method: "UFN_CAMPAIGN_STATUS",
     parameters: {
         id,
+    },
+});
+
+export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: number, status: string): IRequestBody => ({ // query: "SELECT * FROM ufn_campaignmember_status( $campaignid, $campaignmemberid, $status )",
+    method: "UFN_CAMPAIGNMEMBER_STATUS",
+    parameters: {
+        campaignid,
+        campaignmemberid, 
+        status
     },
 });
 
