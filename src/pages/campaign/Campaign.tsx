@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize, stopCampaign } from 'common/helpers';
+import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize, stopCampaign, exportExcel, exportExcelCustom } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -41,6 +41,13 @@ interface IModalProps {
     open: boolean;
     payload: Dictionary | null;
 }
+ 
+  interface ColumnTmp {
+    Header: string;
+    accessor: string;
+    prefixTranslation?: string;
+    type?: string;
+  }
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -363,6 +370,17 @@ export const Campaign: FC = () => {
         []
     )
 
+    const columnsExcel : ColumnTmp[] = [
+        { Header: 'Campaña', accessor: 'title' },
+        { Header: 'Descripción', accessor: 'description' },
+        { Header: 'Canal', accessor: 'communicationchannel' },
+        { Header: 'Fecha de Inicio', accessor: 'startdate' },
+        { Header: 'Fecha de Fin', accessor: 'enddate' },
+        { Header: 'Estado', accessor: 'status' },
+        { Header: 'Fecha y hora de ejecución', accessor: 'datetimestart' },
+        { Header: 'Tipo de ejecución', accessor: 'executiontype' },
+    ];
+
     // {openConfirmationDialog && (
     //     <Dialog open={openConfirmationDialog} onClose={handleCloseConfirmationDialog} maxWidth="xl">
     //         <DialogTitle>
@@ -385,6 +403,7 @@ export const Campaign: FC = () => {
     //     </Dialog>
     // )}
 
+    console.log(mainResult.mainData.data)
  
     
     const fetchData = () => dispatch(getCollection(getCampaignLst(
@@ -569,7 +588,26 @@ export const Campaign: FC = () => {
         key: "selection",
     });
 
-  
+    const handleDownload = () => {
+        if (mainResult && mainResult.mainData && mainResult.mainData.data) {
+            const csvData = mainResult.mainData.data.map((item: Dictionary) => {
+                const formattedItem: Dictionary = {
+                    title: item.title,
+                    description: item.description,
+                    communicationchannel: item.communicationchannel,
+                    startdate: item.startdate ? dateToLocalDate(item.startdate) : '',
+                    enddate: item.enddate ? dateToLocalDate(item.enddate) : '',
+                    status: item.status,
+                    datetimestart: item.datetimestart ? formatDate(item.datetimestart, { withTime: true }) : '',
+                    executiontype: item.executiontype,
+                };
+                return formattedItem;
+            });
+
+            exportExcelCustom('CampañasReport', csvData, columnsExcel);
+        }
+    };
+
 
     const AdditionalButtons = () => {
         return (
@@ -706,7 +744,7 @@ export const Campaign: FC = () => {
 
                             <Divider />
 
-                            <a href="/templates/TemplateCampañas(2024-04-18).xlsx" download style={{ textDecoration: 'none', color: 'inherit' }} >
+                            <a style={{ textDecoration: 'none', color: 'inherit' }} onClick={handleDownload}>
                                 <MenuItem 
                                     disabled={mainResult.mainData.loading}
                                     style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
@@ -714,7 +752,7 @@ export const Campaign: FC = () => {
                                     <ListItemIcon>
                                         <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
                                     </ListItemIcon>
-                                    <Typography variant="inherit">{t(langKeys.download)}</Typography>
+                                    <Typography variant="inherit">Descargar</Typography>
                                 </MenuItem>
                             </a>
                              
@@ -735,7 +773,7 @@ export const Campaign: FC = () => {
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}                
                     ButtonsElement={AdditionalButtons}     
-                    filterGeneral={false} //antes true, preguntar si sirve
+                    filterGeneral={false} 
                 
                 />
             </div>

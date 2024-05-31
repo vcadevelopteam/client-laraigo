@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'; 
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
@@ -22,8 +23,7 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData: () => void;
-    handleStart: (a:number)=>void;
+    fetchData: () => void
 }
 
 export interface FrameProps {
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData, handleStart }) => {
+export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -94,8 +94,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
 
     const [messageVariables, setMessageVariables] = useState<any[]>([]);
-    const [campaignid, setCampaignId] = useState(0);
-    const [campaignType, setCampaignType] = useState("");
+
+    const [dataButtons, setDataButtons] = useState<any[]>([])
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
@@ -242,6 +242,56 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
         return { subject, header, message }
     }
+    const formatMessageGeneric = (message:string) => {
+        let modifiedMessage = message; 
+    
+        if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+            let splitMessage = message.split('{{');
+            messageVariables.forEach((v, i) => {
+                splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
+            });
+            modifiedMessage = splitMessage.join('{{');
+        }
+    
+        if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
+            if (detaildata.person && detaildata.person?.length > 0) {
+                // field i + 2 because i + 1 is used for primary key, pccowner
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                    let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
+                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
+                        modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
+                    });
+                }
+                else {
+                    let localtablevariable = Array.from(new Set([
+                        ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
+                    ]));
+                    localtablevariable = localtablevariable.map(x => x.slice(2, -2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
+                    if (Object.keys(usedTablevariable).length > 0) {
+                        Object.entries(usedTablevariable).forEach((v: any) => {
+                            modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                        });
+                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
+                    }
+                    localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
+                        ...actv,
+                        [`field${tvi + 2}`]: tv
+                    }), {});
+                    setUsedTableVariable(localtablevariable);
+                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
+                        modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                    });
+                }
+            }
+        }
+        else if (['EXTERNAL'].includes(detaildata.source || '')) {
+            tablevariable.forEach((v: any, i: number) => {
+                modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+            });
+        }
+    
+        return modifiedMessage;
+    }
 
     const checkValidation = () => {
         if (!frameProps.valid[0]) {
@@ -266,6 +316,14 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             let elemVariables: string[] = [];
             let errorIndex = null;
 
+            let auxbuttons = detaildata
+            if (auxbuttons?.messagetemplatebuttons) {
+                auxbuttons.messagetemplatebuttons.forEach((button: any) => {
+                    if (button.payload) {
+                        button.payload = formatMessageGeneric(button.payload);
+                    }
+                });
+            }
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                 let vars = extractVariables(localsubject);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
@@ -285,14 +343,30 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if (localmessage !== '') {
-                let vars = extractVariables(localmessage)
+                let vars = extractVariables(localmessage);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
+            
                 if (errorIndex !== -1 || localmessage.includes('{{}}')) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
+            
+                    const errorDetail = {
+                        localmessage,
+                        vars,
+                        errorIndex,
+                        problematicVariable: vars[errorIndex],
+                        tableDescriptions: tablevariable.map(t => t.description),
+                    };
+            
+                    console.error("Validation Error Details:", errorDetail); 
+            
+                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}\nDetails: ${JSON.stringify(errorDetail, null, 2)}`;
+            
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
                 }
+            
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+            
             setDetaildata({
                 ...detaildata,
                 variablereplace: elemVariables,
@@ -300,6 +374,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 subject: newmessages.subject,
                 messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
                 message: newmessages.message,
+                messagetemplatebuttons: auxbuttons.messagetemplatebuttons
             });
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
         }
@@ -455,7 +530,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         setSave('SUBMIT');
     }
 
-    const saveCampaign = (data: any) => dispatch(execute(insCampaign(data)));
+    const saveCampaign = (data: any) => {               
+        dispatch(execute(insCampaign({...data})));
+    }
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
         detail: [...data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }))]
@@ -465,7 +542,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         const callback = () => {
             dispatch(showBackdrop(true));
             setSave('PARENT');
-            setCampaignType(detaildata.executiontype||"")
             saveCampaign(detaildata);
         }
         let errormessage = false
@@ -506,7 +582,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             else if (save === 'PARENT') {
                 if (!executeRes.loading && !executeRes.error) {
                     setSave('MEMBERS');
-                    setCampaignId(executeRes.data[0]?.p_campaignid)
                     saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
@@ -520,7 +595,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                     fetchData();
                     dispatch(showBackdrop(false));
-                    if(campaignid && campaignType === "SCHEDULED") handleStart(campaignid)
                     setViewSelected("view-1");
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
@@ -653,7 +727,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 onChange={(_, value) => setFrameProps({ ...frameProps, page: value, checkPage: true })}
             >
                 <AntTab label={t(langKeys.generalinformation)} />
-                <AntTab label={t(langKeys.contactdetails)} />
+                <AntTab label={t(langKeys.person_plural)} />
                 <AntTab label={t(langKeys.message)} />
             </Tabs>
             {pageSelected === 0 ?
@@ -702,6 +776,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setSave={setSave}
                     messageVariables={messageVariables}
                     setMessageVariables={setMessageVariables}
+                    dataButtons={dataButtons}
+                    setDataButtons={setDataButtons}
                 />
                 : null}
         </div>

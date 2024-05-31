@@ -15,6 +15,7 @@ import ReplyIcon from '@material-ui/icons/Reply';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import AddIcon from '@material-ui/icons/Add';
+import TemplatePreview from './components/TemplatePreview';
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
@@ -85,6 +86,11 @@ const useStyles = makeStyles((theme) => ({
         height: 23,
         cursor: 'pointer',
     },
+    containerStyle: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '16px',
+    }
 }));
 
 class VariableHandler {
@@ -111,10 +117,21 @@ class VariableHandler {
 export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-
     const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
-
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+
+    const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
+    const templateId = 4787;
+    const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
+
+    const bodyVariables = selectedTemplate.bodyvariables;
+
+
+    // console.log('Variables en el template:', bodyVariables.length);
+    //console.log(selectedTemplate)
+
+
+
 
     useEffect(() => {
         if (frameProps.checkPage) {
@@ -127,22 +144,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [frameProps.checkPage])
 
     const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({ ...param }) => void, filter = true) => {
-        let elem = e.target;
+        const elem = e.target;
         if (elem) {
-            let selectionStart = elem.selectionStart || 0;
-            let lines = (elem.value || '').substr(0, selectionStart).split('\n');
-            let row = lines.length - 1;
-            let column = lines[row].length * 3;
-            let startIndex = (elem.value || '').slice(0, selectionStart || 0)?.lastIndexOf('{{');
+            const selectionStart = elem.selectionStart || 0;
+            const lines = (elem.value || '').substr(0, selectionStart).split('\n');
+            const row = lines.length - 1;
+            const column = lines[row].length * 3;
+            const startIndex = (elem.value || '').slice(0, selectionStart || 0)?.lastIndexOf('{{');
             let partialText = '';
             if (startIndex !== -1) {
                 if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
                     && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1
                     && elem.value[selectionStart - 1] !== '}') {
                     partialText = elem.value.slice(startIndex + 2, selectionStart);
-                    let rightText = (elem.value || '').slice(selectionStart, elem.value.length);
-                    let selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
-                    let endIndex = startIndex + partialText.length + selectionEnd + 4;
+                    const rightText = (elem.value || '').slice(selectionStart, elem.value.length);
+                    const selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
+                    const endIndex = startIndex + partialText.length + selectionEnd + 4;
                     setVariableHandler({
                         show: true,
                         item: item,
@@ -234,41 +251,28 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>         
                         </FormControl>                                          
                            
-                        <FormControl className="col-12">                          
+                        <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
-                            <div className={classes.subtitle}> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>                        
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                <div style={{ flex: 1 }}>
-                                    <p>{'Variable {{1}}'}</p>
-                                    <div  style={{ flex: 1 }}>
-                                    <FieldSelect
-                                            variant="outlined"       
-                                            uset={true}       
-                                            label='Variable 1'                     
-                                            className="col-12"
-                                            data={[]}
-                                            optionDesc="value"
-                                            optionValue="key"
-                                        />    
-                                    </div>    
-                                </div>       
-                                <div style={{ flex: 1 }}>
-                                    <p>{'Variable {{2}}'}</p>
-                                    <div  style={{ flex: 1 }}>
-                                    <FieldSelect
-                                            variant="outlined"       
-                                            uset={true}       
-                                            label='Variable 2'                     
-                                            className="col-12"
-                                            data={[]}
-                                            optionDesc="value"
-                                            optionValue="key"
-                                        />    
-                                    </div>    
-                                </div>                            
-                                    
-                            </div>         
-                        </FormControl>     
+                            <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
+                           
+                            <div className={classes.containerStyle}>
+                            {bodyVariables.map((variable: Dictionary) => (
+                                <div key={variable.variable}>
+                                <p style={{ marginBottom: '3px' }}>{`Variable {{${variable.variable}}}`}</p>
+                                <FieldSelect
+                                    variant="outlined"
+                                    uset={true}
+                                    className="col-12"
+                                    data={[{ key: variable.variable, value: variable.text }]}
+                                    optionDesc="value"
+                                    optionValue="key"
+                                />
+                                </div>
+                            ))}
+                            </div>
+
+
+                        </FormControl>   
 
                         <FormControl className="col-12">                          
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
@@ -313,46 +317,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     </div> 
                 </div>  
 
-                <div className={classes.containerDetail} style={{width:'50%'}}>             
-                    <div style={{marginLeft:'1rem', fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}  </div> 
-                    <div style={{marginLeft:'1rem'}}>{'Podrás visualizar como se previsualizará tu plantilla, según los campos que asignes a las variables'} </div>
-                    <div className={classes.containerDetail} style={{height:'60%', display:'block', alignContent:'center'}}>             
-                        <div style={{display:'flex', justifyContent:'center', alignContent:'center', alignItems:'center'}}>
-                            <div style={{ maxWidth:'25rem', borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}> 
+                <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             
+                    <div style={{fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}  </div> 
+                  
+                    <TemplatePreview selectedTemplate={selectedTemplate} />
 
-                                <div className='templatePreview' style={{}}>
-                                    
-                                    {detaildata.messagetemplatetype === 'MULTIMEDIA'  ? (
-                                        <div>                                          
-                                          
-                                            <p>{detaildata?.message}</p>
-
-                                            <p style={{color:'grey', fontSize:'0.8rem'}}>{detaildata.messagetemplatefooter}</p>
-                                            <span className={classes.previewHour}> 11:12</span>
-
-                                            {Array.isArray(detaildata.messagetemplatebuttons) && detaildata.messagetemplatebuttons.length > 0 && (
-                                                <div>
-                                                    {detaildata.messagetemplatebuttons.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index}>
-                                                            {button.title}
-                                                            {button.type === 'url' && <OpenInNewIcon style={{height:'18px', marginLeft: '5px'}} />}
-                                                            {button.type === 'quick_reply' && <ReplyIcon style={{height:'18px', marginLeft: '5px'}} />}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )}                                         
-                                        </div>             
-
-                                    ) : (
-                                    
-                                        <div>
-                                            <p>No se ha seleccionado una Plantilla</p>             
-                                        </div>
-                                    )}
-                                </div>
-                            </div>   
-                        </div>  
-                    </div>
 
                     <FormControl className="col-12">                          
                     <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>

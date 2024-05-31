@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'; 
-import IconButton from '@material-ui/core/IconButton';
 import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
@@ -7,16 +6,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Event as EventIcon } from '@material-ui/icons';
 import { FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import PhoneIcon from '@material-ui/icons/Phone';
-import ListIcon from '@material-ui/icons/List';
-import ReplyIcon from '@material-ui/icons/Reply';
+import TemplatePreview from './components/TemplatePreview';
+import { ModalCampaignSchedule } from './components/ModalCampaignSchedule';
+import IconButton from '@material-ui/core/IconButton';
+import { Event as EventIcon } from '@material-ui/icons';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -37,7 +35,6 @@ type Button = {
     title: string;
     payload: string;
 };
-
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -82,12 +79,57 @@ const useStyles = makeStyles((theme) => ({
     }, 
     pdfPreview: {
         width: '100%',
-        height: '500px', // Puedes ajustar la altura según tus necesidades
+        height: '500px',
         border: 'none',
         display: 'block',
         margin: '0 auto',
         borderRadius: '0.5rem',
-    }
+    },
+    container: {
+        display: 'flex',
+        alignItems: 'center',
+        background: '#F5D9D9',
+        padding: '10px',
+        marginTop:'7px',
+        borderRadius: '5px',
+        maxWidth: '100%',
+        overflow: 'hidden',
+    },
+    copyButton: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
+        backgroundColor: '#f0f0f0',
+        border: '1px solid #ccc',
+        padding: '5px 10px',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
+    icon: {
+        marginRight: '10px',
+        color:'#DF3636',
+    },
+    fileName: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        flex: 1,
+    },
+    carouselContainer: {
+        display: 'flex',
+        overflowX: 'auto',
+        gap: '1rem',
+        padding: '1rem 0',
+    },
+    carouselItem: {
+        minWidth: '200px',
+        maxWidth: '300px',
+        borderRadius: '0.5rem',
+        backgroundColor: '#fff',
+        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+        padding: '1rem',
+        textAlign: 'center',
+    },
 }));
 
 const dataExecutionType: Dictionary = {
@@ -167,7 +209,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const [openModal, setOpenModal] = useState(false);
 
-    const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
+    const { register, setValue, getValues, trigger, formState: { errors } } = useForm<any>({
         defaultValues: {
             isnew: row ? false : true,
             id: row ? row.id : 0,
@@ -196,7 +238,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatelanguage: '',
             messagetemplatepriority: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
-            batchjson: [],
+            batchjson: [{ date: '', time: '', quantity: 1 }],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
             sourcechanged: false,           
@@ -236,7 +278,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
             if (auxdata.length > 0) {
-                let messageTemplateData = dataMessageTemplate.find(d => d.id === auxdata[0].messagetemplateid) || {};
+                const messageTemplateData = dataMessageTemplate.find(d => d.id === auxdata[0].messagetemplateid) || {};
                 setStepData({
                     ...auxdata[0],
                     messagetemplatename: messageTemplateData.name || auxdata[0].messagetemplatename || '',
@@ -287,7 +329,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         if (frameProps.checkPage) {
             trigger().then((valid: any) => {
-                let data = getValues();
+                const data = getValues();
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = data.messagetemplatebuttons || [];
                 data.batchjson = data.batchjson || [];
@@ -396,8 +438,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const filterMessageTemplate = () => {
         if (getValues('type') === "MAIL") {
-            var mailTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
-            var htmlTemplate = filterPipe(dataMessageTemplate, 'type', 'HTML');
+            const mailTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
+            const htmlTemplate = filterPipe(dataMessageTemplate, 'type', 'HTML');
 
             return [...mailTemplate, ...htmlTemplate];
         }
@@ -408,7 +450,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const onChangeMessageTemplateId = async (data: Dictionary) => {
         setValue('messagetemplateid', data?.id || 0);
-        let messageTemplate = dataMessageTemplate.filter(d => d.id === data?.id)[0];
+        const messageTemplate = dataMessageTemplate.filter(d => d.id === data?.id)[0];
         setValue('message', messageTemplate?.body);
         setValue('messagetemplatename', messageTemplate?.name);
         setValue('messagetemplatenamespace', messageTemplate?.namespace);
@@ -452,12 +494,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
     //console.log('Template name: ', selectedTemplate.name, 'y cabecera tipo: ', selectedTemplate.headertype)
-    console.log (selectedTemplate) //cckm cjab comos esco  com ('0deie kk como eosd aomco kk d )
-    
+    //console.log (selectedTemplate) 
+    //console.log('El id es:', selectedTemplate.id)
+
+
     return (
         <React.Fragment>
-           <div style={{display:'flex', gap: '1rem', width:'100%'}}>
-            
+            <div style={{display:'flex', gap: '1rem', width:'100%'}}>
+
                 <div className={classes.containerDetail}  style={{width:'50%'}}>
 
                 <div className="row-zyx">
@@ -481,7 +525,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                     {edit ?
-                      
+                    
                     <FormControl className="col-12" >                     
                         <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.description)} </div>
                         <div className={classes.subtitle}> {t(langKeys.campaign_description_desc)} </div>                    
@@ -581,24 +625,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 optionDesc="value"
                                 optionValue="key"
                             />                       
-                              
-
-                            {/* {getValues('executiontype') === 'SCHEDULED' ?
-                                <IconButton
-                                    style={{ flexGrow: 0 }}
-                                    aria-label="more"
-                                    aria-controls="long-menu"
-                                    aria-haspopup="true"
-                                    size="small"
-                                    onClick={(e) => setOpenModal(true)}
-                                >
-                                    <EventIcon style={{ color: '#777777' }} />
-                                </IconButton>                                
-                                :
-                                null
-                                
-                            }      */}
-
+                                                    
                         </FormControl>
                         :
                         <FieldView
@@ -618,9 +645,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     variant="outlined"                 
                                     type="date"                               
                                     className="col-6"
-                                    valueDefault={getValues('date')}
+                                       valueDefault={getValues('date')}
                                     onChange={(value) => setValue('date', value)}
-                                    error={errors?.date?.message}
+                                    error={errors?.batchjson?.[0]?.date?.message}
                                 />      
                             </FormControl>                      
                                                         
@@ -633,7 +660,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     className="col-6"
                                     valueDefault={getValues('time')}
                                     onChange={(value) => setValue('time', value)}
-                                    error={errors?.time?.message}
+                                    error={errors?.batchjson?.[0]?.time?.message}
                                 />         
                             </FormControl>                         
                         
@@ -643,6 +670,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         : null                                
                     }  
                     
+                   
+
+
                     {edit ?
                         <FormControl className="col-6" >                      
                             <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.group)} </div>
@@ -722,10 +752,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         }
                         {edit ?
                             <FormControl className="col-6" >                       
-                               
+                            
                                 <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.namespace)} </div>
                                 <div className={classes.subtitle}> {t(langKeys.campaign_comunicationtemplate_desc)} </div>
-                               
+                            
                                 <FieldEdit
                                     fregister={{
                                         ...register(`messagetemplatenamespace`, {
@@ -740,7 +770,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     error={errors?.messagetemplatenamespace?.message}
                                 />
                             </FormControl>  
-                           
+                        
                             :
                             <FieldView
                                 label={t(langKeys.namespace)}
@@ -794,7 +824,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 optionValue="domainvalue"
                             />
                         </FormControl>  
-                       
+                    
                         :
                         <FieldView
                             label={t(langKeys.status)}
@@ -802,13 +832,13 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-6"
                         />
                     }
-                   
+                
                     {edit ?
                         <FormControl className="col-6" >                       
-                           
+                        
                             <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetype)} </div>
                             <div className={classes.subtitle}> {t(langKeys.campaign_messagetype_desc)} </div>
-                           
+                        
                             <FieldSelect
                                 variant="outlined"       
                                 uset={true}                              
@@ -828,126 +858,19 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
                             className="col-6"
                         />
-                    }
-                   
+                    }                
                 </div>
 
                 </div>
+                
+                <div style={{width:'50%'}}>
+                    <div style={{fontSize:'1.2rem', marginTop:'2.1rem'}}>{t('Vista Previa de la Plantilla')}</div> 
+                    <TemplatePreview selectedTemplate={selectedTemplate} />
 
-                <div className={classes.containerDetail} style={{width:'50%'}}>             
-                    <h2 style={{margin:'1rem', fontWeight:'normal'}}>{t(langKeys.campaign_templatepreview)}  </h2> 
-                    <div className={classes.containerDetail} style={{height:'60%', display:'block', alignContent:'center'}}>             
-                        <div style={{display:'flex', justifyContent:'center', alignContent:'center', alignItems:'center'}}>
-                            <div style={{ maxWidth:'25rem', borderRadius:'0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}> 
+                </div>  
+            
 
-                                <div className='templatePreview' style={{}}>
-                                    
-                                    {selectedTemplate?.category === "MARKETING" ||  selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS"  ? (
-                                        <div>
-                                            
-                                            {selectedTemplate?.headertype === "DOCUMENT" ? (
-                                                <iframe
-                                                    src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                                                    className={classes.pdfPreview}
-                                                />
-                                            ) : selectedTemplate?.headertype === "MULTIMEDIA" ? (
-                                                <iframe
-                                                    src={selectedTemplate.header || "https://d36ai2hkxl16us.cloudfront.net/thoughtindustries/image/upload/a_exif,c_fill,w_750/v1/course-uploads/7a95ec5e-b843-4247-bc86-c6e2676404fd/15ax1uzck54z-NuxeoGeneric.png"}
-                                                    style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius:'0.5rem'}}
-                                                />
-                                            ) : (
-                                                <p></p>
-                                            )}
-
-                                            {selectedTemplate?.templatetype === "CAROUSEL" && selectedTemplate.carouseldata?.length > 0 && (
-                                                <img
-                                                    src={selectedTemplate.carouseldata[0].header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                                                    alt="Carousel Image"
-                                                    style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
-                                                />
-                                            )}
-
-
-                                           
-                                           
-
-                                            <p>{selectedTemplate.body}</p>
-
-                                            <p style={{color:'grey', fontSize:'0.8rem'}}>{selectedTemplate.footer}</p>
-                                            <span className={classes.previewHour}> 11:12</span>
-
-                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
-                                                <div>
-                                                    {selectedTemplate.buttons.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index}>
-                                                        {button.title}
-                                                        {/* <OpenInNewIcon style={{height:'1.3rem', margin:'0 5px'}}/>*/}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
-                                                <div>
-                                                    {selectedTemplate.buttonsgeneric.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index}>
-                                                            <OpenInNewIcon style={{height:'18px'}}/> {button.btn.text}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )} 
-
-                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
-                                                <div>
-                                                    {selectedTemplate.buttonsgeneric.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index}>
-                                                            <OpenInNewIcon style={{height:'18px'}}/> {button.btn.text}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )} 
-
-                                            {selectedTemplate.buttonsenabled && selectedTemplate.buttonsquickreply?.length > 0 && (
-                                                <div>
-                                                    {selectedTemplate.buttonsquickreply.map((button: Dictionary, index: number) => (
-                                                        <a className={classes.buttonPreview} key={index}>
-                                                            <ReplyIcon style={{height:'18px'}}/> {button.btn.text}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )}  
-
-                                        </div>               
-
-                                    ) :  selectedTemplate?.category === "AUTHENTICATION" ? (
-                                        <div>                                 
-                                            <p>Tu codigo de verificación es 12345678.  
-                                                {selectedTemplate.authenticationdata?.safetyrecommendation && (
-                                                    <span> Por tu seguridad, no lo compartas</span>
-                                                )}
-                                            </p>                                    
-                                            {selectedTemplate.authenticationdata?.showexpirationdate && (
-                                                <div>
-                                                    <p>Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.</p>
-                                                </div>
-                                            )}
-
-                                            <span className={classes.previewHour}> 11:12</span>
-                                        
-                                        </div>                                  
-                                  
-                                    ) : (
-                                    
-                                        <div>
-                                            <p>No se ha seleccionado una Plantilla</p>             
-                                        </div>
-                                    )}
-                                </div>
-                            </div>   
-                        </div>  
-                    </div>
-                </div>
-           </div>
+            </div>
 
             <ModalCampaignSchedule
                 openModal={openModal}
@@ -956,122 +879,5 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 parentSetValue={setValue}
             />
         </React.Fragment>
-    )
-}
-
-interface ModalProps {
-    openModal: boolean;
-    setOpenModal: (value: boolean) => any;
-    data: any[];
-    parentSetValue: (...param: any) => any;
-}
-
-
-const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, data = [], parentSetValue }) => {
-    const { t } = useTranslation();
-
-    const { control, register, handleSubmit, setValue, formState: { errors }, clearErrors } = useForm<any>({
-        defaultValues: {
-            batchjson: data
-        }
-    });
-
-    useEffect(() => {
-        setValue('batchjson', data);
-    }, [data]);
-
-    const { fields: schedule, append: scheduleAppend, remove: scheduleRemove } = useFieldArray({
-        control,
-        name: "batchjson",
-    });
-
-    const onClickAddSchedule = async () => {
-        scheduleAppend({ date: '', time: '', quantity: 0 });
-    }
-
-    const onClickDeleteSchedule = async (index: number) => {
-        scheduleRemove(index);
-    }
-
-    const handleCancelModal = () => {
-        setOpenModal(false);
-        setValue('batchjson', data);
-        clearErrors();
-    }
-
-    const onSubmit = handleSubmit((data) => {
-        parentSetValue('batchjson', data.batchjson.map((d: any, i: number) => ({ ...d, batchindex: i + 1 })));
-        setOpenModal(false);
-    });
-
-    return (
-        <DialogZyx
-            open={openModal}
-            title={t(langKeys.scheduled)}
-            button1Type="button"
-            buttonText1={t(langKeys.cancel)}
-            handleClickButton1={handleCancelModal}
-            button2Type="button"
-            buttonText2={t(langKeys.save)}
-            handleClickButton2={onSubmit}
-        >
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>                            
-                            <TableCell>{t(langKeys.date)}</TableCell>
-                            <TableCell>{t(langKeys.hour)}</TableCell>
-                            <TableCell>{t(langKeys.quantity)}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {schedule.map((item: any, i) =>
-                            <TableRow key={item.id}>                              
-                                <TableCell>
-                                    <FieldEditArray
-                                        fregister={{
-                                            ...register(`batchjson.${i}.date`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        type="date"
-                                        valueDefault={item.date}
-                                        error={errors?.batchjson?.[i]?.date?.message}
-                                        onChange={(value) => setValue(`batchjson[${i}].date`, value)}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FieldEditArray
-                                        fregister={{
-                                            ...register(`batchjson.${i}.time`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        type="time"
-                                        valueDefault={item.time}
-                                        error={errors?.batchjson?.[i]?.time?.message}
-                                        onChange={(value) => setValue(`batchjson[${i}].time`, value)}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FieldEditArray
-                                        fregister={{
-                                            ...register(`batchjson.${i}.quantity`, {
-                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        type="number"
-                                        valueDefault={item.quantity}
-                                        error={errors?.batchjson?.[i]?.quantity?.message}
-                                        onChange={(value) => setValue(`batchjson[${i}].quantity`, parseInt(value))}
-                                        inputProps={{ min: 0, step: 1 }}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </DialogZyx>
     )
 }

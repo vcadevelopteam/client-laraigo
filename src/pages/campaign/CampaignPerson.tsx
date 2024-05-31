@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, DialogZyx3Opt } from 'components';
@@ -9,11 +9,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCampaignMemberSel, campaignPersonSel, uploadExcel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { FrameProps } from './CampaignDetail';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import DescriptionIcon from '@material-ui/icons/Description';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 interface DetailProps {
@@ -164,24 +166,25 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         switch (detaildata.source) {
             case 'INTERNAL':
                 setHeaders([
-                    { Header: 'Destinatarios', accessor: 'personcommunicationchannelowner' },
-                    { Header: t(langKeys.name_plural), accessor: 'firstrealname' }, 
-                    { Header: t(langKeys.ticket_lastname), accessor: 'lastrealname' }, 
-                    { Header: `${t(langKeys.variable)} 1`, accessor: 'field1' },
-                    { Header: `${t(langKeys.variable)} 2`, accessor: 'field2' },
-                    { Header: `${t(langKeys.variable)} 3`, accessor: 'field3' },                  
-                    { Header: `${t(langKeys.variable)} 4`, accessor: 'field4' },
-                    { Header: `${t(langKeys.variable)} 5`, accessor: 'field5' },
-                    { Header: `${t(langKeys.variable)} 6`, accessor: 'field6' },
-                    { Header: `${t(langKeys.variable)} 7`, accessor: 'field7' },
-                    { Header: `${t(langKeys.variable)} 8`, accessor: 'field8' },
-                    { Header: `${t(langKeys.variable)} 9`, accessor: 'field9' },
-                    { Header: `${t(langKeys.variable)} 10`, accessor: 'field10' },
-                    { Header: `${t(langKeys.variable)} 11`, accessor: 'field11' },
-                    { Header: `${t(langKeys.variable)} 12`, accessor: 'field12' },
-                    { Header: `${t(langKeys.variable)} 13`, accessor: 'field13' },
-                    { Header: `${t(langKeys.variable)} 14`, accessor: 'field14' },
-                    { Header: `${t(langKeys.variable)} 15`, accessor: 'field15' }
+                    { Header: t(langKeys.name), accessor: 'displayname' },
+                    { Header: 'PCC', accessor: 'personcommunicationchannelowner' },
+                    { Header: t(langKeys.type), accessor: 'type' },
+                    { Header: t(langKeys.status), accessor: 'status' },
+                    { Header: `${t(langKeys.field)} 1`, accessor: 'field1' },
+                    { Header: `${t(langKeys.field)} 2`, accessor: 'field2' },
+                    { Header: `${t(langKeys.field)} 3`, accessor: 'field3' },
+                    { Header: `${t(langKeys.field)} 4`, accessor: 'field4' },
+                    { Header: `${t(langKeys.field)} 5`, accessor: 'field5' },
+                    { Header: `${t(langKeys.field)} 6`, accessor: 'field6' },
+                    { Header: `${t(langKeys.field)} 7`, accessor: 'field7' },
+                    { Header: `${t(langKeys.field)} 8`, accessor: 'field8' },
+                    { Header: `${t(langKeys.field)} 9`, accessor: 'field9' },
+                    { Header: `${t(langKeys.field)} 10`, accessor: 'field10' },
+                    { Header: `${t(langKeys.field)} 11`, accessor: 'field11' },
+                    { Header: `${t(langKeys.field)} 12`, accessor: 'field12' },
+                    { Header: `${t(langKeys.field)} 13`, accessor: 'field13' },
+                    { Header: `${t(langKeys.field)} 14`, accessor: 'field14' },
+                    { Header: `${t(langKeys.field)} 15`, accessor: 'field15' }
                 ]);
                 fetchCampaignInternalData(row?.id);
                 break;
@@ -264,9 +267,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     selectedRowsTemp = { ...detaildata.selectedRows };
                 }
                 else {
-                    //selectedRowsTemp = { ...auxResult.data.reduce((ad, d, i) => ({ ...ad, [d.campaignmemberid]: true }), {}) };
-                    selectedRowsTemp = { [auxResult.data[0].campaignmemberid]: true };
-
+                    selectedRowsTemp = { ...auxResult.data.reduce((ad, d, i) => ({ ...ad, [d.campaignmemberid]: true }), {}) };
                 }
                 setSelectedRows(selectedRowsTemp)
                 setDetaildata({
@@ -365,7 +366,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         setColumnList([]);
         if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
             setSelectedColumns({ ...detaildata.fields } as SelectedColumns);
-        } else {
+        }
+        else {
             setSelectedColumns(new SelectedColumns());
         }
         setSelectedRows({});
@@ -380,7 +382,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             person: []
         });
     }
-    
 
     const handleCancelModal = () => {
         setSelectedColumns({ ...selectedColumnsBackup } as SelectedColumns);
@@ -528,98 +529,115 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const AdditionalButtons = () => {
         if (detaildata.source === 'EXTERNAL') {
             return (
-                <React.Fragment>
-                    <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
-                    <input
-                        id="upload-file"
-                        name="file"
-                        type="file"
-                        accept=".xls,.xlsx"
-                        value={valuefile}
-                        style={{ display: 'none' }}
-                        onChange={(e) => handleUpload(e.target.files)}
-                    />
-                    <label htmlFor="upload-file">
-                        <Button
-                            component="span"
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            style={{ backgroundColor: "#53a6fa" }}
-                        ><Trans i18nKey={langKeys.uploadFile} />
-                        </Button>
-                    </label>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => cleanData()}
-                        style={{ backgroundColor: "#53a6fa" }}
-                    ><Trans i18nKey={langKeys.clean} />
-                    </Button>
+                <React.Fragment>  
+                    {jsonData.length == 0 && (                
+                      <>
+                        <a 
+                            href="/templates/Template Cabecera Texto con 3 Variables.xlsx" 
+                            download="Template Cabecera Texto con 3 Variables.xlsx" 
+                            style={{ textDecoration: 'none' }}
+                        >
+                            <Button
+                                component="span"
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                style={{ backgroundColor: "#5AB986" }}
+                            >
+                                <DescriptionIcon style={{ marginRight: '4px' }} />
+                                <Trans i18nKey={'Descargar Formato de Carga'} />
+                            </Button>
+                        </a>
+
+                        <input
+                            id="upload-file"
+                            name="file"
+                            type="file"
+                            accept=".xls,.xlsx"
+                            value={valuefile}
+                            style={{ display: 'none' }}
+                            onChange={(e) => handleUpload(e.target.files)}
+                        />
+                        <label htmlFor="upload-file">                     
+                            <Button
+                                component="span"
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                style={{ backgroundColor: "#5AB986" }}
+                            ><CloudUploadIcon style={{marginRight:'4px'}}/><Trans i18nKey={'Importar Base'} />
+                            </Button>
+                        </label>
+                      </>
+                        
+                    )}
+
+                    {jsonData.length > 0 && (
+                        <>
+                            <Button        
+                                disabled={ Object.keys(selectedColumns).length === 0}        
+                                variant="contained"
+                                color="primary"
+                                startIcon={<DeleteIcon />}
+                                style={{ backgroundColor: !Object.keys(selectedRows).length ? "#e0e0e0" : "#7721ad" }}
+                                onClick={() => setOpenDeleteDialog(true)}
+
+                            >
+                                {t(langKeys.delete)} 
+                            </Button>
+
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => cleanData()}
+                                style={{ backgroundColor: "#53a6fa" }}
+                                ><Trans i18nKey={langKeys.clean} />
+                            </Button>
+                        </>
+                    )}      
+
+                     <DialogZyx3Opt
+                        open={openDeleteDialog}
+                        title={t(langKeys.confirmation)}
+                        buttonText1={t(langKeys.cancel)}                   
+                        buttonText2={t(langKeys.accept)}
+                        handleClickButton1={() => setOpenDeleteDialog(false)}                    
+                        handleClickButton2={handleDeleteConfirmed}
+                        maxWidth={'xs'}
+                    >
+                        <div>{' ¿Está seguro que desea eliminar a esta(s) persona(s)?'}</div>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx3Opt>
+
+
+                    <DialogZyx3Opt
+                        open={openCleanDialog}
+                        title={t(langKeys.confirmation)}
+                        buttonText1={t(langKeys.cancel)}                   
+                        buttonText2={t(langKeys.accept)}
+                        handleClickButton1={() => setOpenCleanDialog(false)}
+                        handleClickButton2={handleCleanConfirmed}
+                        maxWidth={'xs'}
+                    >
+                        <div>{' ¿Está seguro que desea eliminar toda la tabla?'}</div>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx3Opt>                 
+
                 </React.Fragment>
             )
         }
         else {
             return <>
-                <Button        
-                    disabled={ Object.keys(selectedColumns).length === 0}        
-                    variant="contained"
-                    color="primary"
-                    startIcon={<DeleteIcon />}
-                    style={{ backgroundColor: !Object.keys(selectedRows).length ? "#e0e0e0" : "#7721ad" }}
-                    onClick={() => setOpenDeleteDialog(true)}
-
-                >
-                    {t(langKeys.delete)} 
-                </Button>
-
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    //onClick={() => cleanData()}
-                    onClick={() => setOpenCleanDialog(true)}
-                    style={{ backgroundColor: "#53a6fa" }}
-                ><Trans i18nKey={langKeys.clean} />
-                </Button>                
-               
-
-                <DialogZyx3Opt
-                    open={openDeleteDialog}
-                    title={t(langKeys.confirmation)}
-                    buttonText1={t(langKeys.cancel)}                   
-                    buttonText2={t(langKeys.accept)}
-                    handleClickButton1={() => setOpenDeleteDialog(false)}                    
-                    handleClickButton2={handleDeleteConfirmed}
-                    maxWidth={'xs'}
-                >
-                    <div>{' ¿Está seguro que desea eliminar a estas personas?'}</div>
-                    <div className="row-zyx">
-                    </div>
-                </DialogZyx3Opt>
-
-
-                <DialogZyx3Opt
-                    open={openCleanDialog}
-                    title={t(langKeys.confirmation)}
-                    buttonText1={t(langKeys.cancel)}                   
-                    buttonText2={t(langKeys.accept)}
-                    handleClickButton1={() => setOpenCleanDialog(false)}
-                    handleClickButton2={handleCleanConfirmed}
-                    maxWidth={'xs'}
-                >
-                    <div>{' ¿Está seguro que desea eliminar toda la tabla?'}</div>
-                    <div className="row-zyx">
-                    </div>
-                </DialogZyx3Opt>
-
-              
-
-                {/* <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b> */}
+                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
             </>
         }
     }
+
+    console.log('Data importada: ', jsonData)
+
 
     return (
         <React.Fragment>
@@ -635,7 +653,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             filterrange={true}
                             FiltersElement={<></>}
                             ButtonsElement={() => <>
-                                {/* <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b> */}
+                                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
                             </>}
                             fetchData={fetchPaginatedData}
                             useSelection={true}
@@ -646,7 +664,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             setAllRowsSelected={setAllRowsSelected}
                         />
                         :
-                        <TableZyx //para TEST CORREO vemos esta tabla
+                        <TableZyx
                             titlemodule=" "
                             columns={headers}
                             data={jsonData}
@@ -661,7 +679,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             allRowsSelected={allRowsSelected}
                             setAllRowsSelected={setAllRowsSelected}
                         />
-                    
                 }
 
             </div>

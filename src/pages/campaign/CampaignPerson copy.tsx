@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DialogZyx } from 'components';
+import { DialogZyx, DialogZyx3Opt } from 'components';
 import { Dictionary, ICampaign, IFetchData, MultiData, SelectedColumns } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../../components/fields/table-simple';
@@ -9,13 +9,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCampaignMemberSel, campaignPersonSel, uploadExcel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { FrameProps } from './CampaignDetail';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import AssignmentIcon from '@material-ui/icons/Assignment';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 interface DetailProps {
@@ -85,6 +83,31 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [fetchDataAux, setfetchDataAux] = useState<any>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, setTotalRow] = useState(0);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openCleanDialog, setOpenCleanDialog] = useState(false);
+
+    const deleteSelectedRows = () => {
+        const newJsonData = jsonData.filter(row => !selectedRows[row.campaignmemberid]);    
+        setJsonData(newJsonData);
+        setSelectedRows({});    
+        setDetaildata({
+            ...detaildata,
+            jsonData: newJsonData,
+            selectedRows: {},
+            person: detaildata.person?.filter(person => !selectedRows[person.campaignmemberid])
+        });
+    }
+
+    const handleDeleteConfirmed = () => {
+        deleteSelectedRows();
+        setOpenDeleteDialog(false);
+    };
+  
+    const handleCleanConfirmed = () => {
+        deleteSelectedRows();
+        setOpenDeleteDialog(false);
+    };        
+
     const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setPaginatedWait(true);
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
@@ -141,25 +164,24 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         switch (detaildata.source) {
             case 'INTERNAL':
                 setHeaders([
-                    { Header: t(langKeys.name), accessor: 'displayname' },
-                    { Header: 'PCC', accessor: 'personcommunicationchannelowner' },
-                    { Header: t(langKeys.type), accessor: 'type' },
-                    { Header: t(langKeys.status), accessor: 'status' },
-                    { Header: `${t(langKeys.field)} 1`, accessor: 'field1' },
-                    { Header: `${t(langKeys.field)} 2`, accessor: 'field2' },
-                    { Header: `${t(langKeys.field)} 3`, accessor: 'field3' },
-                    { Header: `${t(langKeys.field)} 4`, accessor: 'field4' },
-                    { Header: `${t(langKeys.field)} 5`, accessor: 'field5' },
-                    { Header: `${t(langKeys.field)} 6`, accessor: 'field6' },
-                    { Header: `${t(langKeys.field)} 7`, accessor: 'field7' },
-                    { Header: `${t(langKeys.field)} 8`, accessor: 'field8' },
-                    { Header: `${t(langKeys.field)} 9`, accessor: 'field9' },
-                    { Header: `${t(langKeys.field)} 10`, accessor: 'field10' },
-                    { Header: `${t(langKeys.field)} 11`, accessor: 'field11' },
-                    { Header: `${t(langKeys.field)} 12`, accessor: 'field12' },
-                    { Header: `${t(langKeys.field)} 13`, accessor: 'field13' },
-                    { Header: `${t(langKeys.field)} 14`, accessor: 'field14' },
-                    { Header: `${t(langKeys.field)} 15`, accessor: 'field15' }
+                    { Header: 'Destinatarios', accessor: 'personcommunicationchannelowner' },
+                    { Header: t(langKeys.name_plural), accessor: 'firstrealname' }, 
+                    { Header: t(langKeys.ticket_lastname), accessor: 'lastrealname' }, 
+                    { Header: `${t(langKeys.variable)} 1`, accessor: 'field1' },
+                    { Header: `${t(langKeys.variable)} 2`, accessor: 'field2' },
+                    { Header: `${t(langKeys.variable)} 3`, accessor: 'field3' },                  
+                    { Header: `${t(langKeys.variable)} 4`, accessor: 'field4' },
+                    { Header: `${t(langKeys.variable)} 5`, accessor: 'field5' },
+                    { Header: `${t(langKeys.variable)} 6`, accessor: 'field6' },
+                    { Header: `${t(langKeys.variable)} 7`, accessor: 'field7' },
+                    { Header: `${t(langKeys.variable)} 8`, accessor: 'field8' },
+                    { Header: `${t(langKeys.variable)} 9`, accessor: 'field9' },
+                    { Header: `${t(langKeys.variable)} 10`, accessor: 'field10' },
+                    { Header: `${t(langKeys.variable)} 11`, accessor: 'field11' },
+                    { Header: `${t(langKeys.variable)} 12`, accessor: 'field12' },
+                    { Header: `${t(langKeys.variable)} 13`, accessor: 'field13' },
+                    { Header: `${t(langKeys.variable)} 14`, accessor: 'field14' },
+                    { Header: `${t(langKeys.variable)} 15`, accessor: 'field15' }
                 ]);
                 fetchCampaignInternalData(row?.id);
                 break;
@@ -242,7 +264,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     selectedRowsTemp = { ...detaildata.selectedRows };
                 }
                 else {
-                    selectedRowsTemp = { ...auxResult.data.reduce((ad, d, i) => ({ ...ad, [d.campaignmemberid]: true }), {}) };
+                    //selectedRowsTemp = { ...auxResult.data.reduce((ad, d, i) => ({ ...ad, [d.campaignmemberid]: true }), {}) };
+                    selectedRowsTemp = { [auxResult.data[0].campaignmemberid]: true };
+
                 }
                 setSelectedRows(selectedRowsTemp)
                 setDetaildata({
@@ -341,8 +365,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         setColumnList([]);
         if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
             setSelectedColumns({ ...detaildata.fields } as SelectedColumns);
-        }
-        else {
+        } else {
             setSelectedColumns(new SelectedColumns());
         }
         setSelectedRows({});
@@ -357,6 +380,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             person: []
         });
     }
+    
 
     const handleCancelModal = () => {
         setSelectedColumns({ ...selectedColumnsBackup } as SelectedColumns);
@@ -502,7 +526,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     const AdditionalButtons = () => {
-       
         if (detaildata.source === 'EXTERNAL') {
             return (
                 <React.Fragment>
@@ -539,43 +562,61 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         else {
             return <>
-                <Button                
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AssignmentIcon style={{ color: 'white' }} />}
-                    style={{ width: 250, backgroundColor: "#55BD84", marginLeft:'0.5rem' }}
-                    //onClick={() => fetchData(fetchDataAux)}
-                >
-                    Descargar formato de carga
-                </Button>
-                <Button                
-                    variant="contained"
-                    color="primary"
-                    startIcon={<CloudDownloadIcon style={{ color: 'white' }} />}
-                    style={{ width: 150, backgroundColor: "#55BD84" }}
-                >
-                    {t(langKeys.import)} Base
-                </Button>
                 <Button        
                     disabled={ Object.keys(selectedColumns).length === 0}        
                     variant="contained"
                     color="primary"
-                    startIcon={<DeleteIcon style={{ color: 'white' }} />}
-                    style={{ width: 110, backgroundColor: "#55BD84" }}
+                    startIcon={<DeleteIcon />}
+                    style={{ backgroundColor: !Object.keys(selectedRows).length ? "#e0e0e0" : "#7721ad" }}
+                    onClick={() => setOpenDeleteDialog(true)}
+
                 >
                     {t(langKeys.delete)} 
                 </Button>
+
                 <Button
                     className={classes.button}
                     variant="contained"
                     color="primary"
-                    onClick={() => cleanData()}
-                    style={{  width: 110, backgroundColor: "#53a6fa" }}
-                >
-                    {t(langKeys.clean)}                 
-                </Button>
-                <p><span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b></p>
+                    //onClick={() => cleanData()}
+                    onClick={() => setOpenCleanDialog(true)}
+                    style={{ backgroundColor: "#53a6fa" }}
+                ><Trans i18nKey={langKeys.clean} />
+                </Button>                
+               
 
+                <DialogZyx3Opt
+                    open={openDeleteDialog}
+                    title={t(langKeys.confirmation)}
+                    buttonText1={t(langKeys.cancel)}                   
+                    buttonText2={t(langKeys.accept)}
+                    handleClickButton1={() => setOpenDeleteDialog(false)}                    
+                    handleClickButton2={handleDeleteConfirmed}
+                    maxWidth={'xs'}
+                >
+                    <div>{' ¿Está seguro que desea eliminar a estas personas?'}</div>
+                    <div className="row-zyx">
+                    </div>
+                </DialogZyx3Opt>
+
+
+                <DialogZyx3Opt
+                    open={openCleanDialog}
+                    title={t(langKeys.confirmation)}
+                    buttonText1={t(langKeys.cancel)}                   
+                    buttonText2={t(langKeys.accept)}
+                    handleClickButton1={() => setOpenCleanDialog(false)}
+                    handleClickButton2={handleCleanConfirmed}
+                    maxWidth={'xs'}
+                >
+                    <div>{' ¿Está seguro que desea eliminar toda la tabla?'}</div>
+                    <div className="row-zyx">
+                    </div>
+                </DialogZyx3Opt>
+
+              
+
+                {/* <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b> */}
             </>
         }
     }
@@ -594,7 +635,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             filterrange={true}
                             FiltersElement={<></>}
                             ButtonsElement={() => <>
-                                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+                                {/* <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b> */}
                             </>}
                             fetchData={fetchPaginatedData}
                             useSelection={true}
@@ -605,7 +646,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             setAllRowsSelected={setAllRowsSelected}
                         />
                         :
-                        <TableZyx
+                        <TableZyx //para TEST CORREO vemos esta tabla
                             titlemodule=" "
                             columns={headers}
                             data={jsonData}
@@ -620,6 +661,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             allRowsSelected={allRowsSelected}
                             setAllRowsSelected={setAllRowsSelected}
                         />
+                    
                 }
 
             </div>
