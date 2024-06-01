@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 import { EmojiData, Picker } from 'emoji-mart';
+import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import WarningIcon from '@material-ui/icons/Warning';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -68,6 +69,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
 import { AddButtonMenu, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
 import { text } from "stream/consumers";
+import { PDFRedIcon, PdfIcon } from "icons";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -1172,7 +1174,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
               setUploading(true);
               setWaitUploadFile2(true);
             } else {
-              alert(`Invalid file type. Please upload a ${fileType.toLowerCase()} file.`);
+              alert(`Tipo de archivo inválido. Por favor subir un archivo de ${fileType.toLowerCase()} adecuado.`);
             }
           }
     }, [])
@@ -1256,10 +1258,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if (value) {
             setIsProvider(true);
 
-            setValue("communicationchannelid", value.communicationchannelid);
-            setValue("communicationchanneltype", value.type);
-            setValue("communicationchanneldesc", value.communicationchanneldesc)
-            setValue("communicationchannelphone", value.phone)
+            if(getValues('type') === "HSM") {
+                setValue("communicationchannelid", value.communicationchannelid);
+                setValue("communicationchanneltype", value.type);
+                setValue("communicationchanneldesc", value.communicationchanneldesc)
+                setValue("communicationchannelphone", value.phone)
+            }
 
             if (value.type === "WHAT") {
                 setDisableNamespace(false);
@@ -1313,7 +1317,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 buttonpackagename: null,
                 buttonautofilltext: null,
                 buttonsignaturehash: null,
-                codeexpirationminutes: 0,
+                codeexpirationminutes: 1,
                 configurevalidityperiod: false,
                 safetyrecommendation: false,
                 showexpirationdate: false,
@@ -1871,19 +1875,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         size="normal"
                                     />
                                 )}
-                                <FieldSelect
-                                    className="col-6"
-                                    data={dataChannel}
-                                    disabled={!isNew || disableInput}
-                                    error={errors?.communicationchannelid?.message}
-                                    optionDesc="communicationchanneldesc"
-                                    optionValue="communicationchannelid"
-                                    onChange={(value) => changeProvider(value)}
-                                    valueDefault={getValues("communicationchannelid")}
-                                    label={getValues('type') !== 'HSM' ? t(langKeys.channel) : ''}
-                                    variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
-                                    size="normal"
-                                />
+                                {getValues("type") === "HSM" && (
+                                    <FieldSelect
+                                        className="col-6"
+                                        data={dataChannel}
+                                        disabled={!isNew || disableInput}
+                                        error={errors?.communicationchannelid?.message}
+                                        optionDesc="communicationchanneldesc"
+                                        optionValue="communicationchannelid"
+                                        onChange={(value) => changeProvider(value)}
+                                        valueDefault={getValues("communicationchannelid")}
+                                        label={getValues('type') !== 'HSM' ? t(langKeys.channel) : ''}
+                                        variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
+                                        size="normal"
+                                    />
+                                )}
                             </>
                         )}
                     </div>
@@ -2011,14 +2017,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                         {getValues('header') === ''  ? (
                                                             <label htmlFor="fileInput">
                                                                 <Button
-                                                                    startIcon={<ImageIcon/>}
+                                                                    startIcon={getValues('headertype') === 'IMAGE' ? <ImageIcon/> : getValues('headertype') === 'VIDEO' ? <VideoLibraryIcon/> : getValues('headertype') === 'DOCUMENT' ? <PDFRedIcon /> : <></>}
                                                                     variant="outlined"
                                                                     style={{backgroundColor: '#F5F5F5'}}
                                                                     onClick={onClickAttachment}
                                                                     disabled={uploading || !isNew}
                                                                     component="span" // Esto es necesario para que el botón funcione como un input de tipo file
                                                                 >
-                                                                    {getValues('headertype') === 'IMAGE' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'VIDEO' ? 'Elegir archivo MP4' : 'Elegir un documento'}
+                                                                    {getValues('headertype') === 'IMAGE' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'VIDEO' ? 'Elegir archivo MP4' : 'Elegir un documento PDF'}
                                                                 </Button>
                                                             </label>
                                                         ) : (
@@ -2543,7 +2549,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     onInput={(e) => {
                                                         let val = e.target.value.replace(/[^0-9 ]/g, "");
                                                         if (val !== "") {
-                                                            val = Math.max(0, Math.min(91, parseInt(val, 10))); // Asegura que el valor esté entre 0 y 91
+                                                            val = Math.max(1, Math.min(90, parseInt(val, 10))); // Asegura que el valor esté entre 0 y 91
                                                         }
                                                         setValue('authenticationdata.codeexpirationminutes', Number(val));
                                                         e.target.value = val;
@@ -2552,7 +2558,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     onChange={(e) => {
                                                         let val = e.target.value.replace(/[^0-9 ]/g, "");
                                                         if (val !== "") {
-                                                            val = Math.max(0, Math.min(91, parseInt(val, 10))); // Asegura que el valor esté entre 0 y 91
+                                                            val = Math.max(1, Math.min(90, parseInt(val, 10))); // Asegura que el valor esté entre 0 y 91
                                                         }
                                                         setValue('authenticationdata.codeexpirationminutes', Number(val));
                                                         e.target.value = val;
@@ -2578,7 +2584,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.buttontext)}</span>
                                     <span style={{marginBottom: 10}}>{t(langKeys.buttontextauth)}</span>
                                     <div style={{width: '50%', marginBottom: 20}}>
-                                        <FieldEdit
+                                        <FieldEditAdvanced
+                                            inputProps={{
+                                                rows: 1,
+                                                maxRows: 1
+                                            }}
                                             label={t(langKeys.code)}
                                             valueDefault={getValues('authenticationdata.buttontext')}
                                             onChange={(value) => {
@@ -2586,9 +2596,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 trigger('authenticationdata')
                                             }}
                                             maxLength={25}
-                                            size="small"
-                                            variant="outlined"
+                                            rows={1}
                                             disabled={!isNew}
+                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                         />
                                     </div>
                                     <div style={{display: 'flex', gap: 10, alignItems: 'center', marginBottom: 5}}>
@@ -2638,12 +2648,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         </div>
                                     )}
-                                    {getValues('authenticationdata.codeexpirationminutes') < getValues('authenticationdata.validityperiod') && (
-                                        <div style={{display: 'flex', padding: 10, borderRadius: 8, gap: 10, backgroundColor: '#FFF5D1', marginTop: 10}}>
-                                            <WarningIcon style={{color: '#D3A500'}}/>
-                                            <span>{t(langKeys.authtemplatemessage)}</span>
-                                        </div>
-                                    )}
                                 </div>
                                 <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
@@ -2656,6 +2660,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             expiresValue={getValues('authenticationdata.codeexpirationminutes')}
                                         />
                                     </div>
+                                    <div style={{height: 100}}/>
+                                    {getValues('authenticationdata.codeexpirationminutes') < getValues('authenticationdata.validityperiod') && (
+                                        <div style={{display: 'flex', padding: 10, borderRadius: 8, gap: 10, backgroundColor: '#FFF5D1', marginTop: 10}}>
+                                            <WarningIcon style={{color: '#D3A500'}}/>
+                                            <span>{t(langKeys.authtemplatemessage)}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -158,7 +158,7 @@ const MessageTemplates: FC = () => {
                     const { row } = props.cell;
                     const { category, type } = row?.original || {};
                     if (category && type) {
-                        return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
+                        return (type === "HSM" ? t(`TEMPLATE2_${category}`) : category).toUpperCase();
                     } else {
                         return '';
                     }
@@ -177,18 +177,19 @@ const MessageTemplates: FC = () => {
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                if(providerstatus === "CREATED" || providerstatus === "SUBMITTED") statusText = t(`TEMPLATE_PENDING`);
-                                else statusText = t(`TEMPLATE_${providerstatus}`);
+                                if(providerstatus === "CREATED" || providerstatus === "SUBMITTED") statusText = t(langKeys.TEMPLATE2_PENDING);
+                                else if(providerstatus === null) statusText = t(langKeys.TEMPLATE2_UNREGISTERED);
+                                else statusText = t(`TEMPLATE2_${providerstatus}`);
                                 break;
                             default:
-                                statusText = t('TEMPLATE_APPROVED');
+                                statusText = t(langKeys.TEMPLATE2_APPROVED);
                                 break;
                         }
 
                         let color = '';
 
                         switch (statusText) {
-                            case 'PENDIENTE':
+                            case 'EN REVISIÓN':
                                 color = '#E6C300';
                                 break;
                             case 'RECHAZADA':
@@ -238,10 +239,13 @@ const MessageTemplates: FC = () => {
                     if (type) {
                         switch (type) {
                             case "HSM":
+                                if(!providerquality) {
+                                    return t(langKeys.TEMPLATE2_UNREGISTERED);
+                                }
                                 qText = t(`template_${providerquality}`);
                                 break;
                             default:
-                                qText = '-';
+                                qText = "-";
                                 break;
                         }
 
@@ -304,6 +308,7 @@ const MessageTemplates: FC = () => {
                                     limit = t(langKeys.unlimited);
                                     break;
                                 default:
+                                    limit = t(langKeys.TEMPLATE2_UNREGISTERED)
                                     break;
                             }
                         }
