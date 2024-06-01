@@ -28,6 +28,8 @@ interface DetailProps {
     setFrameProps: (value: FrameProps) => void;
     setPageSelected: (page: number) => void;
     setSave: (value: any) => void;
+    setIdAux: (value: number) => void;
+    setTemplateAux: (value: Dictionary) => void;
 }
 
 type Button = {
@@ -196,7 +198,7 @@ type FormFields = {
 
 }
 
-export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave }) => {
+export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, setIdAux, setTemplateAux }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -448,8 +450,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }
 
+
     const onChangeMessageTemplateId = async (data: Dictionary) => {
         setValue('messagetemplateid', data?.id || 0);
+        setIdAux(data?.id || 0);      
+        setTemplateAux(dataMessageTemplate.find(template => template.id === data.id) || {})        
+   
         const messageTemplate = dataMessageTemplate.filter(d => d.id === data?.id)[0];
         setValue('message', messageTemplate?.body);
         setValue('messagetemplatename', messageTemplate?.name);
@@ -493,9 +499,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const templateId = getValues('messagetemplateid');
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
-    //console.log('Template name: ', selectedTemplate.name, 'y cabecera tipo: ', selectedTemplate.headertype)
     //console.log (selectedTemplate) 
-    //console.log('El id es:', selectedTemplate.id)
+    console.log('El id General es:', templateId)
+  
 
 
     return (

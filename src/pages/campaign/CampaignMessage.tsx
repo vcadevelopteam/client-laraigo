@@ -31,6 +31,7 @@ interface DetailProps {
     setSave: (value: any) => void;
     messageVariables: any[];
     setMessageVariables: (value: any[]) => void;
+    templateAux: Dictionary;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -114,14 +115,14 @@ class VariableHandler {
     }
 }
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables }) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, templateAux }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
 
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
-    const templateId = 4787;
+    const templateId = templateAux.id;
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
     const bodyVariables = selectedTemplate.bodyvariables;
@@ -131,7 +132,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     //console.log(selectedTemplate)
 
 
-
+    console.log('Template en mensaje', templateAux)
+    console.log('Template id en Mensaje: ', templateAux.id)
 
     useEffect(() => {
         if (frameProps.checkPage) {

@@ -403,7 +403,7 @@ export const Campaign: FC = () => {
     //     </Dialog>
     // )}
 
-    console.log(mainResult.mainData.data)
+    //console.log(mainResult.mainData.data)
  
     
     const fetchData = () => dispatch(getCollection(getCampaignLst(

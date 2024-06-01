@@ -30,6 +30,9 @@ interface DetailProps {
     setFrameProps: (value: FrameProps) => void;
     setPageSelected: (page: number) => void;
     setSave: (value: any) => void;
+    idAux: number;
+    templateAux: Dictionary;
+
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave }) => {
+export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -111,6 +114,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         deleteSelectedRows();
         setOpenDeleteDialog(false);
     };        
+    console.log(templateAux)
+
+    console.log('Variables: ', templateAux.id)
+
 
     const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setPaginatedWait(true);
@@ -162,6 +169,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             setJsonDataPerson([]);
         }
     }, [jsonData])
+
+    console.log('El id Person es:', idAux)
 
     useEffect(() => {
         // Load Headers
@@ -694,7 +703,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     }
 
-    console.log('Data importada: ', jsonData)
+    //console.log('Data importada: ', jsonData)
 
 
     return (

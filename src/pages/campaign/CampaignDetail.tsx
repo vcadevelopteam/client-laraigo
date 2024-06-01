@@ -101,6 +101,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
     ];
+    const [idAux, setIdAux] = useState(0)
+    const [templateAux, setTemplateAux] = useState<Dictionary>({})
 
     useEffect(() => {
         if (row !== null) {
@@ -743,6 +745,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    setIdAux={setIdAux}
+                    setTemplateAux={setTemplateAux}
                 />
                 : null}
             {pageSelected === 1 ?
@@ -758,6 +762,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    idAux={idAux}
+                    templateAux={templateAux}
                 />
                 : null}
             {pageSelected === 2 ?
@@ -778,6 +784,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setMessageVariables={setMessageVariables}
                     dataButtons={dataButtons}
                     setDataButtons={setDataButtons}
+                    templateAux={templateAux}
                 />
                 : null}
         </div>
