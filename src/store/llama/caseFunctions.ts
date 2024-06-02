@@ -7,7 +7,7 @@ export const llamaLoading = (state: IState): IState => ({
         ...state.llamaResult,
         loading: true,
         error: false,
-        success: undefined
+        success: undefined,
     }
 });
 
@@ -20,7 +20,7 @@ export const llamaSuccess = (state: IState, action: IAction): IState => {
             loading: false,
             error: false,
             success: true,
-        },
+        }
     }
 };
 
