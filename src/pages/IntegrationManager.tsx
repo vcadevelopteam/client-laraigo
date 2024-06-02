@@ -30,6 +30,7 @@ import {
    getdataIntegrationManager,
    uploadExcelBuffer,
    stringBDTimestampToLocalDate12hr,
+   getPropertySelByName,
 } from "common/helpers";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -294,7 +295,10 @@ const IntegrationManager: FC = () => {
 
    useEffect(() => {
       fetchData();
-      dispatch(getMultiCollection([getValuesFromDomain("ESTADOGENERICO")]));
+      dispatch(getMultiCollection([
+         getValuesFromDomain("ESTADOGENERICO"),
+         getPropertySelByName("INTEGRACIONSINCRONIZACION", "INTEGRACIONSINCRONIZACION"),
+      ]));
       return () => {
          dispatch(resetAllMain());
       };
@@ -659,13 +663,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    useEffect(() => {
       if (waitGoogleTokenExchange) {
          if (!exchangeCodeResult.loading) {
-            if (!exchangeCodeResult.error) {
-               dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
-               if (exchangeCodeResult.data) {
-                  setDataSourceConfig(pv => ({ ...pv, credentials: exchangeCodeResult.data as IGoolgeTokenInfo}))
-                  handleOpenPicker(exchangeCodeResult.data.access_token)
-               }
-            } else {
+            if (exchangeCodeResult.error) {
                dispatch(
                   showSnackbar({
                      show: true,
@@ -679,6 +677,20 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                   })
                );
             }
+            else if (exchangeCodeResult.data && !exchangeCodeResult.data.scope.includes('https://www.googleapis.com/auth/drive')) {
+               dispatch(
+                  showSnackbar({
+                     show: true,
+                     severity: "error",
+                     message: t('error_permission_no_granted'),
+                  })
+               );
+            }
+            else {
+               dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+               setDataSourceConfig(pv => ({ ...pv, credentials: exchangeCodeResult.data as IGoolgeTokenInfo}))
+               handleOpenPicker(exchangeCodeResult.data.access_token)
+            }
             dispatch(showBackdrop(false));
             setWaitGoogleTokenExchange(false);
          }
@@ -688,7 +700,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const handleOpenPicker = (token: string) => {
       openPicker({
          clientId: `${apiUrls.GOOGLECLIENTID_CHANNEL}`,
-         developerKey: 'AIzaSyB_xsVpmtbD7qrQ2WDXRkaGW9YZTOcn424',
+         developerKey: `${apiUrls.APIKEY_GC}`,
          viewId: "SPREADSHEETS",
          token: token,
          showUploadView: true,
@@ -3156,6 +3168,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                   deleteDataFunction={onDeleteData} 
                   waitImport={waitImport}
                   row={row}
+                  multiData={multiData}
             />
             )}
          </div>
@@ -3607,6 +3620,7 @@ interface ViewTableModalProps {
    deleteDataFunction: ()=> void;
    waitImport: boolean;
    row?: Dictionary | null;
+   multiData?: MultiData[];
 }
 
 interface ILangKeys {
@@ -3622,7 +3636,8 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    importDataFunction,
    deleteDataFunction,
    waitImport,
-   row
+   row,
+   multiData
 }) => {
    const { t } = useTranslation();
    const dispatch = useDispatch();
@@ -3631,6 +3646,8 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    };
    const mainAuxRes = useSelector((state) => state.main.mainAux);
    const executeRes = useSelector((state) => state.main.execute);
+   const [propValue, setPropValue] = useState(0)
+   const [nextSyncDate, setNextSyncDate] = useState('')
    
 
    useEffect(() => {
@@ -3641,6 +3658,23 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
          dispatch(resetMainAux());
       };
    }, []);
+
+   useEffect(() => {
+       const multi = multiData?.find(item => item.key === "UFN_PROPERTY_SELBYNAMEINTEGRACIONSINCRONIZACION")
+       const data = multi?.data[0].propertyvalue ?? 0
+       if (data) setPropValue(Number(data))
+   }, [multiData])
+
+   useEffect(() => {
+      if (row && row?.datasource_syncinfo?.last_sync && propValue) {
+         const fecha = new Date(row?.datasource_syncinfo?.last_sync)
+         fecha.setMinutes(fecha.getMinutes() + 5);
+         const fechaModificada = fecha.toISOString();
+         setNextSyncDate(fechaModificada)
+      }
+   }, [propValue, row])
+   
+   
 
    useEffect(() => {
       if(waitImport){
@@ -3705,6 +3739,15 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
                            </span>
                         </div>
                      </div>
+                     { nextSyncDate !== '' && (
+                        <div style={{ display: 'flex'}}>
+                           <div>
+                              Próxima sincronización: <span style={{ fontWeight: 'bold' }}>
+                                 <span style={{ marginRight: '0.5rem' }}>{stringBDTimestampToLocalDate12hr(nextSyncDate)}</span>
+                              </span>
+                           </div>
+                        </div>
+                     )}
                   </div>
                )}
 
