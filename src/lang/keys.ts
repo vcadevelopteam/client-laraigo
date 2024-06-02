@@ -6179,6 +6179,13 @@ export const langKeys = {
   footerpage: 'footerpage',
   dynamicbuttontext: 'dynamicbuttontext',
   validtyperiodtitlehelptext: 'validtyperiodtitlehelptext',
+  TEMPLATE2_APPROVED: "TEMPLATE2_APPROVED",
+  TEMPLATE2_REJECTED: "TEMPLATE2_REJECTED",
+  TEMPLATE2_PENDING: "TEMPLATE2_PENDING",
+  TEMPLATE2_UTILITY: "TEMPLATE2_UTILITY",
+  TEMPLATE2_AUTHENTICATION: "TEMPLATE2_AUTHENTICATION",
+  TEMPLATE2_MARKETING: "TEMPLATE2_MARKETING",
+  TEMPLATE2_UNREGISTERED: "TEMPLATE2_UNREGISTERED",
 };
 
 export type LangKeys = typeof langKeys;
