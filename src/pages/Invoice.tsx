@@ -1532,7 +1532,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("voicevcacomission", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicevoipfee", {
