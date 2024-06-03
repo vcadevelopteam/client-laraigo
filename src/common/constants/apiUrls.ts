@@ -9,6 +9,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -29,6 +30,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1094526090706564',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1872023336244866',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -49,6 +51,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -89,6 +92,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -109,6 +113,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -129,6 +134,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -149,6 +155,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyCDfPhg86YSt25QynLajl7GA5Ux6YEphoA",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -169,6 +176,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -188,6 +196,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -208,6 +217,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -230,6 +240,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         FACEBOOKAPP: '235008923608113',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        APIKEY_GC: "AIzaSyD4SpzcUXvxMyj3GS45Dntt8sMdmq2BDcQ",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -260,6 +271,7 @@ const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
 const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
 const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
+const APIKEY_GC = APIS_URL[ENV].APIKEY_GC
 const USELARAIGO = APIS_URL[ENV].USELARAIGO
 const BODEGAACME = APIS_URL[ENV].BODEGAACME
 const OPENPAYSANDBOX = APIS_URL[ENV].OPENPAYSANDBOX
@@ -278,6 +290,7 @@ export const apiUrls = {
     GOOGLECLIENTID_CALENDAR,
     WEBFORMCHANNEL_FORM,
     APIKEY_GMAPS,
+    APIKEY_GC,
     USELARAIGO,
     BODEGAACME,
     OPENPAYSANDBOX,
@@ -447,11 +460,15 @@ export const apiUrls = {
     GPT_ASSISTANTS_DELETE: `${BASE_URL}/gpt/assistants/delete`,
     GPT_ASSISTANTS_DELETE_MASSIVE: `${BASE_URL}/gpt/assistants/massivedelete`,
 
-    LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
-    LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
-
-    CORP_URL: `${BASE_URL}/corp`,
-    DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
-
-    PROCESSZIPINTEGRATION: `${BASE_URL}/integrationmanager/file_upload`,
+    LLAMA_CREATE_COLLECTION: `${BASE_URL}/llama/create_collection`,
+    LLAMA_CREATE_COLLECTION_DOCUMENT: `${BASE_URL}/llama/create_collection_document`,
+    LLAMA_CREATE_COLLECTION_DOCUMENTS: `${BASE_URL}/llama/create_collection_documents`,
+    LLAMA_DELETE_COLLECTION: `${BASE_URL}/llama/delete_collection`,
+    LLAMA_MASSIVE_DELETE_COLLECTION: `${BASE_URL}/llama/massive_delete`,
+    LLAMA_EDIT_COLLECTION: `${BASE_URL}/llama/edit_collection`,
+    LLAMA_ADD_FILE: `${BASE_URL}/llama/add_file`,
+    LLAMA_ADD_FILES: `${BASE_URL}/llama/add_files`,
+    LLAMA_DELETE_FILE: `${BASE_URL}/llama/delete_file`,
+    LLAMA_QUERY: `${BASE_URL}/llama/query`,
+    LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
 };
