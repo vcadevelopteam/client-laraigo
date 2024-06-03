@@ -149,90 +149,112 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     };
 
-    const adjustAndDownloadExcel = async (url: string) => {
-    const descriptionsMap: { [key: string]: string } = {
-        "Destinatarios": "|Obligatorio|Completa la lista con números celulares o e-mails, dependiendo de la plantilla a emplear, se recomienda que se coloque el código de país al número telefónico.",
-        "Nombres": "|Opcional|Completa la lista con los nombres del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
-        "Apellidos": "|Opcional|Completa la lista con los apellidos del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
-        "Variable Adicional": "|Opcional|Puedes añadir una variable adicional que no se enviará en el cuerpo del HSM al cliente, sino que se alojará como parte de las variables que se reciban de la conversación",
-        "Variable Cabecera": "|Obligatorio|Completa colocando la variable que se asignará en el template, depediendo del destinatario enviado.",
-        "Variable": "|Obligatorio|Completa la lista con la variable {num} por configurar del template usado.",
-        "Url dinamico": "|Obligatorio| Completa tu URL dinámico {num} para cada cliente, deberas indicar el código o sección de la url personalizado.",
-        "Variable burbuja": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado.",
-        "Card imagen": "|Opcional|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) se procederá a configurar como cabecera del card {num}, depediendo del destinatario enviado.",
-        "Cabecera multimedia": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado."
+    const getDownloadLink = () => {
+        if (templateAux.headertype === "TEXT" && !templateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
+            return "/templates/Template Cabecera Texto y 3 variables.xlsx";
+        }
+    
+        if (templateAux.headertype === "TEXT" && templateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
+            return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
+        }
+    
+        if (
+            templateAux.templatetype === "CAROUSEL" &&
+            templateAux.carouseldata &&
+            templateAux.carouseldata.length > 0 &&
+            templateAux.buttonsgeneric &&
+            templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")
+        ) {
+            return "/templates/Template Carrusel, 2 variables y 1 variable URL dinámica.xlsx";
+        }
+    
+        if (
+            templateAux.templatetype === "MULTIMEDIA" &&
+            (templateAux.headertype === "VIDEO" || templateAux.headertype === "DOCUMENT") &&
+            templateAux.header &&
+            templateAux.header.trim() !== "" &&
+            templateAux.bodyvariables &&
+            templateAux.bodyvariables.length > 0
+        ) {
+            return "/templates/Template Cabecera Multimedia y 3 variables.xlsx";
+        }
+    
+        return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
     };
 
-    try {
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-        const data = new Uint8Array(arrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-
-        const sheetData = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
-        const columnNames: string[] = sheetData[1];
-
-        const requiredVariableColumns = templateAux.bodyvariables 
-            ? templateAux.bodyvariables.map((varObj: { text: string; variable: number }) => `Variable ${varObj.variable}`)
-            : [];
-        
-        const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
-        const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url dinamico ${index + 1}`);
-
-        let newColumnNames;
-        if (templateAux.headertype === "TEXT") {
-            newColumnNames = [
-                ...columnNames.slice(0, 3),
-                "Variable Cabecera",
-                ...columnNames.slice(3)
-            ];
-        } else {
-            newColumnNames = columnNames.slice(0, 3).concat(requiredVariableColumns).concat(dynamicUrlColumns).concat("Variable Adicional 1");
-        }
-
-        newColumnNames = newColumnNames.concat(requiredVariableColumns).concat(dynamicUrlColumns).concat("Variable Adicional 1");
-
-        const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
-
-        newColumnNames.forEach((columnName, index) => {
-            let descriptionKey = columnName;
-
-            if (descriptionKey.startsWith("Variable Adicional")) {
-                descriptionKey = "Variable Adicional";
-            } else if (descriptionKey.startsWith("Variable")) {
-                const variableNum = columnName.split(' ')[1];
-                newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
-                return;
-            } else if (descriptionKey.startsWith("Url dinamico")) {
-                const urlNum = columnName.split(' ')[2];
-                newSheetData[0][index] = descriptionsMap["Url dinamico"].replace("{num}", urlNum);
-                return;
-            } else if (descriptionKey.startsWith("Card imagen")) {
-                const cardNum = columnName.split(' ')[2];
-                newSheetData[0][index] = descriptionsMap["Card imagen"].replace("{num}", cardNum);
-                return;
-            }
-
-            newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
-        });
-
-        const newWorksheet = XLSX.utils.aoa_to_sheet(newSheetData);
-        const newWorkbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
-
-        const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'binary' });
-        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'Formato de Carga.xlsx');
-    } catch (error) {
-        console.error("Error al ajustar y descargar el archivo Excel", error);
-    }
-};
-
+    const adjustAndDownloadExcel = async (url: string) => {
+        const descriptionsMap: { [key: string]: string } = {
+            "Destinatarios": "|Obligatorio|Completa la lista con números celulares o e-mails, dependiendo de la plantilla a emplear, se recomienda que se coloque el código de país al número telefónico.",
+            "Nombres": "|Opcional|Completa la lista con los nombres del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
+            "Apellidos": "|Opcional|Completa la lista con los apellidos del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
+            "Variable Adicional": "|Opcional|Puedes añadir una variable adicional que no se enviará en el cuerpo del HSM al cliente, sino que se alojará como parte de las variables que se reciban de la conversación",
+            "Variable Cabecera": "|Obligatorio|Completa colocando la variable que se asignará en el template, depediendo del destinatario enviado.",
+            "Variable": "|Obligatorio|Completa la lista con la variable {num} por configurar del template usado.",
+            "Url dinamico": "|Obligatorio| Completa tu URL dinámico {num} para cada cliente, deberas indicar el código o sección de la url personalizado.",
+            "Variable burbuja": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado.",
+            "Card imagen": "|Opcional|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) se procederá a configurar como cabecera del card {num}, depediendo del destinatario enviado.",
+            "Cabecera multimedia": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado."
+        };
     
-    console.log(templateAux)
-    console.log('Variables: ', templateAux.id)
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const workbook = XLSX.read(data, { type: 'array' });
+    
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+    
+            const sheetData = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+            const columnNames: string[] = sheetData[1];
+    
+            const requiredVariableColumns = templateAux.bodyvariables 
+                ? templateAux.bodyvariables.map((varObj: { text: string; variable: number }) => `Variable ${varObj.variable}`)
+                : [];
+            
+            // Verificar si hay buttonsgeneric de tipo URL y dynamic
+            const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
+            const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url dinamico ${index + 1}`);
+    
+            // Agregar las columnas de variables y las de Url dinamico al final
+            const newColumnNames = columnNames.slice(0, 3).concat(requiredVariableColumns).concat(dynamicUrlColumns).concat("Variable Adicional 1");
+            const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
+    
+            // Asignar descripciones correspondientes
+            newColumnNames.forEach((columnName, index) => {
+                let descriptionKey = columnName;
+    
+                if (descriptionKey.startsWith("Variable Adicional")) {
+                    descriptionKey = "Variable Adicional";
+                } else if (descriptionKey.startsWith("Variable")) {
+                    const variableNum = columnName.split(' ')[1];
+                    newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
+                    return;
+                } else if (descriptionKey.startsWith("Url dinamico")) {
+                    const urlNum = columnName.split(' ')[2];
+                    newSheetData[0][index] = descriptionsMap["Url dinamico"].replace("{num}", urlNum);
+                    return;
+                } else if (descriptionKey.startsWith("Card imagen")) {
+                    const cardNum = columnName.split(' ')[2];
+                    newSheetData[0][index] = descriptionsMap["Card imagen"].replace("{num}", cardNum);
+                    return;
+                }
+    
+                newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
+            });
+    
+            // Convertir la nueva data a un worksheet
+            const newWorksheet = XLSX.utils.aoa_to_sheet(newSheetData);
+            const newWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
+    
+            // Descargar el archivo ajustado con el nombre "Formato de Carga.xlsx"
+            const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'binary' });
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'Formato de Carga.xlsx');
+        } catch (error) {
+            console.error("Error al ajustar y descargar el archivo Excel", error);
+        }
+    };
 
     const s2ab = (s: string) => {
         const buf = new ArrayBuffer(s.length);
@@ -241,7 +263,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             view[i] = s.charCodeAt(i) & 0xFF;
         }
         return buf;
-    };    
+    };
+        
+    console.log(templateAux)
+    console.log('Variables: ', templateAux.id)
     
     useEffect(() => {
         if (frameProps.checkPage) {
@@ -416,35 +441,45 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
             return;
         }
-
+    
         const file = files[0];
         if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
             dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
             return;
         }
-
+    
         const reader = new FileReader();
-
+    
         reader.onload = (e) => {
             const data = e.target?.result;
             if (!data) return;
-
+    
             const workbook = XLSX.read(data, { type: 'binary' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
             const json = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
-
-            const headers: string[] = json[0] as string[];
-            const rows = json.slice(1);
-
+    
+            let headers: string[];
+            let rows: string[][];
+            if (json[0][0].startsWith('|Obligatorio|') && json[1][0] === 'Destinatarios') {
+                headers = json[1] as string[];
+                rows = json.slice(2);
+            } else if (json[0][0] === 'Destinatarios') {
+                headers = json[0] as string[];
+                rows = json.slice(1);
+            } else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: "Formato de archivo incorrecto" }));
+                return;
+            }
+    
             const filteredRows = rows.filter(row => {
                 return headers.every((header, index) => row[index] !== undefined && row[index] !== null && row[index] !== '');
             });
-
+    
             const uniqueRows: { [key: string]: boolean } = {};
             const deduplicatedRows: string[][] = [];
             let duplicatesFound = false;
-
+    
             filteredRows.forEach(row => {
                 const rowString = JSON.stringify(row);
                 if (!uniqueRows[rowString]) {
@@ -454,11 +489,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     duplicatesFound = true;
                 }
             });
-
+    
             if (duplicatesFound) {
                 dispatch(showSnackbar({ show: true, severity: "warning", message: "Se encontraron filas duplicadas y se eliminaron." }));
             }
-
+    
             setJsonData(deduplicatedRows.map(row => {
                 const obj: { [key: string]: any } = {};
                 headers.forEach((header: string, index: number) => {
@@ -466,7 +501,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 });
                 return obj;
             }));
-
+    
             setColumnList(headers);
             setSelectedColumns({
                 primarykey: headers[0],
@@ -478,9 +513,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 accessor: c
             })));
         };
-
+    
         reader.readAsBinaryString(file);
-    };  
+    };
+    
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
@@ -702,7 +738,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                       <>
                         <a 
                             href="#"
-                            onClick={() => adjustAndDownloadExcel()}
+                            onClick={() => adjustAndDownloadExcel(getDownloadLink())}
                             style={{ textDecoration: 'none' }}
                         >
                             <Button

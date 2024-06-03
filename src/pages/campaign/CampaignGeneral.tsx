@@ -630,7 +630,22 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 data={dictToArrayKV(dataExecutionType)}
                                 optionDesc="value"
                                 optionValue="key"
-                            />                       
+                            />   
+                            
+                            {getValues('executiontype') === 'SCHEDULED' ?
+                                <IconButton
+                                    style={{ flexGrow: 0 }}
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    size="small"
+                                    onClick={(e) => setOpenModal(true)}
+                                >
+                                    <EventIcon style={{ color: '#777777' }} />
+                                </IconButton>
+                                :
+                                null
+                            }                    
                                                     
                         </FormControl>
                         :
@@ -641,7 +656,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
 
-                    {getValues('executiontype') === 'SCHEDULED' ?
+                    {/* {getValues('executiontype') === 'SCHEDULED' ?
 
                         <div className="row-zyx">
                         <FormControl className="col-3">                          
@@ -674,10 +689,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         </div>                  
 
                         : null                                
-                    }  
-                    
-                   
-
+                    }   */}
 
                     {edit ?
                         <FormControl className="col-6" >                      
