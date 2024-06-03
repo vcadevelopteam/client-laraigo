@@ -106,7 +106,6 @@ const useStyles = makeStyles((theme) => ({
 interface PdfAttachmentProps {
     url: string;
 }
-
 const PdfAttachment: React.FC<PdfAttachmentProps> = ({ url }) => {
     const classes = useStyles();
 
@@ -198,16 +197,10 @@ const replaceVariables = (text: string, variableValues: Dictionary = {}) => {
     });
 };
 
-
 const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, variableValues: Dictionary }> = ({ selectedTemplate, variableValues }) => {
     const classes = useStyles();
-
     const renderedHeader = replaceVariables(selectedTemplate.header || "", variableValues);
     const renderedBody = replaceVariables(selectedTemplate.body || "", variableValues);
-
-    console.log("TemplatePreview - variableValues:", variableValues);
-    console.log("TemplatePreview - renderedHeader:", renderedHeader);
-    console.log("TemplatePreview - renderedBody:", renderedBody);
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>

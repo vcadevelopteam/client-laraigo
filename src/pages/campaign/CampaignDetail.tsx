@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
@@ -103,6 +102,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     ];
     const [idAux, setIdAux] = useState(0)
     const [templateAux, setTemplateAux] = useState<Dictionary>({})
+    const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
 
     useEffect(() => {
         if (row !== null) {
@@ -764,6 +764,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setSave={setSave}
                     idAux={idAux}
                     templateAux={templateAux}
+                    setJsonPersons={setJsonPersons}
                 />
                 : null}
             {pageSelected === 2 ?
@@ -785,6 +786,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dataButtons={dataButtons}
                     setDataButtons={setDataButtons}
                     templateAux={templateAux}
+                    jsonPersons={jsonPersons}
                 />
                 : null}
         </div>

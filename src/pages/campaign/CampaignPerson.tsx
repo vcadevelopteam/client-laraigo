@@ -20,6 +20,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
+//setTemplateAux(dataMessageTemplate.find(template => template.id === data.id) || {})        
+
+
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
@@ -34,7 +37,7 @@ interface DetailProps {
     setSave: (value: any) => void;
     idAux: number;
     templateAux: Dictionary;
-
+    setJsonPersons:  (value: Dictionary) => void;
 }
 
 interface TemplateAux {
@@ -63,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux }) => {
+export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux, setJsonPersons}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -435,24 +438,24 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
             return;
         }
-    
+
         const file = files[0];
         if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
             dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
             return;
         }
-    
+
         const reader = new FileReader();
-    
+
         reader.onload = (e) => {
             const data = e.target?.result;
             if (!data) return;
-    
+
             const workbook = XLSX.read(data, { type: 'binary' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
             const json = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
-    
+
             let headers: string[];
             let rows: string[][];
             if (json[0][0].startsWith('|Obligatorio|') && json[1][0] === 'Destinatarios') {
@@ -465,15 +468,15 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 dispatch(showSnackbar({ show: true, severity: "error", message: "Formato de archivo incorrecto" }));
                 return;
             }
-    
+
             const filteredRows = rows.filter(row => {
                 return headers.every((header, index) => row[index] !== undefined && row[index] !== null && row[index] !== '');
             });
-    
+
             const uniqueRows: { [key: string]: boolean } = {};
             const deduplicatedRows: string[][] = [];
             let duplicatesFound = false;
-    
+
             filteredRows.forEach(row => {
                 const rowString = JSON.stringify(row);
                 if (!uniqueRows[rowString]) {
@@ -483,31 +486,34 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     duplicatesFound = true;
                 }
             });
-    
+
             if (duplicatesFound) {
                 dispatch(showSnackbar({ show: true, severity: "warning", message: "Se encontraron filas duplicadas y se eliminaron." }));
             }
-    
-            setJsonData(deduplicatedRows.map(row => {
+
+            const processedData = deduplicatedRows.map(row => {
                 const obj: { [key: string]: any } = {};
                 headers.forEach((header: string, index: number) => {
                     obj[header] = row[index];
                 });
                 return obj;
-            }));
-    
+            });
+
+            setJsonData(processedData);
+            setJsonPersons(processedData); 
+
             setColumnList(headers);
             setSelectedColumns({
                 primarykey: headers[0],
                 columns: headers.slice(1),
             } as SelectedColumns);
-            
+
             setHeaders(headers.map(c => ({
                 Header: c,
                 accessor: c
             })));
         };
-    
+
         reader.readAsBinaryString(file);
     };
     
