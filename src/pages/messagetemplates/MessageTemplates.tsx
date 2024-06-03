@@ -168,6 +168,14 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "providerstatus",
                 Header: t(langKeys.status),
+                type: "select",
+                listSelectFilter: [
+                    { key: t(langKeys.TEMPLATE2_APPROVED), value: "APPROVED" },
+                    { key: t(langKeys.TEMPLATE2_PENDING), value: "PENDING" },
+                    { key: t(langKeys.TEMPLATE2_REJECTED), value: "REJECTED" },
+                    { key: t(langKeys.TEMPLATE2_CREATED), value: "CREATED" },
+                    { key: t(langKeys.TEMPLATE2_SUBMITTED), value: "SUBMITTED" },
+                ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const { providerstatus, type } = row?.original || {};
@@ -177,8 +185,7 @@ const MessageTemplates: FC = () => {
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                if(providerstatus === "CREATED" || providerstatus === "SUBMITTED") statusText = t(langKeys.TEMPLATE2_PENDING);
-                                else if(providerstatus === null) statusText = t(langKeys.TEMPLATE2_UNREGISTERED);
+                                if(providerstatus === null) statusText = t(langKeys.TEMPLATE2_UNREGISTERED);
                                 else statusText = t(`TEMPLATE2_${providerstatus}`);
                                 break;
                             default:
@@ -217,11 +224,16 @@ const MessageTemplates: FC = () => {
                 accessor: "templatetype",
                 Header: t(langKeys.templatetype),
                 prefixTranslation: "messagetemplate_",
+                type: "select",
+                listSelectFilter: [
+                    { key: t(langKeys.TEMPLATE2_MULTIMEDIA), value: "MULTIMEDIA" },
+                    { key: t(langKeys.TEMPLATE2_CAROUSEL), value: "CAROUSEL" },
+                ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const { category, type, templatetype } = row?.original || {};
                     if (category && type) {
-                        return (((type === "HSM" && category !== 'AUTHENTICATION') || type !== 'HSM') ? t(`messagetemplate_${templatetype.toLowerCase()}`).toUpperCase() : '');
+                        return t(`messagetemplate_${templatetype.toLowerCase()}`).toUpperCase();
                     } else {
                         return '';
                     }
@@ -230,6 +242,12 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "providerquality",
                 Header: t(langKeys.quality),
+                type: "select",
+                listSelectFilter: [
+                    { key: t(langKeys.template_HIGH), value: "HIGH" },
+                    { key: t(langKeys.template_MEDIUM), value: "MEDIUM" },
+                    { key: t(langKeys.template_LOW), value: "LOW" },
+                ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const { providerquality, type } = row?.original || {};
@@ -280,6 +298,15 @@ const MessageTemplates: FC = () => {
                 accessor: "providermessagelimit",
                 Header: t(langKeys.messageslimit),
                 helpText: t(langKeys.limitmessagehelptext),
+                type: "select",
+                listSelectFilter: [
+                    { key: `50 ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_0.05K" },
+                    { key: `250 ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_0.25K" },
+                    { key: `1K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_1K" },
+                    { key: `10K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_10K" },
+                    { key: `100K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_100K" },
+                    { key: t(langKeys.unlimited), value: "TIER_UNLIMITED" },
+                ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const { providermessagelimit, type } = row?.original || {};
