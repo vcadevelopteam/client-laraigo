@@ -143,8 +143,8 @@ const ButtonList: React.FC<{ buttons: any }> = ({ buttons }) => {
             case 'URL':
                 return <OpenInNewIcon style={{ height: '18px' }} />;
             case 'PHONE':
-                case 'PHONE_NUMBER':
-                    return <PhoneIcon style={{ height: '18px' }} />;
+            case 'PHONE_NUMBER':
+                return <PhoneIcon style={{ height: '18px' }} />;
             case 'QUICK_REPLY':
                 return <ReplyIcon style={{ height: '18px' }} />;
             case 'AUTHENTICATION':
@@ -192,12 +192,26 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     );
 };
 
-const TemplatePreview: React.FC<{ selectedTemplate: Dictionary }> = ({ selectedTemplate }) => {
+const replaceVariables = (text: string, variableValues: Dictionary = {}) => {
+    return text.replace(/{{(\d+)}}/g, (_, variableNumber) => {
+        return variableValues[variableNumber] || `{{${variableNumber}}}`;
+    });
+};
+
+
+const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, variableValues: Dictionary }> = ({ selectedTemplate, variableValues }) => {
     const classes = useStyles();
+
+    const renderedHeader = replaceVariables(selectedTemplate.header || "", variableValues);
+    const renderedBody = replaceVariables(selectedTemplate.body || "", variableValues);
+
+    console.log("TemplatePreview - variableValues:", variableValues);
+    console.log("TemplatePreview - renderedHeader:", renderedHeader);
+    console.log("TemplatePreview - renderedBody:", renderedBody);
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
-            <div className={classes.containerDetail} style={{  display: 'block', alignContent: 'center' }}>
+            <div className={classes.containerDetail} style={{ display: 'block', alignContent: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                     <div style={{ maxWidth: '25rem', borderRadius: '0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}>
                        
@@ -212,17 +226,17 @@ const TemplatePreview: React.FC<{ selectedTemplate: Dictionary }> = ({ selectedT
                                             style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
                                         />
                                     ) : selectedTemplate?.headertype === "TEXT" ? (
-                                        <div style={{ fontSize: '1.2rem' }}>{selectedTemplate.header}</div>
+                                        <div style={{ fontSize: '1.2rem' }}>{renderedHeader}</div>
                                     ) : selectedTemplate?.headertype === "VIDEO" ? (
                                         <video controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
                                             <source src={selectedTemplate.header} type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
                                     ) : (
-                                        <div style={{ fontSize: '1.2rem' }}>{selectedTemplate.header}</div>
+                                        <div style={{ fontSize: '1.2rem' }}>{renderedHeader}</div>
                                     )}
 
-                                    <p>{selectedTemplate.body}</p>
+                                    <p>{renderedBody}</p>
 
                                     {selectedTemplate?.templatetype === "CAROUSEL" && selectedTemplate.carouseldata?.length > 0 && (
                                         <CarouselPreview carouselData={selectedTemplate.carouseldata} />

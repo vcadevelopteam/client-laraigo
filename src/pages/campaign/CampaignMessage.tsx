@@ -8,14 +8,12 @@ import { filterPipe } from 'common/helpers';
 import { FrameProps } from './CampaignDetail';
 import { CircularProgress, IconButton, Paper, Box, FormControl } from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import PhoneIcon from '@material-ui/icons/Phone';
-import ListIcon from '@material-ui/icons/List';
-import ReplyIcon from '@material-ui/icons/Reply';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import AddIcon from '@material-ui/icons/Add';
 import TemplatePreview from './components/TemplatePreview';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
@@ -124,13 +122,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const templateId = templateAux.id;
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
-
     const bodyVariables = selectedTemplate.bodyvariables;
-
-
-    // console.log('Variables en el template:', bodyVariables.length);
-    //console.log(selectedTemplate)
-
+    const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
+    const [variableValues, setVariableValues] = useState<Dictionary>({});
 
     console.log('Template en mensaje', templateAux)
     console.log('Template id en Mensaje: ', templateAux.id)
@@ -203,6 +197,33 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }
 
+    const handleAddVariable = () => {
+        setAdditionalVariables(prev => {
+            if (prev.length < 10) {
+                return [...prev, prev.length + 1];
+            }
+            return prev;
+        });
+    };
+
+    const handleRemoveVariable = (indexToRemove: number) => {
+        setAdditionalVariables(prev => {
+            const newVariables = prev.filter((_, index) => index !== indexToRemove);
+            return newVariables.map((_, index) => index + 1);
+        });
+    };
+
+    const handleVariableChange = (variableNumber: number, selectedOption: any) => {
+        const value = selectedOption.value; 
+        setVariableValues(prevValues => {
+            const newValues = { ...prevValues, [variableNumber]: value };
+            console.log("handleVariableChange - variableNumber:", variableNumber);
+            console.log("handleVariableChange - value:", value);
+            console.log("handleVariableChange - newValues:", newValues);
+            return newValues;
+        });
+    };   
+
     useEffect(() => {
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
             const variablesList = detaildata.message?.match(/({{)(.*?)(}})/g) || [];
@@ -258,61 +279,53 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
                            
                             <div className={classes.containerStyle}>
-                            {bodyVariables.map((variable: Dictionary) => (
-                                <div key={variable.variable}>
-                                <p style={{ marginBottom: '3px' }}>{`Variable {{${variable.variable}}}`}</p>
-                                <FieldSelect
-                                    variant="outlined"
-                                    uset={true}
-                                    className="col-12"
-                                    data={[{ key: variable.variable, value: variable.text }]}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                />
-                                </div>
-                            ))}
+                                {bodyVariables.map((variable: Dictionary) => (
+                                    <div key={variable.variable}>
+                                        <p style={{ marginBottom: '3px' }}>{`Variable {{${variable.variable}}}`}</p>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            data={[{ key: variable.variable, value: variable.text }]}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            onChange={(selectedOption) => handleVariableChange(variable.variable, selectedOption)}
+                                        />
+                                    </div>
+                                ))}
                             </div>
-
-
                         </FormControl>   
 
                         <FormControl className="col-12">                          
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                             <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>                        
                             
-                            <div style={{width:'50%', display:'flex', alignItems:'center', gap:'5px'}}><AddIcon/> Añadir variable adicional</div>
-                           
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                <div style={{ flex: 1 }}>
-                                    <p>{'Variable {{1}}'}</p>
-                                    <div  style={{ flex: 1 }}>
-                                    <FieldSelect
-                                            variant="outlined"       
-                                            uset={true}       
-                                            label='Variable 3'                     
+                            <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
+                                <AddIcon /> Añadir variable adicional
+                            </div>
+
+                            <div className={classes.containerStyle}>
+                            {additionalVariables.map((variable, index) => (
+                                <div style={{ flex: 1 }} key={index}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                        <p>{`Variable {{${variable}}}`}</p>
+                                        <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            label={`Variable ${variable + 2}`}
                                             className="col-12"
                                             data={[]}
                                             optionDesc="value"
                                             optionValue="key"
-                                        />    
-                                    </div>    
-                                </div>       
-                                <div style={{ flex: 1 }}>
-                                    <p>{'Variable {{2}}'}</p>
-                                    <div  style={{ flex: 1 }}>
-                                    <FieldSelect
-                                            variant="outlined"       
-                                            uset={true}       
-                                            label='Variable 4'                     
-                                            className="col-12"
-                                            data={[]}
-                                            optionDesc="value"
-                                            optionValue="key"
-                                        />    
-                                    </div>    
-                                </div>                            
-                                    
-                            </div>         
+                                            onChange={(e) => handleVariableChange(variable, e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            ))}                 
+                            </div>                          
                         </FormControl>     
                       
                       
@@ -321,53 +334,36 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                 <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             
                     <div style={{fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}  </div> 
-                  
-                    <TemplatePreview selectedTemplate={selectedTemplate} />
 
+                    <TemplatePreview selectedTemplate={selectedTemplate} variableValues={variableValues} />
 
                     <FormControl className="col-12">                          
-                    <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
-                    <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>                        
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <div style={{ flex: 1 }}>
-                            <p>{'Variable 1'}</p>
-                            <div  style={{ flex: 1 }}>
-                            <FieldSelect
-                                    variant="outlined"       
-                                    uset={true}       
-                                    label='Variable 3'                    
-                                    className="col-12"                                  
-                                    data={[]}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                    disabled 
-                                />    
-                            </div>    
-                        </div>       
-                        <div style={{ flex: 1 }}>
-                            <p>{'Variable 2'}</p>
-                            <div  style={{ flex: 1 }}>
-                            <FieldSelect
-                                    variant="outlined"       
-                                    uset={true}       
-                                    label='Variable 4'                     
-                                    className="col-12"
-                                    data={[]}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                    disabled 
-                                />    
-                            </div>    
-                        </div>                            
-                            
-                    </div>         
-                </FormControl>       
+                        <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
+                        <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>                        
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+                        {additionalVariables.map((variable, index) => (
+                            <div style={{ flex: 1 }} key={index}>
+                                <p>{`Variable ${variable}`}</p>
+                                <div style={{ flex: 1 }}>
+                                    <FieldSelect
+                                        variant="outlined"
+                                        uset={true}
+                                        label={`Variable ${variable + 2}`}
+                                        className="col-12"
+                                        data={[]}
+                                        optionDesc="value"
+                                        optionValue="key"
+                                        disabled
+                                        onChange={(e) => handleVariableChange(variable, e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                        </div>
+                    </FormControl>       
                 </div> 
-
-                                
-
             </div>
-
         </React.Fragment>
     )
 }

@@ -186,7 +186,6 @@ type FormFields = {
     fields: SelectedColumns,
     operation: string,
     sourcechanged: boolean,
-
     headertype: string;
     header: string;
     footer: string;
@@ -195,7 +194,6 @@ type FormFields = {
     buttonsphone: { text: string }[];
     date: string|null;
     time: string | null;
-
 }
 
 export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, setIdAux, setTemplateAux }) => {
@@ -883,7 +881,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 
                 <div style={{width:'50%'}}>
                     <div style={{fontSize:'1.2rem', marginTop:'2.1rem'}}>{t('Vista Previa de la Plantilla')}</div> 
-                    <TemplatePreview selectedTemplate={selectedTemplate} />
+                    <TemplatePreview selectedTemplate={selectedTemplate} variableValues={[]}/>
 
                 </div>  
             

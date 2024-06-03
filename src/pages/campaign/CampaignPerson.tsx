@@ -212,15 +212,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 ? templateAux.bodyvariables.map((varObj: { text: string; variable: number }) => `Variable ${varObj.variable}`)
                 : [];
             
-            // Verificar si hay buttonsgeneric de tipo URL y dynamic
             const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
             const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url dinamico ${index + 1}`);
     
-            // Agregar las columnas de variables y las de Url dinamico al final
             const newColumnNames = columnNames.slice(0, 3).concat(requiredVariableColumns).concat(dynamicUrlColumns).concat("Variable Adicional 1");
             const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
     
-            // Asignar descripciones correspondientes
             newColumnNames.forEach((columnName, index) => {
                 let descriptionKey = columnName;
     
@@ -243,12 +240,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
             });
     
-            // Convertir la nueva data a un worksheet
             const newWorksheet = XLSX.utils.aoa_to_sheet(newSheetData);
             const newWorkbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
     
-            // Descargar el archivo ajustado con el nombre "Formato de Carga.xlsx"
             const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'binary' });
             saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'Formato de Carga.xlsx');
         } catch (error) {
@@ -265,8 +260,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         return buf;
     };
         
-    console.log(templateAux)
-    console.log('Variables: ', templateAux.id)
+    console.log('El id Person es:', idAux, 'y su contenido es',templateAux)
+    console.log('El json Data es', jsonData)
+
     
     useEffect(() => {
         if (frameProps.checkPage) {
@@ -295,8 +291,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             setJsonDataPerson([]);
         }
     }, [jsonData])
-
-    console.log('El id Person es:', idAux)
 
     useEffect(() => {
         // Load Headers
@@ -728,8 +722,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         return true;
     }
 
-    //console.log(selectedRows)
-
     const AdditionalButtons = () => {
         if (detaildata.source === 'EXTERNAL') {
             return (
@@ -839,9 +831,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             </>
         }
     }
-
-    //console.log('Data importada: ', jsonData)
-
 
     return (
         <React.Fragment>
