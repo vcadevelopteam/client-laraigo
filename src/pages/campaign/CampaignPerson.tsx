@@ -141,6 +141,40 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 break;
         }
     };
+
+    const getDownloadLink = () => {
+        if (templateAux.headertype === "TEXT" && !templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")) {
+            return "/templates/Template Cabecera Texto y 3 variables.xlsx";
+        }
+    
+        if (templateAux.headertype === "TEXT" && templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")) {
+            return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
+        }
+    
+        if (
+            templateAux.templatetype === "CAROUSEL" &&
+            templateAux.carouseldata &&
+            templateAux.carouseldata.length > 0 &&
+            templateAux.buttonsgeneric &&
+            templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")
+        ) {
+            return "/templates/Template Carrusel, 2 variables y 1 variable URL dinámica.xlsx";
+        }
+    
+        if (
+            templateAux.templatetype === "MULTIMEDIA" &&
+            (templateAux.headertype === "VIDEO" || templateAux.headertype === "DOCUMENT") &&
+            templateAux.header &&
+            templateAux.header.trim() !== "" &&
+            templateAux.bodyvariables &&
+            templateAux.bodyvariables.length > 0
+        ) {
+            return "/templates/Template Cabecera Multimedia y 3 variables.xlsx";
+        }
+    
+        return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
+    };
+    
     
     useEffect(() => {
         if (frameProps.checkPage) {
@@ -597,11 +631,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         if (detaildata.source === 'EXTERNAL') {
             return (
                 <React.Fragment>  
-                    {jsonData.length == 0 && (                
+                    {jsonData.length === 0 && (                
                       <>
                         <a 
-                            href="/templates/Template Cabecera Texto con 3 Variables.xlsx" 
-                            download="Template Cabecera Texto con 3 Variables.xlsx" 
+                             href={getDownloadLink()}
+                             download={getDownloadLink().split('/').pop()}
                             style={{ textDecoration: 'none' }}
                         >
                             <Button
