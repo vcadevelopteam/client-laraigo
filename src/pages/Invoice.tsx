@@ -1079,7 +1079,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("agentadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("agentadviseractivequantity", {
@@ -1099,22 +1100,26 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("agenttotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("billinginfrastructurefee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("billingplanfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("billingsupportfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("billingtotalfee", {
@@ -1137,12 +1142,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("billingtotalfeetaxrate", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("channelotheradditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("channelothercontractedquantity", {
@@ -1157,12 +1164,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("channeltotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("channelwhatsappadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("channelwhatsappcontractedquantity", {
@@ -1182,17 +1191,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("consultingadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("consultingcontractedfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("consultingextrafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("consultinghourtotal", {
@@ -1207,22 +1219,26 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("consultingtotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactotheradditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactotherfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactotherquantity", {
@@ -1232,12 +1248,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("contactuniqueadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactuniquefee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactuniquelimit", {
@@ -1252,12 +1270,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("contactwhatsappadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactwhatsappfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("contactwhatsappquantity", {
@@ -1267,12 +1287,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("conversationbusinessauthenticationadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessauthenticationmetafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessauthenticationquantity", {
@@ -1282,22 +1304,26 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("conversationbusinessauthenticationtotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessauthenticationvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessmarketingadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessmarketingmetafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessmarketingquantity", {
@@ -1307,22 +1333,26 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("conversationbusinessmarketingtotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessmarketingvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessutilityadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessutilitymetafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessutilityquantity", {
@@ -1332,12 +1362,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("conversationbusinessutilitytotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationbusinessutilityvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationinteractionquantity", {
@@ -1347,7 +1379,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("conversationmetafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationquantity", {
@@ -1357,17 +1390,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("conversationtotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationuserserviceadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationuserservicefee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationuserservicefreequantity", {
@@ -1382,17 +1418,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("conversationuserservicetotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationuserservicevcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("conversationvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("corpid", {
@@ -1407,7 +1446,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("messagingmailadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("messagingmailquantity", {
@@ -1422,17 +1462,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("messagingmailtotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("messagingmailvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("messagingsmsadditionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("messagingsmsquantity", {
@@ -1447,12 +1490,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("messagingsmstotalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("messagingsmsvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("month", {
@@ -1467,67 +1512,80 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("voicefee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voiceotherfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voiceothervcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voiceothervoxfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicepstnfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicepstnvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicepstnvoxfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicerecordingfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicerecordingvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicerecordingvoxfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicetelephonefee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicetelephonevcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicetelephonevoxfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicevcacomission", {
@@ -1538,17 +1596,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
         register("voicevoipfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicevoipvcafee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("voicevoipvoxfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("year", {
@@ -3022,12 +3083,14 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
 
         register("additionalfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("basicfee", {
             validate: (value) =>
-                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+                ((value || String(value)) && (parseFloat(String(value)) >= 0 || parseFloat(String(value)) <= 0)) ||
+                t(langKeys.field_required),
         });
 
         register("charlimit", {
