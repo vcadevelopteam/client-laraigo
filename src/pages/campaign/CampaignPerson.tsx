@@ -18,6 +18,8 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DescriptionIcon from '@material-ui/icons/Description';
 import DeleteIcon from '@material-ui/icons/Delete';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
@@ -33,6 +35,15 @@ interface DetailProps {
     idAux: number;
     templateAux: Dictionary;
 
+}
+
+interface TemplateAux {
+    bodyvariables: { text: string; variable: number }[];
+    headertype?: string;
+    buttonsgeneric?: { type: string }[];
+    templatetype?: string;
+    carouseldata?: any[];
+    header?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -113,12 +124,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const handleCleanConfirmed = () => {
         deleteSelectedRows();
         setOpenDeleteDialog(false);
-    };        
-    console.log(templateAux)
-
-    console.log('Variables: ', templateAux.id)
-
-
+    };       
+ 
     const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setPaginatedWait(true);
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
@@ -142,39 +149,99 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     };
 
-    const getDownloadLink = () => {
-        if (templateAux.headertype === "TEXT" && !templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")) {
-            return "/templates/Template Cabecera Texto y 3 variables.xlsx";
-        }
-    
-        if (templateAux.headertype === "TEXT" && templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")) {
-            return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
-        }
-    
-        if (
-            templateAux.templatetype === "CAROUSEL" &&
-            templateAux.carouseldata &&
-            templateAux.carouseldata.length > 0 &&
-            templateAux.buttonsgeneric &&
-            templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")
-        ) {
-            return "/templates/Template Carrusel, 2 variables y 1 variable URL dinámica.xlsx";
-        }
-    
-        if (
-            templateAux.templatetype === "MULTIMEDIA" &&
-            (templateAux.headertype === "VIDEO" || templateAux.headertype === "DOCUMENT") &&
-            templateAux.header &&
-            templateAux.header.trim() !== "" &&
-            templateAux.bodyvariables &&
-            templateAux.bodyvariables.length > 0
-        ) {
-            return "/templates/Template Cabecera Multimedia y 3 variables.xlsx";
-        }
-    
-        return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
+    const adjustAndDownloadExcel = async (url: string) => {
+    const descriptionsMap: { [key: string]: string } = {
+        "Destinatarios": "|Obligatorio|Completa la lista con números celulares o e-mails, dependiendo de la plantilla a emplear, se recomienda que se coloque el código de país al número telefónico.",
+        "Nombres": "|Opcional|Completa la lista con los nombres del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
+        "Apellidos": "|Opcional|Completa la lista con los apellidos del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
+        "Variable Adicional": "|Opcional|Puedes añadir una variable adicional que no se enviará en el cuerpo del HSM al cliente, sino que se alojará como parte de las variables que se reciban de la conversación",
+        "Variable Cabecera": "|Obligatorio|Completa colocando la variable que se asignará en el template, depediendo del destinatario enviado.",
+        "Variable": "|Obligatorio|Completa la lista con la variable {num} por configurar del template usado.",
+        "Url dinamico": "|Obligatorio| Completa tu URL dinámico {num} para cada cliente, deberas indicar el código o sección de la url personalizado.",
+        "Variable burbuja": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado.",
+        "Card imagen": "|Opcional|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) se procederá a configurar como cabecera del card {num}, depediendo del destinatario enviado.",
+        "Cabecera multimedia": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado."
     };
+
+    try {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        const sheetData = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+        const columnNames: string[] = sheetData[1];
+
+        const requiredVariableColumns = templateAux.bodyvariables 
+            ? templateAux.bodyvariables.map((varObj: { text: string; variable: number }) => `Variable ${varObj.variable}`)
+            : [];
+        
+        const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
+        const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url dinamico ${index + 1}`);
+
+        let newColumnNames;
+        if (templateAux.headertype === "TEXT") {
+            newColumnNames = [
+                ...columnNames.slice(0, 3),
+                "Variable Cabecera",
+                ...columnNames.slice(3)
+            ];
+        } else {
+            newColumnNames = columnNames.slice(0, 3).concat(requiredVariableColumns).concat(dynamicUrlColumns).concat("Variable Adicional 1");
+        }
+
+        newColumnNames = newColumnNames.concat(requiredVariableColumns).concat(dynamicUrlColumns).concat("Variable Adicional 1");
+
+        const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
+
+        newColumnNames.forEach((columnName, index) => {
+            let descriptionKey = columnName;
+
+            if (descriptionKey.startsWith("Variable Adicional")) {
+                descriptionKey = "Variable Adicional";
+            } else if (descriptionKey.startsWith("Variable")) {
+                const variableNum = columnName.split(' ')[1];
+                newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
+                return;
+            } else if (descriptionKey.startsWith("Url dinamico")) {
+                const urlNum = columnName.split(' ')[2];
+                newSheetData[0][index] = descriptionsMap["Url dinamico"].replace("{num}", urlNum);
+                return;
+            } else if (descriptionKey.startsWith("Card imagen")) {
+                const cardNum = columnName.split(' ')[2];
+                newSheetData[0][index] = descriptionsMap["Card imagen"].replace("{num}", cardNum);
+                return;
+            }
+
+            newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
+        });
+
+        const newWorksheet = XLSX.utils.aoa_to_sheet(newSheetData);
+        const newWorkbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
+
+        const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'binary' });
+        saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'Formato de Carga.xlsx');
+    } catch (error) {
+        console.error("Error al ajustar y descargar el archivo Excel", error);
+    }
+};
+
     
+    console.log(templateAux)
+    console.log('Variables: ', templateAux.id)
+
+    const s2ab = (s: string) => {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) {
+            view[i] = s.charCodeAt(i) & 0xFF;
+        }
+        return buf;
+    };    
     
     useEffect(() => {
         if (frameProps.checkPage) {
@@ -634,8 +701,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     {jsonData.length === 0 && (                
                       <>
                         <a 
-                             href={getDownloadLink()}
-                             download={getDownloadLink().split('/').pop()}
+                            href="#"
+                            onClick={() => adjustAndDownloadExcel()}
                             style={{ textDecoration: 'none' }}
                         >
                             <Button
