@@ -245,7 +245,7 @@ export const PaymentOrderIzipay: FC = () => {
                         amount: '${(Math.round((data.totalamount || 0) * 100) / 100).toFixed(2)}',
                         processType: 'AT',
                         merchantBuyerId: '${data.personid}',
-                        dateTimeTransaction: '${Date.now()}',
+                        dateTimeTransaction: '${Math.floor(Date.now()) * 1000}',
                     },
                     card: {
                         brand: '',
@@ -254,15 +254,28 @@ export const PaymentOrderIzipay: FC = () => {
                     billing: {
                         firstName: '${(data.userfirstname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}',
                         lastName: '${(data.userlastname || "LARAIGO").replace(/[^a-zA-Z ]/g, "")}',
-                        email: 'laraigo@laraigo.com',
-                        phoneNumber: '51999999999',
-                        street: 'LARAIGO',
+                        email: '${data.usermail || "laraigo@mail.com"}',
+                        phoneNumber: '${data.userphone || "51999999999"}',
+                        street: 'Lima Lima',
                         city: '${data.usercity || "LIMA"}',
                         state: '${data.usercity || "LIMA"}',
-                        country: 'PE',
+                        country: '${(data.usercountry ? (data.usercountry.length > 2 ? null : data.usercountry) : null) || "PE"}',
                         postalCode: '00001',
-                        document: '12345678',
-                        documentType: 'DNI',
+                        document: '${data.userdocument || "12345678"}',
+                        documentType: '${(data.userdocument ? (data.userdocument.length === 8 ? "DNI" : "RUC") : null) || "DNI"}',
+                    },
+                    "shipping": {
+                        "firstName": "",
+                        "lastName": "",
+                        "email": "",
+                        "phoneNumber": "",
+                        "street": "",
+                        "city": "",
+                        "state": "",
+                        "country": "",
+                        "postalCode": "",
+                        "document": "",
+                        "documentType": "",
                     },
                     render: {
                         typeForm: 'pop-up',
@@ -271,12 +284,17 @@ export const PaymentOrderIzipay: FC = () => {
             };
 
             const callbackPayment = response => {
-                console.log(JSON.stringify(response, null, 2));
                 if (response.code && response.message && response.response) {
                     if (response.code === "00" && response.message === "OK") {
                         document.getElementById("transaction-data").innerHTML = JSON.stringify(response, null, 2);
                         document.getElementById("process-button").click();
                     }
+                    else {
+                        location.reload();
+                    }
+                }
+                else {
+                    location.reload();
                 }
             }
 
@@ -510,6 +528,40 @@ export const PaymentOrderIzipay: FC = () => {
                                                 }}
                                             >
                                                 <div className={classes.textField}>{paymentData?.userlastname}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {paymentData.userdocument && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                flexWrap: "wrap",
+                                                width: "100%",
+                                                marginBottom: "2px",
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    flexBasis: "100%",
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                <div className={classes.textTitle}>
+                                                    {t(langKeys.paymentorder_document)}
+                                                </div>
+                                            </div>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    flexBasis: "100%",
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                <div className={classes.textField}>{paymentData?.userdocument}</div>
                                             </div>
                                         </div>
                                     )}

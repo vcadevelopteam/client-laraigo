@@ -155,14 +155,14 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             }
         }
     }, [multiData, communicationchannelid]);
-
+    
     useEffect(() => {
         if (countnewmessages === 0 && personlastreplydate && lastreplyuser) {
             const timeClose = (userType === "AGENT" || agentSelected?.userid !== 3) ? (dictAutoClose?.[communicationchannelid] || 0) : (dictAutoCloseHolding?.[communicationchannelid] || 0);
             if (timeClose === 0) {
                 setDateToClose(null)
             } else {
-                const datetmp = convertLocalDate(lastreplyuser);
+                const datetmp = convertLocalDate(personlastreplydate);
                 datetmp.setMinutes(datetmp.getMinutes() + timeClose);
                 setDateToClose(datetmp)
             }
