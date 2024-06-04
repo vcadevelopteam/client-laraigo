@@ -298,6 +298,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const emojiButtonRef = useRef(null);
     const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
     const [cardAux, setCardAux] = useState<number | null>(null)
+    const [previousLength, setPreviousLength] = useState(0);
 
     useEffect(() => {
         if (showEmojiPicker && emojiButtonRef.current) {
@@ -511,7 +512,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     });
     
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
-    console.log(getValues("body"))
+    
     const [type] = watch(["type"]);
     React.useEffect(() => {
         register('authenticationdata');
@@ -789,7 +790,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 ...data,
                 headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
                 footerenabled: data.footer !== '' ? true : false,
-                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
+                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
+                headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
             }
             
             const callback = () => {
@@ -1627,6 +1629,88 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('carouseldata')
     }
 
+    const addVariableAux = (cursorPosition: number) => {
+        const newVariableNumber = getValues('bodyvariables').length + 1;
+        const body = getValues('body');
+        const newVariableTag = `{{${newVariableNumber}}}`;
+        const newBody = body.slice(0, cursorPosition) + newVariableTag + body.slice(cursorPosition);
+
+        setValue('body', newBody);
+        trigger('body');
+        setValue('bodyvariables', [...getValues('bodyvariables'), { variable: newVariableNumber, text: "" }]);
+        trigger('bodyvariables');
+    };
+
+    const handleInputBody = (e) => {
+        const value = e.target.value;
+        const cursorPosition = e.target.selectionStart;
+        const isDeleting = value.length < previousLength;
+
+        if (!isDeleting && value.length > 1024) {
+            e.preventDefault();
+            return;
+        }
+
+        if (!isDeleting) {
+            const insertPosition = cursorPosition - 2;
+            if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
+                const newValue = value.slice(0, insertPosition) + value.slice(cursorPosition);
+                setValue('body', newValue);
+                trigger('body');
+                if (getValues('bodyvariables').length < 20 && (getValues('body').length + (getValues('bodyvariables').length + 1).toString().length) <= 1020) {
+                    addVariableAux(insertPosition);
+                }
+                setPreviousLength(newValue.length);
+                setTimeout(() => {
+                    e.target.setSelectionRange(insertPosition + 4 + getValues('bodyvariables').length.toString().length, insertPosition + 4 + getValues('bodyvariables').length.toString().length);
+                }, 0);
+                return;
+            }
+        }
+
+        setValue('body', value);
+        trigger('body');
+        setPreviousLength(value.length);
+    };
+
+    const handlePaste = (e) => {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        const bodyVariables = getValues('bodyvariables');
+        const existingVariables = bodyVariables.map(v => v.variable);
+        const newVariables = [];
+        let cleanedPaste = paste;
+
+        const regex = /{{(\d+)}}/g;
+        let match;
+        while ((match = regex.exec(paste)) !== null) {
+            const varNumber = parseInt(match[1], 10);
+            if (!existingVariables.includes(varNumber) && !newVariables.includes(varNumber)) {
+                newVariables.push(varNumber);
+            } else {
+                // Remove existing variable from the pasted text
+                cleanedPaste = cleanedPaste.replace(match[0], '');
+            }
+        }
+
+        // Check if the pasted content will exceed the max length
+        const currentBody = getValues('body');
+        const newBodyLength = currentBody.length + cleanedPaste.length;
+
+        if (newBodyLength > 1024) {
+            return;
+        }
+
+        newVariables.forEach(varNumber => {
+            bodyVariables.push({ variable: varNumber, text: "" });
+        });
+
+        setValue('bodyvariables', bodyVariables);
+        setValue('body', getValues('body') + cleanedPaste);
+        trigger('body');
+        trigger('bodyvariables');
+    };
+
     return (
         <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
@@ -2064,20 +2148,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.body)}</span>
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
                                     <div>
-                                        <FieldEditAdvanced
+                                        <FieldEditAdvancedAux
                                             inputProps={{
                                                 rows: 8,
                                                 maxRows: 8
                                             }}
                                             valueDefault={getValues('body')}
-                                            onChange={(value) => {
-                                                setValue('body', value)
-                                                trigger('body')
-                                            }}
+                                            onChange={handleInputBody}
                                             maxLength={1024}
                                             error={errors?.body?.message}
                                             style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                             disabled={!isNew}
+                                            onInput={handleInputBody}
+                                            onPaste={handlePaste}
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
@@ -2685,21 +2768,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
                                     <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
                                     <div>
-                                        <FieldEditAdvanced
+                                        <FieldEditAdvancedAux
                                             variant="outlined"
                                             inputProps={{
                                                 rows: 8,
                                                 maxRows: 8
                                             }}
                                             valueDefault={getValues('body')}
-                                            onChange={(value) => {
-                                                setValue('body', value)
-                                                trigger('body')
-                                            }}
+                                            onChange={handleInputBody}
                                             maxLength={1024}
                                             disabled={!isNew}
                                             error={errors?.body?.message}
                                             style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                            onInput={handleInputBody}
+                                            onPaste={handlePaste}
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
