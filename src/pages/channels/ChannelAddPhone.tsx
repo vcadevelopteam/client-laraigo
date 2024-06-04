@@ -132,6 +132,7 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
     const [waitPlan, setWaitPlan] = useState(false);
     const [waitRegions, setWaitRegions] = useState(false);
     const [waitStates, setWaitStates] = useState(false);
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const [fields, setFields] = useState({
         method: "UFN_COMMUNICATIONCHANNEL_INS",
@@ -590,9 +591,13 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            channel?.status === "INACTIVO"
-                                ? history.push(paths.CHANNELS, whatsAppData)
-                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+                            if(newChannels){
+                                history.push(paths.METACHANNELS, whatsAppData)
+                            }else{
+                                channel?.status === "INACTIVO"
+                                    ? history.push(paths.CHANNELS, whatsAppData)
+                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}

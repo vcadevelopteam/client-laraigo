@@ -83,7 +83,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({communicationchannelid}) => {
+const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number, finishFunction?: any, gobackFunction?:any}> = ({communicationchannelid, finishFunction, gobackFunction}) => {
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -124,7 +124,11 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
     const handleGoBack = useCallback(
         (e: React.MouseEvent) => {
             e.preventDefault();
-            history.push(paths.CHANNELS);
+            if(gobackFunction) {
+                gobackFunction();
+            }else{
+                history.push(paths.CHANNELS);
+            }
         },
         [history]
     );
@@ -135,7 +139,11 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_enablecirtualassistant) }))
-                history.push(paths.CHANNELS);
+                if(finishFunction){
+                    finishFunction()
+                }else{
+                    history.push(paths.CHANNELS);
+                }
             } else if (response.error) {
                 const errormessage = t(response.code ?? "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -153,7 +161,11 @@ const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({co
     
                 setWaitSave(true);
             }else{
-                history.push(paths.CHANNELS);
+                if(finishFunction){
+                    finishFunction()
+                }else{
+                    history.push(paths.CHANNELS);
+                }
             }
         };
         dispatch(

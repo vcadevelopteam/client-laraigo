@@ -153,6 +153,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import PartnerPeriodReport from "./PartnerPeriodReport";
 import { CellProps } from "recharts";
+import { useLocation } from "react-router-dom";
 
 interface RowSelected {
     edit: boolean;
@@ -11500,9 +11501,14 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
         </div>
     );
 };
+const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+}
 
 const Invoice: FC = () => {
     const dispatch = useDispatch();
+    const query = useQuery();
+    const recharge = query.get('recharge');
 
     const { t } = useTranslation();
 
@@ -11513,7 +11519,7 @@ const Invoice: FC = () => {
     const [dataOrg, setDataOrg] = useState<any>([]);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [dataPlan, setDataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(0);
+    const [pageSelected, setPageSelected] = useState(!!recharge?5:0);
     const [sentFirstInfo, setSentFirstInfo] = useState(false);
 
     const [customSearch, setCustomSearch] = useState({

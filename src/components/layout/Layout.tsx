@@ -281,13 +281,9 @@ const WelcomeDialog = React.memo(() => {
     const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
-        if (newChannels && !localStorage.getItem("firstloadeddialog")) {
-            if (location.pathname !== "/channels") {
-                history.push("/channels")
-            } else {
-                setOpenModal(true);
-                localStorage.setItem("firstloadeddialog", "1")
-            }
+        if (newChannels && localStorage.getItem("firstLoad")) {
+            console.log(localStorage.getItem("firstLoad"))
+            history.push("/metachannels")
         }
     }, [])
     return (<Dialog

@@ -1784,6 +1784,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     const service = useRef<IChatWebAdd | null>(null);
     const whatsAppData = location.state as WhatsAppData | null;
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     if (!whatsAppData?.row) {
         if (channel && !service.current && channel.servicecredentials.length > 0) {
@@ -1940,7 +1941,8 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
-        if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
+        if (newChannels) {history.push(paths.METACHANNELS)}
+        else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
     if (edit && !channel) {
