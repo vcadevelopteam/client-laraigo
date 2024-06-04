@@ -199,6 +199,12 @@ const MessageTemplates: FC = () => {
                             case 'EN REVISIÓN':
                                 color = '#E6C300';
                                 break;
+                            case 'CREADO':
+                                color = '#E6C300';
+                                break;
+                            case 'PRESENTADO':
+                                color = '#E6C300';
+                                break;
                             case 'RECHAZADA':
                                 color = 'red';
                                 break;
@@ -228,6 +234,7 @@ const MessageTemplates: FC = () => {
                 listSelectFilter: [
                     { key: t(langKeys.TEMPLATE2_MULTIMEDIA), value: "MULTIMEDIA" },
                     { key: t(langKeys.TEMPLATE2_CAROUSEL), value: "CAROUSEL" },
+                    { key: t(langKeys.messagetemplate_standard).toUpperCase(), value: "STANDARD" },
                 ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -305,7 +312,7 @@ const MessageTemplates: FC = () => {
                     { key: `1K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_1K" },
                     { key: `10K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_10K" },
                     { key: `100K ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`, value: "TIER_100K" },
-                    { key: t(langKeys.unlimited), value: "TIER_UNLIMITED" },
+                    { key: t(langKeys.unlimited).toUpperCase(), value: "TIER_UNLIMITED" },
                 ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;

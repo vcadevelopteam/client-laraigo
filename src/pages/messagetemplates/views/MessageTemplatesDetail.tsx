@@ -1174,7 +1174,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
               setUploading(true);
               setWaitUploadFile2(true);
             } else {
-              alert(`Tipo de archivo inválido. Por favor subir un archivo de ${fileType.toLowerCase()} adecuado.`);
+                if(fileType === 'IMAGE') alert("Tipo de archivo inválido. Por favor subir un archivo de imagen adecuado.");
+                else if(fileType === 'VIDEO') alert("Tipo de archivo inválido. Por favor subir un archivo de video adecuado.");
+                else alert("Tipo de archivo inválido. Por favor subir un archivo de documento adecuado.");
             }
           }
     }, [])
