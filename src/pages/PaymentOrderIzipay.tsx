@@ -289,13 +289,12 @@ export const PaymentOrderIzipay: FC = () => {
                         document.getElementById("transaction-data").innerHTML = JSON.stringify(response, null, 2);
                         document.getElementById("process-button").click();
                     }
+                    else {
+                        location.reload();
+                    }
                 }
                 else {
-                    if (response.code) {
-                        if (response.code === "021") {
-                            location.reload();
-                        }
-                    }
+                    location.reload();
                 }
             }
 
