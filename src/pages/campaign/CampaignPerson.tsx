@@ -187,16 +187,16 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     const adjustAndDownloadExcel = async (url: string) => {
         const descriptionsMap: { [key: string]: string } = {
-            "Destinatarios": "|Obligatorio|Completa la lista con números celulares o e-mails, dependiendo de la plantilla a emplear, se recomienda que se coloque el código de país al número telefónico.",
-            "Nombres": "|Opcional|Completa la lista con los nombres del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
-            "Apellidos": "|Opcional|Completa la lista con los apellidos del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\".",
-            "Variable Adicional": "|Opcional|Puedes añadir una variable adicional que no se enviará en el cuerpo del HSM al cliente, sino que se alojará como parte de las variables que se reciban de la conversación",
-            "Variable Cabecera": "|Obligatorio|Completa colocando la variable que se asignará en el template, depediendo del destinatario enviado.",
-            "Variable": "|Obligatorio|Completa la lista con la variable {num} por configurar del template usado.",
-            "Url dinamico": "|Obligatorio| Completa tu URL dinámico {num} para cada cliente, deberas indicar el código o sección de la url personalizado.",
+            "Destinatarios": "|Obligatorio|Completa la lista con números celulares o e-mails, dependiendo de la plantilla a emplear, se recomienda que se coloque el código de país al número telefónico. Ejemplo: Celular: 51999999999 o también E-mail: laraigo@vcaperu.com",
+            "Nombres": "|Opcional|Completa la lista con los nombres del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\". Nota: No alteres el valor del titulo de la columna, ya que se asigna automáticamente.",
+            "Apellidos": "|Opcional|Completa la lista con los apellidos del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\". Nota: No alteres el valor del titulo de la columna, ya que se asigna automáticamente.",
+            "Variable Adicional": "|Opcional|Puedes añadir una variable adicional que no se enviará en el cuerpo del HSM al cliente, sino que se alojará como parte de las variables que se reciban de la conversación. Nota: También puedes cambiar el nombre de la columna o eliminar dicha columna, para usar esta variable dentro de un flujo o reporte usa la variable \"variable_hidden_{num}\"",
+            "Variable Cabecera": "|Obligatorio|Completa colocando la variable que se asignará en el template, depediendo del destinatario enviado. Ejemplo: Marcos",
+            "Variable": "|Obligatorio|Completa la lista con la variable {num} por configurar del template usado. Nota: Se puede cambiar el nombre del titulo de la columna para un mejor entendimiento según el caso.",
+            "Url Dinamico": "|Obligatorio| Completa tu URL dinámico {num} para cada cliente, deberas indicar el código o sección de la url personalizado. Ejemplo: JK589kl",
             "Variable burbuja": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado.",
-            "Card imagen": "|Opcional|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) se procederá a configurar como cabecera del card {num}, depediendo del destinatario enviado.",
-            "Cabecera multimedia": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado."
+            "Card Imagen": "|Opcional|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) se procederá a configurar como cabecera del card {num}, depediendo del destinatario enviado. Nota: Por defecto traerá la imagen que se mandó a aprobar con la plantilla si no se configura esta columna.",
+            "Cabecera Multimedia": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado."
         };
     
         try {
@@ -212,41 +212,59 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             const columnNames: string[] = sheetData[1];
     
             const requiredVariableColumns = templateAux.bodyvariables 
-                ? templateAux.bodyvariables.map((varObj: { text: string; variable: number }) => `Variable ${varObj.variable}`)
-                : [];
+            ? templateAux.bodyvariables.map((varObj: { text: string; variable: number }) => `Variable ${varObj.variable}`)
+            : [];
             
-            const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
-            const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url dinamico ${index + 1}`);
+            const headerVariableColumns = templateAux.headertype === "TEXT" && templateAux.headervariables ? templateAux.headervariables.map((varName: string, index: number) => `Variable Cabecera ${index + 1}`) : [];
+            
+            const headerMultimediaColumns = templateAux.headertype === "DOCUMENT" || templateAux.headertype === "VIDEO" || templateAux.headertype === "IMAGE" ? ["Cabecera Multimedia"] : []; 
     
-            const newColumnNames = columnNames.slice(0, 3).concat(requiredVariableColumns).concat(dynamicUrlColumns).concat("Variable Adicional 1");
+            const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
+            const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url Dinamico ${index + 1}`);
+            
+            const imageCards = templateAux.carouseldata || [];
+            const imageCardColumns = [];
+            if (imageCards.length > 0) {
+              for (let i = 0; i < imageCards.length && i < 3; i++) {
+                if (imageCards[i].header) {
+                  imageCardColumns.push(`Card Imagen ${i + 1}`);
+                }
+              }
+            }          
+
+            const newColumnNames = columnNames.slice(0, 3)
+            .concat(headerVariableColumns)
+            .concat(headerMultimediaColumns)
+            .concat(requiredVariableColumns)
+            .concat(dynamicUrlColumns || [])
+            .concat(imageCardColumns)
+            .concat("Variable Adicional 1");
+
             const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
     
             newColumnNames.forEach((columnName, index) => {
-                let descriptionKey = columnName;
-    
+                let descriptionKey = columnName;    
                 if (descriptionKey.startsWith("Variable Adicional")) {
-                    descriptionKey = "Variable Adicional";
-                } else if (descriptionKey.startsWith("Variable")) {
-                    const variableNum = columnName.split(' ')[1];
-                    newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
-                    return;
-                } else if (descriptionKey.startsWith("Url dinamico")) {
-                    const urlNum = columnName.split(' ')[2];
-                    newSheetData[0][index] = descriptionsMap["Url dinamico"].replace("{num}", urlNum);
-                    return;
-                } else if (descriptionKey.startsWith("Card imagen")) {
-                    const cardNum = columnName.split(' ')[2];
-                    newSheetData[0][index] = descriptionsMap["Card imagen"].replace("{num}", cardNum);
-                    return;
-                }
-    
-                newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
+                        descriptionKey = "Variable Adicional";
+                    } else if (descriptionKey.startsWith("Variable")) {
+                        const variableNum = columnName.split(' ')[1];
+                        newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
+                        return;
+                    } else if (descriptionKey.startsWith("Url Dinamico")) {
+                        const urlNum = columnName.split(' ')[2];
+                        newSheetData[0][index] = descriptionsMap["Url Dinamico"].replace("{num}", urlNum);
+                        return;
+                    } else if (descriptionKey.startsWith("Card Imagen")) {
+                        const cardNum = columnName.split(' ')[2];
+                        newSheetData[0][index] = descriptionsMap["Card Imagen"].replace("{num}", cardNum);
+                        return;
+                    }                
+                    newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
             });
     
             const newWorksheet = XLSX.utils.aoa_to_sheet(newSheetData);
             const newWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
-    
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);    
             const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'binary' });
             saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'Formato de Carga.xlsx');
         } catch (error) {

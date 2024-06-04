@@ -497,8 +497,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const templateId = getValues('messagetemplateid');
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
-    //console.log (selectedTemplate) 
-    console.log('El id General es:', templateId)
+    console.log('Template en General', selectedTemplate)
   
 
 
