@@ -285,7 +285,7 @@ export const PaymentOrderIzipay: FC = () => {
 
             const callbackPayment = response => {
                 if (response.code && response.message && response.response) {
-                    if (response.code === "00" && response.message === "OK") {
+                    if (response.code === "00") {
                         document.getElementById("transaction-data").innerHTML = JSON.stringify(response, null, 2);
                         document.getElementById("process-button").click();
                     }
