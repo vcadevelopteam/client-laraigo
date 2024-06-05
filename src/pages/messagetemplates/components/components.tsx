@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Button, Menu, MenuItem, Tooltip, makeStyles } from "@material-ui/core";
@@ -50,8 +50,7 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         padding: 10,
         backgroundColor: 'white',
-        borderRadius: 10,
-        border: '1px solid black',
+        borderRadius: 15,
         gap: 10,
     },
     messagePrevContainer: {
@@ -127,6 +126,16 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#DFD6C6',
         padding: '5px 5px 5px 10px',
         borderRadius: 5,
+    },
+    containerCarousel: {
+        backgroundColor: '#DFD6C6',
+        padding: '5px 5px 5px 10px',
+        borderRadius: 5,
+        overflowX: 'hidden',
+        display: 'flex',
+        width: 'fit-content',
+        height: 'fit-content',
+        maxWidth: 640,
     },
     chatTime: {
         textAlign: 'end',
@@ -409,6 +418,49 @@ interface MessagePreviewCarouselProps {
 
 export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ body, carouselCards }) => {
     const classes = useStyles();
+    const containerRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        setIsDragging(true);
+        setStartX(e.pageX - containerRef.current.offsetLeft);
+        setScrollLeft(containerRef.current.scrollLeft);
+    };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - containerRef.current.offsetLeft;
+        const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
+        containerRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+        setIsDragging(true);
+        setStartX(e.touches[0].pageX - containerRef.current.offsetLeft);
+        setScrollLeft(containerRef.current.scrollLeft);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+        if (!isDragging) return;
+        const x = e.touches[0].pageX - containerRef.current.offsetLeft;
+        const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
+        containerRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleTouchEnd = () => {
+        setIsDragging(false);
+    };
 
     const parseFormattedText = (text: string) => {
         const monospace = /```(.*?)```/g;
@@ -439,38 +491,42 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
                 </div>
             </div>
             <div style={{ height: 6 }} />
-            {carouselCards.length > 0 && (
-                <div className={classes.container} style={{ overflowX: 'auto', display: 'flex', width: 'fit-content', height: 'fit-content', maxWidth: 640 }}>
-                    {carouselCards.map((card, index) => {
-                        return (
-                            <div key={index} className={classes.messageCard2}>
-                                <div className={classes.cardMediaContainer}>
-                                    <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
-                                </div>
-                                <div className={classes.bodyCar}>{card.body}</div>
-                                {card.buttons.length > 0 && (
-                                    <>
-                                        {card.buttons.map((btn, i) => {
-                                            return (
-                                                <div key={i} className={classes.cardButton2}>
-                                                    {btn.type === 'QUICK_REPLY' ? (
-                                                        <ReplyIcon className={classes.icon} />
-                                                    ) : btn.type === 'URL' ? (
-                                                        <OpenInNewIcon className={classes.icon} />
-                                                    ) : (
-                                                        <PhoneIcon className={classes.icon} />
-                                                    )}
-                                                    <span>{btn.btn.text}</span>
-                                                </div>
-                                            )
-                                        })}
-                                    </>
-                                )}
-                            </div>
-                        )
-                    })}
-                </div>
-            )}
+            <div
+                ref={containerRef}
+                className={classes.containerCarousel}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                {carouselCards.length > 0 && carouselCards.map((card, index) => (
+                    <div key={index} className={classes.messageCard2}>
+                        <div className={classes.cardMediaContainer}>
+                            <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
+                        </div>
+                        <div className={classes.bodyCar}>{card.body}</div>
+                        {card.buttons.length > 0 && (
+                            <>
+                                {card.buttons.map((btn: Dictionary, i: number) => (
+                                    <div key={i} className={classes.cardButton2}>
+                                        {btn.type === 'QUICK_REPLY' ? (
+                                            <ReplyIcon className={classes.icon} />
+                                        ) : btn.type === 'URL' ? (
+                                            <OpenInNewIcon className={classes.icon} />
+                                        ) : (
+                                            <PhoneIcon className={classes.icon} />
+                                        )}
+                                        <span>{btn.btn.text}</span>
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
