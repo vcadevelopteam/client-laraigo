@@ -10,7 +10,6 @@ const validTypes = (types: IActionTypes): boolean => {
 
 const handleError = (error: AxiosError, dispatch: Dispatch<IAction>, actionType: string) => {
     const response = error.response;
-    debugger
     const errorMessage = (error.toJSON() as any)['message'] as string;
     if (errorMessage.toLocaleLowerCase() === 'network error') {
         console.error('Axios network error');
