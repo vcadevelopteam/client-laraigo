@@ -601,6 +601,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                 };
             }
             setWaitSave(true);
+            debugger
             dispatch(executeCorp(insCorp(data)));
         };
 
