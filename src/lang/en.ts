@@ -6245,6 +6245,23 @@ const translation: LangKeys = {
   TEMPLATE2_UNREGISTERED: "UNREGISTERED",
   TEMPLATE2_MULTIMEDIA: "MULTIMEDIA",
   TEMPLATE2_CAROUSEL: "CAROUSEL",
+  campaign_title_desc: 'Assign a name to your campaign',
+  campaign_description_desc: 'Assign a brief description of the use of your campaign',
+  campaign_startdate_desc: 'Select the effective start date of your campaign',
+  campaign_enddate_desc: 'Select the effective end date of your campaign',
+  campaign_origin_desc: 'Choose the source of data origin with which your campaign recipients will be populated',
+  campaign_executiontype_desc: 'Define the execution schedule of your campaign',
+  campaign_group_desc: 'Assign a group of consultants to your campaign.',
+  campaign_channel_desc: 'Select the delivery channel for your campaign',
+  campaign_comunicationtemplate_desc: 'Select the message template to be sent in your campaign',
+  campaign_status_desc: 'Select the status of your campaign',
+  campaign_messagetype_desc: 'Select the type of message to be sent through your assigned channel',
+  campaign_execution_date: 'Campaign execution date',
+  campaign_execution_time: 'Campaign execution time',
+  campaign_templatepreview: 'Template Preview',
+  programmed: 'Programmed',
+  contactdetails: 'Contact Details',
+
 };
 
 const enResource: ResourceLanguage = {

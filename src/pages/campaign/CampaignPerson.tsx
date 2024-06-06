@@ -1,20 +1,23 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DialogZyx } from 'components';
+import { DialogZyx3Opt } from 'components';
 import { Dictionary, ICampaign, IFetchData, MultiData, SelectedColumns } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, campaignPersonSel, uploadExcel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { FrameProps } from './CampaignDetail';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import DescriptionIcon from '@material-ui/icons/Description';
+import DeleteIcon from '@material-ui/icons/Delete';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -28,6 +31,9 @@ interface DetailProps {
     setFrameProps: (value: FrameProps) => void;
     setPageSelected: (page: number) => void;
     setSave: (value: any) => void;
+    idAux: number;
+    templateAux: Dictionary;
+    setJsonPersons:  (value: Dictionary) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave }) => {
+export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux, setJsonPersons}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -83,6 +89,33 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [fetchDataAux, setfetchDataAux] = useState<any>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, setTotalRow] = useState(0);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openCleanDialog, setOpenCleanDialog] = useState(false);
+
+    const deleteSelectedRows = () => {
+        const newJsonData = jsonData.filter(row => !selectedRows[row.campaignmemberid]);    
+        setJsonData(newJsonData);
+        setSelectedRows({});    
+        setDetaildata({
+            ...detaildata,
+            jsonData: newJsonData,
+            selectedRows: {},
+            person: detaildata.person?.filter(person => !selectedRows[person.campaignmemberid])
+        });
+    }
+
+    const handleDeleteSelectedRows = () => {
+        const updatedJsonData = jsonData.filter(item => !selectedRows[item.Destinatarios]);
+        setJsonData(updatedJsonData);
+        setSelectedRows({});
+        setOpenDeleteDialog(false);
+    };
+  
+    const handleCleanConfirmed = () => {
+        deleteSelectedRows();
+        setOpenDeleteDialog(false);
+    };       
+ 
     const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setPaginatedWait(true);
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
@@ -106,6 +139,151 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     };
 
+    const getDownloadLink = () => {
+        if (templateAux.headertype === "TEXT" && !templateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
+            return "/templates/Template Cabecera Texto y 3 variables.xlsx";
+        }
+    
+        if (templateAux.headertype === "TEXT" && templateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
+            return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
+        }
+    
+        if (
+            templateAux.templatetype === "CAROUSEL" &&
+            templateAux.carouseldata &&
+            templateAux.carouseldata.length > 0 &&
+            templateAux.buttonsgeneric &&
+            templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")
+        ) {
+            return "/templates/Template Carrusel, 2 variables y 1 variable URL dinámica.xlsx";
+        }
+    
+        if (
+            templateAux.templatetype === "MULTIMEDIA" &&
+            (templateAux.headertype === "VIDEO" || templateAux.headertype === "DOCUMENT") &&
+            templateAux.header &&
+            templateAux.header.trim() !== "" &&
+            templateAux.bodyvariables &&
+            templateAux.bodyvariables.length > 0
+        ) {
+            return "/templates/Template Cabecera Multimedia y 3 variables.xlsx";
+        }
+    
+        return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
+    };
+
+    const adjustAndDownloadExcel = async (url: string) => {
+        const descriptionsMap: { [key: string]: string } = {
+            "Destinatarios": "|Obligatorio|Completa la lista con números celulares o e-mails, dependiendo de la plantilla a emplear, se recomienda que se coloque el código de país al número telefónico. Ejemplo: Celular: 51999999999 o también E-mail: laraigo@vcaperu.com",
+            "Nombres": "|Opcional|Completa la lista con los nombres del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\". Nota: No alteres el valor del titulo de la columna, ya que se asigna automáticamente.",
+            "Apellidos": "|Opcional|Completa la lista con los apellidos del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\". Nota: No alteres el valor del titulo de la columna, ya que se asigna automáticamente.",
+            "Variable Adicional": "|Opcional|Puedes añadir una variable adicional que no se enviará en el cuerpo del HSM al cliente, sino que se alojará como parte de las variables que se reciban de la conversación. Nota: También puedes cambiar el nombre de la columna o eliminar dicha columna, para usar esta variable dentro de un flujo o reporte usa la variable \"variable_hidden_{num}\"",
+            "Variable Cabecera": "|Obligatorio|Completa colocando la variable que se asignará en el template, depediendo del destinatario enviado. Ejemplo: Marcos",
+            "Variable": "|Obligatorio|Completa la lista con la variable {num} por configurar del template usado. Nota: Se puede cambiar el nombre del titulo de la columna para un mejor entendimiento según el caso.",
+            "Url Dinamico": "|Obligatorio| Completa tu URL dinámico {num} para cada cliente, deberas indicar el código o sección de la url personalizado. Ejemplo: JK589kl",
+            "Variable burbuja": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado.",
+            "Card Imagen": "|Opcional|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) se procederá a configurar como cabecera del card {num}, depediendo del destinatario enviado. Nota: Por defecto traerá la imagen que se mandó a aprobar con la plantilla si no se configura esta columna.",
+            "Cabecera Multimedia": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado."
+        };
+    
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const workbook = XLSX.read(data, { type: 'array' });
+    
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+    
+            const sheetData = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
+            const columnNames: string[] = sheetData[1];
+    
+            let variableCounter = 1;
+    
+            const requiredVariableColumns = templateAux.bodyvariables
+                ? templateAux.bodyvariables.map(() => `Variable ${variableCounter++}`)
+                : [];
+    
+            const headerVariableColumns = templateAux.headertype === "TEXT" && templateAux.headervariables
+                ? templateAux.headervariables.map(() => `Variable Cabecera ${variableCounter++}`)
+                : [];
+    
+            const headerMultimediaColumns = templateAux.headertype === "DOCUMENT" || templateAux.headertype === "VIDEO" || templateAux.headertype === "IMAGE"
+                ? ["Cabecera Multimedia"]
+                : [];
+    
+            const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
+            const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url Dinamico ${index + 1}`);
+    
+            const imageCards = templateAux.carouseldata || [];
+            const carouselVariableColumns = imageCards.reduce((acc, card) => {
+                const cardVariables = card.body.match(/{{\d+}}/g) || [];
+                return acc.concat(cardVariables.map(() => `Variable ${variableCounter++}`));
+            }, [] as string[]);
+    
+            const imageCardColumns = imageCards.map((card, index) => card.header ? `Card Imagen ${index + 1}` : '').filter(Boolean);
+    
+            // Detect dynamic URLs in carouseldata
+            const carouselDynamicUrlColumns = imageCards.reduce((acc, card) => {
+                const dynamicButtons = card.buttons?.filter(button => button.btn.type === 'dynamic') || [];
+                return acc.concat(dynamicButtons.map((btn, index) => `Url Dinamico ${index + 1}`));
+            }, [] as string[]);
+    
+            const newColumnNames = columnNames.slice(0, 3)
+                .concat(headerVariableColumns)
+                .concat(headerMultimediaColumns)
+                .concat(requiredVariableColumns)
+                .concat(carouselVariableColumns)
+                .concat(dynamicUrlColumns)
+                .concat(carouselDynamicUrlColumns)
+                .concat(imageCardColumns)
+                .concat("Variable Adicional 1");
+    
+            const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
+    
+            newColumnNames.forEach((columnName, index) => {
+                let descriptionKey = columnName;
+                if (descriptionKey.startsWith("Variable Adicional")) {
+                    descriptionKey = "Variable Adicional";
+                } else if (descriptionKey.startsWith("Variable")) {
+                    const variableNum = descriptionKey.split(' ')[1];
+                    newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
+                    return;
+                } else if (descriptionKey.startsWith("Url Dinamico")) {
+                    const urlNum = columnName.split(' ')[2];
+                    newSheetData[0][index] = descriptionsMap["Url Dinamico"].replace("{num}", urlNum);
+                    return;
+                } else if (descriptionKey.startsWith("Card Imagen")) {
+                    const cardNum = columnName.split(' ')[2];
+                    newSheetData[0][index] = descriptionsMap["Card Imagen"].replace("{num}", cardNum);
+                    return;
+                }
+                newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
+            });
+    
+            const newWorksheet = XLSX.utils.aoa_to_sheet(newSheetData);
+            const newWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
+            const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'binary' });
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'Formato de Carga.xlsx');
+        } catch (error) {
+            console.error("Error al ajustar y descargar el archivo Excel", error);
+        }
+    };
+    
+    
+    
+    
+
+    const s2ab = (s: string) => {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) {
+            view[i] = s.charCodeAt(i) & 0xFF;
+        }
+        return buf;
+    };
+    
     useEffect(() => {
         if (frameProps.checkPage) {
             const valid = changeStep(frameProps.page);
@@ -270,15 +448,92 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     }, [paginatedAuxResult]);
 
+
     // External Data Logic //
-    const handleUpload = async (files: any) => {
-        const file = files[0];
-        const data = await uploadExcel(file);
-        setvaluefile('')
-        if (data) {
-            uploadData(data);
+    const handleUpload = (files: FileList | null) => {
+        if (!files || files.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
+            return;
         }
-    }
+
+        const file = files[0];
+        if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const data = e.target?.result;
+            if (!data) return;
+
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const json = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
+
+            let headers: string[];
+            let rows: string[][];
+            if (json[0][0].startsWith('|Obligatorio|') && json[1][0] === 'Destinatarios') {
+                headers = json[1] as string[];
+                rows = json.slice(2);
+            } else if (json[0][0] === 'Destinatarios') {
+                headers = json[0] as string[];
+                rows = json.slice(1);
+            } else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: "Formato de archivo incorrecto" }));
+                return;
+            }
+
+            const filteredRows = rows.filter(row => {
+                return headers.every((header, index) => row[index] !== undefined && row[index] !== null && row[index] !== '');
+            });
+
+            const uniqueRows: { [key: string]: boolean } = {};
+            const deduplicatedRows: string[][] = [];
+            let duplicatesFound = false;
+
+            filteredRows.forEach(row => {
+                const rowString = JSON.stringify(row);
+                if (!uniqueRows[rowString]) {
+                    uniqueRows[rowString] = true;
+                    deduplicatedRows.push(row);
+                } else {
+                    duplicatesFound = true;
+                }
+            });
+
+            if (duplicatesFound) {
+                dispatch(showSnackbar({ show: true, severity: "warning", message: "Se encontraron filas duplicadas y se eliminaron." }));
+            }
+
+            const processedData = deduplicatedRows.map(row => {
+                const obj: { [key: string]: any } = {};
+                headers.forEach((header: string, index: number) => {
+                    obj[header] = row[index];
+                });
+                return obj;
+            });
+
+            setJsonData(processedData);
+            setJsonPersons(processedData); 
+
+            setColumnList(headers);
+            setSelectedColumns({
+                primarykey: headers[0],
+                columns: headers.slice(1),
+            } as SelectedColumns);
+
+            setHeaders(headers.map(c => ({
+                Header: c,
+                accessor: c
+            })));
+        };
+
+        reader.readAsBinaryString(file);
+    };
+    
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
@@ -417,66 +672,53 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     useEffect(() => {
-        if (openModal === false) {
+        if (openModal === false && selectedColumns.primarykey !== '') {
             setHeaderTableData(selectedColumns);
-            setAllRowsSelected(true)
+            setAllRowsSelected(true);
         }
-    }, [openModal])
+    }, [openModal, selectedColumns]);
 
     const setHeaderTableData = (localSelectedColumns: SelectedColumns) => {
-        if (openModal === false && selectedColumns.primarykey !== '') {
-            setSelectionKey(selectedColumns.primarykey);
-            let headers = [
+        if (localSelectedColumns.primarykey !== '') {
+            const headers = [
                 localSelectedColumns.primarykey,
                 ...localSelectedColumns.columns
-            ].map(c => {
-                return {
-                    Header: c,
-                    accessor: c
-                }
-            });
+            ].map(c => ({
+                Header: c,
+                accessor: c
+            }));
             setHeaders(headers);
-            // setDetaildata({...detaildata, headers: headers});
             return headers;
         }
-    }
+    };
     // External Data Logic //
 
-    const changeStep = (step: number) => {
-        if (Object.keys(selectedRows).length === 0) {
-            if (step === 2) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected) }));
-            }
-            return false;
-        }
+    const changeStep = (step) => {
         switch (detaildata.source) {
             case 'INTERNAL':
                 setDetaildata({
                     ...detaildata,
                     headers: setHeaderTableData(selectedColumns),
-                    jsonData: jsonData,
-                    selectedColumns: selectedColumns,
-                    selectedRows: selectedRows,
-                    person: jsonData.map(j =>
-                        Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' }
-                    )
+                    jsonData,
+                    selectedColumns,
+                    selectedRows,
+                    person: jsonData.map(j => Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' })
                 });
                 break;
             case 'EXTERNAL':
                 setDetaildata({
                     ...detaildata,
-                    // Update headers only where upload has used
-                    headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
-                    jsonData: jsonData,
-                    selectedColumns: selectedColumns,
-                    selectedRows: selectedRows,
+                    headers: setHeaderTableData(selectedColumns),
+                    jsonData,
+                    selectedColumns,
+                    selectedRows,
                     person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
                 });
                 break;
             case 'PERSON':
                 setDetaildata({
                     ...detaildata,
-                    selectedRows: selectedRows,
+                    selectedRows,
                     person: Array.from(
                         new Map([
                             ...(detaildata.person || []),
@@ -487,7 +729,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             case 'LEAD':
                 setDetaildata({
                     ...detaildata,
-                    selectedRows: selectedRows,
+                    selectedRows,
                     person: Array.from(
                         new Map([
                             ...(detaildata.person || []),
@@ -498,39 +740,108 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
+    
 
     const AdditionalButtons = () => {
         if (detaildata.source === 'EXTERNAL') {
             return (
-                <React.Fragment>
-                    <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
-                    <input
-                        id="upload-file"
-                        name="file"
-                        type="file"
-                        accept=".xls,.xlsx"
-                        value={valuefile}
-                        style={{ display: 'none' }}
-                        onChange={(e) => handleUpload(e.target.files)}
-                    />
-                    <label htmlFor="upload-file">
-                        <Button
-                            component="span"
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            style={{ backgroundColor: "#53a6fa" }}
-                        ><Trans i18nKey={langKeys.uploadFile} />
-                        </Button>
-                    </label>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => cleanData()}
-                        style={{ backgroundColor: "#53a6fa" }}
-                    ><Trans i18nKey={langKeys.clean} />
-                    </Button>
+                <React.Fragment>  
+                    {jsonData.length === 0 && (                
+                      <>
+                        <a 
+                            href="#"
+                            onClick={() => adjustAndDownloadExcel(getDownloadLink())}
+                            style={{ textDecoration: 'none' }}
+                        >
+                            <Button
+                                component="span"
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                style={{ backgroundColor: "#5AB986" }}
+                            >
+                                <DescriptionIcon style={{ marginRight: '4px' }} />
+                                <Trans i18nKey={'Descargar Formato de Carga'} />
+                            </Button>
+                        </a>
+
+                        <input
+                            id="upload-file"
+                            name="file"
+                            type="file"
+                            accept=".xls,.xlsx"
+                            value={valuefile}
+                            style={{ display: 'none' }}
+                            onChange={(e) => handleUpload(e.target.files)}
+                        />
+                        <label htmlFor="upload-file">                     
+                            <Button
+                                component="span"
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                style={{ backgroundColor: "#5AB986" }}
+                            ><CloudUploadIcon style={{marginRight:'4px'}}/><Trans i18nKey={'Importar Base'} />
+                            </Button>
+                        </label>
+                      </>
+                        
+                    )}
+
+                    {jsonData.length > 0 && (
+                        <>
+                            <Button        
+                                disabled={ Object.keys(selectedColumns).length === 0}        
+                                variant="contained"
+                                color="primary"
+                                startIcon={<DeleteIcon />}
+                                style={{ backgroundColor: !Object.keys(selectedRows).length ? "#e0e0e0" : "#7721ad" }}
+                                onClick={() => setOpenDeleteDialog(true)}
+
+                            >
+                                {t(langKeys.delete)} 
+                            </Button>
+
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => cleanData()}
+                                style={{ backgroundColor: "#53a6fa" }}
+                                ><Trans i18nKey={langKeys.clean} />
+                            </Button>
+                        </>
+                    )}      
+
+                     <DialogZyx3Opt
+                        open={openDeleteDialog}
+                        title={t(langKeys.confirmation)}
+                        buttonText1={t(langKeys.cancel)}                   
+                        buttonText2={t(langKeys.accept)}
+                        handleClickButton1={() => setOpenDeleteDialog(false)}                    
+                        handleClickButton2={handleDeleteSelectedRows}
+                        maxWidth={'xs'}
+                    >
+                        <div>{' ¿Está seguro que desea eliminar a esta(s) persona(s)?'}</div>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx3Opt>
+
+
+                    <DialogZyx3Opt
+                        open={openCleanDialog}
+                        title={t(langKeys.confirmation)}
+                        buttonText1={t(langKeys.cancel)}                   
+                        buttonText2={t(langKeys.accept)}
+                        handleClickButton1={() => setOpenCleanDialog(false)}
+                        handleClickButton2={handleCleanConfirmed}
+                        maxWidth={'xs'}
+                    >
+                        <div>{' ¿Está seguro que desea eliminar toda la tabla?'}</div>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx3Opt>                 
+
                 </React.Fragment>
             )
         }
@@ -572,7 +883,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             data={jsonData}
                             download={false}
                             loading={detaildata.source === 'INTERNAL' && auxResult.loading}
-                            filterGeneral={false}
+                            filterGeneral={true}
                             ButtonsElement={AdditionalButtons}
                             useSelection={true}
                             selectionKey={selectionKey}
@@ -584,96 +895,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 }
 
             </div>
-            <ModalCampaignColumns
-                columnList={columnList}
-                selectedColumns={selectedColumns}
-                setSelectedColumns={setSelectedColumns}
-                openModal={openModal}
-                handleCancelModal={handleCancelModal}
-                handleSaveModal={handleSaveModal}
-            />
+          
         </React.Fragment>
-    )
-}
-
-interface ModalProps {
-    columnList: string[];
-    selectedColumns: SelectedColumns;
-    setSelectedColumns: (data: SelectedColumns) => void;
-    openModal: boolean | null;
-    handleCancelModal: () => void;
-    handleSaveModal: () => void;
-}
-
-const ModalCampaignColumns: React.FC<ModalProps> = ({ columnList, selectedColumns, setSelectedColumns, openModal, handleCancelModal, handleSaveModal }) => {
-    const { t } = useTranslation();
-
-    const [checkboxEnable, setCheckboxEnable] = useState(true);
-
-    const handleMaxColumns = () => {
-        setCheckboxEnable(selectedColumns.column.filter(c => c === true).length < 14 ? true : false);
-    }
-
-    useEffect(() => {
-        handleMaxColumns();
-    }, [selectedColumns])
-
-    return (
-        <DialogZyx
-            open={openModal || false}
-            title={t(langKeys.select_column_plural)}
-            button1Type="button"
-            buttonText1={t(langKeys.cancel)}
-            handleClickButton1={handleCancelModal}
-            button2Type="button"
-            buttonText2={t(langKeys.save)}
-            handleClickButton2={handleSaveModal}
-        >
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>{t(langKeys.name)}</TableCell>
-                            <TableCell>{t(langKeys.key)}</TableCell>
-                            <TableCell>{t(langKeys.column)}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {columnList.map((c, i) =>
-                            <TableRow key={i}>
-                                <TableCell>{c}</TableCell>
-                                <TableCell>
-                                    <input
-                                        type="radio"
-                                        value={c}
-                                        checked={selectedColumns.primarykey === c || false}
-                                        onChange={(e) => {
-                                            setSelectedColumns({
-                                                ...selectedColumns,
-                                                primarykey: c || '',
-                                                column: selectedColumns.column.map((sc, sci) => sci === i ? false : sc) || []
-                                            });
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedColumns.column[i] || false}
-                                        disabled={selectedColumns.primarykey === c || (!checkboxEnable && selectedColumns.column[i] === false)}
-                                        onChange={(e) => {
-                                            setSelectedColumns({
-                                                ...selectedColumns,
-                                                column: selectedColumns.column.map((sc, sci) => sci === i ? e.target.checked : sc) || []
-                                            });
-                                        }}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </DialogZyx>
     )
 }

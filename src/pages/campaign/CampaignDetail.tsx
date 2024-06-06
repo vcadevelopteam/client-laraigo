@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
@@ -101,6 +100,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
     ];
+    const [idAux, setIdAux] = useState(0)
+    const [templateAux, setTemplateAux] = useState<Dictionary>({})
+    const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
 
     useEffect(() => {
         if (row !== null) {
@@ -167,6 +169,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         batchjson: data?.batchjson || [],
                         fields: { ...new SelectedColumns(), ...data?.fields },
                         operation: 'UPDATE',
+                        carouseljson: data?.carouseljson || [],
                         person: mainResult.multiData.data[5] && mainResult.multiData.data[5].success ? mainResult.multiData.data[5].data : []
                     });
                     setFrameProps({
@@ -308,15 +311,15 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 valid = false;
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
-            let newmessages = formatMessage();
-            let localsubject = newmessages.subject || '';
-            let localheader = newmessages.header || '';
-            let localmessage = newmessages.message || '';
+            const newmessages = formatMessage();
+            const localsubject = newmessages.subject || '';
+            const localheader = newmessages.header || '';
+            const localmessage = newmessages.message || '';
 
             let elemVariables: string[] = [];
             let errorIndex = null;
 
-            let auxbuttons = detaildata
+            const auxbuttons = detaildata
             if (auxbuttons?.messagetemplatebuttons) {
                 auxbuttons.messagetemplatebuttons.forEach((button: any) => {
                     if (button.payload) {
@@ -325,7 +328,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 });
             }
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                let vars = extractVariables(localsubject);
+                const vars = extractVariables(localsubject);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
@@ -334,7 +337,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if (detaildata.messagetemplatetype === 'MULTIMEDIA' && localheader !== '') {
-                let vars = extractVariables(localheader);
+                const vars = extractVariables(localheader);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1 || localheader.includes('{{}}')) {
                     valid = false;
@@ -343,20 +346,38 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if (localmessage !== '') {
-                let vars = extractVariables(localmessage)
+                const vars = extractVariables(localmessage);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
+            
                 if (errorIndex !== -1 || localmessage.includes('{{}}')) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
+            
+                    const errorDetail = {
+                        localmessage,
+                        vars,
+                        errorIndex,
+                        problematicVariable: vars[errorIndex],
+                        tableDescriptions: tablevariable.map(t => t.description),
+                    };
+            
+                    console.error("Validation Error Details:", errorDetail); 
+            
+                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;
+            
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
                 }
+            
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+            
             setDetaildata({
                 ...detaildata,
                 variablereplace: elemVariables,
                 batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
                 subject: newmessages.subject,
-                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
+                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },               
+                messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
+                carouseljson: detaildata.carouseljson,               
                 message: newmessages.message,
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons
             });
@@ -727,6 +748,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    setIdAux={setIdAux}
+                    setTemplateAux={setTemplateAux}
                 />
                 : null}
             {pageSelected === 1 ?
@@ -742,6 +765,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    idAux={idAux}
+                    templateAux={templateAux}
+                    setJsonPersons={setJsonPersons}
                 />
                 : null}
             {pageSelected === 2 ?
@@ -762,6 +788,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setMessageVariables={setMessageVariables}
                     dataButtons={dataButtons}
                     setDataButtons={setDataButtons}
+                    templateAux={templateAux}
+                    jsonPersons={jsonPersons}
                 />
                 : null}
         </div>
