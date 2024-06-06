@@ -191,26 +191,45 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     );
 };
 
-const replaceVariables = (text: string, variableValues: Dictionary = {}) => {
+const replaceVariables = (text: string, bodyVariableValues: Dictionary = {}, bubbleVariableValues: Dictionary = {}) => {
     return text.replace(/{{(\d+)}}/g, (_, variableNumber) => {
-        return variableValues[variableNumber] || `{{${variableNumber}}}`;
+        return bodyVariableValues[variableNumber] || bubbleVariableValues[variableNumber] || `{{${variableNumber}}}`;
     });
 };
 
-const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, bodyVariableValues: Dictionary, headerVariableValues: Dictionary, videoHeaderValue: string, cardImageValues: Dictionary, dynamicUrlValues: Dictionary }> = ({ selectedTemplate, bodyVariableValues, headerVariableValues, videoHeaderValue, cardImageValues, dynamicUrlValues }) => {
+interface TemplatePreviewProps {
+    selectedTemplate: Dictionary;
+    bodyVariableValues: Dictionary;
+    bubbleVariableValues: Dictionary;
+    headerVariableValues: Dictionary;
+    videoHeaderValue: string;
+    cardImageValues: Dictionary;
+    dynamicUrlValues: Dictionary;
+}
+
+const TemplatePreview: React.FC<TemplatePreviewProps> = ({
+    selectedTemplate,
+    bodyVariableValues,
+    bubbleVariableValues,
+    headerVariableValues,
+    videoHeaderValue,
+    cardImageValues,
+    dynamicUrlValues
+}) => {
     const classes = useStyles();
     const renderedHeader = replaceVariables(selectedTemplate.header || "", headerVariableValues);
     const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues);
     const renderedVideoHeader = replaceVariables(videoHeaderValue || selectedTemplate.header || "", videoHeaderValue ? { videoHeader: videoHeaderValue } : {});
+    
     const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
         ...item,
         header: replaceVariables(item.header || "", cardImageValues),
-        body: replaceVariables(item.body || "", bodyVariableValues),
+        body: replaceVariables(item.body || "", {}, bubbleVariableValues),
         buttons: item.buttons.map((button: Dictionary) => ({
             ...button,
             btn: {
                 ...button.btn,
-                url: replaceVariables(button.btn.url || "", dynamicUrlValues)
+                url: replaceVariables(button.btn.url || "", {}, dynamicUrlValues)
             }
         }))
     })) || [];
