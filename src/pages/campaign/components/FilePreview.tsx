@@ -35,7 +35,7 @@ const useFilePreviewStyles = makeStyles(theme => ({
     },
 }));
 
-const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
+export const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     const classes = useFilePreviewStyles();
 
     const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);

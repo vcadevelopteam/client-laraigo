@@ -695,10 +695,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     // External Data Logic //
 
     const changeStep = (step) => {
-        if (Object.keys(selectedRows).length === 0 && step === 2) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected) }));
-            return false;
-        }
         switch (detaildata.source) {
             case 'INTERNAL':
                 setDetaildata({
@@ -745,6 +741,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
+    
 
     const AdditionalButtons = () => {
         if (detaildata.source === 'EXTERNAL') {

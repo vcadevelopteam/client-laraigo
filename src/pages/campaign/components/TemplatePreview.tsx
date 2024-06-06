@@ -218,6 +218,12 @@ const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, variableValues: 
                                             src={selectedTemplate.header || "https://d36ai2hkxl16us.cloudfront.net/thoughtindustries/image/upload/a_exif,c_fill,w_750/v1/course-uploads/7a95ec5e-b843-4247-bc86-c6e2676404fd/15ax1uzck54z-NuxeoGeneric.png"}
                                             style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
                                         />
+                                    ) : selectedTemplate?.headertype === "IMAGE" ? (
+                                        <img
+                                            src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
+                                            alt="Carousel Header"
+                                            style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
+                                        />
                                     ) : selectedTemplate?.headertype === "TEXT" ? (
                                         <div style={{ fontSize: '1.2rem' }}>{renderedHeader}</div>
                                     ) : selectedTemplate?.headertype === "VIDEO" ? (
@@ -273,6 +279,7 @@ const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, variableValues: 
                                 </div>
                             )}
                         </div>
+                        
                     </div>
                 </div>
             </div>
