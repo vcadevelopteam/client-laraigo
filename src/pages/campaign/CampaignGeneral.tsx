@@ -183,6 +183,7 @@ type FormFields = {
     messagetemplatepriority: string,
     executiontype: string,
     batchjson: Dictionary[],
+    carouseljson: Dictionary[],
     fields: SelectedColumns,
     operation: string,
     sourcechanged: boolean,
@@ -206,7 +207,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataGroup = [...multiData[2] && multiData[2].success ? multiData[2].data : []];
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
-
     const [openModal, setOpenModal] = useState(false);
 
     const { register, setValue, getValues, trigger, formState: { errors } } = useForm<any>({
@@ -239,6 +239,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatepriority: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: [{ date: '', time: '', quantity: 1 }],
+            carouseljson: [],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
             sourcechanged: false,           
@@ -253,6 +254,51 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     });
 
+    const templateId = getValues('messagetemplateid');
+    const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
+
+    console.log('Template en General', selectedTemplate)
+
+    let fieldCounter = 5; 
+    const initialFieldCounter = fieldCounter; 
+    fieldCounter = initialFieldCounter;
+
+    const carouseljsonData = selectedTemplate.carouseldata
+    ? selectedTemplate.carouseldata.map(({ bodyvariables, buttons, ...rest }: { bodyvariables: any, buttons: any[] }) => ({
+        ...rest,
+        body: rest.body.replace(/{{\d+}}/g, () => `{{field${fieldCounter++}}}`), // Incrementamos el contador con cada reemplazo
+        buttons: buttons.map(({ btn, ...buttonRest }) => ({
+            ...buttonRest,
+            btn: {
+                ...btn,
+                variables: undefined
+            }
+        }))
+    }))
+    : [];
+    
+
+
+    const templateButtonsData = [
+        ...(selectedTemplate.buttonsgeneric || []).map(({ btn, ...rest }) => ({
+            ...rest,
+            btn: {
+                ...Object.fromEntries(Object.entries(btn).filter(([key]) => key !== 'variables')),
+                url: btn.url ? btn.url.replace(/{{\d+}}/g, () => `{{field${fieldCounter++}}}`) : btn.url
+            }
+        })),
+        ...(selectedTemplate.buttonsquickreply || []).map(({ btn, ...rest }) => ({
+            ...rest,
+            btn: {
+                ...btn,
+                text: btn.text ? btn.text.replace(/{{\d+}}/g, () => `{{field${fieldCounter++}}}`) : btn.text
+            }
+        }))
+    ];
+
+    console.log('Carrousel detectado', carouseljsonData)
+    console.log('Buttons Detectados', templateButtonsData)
+    
     useEffect(() => {
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -316,13 +362,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatenamespace', data.messagetemplatenamespace);
         setValue('messagetemplatetype', data.messagetemplatetype);
         setValue('messagetemplateheader', data.messagetemplateheader || {});
-        setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
+        setValue('messagetemplatebuttons', templateButtonsData || []);
         setValue('messagetemplatefooter', data.messagetemplatefooter || '');
         setValue('messagetemplateattachment', data.messagetemplateattachment || '');
         setValue('messagetemplatelanguage', data.messagetemplatelanguage || '');
         setValue('messagetemplatepriority', data.messagetemplatepriority || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
+        setValue('carouseljson', carouseljsonData || []);
         setValue('fields', { ...new SelectedColumns(), ...data.fields });
     }
 
@@ -331,8 +378,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             trigger().then((valid: any) => {
                 const data = getValues();
                 data.messagetemplateheader = data.messagetemplateheader || {};
-                data.messagetemplatebuttons = data.messagetemplatebuttons || [];
+                data.messagetemplatebuttons = templateButtonsData || [];
                 data.batchjson = data.batchjson || [];
+                data.carouseljson = carouseljsonData || [];
                 data.fields = { ...new SelectedColumns(), ...data.fields };
                 setDetaildata({ ...detaildata, ...data });
                 setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: valid } });
@@ -494,11 +542,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
   
 
-    const templateId = getValues('messagetemplateid');
-    const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
 
-    console.log('Template en General', selectedTemplate)
-  
 
 
     return (

@@ -13,7 +13,6 @@ import { FormControl } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import AddIcon from '@material-ui/icons/Add';
-import TemplatePreview from './components/TemplatePreview';
 import DeleteIcon from '@material-ui/icons/Delete';
 interface DetailProps {
     row: Dictionary | null,
@@ -89,6 +88,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [tablevariableShow, setTableVariableShow] = useState<Dictionary[]>([]);
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
     const [allVariables, setAllVariables] = useState<string[]>([]);
+    const [headerVariables, setHeaderVariables] = useState<string[]>([]);
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const templateId = templateAux.id;
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
@@ -101,12 +101,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
     const [additionalVariableValues, setAdditionalVariableValues] = useState<Dictionary>({});
     const [selectedAdditionalHeaders, setSelectedAdditionalHeaders] = useState<{ [key: number]: string }>({});
-
+   
     useEffect(() => {
         const detectedVariables = (detaildata.message.match(/{{(.*?)}}/g) || []);
         console.log('Variables detectadas:', detectedVariables);
         setAllVariables(detectedVariables);
-    }, [detaildata.message]);
+    
+        if (detaildata.messagetemplateheader?.type === 'TEXT') {
+            const detectedHeaderVariables = (detaildata.messagetemplateheader.value.match(/{{(.*?)}}/g) || []);
+            console.log('Variables de cabecera detectadas:', detectedHeaderVariables);
+            setHeaderVariables(detectedHeaderVariables);
+        } else {
+            setHeaderVariables([]);
+        }
+    }, [detaildata.message, detaildata.messagetemplateheader]);
 
     const toggleVariableSelect = (e: React.ChangeEvent<Dictionary>, item: Dictionary, inputkey: string, changefunc: ({ ...param }) => void, filter = true) => {        
         const elem = e.target;
@@ -171,21 +179,21 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setSelectedHeaders(prev => ({ ...prev, main: selectedOption.key }));
     };   
     
-    const handleVariableChange = (variableName: string, selectedOption: { key: string, value: string } | null) => {
-        if (!selectedOption) {
-            setSelectedHeaders(prev => {
-                const newHeaders = { ...prev };
-                delete newHeaders[variableName];
-                return newHeaders;
-            });
-            const updatedMessage = detaildata.message.replace(`{{${variableName}}}`, `{{${variableName}}}`);
-            setDetaildata(prevDetaildata => ({ ...prevDetaildata, message: updatedMessage }));
-        } else {
-            setSelectedHeaders(prev => ({ ...prev, [variableName]: selectedOption.key }));
+    const handleVariableChange = (variableName: string, selectedOption: { key: string, value: string }) => {
+        const newSelectedHeaders = { ...selectedHeaders, [variableName]: selectedOption.key };
+        setSelectedHeaders(newSelectedHeaders);
+    
+        if (allVariables.includes(`{{${variableName}}}`)) {
             const updatedMessage = detaildata.message.replace(`{{${variableName}}}`, `{{${selectedOption.key}}}`);
             setDetaildata(prevDetaildata => ({ ...prevDetaildata, message: updatedMessage }));
+        } else if (headerVariables.includes(`{{${variableName}}}`)) {
+            const updatedHeader = detaildata.messagetemplateheader.value.replace(`{{${variableName}}}`, `{{${selectedOption.key}}}`);
+            setDetaildata(prevDetaildata => ({
+                ...prevDetaildata,
+                messagetemplateheader: { ...prevDetaildata.messagetemplateheader, value: updatedHeader }
+            }));
         }
-    }
+    };
     
 
     const handleAddVariable = () => {
@@ -228,11 +236,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [frameProps.checkPage])
 
     useEffect(() => {
-        const newData = (detaildata?.messagetemplatebuttons||[]).map(item => 
-            item.payload.match(/{{(.*?)}}/) ? { ...item, variables: Object.fromEntries(item.payload.match(/{{(.*?)}}/g).map(variable => [variable.slice(2, -2), ""])) } : item
-        );
-        setDataButtons(newData)
-    }, [detaildata.messagetemplatebuttons])
+        const newData = (detaildata?.messagetemplatebuttons || []).map(item => {
+            const payloadVariables = item.payload ? item.payload.match(/{{(.*?)}}/g) : null;
+            return payloadVariables 
+                ? { ...item, variables: Object.fromEntries(payloadVariables.map(variable => [variable.slice(2, -2), ""])) }
+                : item;
+        });
+        setDataButtons(newData);
+    }, [detaildata.messagetemplatebuttons]);
+    
     
     useEffect(() => {
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
@@ -267,7 +279,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 {(detaildata.messagetemplatetype === 'MULTIMEDIA'
                     && (detaildata?.messagetemplateheader?.type || '') !== '') ?
                     <div className="row-zyx">
-                        <FieldEdit
+                       <FieldEditWithSelect
                             label={t(langKeys.header)}
                             className="col-12"
                             valueDefault={detaildata.messagetemplateheader?.value}
@@ -276,9 +288,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 messagetemplateheader: { ...detaildata.messagetemplateheader, value: value }
                             })}
                             inputProps={{
-                                readOnly: detaildata.messagetemplateid !== 0
+                                readOnly: detaildata.messagetemplateid !== 0,
+                                onClick: (e: any) => toggleVariableSelect(e, detaildata.messagetemplateheader, 'header', setDetaildata, detaildata.type === 'TEXTO'),
+                                onInput: (e: any) => toggleVariableSelect(e, detaildata.messagetemplateheader, 'header', setDetaildata, detaildata.type === 'TEXTO'),
                             }}
+                            show={variableHandler.show}
+                            data={tablevariableShow}
+                            datalabel="label"
+                            datakey="description"
+                            top={variableHandler.top}
+                            left={variableHandler.left}
+                            onClickSelection={(e, value) => selectionVariableSelect(e, value)}
+                            onClickAway={() => setVariableHandler({ ...variableHandler, show: false })}
                         />
+
                     </div> : null}
                 {detaildata.communicationchanneltype?.startsWith('MAI')
                     && ['MAIL', 'HTML'].includes(detaildata.type!!) ?
@@ -352,31 +375,51 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
                                     <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
                                     <div className={classes.containerStyle}>
-                                    {(allVariables || []).map((variable: string) => {
-                                        const variableName = variable.slice(2, -2); 
-                                        const currentCounter = counter++;
-                                        return (
-                                            <div key={variableName}>
-                                                <p style={{ marginBottom: '3px' }}>{`Variable {{${currentCounter}}}`}</p>
-                                                <FieldSelect
-                                                    variant="outlined"
-                                                    uset={true}
-                                                    className="col-12"
-                                                    data={headers
-                                                        .filter(header => header !== selectedHeader)
-                                                        .map(header => ({ key: header, value: header }))}
-                                                    optionDesc="value"
-                                                    optionValue="key"
-                                                    valueDefault={selectedHeaders[variableName]}
-                                                    onChange={(selectedOption) => handleVariableChange(variableName, selectedOption)}
-                                                />
-                                            </div>
-                                        );
-                                    })}
+                                        {(allVariables || []).map((variable: string) => {
+                                            const variableName = variable.slice(2, -2); 
+                                            const currentCounter = counter++;
+                                            return (
+                                                <div key={variableName}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable {{${currentCounter}}}`}</p>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={headers
+                                                            .filter(header => header !== selectedHeader)
+                                                            .map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={selectedHeaders[variableName]}
+                                                        onChange={(selectedOption) => handleVariableChange(variableName, selectedOption)}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                        {(headerVariables || []).map((variable: string) => {
+                                            const variableName = variable.slice(2, -2); 
+                                            const currentCounter = counter++;
+                                            return (
+                                                <div key={variableName}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${currentCounter}}}`}</p>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={headers
+                                                            .filter(header => header !== selectedHeader)
+                                                            .map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={selectedHeaders[variableName]}
+                                                        onChange={(selectedOption) => handleVariableChange(variableName, selectedOption)}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </FormControl>
-
-                                                        
+                  
                                 <FormControl className="col-12">                          
                                     <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                                     <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>                        
