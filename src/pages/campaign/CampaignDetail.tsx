@@ -379,7 +379,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
                 carouseljson: detaildata.carouseljson,               
                 message: newmessages.message,
-                messagetemplatebuttons: auxbuttons.messagetemplatebuttons
             });
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
         }
