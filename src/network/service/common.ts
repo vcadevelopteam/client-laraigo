@@ -10,7 +10,6 @@ export function login(usr: string, password: string, facebookid: string, googlei
 
 export function logout() {
     const tmp = APIManager.post(apiUrls.LOGOUT_URL, {}, true);
-    removeAuthorizationToken()
     return tmp;
 }
 

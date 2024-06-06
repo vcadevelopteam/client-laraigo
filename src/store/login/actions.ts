@@ -1,6 +1,7 @@
 import { IActionCall } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
+import { removeAuthorizationToken } from "common/helpers";
 
 export const login = (usr: string | null, password: string | null, facebookid?: string | null, googleid?: string | null, token_recaptcha?: string | null, samlCode?: string | null): IActionCall => ({
     callAPI: () => CommonService.login(usr || "", password || "", facebookid || "", googleid || "", token_recaptcha || "", samlCode || ""),
@@ -70,3 +71,8 @@ export const setPwdFirsLogin = (value: boolean, ignorePwdchangefirstloginValidat
     type: actionTypes.CHANGE_PWD_FIRST_LOGIN,
     payload: { value, ignorePwdchangefirstloginValidation },
 });
+
+export const cleanValidateToken = (): IActionCall => {
+    removeAuthorizationToken()
+    return { type: actionTypes.CLEAN_VALIDATETOKEN };
+};
