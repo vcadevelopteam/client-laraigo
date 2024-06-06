@@ -362,7 +362,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             
                     console.error("Validation Error Details:", errorDetail); 
             
-                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}\nDetails: ${JSON.stringify(errorDetail, null, 2)}`;
+                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;
             
                     dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
                 }
@@ -377,8 +377,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 subject: newmessages.subject,
                 messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },               
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
-                carouseljson: [],
-                
+                carouseljson: detaildata.carouseljson,               
                 message: newmessages.message,
             });
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });

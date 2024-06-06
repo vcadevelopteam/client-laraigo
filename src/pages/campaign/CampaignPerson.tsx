@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react'; 
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DialogZyx, DialogZyx3Opt } from 'components';
+import { DialogZyx3Opt } from 'components';
 import { Dictionary, ICampaign, IFetchData, MultiData, SelectedColumns } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, campaignPersonSel, uploadExcel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
@@ -19,9 +18,6 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import DeleteIcon from '@material-ui/icons/Delete';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-
-//setTemplateAux(dataMessageTemplate.find(template => template.id === data.id) || {})        
-
 
 interface DetailProps {
     row: Dictionary | null,
@@ -38,15 +34,6 @@ interface DetailProps {
     idAux: number;
     templateAux: Dictionary;
     setJsonPersons:  (value: Dictionary) => void;
-}
-
-interface TemplateAux {
-    bodyvariables: { text: string; variable: number }[];
-    headertype?: string;
-    buttonsgeneric?: { type: string }[];
-    templatetype?: string;
-    carouseldata?: any[];
-    header?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -211,66 +198,82 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             const sheetData = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
             const columnNames: string[] = sheetData[1];
     
-            const requiredVariableColumns = templateAux.bodyvariables 
-            ? templateAux.bodyvariables.map((varObj: { text: string; variable: number }) => `Variable ${varObj.variable}`)
-            : [];
-            
-            const headerVariableColumns = templateAux.headertype === "TEXT" && templateAux.headervariables ? templateAux.headervariables.map((varName: string, index: number) => `Variable Cabecera ${index + 1}`) : [];
-            
-            const headerMultimediaColumns = templateAux.headertype === "DOCUMENT" || templateAux.headertype === "VIDEO" || templateAux.headertype === "IMAGE" ? ["Cabecera Multimedia"] : []; 
+            let variableCounter = 1;
+    
+            const requiredVariableColumns = templateAux.bodyvariables
+                ? templateAux.bodyvariables.map(() => `Variable ${variableCounter++}`)
+                : [];
+    
+            const headerVariableColumns = templateAux.headertype === "TEXT" && templateAux.headervariables
+                ? templateAux.headervariables.map(() => `Variable Cabecera ${variableCounter++}`)
+                : [];
+    
+            const headerMultimediaColumns = templateAux.headertype === "DOCUMENT" || templateAux.headertype === "VIDEO" || templateAux.headertype === "IMAGE"
+                ? ["Cabecera Multimedia"]
+                : [];
     
             const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
             const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url Dinamico ${index + 1}`);
-            
+    
             const imageCards = templateAux.carouseldata || [];
-            const imageCardColumns = [];
-            if (imageCards.length > 0) {
-              for (let i = 0; i < imageCards.length && i < 3; i++) {
-                if (imageCards[i].header) {
-                  imageCardColumns.push(`Card Imagen ${i + 1}`);
-                }
-              }
-            }          
-
+            const carouselVariableColumns = imageCards.reduce((acc, card) => {
+                const cardVariables = card.body.match(/{{\d+}}/g) || [];
+                return acc.concat(cardVariables.map(() => `Variable ${variableCounter++}`));
+            }, [] as string[]);
+    
+            const imageCardColumns = imageCards.map((card, index) => card.header ? `Card Imagen ${index + 1}` : '').filter(Boolean);
+    
+            // Detect dynamic URLs in carouseldata
+            const carouselDynamicUrlColumns = imageCards.reduce((acc, card) => {
+                const dynamicButtons = card.buttons?.filter(button => button.btn.type === 'dynamic') || [];
+                return acc.concat(dynamicButtons.map((btn, index) => `Url Dinamico ${index + 1}`));
+            }, [] as string[]);
+    
             const newColumnNames = columnNames.slice(0, 3)
-            .concat(headerVariableColumns)
-            .concat(headerMultimediaColumns)
-            .concat(requiredVariableColumns)
-            .concat(dynamicUrlColumns || [])
-            .concat(imageCardColumns)
-            .concat("Variable Adicional 1");
-
+                .concat(headerVariableColumns)
+                .concat(headerMultimediaColumns)
+                .concat(requiredVariableColumns)
+                .concat(carouselVariableColumns)
+                .concat(dynamicUrlColumns)
+                .concat(carouselDynamicUrlColumns)
+                .concat(imageCardColumns)
+                .concat("Variable Adicional 1");
+    
             const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
     
             newColumnNames.forEach((columnName, index) => {
-                let descriptionKey = columnName;    
+                let descriptionKey = columnName;
                 if (descriptionKey.startsWith("Variable Adicional")) {
-                        descriptionKey = "Variable Adicional";
-                    } else if (descriptionKey.startsWith("Variable")) {
-                        const variableNum = columnName.split(' ')[1];
-                        newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
-                        return;
-                    } else if (descriptionKey.startsWith("Url Dinamico")) {
-                        const urlNum = columnName.split(' ')[2];
-                        newSheetData[0][index] = descriptionsMap["Url Dinamico"].replace("{num}", urlNum);
-                        return;
-                    } else if (descriptionKey.startsWith("Card Imagen")) {
-                        const cardNum = columnName.split(' ')[2];
-                        newSheetData[0][index] = descriptionsMap["Card Imagen"].replace("{num}", cardNum);
-                        return;
-                    }                
-                    newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
+                    descriptionKey = "Variable Adicional";
+                } else if (descriptionKey.startsWith("Variable")) {
+                    const variableNum = descriptionKey.split(' ')[1];
+                    newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", variableNum);
+                    return;
+                } else if (descriptionKey.startsWith("Url Dinamico")) {
+                    const urlNum = columnName.split(' ')[2];
+                    newSheetData[0][index] = descriptionsMap["Url Dinamico"].replace("{num}", urlNum);
+                    return;
+                } else if (descriptionKey.startsWith("Card Imagen")) {
+                    const cardNum = columnName.split(' ')[2];
+                    newSheetData[0][index] = descriptionsMap["Card Imagen"].replace("{num}", cardNum);
+                    return;
+                }
+                newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
             });
     
             const newWorksheet = XLSX.utils.aoa_to_sheet(newSheetData);
             const newWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);    
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
             const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'binary' });
             saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), 'Formato de Carga.xlsx');
         } catch (error) {
             console.error("Error al ajustar y descargar el archivo Excel", error);
         }
     };
+    
+    
+    
+    
 
     const s2ab = (s: string) => {
         const buf = new ArrayBuffer(s.length);
@@ -280,10 +283,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return buf;
     };
-        
-    console.log('El id Person es:', idAux, 'y su contenido es',templateAux)
-    console.log('El json Data es', jsonData)
-
     
     useEffect(() => {
         if (frameProps.checkPage) {

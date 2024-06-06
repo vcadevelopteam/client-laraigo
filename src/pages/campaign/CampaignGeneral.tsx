@@ -263,22 +263,27 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const initialFieldCounter = fieldCounter; 
     fieldCounter = initialFieldCounter;
 
-    const carouseljsonData = selectedTemplate.carouseldata
+    const carouseljsonData: any[] = selectedTemplate.carouseldata
     ? selectedTemplate.carouseldata.map(({ bodyvariables, buttons, ...rest }: { bodyvariables: any, buttons: any[] }) => ({
         ...rest,
-        body: rest.body.replace(/{{\d+}}/g, () => `{{field${fieldCounter++}}}`), // Incrementamos el contador con cada reemplazo
-        buttons: buttons.map(({ btn, ...buttonRest }) => ({
-            ...buttonRest,
-            btn: {
-                ...btn,
-                variables: undefined
+        body: rest.body.replace(/{{\d+}}/g, () => `{{field${fieldCounter++}}}`), 
+        buttons: buttons.map(({ btn, ...buttonRest }) => {
+            let url = btn.url;
+            if (btn.type === "dynamic" && !url.includes("{{")) {
+                url = `${url}/{{field${fieldCounter++}}}`;
             }
-        }))
+            return {
+                ...buttonRest,
+                btn: {
+                    ...btn,
+                    url,
+                    variables: undefined
+                }
+            }
+        })
     }))
     : [];
     
-
-
     const templateButtonsData = [
         ...(selectedTemplate.buttonsgeneric || []).map(({ btn, ...rest }) => ({
             ...rest,
@@ -295,9 +300,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }))
     ];
-
-    console.log('Carrousel detectado', carouseljsonData)
-    console.log('Buttons Detectados', templateButtonsData)
     
     useEffect(() => {
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -369,7 +371,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatepriority', data.messagetemplatepriority || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
-        setValue('carouseljson', carouseljsonData || []);
+        setValue('carouseljson', carouseljsonData || ['faileaste']);
         setValue('fields', { ...new SelectedColumns(), ...data.fields });
     }
 
@@ -380,7 +382,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = templateButtonsData || [];
                 data.batchjson = data.batchjson || [];
-                data.carouseljson = carouseljsonData || [];
+                data.carouseljson = carouseljsonData || ['faileaste'];
                 data.fields = { ...new SelectedColumns(), ...data.fields };
                 setDetaildata({ ...detaildata, ...data });
                 setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: valid } });

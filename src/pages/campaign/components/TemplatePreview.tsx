@@ -197,10 +197,23 @@ const replaceVariables = (text: string, variableValues: Dictionary = {}) => {
     });
 };
 
-const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, variableValues: Dictionary }> = ({ selectedTemplate, variableValues }) => {
+const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, bodyVariableValues: Dictionary, headerVariableValues: Dictionary, videoHeaderValue: string, cardImageValues: Dictionary, dynamicUrlValues: Dictionary }> = ({ selectedTemplate, bodyVariableValues, headerVariableValues, videoHeaderValue, cardImageValues, dynamicUrlValues }) => {
     const classes = useStyles();
-    const renderedHeader = replaceVariables(selectedTemplate.header || "", variableValues);
-    const renderedBody = replaceVariables(selectedTemplate.body || "", variableValues);
+    const renderedHeader = replaceVariables(selectedTemplate.header || "", headerVariableValues);
+    const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues);
+    const renderedVideoHeader = replaceVariables(videoHeaderValue || selectedTemplate.header || "", videoHeaderValue ? { videoHeader: videoHeaderValue } : {});
+    const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
+        ...item,
+        header: replaceVariables(item.header || "", cardImageValues),
+        body: replaceVariables(item.body || "", bodyVariableValues),
+        buttons: item.buttons.map((button: Dictionary) => ({
+            ...button,
+            btn: {
+                ...button.btn,
+                url: replaceVariables(button.btn.url || "", dynamicUrlValues)
+            }
+        }))
+    })) || [];
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
@@ -237,8 +250,8 @@ const TemplatePreview: React.FC<{ selectedTemplate: Dictionary, variableValues: 
 
                                     <p>{renderedBody}</p>
 
-                                    {selectedTemplate?.templatetype === "CAROUSEL" && selectedTemplate.carouseldata?.length > 0 && (
-                                        <CarouselPreview carouselData={selectedTemplate.carouseldata} />
+                                    {selectedTemplate?.templatetype === "CAROUSEL" && renderedCarouselData.length > 0 && (
+                                        <CarouselPreview carouselData={renderedCarouselData} />
                                     )}
 
                                     <p style={{ color: 'grey', fontSize: '0.8rem' }}>{selectedTemplate.footer}</p>

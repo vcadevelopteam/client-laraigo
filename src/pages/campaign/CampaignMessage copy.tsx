@@ -89,9 +89,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
     const [additionalVariableValues, setAdditionalVariableValues] = useState<Dictionary>({});
     const [selectedAdditionalHeaders, setSelectedAdditionalHeaders] = useState<{ [key: number]: string }>({});
- 
-    console.log('Template en mensaje', templateAux)
-    console.log('Mi jsonPersons desde message es: ', jsonPersons)
 
     const handleHeaderChange = (selectedOption: any) => {
         setSelectedHeader(selectedOption.key);
