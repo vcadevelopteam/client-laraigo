@@ -7,6 +7,7 @@ import { useSelector } from './store';
 import { disconnectVoxi } from "store/voximplant/actions";
 import { logout } from 'network/service/common';
 import { cleanValidateToken } from 'store/login/actions';
+import { showSnackbar } from 'store/popus/actions';
 
 export function useForcedDisconnection(callback?: () => void) {
     const { t } = useTranslation();
