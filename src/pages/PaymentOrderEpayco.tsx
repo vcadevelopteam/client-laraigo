@@ -293,7 +293,7 @@ export const PaymentOrderEpayco: FC = () => {
                             <div className={classes.back}>
                                 <div className={classes.containerSuccess}>
                                     <div style={{ display: "flex", justifyContent: "center" }}>
-                                    <img src={'https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/dfbffeb9-5a11-4020-852d-a600264d8fb4/epayco-logo-fondo-oscuro.png'} style={{ height: 120, margin: '20px' }} />
+                                        <img src={'https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/dfbffeb9-5a11-4020-852d-a600264d8fb4/epayco-logo-fondo-oscuro.png'} style={{ height: 120, margin: '20px' }} />
                                     </div>
                                     <div style={{ fontWeight: "bold", fontSize: 20, marginBottom: "20px" }}>
                                         {t(langKeys.paymentorder_success)}
@@ -429,6 +429,40 @@ export const PaymentOrderEpayco: FC = () => {
                                                 }}
                                             >
                                                 <div className={classes.textField}>{paymentData?.userlastname}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {paymentData.userdocument && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                flexWrap: "wrap",
+                                                width: "100%",
+                                                marginBottom: "2px",
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    flexBasis: "100%",
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                <div className={classes.textTitle}>
+                                                    {t(langKeys.paymentorder_document)}
+                                                </div>
+                                            </div>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    flexBasis: "100%",
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                <div className={classes.textField}>{paymentData?.userdocument}</div>
                                             </div>
                                         </div>
                                     )}
