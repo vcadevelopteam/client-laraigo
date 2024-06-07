@@ -6,6 +6,7 @@ import { resetForcedDisconnection } from 'store/inbox/actions';
 import { useSelector } from './store';
 import { disconnectVoxi } from "store/voximplant/actions";
 import { logout } from 'network/service/common';
+import { cleanValidateToken } from 'store/login/actions';
 
 export function useForcedDisconnection(callback?: () => void) {
     const { t } = useTranslation();
@@ -31,6 +32,7 @@ export function useForcedDisconnection(callback?: () => void) {
                     }
                 });
             }
+            dispatch(cleanValidateToken())
             callback?.();
             // if (!voxiConnection.error) {
             dispatch(disconnectVoxi())
