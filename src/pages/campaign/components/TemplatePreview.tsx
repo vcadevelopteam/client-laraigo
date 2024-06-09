@@ -110,6 +110,7 @@ const PdfAttachment: React.FC<PdfAttachmentProps> = ({ url }) => {
     const classes = useStyles();
 
     const getFileName = (url: string) => {
+        if (!url) return 'Archivo PDF';
         const matches = url.match(/\/([^/?#]+\.pdf)(?:[?#]|$)/i);
         return matches && matches[1] ? matches[1] : 'Archivo PDF';
     };
@@ -191,12 +192,6 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     );
 };
 
-const replaceVariables = (text: string, bodyVariableValues: Dictionary = {}, bubbleVariableValues: Dictionary = {}) => {
-    return text.replace(/{{(\d+)}}/g, (_, variableNumber) => {
-        return bodyVariableValues[variableNumber] || bubbleVariableValues[variableNumber] || `{{${variableNumber}}}`;
-    });
-};
-
 interface TemplatePreviewProps {
     selectedTemplate: Dictionary;
     bodyVariableValues: Dictionary;
@@ -205,7 +200,17 @@ interface TemplatePreviewProps {
     videoHeaderValue: string;
     cardImageValues: Dictionary;
     dynamicUrlValues: Dictionary;
+    carouselVariableValues: Dictionary;
 }
+
+const replaceVariables = (text: string, bodyVariableValues: Dictionary = {}, bubbleVariableValues: Dictionary = {}, dynamicUrlValues: Dictionary = {}, cardImageValues: Dictionary = {}, carouselVariableValues: Dictionary = {}, carouselIndex?: number) => {
+    return text.replace(/{{(\d+)}}/g, (_, variableNumber) => {
+        if (carouselIndex !== undefined && carouselVariableValues[carouselIndex]) {
+            return carouselVariableValues[carouselIndex][variableNumber] || `{{${variableNumber}}}`;
+        }
+        return bodyVariableValues[variableNumber] || bubbleVariableValues[variableNumber] || dynamicUrlValues[variableNumber] || cardImageValues[variableNumber] || `{{${variableNumber}}}`;
+    });
+};
 
 const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     selectedTemplate,
@@ -214,22 +219,22 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     headerVariableValues,
     videoHeaderValue,
     cardImageValues,
-    dynamicUrlValues
+    dynamicUrlValues,
+    carouselVariableValues
 }) => {
     const classes = useStyles();
     const renderedHeader = replaceVariables(selectedTemplate.header || "", headerVariableValues);
     const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues);
-    const renderedVideoHeader = replaceVariables(videoHeaderValue || selectedTemplate.header || "", videoHeaderValue ? { videoHeader: videoHeaderValue } : {});
     
     const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
         ...item,
-        header: replaceVariables(item.header || "", cardImageValues),
-        body: replaceVariables(item.body || "", {}, bubbleVariableValues),
+        header: replaceVariables(item.header || "", {}, {}, {}, cardImageValues, carouselVariableValues, index),
+        body: replaceVariables(item.body || "", {}, bubbleVariableValues, {}, {}, carouselVariableValues, index),
         buttons: item.buttons.map((button: Dictionary) => ({
             ...button,
             btn: {
                 ...button.btn,
-                url: replaceVariables(button.btn.url || "", {}, dynamicUrlValues)
+                url: replaceVariables(button.btn.url || "", {}, {}, dynamicUrlValues, {}, carouselVariableValues, index)
             }
         }))
     })) || [];
