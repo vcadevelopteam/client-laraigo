@@ -81,6 +81,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const templateId = templateAux.id;
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
+    const [filledTemplate, setFilledTemplate] = useState<Dictionary>({ ...selectedTemplate });
     const [variableValues, setVariableValues] = useState<Dictionary>({});
     const headers = jsonPersons.length > 0 ? Object.keys(jsonPersons[0]) : [];
     const [selectedHeader, setSelectedHeader] = useState<string | null>(null);
@@ -109,8 +110,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const carouselBodyVariables = selectedTemplate.carouseldata
         ? selectedTemplate.carouseldata.flatMap(item => detectVariables(item.body))
         : [];
-    const allBodyVariables = bodyVariables.concat(carouselBodyVariables);
-    
+    const allBodyVariables = bodyVariables.concat(carouselBodyVariables);    
     const [bodyVariableValues, setBodyVariableValues] = useState<Dictionary>({});
     const [headerVariableValues, setHeaderVariableValues] = useState<Dictionary>({});
     const [videoHeaderValue, setVideoHeaderValue] = useState<string>('');
@@ -118,7 +118,36 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [dynamicUrlValues, setDynamicUrlValues] = useState<Dictionary>({});
     const [bubbleVariableValues, setBubbleVariableValues] = useState<Dictionary>({});
     const [carouselVariableValues, setCarouselVariableValues] = useState<Dictionary>({});
-
+    const [variableSelections, setVariableSelections] = useState<{ [key: string]: string }>({});
+    
+    const updateTemplate = (variableType: string, variableNumber: string, header: string, carouselIndex?: number) => {
+        const updatedTemplate = JSON.parse(JSON.stringify(selectedTemplate));
+    
+        Object.keys(variableSelections).forEach(key => {
+            const [type, number, index] = key.split('-');
+            const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
+    
+            if (type === 'body' && updatedTemplate.body) {
+                updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            } else if (type === 'header' && updatedTemplate.header) {
+                updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            } else if (type === 'cardImage' && index !== undefined && updatedTemplate.carouseldata && updatedTemplate.carouseldata[parseInt(index)]) {
+                const fieldHeader = jsonPersons[0][variableSelections[key]];
+                updatedTemplate.carouseldata[parseInt(index)].header = fieldHeader;
+            } else if (type === 'dynamicUrl' && index !== undefined && updatedTemplate.carouseldata && updatedTemplate.carouseldata[parseInt(index)]) {
+                const button = updatedTemplate.carouseldata[parseInt(index)].buttons?.find((btn: any) => btn.btn.type === 'dynamic');
+                if (button) {
+                    button.btn.url = `${button.btn.url.split('{{')[0]}{{field${fieldNumber}}}`;
+                }
+            } else if (type === 'carousel' && index !== undefined && updatedTemplate.carouseldata && updatedTemplate.carouseldata[parseInt(index)]) {
+                updatedTemplate.carouseldata[parseInt(index)].body = updatedTemplate.carouseldata[parseInt(index)].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            } else if (type === 'bubble' && index !== undefined && updatedTemplate.carouseldata && updatedTemplate.carouseldata[parseInt(index)]) {
+                updatedTemplate.carouseldata[parseInt(index)].body = updatedTemplate.carouseldata[parseInt(index)].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            }
+        });
+    
+        setFilledTemplate(updatedTemplate);
+    };  
         
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'bubble', carouselIndex?: number) => {
         const header = selectedOption.key;
@@ -165,12 +194,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             ...prev,
             [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
         }));
+    
+        setVariableSelections(prev => ({
+            ...prev,
+            [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
+        }));
+    
+        updateTemplate(variableType, variableNumber, header, carouselIndex);
     };
     
     
+
+    useEffect(() => {
+        console.log('Filled Template:', filledTemplate);
+    }, [filledTemplate]);
     
-    
-    
+        
     const handleAddVariable = () => {
         setAdditionalVariables(prev => {
             if (prev.length < 10) {
@@ -199,8 +238,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             return newHeaders;
         });
     };
-    
-      
     
     useEffect(() => {
         if (frameProps.checkPage) {
