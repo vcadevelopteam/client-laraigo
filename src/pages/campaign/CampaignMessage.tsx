@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FieldEdit, FieldSelect } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -120,13 +120,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [carouselVariableValues, setCarouselVariableValues] = useState<Dictionary>({});
     const [variableSelections, setVariableSelections] = useState<{ [key: string]: string }>({});
     
-    const updateTemplate = (variableType: string, variableNumber: string, header: string, carouselIndex?: number) => {
+    const updateTemplate = useCallback(() => {
         const updatedTemplate = JSON.parse(JSON.stringify(selectedTemplate));
-    
+
         Object.keys(variableSelections).forEach(key => {
             const [type, number, index] = key.split('-');
             const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
-    
+
             if (type === 'body' && updatedTemplate.body) {
                 updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
             } else if (type === 'header' && updatedTemplate.header) {
@@ -145,14 +145,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 updatedTemplate.carouseldata[parseInt(index)].body = updatedTemplate.carouseldata[parseInt(index)].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
             }
         });
-    
+
         setFilledTemplate(updatedTemplate);
-    };  
+        setDetaildata({
+            ...detaildata,
+            message: updatedTemplate.body,
+            messagetemplateheader: {
+                ...detaildata.messagetemplateheader,
+                value: updatedTemplate.header
+            }
+        });
+    }, [variableSelections, headers, selectedTemplate, detaildata, setDetaildata]);
         
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'bubble', carouselIndex?: number) => {
         const header = selectedOption.key;
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
-        
+
         if (variableType === 'body') {
             setBodyVariableValues(prevValues => ({
                 ...prevValues,
@@ -189,27 +197,24 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             }));
         }
-    
+
         setSelectedHeaders(prev => ({
             ...prev,
             [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
         }));
-    
+
         setVariableSelections(prev => ({
             ...prev,
             [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
         }));
-    
-        updateTemplate(variableType, variableNumber, header, carouselIndex);
+
+        updateTemplate();
     };
-    
-    
 
     useEffect(() => {
-        console.log('Filled Template:', filledTemplate);
-    }, [filledTemplate]);
+        updateTemplate();
+    }, [variableSelections]);
     
-        
     const handleAddVariable = () => {
         setAdditionalVariables(prev => {
             if (prev.length < 10) {
@@ -433,10 +438,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     )}
                             </div>
                         </FormControl>
-
-
-
-   
 
                         <FormControl className="col-12">                          
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>

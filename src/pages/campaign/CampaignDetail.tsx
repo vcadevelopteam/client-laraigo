@@ -192,6 +192,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
+    
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
             let splitMessage = message.split('{{');
             messageVariables.forEach((v, i) => {
@@ -199,52 +200,54 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             });
             message = splitMessage.join('{{');
         }
+    
+        let localtablevariable = [];
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
-                // field i + 2 because i + 1 is used for primary key, pccowner
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                    let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
-                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
+                    const localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values());
+                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v, i) => {
                         message = message.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
                     });
-                }
-                else {
-                    let localtablevariable = Array.from(new Set([
+                } else {
+                    localtablevariable = Array.from(new Set([
                         ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
                         ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
                         ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
                     ]));
                     localtablevariable = localtablevariable.map(x => x.slice(2, -2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
                     if (Object.keys(usedTablevariable).length > 0) {
-                        Object.entries(usedTablevariable).forEach((v: any) => {
+                        Object.entries(usedTablevariable).forEach((v) => {
                             subject = subject.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                             header = header.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                             message = message.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                         });
-                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
+                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x);
                     }
                     localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
                         ...actv,
                         [`field${tvi + 2}`]: tv
                     }), {});
                     setUsedTableVariable(localtablevariable);
-                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
+                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v, i) => {
                         subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
                         header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
                         message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
                     });
                 }
             }
-        }
-        else if (['EXTERNAL'].includes(detaildata.source || '')) {
-            tablevariable.forEach((v: any, i: number) => {
+        } else if (['EXTERNAL'].includes(detaildata.source || '')) {
+            tablevariable.forEach((v, i) => {
                 subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
         }
-        return { subject, header, message }
-    }
+    
+        return { subject, header, message };
+    };
+    
+
     const formatMessageGeneric = (message:string) => {
         let modifiedMessage = message; 
     
@@ -258,7 +261,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
-                // field i + 2 because i + 1 is used for primary key, pccowner
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                     let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
                     localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
