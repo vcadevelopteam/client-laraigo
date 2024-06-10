@@ -6,7 +6,7 @@ import { SaveActivityModal, TabPanelLogNote } from "./LeadForm";
 import { getAdvisers, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote } from "store/lead/actions";
 import { adviserSel, insLeadConfig, insOrderConfig, leadActivityIns, leadHistoryIns, leadLogNotesIns } from "common/helpers";
 import { Box, Button, makeStyles, Modal, Typography } from "@material-ui/core";
-import { DialogZyx, FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, TitleDetail } from "components";
+import { DialogZyx, FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, FieldView, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
