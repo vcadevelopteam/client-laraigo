@@ -749,6 +749,43 @@ export const FieldEditAdvancedAux: React.FC<InputProps> = ({ label, className, d
     )
 }
 
+export const SingleLineInput: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, maxLength = 0, fregister = {}, inputProps = {}, style = {}, onInput = {}, onPaste = {} }) => {
+    const [value, setValue] = useState(valueDefault || "");
+
+    useEffect(() => {
+        setValue(valueDefault || "");
+    }, [valueDefault]);
+
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type="text"
+                error={!!error}
+                value={value}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={{...inputProps, maxLength }}
+                onInput={onInput}
+                onPaste={onPaste}
+                style={style}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}> {value.length}/{maxLength}</FormHelperText>}
+        </div>
+    );
+};
+
 interface IconProps extends React.SVGProps<SVGSVGElement> {
     channelType: string
 }

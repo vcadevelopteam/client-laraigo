@@ -47,6 +47,7 @@ import {
     FieldEditMulti,
     FieldSelect,
     FieldView,
+    SingleLineInput,
     TemplateBreadcrumbs,
     TitleDetail,
 } from "components";
@@ -247,6 +248,21 @@ const useStyles = makeStyles((theme) => ({
         width: 'auto',
         height: 17,
         cursor: 'pointer',
+    },
+    cardMedia: {
+        width: '100%',
+        objectFit: 'contain',
+        height: '100%',
+    },
+    cardMediaContainer: {
+        height: 120,
+        width: 120,
+        backgroundColor: '#EAF4FF',
+        borderRadius: 8,
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 }));
 
@@ -941,6 +957,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("templatetype", data?.value || "");
             trigger("templatetype");
 
+            if(data?.value === "CAROUSEL") {
+                setValue('carouseldata', [{ header: "", body: '', bodyvariables: [], buttons: [] }])
+            } else {
+                setValue('carouseldata', [])
+            }
+
             setBodyObject(row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }])
             setValue('header', '')
             setValue('footer', '')
@@ -949,13 +971,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setValue("headertype", "NONE");
             setValue('body', '')
             setHeaderType('none')
-            setValue('carouseldata', [])
             trigger("headertype");
             trigger("footer");
             trigger('buttonsgeneric');
             trigger('buttonsquickreply');
             setValue('bodyvariables', [])
             trigger('bodyvariables');
+            trigger('carouseldata')
         }
     };
     
@@ -1711,6 +1733,34 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('bodyvariables');
     };
 
+    const handleTextFormatting = (format) => {
+        const textarea = document.querySelector('textarea');
+        const text = getValues('body');
+        const selectionStart = textarea.selectionStart;
+        const selectionEnd = textarea.selectionEnd;
+    
+        if (selectionStart !== selectionEnd) {
+          const selectedText = text.substring(selectionStart, selectionEnd);
+          const formattedText = `${format}${selectedText}${format}`;
+          const newText = text.substring(0, selectionStart) + formattedText + text.substring(selectionEnd);
+    
+          if (newText.length <= 1024) {
+            setValue('body', newText);
+          } else {
+            // Optionally, you can add some feedback to the user that the text is too long
+            console.warn('Formatted text would exceed the maximum length');
+          }
+        } else {
+          if (text.length + format.length * 2 <= 1024) {
+            setValue('body', text + format + format);
+          } else {
+            // Optionally, you can add some feedback to the user that the text is too long
+            console.warn('Formatted text would exceed the maximum length');
+          }
+        }
+        trigger('body');
+    };
+
     return (
         <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
@@ -2173,45 +2223,25 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         )}
                                         <IconButton
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1022) {
-                                                    setValue('body', getValues('body') + '**')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting("*")}
                                             disabled={!isNew}
                                         >
                                             <FormatBoldIcon />
                                         </IconButton>
                                         <IconButton 
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1022) {
-                                                    setValue('body', getValues('body') + '__')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting('_')}
                                             disabled={!isNew}
                                         >
                                             <FormatItalicIcon />
                                         </IconButton>
                                         <IconButton
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1022) {
-                                                    setValue('body', getValues('body') + '~~')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting('~')}
                                             disabled={!isNew}
                                         >
                                             <FormatStrikethroughIcon />
                                         </IconButton>
                                         <IconButton
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1018) {
-                                                    setValue('body', getValues('body') + '``````')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting('```')}
                                             disabled={!isNew}
                                         >
                                             <FormatCodeIcon />
@@ -2255,10 +2285,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     </div>
                                                 );
                                             })}
-                                            <div className={classes.warningContainer}>
-                                                <WarningIcon style={{color: '#FF7575'}}/>
-                                                {t(langKeys.addexampletext)}
-                                            </div>
+                                            {getValues('bodyvariables').some(v => v.text === '') && (
+                                                <div className={classes.warningContainer}>
+                                                    <WarningIcon style={{color: '#FF7575'}}/>
+                                                    {t(langKeys.addexampletext)}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     <span className={classes.title} style={{marginTop: 20}}>{t(langKeys.footerpage)}</span>
@@ -2374,7 +2406,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                 <DragIndicatorIcon />
                                                                                                 <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
                                                                                                     <div className="row-zyx" style={{width: '100%', marginBottom: 0, display: 'flex'}}>
-                                                                                                        <FieldEditAdvancedAux
+                                                                                                        <SingleLineInput
                                                                                                             className='col-4'
                                                                                                             label={t(langKeys.buttontext)}
                                                                                                             error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
@@ -2416,7 +2448,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                 size="normal"
                                                                                                             />
                                                                                                         </div>
-                                                                                                        <FieldEditAdvancedAux
+                                                                                                        <SingleLineInput
                                                                                                             className='col-4'
                                                                                                             label={t(langKeys.urlwebsite)}
                                                                                                             error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
@@ -2470,10 +2502,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             />
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    <div className={classes.warningContainer}>
-                                                                                                        <WarningIcon style={{color: '#FF7575'}}/>
-                                                                                                        {t(langKeys.addexampletext)}
-                                                                                                    </div>
+                                                                                                    {getValues(`buttonsgeneric.${i}.btn.variables[0]`) === "" && (
+                                                                                                        <div className={classes.warningContainer}>
+                                                                                                            <WarningIcon style={{color: '#FF7575'}}/>
+                                                                                                            {t(langKeys.addexampletext)}
+                                                                                                        </div>
+                                                                                                    )}
                                                                                                 </div>
                                                                                             )}
                                                                                         </>
@@ -2482,7 +2516,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                             <DragIndicatorIcon />
                                                                                             <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
                                                                                                 <div className="row-zyx" style={{width: '100%', marginBottom: 0}}>
-                                                                                                    <FieldEditAdvancedAux
+                                                                                                    <SingleLineInput
                                                                                                         className='col-4'
                                                                                                         label={t(langKeys.buttontext)}
                                                                                                         error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
@@ -2794,45 +2828,25 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </div>
                                         )}
                                         <IconButton
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1022) {
-                                                    setValue('body', getValues('body') + '**')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting("*")}
                                             disabled={!isNew}
                                         >
                                             <FormatBoldIcon />
                                         </IconButton>
                                         <IconButton 
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1022) {
-                                                    setValue('body', getValues('body') + '__')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting("_")}
                                             disabled={!isNew}
                                         >
                                             <FormatItalicIcon />
                                         </IconButton>
                                         <IconButton
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1022) {
-                                                    setValue('body', getValues('body') + '~~')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting("~")}
                                             disabled={!isNew}
                                         >
                                             <FormatStrikethroughIcon />
                                         </IconButton>
                                         <IconButton
-                                            onClick={() => {
-                                                if(getValues('body').length <= 1018) {
-                                                    setValue('body', getValues('body') + '``````')
-                                                    trigger('body')
-                                                }
-                                            }}
+                                            onClick={() => handleTextFormatting("```")}
                                             disabled={!isNew}
                                         >
                                             <FormatCodeIcon />
@@ -2880,10 +2894,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     </div>
                                                 );
                                             })}
-                                            <div className={classes.warningContainer}>
-                                                <WarningIcon style={{color: '#FF7575'}}/>
-                                                {t(langKeys.addexampletext)}
-                                            </div>
+                                            {getValues('bodyvariables').some(v => v.text === '') && (
+                                                <div className={classes.warningContainer}>
+                                                    <WarningIcon style={{color: '#FF7575'}}/>
+                                                    {t(langKeys.addexampletext)}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     <div style={{height: 20}}/>
@@ -2903,7 +2919,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                             </div>
                                                             {card.header !== '' ? (
                                                                 <div className={classes.uploadedImage}>
-                                                                    <ImageIcon style={{color: '#004DB1', height: 85, width: 'auto'}}/>
+                                                                    <div className={classes.cardMediaContainer}>
+                                                                        <img src={card.header} alt="Selected Image" className={classes.cardMedia} />
+                                                                    </div>
                                                                     <div style={{display: 'flex', gap: 10}}>
                                                                         <span className={classes.imageName}>{card.header.split('/').pop().replace(/%20/g, ' ')}</span>
                                                                         <IconButton onClick={() => handleImageRemove(index)} disabled={!isNew} style={{padding: 0}}>
@@ -3001,7 +3019,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
                                                                                                             </div>
                                                                                                             <div style={{display: 'flex', alignItems: 'start'}}>
-                                                                                                                <FieldEditAdvancedAux
+                                                                                                                <SingleLineInput
                                                                                                                     inputProps={{
                                                                                                                         rows: 1,
                                                                                                                         maxRows: 1
@@ -3032,7 +3050,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
                                                                                                             </div>
                                                                                                             <div style={{display: 'flex', alignItems: 'start'}}>
-                                                                                                                <FieldEditAdvancedAux
+                                                                                                                <SingleLineInput
                                                                                                                     inputProps={{
                                                                                                                         rows: 1,
                                                                                                                         maxRows: 1
@@ -3086,7 +3104,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             </div>
                                                                                                             <div style={{display: 'flex', width: '100%', alignItems: 'start'}}>
                                                                                                                 <div style={{flex: 1}}>
-                                                                                                                    <FieldEditAdvancedAux
+                                                                                                                    <SingleLineInput
                                                                                                                         inputProps={{
                                                                                                                             rows: 1,
                                                                                                                             maxRows: 1
@@ -3143,7 +3161,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                 <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
                                                                                                             </div>
                                                                                                             <div style={{display: 'flex', alignItems: 'start'}}>
-                                                                                                                <FieldEditAdvancedAux
+                                                                                                                <SingleLineInput
                                                                                                                     inputProps={{
                                                                                                                         rows: 1,
                                                                                                                         maxRows: 1
@@ -3285,10 +3303,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                 </div>
                                                                             );
                                                                         })}
-                                                                        <div className={classes.warningContainer}>
-                                                                            <WarningIcon style={{color: '#FF7575'}}/>
-                                                                            {t(langKeys.addexampletext)}
-                                                                        </div>
+                                                                        {getValues(`carouseldata.${cindex}.bodyvariables`).some(cv => cv.text === '') && (
+                                                                            <div className={classes.warningContainer}>
+                                                                                <WarningIcon style={{color: '#FF7575'}}/>
+                                                                                {t(langKeys.addexampletext)}
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 )}
                                                             </>
