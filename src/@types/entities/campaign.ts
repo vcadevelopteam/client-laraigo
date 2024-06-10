@@ -44,6 +44,7 @@ export interface ICampaign {
 	batchjson?: Dictionary[],
 	fields?: Dictionary,
 	operation?: string,
+	carouseljson?: Dictionary[],
 
 	headers?: any[],
 	jsonData?: any[],

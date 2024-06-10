@@ -1,15 +1,16 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, FC, useCallback } from 'react'; // we need this to make JSX compile
-import { FieldEdit, FieldEditWithSelect, FieldView, FieldSelect } from 'components';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FieldEdit, FieldSelect } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
 import { filterPipe } from 'common/helpers';
 import { FrameProps } from './CampaignDetail';
-import { CircularProgress, IconButton, Paper, Box } from '@material-ui/core';
-import { Close, FileCopy, GetApp } from '@material-ui/icons';
-import FieldEditWithSelectCampaign from './FieldEditWithSelectCampaign';
+import { FormControl } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import AddIcon from '@material-ui/icons/Add';
+import TemplatePreview from './components/TemplatePreview';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -26,8 +27,8 @@ interface DetailProps {
     setSave: (value: any) => void;
     messageVariables: any[];
     setMessageVariables: (value: any[]) => void;
-    dataButtons: any[];
-    setDataButtons: (value: any[]) => void;
+    templateAux: Dictionary;
+    jsonPersons: Dictionary;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -35,19 +36,22 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+    },          
+    subtitle: {
+        fontSize: '0.9rem',       
+        color: 'grey', 
+        marginBottom:'0.5rem',
     },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
+    iconHelpText: {
+        width: 'auto',
+        height: 23,
+        cursor: 'pointer',
     },
-    flexgrow1: {
-        flexGrow: 1
-    },
-    mb1: {
-        marginBottom: '0.25rem',
-    },
+    containerStyle: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '16px',
+    }
 }));
 
 class VariableHandler {
@@ -71,12 +75,248 @@ class VariableHandler {
     }
 }
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, dataButtons, setDataButtons }) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, templateAux, jsonPersons}) => {
     const classes = useStyles();
-    const { t } = useTranslation();
-    const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
+    const { t } = useTranslation();  
+    const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
+    const templateId = templateAux.id;
+    const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
+    const [filledTemplate, setFilledTemplate] = useState<Dictionary>({ ...selectedTemplate });
+    const [variableValues, setVariableValues] = useState<Dictionary>({});
+    const headers = jsonPersons.length > 0 ? Object.keys(jsonPersons[0]) : [];
+    const [selectedHeader, setSelectedHeader] = useState<string | null>(null);
+    const [selectedHeaders, setSelectedHeaders] = useState<{ [key: number]: string }>({});
+    const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
+    const [additionalVariableValues, setAdditionalVariableValues] = useState<Dictionary>({});
+    const [selectedAdditionalHeaders, setSelectedAdditionalHeaders] = useState<{ [key: number]: string }>({});
 
-    const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+    const handleHeaderChange = (selectedOption: any) => {
+        setSelectedHeader(selectedOption.key);
+        setSelectedHeaders(prev => ({ ...prev, main: selectedOption.key }));
+    };    
+
+    const detectVariables = (text: string) => {
+        const regex = /{{(\d+)}}/g;
+        const matches = [];
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            matches.push({ variable: match[1] });
+        }
+        return matches;
+    };
+    
+    const bodyVariables = detectVariables(selectedTemplate.body);
+    const headerVariables = selectedTemplate.headertype === 'TEXT' ? detectVariables(selectedTemplate.header) : [];
+    const carouselBodyVariables = selectedTemplate.carouseldata
+        ? selectedTemplate.carouseldata.flatMap(item => detectVariables(item.body))
+        : [];
+    const allBodyVariables = bodyVariables.concat(carouselBodyVariables);    
+    const [bodyVariableValues, setBodyVariableValues] = useState<Dictionary>({});
+    const [headerVariableValues, setHeaderVariableValues] = useState<Dictionary>({});
+    const [videoHeaderValue, setVideoHeaderValue] = useState<string>('');
+    const [cardImageValues, setCardImageValues] = useState<Dictionary>({});
+    const [dynamicUrlValues, setDynamicUrlValues] = useState<Dictionary>({});
+    const [bubbleVariableValues, setBubbleVariableValues] = useState<Dictionary>({});
+    const [carouselVariableValues, setCarouselVariableValues] = useState<Dictionary>({});
+    const [variableSelections, setVariableSelections] = useState<{ [key: string]: string }>({});
+          
+    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'bubble', carouselIndex?: number) => {
+        const header = selectedOption.key;
+        const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
+        
+        if (variableType === 'body') {
+            setBodyVariableValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
+        } else if (variableType === 'header') {
+            setHeaderVariableValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
+        } else if (variableType === 'video') {
+            setVideoHeaderValue(value);
+        } else if (variableType === 'cardImage') {
+            setCardImageValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
+        } else if (variableType === 'dynamicUrl') {
+            setDynamicUrlValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
+        } else if (variableType === 'bubble') {
+            setBubbleVariableValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
+        } else if (variableType === 'carousel' && carouselIndex !== undefined) {
+            setCarouselVariableValues(prevValues => ({
+                ...prevValues,
+                [carouselIndex]: {
+                    ...prevValues[carouselIndex],
+                    [variableNumber]: value
+                }
+            }));
+        }
+    
+        setSelectedHeaders(prev => ({
+            ...prev,
+            [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
+        }));
+    
+        setVariableSelections(prev => ({
+            ...prev,
+            [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
+        }));
+    
+        updateTemplate();
+    };
+    
+    
+      
+    const updateTemplate = useCallback(() => {
+    
+        const updatedTemplate = JSON.parse(JSON.stringify(selectedTemplate));
+    
+        Object.keys(variableSelections).forEach(key => {
+            const [type, number] = key.split('-');
+            const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
+                
+            if (type === 'body' && updatedTemplate.body) {
+                updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            } else if (type === 'header' && updatedTemplate.header) {
+                updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                const index = parseInt(key.split('-')[2]);
+                if (!isNaN(index)) {
+                    updatedTemplate.carouseldata[index].header = jsonPersons[0][variableSelections[key]];
+                }
+            }               
+
+            else if (type === 'dynamicUrl' && updatedTemplate.buttonsgeneric) {
+                updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {                    
+                    const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`; 
+                    const variableSelectionsValue = variableSelections[buttonKey];             
+                    if (variableSelectionsValue) {
+                        const variableKey = headers.indexOf(variableSelectionsValue);
+                        if (variableKey !== -1) {
+                            if (button.btn.type === 'dynamic' && button.btn.url) {
+                                const regex = /{{\d+}}/g;
+                                button.btn.url = button.btn.url.replace(regex, `{{field${variableKey + 1}}}`);
+                            }
+                        } else {
+                            console.log(`Value "${variableSelectionsValue}" not found in headers`);
+                        }
+                    } else {
+                        console.log(`No selection found for button key: ${buttonKey}`);
+                    }
+                });
+            }
+            
+            else if (type === 'carousel' && updatedTemplate.carouseldata) {
+                const index = parseInt(key.split('-')[2]);
+                if (!isNaN(index)) {
+                    updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                }
+            } else if (type === 'bubble' && updatedTemplate.carouseldata) {
+                const index = parseInt(key.split('-')[2]);
+                if (!isNaN(index)) {
+                    updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                }
+            }
+        });       
+        console.log('updateTemplate - final updatedTemplate:', updatedTemplate);    
+
+        setFilledTemplate(updatedTemplate);
+        setDetaildata(prev => ({
+            ...prev,
+            message: updatedTemplate.body,
+            messagetemplateheader: {
+                ...prev.messagetemplateheader,
+                value: updatedTemplate.header
+            },
+            messagetemplatebuttons: updatedTemplate.buttonsgeneric || []
+        }));
+    }, [variableSelections, headers, selectedTemplate, jsonPersons, setDetaildata]);
+    
+    
+    
+    
+    
+    const renderDynamicUrlFields = () => {
+        const dynamicButtons = selectedTemplate.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
+        
+        return dynamicButtons.map((button, btnIndex) => (
+            <div key={`dynamicUrl-${btnIndex}`}>
+                <p style={{ marginBottom: '3px' }}>{`Url Dinamico {{${btnIndex + 1}}}`}</p>
+                <FieldSelect
+                    variant="outlined"
+                    uset={true}
+                    className="col-12"
+                    data={headers
+                        .filter(header => header !== selectedHeader)
+                        .map(header => ({ key: header, value: header }))}
+                    optionDesc="value"
+                    optionValue="key"
+                    valueDefault={headers}
+                    onChange={(selectedOption) => handleVariableChange(`dynamicUrl-${btnIndex + 1}`, selectedOption, 'dynamicUrl')}
+                />
+            </div>
+        ));
+    };
+    
+
+    useEffect(() => {
+        updateTemplate();
+    }, [variableSelections]);
+    
+    const handleAddVariable = () => {
+        setAdditionalVariables(prev => {
+            if (prev.length < 10) {
+                return [...prev, prev.length + 1];
+            }
+            return prev;
+        });
+    };
+
+    const handleRemoveVariable = (indexToRemove: number) => {   
+        setAdditionalVariables(prev => {
+            const newVariables = prev.filter((_, index) => index !== indexToRemove);
+            return newVariables.map((_, index) => index + 1);
+        });
+    };
+
+    const handleAdditionalVariableChange = (variableNumber: number, selectedOption: any) => {
+        const header = selectedOption.key;
+        const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';        
+        setAdditionalVariableValues(prevValues => {
+            const newValues = { ...prevValues, [variableNumber]: value };
+            return newValues;
+        });
+        setSelectedAdditionalHeaders(prev => {
+            const newHeaders = { ...prev, [variableNumber]: header };
+            return newHeaders;
+        });
+    };
+
+    
+    
+    const collectButtonsFromTemplate = (template: Dictionary) => {
+        const buttons = [...(template.buttonsgeneric || []), ...(template.buttonsquickreply || [])];
+        return buttons;
+    };
+    
+    useEffect(() => {
+        const buttons = collectButtonsFromTemplate(selectedTemplate);
+        setDetaildata(prev => ({
+            ...prev,
+            messagetemplatebuttons: buttons
+        }));
+    }, [selectedTemplate]);
+
+
     useEffect(() => {
         if (frameProps.checkPage) {
             setFrameProps({ ...frameProps, executeSave: false, checkPage: false });
@@ -86,70 +326,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
     }, [frameProps.checkPage])
-    useEffect(() => {
-        const newData = (detaildata?.messagetemplatebuttons||[]).map(item => 
-            item.payload.match(/{{(.*?)}}/) ? { ...item, variables: Object.fromEntries(item.payload.match(/{{(.*?)}}/g).map(variable => [variable.slice(2, -2), ""])) } : item
-        );
-        setDataButtons(newData)
-    }, [detaildata.messagetemplatebuttons])
-    const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({ ...param }) => void, filter = true) => {
-        
-        let elem = e.target;
-        if (elem) {
-            let selectionStart = elem.selectionStart || 0;
-            let lines = (elem.value || '').substr(0, selectionStart).split('\n');
-            let row = lines.length - 1;
-            let column = lines[row].length * 3;
-            let startIndex = (elem.value || '').slice(0, selectionStart || 0)?.lastIndexOf('{{');
-            let partialText = '';
-            if (startIndex !== -1) {
-                if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
-                    && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1
-                    && elem.value[selectionStart - 1] !== '}') {
-                    partialText = elem.value.slice(startIndex + 2, selectionStart);
-                    let rightText = (elem.value || '').slice(selectionStart, elem.value.length);
-                    let selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
-                    let endIndex = startIndex + partialText.length + selectionEnd + 4;
-                    setVariableHandler({
-                        show: true,
-                        item: item,
-                        inputkey: inputkey,
-                        inputvalue: elem.value,
-                        range: [startIndex, endIndex],
-                        changer: ({ ...param }) => changefunc({ ...param }),
-                        top: 24 + row * 21,
-                        left: column
-                    })
-                    if (filter) {
-                        setTableVariableShow(filterPipe(tablevariable, 'description', partialText, '%'));
-                    }
-                    else {
-                        setTableVariableShow(tablevariable);
-                    }
-                }
-                else {
-                    setVariableHandler(new VariableHandler());
-                }
-            }
-            else {
-                setVariableHandler(new VariableHandler());
-            }
-        }
-    }
 
-    const selectionVariableSelect = (e: React.ChangeEvent<any>, value: string) => {
-        const { item, inputkey, inputvalue, range, changer } = variableHandler;
-        if (range[1] !== -1 && (range[1] > range[0] || range[0] !== -1)) {
-            changer({
-                ...item,
-                [inputkey]: inputvalue.substring(0, range[0] + 2)
-                    + value
-                    + (inputvalue[range[1] - 2] !== '}' ? '}}' : '')
-                    + inputvalue.substring(range[1] - 2)
-            });
-            setVariableHandler(new VariableHandler());
-        }
-    }
 
     useEffect(() => {
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
@@ -168,248 +345,229 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     return (
         <React.Fragment>
-            <div className={classes.containerDetail}>
-                {detaildata.communicationchanneltype?.startsWith('MAI') ?
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.subject)}
-                            className="col-12"
-                            valueDefault={detaildata.messagetemplateheader?.value}
-                            onChange={(value) => setDetaildata({ ...detaildata, subject: value })}
-                            inputProps={{
-                                readOnly: ['HSM', 'SMS', 'MAIL'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0
-                            }}
-                        />
-                    </div> : null}
-                {(detaildata.messagetemplatetype === 'MULTIMEDIA'
-                    && (detaildata?.messagetemplateheader?.type || '') !== '') ?
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.header)}
-                            className="col-12"
-                            valueDefault={detaildata.messagetemplateheader?.value}
-                            onChange={(value) => setDetaildata({
-                                ...detaildata,
-                                messagetemplateheader: { ...detaildata.messagetemplateheader, value: value }
-                            })}
-                            inputProps={{
-                                readOnly: detaildata.messagetemplateid !== 0
-                            }}
-                        />
-                    </div> : null}
-                {detaildata.communicationchanneltype?.startsWith('MAI')
-                    && ['MAIL', 'HTML'].includes(detaildata.type!!) ?
-                    <div className="row-zyx">
-                        <React.Fragment>
-                            <div style={{ display: 'flex', justifyContent: 'center', flexFlow: 'row wrap', gap: '20px' }}>
-                                <div className="col-8" style={{ overflow: 'auto', borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "20px" }}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
-                                    <div
-                                        onClick={(e) => console.log(e)}
-                                        dangerouslySetInnerHTML={{ __html: detaildata?.message || '' }}
-                                    />
-                                </div>
-                                <div className="col-4" style={{ width: '400px', borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "20px" }}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.parameters)}</Box>
-                                    {messageVariables.map((item: Dictionary, i) => (
-                                        <React.Fragment key={"param_" + i}>
-                                            <FieldSelect
-                                                key={"var_" + i}
-                                                label={`${i + 1}. ${t(langKeys.variable)} #${item.name}`}
-                                                valueDefault={messageVariables[i].text}
-                                                onChange={(value: { description: any; }) => {
-                                                    const datatemp = [...messageVariables];
-                                                    datatemp[i].text = value?.description;
-                                                    setMessageVariables(datatemp)
-                                                }}
-                                                data={tablevariable}
-                                                optionDesc="label"
-                                                optionValue="description"
-                                            />
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-                            </div>
-                        </React.Fragment>
-                    </div> :
-                    <div className="row-zyx">
-                        <FieldEditWithSelect
-                            label={t(langKeys.body)}
-                            className="col-12"
-                            rows={10}
-                            valueDefault={detaildata.message}
-                            onChange={(value) => setDetaildata({ ...detaildata, message: value })}
-                            inputProps={{
-                                readOnly: ['HSM', 'SMS', 'MAIL'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0,
-                                onClick: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetaildata, detaildata.type === 'TEXTO'),
-                                onInput: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetaildata, detaildata.type === 'TEXTO'),
-                            }}
-                            show={variableHandler.show}
-                            data={tablevariableShow}
-                            datalabel="label"
-                            datakey="description"
-                            top={variableHandler.top}
-                            left={variableHandler.left}
-                            onClickSelection={(e, value) => selectionVariableSelect(e, value)}
-                            onClickAway={(variableHandler) => setVariableHandler({ ...variableHandler, show: false })}
-                        />
-                    </div>}
-                {(detaildata.messagetemplatetype === 'MULTIMEDIA'
-                    && (detaildata?.messagetemplatefooter || '') !== '') ?
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.footer)}
-                            className="col-12"
-                            valueDefault={detaildata.messagetemplatefooter}
-                            onChange={(value) => setDetaildata({
-                                ...detaildata,
-                                messagetemplatefooter: value
-                            })}
-                            inputProps={{
-                                readOnly: detaildata.messagetemplateid !== 0
-                            }}
-                        />
-                    </div> : null}
-                {(detaildata.messagetemplatetype === 'MULTIMEDIA' && (detaildata?.messagetemplatebuttons || detaildata?.messagetemplatebuttons !== null)) && <div className="row-zyx">
-                    <FieldView
-                        label={t(langKeys.buttons)}
-                        className="col-12"
-                        value=''
-                    />
-                    <React.Fragment>
-                        {detaildata?.messagetemplatebuttons?.map((btn: any, i: number) => {
-                            return (<div key={`btn-${i}`} className="col-4">
-                                <FieldView
-                                    label={t(langKeys.title)}
-                                    value={btn?.title || ""}
-                                    className={classes.mb1}
+            <div className={classes.containerDetail} style={{display:'flex', width:'100%'}}>
+
+                
+                <div style={{width:'50%'}}>
+                    <div className="row-zyx">                       
+                        <FormControl className="col-12">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
+                            <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>                        
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <div style={{ flex: 1 }}>
+                                <FieldSelect
+                                    variant="outlined"
+                                    uset={true}
+                                    label='Campos archivo'
+                                    className="col-12"
+                                    data={headers.map(header => ({ key: header, value: header }))}
+                                    optionDesc="value"
+                                    optionValue="key"
+                                    valueDefault={selectedHeader ? { key: selectedHeader, value: selectedHeader } : undefined}
+                                    onChange={handleHeaderChange}
                                 />
-                                <FieldView
-                                    label={t(langKeys.type)}
-                                    value={t(`messagetemplate_${btn?.type || ""}`)}
-                                    className={classes.mb1}
-                                />
-                                {(btn?.type === "url") ? 
-                                <div className="row-zyx">
-                                    <FieldEditWithSelectCampaign 
-                                        title={t(langKeys.payload)}
-                                        rows={1}
-                                        message={detaildata?.messagetemplatebuttons?.[i]?.payload}
-                                        onChange={(value) => {
-                                            let auxdetail = detaildata
-                                            auxdetail.messagetemplatebuttons[i].payload = value
-                                            setDetaildata(auxdetail)
-                                        }}
-                                        readOnly={['HSM', 'SMS', 'MAIL'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0}
-                                        tablevariable={tablevariable}
-                                        detaildata={detaildata}
-                                        field={`messagetemplatebuttons[${i}].payload`}
-                                        setDetaildata={setDetaildata}
-                                    />
-                                </div>:
-                                <FieldView
-                                    label={t(langKeys.payload)}
-                                    value={btn?.payload || ""}
-                                    className={classes.mb1}
-                                />
-                            }
+
+                                </div>                                   
+                                <Tooltip
+                                    title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
+                                    arrow
+                                    placement="top"
+                                >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>        
+                            </div>         
+                        </FormControl>     
+
+
+                           
+                        <FormControl className="col-12">
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
+                            <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
+
+                            <div className={classes.containerStyle}>
+                                {headerVariables.map((variable: Dictionary) => (
+                                    <div key={variable.variable}>
+                                        <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${variable.variable}}}`}</p>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            data={headers
+                                                .filter(header => header !== selectedHeader)
+                                                .map(header => ({ key: header, value: header }))}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            valueDefault={selectedHeaders[`header-${variable.variable}`] ? { key: selectedHeaders[`header-${variable.variable}`], value: selectedHeaders[`header-${variable.variable}`] } : undefined}
+                                            onChange={(selectedOption) => handleVariableChange(variable.variable, selectedOption, 'header')}
+                                        />
+                                    </div>
+                                ))}
                             </div>
 
-                        )
-                        })}
-                    </React.Fragment>
-                </div>}
-                {(detaildata.communicationchanneltype === 'MAIL' && detaildata?.messagetemplateattachment) && <div className="row-zyx">
-                    <FieldView label={t(langKeys.messagetemplate_attachment)} />
-                    <React.Fragment>
-                        {!!detaildata?.messagetemplateattachment && detaildata?.messagetemplateattachment?.split(',').map((f: string, i: number) => (
-                            <FilePreview key={`attachment-${i}`} src={f} />
+                            <div className={classes.containerStyle}>
+                                {bodyVariables.map((variable: Dictionary) => (
+                                    <div key={variable.variable}>
+                                        <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            data={headers
+                                                .filter(header => header !== selectedHeader)
+                                                .map(header => ({ key: header, value: header }))}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            valueDefault={headers}
+                                            onChange={(selectedOption) => handleVariableChange(variable.variable, selectedOption, 'body')}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className={classes.containerStyle}>
+                                {selectedTemplate.carouseldata?.map((item, index) =>
+                                    item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
+                                        <div key={`carousel-${index}-bubble-${variableIndex}`}>
+                                            <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
+                                            <FieldSelect
+                                                variant="outlined"
+                                                uset={true}
+                                                className="col-12"
+                                                data={headers
+                                                    .filter(header => header !== selectedHeader)
+                                                    .map(header => ({ key: header, value: header }))}
+                                                optionDesc="value"
+                                                optionValue="key"
+                                                valueDefault={headers}
+                                                onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                            />
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            <div className={classes.containerStyle}>
+                                {selectedTemplate.headertype === 'VIDEO' && (
+                                    <div>
+                                        <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            data={headers
+                                                .filter(header => header !== selectedHeader)
+                                                .map(header => ({ key: header, value: header }))}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            valueDefault={headers}
+                                            onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className={classes.containerStyle}>
+                                {selectedTemplate.carouseldata?.map((item, index) =>
+                                    item.header && (
+                                        <div key={`cardImage-${index}`}>
+                                            <p style={{ marginBottom: '3px' }}>{`Card Imagen ${index + 1}`}</p>
+                                            <FieldSelect
+                                                variant="outlined"
+                                                uset={true}
+                                                className="col-12"
+                                                data={headers
+                                                    .filter(header => header !== selectedHeader)
+                                                    .map(header => ({ key: header, value: header }))}
+                                                optionDesc="value"
+                                                optionValue="key"
+                                                valueDefault={headers}
+                                                onChange={(selectedOption) => handleVariableChange(`cardImage-${index + 1}`, selectedOption, 'cardImage')}
+                                            />
+                                        </div>
+                                    )
+                                )}
+                            </div>
+
+                            <div className={classes.containerStyle}>
+                                {renderDynamicUrlFields()}
+                            </div>
+
+
+                        </FormControl>
+
+                        <FormControl className="col-12">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
+                            <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>                        
+                            <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
+                                <AddIcon /> Añadir variable adicional
+                            </div>
+                            <div className={classes.containerStyle}>
+                                {additionalVariables.map((variable, index) => (
+                                    <div style={{ flex: 1 }} key={index}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                            <p>{`Variable {{${variable}}}`}</p>
+                                            <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <FieldSelect
+                                                variant="outlined"
+                                                uset={true}
+                                                className="col-12"
+                                                data={headers
+                                                    .filter(header => !Object.values(selectedHeaders).includes(header) && !Object.values(selectedAdditionalHeaders).includes(header))
+                                                    .map(header => ({ key: header, value: header }))}
+                                                optionDesc="value"
+                                                optionValue="key"
+                                                valueDefault={headers}
+                                                onChange={(selectedOption) => handleAdditionalVariableChange(variable, selectedOption)}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>                          
+                        </FormControl>
+
+                    </div> 
+                </div>  
+
+                <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             
+                    <div style={{fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}  </div> 
+                    <TemplatePreview
+                        selectedTemplate={selectedTemplate}
+                        bodyVariableValues={bodyVariableValues}
+                        headerVariableValues={headerVariableValues}
+                        videoHeaderValue={videoHeaderValue}
+                        cardImageValues={cardImageValues}
+                        dynamicUrlValues={dynamicUrlValues}
+                        bubbleVariableValues={bubbleVariableValues}
+                        carouselVariableValues={carouselVariableValues}
+                    />
+
+
+                    <FormControl className="col-12">                          
+                        <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
+                        <div className={classes.subtitle}> {'Previsualiza un ejemplo de las variables adicionales elegidas en el apartado de Variables Adicionales'} </div>                      
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+                        {additionalVariables.map((variable, index) => (
+                            <div style={{ flex: 1 }} key={index}>
+                                <p>{`Variable ${variable}`}</p>
+                                <div style={{ flex: 1 }}>
+                                <FieldEdit
+                                    variant="outlined"
+                                    uset={true}
+                                    className="col-12"
+                                    valueDefault={additionalVariableValues[variable] || ''}
+                                    disabled
+                                />
+                                </div>
+                            </div>
                         ))}
-                    </React.Fragment>
-                </div>}
+                        </div>
+                    </FormControl>
+
+                </div> 
+
             </div>
         </React.Fragment>
     )
-}
-
-interface FilePreviewProps {
-    onClose?: (f: string) => void;
-    src: File | string;
-}
-
-const useFilePreviewStyles = makeStyles(theme => ({
-    btnContainer: {
-        color: 'lightgrey',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-    },
-    infoContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    root: {
-        alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 4,
-        display: 'flex',
-        flexDirection: 'row',
-        margin: theme.spacing(1),
-        maxHeight: 80,
-        maxWidth: 300,
-        overflow: 'hidden',
-        padding: theme.spacing(1),
-        width: 'fit-content',
-    },
-}));
-
-const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
-    const classes = useFilePreviewStyles();
-
-    const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);
-
-    const getFileName = useCallback(() => {
-        if (isUrl()) {
-            const m = (src as string).match(/.*\/(.+?)\./);
-            return m && m.length > 1 ? m[1] : "";
-        };
-        return (src as File).name;
-    }, [isUrl, src]);
-
-    const getFileExt = useCallback(() => {
-        if (isUrl()) {
-            return (src as string).split('.').pop()?.toUpperCase() || "-";
-        }
-        return (src as File).name?.split('.').pop()?.toUpperCase() || "-";
-    }, [isUrl, src]);
-
-    return (
-        <Paper className={classes.root} elevation={2}>
-            <FileCopy />
-            <div style={{ width: '0.5em' }} />
-            <div className={classes.infoContainer}>
-                <div>
-                    <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: 190, whiteSpace: 'nowrap' }}>{getFileName()}</div>{getFileExt()}
-                </div>
-            </div>
-            <div style={{ width: '0.5em' }} />
-            {!isUrl() && !onClose && <CircularProgress color="primary" />}
-            <div className={classes.btnContainer}>
-                {onClose && (
-                    <IconButton size="small" onClick={() => onClose(src as string)}>
-                        <Close />
-                    </IconButton>
-                )}
-                {isUrl() && <div style={{ height: '10%' }} />}
-                {isUrl() && (
-                    <a href={src as string} target="_blank" rel="noreferrer" download={`${getFileName()}.${getFileExt()}`}>
-                        <IconButton size="small">
-                            <GetApp />
-                        </IconButton>
-                    </a>
-                )}
-            </div>
-        </Paper>
-    );
 }

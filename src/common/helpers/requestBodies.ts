@@ -1426,7 +1426,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
     service,
 });
 
-export const getCampaignLst = (): IRequestBody => ({
+export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
     parameters: {       
@@ -1472,6 +1472,7 @@ export const insCampaign = ({
     batchjson,
     fields,
     operation,
+    carouseljson,
     selectedColumns
 }: Dictionary): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
@@ -1502,8 +1503,9 @@ export const insCampaign = ({
         messagetemplatepriority: messagetemplatepriority || null,
         executiontype,
         batchjson: JSON.stringify(batchjson),
-        fields: JSON.stringify(selectedColumns || fields),
-        operation
+        fields: JSON.stringify(selectedColumns || fields),       
+        operation,
+        carouseljson: JSON.stringify(carouseljson)
     }
 });
 
@@ -1808,10 +1810,19 @@ export const getCampaignStart = (id: number): IRequestBody => ({
     },
 });
 
-export const getCampaignStatus = (id: number): IRequestBody => ({
+export const getCampaignStatus = (id: number): IRequestBody => ({ // query: "SELECT * FROM ufn_campaign_status($corpid, $orgid, $id)",
     method: "UFN_CAMPAIGN_STATUS",
     parameters: {
         id,
+    },
+});
+
+export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: number, status: string): IRequestBody => ({ // query: "SELECT * FROM ufn_campaignmember_status( $campaignid, $campaignmemberid, $status )",
+    method: "UFN_CAMPAIGNMEMBER_STATUS",
+    parameters: {
+        campaignid,
+        campaignmemberid, 
+        status
     },
 });
 

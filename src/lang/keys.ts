@@ -6191,6 +6191,25 @@ export const langKeys = {
   TEMPLATE2_UNREGISTERED: "TEMPLATE2_UNREGISTERED",
   TEMPLATE2_MULTIMEDIA: "TEMPLATE2_MULTIMEDIA",
   TEMPLATE2_CAROUSEL: "TEMPLATE2_CAROUSEL",
+
+  campaign_title_desc: 'campaign_title_desc',
+  campaign_description_desc: 'campaign_description_desc',
+  campaign_startdate_desc: 'campaign_startdate_desc',
+  campaign_enddate_desc: 'campaign_enddate_desc',
+  campaign_origin_desc: 'campaign_origin_desc',
+  campaign_executiontype_desc: 'campaign_executiontype_desc',
+  campaign_group_desc: 'campaign_group_desc',
+  campaign_channel_desc: 'campaign_channel_desc',
+  campaign_comunicationtemplate_desc: 'campaign_comunicationtemplate_desc',
+  campaign_status_desc: 'campaign_status_desc',
+  campaign_messagetype_desc: 'campaign_messagetype_desc',
+  campaign_execution_date: 'campaign_execution_date',
+  campaign_execution_time: 'campaign_execution_time',
+
+  campaign_templatepreview: 'campaign_templatepreview',
+  programmed: 'programmed',
+  contactdetails: 'contactdetails',
+
 };
 
 export type LangKeys = typeof langKeys;

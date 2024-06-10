@@ -8,9 +8,8 @@ export function login(usr: string, password: string, facebookid: string, googlei
     return APIManager.post(apiUrls.LOGIN_URL, { data: { data } }, false);
 }
 
-export function logout() {
-    const tmp = APIManager.post(apiUrls.LOGOUT_URL, {}, true);
-    removeAuthorizationToken()
+export function logout(data: Dictionary = {}) {
+    const tmp = APIManager.post(apiUrls.LOGOUT_URL, {data}, true);
     return tmp;
 }
 

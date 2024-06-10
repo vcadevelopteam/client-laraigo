@@ -1,4 +1,4 @@
-import { IUser, ITemplate, NotificationZyx } from "@types";
+import { IUser, ITemplate, NotificationZyx, Dictionary } from "@types";
 import { createReducer, initialCommon } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -14,7 +14,7 @@ export interface IState {
     login: IUserTmp;
     triggerChangeOrganization: ITemplate & { automaticConnection?: boolean };
     validateToken: IUserTmp;
-    logout: ITemplate;
+    logout: ITemplate & { data?: Dictionary };
     invokeIncremental: ITemplate;
     ignorePwdchangefirstloginValidation: boolean;
 }
@@ -58,4 +58,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHANGE_PWD_FIRST_LOGIN]: caseFunctions.changePwdFirstLogin,
     [actionTypes.NEW_NOTIFICATION]: caseFunctions.newNotification,
     [actionTypes.UPDATE_CONNECTION]: caseFunctions.updateConnection,
+    [actionTypes.CLEAN_VALIDATETOKEN]: caseFunctions.cleanValidateToken,
 });

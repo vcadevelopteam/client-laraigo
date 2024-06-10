@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
@@ -101,6 +100,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
     ];
+    const [idAux, setIdAux] = useState(0)
+    const [templateAux, setTemplateAux] = useState<Dictionary>({})
+    const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
 
     useEffect(() => {
         if (row !== null) {
@@ -158,7 +160,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         messagetemplatenamespace: data?.messagetemplatenamespace,
                         messagetemplatetype: data?.messagetemplatetype,
                         messagetemplateheader: data?.messagetemplateheader || {},
-                        messagetemplatebuttons: data?.messagetemplatebuttons || [],
+                        messagetemplatebuttons: detaildata.messagetemplatebuttons || [],                        
                         messagetemplatefooter: data?.messagetemplatefooter || '',
                         messagetemplateattachment: data?.messagetemplateattachment || '',
                         messagetemplatelanguage: data?.messagetemplatelanguage || '',
@@ -167,6 +169,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         batchjson: data?.batchjson || [],
                         fields: { ...new SelectedColumns(), ...data?.fields },
                         operation: 'UPDATE',
+                        carouseljson: data?.carouseljson || [],
                         person: mainResult.multiData.data[5] && mainResult.multiData.data[5].success ? mainResult.multiData.data[5].data : []
                     });
                     setFrameProps({
@@ -189,6 +192,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
+    
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
             let splitMessage = message.split('{{');
             messageVariables.forEach((v, i) => {
@@ -196,52 +200,54 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             });
             message = splitMessage.join('{{');
         }
+    
+        let localtablevariable = [];
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
-                // field i + 2 because i + 1 is used for primary key, pccowner
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                    let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
-                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
+                    const localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values());
+                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v, i) => {
                         message = message.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
                     });
-                }
-                else {
-                    let localtablevariable = Array.from(new Set([
+                } else {
+                    localtablevariable = Array.from(new Set([
                         ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
                         ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
                         ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
                     ]));
                     localtablevariable = localtablevariable.map(x => x.slice(2, -2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
                     if (Object.keys(usedTablevariable).length > 0) {
-                        Object.entries(usedTablevariable).forEach((v: any) => {
+                        Object.entries(usedTablevariable).forEach((v) => {
                             subject = subject.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                             header = header.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                             message = message.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                         });
-                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
+                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x);
                     }
                     localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
                         ...actv,
                         [`field${tvi + 2}`]: tv
                     }), {});
                     setUsedTableVariable(localtablevariable);
-                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
+                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v, i) => {
                         subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
                         header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
                         message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
                     });
                 }
             }
-        }
-        else if (['EXTERNAL'].includes(detaildata.source || '')) {
-            tablevariable.forEach((v: any, i: number) => {
+        } else if (['EXTERNAL'].includes(detaildata.source || '')) {
+            tablevariable.forEach((v, i) => {
                 subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
         }
-        return { subject, header, message }
-    }
+    
+        return { subject, header, message };
+    };
+    
+
     const formatMessageGeneric = (message:string) => {
         let modifiedMessage = message; 
     
@@ -255,7 +261,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
-                // field i + 2 because i + 1 is used for primary key, pccowner
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                     let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
                     localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
@@ -308,15 +313,15 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 valid = false;
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
-            let newmessages = formatMessage();
-            let localsubject = newmessages.subject || '';
-            let localheader = newmessages.header || '';
-            let localmessage = newmessages.message || '';
+            const newmessages = formatMessage();
+            const localsubject = newmessages.subject || '';
+            const localheader = newmessages.header || '';
+            const localmessage = newmessages.message || '';
 
             let elemVariables: string[] = [];
             let errorIndex = null;
 
-            let auxbuttons = detaildata
+            const auxbuttons = detaildata
             if (auxbuttons?.messagetemplatebuttons) {
                 auxbuttons.messagetemplatebuttons.forEach((button: any) => {
                     if (button.payload) {
@@ -325,7 +330,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 });
             }
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                let vars = extractVariables(localsubject);
+                const vars = extractVariables(localsubject);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
@@ -334,7 +339,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if (detaildata.messagetemplatetype === 'MULTIMEDIA' && localheader !== '') {
-                let vars = extractVariables(localheader);
+                const vars = extractVariables(localheader);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1 || localheader.includes('{{}}')) {
                     valid = false;
@@ -343,22 +348,39 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if (localmessage !== '') {
-                let vars = extractVariables(localmessage)
+                const vars = extractVariables(localmessage);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
+            
                 if (errorIndex !== -1 || localmessage.includes('{{}}')) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
+            
+                    const errorDetail = {
+                        localmessage,
+                        vars,
+                        errorIndex,
+                        problematicVariable: vars[errorIndex],
+                        tableDescriptions: tablevariable.map(t => t.description),
+                    };
+            
+                    console.error("Validation Error Details:", errorDetail); 
+            
+                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;
+            
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
                 }
+            
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+            
             setDetaildata({
                 ...detaildata,
                 variablereplace: elemVariables,
                 batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
                 subject: newmessages.subject,
-                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
+                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },               
+                messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
+                carouseljson: detaildata.carouseljson,               
                 message: newmessages.message,
-                messagetemplatebuttons: auxbuttons.messagetemplatebuttons
             });
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
         }
@@ -514,9 +536,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         setSave('SUBMIT');
     }
 
-    const saveCampaign = (data: any) => {               
+    const saveCampaign = (data: any) => {
+        console.log('saveCampaign - data:', data);
         dispatch(execute(insCampaign({...data})));
-    }
+    };
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
         detail: [...data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }))]
@@ -527,32 +550,36 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             dispatch(showBackdrop(true));
             setSave('PARENT');
             saveCampaign(detaildata);
-        }
-        let errormessage = false
-        if(detaildata.operation ==="UPDATE"){
-            if(row?.startdate !== detaildata.startdate){
-                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+        };
+    
+        let errormessage = false;
+        if(detaildata.operation === "UPDATE") {
+            if(row?.startdate !== detaildata.startdate) {
+                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
             }
-            if(row?.enddate !== detaildata.enddate){
-                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+            if(row?.enddate !== detaildata.enddate) {
+                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
             }
-        }else{            
-            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
-            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+        } else {
+            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
+            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
         }
-        if(errormessage){
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }))
-        }else{
+    
+        if(errormessage) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }));
+        } else {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
                 callback
-            }))
+            }));
         }
     };
+    
 
     useEffect(() => {
         if (save === 'VALIDATION') {
+            console.log('CampaignDetail - detaildata:', detaildata);
             checkValidation();
             setSave('PREPARING');
         }
@@ -727,6 +754,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    setIdAux={setIdAux}
+                    setTemplateAux={setTemplateAux}
                 />
                 : null}
             {pageSelected === 1 ?
@@ -742,6 +771,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    idAux={idAux}
+                    templateAux={templateAux}
+                    setJsonPersons={setJsonPersons}
                 />
                 : null}
             {pageSelected === 2 ?
@@ -762,6 +794,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setMessageVariables={setMessageVariables}
                     dataButtons={dataButtons}
                     setDataButtons={setDataButtons}
+                    templateAux={templateAux}
+                    jsonPersons={jsonPersons}
                 />
                 : null}
         </div>

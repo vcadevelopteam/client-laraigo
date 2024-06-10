@@ -69,7 +69,7 @@
         "use-places-autocomplete": "^1.11.0",
         "voximplant-websdk": "^4.6.1-2394",
         "web-vitals": "^1.1.2",
-        "xlsx": "^0.17.0"
+        "xlsx": "^0.17.5"
     },
     "scripts": {
         "start": "set HTTPS=true&&vite --host",
