@@ -167,7 +167,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                             className="col-3"
                             type="text"
                             disabled={true}
-                            valueDefault={row?.deliveryaddress}
+                            valueDefault={row?.person_address}
                         />
                     </div>
                 </div>
