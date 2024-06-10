@@ -312,7 +312,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
-                parameters: [...data.variables, data.buttons].map((v: any) => ({
+                parameters: [...data.variables, ...data.buttons].map((v: any) => ({
                     type: v?.type||"text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name
