@@ -172,6 +172,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
     };
 
+    console.log(jsonDataPerson)
+
     const adjustAndDownloadExcel = async (url: string) => {
         const descriptionsMap: { [key: string]: string } = {
             "Destinatarios": "|Obligatorio|Completa la lista con números celulares o e-mails, dependiendo de la plantilla a emplear, se recomienda que se coloque el código de país al número telefónico. Ejemplo: Celular: 51999999999 o también E-mail: laraigo@vcaperu.com",
@@ -199,36 +201,35 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             const columnNames: string[] = sheetData[1];
     
             let variableCounter = 1;
-    
-            const requiredVariableColumns = templateAux.bodyvariables
-                ? templateAux.bodyvariables.map(() => `Variable ${variableCounter++}`)
-                : [];
-    
+
+            const bodyVariables = templateAux.body.match(/{{\d+}}/g) || [];
+            const requiredVariableColumns = bodyVariables.map((_, index) => `Variable ${index + 1}`);
+            variableCounter += bodyVariables.length;
+            
             const headerVariableColumns = templateAux.headertype === "TEXT" && templateAux.headervariables
-                ? templateAux.headervariables.map(() => `Variable Cabecera ${variableCounter++}`)
+                ? templateAux.headervariables.map((_, index) => `Variable Cabecera ${index + 1}`)
                 : [];
-    
+            
             const headerMultimediaColumns = templateAux.headertype === "DOCUMENT" || templateAux.headertype === "VIDEO" || templateAux.headertype === "IMAGE"
                 ? ["Cabecera Multimedia"]
                 : [];
-    
+            
             const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
             const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url Dinamico ${index + 1}`);
-    
+            
             const imageCards = templateAux.carouseldata || [];
             const carouselVariableColumns = imageCards.reduce((acc, card) => {
                 const cardVariables = card.body.match(/{{\d+}}/g) || [];
                 return acc.concat(cardVariables.map(() => `Variable ${variableCounter++}`));
             }, [] as string[]);
-    
+            
             const imageCardColumns = imageCards.map((card, index) => card.header ? `Card Imagen ${index + 1}` : '').filter(Boolean);
-    
-            // Detect dynamic URLs in carouseldata
+            
             const carouselDynamicUrlColumns = imageCards.reduce((acc, card) => {
                 const dynamicButtons = card.buttons?.filter(button => button.btn.type === 'dynamic') || [];
                 return acc.concat(dynamicButtons.map((btn, index) => `Url Dinamico ${index + 1}`));
             }, [] as string[]);
-    
+            
             const newColumnNames = columnNames.slice(0, 3)
                 .concat(headerVariableColumns)
                 .concat(headerMultimediaColumns)
@@ -238,6 +239,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 .concat(carouselDynamicUrlColumns)
                 .concat(imageCardColumns)
                 .concat("Variable Adicional 1");
+            
     
             const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
     
@@ -270,6 +272,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             console.error("Error al ajustar y descargar el archivo Excel", error);
         }
     };
+    
     
     
     

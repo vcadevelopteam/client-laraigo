@@ -1503,7 +1503,7 @@ export const insCampaign = ({
         messagetemplatepriority: messagetemplatepriority || null,
         executiontype,
         batchjson: JSON.stringify(batchjson),
-        fields: JSON.stringify(selectedColumns || fields),
+        fields: JSON.stringify(selectedColumns || fields),       
         operation,
         carouseljson: JSON.stringify(carouseljson)
     }

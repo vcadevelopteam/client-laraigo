@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FieldEdit, FieldSelect } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -81,6 +81,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const templateId = templateAux.id;
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
+    const [filledTemplate, setFilledTemplate] = useState<Dictionary>({ ...selectedTemplate });
     const [variableValues, setVariableValues] = useState<Dictionary>({});
     const headers = jsonPersons.length > 0 ? Object.keys(jsonPersons[0]) : [];
     const [selectedHeader, setSelectedHeader] = useState<string | null>(null);
@@ -95,55 +96,181 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };    
 
     const detectVariables = (text: string) => {
-        if (typeof text !== 'string') {
-            return [];
+        const regex = /{{(\d+)}}/g;
+        const matches = [];
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            matches.push({ variable: match[1] });
         }
-        const variables = text.match(/{{\d+}}/g) || [];
-        return variables.map(variable => ({
-            variable: parseInt(variable.slice(2, -2), 10)
-        }));
+        return matches;
     };
     
-
     const bodyVariables = detectVariables(selectedTemplate.body);
     const headerVariables = selectedTemplate.headertype === 'TEXT' ? detectVariables(selectedTemplate.header) : [];
+    const carouselBodyVariables = selectedTemplate.carouseldata
+        ? selectedTemplate.carouseldata.flatMap(item => detectVariables(item.body))
+        : [];
+    const allBodyVariables = bodyVariables.concat(carouselBodyVariables);    
+    const [bodyVariableValues, setBodyVariableValues] = useState<Dictionary>({});
     const [headerVariableValues, setHeaderVariableValues] = useState<Dictionary>({});
     const [videoHeaderValue, setVideoHeaderValue] = useState<string>('');
     const [cardImageValues, setCardImageValues] = useState<Dictionary>({});
     const [dynamicUrlValues, setDynamicUrlValues] = useState<Dictionary>({});
-
-    
-    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl') => {
+    const [bubbleVariableValues, setBubbleVariableValues] = useState<Dictionary>({});
+    const [carouselVariableValues, setCarouselVariableValues] = useState<Dictionary>({});
+    const [variableSelections, setVariableSelections] = useState<{ [key: string]: string }>({});
+          
+    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'bubble', carouselIndex?: number) => {
         const header = selectedOption.key;
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
+        
         if (variableType === 'body') {
-            setVariableValues(prevValues => {
-                const newValues = { ...prevValues, [variableNumber]: value };
-                return newValues;
-            });
+            setBodyVariableValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
         } else if (variableType === 'header') {
-            setHeaderVariableValues(prevValues => {
-                const newValues = { ...prevValues, [variableNumber]: value };
-                return newValues;
-            });
+            setHeaderVariableValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
         } else if (variableType === 'video') {
             setVideoHeaderValue(value);
         } else if (variableType === 'cardImage') {
-            setCardImageValues(prevValues => {
-                const newValues = { ...prevValues, [variableNumber]: value };
-                return newValues;
-            });
+            setCardImageValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
         } else if (variableType === 'dynamicUrl') {
-            setDynamicUrlValues(prevValues => {
-                const newValues = { ...prevValues, [variableNumber]: value };
-                return newValues;
-            });
+            setDynamicUrlValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
+        } else if (variableType === 'bubble') {
+            setBubbleVariableValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
+        } else if (variableType === 'carousel' && carouselIndex !== undefined) {
+            setCarouselVariableValues(prevValues => ({
+                ...prevValues,
+                [carouselIndex]: {
+                    ...prevValues[carouselIndex],
+                    [variableNumber]: value
+                }
+            }));
         }
-        setSelectedHeaders(prev => ({ ...prev, [variableNumber]: header }));
+    
+        setSelectedHeaders(prev => ({
+            ...prev,
+            [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
+        }));
+    
+        setVariableSelections(prev => ({
+            ...prev,
+            [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
+        }));
+    
+        updateTemplate();
     };
     
-  
     
+      
+    const updateTemplate = useCallback(() => {
+    
+        const updatedTemplate = JSON.parse(JSON.stringify(selectedTemplate));
+    
+        Object.keys(variableSelections).forEach(key => {
+            const [type, number] = key.split('-');
+            const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
+                
+            if (type === 'body' && updatedTemplate.body) {
+                updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            } else if (type === 'header' && updatedTemplate.header) {
+                updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+            } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                const index = parseInt(key.split('-')[2]);
+                if (!isNaN(index)) {
+                    updatedTemplate.carouseldata[index].header = jsonPersons[0][variableSelections[key]];
+                }
+            }               
+
+            else if (type === 'dynamicUrl' && updatedTemplate.buttonsgeneric) {
+                updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {                    
+                    const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`; 
+                    const variableSelectionsValue = variableSelections[buttonKey];             
+                    if (variableSelectionsValue) {
+                        const variableKey = headers.indexOf(variableSelectionsValue);
+                        if (variableKey !== -1) {
+                            if (button.btn.type === 'dynamic' && button.btn.url) {
+                                const regex = /{{\d+}}/g;
+                                button.btn.url = button.btn.url.replace(regex, `{{field${variableKey + 1}}}`);
+                            }
+                        } else {
+                            console.log(`Value "${variableSelectionsValue}" not found in headers`);
+                        }
+                    } else {
+                        console.log(`No selection found for button key: ${buttonKey}`);
+                    }
+                });
+            }
+            
+            else if (type === 'carousel' && updatedTemplate.carouseldata) {
+                const index = parseInt(key.split('-')[2]);
+                if (!isNaN(index)) {
+                    updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                }
+            } else if (type === 'bubble' && updatedTemplate.carouseldata) {
+                const index = parseInt(key.split('-')[2]);
+                if (!isNaN(index)) {
+                    updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                }
+            }
+        });       
+        console.log('updateTemplate - final updatedTemplate:', updatedTemplate);    
+
+        setFilledTemplate(updatedTemplate);
+        setDetaildata(prev => ({
+            ...prev,
+            message: updatedTemplate.body,
+            messagetemplateheader: {
+                ...prev.messagetemplateheader,
+                value: updatedTemplate.header
+            },
+            messagetemplatebuttons: updatedTemplate.buttonsgeneric || []
+        }));
+    }, [variableSelections, headers, selectedTemplate, jsonPersons, setDetaildata]);
+    
+    
+    
+    
+    
+    const renderDynamicUrlFields = () => {
+        const dynamicButtons = selectedTemplate.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
+        
+        return dynamicButtons.map((button, btnIndex) => (
+            <div key={`dynamicUrl-${btnIndex}`}>
+                <p style={{ marginBottom: '3px' }}>{`Url Dinamico {{${btnIndex + 1}}}`}</p>
+                <FieldSelect
+                    variant="outlined"
+                    uset={true}
+                    className="col-12"
+                    data={headers
+                        .filter(header => header !== selectedHeader)
+                        .map(header => ({ key: header, value: header }))}
+                    optionDesc="value"
+                    optionValue="key"
+                    valueDefault={headers}
+                    onChange={(selectedOption) => handleVariableChange(`dynamicUrl-${btnIndex + 1}`, selectedOption, 'dynamicUrl')}
+                />
+            </div>
+        ));
+    };
+    
+
+    useEffect(() => {
+        updateTemplate();
+    }, [variableSelections]);
     
     const handleAddVariable = () => {
         setAdditionalVariables(prev => {
@@ -173,9 +300,23 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             return newHeaders;
         });
     };
+
     
-      
     
+    const collectButtonsFromTemplate = (template: Dictionary) => {
+        const buttons = [...(template.buttonsgeneric || []), ...(template.buttonsquickreply || [])];
+        return buttons;
+    };
+    
+    useEffect(() => {
+        const buttons = collectButtonsFromTemplate(selectedTemplate);
+        setDetaildata(prev => ({
+            ...prev,
+            messagetemplatebuttons: buttons
+        }));
+    }, [selectedTemplate]);
+
+
     useEffect(() => {
         if (frameProps.checkPage) {
             setFrameProps({ ...frameProps, executeSave: false, checkPage: false });
@@ -235,30 +376,32 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                 </Tooltip>        
                             </div>         
-                        </FormControl>                                          
+                        </FormControl>     
+
+
                            
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
                             <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
 
                             <div className={classes.containerStyle}>
-                            {headerVariables.map((variable: Dictionary) => (
-                                <div key={variable.variable}>
-                                    <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${variable.variable}}}`}</p>
-                                    <FieldSelect
-                                        variant="outlined"
-                                        uset={true}
-                                        className="col-12"
-                                        data={headers
-                                            .filter(header => header !== selectedHeader)
-                                            .map(header => ({ key: header, value: header }))}
-                                        optionDesc="value"
-                                        optionValue="key"
-                                        valueDefault={selectedHeaders[variable.variable] ? { key: selectedHeaders[variable.variable], value: selectedHeaders[variable.variable] } : undefined}
-                                        onChange={(selectedOption) => handleVariableChange(variable.variable, selectedOption, 'header')}
-                                    />
-                                </div>
-                            ))}                       
+                                {headerVariables.map((variable: Dictionary) => (
+                                    <div key={variable.variable}>
+                                        <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${variable.variable}}}`}</p>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            data={headers
+                                                .filter(header => header !== selectedHeader)
+                                                .map(header => ({ key: header, value: header }))}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            valueDefault={selectedHeaders[`header-${variable.variable}`] ? { key: selectedHeaders[`header-${variable.variable}`], value: selectedHeaders[`header-${variable.variable}`] } : undefined}
+                                            onChange={(selectedOption) => handleVariableChange(variable.variable, selectedOption, 'header')}
+                                        />
+                                    </div>
+                                ))}
                             </div>
 
                             <div className={classes.containerStyle}>
@@ -274,11 +417,33 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
                                             optionValue="key"
-                                            valueDefault={selectedHeaders[variable.variable] ? { key: selectedHeaders[variable.variable], value: selectedHeaders[variable.variable] } : undefined}
+                                            valueDefault={headers}
                                             onChange={(selectedOption) => handleVariableChange(variable.variable, selectedOption, 'body')}
                                         />
                                     </div>
                                 ))}
+                            </div>
+
+                            <div className={classes.containerStyle}>
+                                {selectedTemplate.carouseldata?.map((item, index) =>
+                                    item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
+                                        <div key={`carousel-${index}-bubble-${variableIndex}`}>
+                                            <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
+                                            <FieldSelect
+                                                variant="outlined"
+                                                uset={true}
+                                                className="col-12"
+                                                data={headers
+                                                    .filter(header => header !== selectedHeader)
+                                                    .map(header => ({ key: header, value: header }))}
+                                                optionDesc="value"
+                                                optionValue="key"
+                                                valueDefault={headers}
+                                                onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                            />
+                                        </div>
+                                    ))
+                                )}
                             </div>
 
                             <div className={classes.containerStyle}>
@@ -294,7 +459,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
                                             optionValue="key"
-                                            valueDefault={selectedHeaders['videoHeader'] ? { key: selectedHeaders['videoHeader'], value: selectedHeaders['videoHeader'] } : undefined}
+                                            valueDefault={headers}
                                             onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
                                         />
                                     </div>
@@ -302,7 +467,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>
-                                {selectedTemplate.carouseldata?.map((item, index) => 
+                                {selectedTemplate.carouseldata?.map((item, index) =>
                                     item.header && (
                                         <div key={`cardImage-${index}`}>
                                             <p style={{ marginBottom: '3px' }}>{`Card Imagen ${index + 1}`}</p>
@@ -315,7 +480,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
                                                 optionValue="key"
-                                                valueDefault={selectedHeaders[`cardImage-${index + 1}`] ? { key: selectedHeaders[`cardImage-${index + 1}`], value: selectedHeaders[`cardImage-${index + 1}`] } : undefined}
+                                                valueDefault={headers}
                                                 onChange={(selectedOption) => handleVariableChange(`cardImage-${index + 1}`, selectedOption, 'cardImage')}
                                             />
                                         </div>
@@ -324,30 +489,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>
-                                {selectedTemplate.carouseldata?.some(item => item.buttons?.some(button => button.btn?.type === 'dynamic')) && 
-                                    selectedTemplate.carouseldata.map((item, index) => 
-                                        item.buttons?.filter(button => button.btn?.type === 'dynamic').map((button, btnIndex) => (
-                                            <div key={`dynamicUrl-${index}-${btnIndex}`}>
-                                                <p style={{ marginBottom: '3px' }}>{`Url Dinamico {{${index + 1}}}`}</p>
-                                                <FieldSelect
-                                                    variant="outlined"
-                                                    uset={true}
-                                                    className="col-12"
-                                                    data={headers
-                                                        .filter(header => header !== selectedHeader)
-                                                        .map(header => ({ key: header, value: header }))}
-                                                    optionDesc="value"
-                                                    optionValue="key"
-                                                    valueDefault={selectedHeaders[`dynamicUrl-${index + 1}`] ? { key: selectedHeaders[`dynamicUrl-${index + 1}`], value: selectedHeaders[`dynamicUrl-${index + 1}`] } : undefined}
-                                                    onChange={(selectedOption) => handleVariableChange(`dynamicUrl-${index + 1}`, selectedOption, 'dynamicUrl')}
-                                                />
-                                            </div>
-                                        ))
-                                    )
-                                }
+                                {renderDynamicUrlFields()}
                             </div>
+
+
                         </FormControl>
-   
 
                         <FormControl className="col-12">                          
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
@@ -372,7 +518,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
                                                 optionValue="key"
-                                                valueDefault={selectedAdditionalHeaders[variable] ? { key: selectedAdditionalHeaders[variable], value: selectedAdditionalHeaders[variable] } : null}
+                                                valueDefault={headers}
                                                 onChange={(selectedOption) => handleAdditionalVariableChange(variable, selectedOption)}
                                             />
                                         </div>
@@ -386,7 +532,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                 <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             
                     <div style={{fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}  </div> 
-                    <TemplatePreview selectedTemplate={selectedTemplate} variableValues={variableValues} />
+                    <TemplatePreview
+                        selectedTemplate={selectedTemplate}
+                        bodyVariableValues={bodyVariableValues}
+                        headerVariableValues={headerVariableValues}
+                        videoHeaderValue={videoHeaderValue}
+                        cardImageValues={cardImageValues}
+                        dynamicUrlValues={dynamicUrlValues}
+                        bubbleVariableValues={bubbleVariableValues}
+                        carouselVariableValues={carouselVariableValues}
+                    />
+
 
                     <FormControl className="col-12">                          
                         <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
