@@ -160,7 +160,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         messagetemplatenamespace: data?.messagetemplatenamespace,
                         messagetemplatetype: data?.messagetemplatetype,
                         messagetemplateheader: data?.messagetemplateheader || {},
-                        messagetemplatebuttons: data?.messagetemplatebuttons || [],
+                        messagetemplatebuttons: detaildata.messagetemplatebuttons || [],                        
                         messagetemplatefooter: data?.messagetemplatefooter || '',
                         messagetemplateattachment: data?.messagetemplateattachment || '',
                         messagetemplatelanguage: data?.messagetemplatelanguage || '',
@@ -536,9 +536,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         setSave('SUBMIT');
     }
 
-    const saveCampaign = (data: any) => {               
+    const saveCampaign = (data: any) => {
+        console.log('saveCampaign - data:', data);
         dispatch(execute(insCampaign({...data})));
-    }
+    };
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
         detail: [...data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }))]
@@ -549,32 +550,36 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             dispatch(showBackdrop(true));
             setSave('PARENT');
             saveCampaign(detaildata);
-        }
-        let errormessage = false
-        if(detaildata.operation ==="UPDATE"){
-            if(row?.startdate !== detaildata.startdate){
-                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+        };
+    
+        let errormessage = false;
+        if(detaildata.operation === "UPDATE") {
+            if(row?.startdate !== detaildata.startdate) {
+                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
             }
-            if(row?.enddate !== detaildata.enddate){
-                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+            if(row?.enddate !== detaildata.enddate) {
+                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
             }
-        }else{            
-            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
-            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+        } else {
+            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
+            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
         }
-        if(errormessage){
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }))
-        }else{
+    
+        if(errormessage) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }));
+        } else {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
                 callback
-            }))
+            }));
         }
     };
+    
 
     useEffect(() => {
         if (save === 'VALIDATION') {
+            console.log('CampaignDetail - detaildata:', detaildata);
             checkValidation();
             setSave('PREPARING');
         }
