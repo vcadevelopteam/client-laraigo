@@ -1937,6 +1937,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
             return
         }
+        debugger
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
@@ -1951,7 +1952,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
-                parameters: [...data.variables, data.buttons].map((v: any) => ({
+                parameters: [...data.variables, ...data.buttons].map((v: any) => ({
                     type: v?.type||"text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name

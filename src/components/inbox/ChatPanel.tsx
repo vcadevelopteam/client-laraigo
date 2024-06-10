@@ -174,7 +174,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 phone: person.data?.phone!! + "",
                 firstname: person.data?.firstname + "",
                 lastname: person.data?.lastname + "",
-                parameters: [...data.variables, data.buttons].map((v: any) => ({
+                parameters: [...data.variables, ...data.buttons].map((v: any) => ({
                     type: v?.type||"text",
                     text: v.variable !== 'custom' ? (person.data as Dictionary)[v.variable] : v.text,
                     name: v.name

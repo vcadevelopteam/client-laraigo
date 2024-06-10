@@ -688,7 +688,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 phone: person.phone || "",
                 firstname: person.contact_name || "",
                 email: person.email || "",
-                parameters: [...data.variables, data.buttons].map((v: any) => ({
+                parameters: [...data.variables, ...data.buttons].map((v: any) => ({
                     type: v?.type||"text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name
