@@ -6179,6 +6179,7 @@ const translation: LangKeys = {
   tmoDescription: 'Average Operation Time',
   tmeDescription: 'First Response Time',
   tmrDescription: 'Average Response Time',
+  button: 'button',
   corporate: 'CORPORATE',
   cancelassistantcreation: 'Are you sure to cancel the creation of the assistant?',
   cancelassistantedit: 'Are you sure to cancel the edit of the assistant?',

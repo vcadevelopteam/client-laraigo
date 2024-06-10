@@ -6210,6 +6210,7 @@ export const langKeys = {
   programmed: 'programmed',
   contactdetails: 'contactdetails',
 
+  button: 'button',
 };
 
 export type LangKeys = typeof langKeys;
