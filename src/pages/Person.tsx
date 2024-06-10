@@ -68,13 +68,18 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             observation: '',
             communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
             communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
-            variables: []
+            variables: [],
+            buttons: []
         }
     });
 
     const { fields } = useFieldArray({
         control,
         name: 'variables',
+    });
+    const { fields:buttons } = useFieldArray({
+        control,
+        name: 'buttons',
     });
 
     useEffect(() => {
@@ -141,9 +146,25 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+            if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some(element => element.btn.type === "dynamic")) {
+                const buttonsaux = value?.buttonsgeneric
+                let buttonsFiltered = []
+                buttonsaux.forEach((x,i)=>{
+                    const variablesListbtn  = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
+                    const varaiblesCleanedbtn = variablesListbtn.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+                    if(varaiblesCleanedbtn.length){
+                        const btns= varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url||"" }))||[]
+                        buttonsFiltered=[...buttonsFiltered, ...btns]
+                    }
+                })
+                setValue('buttons', buttonsFiltered);
+            } else {
+                setValue('buttons', []);
+            }
         } else {
             setValue('hsmtemplatename', '');
             setValue('variables', []);
+            setValue('buttons', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
         }
@@ -167,8 +188,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
-                parameters: data.variables.map((v: any) => ({
-                    type: "text",
+                parameters: [...data.variables, data.buttons].map((v: any) => ({
+                    type: v?.type||"text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name
                 }))
@@ -281,6 +302,52 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                                 onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
                             />
                         }
+                    </div>
+                ))}
+                {Boolean(buttons.length) && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    {t(langKeys.buttons)}
+                </Box>}
+                {buttons.map((item: Dictionary, i) => (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                        <div key={item.id}>
+                            <FieldView
+                                label={t(langKeys.button) + ` ${i+1}`}
+                                value={item?.url||""}
+                            />
+                            <FieldSelect
+                                key={"var_" + item.id}
+                                fregister={{
+                                    ...register(`buttons.${i}.variable`, {
+                                        validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                label={item.name}
+                                valueDefault={getValues(`buttons.${i}.variable`)}
+                                onChange={(value) => {
+                                    setValue(`buttons.${i}.variable`, value?.key)
+                                    trigger(`buttons.${i}.variable`)
+                                }}
+                                error={errors?.buttons?.[i]?.text?.message}
+                                data={variables}
+                                uset={true}
+                                prefixTranslation=""
+                                optionDesc="key"
+                                optionValue="key"
+                            />
+                            {getValues(`buttons.${i}.variable`) === 'custom' &&
+                                <FieldEditArray
+                                    key={"custom_" + item.id}
+                                    fregister={{
+                                        ...register(`buttons.${i}.text`, {
+                                            validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                        })
+                                    }}
+                                    valueDefault={item.value}
+                                    error={errors?.buttons?.[i]?.text?.message}
+                                    onChange={(value) => setValue(`buttons.${i}.text`, "" + value)}
+                                />
+                            }
+                        </div>
                     </div>
                 ))}
             </div>

@@ -6070,6 +6070,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   transactionnumber: 'N° Transacción',
   conversationTMO: 'conversationTMO',
   numbers: 'Números',
+  button: 'Botón',
 };
 
 const esResource: ResourceLanguage = {

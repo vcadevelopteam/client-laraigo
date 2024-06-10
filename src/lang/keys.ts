@@ -6071,6 +6071,7 @@ export const langKeys = {
   transactionnumber: 'transactionnumber',
   conversationTMO: 'TMO Conversación',
   numbers: 'numbers',
+  button: 'button',
 };
 
 export type LangKeys = typeof langKeys;

@@ -6127,6 +6127,7 @@ const translation: LangKeys = {
   tmoDescription: 'Average Operation Time',
   tmeDescription: 'First Response Time',
   tmrDescription: 'Average Response Time',
+  button: 'button',
 };
 
 const enResource: ResourceLanguage = {
