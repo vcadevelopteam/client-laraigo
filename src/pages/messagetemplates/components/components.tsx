@@ -222,7 +222,7 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {textbtn?.length < 7 && (
+                {textbtn?.length < 10 && (
                     <MenuItem onClick={handleMenuFastAnswer}>
                         <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
                     </MenuItem>
@@ -399,7 +399,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                             );
                         })}
                         {combinedButtons.length > 3 && (
-                            <div className={classes.cardButton2}>
+                            <div className={classes.cardButton2} style={{cursor: 'pointer'}}>
                                 <ListIcon className={classes.icon} />
                                 <span>See all options</span>
                             </div>

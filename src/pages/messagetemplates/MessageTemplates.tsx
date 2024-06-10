@@ -104,7 +104,8 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),
-                NoFilter: true,
+                NoFilter: false,
+                type: 'date',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     if (!row || !row.original || !row.original.createdate) {
@@ -166,7 +167,7 @@ const MessageTemplates: FC = () => {
                     { key: t(langKeys.TEMPLATE2_AUTHENTICATION), value: "AUTHENTICATION" },
                     { key: t(langKeys.TEMPLATE2_MARKETING), value: "MARKETING" },
                     { key: t(langKeys.TEMPLATE2_UTILITY), value: "UTILITY" },
-                    { key: t(langKeys.TEMPLATE_NONE), value: "NINGUNO" },
+                    { key: "NINGUNO", value: "NINGUNO" },
                 ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
