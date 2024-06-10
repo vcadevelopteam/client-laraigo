@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { FieldEditMulti, FieldSelect, Title } from 'components';
+import { FieldEditMulti, FieldSelect, FieldView, Title } from 'components';
 import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation, importPerson } from 'common/helpers';
 import { Dictionary, IPerson, IPersonImport, IFetchData } from "@types";
 import { Box, Button, IconButton, MenuItem } from '@material-ui/core';
