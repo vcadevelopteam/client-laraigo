@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { DialogZyx, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon} from '@material-ui/icons';
 import TuneIcon from '@material-ui/icons/Tune';
-import { Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
+import { ClickAwayListener, Divider, IconButton, ListItemIcon, MenuItem, Paper, Popper, Tooltip, Typography } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -1063,16 +1063,7 @@ const CRM: FC = () => {
     setAnchorElSeButtons(null);
     setOpenSeButtons(false);
     };
-    
-    useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-        if (anchorElSeButtons && !anchorElSeButtons.contains(event.target as Node)) {
-        handleCloseSeButtons();
-        }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => { document.removeEventListener('mousedown', handleClickOutside);};}, [anchorElSeButtons]);    
+      
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -1405,71 +1396,74 @@ const CRM: FC = () => {
                         initialEndDate={params.endDate}
                         initialStartDate={params.startDate}                      
                         initialPageIndex={params.page}
-                        ButtonsElement={
-                            <>
-                                <div style={{ display: 'flex', gap: 8 }}></div>
-                                {!isIncremental &&                                           
-                                    <div>
-                                        <IconButton
-                                            aria-label="more"
-                                            id="long-button"
-                                            onClick={handleClickSeButtons}
-                                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                                        >
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                        {!isIncremental &&
-                                            <div style={{ display: 'flex', gap: 8 }}>                               
-                                                <Popper
-                                                    open={openSeButtons}
-                                                    anchorEl={anchorElSeButtons}
-                                                    placement="bottom"
-                                                    transition
-                                                    style={{marginRight:'1rem'}}
+                        ButtonsElement={ <>
+                            <div style={{ display: 'flex', gap: 8 }}></div>
+                            <div>
+                                <IconButton
+                                    aria-label="more"
+                                    id="long-button"
+                                    onClick={handleClickSeButtons}
+                                    style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+                                <Popper
+                                    open={openSeButtons}
+                                    anchorEl={anchorElSeButtons}
+                                    placement="bottom"
+                                    transition
+                                    style={{ zIndex: 1300, marginRight: '1rem' }}
+                                >
+                                    {({ TransitionProps }) => (
+                                        <ClickAwayListener onClickAway={handleCloseSeButtons}>
+                                            <Paper {...TransitionProps} elevation={5}>
+                                                <MenuItem
+                                                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                                    style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                    onClick={() => {
+                                                        handleCloseSeButtons();
+                                                        setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } });
+                                                    }}
                                                 >
-                                                    {({ TransitionProps }) => (
-                                                        <Paper {...TransitionProps} elevation={5}>
-
-                                                            <MenuItem 
-                                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' } })}
-                                                            >
-                                                                <ListItemIcon>
-                                                                    <WhatsappIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                                                </ListItemIcon>
-                                                                <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
-                                                            </MenuItem>
-                                                            <Divider />
-                                                            <MenuItem 
-                                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } })}
-                                                            >
-                                                                <ListItemIcon>
-                                                                    <MailIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                                </ListItemIcon>
-                                                                <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
-                                                            </MenuItem>
-                                                            <Divider />
-                                                            <MenuItem 
-                                                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0} 
-                                                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                                                onClick={() => setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } })}
-                                                            >
-                                                                <ListItemIcon>
-                                                                    <SmsIcon fontSize="small" style={{ fill: 'grey', height:'25px' }}/>
-                                                                </ListItemIcon>
-                                                                <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
-                                                            </MenuItem>
-                                                        </Paper>
-                                                    )}
-                                                </Popper>
-                                            </div>     
-                                        }                       
-                                    </div>
-                                }                                                    
-                            </> 
+                                                    <ListItemIcon>
+                                                        <WhatsappIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                    </ListItemIcon>
+                                                    <Typography variant="inherit">{t(langKeys.send_hsm)}</Typography>
+                                                </MenuItem>
+                                                <Divider />
+                                                <MenuItem
+                                                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                                    style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                    onClick={() => {
+                                                        handleCloseSeButtons();
+                                                        setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' } });
+                                                    }}
+                                                >
+                                                    <ListItemIcon>
+                                                        <MailIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                    </ListItemIcon>
+                                                    <Typography variant="inherit">{t(langKeys.send_mail)}</Typography>
+                                                </MenuItem>
+                                                <Divider />
+                                                <MenuItem
+                                                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                                    style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                                    onClick={() => {
+                                                        handleCloseSeButtons();
+                                                        setGridModal({ name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' } });
+                                                    }}
+                                                >
+                                                    <ListItemIcon>
+                                                        <SmsIcon fontSize="small" style={{ fill: 'grey', height: '25px' }} />
+                                                    </ListItemIcon>
+                                                    <Typography variant="inherit" noWrap>{t(langKeys.send_sms)}</Typography>
+                                                </MenuItem>
+                                            </Paper>
+                                        </ClickAwayListener>
+                                    )}
+                                </Popper>
+                            </div>
+                        </>
                         }                       
                     />
                     {gridModal.name === 'ACTIVITY' && <NewActivityModal
