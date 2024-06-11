@@ -1267,8 +1267,8 @@ const DetailUsers: React.FC<DetailProps> = ({
     }, [allIndex, triggerSave]);
 
     const onSubmit = handleSubmit((data) => {
-        if (user?.properties.environment === "CLARO") {
-            data.password = '123456789'
+        if ((!row || !edit) && !data.password && user?.properties.environment === "CLARO") {
+            data.password = '$2y$10$Pc4Aiy6e/gnatp.EowJAnuxe03pJpdavyG9q0K3o7GRKlmkPkEOEW'
         }
 
         if (!row && !data.password) {
