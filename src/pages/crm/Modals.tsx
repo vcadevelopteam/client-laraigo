@@ -551,7 +551,8 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             communicationchannelid: 0,
             communicationchanneltype: '',
             variables: [],
-            buttons: []
+            buttons: [],
+            headervariables:[]
         }
     });
 
@@ -562,6 +563,10 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     const { fields:buttons } = useFieldArray({
         control,
         name: 'buttons',
+    });
+    const { fields: fieldsheader } = useFieldArray({
+        control,
+        name: 'headervariables',
     });
 
     useEffect(() => {
@@ -623,6 +628,8 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             reset({
                 hsmtemplateid: 0,
                 variables: [],
+                buttons: [],
+                headervariables:[],
                 communicationchannelid: 0,
                 communicationchanneltype: ''
             })
@@ -650,6 +657,13 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+            if(value?.header){
+                const variablesListHeader = value?.header?.match(/({{)(.*?)(}})/g) || [];
+                const varaiblesCleanedHeader = variablesListHeader.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header||"" })));
+            }else{
+                setValue('headervariables',[])
+            }
             if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some(element => element.btn.type === "dynamic")) {
                 const buttonsaux = value?.buttonsgeneric
                 let buttonsFiltered = []
@@ -669,6 +683,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             setValue('hsmtemplatename', '');
             setValue('variables', []);
             setValue('buttons', []);
+            setValue('headervariables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
         }
@@ -688,7 +703,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 phone: person.phone || "",
                 firstname: person.contact_name || "",
                 email: person.email || "",
-                parameters: [...data.variables, ...data.buttons].map((v: any) => ({
+                parameters: [...data.variables, ...data.buttons, ...data.headervariables].map((v: any) => ({
                     type: v?.type||"text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name
@@ -744,6 +759,51 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                     optionDesc="name"
                     optionValue="id"
                 />
+            </div>  
+            {Boolean(fieldsheader.length) &&             
+                <FieldView
+                    label={t(langKeys.header)}
+                    value={fieldsheader?.[0]?.header||""}
+                />
+            }
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, marginBottom: 16 }}>
+                {fieldsheader.map((item: Dictionary, i) => (
+                    <div key={item.id}>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`headervariables.${i}.variable`, {
+                                    validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`headervariables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`headervariables.${i}.variable`, value?.key)
+                                trigger(`headervariables.${i}.variable`)
+                            }}
+                            error={errors?.headervariables?.[i]?.text?.message}
+                            data={variables}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`headervariables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`headervariables.${i}.text`, {
+                                        validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.headervariables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`headervariables.${i}.text`, "" + value)}
+                            />
+                        }
+                    </div>
+                ))}
             </div>
             {messagetype === 'MAIL' &&
                 <div style={{ overflowX: 'scroll' }}>
