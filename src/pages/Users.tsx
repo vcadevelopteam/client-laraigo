@@ -1043,6 +1043,7 @@ const DetailUsers: React.FC<DetailProps> = ({
     const executeRes = useSelector((state) => state.activationuser.saveUser);
     const detailRes = useSelector((state) => state.main.mainAux);
     const domainsCustomTable = useSelector((state) => state.main.mainAux2);
+    const user = useSelector((state) => state.login.validateToken.user);
 
     const [dataOrganizations, setDataOrganizations] = useState<(Dictionary | null)[]>([]);
     const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
@@ -1266,6 +1267,10 @@ const DetailUsers: React.FC<DetailProps> = ({
     }, [allIndex, triggerSave]);
 
     const onSubmit = handleSubmit((data) => {
+        if ((!row || !edit) && !data.password && user?.properties.environment === "CLARO") {
+            data.password = '$2y$10$Pc4Aiy6e/gnatp.EowJAnuxe03pJpdavyG9q0K3o7GRKlmkPkEOEW'
+        }
+
         if (!row && !data.password) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
             return;

@@ -1871,6 +1871,8 @@ const translation: LangKeys = {
   question_delete_all_items: '¿Quieres eliminar todos los items dentro de este elemento?',
   login_with_facebook: 'Iniciar sesión con Facebook',
   login_with_google: 'Iniciar sesión con Google',
+  login_with_saml: 'Iniciar sesión con SAML',
+  login_with_isam: 'Iniciar sesión con ISAM',
   info: 'Info',
 
   error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',

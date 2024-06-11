@@ -454,4 +454,5 @@ export const apiUrls = {
     DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
 
     PROCESSZIPINTEGRATION: `${BASE_URL}/integrationmanager/file_upload`,
+    SAML_LOGIN: `${BASE_URL}/auth/idps/saml20/sso/login`,
 };
