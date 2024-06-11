@@ -14,6 +14,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import ListIcon from '@material-ui/icons/List';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import NoImage from '../../../icons/noimage.jpg'
+import AllButtonsDialog from "../dialogs/AllButtonsDialog";
 
 const useStyles = makeStyles(() => ({
     main: {
@@ -266,14 +267,17 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
 interface MessagePreviewMultimediaProps {
     headerType: string;
     header: string;
+    headervariables: string[];
     body: string;
+    bodyvariables: Dictionary[];
     footer: string;
     buttonstext: string[];
     buttonslink: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, body, footer, buttonstext, buttonslink }) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink }) => {
     const classes = useStyles();
+    const [openModal, setOpenModal] = useState(false);
     const combinedButtons = [
         ...buttonstext.map(text => ({ type: 'text', text: text })),
         ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
@@ -334,89 +338,109 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
         }
     };
 
+    const getFormattedHeader = () => {
+        if (headerType === 'TEXT' && headervariables.length > 0) {
+            return header.replace('{{1}}', headervariables[0]);
+        }
+        return header;
+    };
+    
+    const getFormattedBody = () => {
+        let formattedBody = body;
+        bodyvariables.forEach(variable => {
+            const regex = new RegExp(`\\{\\{${variable.variable}\\}\\}`, 'g');
+            formattedBody = formattedBody.replace(regex, variable.text);
+        });
+        return formattedBody;
+    };
+
     return (
-        <div className={classes.messagePrevContainer}>
-            <div className={classes.container} style={{ width: 350 }}>
-                <div className={classes.messageCard}>
-                    {headerType === 'TEXT' ? (
-                        <span className={classes.headerText}>{header}</span>
-                    ) : (headerType !== 'TEXT' && headerType !== 'NONE') ? (
-                        <>
-                            {(header !== '' && headerType === 'IMAGE') ? (
-                                <div className={classes.cardMediaContainer}>
-                                    <img src={header} alt="Cabecera" className={classes.cardMedia} />
-                                </div>
-                            ) : (header !== '' && headerType === 'VIDEO') ? (
-                                <video controls className={classes.cardMedia}>
-                                    <source src={header} type="video/mp4" />
-                                    Tu navegador no soporta la etiqueta de video.
-                                </video>
-                            ) : (header !== '' && headerType === 'DOCUMENT') ? (
-                                <>
-                                    {getFileIcon(header)}
-                                </>
-                            ) : (
-                                <span>No media selected</span>
-                            )}
-                        </>
-                    ) : (
-                        <></>
-                    )}
-                    {body !== '' && (
-                        <div className={classes.body} style={{ marginTop: 10 }}
-                            dangerouslySetInnerHTML={{ __html: parseFormattedText(body) }}>
-                        </div>
-                    )}
-                    {footer !== '' && (
-                        <span className={classes.footer}>{footer}</span>
-                    )}
-                    <span className={classes.chatTime} style={{ color: 'black', marginTop: 10 }}>16:59</span>
-                    <div>
-                        {combinedButtons.map((btn, index) => {
-                            let icon;
-                            switch (btn.type) {
-                                case 'text':
-                                    icon = <ReplyIcon className={classes.icon} />;
-                                    break;
-                                case 'URL':
-                                    icon = <OpenInNewIcon className={classes.icon} />;
-                                    break;
-                                case 'PHONE':
-                                    icon = <PhoneIcon className={classes.icon} />;
-                                    break;
-                                default:
-                                    icon = null;
-                            }
-                            return (
-                                <div key={index}>
-                                    {((index <= 2 && combinedButtons.length === 3) || (index < 2 && combinedButtons.length !== 3)) && (
-                                        <div className={index === combinedButtons.length - 1 ? classes.cardButton2 : classes.cardButton}>
-                                            {icon}
-                                            <span>{btn.text}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                        {combinedButtons.length > 3 && (
-                            <div className={classes.cardButton2} style={{cursor: 'pointer'}}>
-                                <ListIcon className={classes.icon} />
-                                <span>See all options</span>
+        <>
+            <div className={classes.messagePrevContainer}>
+                <div className={classes.container} style={{ width: 350 }}>
+                    <div className={classes.messageCard}>
+                        {headerType === 'TEXT' ? (
+                            <span className={classes.headerText}>{getFormattedHeader()}</span>
+                        ) : (headerType !== 'TEXT' && headerType !== 'NONE') ? (
+                            <>
+                                {(header !== '' && headerType === 'IMAGE') ? (
+                                    <div className={classes.cardMediaContainer}>
+                                        <img src={header} alt="Cabecera" className={classes.cardMedia} />
+                                    </div>
+                                ) : (header !== '' && headerType === 'VIDEO') ? (
+                                    <video controls className={classes.cardMedia}>
+                                        <source src={header} type="video/mp4" />
+                                        Tu navegador no soporta la etiqueta de video.
+                                    </video>
+                                ) : (header !== '' && headerType === 'DOCUMENT') ? (
+                                    <>
+                                        {getFileIcon(header)}
+                                    </>
+                                ) : (
+                                    <span>No media selected</span>
+                                )}
+                            </>
+                        ) : (
+                            <></>
+                        )}
+                        {body !== '' && (
+                            <div className={classes.body} style={{ marginTop: 10 }}
+                                dangerouslySetInnerHTML={{ __html: parseFormattedText(getFormattedBody()) }}>
                             </div>
                         )}
+                        {footer !== '' && (
+                            <span className={classes.footer}>{footer}</span>
+                        )}
+                        <span className={classes.chatTime} style={{ color: 'black', marginTop: 10 }}>16:59</span>
+                        <div>
+                            {combinedButtons.map((btn, index) => {
+                                let icon;
+                                switch (btn.type) {
+                                    case 'text':
+                                        icon = <ReplyIcon className={classes.icon} />;
+                                        break;
+                                    case 'URL':
+                                        icon = <OpenInNewIcon className={classes.icon} />;
+                                        break;
+                                    case 'PHONE':
+                                        icon = <PhoneIcon className={classes.icon} />;
+                                        break;
+                                    default:
+                                        icon = null;
+                                }
+                                return (
+                                    <div key={index}>
+                                        {((index <= 2 && combinedButtons.length === 3) || (index < 2 && combinedButtons.length !== 3)) && (
+                                            <div className={index === combinedButtons.length - 1 ? classes.cardButton2 : classes.cardButton}>
+                                                {icon}
+                                                <span>{btn.text}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                            {combinedButtons.length > 3 && (
+                                <div className={classes.cardButton2} style={{cursor: 'pointer'}} onClick={() => setOpenModal(true)}>
+                                    <ListIcon className={classes.icon} />
+                                    <span>See all options</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <AllButtonsDialog openModal={openModal} setOpenModal={setOpenModal} buttons={combinedButtons}/>
+        </>
     );
 };
 
 interface MessagePreviewCarouselProps {
     body: string;
+    bodyvariables: Dictionary[];
     carouselCards: Dictionary[];
 }
 
-export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ body, carouselCards }) => {
+export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ body, bodyvariables, carouselCards }) => {
     const classes = useStyles();
     const containerRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -478,13 +502,22 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
         return text;
     };
 
+    const getFormattedBody = (body: string, bodyvariables: Dictionary[]) => {
+        let formattedBody = body;
+        bodyvariables.forEach(variable => {
+            const regex = new RegExp(`\\{\\{${variable.variable}\\}\\}`, 'g');
+            formattedBody = formattedBody.replace(regex, variable.text);
+        });
+        return formattedBody;
+    };
+    
     return (
         <div className={classes.messagePrevContainer}>
             <div className={classes.container} style={{ width: 350 }}>
                 <div className={classes.messageCard}>
                     {body !== '' && (
                         <div className={classes.body} style={{ marginTop: 10 }}
-                            dangerouslySetInnerHTML={{ __html: parseFormattedText(body) }}>
+                            dangerouslySetInnerHTML={{ __html: parseFormattedText(getFormattedBody(body, bodyvariables)) }}>
                         </div>
                     )}
                     <span className={classes.chatTime}>11:54</span>
@@ -507,7 +540,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
                         <div className={classes.cardMediaContainer}>
                             <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
                         </div>
-                        <div className={classes.bodyCar}>{card.body}</div>
+                        <div className={classes.bodyCar}>{getFormattedBody(card.body, card.bodyvariables)}</div>
                         {card.buttons.length > 0 && (
                             <>
                                 {card.buttons.map((btn: Dictionary, i: number) => (

@@ -60,17 +60,14 @@ import {
 import AddIcon from "@material-ui/icons/Add";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import Button from "@material-ui/core/Button";
-import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import MenuItem from "@material-ui/core/MenuItem";
 import React, { FC, Suspense, useCallback, useEffect, useState, useRef, ChangeEvent } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
-import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
 import { AddButtonMenu, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
-import { text } from "stream/consumers";
-import { PDFRedIcon, PdfIcon } from "icons";
+import { PDFRedIcon } from "icons";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -2702,7 +2699,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <MessagePreviewMultimedia
                                             headerType={getValues('headertype')}
                                             header={getValues('header')}
+                                            headervariables={getValues('headervariables')}
                                             body={getValues('body')}
+                                            bodyvariables={getValues('bodyvariables')}
                                             footer={getValues('footer')}
                                             buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
                                             buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
@@ -2993,6 +2992,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
                                         <MessagePreviewCarousel
                                             body={getValues('body')}
+                                            bodyvariables={getValues('bodyvariables')}
                                             carouselCards={getValues('carouseldata')}
                                         />
                                     </div>
