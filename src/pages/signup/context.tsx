@@ -620,6 +620,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }, [listChannels]);
 
     const finishRegister = () => {
+        debugger
         form.handleSubmit(onSubmit, onError)();
         submitObservable.trigger();
     };
@@ -633,7 +634,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         const { ...mainData } = data;
 
         const submitInformation = {
-            channel: listChannels,
             key: "UFN_CREATEZYXMEACCOUNT_INS",
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             card: {
@@ -666,7 +666,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 loginusername: mainData.loginusername,
                 paymentplan: planData.data[0].plan,
                 paymentplanid: planData.data[0].paymentplanid,
-                iscompany: planData.data[0].iscompany,
+                iscompany: mainData.iscompany,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
             },

@@ -6208,6 +6208,7 @@ const translation: LangKeys = {
   channelconfigsave:'Do you want to save the channel settings?',
   decline:'Decline',
   skip: 'Skip',
+  mustaccepttermsandconditions: 'You must accept the terms and conditions',
 };
 
 const enResource: ResourceLanguage = {

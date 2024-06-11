@@ -6155,6 +6155,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   channelconfigsave:'¿Deseas guardar la configuración del canal?',
   decline:'Rechazar',
   skip: 'Omitir',
+  mustaccepttermsandconditions: 'Debe aceptar los terminos y condiciones',
 };
 
 const esResource: ResourceLanguage = {

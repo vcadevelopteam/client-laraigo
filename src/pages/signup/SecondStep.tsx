@@ -131,14 +131,20 @@ const SecondStep = () => {
         }
     };
 
-    const dataBilling = useMemo(
-        () => [
-            { id: 1, desc: t(langKeys.billingfield_billingdni) },
-            { id: 2, desc: t(langKeys.billingfield_billingextra) },
-            { id: 3, desc: t(langKeys.billingfield_billingruc) },
-        ],
-        [t]
-    );
+    const dataBillingPeru = [
+        { id: 1, desc: t(langKeys.billingfield_billingdni) },
+        { id: 4, desc: t(langKeys.billingfield_billingextra) },
+        { id: 6, desc: t(langKeys.billingfield_billingruc) },
+    ]
+    const dataBillingColombia = [
+        { id: 13, desc: t(langKeys.billingfield_colombiacedciud) },
+        { id: 22, desc: t(langKeys.billingfield_colombiacedext) },
+        { id: 31, desc: t(langKeys.billingfield_colombianit)},
+        { id: 50, desc: t(langKeys.billingfield_colombianitother)},
+    ]
+    const dataBillingOther = [
+        { id: 0, desc: t(langKeys.billingfield_billingno) },
+    ]
 
     const dataCountry = useMemo(() => {
         if (countryResult.loading) return [];
@@ -248,14 +254,14 @@ const SecondStep = () => {
                                     {t(langKeys.docType)}<div style={{ color: "red" }}>*</div>
                                 </Box>
                                 <FieldSelect
-                                    data={dataBilling}
+                                    data={getValues("contactcountry") === "PE"? dataBillingPeru:(getValues("contactcountry")==="CO"?dataBillingColombia:dataBillingOther)}
                                     error={errors.contactdocumenttype?.message}
                                     optionDesc="desc"
                                     optionValue="id"
                                     style={{ marginTop: 0 }}
                                     valueDefault={getValues("contactdocumenttype")}
                                     variant="outlined"
-                                    onChange={(data: (typeof dataBilling)[number]) => {
+                                    onChange={(data) => {
                                         onChange(data?.id || "");
                                     }}
                                 />

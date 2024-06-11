@@ -182,7 +182,11 @@ const FirstStep: FC = () => {
         if (waitSave) {
             if (!signUpState.loading) {
                 if (signUpState.isvalid) {
-                    setStep(2);
+                    if(disableButton){
+                        showSnackbar({ message: t(langKeys.mustaccepttermsandconditions), severity: "error", show: true })
+                    }else{
+                        setStep(2);
+                    }
                     setWaitSave(false);
                 } else {
                     dispatch(

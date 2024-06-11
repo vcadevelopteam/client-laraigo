@@ -29,7 +29,7 @@ export const langKeys = {
   datatype: "datatype",
   custom_field: "custom_field",
   custom_fields_list: "custom_fields_list",
-  custom_fields_list_helper: "custom_fields_list_helper",
+  custom_fields_list_helper: "custom_fields_list_he",
   custom_fields_of: "custom_fields_of",
   custom_fields_helper: "custom_fields_helper",
   visualizationBotTooltip: "visualizationBotTooltip",
@@ -6152,6 +6152,7 @@ export const langKeys = {
   channelconfigsave:'channelconfigsave',
   decline:'decline',
   skip: 'skip',
+  mustaccepttermsandconditions: 'mustaccepttermsandconditions',
 };
 
 export type LangKeys = typeof langKeys;

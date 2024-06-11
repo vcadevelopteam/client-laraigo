@@ -105,6 +105,7 @@ const AccountBalance: FC = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const history = useHistory();
+    const user = useSelector(state => state.login.validateToken.user);
 
     const onChecked = () => {
         if (userConnected) {
@@ -135,7 +136,7 @@ const AccountBalance: FC = () => {
             <Paper elevation={0} className={classes.root}>
                 <label className={classes.connectionText}><Trans>{langKeys.recharge1}</Trans></label>
                 <div style={{ width: 6 }} />
-                <div style={{ border: "solid grey 1px", padding: "0 15px", marginLeft: 5, borderRadius: 10, paddingRight: 3 }}>$ {200.167}
+                <div style={{ border: "solid grey 1px", padding: "0 15px", marginLeft: 5, borderRadius: 10, paddingRight: 3 }}>$ {(user?.balance||0).toFixed(3)}
                     <IconButton
                         aria-label="recharge"
                         style={{
