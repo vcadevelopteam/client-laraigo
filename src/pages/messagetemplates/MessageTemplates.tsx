@@ -104,7 +104,8 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),
-                NoFilter: true,
+                NoFilter: false,
+                type: 'date',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     if (!row || !row.original || !row.original.createdate) {
@@ -146,6 +147,13 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "type",
                 Header: t(langKeys.messagetype),
+                type: "select",
+                listSelectFilter: [
+                    { key: "HSM", value: "HSM" },
+                    { key: "HTML", value: "HTML" },
+                    { key: "CORREO", value: "MAIL" },
+                    { key: "SMS", value: "SMS" },
+                ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     return <div>{t(`messagetemplate_${row.original.type.toLowerCase()}`).toUpperCase()}</div>;
@@ -154,6 +162,13 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "category",
                 Header: t(langKeys.category),
+                type: "select",
+                listSelectFilter: [
+                    { key: t(langKeys.TEMPLATE2_AUTHENTICATION), value: "AUTHENTICATION" },
+                    { key: t(langKeys.TEMPLATE2_MARKETING), value: "MARKETING" },
+                    { key: t(langKeys.TEMPLATE2_UTILITY), value: "UTILITY" },
+                    { key: "NINGUNO", value: "NINGUNO" },
+                ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const { category, type } = row?.original || {};
