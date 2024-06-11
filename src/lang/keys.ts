@@ -2253,6 +2253,7 @@ export const langKeys = {
   signup_with_facebook: 'signup_with_facebook',
   login_with_google: 'login_with_google',
   login_with_saml: 'login_with_saml',
+  login_with_isam: 'login_with_isam',
   info: 'info',
   validnumber: "validnumber",
   waitinginteractions: "waitinginteractions",

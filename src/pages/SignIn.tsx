@@ -40,6 +40,9 @@ import SamlLogin from 'components/fields/SamlLogin';
 
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 // Declara la nueva propiedad en el objeto `window`
+let isClaroEnviroment = apiUrls.LOGIN_URL.includes("stagingapix")
+const debugParam = new URLSearchParams(window.location.search).get('debug');
+if (debugParam === "true") isClaroEnviroment = !isClaroEnviroment
 
 export const useStyles = makeStyles((theme) => ({
     paper: {
@@ -66,8 +69,12 @@ export const useStyles = makeStyles((theme) => ({
         paddingRight: 36,
         position: "relative",
         // maxHeight: '94vh',
-        height: 653,
+        height: !isClaroEnviroment ? 653 : 'auto',
         maxWidth: 420
+    },
+    w100p: {
+        width: "100%",
+        padding: '0 2rem'
     },
     copyright: {
         fontFamily: "Inter",
@@ -386,7 +393,6 @@ const SignIn = () => {
         scriptsToLoad.push("clarity");
         // }
         const { scriptRecaptcha, scriptPlatform, clarityScript } = loadScripts(scriptsToLoad);
-
         return () => {
             scriptRecaptcha && document.body.removeChild(scriptRecaptcha);
             scriptPlatform && document.body.removeChild(scriptPlatform);
@@ -458,126 +464,140 @@ const SignIn = () => {
                                         </div>
                                     </Alert>
                                 )}
-                                <div >
+                                <div className={isClaroEnviroment ? classes.w100p : ""}>
                                     <form
                                         className={classes.form}
                                         onSubmit={onSubmitLogin}
                                         style={{ margin: 0, maxWidth: "21.125rem" }}
                                     >
-                                        <ReCAPTCHA
-                                            ref={recaptchaRef}
-                                            sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
-                                            size="invisible" // Set reCAPTCHA size to invisible
-                                        />
-                                        <TextField
-                                            variant="outlined"
-                                            margin="normal"
-                                            fullWidth
-                                            style={{ margin: 0 }}
-                                            required
-                                            error={showError && resLogin.error}
-                                            value={dataAuth.username}
-                                            onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
-                                            label={t(langKeys.username)}
-                                            name="usr"
-                                        />
-                                        <TextField
-                                            variant="outlined"
-                                            margin="normal"
-                                            fullWidth
-                                            required
-                                            style={{ marginBottom: "1.12rem" }}
-                                            error={showError && resLogin.error}
-                                            label={t(langKeys.password)}
-                                            name="password"
-                                            type={showPassword ? 'text' : 'password'}
-                                            autoComplete="current-password"
-                                            value={dataAuth.password}
-                                            onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            onClick={handleClickShowPassword}
-                                                            onMouseDown={handleMouseDownPassword}
-                                                            edge="end"
-                                                        >
-                                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                        {!resLogin.loading ?
-                                            <div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.02rem" }}>
-                                                <Button
-                                                    type="submit"
+                                        {!isClaroEnviroment ? (
+                                            <>
+                                                <ReCAPTCHA
+                                                    ref={recaptchaRef}
+                                                    sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
+                                                    size="invisible" // Set reCAPTCHA size to invisible
+                                                />
+                                                <TextField
+                                                    variant="outlined"
+                                                    margin="normal"
                                                     fullWidth
-                                                    variant="contained"
-                                                    color="primary"
-                                                    style={{ height: '2.5rem', }}
-                                                >
-                                                    <Trans i18nKey={langKeys.logIn} />
-                                                </Button>
-                                                <FacebookLogin
-                                                    appId={`${apiUrls.FACEBOOKAPP}`}
-                                                    autoLoad={false}
-                                                    buttonStyle={{ border: '1px solid #4D6BB7' }}
-                                                    callback={onAuthWithFacebook}
-                                                    containerStyle={{ width: "100%" }}
-                                                    cssClass={classes.button}
-                                                    disableMobileRedirect={true}
-                                                    fields="name,email,picture"
-                                                    icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
-                                                    isDisabled={false}
-                                                    textButton={t(langKeys.login_with_facebook)}
-                                                    onClick={(e: any) => {
-                                                        e.view.window.FB.init({
-                                                            appId: apiUrls.FACEBOOKAPP,
-                                                            cookie: true,
-                                                            xfbml: true,
-                                                            version: apiUrls.FACEBOOKVERSION,
-                                                        });
+                                                    style={{ margin: 0 }}
+                                                    required
+                                                    error={showError && resLogin.error}
+                                                    value={dataAuth.username}
+                                                    onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
+                                                    label={t(langKeys.username)}
+                                                    name="usr"
+                                                />
+                                                <TextField
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    required
+                                                    style={{ marginBottom: "1.12rem" }}
+                                                    error={showError && resLogin.error}
+                                                    label={t(langKeys.password)}
+                                                    name="password"
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    autoComplete="current-password"
+                                                    value={dataAuth.password}
+                                                    onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton
+                                                                    aria-label="toggle password visibility"
+                                                                    onClick={handleClickShowPassword}
+                                                                    onMouseDown={handleMouseDownPassword}
+                                                                    edge="end"
+                                                                >
+                                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ),
                                                     }}
                                                 />
-                                                <GoogleLogin
-                                                    accessType='online'
-                                                    autoLoad={false}
-                                                    buttonText={t(langKeys.login_with_google)}
-                                                    className={`${classes.button} ${classes.borderGoogle}`}
-                                                    clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
-                                                    cookiePolicy={'single_host_origin'}
-                                                    onFailure={onGoogleLoginFailure}
-                                                    onSuccess={onGoogleLoginSucess}
-                                                />
-                                                <SamlLogin
-                                                    buttonText={t(langKeys.login_with_saml)}
-                                                    onFailure={onSamlLoginError}
-                                                    onSuccess={onSamlLoginSuccess}
-                                                />
-                                                <Button
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    style={{ height: '2.5rem', }}
-                                                    color="primary"
-                                                    onClick={consultHistoricalData}
-                                                >
-                                                    {t(isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata)}
-                                                </Button>
-                                            </div> :
-                                            <CircularProgress className={classes.progress} />
+                                                {!resLogin.loading ?
+                                                    <div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.02rem" }}>
+                                                        <Button
+                                                            type="submit"
+                                                            fullWidth
+                                                            variant="contained"
+                                                            color="primary"
+                                                            style={{ height: '2.5rem', }}
+                                                        >
+                                                            <Trans i18nKey={langKeys.logIn} />
+                                                        </Button>
+                                                        <FacebookLogin
+                                                            appId={`${apiUrls.FACEBOOKAPP}`}
+                                                            autoLoad={false}
+                                                            buttonStyle={{ border: '1px solid #4D6BB7' }}
+                                                            callback={onAuthWithFacebook}
+                                                            containerStyle={{ width: "100%" }}
+                                                            cssClass={classes.button}
+                                                            disableMobileRedirect={true}
+                                                            fields="name,email,picture"
+                                                            icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
+                                                            isDisabled={false}
+                                                            textButton={t(langKeys.login_with_facebook)}
+                                                            onClick={(e: any) => {
+                                                                e.view.window.FB.init({
+                                                                    appId: apiUrls.FACEBOOKAPP,
+                                                                    cookie: true,
+                                                                    xfbml: true,
+                                                                    version: apiUrls.FACEBOOKVERSION,
+                                                                });
+                                                            }}
+                                                        />
+                                                        <GoogleLogin
+                                                            accessType='online'
+                                                            autoLoad={false}
+                                                            buttonText={t(langKeys.login_with_google)}
+                                                            className={`${classes.button} ${classes.borderGoogle}`}
+                                                            clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
+                                                            cookiePolicy={'single_host_origin'}
+                                                            onFailure={onGoogleLoginFailure}
+                                                            onSuccess={onGoogleLoginSucess}
+                                                        />
+                                                        <SamlLogin
+                                                            buttonText={t(langKeys.login_with_saml)}
+                                                            onFailure={onSamlLoginError}
+                                                            onSuccess={onSamlLoginSuccess}
+                                                        />
+                                                        <Button
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            style={{ height: '2.5rem', }}
+                                                            color="primary"
+                                                            onClick={consultHistoricalData}
+                                                        >
+                                                            {t(isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata)}
+                                                        </Button>
+                                                    </div> :
+                                                    <CircularProgress className={classes.progress} />
+                                                }
+                                            </>
+                                        ) : 
+                                            <SamlLogin
+                                                buttonText={t(langKeys.login_with_isam)}
+                                                onFailure={onSamlLoginError}
+                                                onSuccess={onSamlLoginSuccess}
+                                            />
                                         }
-                                        <Grid container>
+                                        <Grid container style={{ padding: isClaroEnviroment ? '1rem 0' : ''}}>
                                             <Grid item>
-                                                <p style={{ marginTop: 0, marginBottom: 12 }}>
-                                                    <Trans i18nKey={langKeys.newRegisterMessage} />
-                                                    <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
-                                                </p>
-                                                <p style={{ marginTop: 12, marginBottom: "0.44rem" }}>
-                                                    <Trans i18nKey={langKeys.recoverpassword1} />
-                                                    <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
-                                                </p>
+                                                {!isClaroEnviroment && (
+                                                    <>
+                                                        <p style={{ marginTop: 0, marginBottom: 12 }}>
+                                                            <Trans i18nKey={langKeys.newRegisterMessage} />
+                                                            <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
+                                                        </p>
+                                                        <p style={{ marginTop: 12, marginBottom: "0.44rem" }}>
+                                                            <Trans i18nKey={langKeys.recoverpassword1} />
+                                                            <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
+                                                        </p>
+                                                    </>
+                                                )}
                                                 <Typography variant="body2" color="textPrimary">
                                                     <a
                                                         rel="noopener noreferrer"
