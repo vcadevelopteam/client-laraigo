@@ -2569,7 +2569,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                         <span>{'{{'}1{'}}'}</span>
                                                                                                         <div style={{backgroundColor: 'white', width: '100%'}}>
                                                                                                             <FieldEdit
-                                                                                                                label={btn?.btn?.url !== '' ? `Introcue la URL completa de ${btn?.btn?.url}{{1}}` : ''}
+                                                                                                                label={btn?.btn?.url !== '' ? `Introduce la URL completa de ${btn?.btn?.url}{{1}}` : ''}
                                                                                                                 variant="outlined"
                                                                                                                 size="small"
                                                                                                                 onChange={(value) => {
