@@ -66,7 +66,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import React, { FC, Suspense, useCallback, useEffect, useState, useRef, ChangeEvent } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import SaveIcon from "@material-ui/icons/Save";
-import { AddButtonMenu, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
+import { AddButtonMenu, AddButtonMenuCard, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
 import { PDFRedIcon } from "icons";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
@@ -312,6 +312,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
     const [cardAux, setCardAux] = useState<number | null>(null)
     const [previousLength, setPreviousLength] = useState(0);
+    const [buttonsType, setButtonsType] = useState('none')
 
     useEffect(() => {
         if (showEmojiPicker && emojiButtonRef.current) {
@@ -1082,6 +1083,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
         trigger("carouseldata");
     }
+
+    useEffect(() => {
+        const carouseldata = getValues("carouseldata");
+        const allButtonsEmpty = carouseldata.every((item: Dictionary) => item.buttons.length === 0);
+        if (allButtonsEmpty) setButtonsType('none');
+    }, [getValues('carouseldata').map((item: Dictionary) => item.buttons)]);
+
     const onClickAddButtonTCard = async (index: number) => {
         const currentCards = getValues('carouseldata');
         if (currentCards && currentCards.length > index) {
@@ -1096,6 +1104,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             });
             setValue('carouseldata', updatedCards);
             trigger('carouseldata');
+            setButtonsType('text')
         }
     }
     const onClickAddButtonLCard = async (index: number) => {
@@ -1112,6 +1121,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             });
             setValue('carouseldata', updatedCards);
             trigger('carouseldata');
+            setButtonsType('url')
         }
     }
     const onClickAddButtonPCard = async (index: number) => {
@@ -1128,6 +1138,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             });
             setValue('carouseldata', updatedCards);
             trigger('carouseldata');
+            setButtonsType('phone')
         }
     }
     const onClickRemoveButtonCard = async (cindex: number, bindex: number) => {
@@ -3113,9 +3124,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        {(getValues(`carouseldata.${index}.buttons`)?.length < 2) && (
+                                                        {(getValues(`carouseldata.${index}.buttons`)?.length < 2 && !(buttonsType === 'phone' && getValues(`carouseldata.${index}.buttons`).length === 1)) && (
                                                             <div>
-                                                                <AddButtonMenu
+                                                                <AddButtonMenuCard
                                                                     fastAnswer={() => onClickAddButtonTCard(index)}
                                                                     urlWeb={() => onClickAddButtonLCard(index)}
                                                                     callNumber={() => onClickAddButtonPCard(index)}
@@ -3123,6 +3134,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                     urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'URL'})}
                                                                     phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'PHONE'})}
                                                                     isNew={isNew}
+                                                                    buttonsType={buttonsType}
                                                                 />
                                                             </div>
                                                         )}
