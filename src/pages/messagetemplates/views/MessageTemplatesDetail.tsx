@@ -1536,6 +1536,32 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
     }
 
+    const handleInputHeader = (e) => {
+        const value = e.target.value;
+        const cursorPosition = e.target.selectionStart;
+        const insertPosition = cursorPosition - 2;
+
+        if (value.length > 60) {
+            e.preventDefault();
+            return;
+        }
+
+        if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
+            if (!isHeaderVariable) {
+                const header = getValues('header')
+                setIsHeaderVariable(true)
+                setValue('headervariables', [''])
+                setValue('header', header + '{1}}')
+                trigger('headervariables')
+                trigger('header')
+                return;
+            }
+        }
+        
+        setValue('header', value)
+        trigger('header')
+    }
+
     const addHeaderVariable = () => {
         if(isHeaderVariable) {
             setIsHeaderVariable(false)
@@ -2129,17 +2155,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </div>
                                         {getValues('headertype') === 'TEXT' && (
                                             <div style={{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
-                                                <FieldEdit
+                                                <FieldEditAdvancedAux
+                                                    inputProps={{
+                                                        rows: 1,
+                                                        maxRows: 1
+                                                    }}
+                                                    rows={1}
                                                     variant="outlined"
                                                     size="small"
                                                     maxLength={60}
                                                     valueDefault={getValues('header')}
                                                     error={errors?.header?.message}
-                                                    onChange={(value) => {
-                                                        setValue('header', value)
-                                                        trigger('header')
-                                                    }}
+                                                    onChange={handleInputHeader}
                                                     disabled={!isNew}
+                                                    onInput={handleInputHeader}
+                                                    style={{ border: '1px solid #BDBDBD', borderRadius: '4px', padding: '3px' }}
                                                 />
                                                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
                                                     <Button
