@@ -520,7 +520,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
-    else if (interactiontype === "email") {
+    else if (interactiontype === "email" || (interactiontype === "comment-text" && `${interactiontext}`.includes("&%MAIL%&"))) {
         try {
             const [subject, body, files] = interactiontext.split("&%MAIL%&")
             return (
