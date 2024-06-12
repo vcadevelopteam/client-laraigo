@@ -38,6 +38,12 @@ type Button = {
     payload: string;
 };
 
+type BatchJson = {
+    date: string;
+    time: string;
+    quantity: number;
+};
+
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -182,7 +188,10 @@ type FormFields = {
     messagetemplatelanguage: string,
     messagetemplatepriority: string,
     executiontype: string,
-    batchjson: Dictionary[],
+    date: string,
+    time: string,  
+    quantity: number,
+    batchjson: BatchJson,
     carouseljson: Dictionary[],
     fields: SelectedColumns,
     operation: string,
@@ -192,9 +201,7 @@ type FormFields = {
     footer: string;
     buttons: Button[];
     buttonstext: { text: string }[];
-    buttonsphone: { text: string }[];
-    date: string|null;
-    time: string | null;
+    buttonsphone: { text: string }[];   
 }
 
 export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, setIdAux, setTemplateAux }) => {
@@ -209,7 +216,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
     const [openModal, setOpenModal] = useState(false);
 
-    const { register, setValue, getValues, trigger, formState: { errors } } = useForm<any>({
+    const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
             id: row ? row.id : 0,
@@ -238,7 +245,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatelanguage: '',
             messagetemplatepriority: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
-            batchjson: [{ date: '', time: '', quantity: 1 }],
+            batchjson: detaildata?.batchjson?.[0] || { date: '', time: '', quantity: 0 },
             carouseljson: [],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
@@ -256,12 +263,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const templateId = getValues('messagetemplateid');
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
-
-    console.log('Template en General', selectedTemplate)
-
     let fieldCounter = 5; 
     const initialFieldCounter = fieldCounter; 
     fieldCounter = initialFieldCounter;
+    
+    console.log('Template en General', selectedTemplate)
 
     const carouseljsonData: any[] = selectedTemplate.carouseldata
     ? selectedTemplate.carouseldata.map(({ bodyvariables, buttons, ...rest }: { bodyvariables: any, buttons: any[] }) => ({
@@ -305,8 +311,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('startdate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('date', { validate: (value: any) => getValues('executiontype') === 'SCHEDULED'? ((value && value.length) || t(langKeys.field_required)):true });
-        register('time', { validate: (value: any) => getValues('executiontype') === 'SCHEDULED'? ((value && value.length) || t(langKeys.field_required)):true });
         register('enddate', {
             validate: {
                 value: (value: any) => (value && value.length) || t(langKeys.field_required),
@@ -314,6 +318,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         });
         register('executiontype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('batchjson.date', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required) });
+        register('batchjson.time', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required) });
+        register('batchjson.quantity', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value > 0)) || t(langKeys.field_required) });
         register('communicationchannelid', { validate: (value: any) => (value && value > 0) || t(langKeys.field_required) });
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -673,23 +680,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 data={dictToArrayKV(dataExecutionType)}
                                 optionDesc="value"
                                 optionValue="key"
-                            />   
-                            
-                            {getValues('executiontype') === 'SCHEDULED' ?
-                                <IconButton
-                                    style={{ flexGrow: 0 }}
-                                    aria-label="more"
-                                    aria-controls="long-menu"
-                                    aria-haspopup="true"
-                                    size="small"
-                                    onClick={(e) => setOpenModal(true)}
-                                >
-                                    <EventIcon style={{ color: '#777777' }} />
-                                </IconButton>
-                                :
-                                null
-                            }                    
-                                                    
+                            />                              
+                                                   
                         </FormControl>
                         :
                         <FieldView
@@ -699,22 +691,25 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
 
-                    {/* {getValues('executiontype') === 'SCHEDULED' ?
-
+                    {edit && getValues('executiontype') === 'SCHEDULED' &&
                         <div className="row-zyx">
-                        <FormControl className="col-3">                          
+                            <FormControl className="col-3">                          
                                 <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.date)} </div>
                                 <div className={classes.subtitle}> {t(langKeys.campaign_execution_date)} </div>
                                 <FieldEdit   
                                     variant="outlined"                 
                                     type="date"                               
                                     className="col-6"
-                                       valueDefault={getValues('date')}
-                                    onChange={(value) => setValue('date', value)}
-                                    error={errors?.batchjson?.[0]?.date?.message}
+                                    valueDefault={getValues('batchjson.date')}
+                                    onChange={(value) => {
+                                        const batchjson = getValues('batchjson') || {};
+                                        batchjson.date = value;
+                                        setValue('batchjson', batchjson);
+                                    }}
+                                    error={errors?.batchjson?.date?.message}
                                 />      
                             </FormControl>                      
-                                                        
+                                                                            
                             <FormControl className="col-3">                          
                                 <div className={classes.title}> {t(langKeys.hour)} </div>
                                 <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
@@ -722,18 +717,37 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     variant="outlined"                 
                                     type="time"                            
                                     className="col-6"
-                                    valueDefault={getValues('time')}
-                                    onChange={(value) => setValue('time', value)}
-                                    error={errors?.batchjson?.[0]?.time?.message}
+                                    valueDefault={getValues('batchjson.time')}
+                                    onChange={(value) => {
+                                        const batchjson = getValues('batchjson') || {};
+                                        batchjson.time = value;
+                                        setValue('batchjson', batchjson);
+                                    }}
+                                    error={errors?.batchjson?.time?.message}
                                 />         
-                            </FormControl>                         
-                        
-                                            
-                        </div>                  
+                            </FormControl>  
 
-                        : null                                
-                    }   */}
+                            <FormControl className="col-3">                          
+                                <div className={classes.title}> {t(langKeys.quantity)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
+                                <FieldEdit   
+                                    variant="outlined"                 
+                                    type="number"                       
+                                    className="col-4"
+                                    valueDefault={getValues('batchjson.quantity')}
+                                    onChange={(value) => {
+                                        const batchjson = getValues('batchjson') || {};
+                                        batchjson.quantity = parseInt(value, 10);
+                                        setValue('batchjson', batchjson);
+                                    }}
+                                    error={errors?.batchjson?.quantity?.message}
+                                    inputProps={{ min: 0, step: 1 }}
+                                />         
+                            </FormControl> 
+                        </div>
+                    }
 
+                    
                     {edit ?
                         <FormControl className="col-6" >                      
                             <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.group)} </div>
