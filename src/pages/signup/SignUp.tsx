@@ -1,10 +1,8 @@
-import { FC, useContext, useState, useEffect } from 'react';
-import { Button, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
+import React, { FC, useContext, useEffect } from 'react';
 import { langKeys } from "lang/keys";
 import { makeStyles } from "@material-ui/core/styles";
 import { RouteParams, SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
-import { Trans, useTranslation } from "react-i18next";
-import { useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { loadScripts } from 'common/helpers';
 import { useRouteMatch } from 'react-router-dom';
 import { LaraigoLogo } from "icons";
@@ -42,7 +40,7 @@ const useSignUpStyles = makeStyles((theme) => ({
         paddingTop: 16,
     },
     containerLogo: {
-        background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)", 
+        background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)",
         height: "100%",
         display: "flex",
         width: "40%",
@@ -127,7 +125,7 @@ const SignUpFunc: FC = () => {
         if (["BUSINESS START", "BUSINESS BASIC", "BUSINESS PRO", "BUSINESS PRO+"].includes(match.params.token)) {
             const scriptsToLoad = ["gtm"];
             const { scriptRecaptcha, scriptPlatform, clarityScript } = loadScripts(scriptsToLoad);
-    
+
             return () => {
                 scriptRecaptcha && document.body.removeChild(scriptRecaptcha);
                 scriptPlatform && document.body.removeChild(scriptPlatform);
@@ -137,7 +135,7 @@ const SignUpFunc: FC = () => {
             };
         }
     }, [])
-    
+
     return (
         <div className={classes.root}>
             <div
@@ -151,29 +149,28 @@ const SignUpFunc: FC = () => {
             >
                 {step !== 1 && (
                     <div className={classes.containerLogo}>
-                        <div className={classes.container} style={{ width: "100%", margin:"0 10px 0 0" }}>   
+                        <div className={classes.container} style={{ width: "100%", margin: "0 10px 0 0" }}>
                             <div>
                                 <div className={classes.image}>
-                                    <LaraigoLogo height={42.8} />
+                                    <LaraigoLogo height={60} />
                                 </div>
-                                <div style={{color:"#FFBF00", fontWeight:"bold", fontSize:"2em", textAlign:"center"}}>
-                                    {t(langKeys.signupstep2ms1)}    
+                                <div style={{ color: "#FFBF00", fontWeight: "bold", fontSize: "2em", textAlign: "center" }}>
+                                    {t(langKeys.signupstep2ms1)}
                                 </div>
-                                <div style={{color:"white", fontSize:"1.5em", textAlign:"center", margin: "20px 10%"}}>
-                                    {t(langKeys.signupstep2ms2, { plan: planData?.plan?.plan})}  
+                                <div style={{ color: "white", fontSize: "1.5em", textAlign: "center", margin: "20px 10%" }}>
+                                    {t(langKeys.signupstep2ms2, { plan: planData?.plan?.plan })}
                                 </div>
-                                <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                                    <video width="80%" controls //autoPlay
-                                    >
-                                        <source src="http://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/4a78ff62-dc91-49b3-b8d6-84dda5a0420a/Laraigo%20%EF%BD%9C%20CRM%20Omnicanal%20100%25%20Cloud.mp4" type="video/mp4"/>
+                                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                    <video width="80%" controls>
+                                        <source src="http://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/4a78ff62-dc91-49b3-b8d6-84dda5a0420a/Laraigo%20%EF%BD%9C%20CRM%20Omnicanal%20100%25%20Cloud.mp4" type="video/mp4" />
                                     </video>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
-                <div className={classes.containerLeft}> 
-                    <RightSideMenu/>
+                <div className={classes.containerLeft}>
+                    <RightSideMenu />
                 </div>
             </div>
         </div>

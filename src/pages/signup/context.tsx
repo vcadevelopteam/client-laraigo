@@ -750,6 +750,8 @@ interface PlanData {
         planCost: number;
         provider: string;
         cityList: any;
+        descriptionen: string;
+        descriptiones: string;
     } | null;
 }
 
@@ -776,6 +778,8 @@ export function usePlanData(): PlanData {
                 planCost: planData.data[0]?.plancost || 0,
                 provider: planData.data[0]?.providerwhatsapp || "",
                 cityList: planData.data[0]?.cityList || [],
+                descriptionen: planData.data[0]?.descriptionen || "",
+                descriptiones: planData.data[0]?.descriptiones || "",
             },
         };
     }, [planData, match.params.token]);
