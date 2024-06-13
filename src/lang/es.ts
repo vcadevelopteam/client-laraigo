@@ -6193,6 +6193,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   TEMPLATE2_UNREGISTERED: "NO REGISTRADO",
   TEMPLATE2_MULTIMEDIA: "MULTIMEDIA",
   TEMPLATE2_CAROUSEL: "CARRUSEL",
+  templateidentifier: "Identificador de la plantilla.",
+  templatequalitytext: "Calidad de la plantilla registrada, para su uso.",
+  messageslimittext: "Limite de envíos del negocio, dentro de las 24 horas.",
 };
 
 const esResource: ResourceLanguage = {

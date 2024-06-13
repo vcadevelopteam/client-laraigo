@@ -1728,6 +1728,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             return;
         }
 
+        if(value.length === 0) {
+            setValue('body', value);
+            setValue('bodyvariables', []);
+            trigger('body');
+            trigger('bodyvariables');
+            return;
+        }
+
         if (isDeleting) {
             const insertPosition = cursorPosition - 2;
             if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
@@ -1840,7 +1848,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const addVariableCardAux = (cursorPosition: number, index: number) => {
-        const newVariableNumber = getValues(`carouseldata.${index}.bodyvariables`).length + 1;
+        let newVariableNumber = 0;
+        if (getValues(`carouseldata.${index}.bodyvariables`).length === 0) {
+            newVariableNumber = 1;
+        } else {
+            newVariableNumber = getValues(`carouseldata.${index}.bodyvariables`)[getValues(`carouseldata.${index}.bodyvariables`).length - 1].variable + 1;
+        }
+
         const body = getValues(`carouseldata.${index}.body`);
         const newVariableTag = `{{${newVariableNumber}}}`;
         const newBody = body.slice(0, cursorPosition) + newVariableTag + body.slice(cursorPosition);
@@ -1849,7 +1863,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), { variable: newVariableNumber, text: "" }]);
         trigger('carouseldata');
     };
-
+    
     const handleInputBodyCard = (e, index: number) => {
         const value = e.target.value;
         const cursorPosition = e.target.selectionStart;
@@ -1860,7 +1874,63 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             return;
         }
 
-        if (!isDeleting) {
+        if(value.length === 0) {
+            setValue(`carouseldata.${index}.body`, value);
+            setValue(`carouseldata.${index}.bodyvariables`, []);
+            trigger('carouseldata');
+            return;
+        }
+
+        if (isDeleting) {
+            const insertPosition = cursorPosition - 2;
+            if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
+                const newValue = value.slice(0, insertPosition) + value.slice(cursorPosition);
+                setValue(`carouseldata.${index}.body`, newValue);
+
+                // Recopilar todas las variables actuales del body
+                const variablesInBody = [];
+                let currentIndex = 0;
+                while (currentIndex < newValue.length) {
+                    if (newValue[currentIndex] === '{' && newValue[currentIndex + 1] === '{') {
+                        let variableNumber = '';
+                        currentIndex += 2; // Avanzar pasando '{{'
+                        while (!isNaN(parseInt(newValue[currentIndex], 10))) {
+                            variableNumber += newValue[currentIndex];
+                            currentIndex++;
+                        }
+                        if (newValue[currentIndex] === '}') {
+                            variablesInBody.push(parseInt(variableNumber, 10));
+                        }
+                    }
+                    currentIndex++;
+                }
+
+                // Filtrar bodyvariables para eliminar las que ya no están presentes en variablesInBody
+                let updatedBodyVariables = getValues(`carouseldata.${index}.bodyvariables`).filter(variable => variablesInBody.includes(variable.variable));
+                updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
+                    ...variable,
+                    variable: index + 1,
+                }));
+                setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
+                trigger('carouseldata');
+
+                // Reemplazar los marcadores especiales '{{*}}' por los valores correspondientes de updatedBodyVariables
+                const variableRegex = /\{\{(\d+)\}\}/g;
+                let currentIndexInText = 0;
+                const updatedText = newValue.replace(variableRegex, () => {
+                    const variable = updatedBodyVariables[currentIndexInText];
+                    currentIndexInText++;
+                    return `{{${variable.variable}}}`;
+                });
+                setValue(`carouseldata.${index}.body`, updatedText);
+                trigger('carouseldata');
+
+                setTimeout(() => {
+                    e.target.setSelectionRange(insertPosition, insertPosition);
+                }, 0);
+                return;
+            }
+        } else {
             const insertPosition = cursorPosition - 2;
             if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
                 const newValue = value.slice(0, insertPosition) + value.slice(cursorPosition);
@@ -1996,9 +2066,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             />
                         </div>
                     )}
-                    <div className='row-zyx' style={{display: 'flex', flexDirection: 'column'}}>
-                        <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetype)}</span>
-                        <span>{t(langKeys.messagetypetext)}</span>
+                    <div className='row-zyx'>
+                        <div className="col-4" style={{display: 'flex', flexDirection: 'column'}}>
+                            <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetype)}</span>
+                            <span>{t(langKeys.messagetypetext)}</span>
+                        </div>
+                        {(!isNew && getValues('type') === 'HSM') && (
+                            <div className="col-8" style={{display: 'flex'}}>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
+                                    <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetemplateid)}</span>
+                                    <span>{t(langKeys.templateidentifier)}</span>
+                                </div>
+                                <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
+                                    <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.quality)}</span>
+                                    <span>{t(langKeys.templatequalitytext)}</span>
+                                </div>
+                                <div style={{flex: 2, display: 'flex', flexDirection: 'column'}}>
+                                    <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messageslimit)}</span>
+                                    <span>{t(langKeys.messageslimittext)}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="row-zyx" style={{display: 'flex', alignItems: 'center'}}>
                         <FieldSelect
@@ -2021,9 +2109,31 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         )}
                         {(!isNew && getValues('type') === 'HSM') && (
-                            <div className="col-8">
-                                <span>ID Plantilla</span>
-                            </div>
+                            <FieldEdit
+                                className="col-2"
+                                variant="outlined"
+                                valueDefault={getValues('id')}
+                                disabled
+                                size="small"
+                            />
+                        )}
+                        {(!isNew && getValues('type') === 'HSM') && (
+                            <FieldEdit
+                                className="col-2"
+                                variant="outlined"
+                                valueDefault={getValues('providerquality')}
+                                disabled
+                                size="small"
+                            />
+                        )}
+                        {(!isNew && getValues('type') === 'HSM') && (
+                            <FieldEdit
+                                className="col-4"
+                                variant="outlined"
+                                valueDefault={getValues('providermessagelimit')}
+                                disabled
+                                size="small"
+                            />
                         )}
                     </div>
                     {getValues("type") === 'HSM' && (

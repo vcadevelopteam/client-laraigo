@@ -6245,6 +6245,9 @@ const translation: LangKeys = {
   TEMPLATE2_UNREGISTERED: "UNREGISTERED",
   TEMPLATE2_MULTIMEDIA: "MULTIMEDIA",
   TEMPLATE2_CAROUSEL: "CAROUSEL",
+  templateidentifier: "Template identifier.",
+  templatequalitytext: "Quality of the registered template, for use.",
+  messageslimittext: "Limit of business shipments, within 24 hours.",
 };
 
 const enResource: ResourceLanguage = {

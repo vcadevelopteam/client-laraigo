@@ -6191,6 +6191,9 @@ export const langKeys = {
   TEMPLATE2_UNREGISTERED: "TEMPLATE2_UNREGISTERED",
   TEMPLATE2_MULTIMEDIA: "TEMPLATE2_MULTIMEDIA",
   TEMPLATE2_CAROUSEL: "TEMPLATE2_CAROUSEL",
+  templateidentifier: "templateidentifier",
+  templatequalitytext: "templatequalitytext",
+  messageslimittext: "messageslimittext",
 };
 
 export type LangKeys = typeof langKeys;
