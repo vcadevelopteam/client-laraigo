@@ -84,7 +84,7 @@ const MessageTemplates: FC = () => {
 
     const columns = React.useMemo(
         () => [
-            {
+            /*{
                 accessor: "templateid",
                 isComponent: true,
                 minWidth: 60,
@@ -100,7 +100,7 @@ const MessageTemplates: FC = () => {
                         />
                     );
                 },
-            },
+            },*/
             {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),

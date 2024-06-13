@@ -159,6 +159,7 @@ interface TemplateIconsProps {
     urlbtn: Dictionary[];
     phonebtn: Dictionary[];
     isNew: boolean;
+    buttonsType?: string;
 }
 
 export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
@@ -235,6 +236,91 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
                     </MenuItem>
                 )}
                 {phonebtn?.length < 1 && (
+                    <MenuItem onClick={handleMenuCallNumber} style={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.callnumber)}</span>
+                        <span style={{ fontSize: 13 }}>1 botón como máximo</span>
+                    </MenuItem>
+                )}
+            </Menu>
+        </div>
+    );
+};
+
+export const AddButtonMenuCard: React.FC<TemplateIconsProps> = ({
+    fastAnswer,
+    urlWeb,
+    callNumber,
+    textbtn,
+    urlbtn,
+    phonebtn,
+    isNew,
+    buttonsType
+}) => {
+    const classes = useStyles();
+    const { t } = useTranslation();
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const handleClickTyping = (e: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(e.currentTarget as HTMLElement);
+        e.stopPropagation();
+    };
+    const handleMenuFastAnswer = () => {
+        setAnchorEl(null);
+        fastAnswer();
+    };
+    const handleMenuUrlWeb = () => {
+        setAnchorEl(null);
+        urlWeb();
+    };
+    const handleMenuCallNumber = () => {
+        setAnchorEl(null);
+        callNumber();
+    };
+    const handleClose = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setAnchorEl(null);
+    };
+
+    return (
+        <div className={classes.main}>
+            <Button
+                onClick={handleClickTyping}
+                startIcon={<AddIcon />}
+                endIcon={<ArrowDropDownIcon />}
+                className={classes.button}
+                type="button"
+                variant="outlined"
+                disabled={!isNew}
+            >
+                {t(langKeys.addbutton)}
+            </Button>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                {(textbtn?.length < 10 && (buttonsType === 'text' || buttonsType === 'none')) && (
+                    <MenuItem onClick={handleMenuFastAnswer}>
+                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
+                    </MenuItem>
+                )}
+                {(urlbtn?.length < 2 && (buttonsType === 'url' || buttonsType === 'none')) && (
+                    <MenuItem onClick={handleMenuUrlWeb} style={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.gotothewebsite)}</span>
+                        <span style={{ fontSize: 13 }}>2 botones como máximo</span>
+                    </MenuItem>
+                )}
+                {(phonebtn?.length < 1 && (buttonsType === 'phone' || buttonsType === 'none')) && (
                     <MenuItem onClick={handleMenuCallNumber} style={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
                         <span style={{ fontWeight: 'bold' }}>{t(langKeys.callnumber)}</span>
                         <span style={{ fontSize: 13 }}>1 botón como máximo</span>

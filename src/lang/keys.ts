@@ -6211,6 +6211,9 @@ export const langKeys = {
   contactdetails: 'contactdetails',
 
   button: 'button',
+  templateidentifier: "templateidentifier",
+  templatequalitytext: "templatequalitytext",
+  messageslimittext: "messageslimittext",
 };
 
 export type LangKeys = typeof langKeys;

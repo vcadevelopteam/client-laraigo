@@ -6263,6 +6263,9 @@ const translation: LangKeys = {
   programmed: 'Programmed',
   contactdetails: 'Contact Details',
 
+  templateidentifier: "Template identifier.",
+  templatequalitytext: "Quality of the registered template, for use.",
+  messageslimittext: "Limit of business shipments, within 24 hours.",
 };
 
 const enResource: ResourceLanguage = {
