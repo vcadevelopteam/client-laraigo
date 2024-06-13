@@ -2015,6 +2015,36 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('body');
     };
 
+    const getLimitMessage = (providermessagelimit: string) => {
+        let limit;
+        if (providermessagelimit) {
+            switch (providermessagelimit) {
+                case "TIER_0.05K":
+                    limit = `50 ${t('clients')}/24 ${t('hours')}`;
+                    break;
+                case "TIER_0.25K":
+                    limit = `250 ${t('clients')}/24 ${t('hours')}`;
+                    break;
+                case "TIER_1K":
+                    limit = `1K ${t('clients')}/24 ${t('hours')}`;
+                    break;
+                case "TIER_10K":
+                    limit = `10K ${t('clients')}/24 ${t('hours')}`;
+                    break;
+                case "TIER_100K":
+                    limit = `100K ${t('clients')}/24 ${t('hours')}`;
+                    break;
+                case "TIER_UNLIMITED":
+                    limit = t('unlimited');
+                    break;
+                default:
+                    limit = t('TEMPLATE2_UNREGISTERED');
+                    break;
+            }
+        }
+        return limit;
+    };
+
     return (
         <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
@@ -2121,7 +2151,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             <FieldEdit
                                 className="col-2"
                                 variant="outlined"
-                                valueDefault={getValues('providerquality')}
+                                valueDefault={t(`template_${getValues('providerquality')}`)}
                                 disabled
                                 size="small"
                             />
@@ -2130,7 +2160,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             <FieldEdit
                                 className="col-4"
                                 variant="outlined"
-                                valueDefault={getValues('providermessagelimit')}
+                                valueDefault={() => getLimitMessage(getValues('providermessagelimit'))}
                                 disabled
                                 size="small"
                             />
