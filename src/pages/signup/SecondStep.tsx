@@ -207,7 +207,11 @@ const SecondStep = () => {
                             control={control}
                             defaultValue={true}
                             render={({ field }) => (
-                                <RadioGroup {...field} row>
+                                <RadioGroup {...field} row
+                                    onChange={(e)=>{
+                                        setValue('iscompany',e.target.value === "true")
+                                    }}
+                                >
                                     <FormControlLabel value={true} control={<Radio color="primary" />} label={t(langKeys.business)} />
                                     <FormControlLabel value={false} control={<Radio color="primary" />} label={t(langKeys.person)} />
                                 </RadioGroup>
