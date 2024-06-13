@@ -110,9 +110,9 @@ const SecondStep = () => {
     const insertResult = useSelector((state) => state.signup.insertChannel);
     const planData = usePlanData();
     const [accounting, setAccounting] = useState({
-        total: ((remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)) * 1.18).toFixed(2),
-        taxes: ((remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)) * 0.18).toFixed(2),
-        subtotal: (remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)).toFixed(2),
+        total: ((remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * remainingDaysFromSubscription) / daysInCurrentMonth)) * 1.18).toFixed(2),
+        taxes: ((remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * remainingDaysFromSubscription) / daysInCurrentMonth)) * 0.18).toFixed(2),
+        subtotal: (remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * remainingDaysFromSubscription) / daysInCurrentMonth)).toFixed(2),
     });
 
     const validateDocumentType = (documentNumber: string, documentType: number) => {
@@ -191,10 +191,12 @@ const SecondStep = () => {
             dispatch(resetMain());
         };
     }, [dispatch]);
+
     useEffect(() => {
-        let cost = Number(getValues("recharge.rechargeamount"))||0
-        let subtotal= (remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)) + cost
-        if(values.contactcountry==="PE"){
+        const cost = Number(getValues("recharge.rechargeamount")) || 0;
+        const subtotal = (remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * remainingDaysFromSubscription) / daysInCurrentMonth)) + cost;
+
+        if (values.contactcountry === "PE") {
             setAccounting({
                 subtotal: subtotal.toFixed(2),
                 taxes: (subtotal * 0.18).toFixed(2),
@@ -214,6 +216,7 @@ const SecondStep = () => {
             })
         }
     }, [values.contactcountry, values.recharge.rechargeamount]);
+
     return (
         <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100vh", padding: "30px 4%", overflowY: "auto" }}>
             <div className={classes.containerBorder}>
@@ -226,8 +229,8 @@ const SecondStep = () => {
                             defaultValue={true}
                             render={({ field }) => (
                                 <RadioGroup {...field} row
-                                    onChange={(e)=>{
-                                        setValue('iscompany',e.target.value === "true")
+                                    onChange={(e) => {
+                                        setValue('iscompany', e.target.value === "true")
                                         setValue("companyname", "")
                                         setValue("companydocument", "")
                                         setValue("contactdocumenttype", 0)
