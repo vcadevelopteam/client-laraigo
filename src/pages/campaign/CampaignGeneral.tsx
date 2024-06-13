@@ -216,6 +216,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
     const [openModal, setOpenModal] = useState(false);
 
+
+    //console.log('Trae todos los templates, incluid tipo sms', dataMessageTemplate)
+
     const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
@@ -459,23 +462,27 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         dispatch(resetCollectionPaginatedAux())
     }
 
+
     const filterDataCampaignType = () => {
-        if (getValues('communicationchanneltype')?.startsWith('WHA')) {
-            return dataCampaignType.filter(t => t.key === 'HSM');
+        const communicationChannelType = getValues('communicationchanneltype');
+        
+        if (communicationChannelType?.startsWith('WHA')) {
+            return dataCampaignType.filter(t => t.key === 'HSM' || t.key === 'SMS');
         }
-        else if (getValues('communicationchanneltype')?.startsWith('SMS')) {
+        else if (communicationChannelType?.startsWith('SMS')) {
             return dataCampaignType.filter(t => t.key === 'SMS');
         }
-        else if (getValues('communicationchanneltype')?.startsWith('VOX')) {
+        else if (communicationChannelType?.startsWith('VOX')) {
             return dataCampaignType.filter(t => t.key === 'CALL');
         }
-        else if (getValues('communicationchanneltype')?.startsWith('MAI')) {
-            return dataCampaignType.filter(t => t.key === 'MAIL');
+        else if (communicationChannelType?.startsWith('MAI')) {
+            return dataCampaignType.filter(t => t.key === 'MAIL' || t.key === 'HTML');
         }
         else {
             return filterIf(dataCampaignType);
         }
     }
+    
 
     const onChangeType = async (data: Dictionary) => {
         setValue('type', data?.key || '');
@@ -857,22 +864,25 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 {['SMS', 'MAIL'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
-                            <FieldSelect
-                                fregister={{
-                                    ...register(`messagetemplateid`, {
-                                        validate: (value: any) => (value) || t(langKeys.field_required)
-                                    })
-                                }}
-                                label={t(langKeys.messagetemplate)}
-                                className="col-6"
-                                valueDefault={getValues('messagetemplateid') as any}
-                                disabled={!getValues('isnew')}
-                                onChange={onChangeMessageTemplateId}
-                                error={errors?.messagetemplateid?.message}
-                                data={filterMessageTemplate()}
-                                optionDesc="name"
-                                optionValue="id"
-                            />
+                            <FormControl className="col-6" >                     
+                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetemplate)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_comunicationtemplate_desc)} </div>
+                                <FieldSelect
+                                    fregister={{
+                                        ...register(`messagetemplateid`, {
+                                            validate: (value: any) => (value) || t(langKeys.field_required)
+                                        })
+                                    }}
+                                    variant="outlined"                                       
+                                    valueDefault={getValues('messagetemplateid') as any}
+                                    disabled={!getValues('isnew')}
+                                    onChange={onChangeMessageTemplateId}
+                                    error={errors?.messagetemplateid?.message}
+                                    data={filterMessageTemplate()}
+                                    optionDesc="name"
+                                    optionValue="id"
+                                />
+                            </FormControl>                                
                             :
                             <FieldView
                                 label={t(langKeys.messagetemplate)}
