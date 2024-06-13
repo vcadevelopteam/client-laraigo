@@ -68,7 +68,7 @@ export interface RouteParams {
 }
 
 export interface RechargeData {
-    rechargeamount: number|null;
+    rechargeamount: number | null;
 }
 export interface ListChannels {
     android: boolean;
@@ -322,7 +322,7 @@ export interface Channels {
 }
 
 export interface MainData {
-    activechannels: ListChannels|null;
+    activechannels: ListChannels | null;
     cardmonth: string;
     cardname: string;
     cardnumber: string;
@@ -622,7 +622,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }, [listChannels]);
 
     const finishRegister = () => {
-        debugger
         form.handleSubmit(onSubmit, onError)();
         submitObservable.trigger();
     };
