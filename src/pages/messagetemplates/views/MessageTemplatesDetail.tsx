@@ -252,6 +252,30 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    carouselContainer: {
+        display: 'flex',
+        overflowX: 'auto',
+    },
+    carouselCard: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.5rem',
+        alignItems: 'center',
+        padding: '0px 8px 0px 8px',
+        width: 500,
+        minWidth: 500,
+        marginBottom: 10
+    },
+    addCard: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid #B6B6B6',
+        cursor: 'pointer',
+        width: 150,
+        minWidth: 150,
+        marginBottom: 10
+    },
 }));
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
@@ -1677,7 +1701,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const addVariableAux = (cursorPosition: number) => {
-        const newVariableNumber = getValues('bodyvariables').length + 1;
+        let newVariableNumber = 0;
+        if(getValues('bodyvariables').length === 0) {
+            newVariableNumber = 1;
+        } else {
+            newVariableNumber = getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable + 1;
+        }
+        
         const body = getValues('body');
         const newVariableTag = `{{${newVariableNumber}}}`;
         const newBody = body.slice(0, cursorPosition) + newVariableTag + body.slice(cursorPosition);
@@ -1698,18 +1728,69 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             return;
         }
 
-        if (!isDeleting) {
+        if (isDeleting) {
+            const insertPosition = cursorPosition - 2;
+            if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
+                const newValue = value.slice(0, insertPosition) + value.slice(cursorPosition);
+                setValue('body', newValue);
+                const variablesInBody = [];
+                let currentIndex = 0;
+                while (currentIndex < newValue.length) {
+                    if (newValue[currentIndex] === '{' && newValue[currentIndex + 1] === '{') {
+                        let variableNumber = '';
+                        currentIndex += 2; // Avanzar pasando '{{'
+                        while (!isNaN(parseInt(newValue[currentIndex], 10))) {
+                            variableNumber += newValue[currentIndex];
+                            currentIndex++;
+                        }
+                        if (newValue[currentIndex] === '}') {
+                            variablesInBody.push(parseInt(variableNumber, 10));
+                        }
+                    }
+                    currentIndex++;
+                }
+                let updatedBodyVariables = getValues('bodyvariables').filter((variable: Dictionary) => variablesInBody.includes(variable.variable));
+                updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
+                    ...variable,
+                    variable: index + 1,
+                }));
+                setValue('bodyvariables', updatedBodyVariables);
+                trigger('bodyvariables');
+
+                const variableRegex = /\{\{(\d+)\}\}/g;
+                let currentIndexInText = 0;
+                const updatedText = newValue.replace(variableRegex, () => {
+                    const variable = updatedBodyVariables[currentIndexInText];
+                    currentIndexInText++;
+                    return `{{${variable.variable}}}`;
+                });
+                setValue('body', updatedText);
+                trigger('body');
+    
+                setTimeout(() => {
+                    e.target.setSelectionRange(insertPosition, insertPosition);
+                }, 0);
+                return;
+            }
+        } else {
             const insertPosition = cursorPosition - 2;
             if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
                 const newValue = value.slice(0, insertPosition) + value.slice(cursorPosition);
                 setValue('body', newValue);
                 trigger('body');
-                if (getValues('bodyvariables').length < 20 && (getValues('body').length + (getValues('bodyvariables').length + 1).toString().length) <= 1020) {
-                    addVariableAux(insertPosition);
+                if (getValues('bodyvariables').length < 20) {
+                    if(getValues('bodyvariables').length === 0) {
+                        if((getValues('body').length + 1) <= 1020) {
+                            addVariableAux(insertPosition);
+                        }
+                    }
+                    else if((getValues('body').length + (getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable + 1).toString().length) <= 1020) {
+                        addVariableAux(insertPosition);
+                    }
                 }
                 setPreviousLength(newValue.length);
                 setTimeout(() => {
-                    e.target.setSelectionRange(insertPosition + 4 + getValues('bodyvariables').length.toString().length, insertPosition + 4 + getValues('bodyvariables').length.toString().length);
+                    e.target.setSelectionRange(insertPosition + 4 + getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable.toString().length, insertPosition + 4 + getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable.toString().length);
                 }, 0);
                 return;
             }
@@ -1937,6 +2018,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <WarningIcon style={{color: '#FF7575'}}/>
                                     Selecciona una opción
                                 </div>
+                            </div>
+                        )}
+                        {(!isNew && getValues('type') === 'HSM') && (
+                            <div className="col-8">
+                                <span>ID Plantilla</span>
                             </div>
                         )}
                     </div>
@@ -3037,372 +3123,373 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span style={{color: 'red', marginBottom: 10}}>{errors?.carouseldata?.message}</span>
                                 </div>
                                 {getValues('carouseldata')?.length > 0 ? (
-                                    <div className="row-zyx">
-                                        <React.Fragment>
-                                            {getValues("carouseldata")?.map((card: any, index: number) => {
-                                                return (
-                                                    <div key={`card-${index}`} className="col-4" style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', padding: '0px 8px 0px 8px'}}>
-                                                        <div style={{display: 'flex', width: '100%', justifyContent: 'end'}}>
-                                                            <IconButton onClick={() => onClickRemoveCard(index)} disabled={!isNew} style={{padding: 0}}>
-                                                                <ClearIcon className={classes.closeIcon}/>
-                                                            </IconButton>
-                                                        </div>
-                                                        {card.header !== '' ? (
-                                                            <div className={classes.uploadedImage}>
-                                                                <div className={classes.cardMediaContainer}>
-                                                                    <img src={card.header} alt="Selected Image" className={classes.cardMedia} />
-                                                                </div>
-                                                                <div style={{display: 'flex', gap: 10}}>
-                                                                    <span className={classes.imageName}>{card.header.split('/').pop().replace(/%20/g, ' ')}</span>
-                                                                    <IconButton onClick={() => handleImageRemove(index)} disabled={!isNew} style={{padding: 0}}>
-                                                                        <ClearIcon className={classes.closeIcon}/>
-                                                                    </IconButton>
-                                                                </div>
+                                    <div>
+                                        <div className={classes.carouselContainer}>
+                                            <React.Fragment>
+                                                {getValues("carouseldata")?.map((card: any, index: number) => {
+                                                    return (
+                                                        <div key={`card-${index}`} className={classes.carouselCard}>
+                                                            <div style={{display: 'flex', width: '100%', justifyContent: 'end'}}>
+                                                                <IconButton onClick={() => onClickRemoveCard(index)} disabled={!isNew} style={{padding: 0}}>
+                                                                    <ClearIcon className={classes.closeIcon}/>
+                                                                </IconButton>
                                                             </div>
-                                                        ) : (
-                                                            <>
-                                                                <input
-                                                                    type="file"
-                                                                    accept={'.jpg,.png'}
-                                                                    onChange={(e) => handleFileChangeAux(e.target.files, index)}
-                                                                    style={{ display: 'none' }}
-                                                                    id={`fileInput-${index}`}
-                                                                    disabled={!isNew}
-                                                                />
-                                                                <label htmlFor={`fileInput-${index}`} style={{ display: 'flex', justifyContent: 'center', width: '100%'}}>
-                                                                    <div className={classes.uploadedImage} style={{cursor: 'pointer'}}>
-                                                                        <ImageIcon style={{color: '#004DB1', height: 170, width: 'auto'}}/>
-                                                                        <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
-                                                                        <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
+                                                            {card.header !== '' ? (
+                                                                <div className={classes.uploadedImage}>
+                                                                    <div className={classes.cardMediaContainer}>
+                                                                        <img src={card.header} alt="Selected Image" className={classes.cardMedia} />
                                                                     </div>
-                                                                </label>
-                                                            </>
-                                                        )}
-                                                        <div style={{width: '90%', fontWeight: 'bold'}}>
-                                                            {t(langKeys.body)}
-                                                            <FieldEditAdvancedAux
-                                                                variant="outlined"
-                                                                inputProps={{
-                                                                    rows: 4,
-                                                                    maxRows: 4
-                                                                }}
-                                                                maxLength={160}
-                                                                rows={4}
-                                                                valueDefault={card?.body || ""}
-                                                                error={errors?.carouseldata?.[index]?.body?.message ? true : false}
-                                                                fregister={{
-                                                                    ...register(`carouseldata.${index}.body`, {
-                                                                        validate: (value) =>
-                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                    }),
-                                                                }}
-                                                                onChange={(e) => handleInputBodyCard(e, index)}
-                                                                onInput={(e) => handleInputBodyCard(e, index)}
-                                                                onPaste={(e) => handlePasteCard(e, index)}
-                                                                disabled={!isNew}
-                                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
-                                                            />
-                                                            {getValues(`carouseldata.${index}.bodyvariables`)?.length < 20 &&(
-                                                                <div style={{display: 'flex', justifyContent: 'end'}}>
-                                                                    <Button
-                                                                        className={classes.button}
-                                                                        startIcon={<AddIcon />}
-                                                                        onClick={() => addVariableCard(index)}
-                                                                        disabled={!isNew}
-                                                                    >
-                                                                        {t(langKeys.addvariable)}
-                                                                    </Button>
+                                                                    <div style={{display: 'flex', gap: 10}}>
+                                                                        <span className={classes.imageName}>{card.header.split('/').pop().replace(/%20/g, ' ')}</span>
+                                                                        <IconButton onClick={() => handleImageRemove(index)} disabled={!isNew} style={{padding: 0}}>
+                                                                            <ClearIcon className={classes.closeIcon}/>
+                                                                        </IconButton>
+                                                                    </div>
                                                                 </div>
+                                                            ) : (
+                                                                <>
+                                                                    <input
+                                                                        type="file"
+                                                                        accept={'.jpg,.png'}
+                                                                        onChange={(e) => handleFileChangeAux(e.target.files, index)}
+                                                                        style={{ display: 'none' }}
+                                                                        id={`fileInput-${index}`}
+                                                                        disabled={!isNew}
+                                                                    />
+                                                                    <label htmlFor={`fileInput-${index}`} style={{ display: 'flex', justifyContent: 'center', width: '100%'}}>
+                                                                        <div className={classes.uploadedImage} style={{cursor: 'pointer'}}>
+                                                                            <ImageIcon style={{color: '#004DB1', height: 170, width: 'auto'}}/>
+                                                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
+                                                                            <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
+                                                                        </div>
+                                                                    </label>
+                                                                </>
                                                             )}
-                                                        </div>
-                                                        {(getValues(`carouseldata.${index}.buttons`)?.length < 2 && !(buttonsType === 'phone' && getValues(`carouseldata.${index}.buttons`).length === 1)) && (
-                                                            <div>
-                                                                <AddButtonMenuCard
-                                                                    fastAnswer={() => onClickAddButtonTCard(index)}
-                                                                    urlWeb={() => onClickAddButtonLCard(index)}
-                                                                    callNumber={() => onClickAddButtonPCard(index)}
-                                                                    textbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'QUICK_REPLY'})}
-                                                                    urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'URL'})}
-                                                                    phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'PHONE'})}
-                                                                    isNew={isNew}
-                                                                    buttonsType={buttonsType}
+                                                            <div style={{width: '90%', fontWeight: 'bold'}}>
+                                                                {t(langKeys.body)}
+                                                                <FieldEditAdvancedAux
+                                                                    variant="outlined"
+                                                                    inputProps={{
+                                                                        rows: 4,
+                                                                        maxRows: 4
+                                                                    }}
+                                                                    maxLength={160}
+                                                                    rows={4}
+                                                                    valueDefault={card?.body || ""}
+                                                                    error={errors?.carouseldata?.[index]?.body?.message ? true : false}
+                                                                    fregister={{
+                                                                        ...register(`carouseldata.${index}.body`, {
+                                                                            validate: (value) =>
+                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                        }),
+                                                                    }}
+                                                                    onChange={(e) => handleInputBodyCard(e, index)}
+                                                                    onInput={(e) => handleInputBodyCard(e, index)}
+                                                                    onPaste={(e) => handlePasteCard(e, index)}
+                                                                    disabled={!isNew}
+                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                                                 />
-                                                            </div>
-                                                        )}
-                                                        <DragDropContext onDragEnd={(results) => handleDragDropCarrusel(results, index)}>
-                                                            <Droppable droppableId="root3" type="group">
-                                                                {(provided) => (
-                                                                    <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10, width: '90%'}}>
-                                                                        {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
-                                                                            return (
-                                                                                <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
-                                                                                    {(provided) => (
-                                                                                        <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
-                                                                                                {getValues(`carouseldata.${index}.buttons`).length === 2 &&(
-                                                                                                    <DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/>
-                                                                                                )}
-                                                                                                {btn.type === 'QUICK_REPLY' ? (
-                                                                                                    <>
-                                                                                                        <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.fastanswer)}</span>
-                                                                                                        <div style={{width: '100%'}}>
-                                                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                        </div>
-                                                                                                        <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
-                                                                                                            <div style={{flex: 1}}>
-                                                                                                                <SingleLineInput
-                                                                                                                    inputProps={{
-                                                                                                                        rows: 1,
-                                                                                                                        maxRows: 1
-                                                                                                                    }}
-                                                                                                                    rows={1}
-                                                                                                                    maxLength={25}
-                                                                                                                    valueDefault={btn?.btn?.text}
-                                                                                                                    onInput={(e) => handleQuickReplyCard(e, index, btni)}
-                                                                                                                    onChange={(e) => handleQuickReplyCard(e, index, btni)}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white'}}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                <ClearIcon />
-                                                                                                            </IconButton>
-                                                                                                        </div>
-                                                                                                    </>
-                                                                                                ) : btn.type === 'URL' ?(
-                                                                                                    <>
-                                                                                                        <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.calltoaction)}</span>
-                                                                                                        <div style={{width: '100%'}}>
-                                                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                        </div>
-                                                                                                        <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
-                                                                                                            <div style={{flex: 1}}>
-                                                                                                                <SingleLineInput
-                                                                                                                    inputProps={{
-                                                                                                                        rows: 1,
-                                                                                                                        maxRows: 1
-                                                                                                                    }}
-                                                                                                                    rows={1}
-                                                                                                                    maxLength={25}
-                                                                                                                    valueDefault={btn?.btn?.text}
-                                                                                                                    onInput={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                    onChange={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                <ClearIcon />
-                                                                                                            </IconButton>
-                                                                                                        </div>
-                                                                                                        <div style={{width: '100%'}}>
-                                                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urltype)}</span>
-                                                                                                        </div>
-                                                                                                        <div style={{width: '100%', marginBottom: 20, padding: '0px 10px'}}>
-                                                                                                            <div style={{backgroundColor: 'white'}}>
-                                                                                                                <FieldSelect
-                                                                                                                    data={dataURLType}
-                                                                                                                    variant="outlined"
-                                                                                                                    optionDesc="text"
-                                                                                                                    optionValue="value"
-                                                                                                                    valueDefault={btn?.btn?.type}
-                                                                                                                    onChange={(value) => {
-                                                                                                                        if(value) {
-                                                                                                                            onChangeCardsButton(index, btni, "type", value?.value)
-                                                                                                                        } else {
-                                                                                                                            onChangeCardsButton(index, btni, "type", "")
-                                                                                                                        }
-                                                                                                                    }}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div style={{width: '100%', display:'flex'}}>
-                                                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
-                                                                                                        </div>
-                                                                                                        <div style={{display: 'flex', width: '100%', alignItems: 'start', padding: '0px 10px'}}>
-                                                                                                            <div style={{flex: 1}}>
-                                                                                                                <SingleLineInput
-                                                                                                                    inputProps={{
-                                                                                                                        rows: 1,
-                                                                                                                        maxRows: 1
-                                                                                                                    }}
-                                                                                                                    rows={1}
-                                                                                                                    maxLength={2000}
-                                                                                                                    valueDefault={btn?.btn?.url}
-                                                                                                                    onInput={(e) => handleActionButtonUrlCard(e, index, btni)}
-                                                                                                                    onChange={(e) => handleActionButtonUrlCard(e, index, btni)}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.url`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            {btn?.btn?.type === 'dynamic' &&(
-                                                                                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 15}}>{'{{'}1{'}}'}</div>
-                                                                                                            )}
-                                                                                                        </div>
-                                                                                                        {btn?.btn?.type === 'dynamic' && (
-                                                                                                            <>
-                                                                                                                <div style={{width: '100%', display:'flex'}}>
-                                                                                                                    <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.addexampletext)}</span>
-                                                                                                                </div>
-                                                                                                                <div style={{width: '100%', padding: '0px 10px'}}>
-                                                                                                                    <div style={{backgroundColor: 'white'}}>
-                                                                                                                        <FieldEdit
-                                                                                                                            variant="outlined"
-                                                                                                                            size="small"
-                                                                                                                            onChange={(value) => {
-                                                                                                                                setValue(`carouseldata.${index}.buttons.${btni}.btn.variables[0]`, value);
-                                                                                                                                trigger('carouseldata')
-                                                                                                                            }}
-                                                                                                                            valueDefault={btn?.btn?.variables[0] || ""}
-                                                                                                                            disabled={!isNew}
-                                                                                                                            fregister={{
-                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.variables.${0}`, {
-                                                                                                                                    validate: (value) =>
-                                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                                }),
-                                                                                                                            }}
-                                                                                                                        />
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </>
-                                                                                                        )}
-                                                                                                    </>
-                                                                                                ) : (
-                                                                                                    <>
-                                                                                                        <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.calltoaction)}</span>
-                                                                                                        <div style={{width: '100%'}}>
-                                                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                        </div>
-                                                                                                        <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
-                                                                                                            <div style={{flex: 1}}>
-                                                                                                                <SingleLineInput
-                                                                                                                    inputProps={{
-                                                                                                                        rows: 1,
-                                                                                                                        maxRows: 1
-                                                                                                                    }}
-                                                                                                                    rows={1}
-                                                                                                                    maxLength={25}
-                                                                                                                    valueDefault={btn?.btn?.text}
-                                                                                                                    onInput={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                    onChange={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                <ClearIcon />
-                                                                                                            </IconButton>
-                                                                                                        </div>
-                                                                                                        <div style={{width: '100%'}}>
-                                                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.country)}</span>
-                                                                                                        </div>
-                                                                                                        <div style={{ width: '100%', marginBottom: 20, padding: '0px 10px'}}>
-                                                                                                            <div style={{backgroundColor: 'white'}}>
-                                                                                                                <FieldSelect
-                                                                                                                    data={dataCountryCodes}
-                                                                                                                    variant="outlined"
-                                                                                                                    optionDesc="text"
-                                                                                                                    optionValue="value"
-                                                                                                                    valueDefault={btn?.btn?.code}
-                                                                                                                    onChange={(value) => {
-                                                                                                                        if(value) {
-                                                                                                                            onChangeCardsButton(index, btni, "code", value?.value)
-                                                                                                                        } else {
-                                                                                                                            setValue(`carouseldata.${index}.buttons.${btni}.btn.code`, null);
-                                                                                                                            trigger('carouseldata')
-                                                                                                                        }
-                                                                                                                    }}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.code`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value !== 0) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    disabled={!isNew}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div style={{width: '100%'}}>
-                                                                                                            <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.telephonenumber)}</span>
-                                                                                                        </div>
-                                                                                                        <div style={{width: '100%', padding: '0px 10px'}}>
-                                                                                                            <FieldEditAdvancedAux
-                                                                                                                inputProps={{
-                                                                                                                    rows: 1,
-                                                                                                                    maxRows: 1
-                                                                                                                }}
-                                                                                                                rows={1}
-                                                                                                                type="number"
-                                                                                                                maxLength={20}
-                                                                                                                valueDefault={btn?.btn?.phone_number}
-                                                                                                                onInput={(e) => handleActionButtonPhoneCard(e, index, btni)}
-                                                                                                                onChange={(e) => handleActionButtonPhoneCard(e, index, btni)}
-                                                                                                                disabled={!isNew}
-                                                                                                                fregister={{
-                                                                                                                    ...register(`carouseldata.${index}.buttons.${btni}.btn.phone_number`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                    </>
-                                                                                                )}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    )}
-                                                                                </Draggable>
-                                                                            )
-                                                                        })}
+                                                                {getValues(`carouseldata.${index}.bodyvariables`)?.length < 20 &&(
+                                                                    <div style={{display: 'flex', justifyContent: 'end'}}>
+                                                                        <Button
+                                                                            className={classes.button}
+                                                                            startIcon={<AddIcon />}
+                                                                            onClick={() => addVariableCard(index)}
+                                                                            disabled={!isNew}
+                                                                        >
+                                                                            {t(langKeys.addvariable)}
+                                                                        </Button>
                                                                     </div>
                                                                 )}
-                                                            </Droppable>
-                                                        </DragDropContext>
+                                                            </div>
+                                                            {(getValues(`carouseldata.${index}.buttons`)?.length < 2 && !(buttonsType === 'phone' && getValues(`carouseldata.${index}.buttons`).length === 1)) && (
+                                                                <div>
+                                                                    <AddButtonMenuCard
+                                                                        fastAnswer={() => onClickAddButtonTCard(index)}
+                                                                        urlWeb={() => onClickAddButtonLCard(index)}
+                                                                        callNumber={() => onClickAddButtonPCard(index)}
+                                                                        textbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'QUICK_REPLY'})}
+                                                                        urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'URL'})}
+                                                                        phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'PHONE'})}
+                                                                        isNew={isNew}
+                                                                        buttonsType={buttonsType}
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                            <DragDropContext onDragEnd={(results) => handleDragDropCarrusel(results, index)}>
+                                                                <Droppable droppableId="root3" type="group">
+                                                                    {(provided) => (
+                                                                        <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10, width: '90%'}}>
+                                                                            {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
+                                                                                return (
+                                                                                    <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
+                                                                                        {(provided) => (
+                                                                                            <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
+                                                                                                    {getValues(`carouseldata.${index}.buttons`).length === 2 &&(
+                                                                                                        <DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/>
+                                                                                                    )}
+                                                                                                    {btn.type === 'QUICK_REPLY' ? (
+                                                                                                        <>
+                                                                                                            <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.fastanswer)}</span>
+                                                                                                            <div style={{width: '100%'}}>
+                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
+                                                                                                            </div>
+                                                                                                            <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
+                                                                                                                <div style={{flex: 1}}>
+                                                                                                                    <SingleLineInput
+                                                                                                                        inputProps={{
+                                                                                                                            rows: 1,
+                                                                                                                            maxRows: 1
+                                                                                                                        }}
+                                                                                                                        rows={1}
+                                                                                                                        maxLength={25}
+                                                                                                                        valueDefault={btn?.btn?.text}
+                                                                                                                        onInput={(e) => handleQuickReplyCard(e, index, btni)}
+                                                                                                                        onChange={(e) => handleQuickReplyCard(e, index, btni)}
+                                                                                                                        disabled={!isNew}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white'}}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                    <ClearIcon />
+                                                                                                                </IconButton>
+                                                                                                            </div>
+                                                                                                        </>
+                                                                                                    ) : btn.type === 'URL' ?(
+                                                                                                        <>
+                                                                                                            <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.calltoaction)}</span>
+                                                                                                            <div style={{width: '100%'}}>
+                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
+                                                                                                            </div>
+                                                                                                            <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
+                                                                                                                <div style={{flex: 1}}>
+                                                                                                                    <SingleLineInput
+                                                                                                                        inputProps={{
+                                                                                                                            rows: 1,
+                                                                                                                            maxRows: 1
+                                                                                                                        }}
+                                                                                                                        rows={1}
+                                                                                                                        maxLength={25}
+                                                                                                                        valueDefault={btn?.btn?.text}
+                                                                                                                        onInput={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                        onChange={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                        disabled={!isNew}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                    <ClearIcon />
+                                                                                                                </IconButton>
+                                                                                                            </div>
+                                                                                                            <div style={{width: '100%'}}>
+                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urltype)}</span>
+                                                                                                            </div>
+                                                                                                            <div style={{width: '100%', marginBottom: 20, padding: '0px 10px'}}>
+                                                                                                                <div style={{backgroundColor: 'white'}}>
+                                                                                                                    <FieldSelect
+                                                                                                                        data={dataURLType}
+                                                                                                                        variant="outlined"
+                                                                                                                        optionDesc="text"
+                                                                                                                        optionValue="value"
+                                                                                                                        valueDefault={btn?.btn?.type}
+                                                                                                                        onChange={(value) => {
+                                                                                                                            if(value) {
+                                                                                                                                onChangeCardsButton(index, btni, "type", value?.value)
+                                                                                                                            } else {
+                                                                                                                                onChangeCardsButton(index, btni, "type", "")
+                                                                                                                            }
+                                                                                                                        }}
+                                                                                                                        disabled={!isNew}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div style={{width: '100%', display:'flex'}}>
+                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
+                                                                                                            </div>
+                                                                                                            <div style={{display: 'flex', width: '100%', alignItems: 'start', padding: '0px 10px'}}>
+                                                                                                                <div style={{flex: 1}}>
+                                                                                                                    <SingleLineInput
+                                                                                                                        inputProps={{
+                                                                                                                            rows: 1,
+                                                                                                                            maxRows: 1
+                                                                                                                        }}
+                                                                                                                        rows={1}
+                                                                                                                        maxLength={2000}
+                                                                                                                        valueDefault={btn?.btn?.url}
+                                                                                                                        onInput={(e) => handleActionButtonUrlCard(e, index, btni)}
+                                                                                                                        onChange={(e) => handleActionButtonUrlCard(e, index, btni)}
+                                                                                                                        disabled={!isNew}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.url`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                {btn?.btn?.type === 'dynamic' &&(
+                                                                                                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 15}}>{'{{'}1{'}}'}</div>
+                                                                                                                )}
+                                                                                                            </div>
+                                                                                                            {btn?.btn?.type === 'dynamic' && (
+                                                                                                                <>
+                                                                                                                    <div style={{width: '100%', display:'flex'}}>
+                                                                                                                        <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.addexampletext)}</span>
+                                                                                                                    </div>
+                                                                                                                    <div style={{width: '100%', padding: '0px 10px'}}>
+                                                                                                                        <div style={{backgroundColor: 'white'}}>
+                                                                                                                            <FieldEdit
+                                                                                                                                variant="outlined"
+                                                                                                                                size="small"
+                                                                                                                                onChange={(value) => {
+                                                                                                                                    setValue(`carouseldata.${index}.buttons.${btni}.btn.variables[0]`, value);
+                                                                                                                                    trigger('carouseldata')
+                                                                                                                                }}
+                                                                                                                                valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                                disabled={!isNew}
+                                                                                                                                fregister={{
+                                                                                                                                    ...register(`carouseldata.${index}.buttons.${btni}.btn.variables.${0}`, {
+                                                                                                                                        validate: (value) =>
+                                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                                    }),
+                                                                                                                                }}
+                                                                                                                            />
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </>
+                                                                                                            )}
+                                                                                                        </>
+                                                                                                    ) : (
+                                                                                                        <>
+                                                                                                            <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.calltoaction)}</span>
+                                                                                                            <div style={{width: '100%'}}>
+                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
+                                                                                                            </div>
+                                                                                                            <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
+                                                                                                                <div style={{flex: 1}}>
+                                                                                                                    <SingleLineInput
+                                                                                                                        inputProps={{
+                                                                                                                            rows: 1,
+                                                                                                                            maxRows: 1
+                                                                                                                        }}
+                                                                                                                        rows={1}
+                                                                                                                        maxLength={25}
+                                                                                                                        valueDefault={btn?.btn?.text}
+                                                                                                                        onInput={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                        onChange={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                        disabled={!isNew}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                    <ClearIcon />
+                                                                                                                </IconButton>
+                                                                                                            </div>
+                                                                                                            <div style={{width: '100%'}}>
+                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.country)}</span>
+                                                                                                            </div>
+                                                                                                            <div style={{ width: '100%', marginBottom: 20, padding: '0px 10px'}}>
+                                                                                                                <div style={{backgroundColor: 'white'}}>
+                                                                                                                    <FieldSelect
+                                                                                                                        data={dataCountryCodes}
+                                                                                                                        variant="outlined"
+                                                                                                                        optionDesc="text"
+                                                                                                                        optionValue="value"
+                                                                                                                        valueDefault={btn?.btn?.code}
+                                                                                                                        onChange={(value) => {
+                                                                                                                            if(value) {
+                                                                                                                                onChangeCardsButton(index, btni, "code", value?.value)
+                                                                                                                            } else {
+                                                                                                                                setValue(`carouseldata.${index}.buttons.${btni}.btn.code`, null);
+                                                                                                                                trigger('carouseldata')
+                                                                                                                            }
+                                                                                                                        }}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.code`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value !== 0) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                        disabled={!isNew}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div style={{width: '100%'}}>
+                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.telephonenumber)}</span>
+                                                                                                            </div>
+                                                                                                            <div style={{width: '100%', padding: '0px 10px'}}>
+                                                                                                                <FieldEditAdvancedAux
+                                                                                                                    inputProps={{
+                                                                                                                        rows: 1,
+                                                                                                                        maxRows: 1
+                                                                                                                    }}
+                                                                                                                    rows={1}
+                                                                                                                    type="number"
+                                                                                                                    maxLength={20}
+                                                                                                                    valueDefault={btn?.btn?.phone_number}
+                                                                                                                    onInput={(e) => handleActionButtonPhoneCard(e, index, btni)}
+                                                                                                                    onChange={(e) => handleActionButtonPhoneCard(e, index, btni)}
+                                                                                                                    disabled={!isNew}
+                                                                                                                    fregister={{
+                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.phone_number`, {
+                                                                                                                            validate: (value) =>
+                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                        }),
+                                                                                                                    }}
+                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                />
+                                                                                                            </div>
+                                                                                                        </>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </Draggable>
+                                                                                )
+                                                                            })}
+                                                                        </div>
+                                                                    )}
+                                                                </Droppable>
+                                                            </DragDropContext>
+                                                        </div>
+                                                    );
+                                                })}
+                                                {(getValues("carouseldata") && getValues('carouseldata').length < 10) && (
+                                                    <div 
+                                                        className={classes.addCard}
+                                                        onClick={() => {if(isNew) onClickAddCard()}}
+                                                    >
+                                                        <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
                                                     </div>
-                                                );
-                                            })}
-                                            {(getValues("carouseldata") && getValues('carouseldata').length < 10) && (
-                                                <div 
-                                                    style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
-                                                    onClick={() => {if(isNew) onClickAddCard()}}
-                                                    className="col-4"
-                                                >
-                                                    <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
-                                                </div>
-                                            )}
-                                        </React.Fragment>
+                                                )}
+                                            </React.Fragment>
+                                        </div>
                                         {getValues('carouseldata').length > 0 && (
                                             <>
                                                 {getValues('carouseldata').map((card, cindex: number) => {
