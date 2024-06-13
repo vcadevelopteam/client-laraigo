@@ -227,7 +227,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             }
         });       
-        console.log('updateTemplate - final updatedTemplate:', updatedTemplate);    
+        //console.log('updateTemplate - final updatedTemplate:', updatedTemplate);    
 
         setFilledTemplate(updatedTemplate);
         setDetaildata(prev => ({
