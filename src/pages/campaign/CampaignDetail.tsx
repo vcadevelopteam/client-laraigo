@@ -298,30 +298,33 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         return modifiedMessage;
     }
 
-    const checkValidation = () => {
+    const checkValidation = () => {        
         if (!frameProps.valid[0]) {
+            console.error("Validation failed: required fields are missing in the initial section.");
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
-        }
-        else if (!frameProps.valid[1]) {
+        } else if (!frameProps.valid[1]) {
+            console.error("Validation failed: missing people in the campaign.");
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_people) }));
-        }
-        else {
+        } else {
             let valid = true;
+    
             if (detaildata.messagetemplatetype === 'MULTIMEDIA'
                 && (detaildata?.messagetemplateheader?.type || '') !== ''
                 && detaildata.messagetemplateheader?.value === '') {
                 valid = false;
+                console.error("Validation failed: missing header for multimedia message.");
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
+    
             const newmessages = formatMessage();
             const localsubject = newmessages.subject || '';
             const localheader = newmessages.header || '';
-            const localmessage = newmessages.message || '';
-
+            const localmessage = newmessages.message || '';   
+    
             let elemVariables: string[] = [];
             let errorIndex = null;
-
-            const auxbuttons = detaildata
+    
+            const auxbuttons = detaildata;
             if (auxbuttons?.messagetemplatebuttons) {
                 auxbuttons.messagetemplatebuttons.forEach((button: any) => {
                     if (button.payload) {
@@ -329,31 +332,36 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     }
                 });
             }
+    
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                 const vars = extractVariables(localsubject);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
+                    console.error("Validation failed: missing header variable in email communication channel.");
                     dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.missing_header)} ${vars[errorIndex]}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+    
             if (detaildata.messagetemplatetype === 'MULTIMEDIA' && localheader !== '') {
                 const vars = extractVariables(localheader);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1 || localheader.includes('{{}}')) {
                     valid = false;
+                    console.error("Validation failed: invalid parameter in multimedia message header.");
                     dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+    
             if (localmessage !== '') {
                 const vars = extractVariables(localmessage);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-            
+    
                 if (errorIndex !== -1 || localmessage.includes('{{}}')) {
                     valid = false;
-            
+    
                     const errorDetail = {
                         localmessage,
                         vars,
@@ -361,31 +369,38 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         problematicVariable: vars[errorIndex],
                         tableDescriptions: tablevariable.map(t => t.description),
                     };
-            
-                    console.error("Validation Error Details:", errorDetail); 
-            
-                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;
-            
+    
+                    console.error("Validation Error Details:", errorDetail);                       
+                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;    
                     dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
                 }
-            
+    
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
-            
+    
+            if (detaildata.executiontype === 'SCHEDULED') {
+                const { date, time, quantity } = detaildata.batchjson || {};
+                if (!date || !time || !quantity) {
+                    valid = false;
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
+                }
+            }
+    
             setDetaildata({
                 ...detaildata,
                 variablereplace: elemVariables,
                 batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
                 subject: newmessages.subject,
-                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },               
+                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
-                carouseljson: detaildata.carouseljson,               
+                carouseljson: detaildata.carouseljson,
                 message: newmessages.message,
             });
+    
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
         }
     }
-
+    
     const buildingMembers = () => {
         let campaignMemberList: any[] = [];
         switch (detaildata.source) {
@@ -521,17 +536,26 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 break;
         }
         if (detaildata.executiontype === 'SCHEDULED') {
-            let batchjsontemp = [...(detaildata.batchjson || [])];
-            batchjsontemp = batchjsontemp.map((d: any, i: number) => ({ ...d, batchindex: i + 1 }));
-            setDetaildata({
-                ...detaildata,
-                batchjson: batchjsontemp,
-            });
-            batchjsontemp.reduce((bda, bdc, i) => {
-                campaignMemberList.filter((cm, j) => j >= bda && j < bda + parseInt(bdc.quantity)).map(cm => cm.batchindex = bdc.batchindex);
-                return bda + parseInt(bdc.quantity);
-            }, 0);
-        }
+            const batchjson = detaildata.batchjson?.[0] || {};
+            const { date, time, quantity } = batchjson;
+            if (date && time && quantity) {
+                const newBatchjson = [{
+                    date,
+                    time,
+                    quantity,
+                    batchindex: 1
+                }];
+                setDetaildata({
+                    ...detaildata,
+                    batchjson: newBatchjson,
+                });
+                campaignMemberList.forEach((cm, j) => {
+                    if (j < quantity) {
+                        cm.batchindex = 1;
+                    }
+                });
+            }
+        }    
         setCampaignMembers(campaignMemberList);
         setSave('SUBMIT');
     }

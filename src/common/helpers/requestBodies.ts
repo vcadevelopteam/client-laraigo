@@ -1430,8 +1430,8 @@ export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
     parameters: {       
-        startdate: null,
-        enddate: null,
+        startdate: startdate || null,
+        enddate: enddate || null,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
@@ -1503,9 +1503,8 @@ export const insCampaign = ({
         messagetemplatepriority: messagetemplatepriority || null,
         executiontype,
         batchjson: JSON.stringify(batchjson),
-        fields: JSON.stringify(selectedColumns || fields),       
-        operation,
-        carouseljson: JSON.stringify(carouseljson)
+        fields: JSON.stringify(selectedColumns || fields),
+        operation
     }
 });
 

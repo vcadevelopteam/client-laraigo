@@ -884,7 +884,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small' }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
