@@ -175,7 +175,8 @@ const SecondStep = () => {
         };
     }, [dispatch]);
     useEffect(() => {
-        let subtotal= (remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription))
+        let cost = getValues("recharge.rechargeamount")||0
+        let subtotal= (remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)) + cost
         if(values.contactcountry==="PE"){
             setAccounting({
                 subtotal:subtotal.toFixed(2),
@@ -195,7 +196,7 @@ const SecondStep = () => {
                 total: subtotal.toFixed(2),
             })
         }
-    }, [values.contactcountry]);
+    }, [values.contactcountry, values.recharge.rechargeamount]);
     return (
         <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100vh", padding: "30px 4%", overflowY: "auto" }}>
             <div className={classes.containerBorder}>
@@ -210,6 +211,9 @@ const SecondStep = () => {
                                 <RadioGroup {...field} row
                                     onChange={(e)=>{
                                         setValue('iscompany',e.target.value === "true")
+                                        setValue("companyname", "")
+                                        setValue("companydocument", "")
+                                        setValue("contactdocumenttype", 0)
                                     }}
                                 >
                                     <FormControlLabel value={true} control={<Radio color="primary" />} label={t(langKeys.business)} />
@@ -266,7 +270,7 @@ const SecondStep = () => {
                                     valueDefault={getValues("contactdocumenttype")}
                                     variant="outlined"
                                     onChange={(data) => {
-                                        onChange(data?.id || "");
+                                        onChange(data?.id || "0");
                                     }}
                                 />
                             </div>
