@@ -266,8 +266,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     let fieldCounter = 5; 
     const initialFieldCounter = fieldCounter; 
     fieldCounter = initialFieldCounter;
-    
-    console.log('Template en General', selectedTemplate)
+
+    // console.log('Template en General', selectedTemplate)
 
     const carouseljsonData: any[] = selectedTemplate.carouseldata
     ? selectedTemplate.carouseldata.map(({ bodyvariables, buttons, ...rest }: { bodyvariables: any, buttons: any[] }) => ({
@@ -505,7 +505,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }
 
-
     const onChangeMessageTemplateId = async (data: Dictionary) => {
         setValue('messagetemplateid', data?.id || 0);
         setIdAux(data?.id || 0);      
@@ -625,7 +624,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                     {edit ?
                         <FormControl className="col-6">                          
-                            <div className={classes.title}> {t(langKeys.report_tipification_enddate)} </div>
+                            <div className={classes.title}> {t(langKeys.enddate)} </div>
                             <div className={classes.subtitle}> {t(langKeys.campaign_enddate_desc)} </div>
                             <FieldEdit   
                                 variant="outlined"                 
@@ -939,7 +938,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 </div>
                 
                 <div style={{width:'50%'}}>
-                    <div style={{fontSize:'1.2rem', marginTop:'2.1rem'}}>{t('Vista Previa de la Plantilla')}</div> 
+                    <div style={{fontSize:'1.2rem', marginTop:'2.1rem'}}>{t('Previsualización de la Plantilla')}</div> 
                     <TemplatePreview selectedTemplate={selectedTemplate} variableValues={[]}/>
 
                 </div>  
