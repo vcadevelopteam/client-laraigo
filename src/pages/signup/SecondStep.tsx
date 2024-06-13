@@ -409,6 +409,7 @@ const SecondStep = () => {
                                     variant="outlined"
                                     onChange={(data) => {
                                         onChange(data?.code || "");
+                                        setValue("citybillingid", 0)
                                         setValue("contactdocumenttype", data?.code === "PE" ? 1 : 0);
                                         setPhoneCountry(data?.code || "");
                                     }}
@@ -422,6 +423,39 @@ const SecondStep = () => {
                         }}
                     />
                 </div>
+                {getValues("contactcountry") === "CO" && <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                    <Controller
+                        control={control}
+                        name="citybillingid"
+                        render={({ field: { onChange }, formState: { errors } }) => (
+                            <div className="col-12" style={{ padding: 0 }}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                                    {t(langKeys.citybilling)}<div style={{ color: "red" }}>*</div>
+                                </Box>
+                                <FieldSelect
+                                    className="col-12"
+                                    data={planData?.plan?.cityList}
+                                    error={errors.citybillingid?.message}
+                                    optionDesc="locationdescription"
+                                    optionValue="citybillingid"
+                                    size="small"
+                                    style={{ marginTop: 0 }}
+                                    valueDefault={getValues("citybillingid")}
+                                    variant="outlined"
+                                    onChange={(data) => {
+                                        setValue("citybillingid", data?.citybillingid);
+                                    }}
+                                />
+                            </div>
+                        )}
+                        rules={{
+                            validate: (value) => {
+                                if(getValues("contactcountry") !== "CO") return true
+                                if (value === null || value === undefined) return `${t(langKeys.field_required)}`;
+                            },
+                        }}
+                    />
+                </div>}
                 {getValues("iscompany") && <div className="row-zyx" style={{ marginBottom: "-10px" }}>
                     <Controller
                         control={control}

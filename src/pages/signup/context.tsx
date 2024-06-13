@@ -330,6 +330,7 @@ export interface MainData {
     cardyear: string;
     contactaddress: string;
     contactcountry: string;
+    citybillingid: number;
     contactcountryname: string;
     contactcurrency: string;
     contactdocumentnumber: string;
@@ -475,6 +476,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             cardyear: "",
             contactaddress: "",
             contactcountry: "",
+            citybillingid: 0,
             contactcountryname: "",
             contactcurrency: "",
             contactdocumentnumber: "",
@@ -652,6 +654,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                     rechargeamount: mainData.recharge.rechargeamount
                 },
                 contactcountry: mainData.contactcountry,
+                citybillingid: mainData.citybillingid,
                 contactcountryname: mainData.contactcountryname,
                 contactcurrency: mainData.contactcurrency,
                 contactdocumentnumber: mainData.contactdocumentnumber,
@@ -746,6 +749,7 @@ interface PlanData {
         plan: string;
         planCost: number;
         provider: string;
+        cityList: any;
     } | null;
 }
 
@@ -771,6 +775,7 @@ export function usePlanData(): PlanData {
                 plan: match.params.token,
                 planCost: planData.data[0]?.plancost || 0,
                 provider: planData.data[0]?.providerwhatsapp || "",
+                cityList: planData.data[0]?.cityList || [],
             },
         };
     }, [planData, match.params.token]);
