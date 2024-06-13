@@ -29,6 +29,7 @@ var call,
     personName = "",
     accountID = "",
     lastagentid = 2,
+    callmethod = "COLA",
     messageBusy = "Adios",
     dataCampaign = {
         type: "",
@@ -89,8 +90,15 @@ function createTicket2(callback) {
             identifier = result.Result.identifier || result.Result.split("#")[0];
             personName = result.Result.personname || result.Result.split("#")[1];
             configSIP = result.Result.configsip;
-            flow = !flow ? JSON.parse(result.Result.flow) : flow;
-            red = { "recording": true, "recordingquality": "hd", "recordingstorage": "month3" };
+            welcomeTone = result.Result.welcometone;
+            holdTone = result.Result.holdTone;
+
+            if (flow || result.Result?.flow) {
+                flow = !flow ? JSON.parse(result.Result.flow) : flow;
+            }
+            if (result.Result?.red) {
+                red = JSON.parse(result.Result?.red);
+            }
             callback(identifier)
         }
     }, {
@@ -252,6 +260,7 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     corpid = data.corpid;
     orgid = data.orgid;
     communicationchannelid = data.communicationchannelid;
+    callmethod = data.callmethod;
     site = data.caller_id;
     message = data.message;
     flow = data.flow;
@@ -572,11 +581,10 @@ function handleSimultaneousCall() {
     );
 }
 
-const cardReassignAgent = (variables, { messageBusy: messageBusy1, retrytime, type }) => {
+const cardReassignAgent = (variables, { messageBusy: messageBusy1, retrytime = 3000, type }) => {
     const messageBusy2 = messageBusy1 ? replaceTextWithVariables(messageBusy1, variables) : messageBusy;
     Logger.write("derivar simultaneous: " + type);
     if (type === "simultaneous") {
-
         handleSimultaneousCall()
     } else {
         handleACDQueue({ messageBusy2, retrytime })
@@ -601,15 +609,7 @@ const handleACDQueue = ({ messageBusy2, retrytime }) => {
     // Notify caller about his position in the queue
     request.addEventListener(ACDEvents.Waiting, function (acdevent) {
         Logger.write("ACDEvents-Waiting: " + JSON.stringify(acdevent));
-        // var minutesLeft = acdevent.ewt + 1;
-        // var minutesWord = " minuto.";
-        // if (minutesLeft > 1) {
-        //     minutesWord = " minutos.";
-        // }
-        //ordinal_suffix_of(acdevent.position)
-        //const speech = `Tú eres el número ${acdevent.position} en la cola. El asesor le responderá en ${(acdevent.ewt + 1)} ${minutesWord}`;
-        //const speech = `Tú eres el número ${acdevent.position} en la cola.`;
-        // call.say(messageWelcome, VoiceList.Amazon.es_MX_Mia);
+
     });
     // Connect caller with operator
     request.addEventListener(ACDEvents.OperatorReached, function (acdevent) {
@@ -783,7 +783,10 @@ async function handleCallConnected(e) {
             VoxEngine.terminate();
         }
     } else {
-        cardReassignAgent();
+        const type = callmethod !== "COLA" ? "simultaneous" : "queue";
+        await cardMessage({}, { message });
+        call.startPlayback(welcomeTone);
+        cardReassignAgent(null, { type });
     }
 }
 
