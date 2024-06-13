@@ -92,41 +92,29 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openCleanDialog, setOpenCleanDialog] = useState(false);
 
+    const deleteSelectedRows = () => {
+        const newJsonData = jsonData.filter(row => !selectedRows[row.campaignmemberid]);    
+        setJsonData(newJsonData);
+        setSelectedRows({});    
+        setDetaildata({
+            ...detaildata,
+            jsonData: newJsonData,
+            selectedRows: {},
+            person: detaildata.person?.filter(person => !selectedRows[person.campaignmemberid])
+        });
+    }
+
     const handleDeleteSelectedRows = () => {
-        const updatedJsonData = jsonData.filter(item => !selectedRows[item[selectionKey]]);
-        setJsonData(updatedJsonData); 
+        const updatedJsonData = jsonData.filter(item => !selectedRows[item.Destinatarios]);
+        setJsonData(updatedJsonData);
         setSelectedRows({});
         setOpenDeleteDialog(false);
-    
-        setDetaildata({
-            ...detaildata,
-            jsonData: updatedJsonData,
-            selectedRows: {},
-            person: detaildata.person?.filter(person => !selectedRows[person[selectionKey]])
-        });
-
-        setTimeout(() => {
-            setJsonData([...updatedJsonData]);
-        }, 0);
     };
-
-    const deleteSelectedRows = () => {
-        const updatedJsonData = jsonData.filter(row => !selectedRows[row[selectionKey]]);    
-        setJsonData([...updatedJsonData]);
-        setSelectedRows({});  
-    
-        setDetaildata({
-            ...detaildata,
-            jsonData: updatedJsonData,
-            selectedRows: {},
-            person: detaildata.person?.filter(person => !selectedRows[person[selectionKey]])
-        });
-    };
-
+  
     const handleCleanConfirmed = () => {
         deleteSelectedRows();
         setOpenDeleteDialog(false);
-    };
+    };       
  
     const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setPaginatedWait(true);
@@ -184,7 +172,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
     };
 
-    console.log('Nuestro jsonData', jsonData)
+    console.log(jsonDataPerson)
 
     const adjustAndDownloadExcel = async (url: string) => {
         const descriptionsMap: { [key: string]: string } = {
@@ -470,24 +458,24 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
             return;
         }
-    
+
         const file = files[0];
         if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
             dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
             return;
         }
-    
+
         const reader = new FileReader();
-    
+
         reader.onload = (e) => {
             const data = e.target?.result;
             if (!data) return;
-    
+
             const workbook = XLSX.read(data, { type: 'binary' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
             const json = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
-    
+
             let headers: string[];
             let rows: string[][];
             if (json[0][0].startsWith('|Obligatorio|') && json[1][0] === 'Destinatarios') {
@@ -500,15 +488,15 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 dispatch(showSnackbar({ show: true, severity: "error", message: "Formato de archivo incorrecto" }));
                 return;
             }
-    
+
             const filteredRows = rows.filter(row => {
                 return headers.every((header, index) => row[index] !== undefined && row[index] !== null && row[index] !== '');
             });
-    
+
             const uniqueRows: { [key: string]: boolean } = {};
             const deduplicatedRows: string[][] = [];
             let duplicatesFound = false;
-    
+
             filteredRows.forEach(row => {
                 const rowString = JSON.stringify(row);
                 if (!uniqueRows[rowString]) {
@@ -518,11 +506,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     duplicatesFound = true;
                 }
             });
-    
+
             if (duplicatesFound) {
                 dispatch(showSnackbar({ show: true, severity: "warning", message: "Se encontraron filas duplicadas y se eliminaron." }));
             }
-    
+
             const processedData = deduplicatedRows.map(row => {
                 const obj: { [key: string]: any } = {};
                 headers.forEach((header: string, index: number) => {
@@ -530,25 +518,24 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 });
                 return obj;
             });
-    
+
             setJsonData(processedData);
             setJsonPersons(processedData); 
-    
+
             setColumnList(headers);
             setSelectedColumns({
                 primarykey: headers[0],
                 columns: headers.slice(1),
             } as SelectedColumns);
-    
+
             setHeaders(headers.map(c => ({
                 Header: c,
                 accessor: c
             })));
         };
-    
+
         reader.readAsBinaryString(file);
     };
-    
     
 
     const uploadData = (data: any) => {

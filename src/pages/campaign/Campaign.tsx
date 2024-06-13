@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react'; 
+import React, { FC, useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -36,6 +36,12 @@ interface RowSelected {
     edit: boolean
 }
 
+interface IModalProps {
+    name: string;
+    open: boolean;
+    payload: Dictionary | null;
+}
+ 
   interface ColumnTmp {
     Header: string;
     accessor: string;
@@ -165,8 +171,7 @@ export const Campaign: FC = () => {
             })
         );
     };
-
-
+    
     const columns = React.useMemo(
         () => [
             {
@@ -189,23 +194,29 @@ export const Campaign: FC = () => {
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
-                width: '200px',               
-                
+                NoFilter: false,           
+                width: 'auto', 
+                maxWidth: '200px'
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                width: '200px',               
+                NoFilter: false,     
+                width: 'auto',    
+                maxWidth: '200px'
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'communicationchannel',
-                width: '250px',               
+                NoFilter: false,         
+                width: 'auto',
+                maxWidth: '200px'
             },
             {
                 Header: t(langKeys.startdate),
-                accessor: 'startdate',              
-                width: '200px',
+                accessor: 'startdate',
+                NoFilter: false,
+                width: 'auto',
                 type: 'date',
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
@@ -217,8 +228,9 @@ export const Campaign: FC = () => {
             },
             {
                 Header: t(langKeys.enddate),
-                accessor: 'enddate',             
-                width: '200px',
+                accessor: 'enddate',
+                NoFilter: false,
+                width: 'auto',
                 type: 'date',
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
@@ -229,7 +241,8 @@ export const Campaign: FC = () => {
             },
             {
                 Header: t(langKeys.status),
-                accessor: 'status',              
+                accessor: 'status',
+                NoFilter: false,
                 prefixTranslation: 'status_',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -240,7 +253,8 @@ export const Campaign: FC = () => {
             },
             {
                 Header: t(langKeys.datetimestart_campaign),
-                accessor: 'datetimestart',             
+                accessor: 'datetimestart',
+                NoFilter: false,
                 width: 'auto',
                 prefixTranslation: 'datetimestart',
                 Cell: (props: CellProps<Dictionary>) => {
@@ -252,12 +266,13 @@ export const Campaign: FC = () => {
             },
             {
                 Header: t(langKeys.executiontype_campaign),
-                accessor: 'executiontype',              
+                accessor: 'executiontype',
+                NoFilter: false,
                 prefixTranslation: 'executiontype',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const executiontype = row && row.original && row.original.executiontype;
-                    return executiontype ? t(`${executiontype}`).toUpperCase() : '';
+                    return executiontype ? t(`executiontype_${executiontype}`).toUpperCase() : '';
                 }                
             },
             {
@@ -366,11 +381,37 @@ export const Campaign: FC = () => {
         { Header: 'Tipo de ejecución', accessor: 'executiontype' },
     ];
 
+    // {openConfirmationDialog && (
+    //     <Dialog open={openConfirmationDialog} onClose={handleCloseConfirmationDialog} maxWidth="xl">
+    //         <DialogTitle>
+    //             <Trans i18nKey={langKeys.confirmation} />
+    //         </DialogTitle>
+    //         <DialogContent>                   
+    //             ¿Seguro?
+    //         </DialogContent>
+    //         <DialogActions>
+    //             <Button color="primary">
+    //                 <Trans i18nKey={langKeys.continue} />
+    //             </Button>
+    //             <Button color="primary" onClick={() => {
+    //                 console.log("Botón de cancelar clickeado");
+    //                 setOpenConfirmationDialog(false);
+    //             }}>
+    //                 <Trans i18nKey={langKeys.cancel} />
+    //             </Button>
+    //         </DialogActions>
+    //     </Dialog>
+    // )}
+
+    //console.log(mainResult.mainData.data)
+ 
+    
     const fetchData = () => dispatch(getCollection(getCampaignLst(
         dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
         dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : "",
     )));
     
+
     const handleStatus = (id: number) => {
         if (!waitStatus) {
             dispatch(getCollectionAux(getCampaignStatus(id)));
@@ -568,14 +609,6 @@ export const Campaign: FC = () => {
     };
 
 
-    const modifiedData = useMemo(() => {
-        return mainResult.mainData.data.map((item: any) => ({
-          ...item,
-          executiontype: item.executiontype === "SCHEDULED" ? "PROGRAMADO" : item.executiontype
-        }));
-      }, [mainResult.mainData.data]);
-    
-
     const AdditionalButtons = () => {
         return (
             <React.Fragment>        
@@ -733,14 +766,15 @@ export const Campaign: FC = () => {
                 
                 <TableZyx      
                     columns={columns}
-                    data={modifiedData}             
+                    data={mainResult.mainData.data}              
                     useSelection={true}
                     setSelectedRows={setSelectedRows}
                     selectionKey={selectionKey}
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}                
                     ButtonsElement={AdditionalButtons}     
-                    filterGeneral={false}                 
+                    filterGeneral={false} 
+                
                 />
             </div>
         )
