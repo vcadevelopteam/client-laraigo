@@ -1,4 +1,4 @@
-const ENV = import.meta.env.VITE_ENV || 'TESTING';
+const ENV = import.meta.env.VITE_ENV || 'LOCAL';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
@@ -471,6 +471,6 @@ export const apiUrls = {
     LLAMA_DELETE_FILE: `${BASE_URL}/llama/delete_file`,
     LLAMA_QUERY: `${BASE_URL}/llama/query`,
     LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
-    
+
     CORP_URL: `${BASE_URL}/corp`,
 };

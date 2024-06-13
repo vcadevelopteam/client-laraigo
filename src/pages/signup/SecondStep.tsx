@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, FormControlLabel, FormLabel, makeStyles, Radio, RadioGroup, TextField } from "@material-ui/core";
+import { Box, Button, FormControl, FormControlLabel, makeStyles, Radio, RadioGroup, TextField } from "@material-ui/core";
 import { Controller, useFormContext } from "react-hook-form";
 import { FieldSelect } from "components";
 import { getCollectionPublic, resetMain } from "store/main/actions";
@@ -13,7 +13,7 @@ import { useSelector } from "hooks";
 import LockIcon from '@material-ui/icons/Lock';
 
 import MuiPhoneNumber from "material-ui-phone-number";
-import React, { FC, useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 
 const useChannelAddStyles = makeStyles((theme) => ({
     button: {
@@ -51,26 +51,26 @@ const useChannelAddStyles = makeStyles((theme) => ({
         },
     },
     noBorder: {
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          border: 'none',
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                border: 'none',
+            },
         },
-      },
     },
     customFontSize: {
-      '& .MuiInputBase-input': {
-        fontSize: '25px', // Cambia este valor al tamaño de fuente deseado
-      },
-      '& .MuiFormHelperText-root': {
-        fontSize: '25px', // Cambia este valor al tamaño de fuente del texto de ayuda
-      },
+        '& .MuiInputBase-input': {
+            fontSize: '25px',
+        },
+        '& .MuiFormHelperText-root': {
+            fontSize: '25px',
+        },
     },
     centeredPlaceholder: {
-      '&::placeholder': {
-        textAlign: 'center', // Centrar el placeholder
-      },
+        '&::placeholder': {
+            textAlign: 'center',
+        },
     },
-    
+
 }));
 
 const CssPhonemui = styled(MuiPhoneNumber)({
@@ -97,11 +97,12 @@ const SecondStep = () => {
     const [icon, setIcon] = useState(<></>);
     const [limitNumbers, setLimitNumbers] = useState(24);
     const [phoneCountry, setPhoneCountry] = useState("");
+
     const values = watch();
-    const remainingDaysFromSubscription = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate() + 1
+    const remainingDaysFromSubscription = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate() + 1;
     const daysInCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    
-    
+
+
     const classes = useChannelAddStyles();
     const countryResult = useSelector((state) => state.signup.countryList);
     const dispatch = useDispatch();
@@ -109,9 +110,9 @@ const SecondStep = () => {
     const insertResult = useSelector((state) => state.signup.insertChannel);
     const planData = usePlanData();
     const [accounting, setAccounting] = useState({
-        total: ((remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription))*1.18).toFixed(2),
-        taxes: ((remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription))*0.18).toFixed(2),
-        subtotal: (remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)).toFixed(2),
+        total: ((remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)) * 1.18).toFixed(2),
+        taxes: ((remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)) * 0.18).toFixed(2),
+        subtotal: (remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription)).toFixed(2),
     });
 
     const validateDocumentType = (documentNumber: string, documentType: number) => {
@@ -122,28 +123,44 @@ const SecondStep = () => {
         switch (documentType) {
             case 1:
                 return documentNumber.length !== 8 ? t(langKeys.doctype_dni_error) : undefined;
-            case 2:
-                return documentNumber.length <= 12 ? t(langKeys.doctype_foreigners_card) : undefined;
-            case 3:
+
+            case 6:
                 return documentNumber.length !== 11 ? t(langKeys.doctype_ruc_error) : undefined;
+
+            case 0:
+            case 4:
+            case 13:
+            case 22:
+            case 31:
+            case 50:
+                return undefined;
+
             default:
                 return t(langKeys.doctype_unknown_error);
         }
     };
 
-    const dataBillingPeru = [
-        { id: 1, desc: t(langKeys.billingfield_billingdni) },
-        { id: 4, desc: t(langKeys.billingfield_billingextra) },
-        { id: 6, desc: t(langKeys.billingfield_billingruc) },
+    const dataBillingPersonPeru = [
+        { id: 1, desc: t(langKeys.subscription_billingdni) },
+        { id: 4, desc: t(langKeys.subscription_billingextra) },
     ]
-    const dataBillingColombia = [
-        { id: 13, desc: t(langKeys.billingfield_colombiacedciud) },
-        { id: 22, desc: t(langKeys.billingfield_colombiacedext) },
-        { id: 31, desc: t(langKeys.billingfield_colombianit)},
-        { id: 50, desc: t(langKeys.billingfield_colombianitother)},
+
+    const dataBillingCompanyPeru = [
+        { id: 6, desc: t(langKeys.subscription_billingruc) },
     ]
+
+    const dataBillingPersonColombia = [
+        { id: 13, desc: t(langKeys.subscription_colombiacedciud) },
+        { id: 22, desc: t(langKeys.subscription_colombiacedext) },
+    ]
+
+    const dataBillingCompanyColombia = [
+        { id: 31, desc: t(langKeys.subscription_colombianit) },
+        { id: 50, desc: t(langKeys.subscription_colombianitother) },
+    ]
+
     const dataBillingOther = [
-        { id: 0, desc: t(langKeys.billingfield_billingno) },
+        { id: 0, desc: t(langKeys.subscription_billingno) },
     ]
 
     const dataCountry = useMemo(() => {
@@ -165,7 +182,7 @@ const SecondStep = () => {
                 setValue("contactcountry", countryCode);
                 setValue("contactcountryname", (data?.country_name || "").toUpperCase());
                 setValue("contactcurrency", data?.currency || "");
-                setValue("contactdocumenttype", countryCode === "PE" ? 1 : 0);
+                setValue("contactdocumenttype", countryCode === "PE" ? 6 : 0);
             });
 
         fetchData();
@@ -174,28 +191,31 @@ const SecondStep = () => {
             dispatch(resetMain());
         };
     }, [dispatch]);
+
     useEffect(() => {
-        let subtotal= (remainingDaysFromSubscription === 0 ? 0 :(((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription))
-        if(values.contactcountry==="PE"){
+        const subtotal = (remainingDaysFromSubscription === 0 ? 0 : (((planData?.plan?.planCost || 0) * daysInCurrentMonth) / remainingDaysFromSubscription));
+
+        if (values.contactcountry === "PE") {
             setAccounting({
-                subtotal:subtotal.toFixed(2),
-                taxes: (subtotal*0.18).toFixed(2),
-                total: (subtotal*1.18).toFixed(2),
+                subtotal: subtotal.toFixed(2),
+                taxes: (subtotal * 0.18).toFixed(2),
+                total: (subtotal * 1.18).toFixed(2),
             })
-        } else if(values.contactcountry==="CO"){
+        } else if (values.contactcountry === "CO") {
             setAccounting({
-                subtotal:subtotal.toFixed(2),
-                taxes: (subtotal*0.19).toFixed(2),
-                total: (subtotal*1.19).toFixed(2),
+                subtotal: subtotal.toFixed(2),
+                taxes: (subtotal * 0.19).toFixed(2),
+                total: (subtotal * 1.19).toFixed(2),
             })
-        }else{
+        } else {
             setAccounting({
-                subtotal:subtotal.toFixed(2),
+                subtotal: subtotal.toFixed(2),
                 taxes: "0.00",
                 total: subtotal.toFixed(2),
             })
         }
     }, [values.contactcountry]);
+
     return (
         <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100vh", padding: "30px 4%", overflowY: "auto" }}>
             <div className={classes.containerBorder}>
@@ -208,8 +228,8 @@ const SecondStep = () => {
                             defaultValue={true}
                             render={({ field }) => (
                                 <RadioGroup {...field} row
-                                    onChange={(e)=>{
-                                        setValue('iscompany',e.target.value === "true")
+                                    onChange={(e) => {
+                                        setValue('iscompany', e.target.value === "true")
                                     }}
                                 >
                                     <FormControlLabel value={true} control={<Radio color="primary" />} label={t(langKeys.business)} />
@@ -226,7 +246,7 @@ const SecondStep = () => {
                         render={({ field, formState: { errors } }) => (
                             <div className="col-6">
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
-                                    {t(langKeys.fullname)}<div style={{ color: "red" }}>*</div>
+                                    {t(langKeys.subscription_companyorname)}<div style={{ color: "red" }}>*</div>
                                 </Box>
                                 <TextField
                                     {...field}
@@ -258,7 +278,7 @@ const SecondStep = () => {
                                     {t(langKeys.docType)}<div style={{ color: "red" }}>*</div>
                                 </Box>
                                 <FieldSelect
-                                    data={getValues("contactcountry") === "PE"? dataBillingPeru:(getValues("contactcountry")==="CO"?dataBillingColombia:dataBillingOther)}
+                                    data={getValues("contactcountry") === "PE" ? (getValues("iscompany") ? dataBillingCompanyPeru : dataBillingPersonPeru) : (getValues("contactcountry") === "CO" ? (getValues("iscompany") ? dataBillingCompanyColombia : dataBillingPersonColombia) : dataBillingOther)}
                                     error={errors.contactdocumenttype?.message}
                                     optionDesc="desc"
                                     optionValue="id"
@@ -413,8 +433,8 @@ const SecondStep = () => {
                                     variant="outlined"
                                     onChange={(data) => {
                                         onChange(data?.code || "");
-                                        setValue("citybillingid", 0)
-                                        setValue("contactdocumenttype", data?.code === "PE" ? 1 : 0);
+                                        setValue("citybillingid", 0);
+                                        setValue("contactdocumenttype", data?.code === "PE" ? (getValues("iscompany") ? 6 : 1) : (data?.code === "CO" ? (getValues("iscompany") ? 31 : 13) : 0));
                                         setPhoneCountry(data?.code || "");
                                     }}
                                 />
@@ -454,7 +474,7 @@ const SecondStep = () => {
                         )}
                         rules={{
                             validate: (value) => {
-                                if(getValues("contactcountry") !== "CO") return true
+                                if (getValues("contactcountry") !== "CO") return true
                                 if (value === null || value === undefined) return `${t(langKeys.field_required)}`;
                             },
                         }}
@@ -545,7 +565,7 @@ const SecondStep = () => {
                             </h3>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 <h3 style={{ textAlign: "center", margin: "0 5px 0 0" }}>
-                                    <b>$ {planData?.plan?.planCost}</b>
+                                    <b>${planData?.plan?.planCost}</b>
                                 </h3>
                                 <p style={{ textAlign: "center", margin: "0" }}>
                                     <b>USD</b>
@@ -568,41 +588,7 @@ const SecondStep = () => {
                             >
                                 {t(langKeys.summaryofplan)}
                             </h3>
-                            <p
-                                style={{
-                                    textAlign: "center",
-                                    margin: "0px",
-                                }}>
-                                {t(langKeys.crmomnichannel)} {planData?.plan?.limitContact} {t(langKeys.subscription_signup_plandescription_02)}
-                            </p>
-                            <p
-                                style={{
-                                    textAlign: "center",
-                                    margin: "0px",
-                                }}>
-                                {t(langKeys.sinupfeature1)}
-                            </p>
-                            <p
-                                style={{
-                                    textAlign: "center",
-                                    margin: "0px",
-                                }}>
-                                {t(langKeys.sinupfeature2)}
-                            </p>
-                            <p
-                                style={{
-                                    textAlign: "center",
-                                    margin: "0px",
-                                }}>
-                                {t(langKeys.sinupfeature3)}
-                            </p>
-                            <p
-                                style={{
-                                    textAlign: "center",
-                                    margin: "0px",
-                                }}>
-                                {t(langKeys.sinupfeature4)}
-                            </p>
+                            <div style={{ whiteSpace: 'pre-wrap' }}>{t(langKeys.subscription_language) === "english" ? planData?.plan?.descriptionen : planData?.plan?.descriptiones}</div>
                         </div>
                     </div>
                 </div>
@@ -775,9 +761,9 @@ const SecondStep = () => {
                                 />
                             </div>
                             </div>
-                            <div className="row-zyx" style={{marginBottom: 0}}>                                
-                                <div className="row-zyx col-12" style={{marginBottom: 0}} >
-                                    <div className="row-zyx col-6" style={{marginBottom: 0}}>
+                            <div className="row-zyx" style={{ marginBottom: 0 }}>
+                                <div className="row-zyx col-12" style={{ marginBottom: 0 }} >
+                                    <div className="row-zyx col-6" style={{ marginBottom: 0 }}>
                                         <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex" }}>
                                             {t(langKeys.dueDate)}
                                         </Box>
@@ -885,9 +871,9 @@ const SecondStep = () => {
                                         color: "#50ab54"
                                     }}
                                 >
-                                    <LockIcon style={{height: 60, width: 60}}/>
+                                    <LockIcon style={{ height: 60, width: 60 }} />
                                     <h3>{t(langKeys.safepurchase)}</h3>
-                                    <p>{t(langKeys.finishregwarn2)}</p>                                    
+                                    <p>{t(langKeys.finishregwarn2)}</p>
                                 </div>
                             </div>
                         </div>
@@ -895,80 +881,78 @@ const SecondStep = () => {
                 </div>
             </div>
             <p>{t(langKeys.signupcond1)}</p>
-            
             <div className={classes.containerBorder}>
-                <h3 style={{fontWeight: "bold", marginTop: 0}}>{t(langKeys.signupcond2)}</h3>
-                <p style={{margin:0}}>{t(langKeys.signupcond3)}</p>
-                <div style={{display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between"}}>
-                    <div className={classes.containerBorder} style={{width: 300, cursor: "pointer"}}
-                    onClick={()=>{
-                        let currentval = getValues("recharge.rechargeamount")||0
-                        setValue("recharge.rechargeamount", currentval + 100)
-                    }}>
-                        <h3 style={{fontWeight: "bold", color: "#7721ad", textAlign:"center", margin: 0, fontSize: 25, paddingTop: 10.5}}>$100 USD</h3>
+                <h3 style={{ fontWeight: "bold", marginTop: 0 }}>{t(langKeys.signupcond2)}</h3>
+                <p style={{ margin: 0 }}>{t(langKeys.signupcond3)}</p>
+                <div style={{ display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between" }}>
+                    <div className={classes.containerBorder} style={{ width: 300, cursor: "pointer" }}
+                        onClick={() => {
+                            const currentval = getValues("recharge.rechargeamount") || 0;
+                            setValue("recharge.rechargeamount", parseFloat(`${currentval}`) + 100);
+                        }}>
+                        <h3 style={{ fontWeight: "bold", color: "#7721ad", textAlign: "center", margin: 0, fontSize: 25, paddingTop: 10.5 }}>$100 USD</h3>
                     </div>
-                    <div className={classes.containerBorder} style={{width: 300}}>
-                    <Controller
-                        control={control}
-                        name="recharge.rechargeamount"
-                        render={({ field, formState: { errors } }) => (
-                            <div className="col-12">
-                                <TextField
-                                    {...field}
-                                    error={Boolean(errors?.recharge?.rechargeamount)}
-                                    fullWidth
-                                    style={{ marginTop: 0 }}
-                                    helperText={errors?.recharge?.rechargeamount?.message}
-                                    margin="normal"
-                                    size="small"
-                                    variant="outlined"
-                                    type="number"
-                                    inputProps={{ className: classes.centeredPlaceholder }}
-                                    placeholder="$ 20 USD"
-                                    className={`${classes.noBorder} ${classes.customFontSize}`}
-                                />
-                            </div>
-                        )}
-                        rules={{
-                            validate: (value) => {
-                                if (value) {
-                                    if (value < 20) {
-
-                                        return `${t(langKeys.errorvaluebiggerthan, { value: 20})} `;
+                    <div className={classes.containerBorder} style={{ width: 300 }}>
+                        <Controller
+                            control={control}
+                            name="recharge.rechargeamount"
+                            render={({ field, formState: { errors } }) => (
+                                <div className="col-12">
+                                    <TextField
+                                        {...field}
+                                        error={Boolean(errors?.recharge?.rechargeamount)}
+                                        fullWidth
+                                        style={{ marginTop: 0 }}
+                                        helperText={errors?.recharge?.rechargeamount?.message}
+                                        margin="normal"
+                                        size="small"
+                                        variant="outlined"
+                                        type="number"
+                                        inputProps={{ className: classes.centeredPlaceholder }}
+                                        placeholder="$20 USD"
+                                        className={`${classes.noBorder} ${classes.customFontSize}`}
+                                    />
+                                </div>
+                            )}
+                            rules={{
+                                validate: (value) => {
+                                    if (value) {
+                                        if (value < 20) {
+                                            return `${t(langKeys.errorvaluebiggerthan, { value: 20 })} `;
+                                        }
+                                    } else {
+                                        return `${t(langKeys.field_required)}`;
                                     }
-                                }else{
-                                    return `${t(langKeys.field_required)}`;
-                                }
-                            },
-                        }}
-                    /></div>
+                                },
+                            }}
+                        /></div>
                 </div>
-                <div style={{display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between"}}>
-                    <div style={{width: 300, textAlign: "center", margin:0}}>
-                        <p style={{margin:0}}>{t(langKeys.suggestedamount)}</p>
+                <div style={{ display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between" }}>
+                    <div style={{ width: 300, textAlign: "center", margin: 0 }}>
+                        <p style={{ margin: 0 }}>{t(langKeys.suggestedamount)}</p>
                     </div>
-                    <div style={{width: 300, textAlign: "center", margin:0}}>
-                        <p style={{margin:0}}>{t(langKeys.addminimum)} $20</p>
+                    <div style={{ width: 300, textAlign: "center", margin: 0 }}>
+                        <p style={{ margin: 0 }}>{t(langKeys.addminimum)} $20</p>
                     </div>
                 </div>
             </div>
             <div>
-                <div style={{marginTop: 10,display: "flex", justifyContent: "end"}}>                    
-                    <p style={{fontWeight: "bold", textAlign:"center", margin: 5}}>Sub Total</p>
-                    <div className={classes.containerBorder} style={{width: 150, padding: 5, }}>
-                        <p style={{fontWeight: "bold", textAlign:"center", margin: 0}}>${accounting.subtotal} USD</p>
+                <div style={{ marginTop: 10, display: "flex", justifyContent: "end" }}>
+                    <p style={{ fontWeight: "bold", textAlign: "center", margin: 5 }}>{t(langKeys.subscription_subtotal)}</p>
+                    <div className={classes.containerBorder} style={{ width: 150, padding: 5, }}>
+                        <p style={{ fontWeight: "bold", textAlign: "center", margin: 0 }}>${accounting.subtotal} USD</p>
                     </div>
                 </div>
-                <div style={{marginTop: 10,display: "flex", justifyContent: "end"}}>                    
-                    <p style={{fontWeight: "bold", textAlign:"center", margin: 5}}>{t(langKeys.sutaxes)}</p>
-                    <div className={classes.containerBorder} style={{width: 150, padding: 5, border: "0px solid"}}>
-                        <p style={{fontWeight: "bold", textAlign:"center", margin: 0}}>${accounting.taxes} USD</p>
+                <div style={{ marginTop: 10, display: "flex", justifyContent: "end" }}>
+                    <p style={{ fontWeight: "bold", textAlign: "center", margin: 5 }}>{t(langKeys.subscription_taxes)}</p>
+                    <div className={classes.containerBorder} style={{ width: 150, padding: 5, border: "0px solid" }}>
+                        <p style={{ fontWeight: "bold", textAlign: "center", margin: 0 }}>${accounting.taxes} USD</p>
                     </div>
                 </div>
-                <div style={{marginTop: 10,display: "flex", justifyContent: "end"}}>                    
-                    <p style={{fontWeight: "bold", textAlign:"center", margin: 5}}>Total</p>
-                    <div className={classes.containerBorder} style={{width: 150, padding: 5,}}>
-                        <p style={{fontWeight: "bold", textAlign:"center", margin: 0}}>${accounting.total} USD</p>
+                <div style={{ marginTop: 10, display: "flex", justifyContent: "end" }}>
+                    <p style={{ fontWeight: "bold", textAlign: "center", margin: 5 }}>{t(langKeys.subscription_total)}</p>
+                    <div className={classes.containerBorder} style={{ width: 150, padding: 5, }}>
+                        <p style={{ fontWeight: "bold", textAlign: "center", margin: 0 }}>${accounting.total} USD</p>
                     </div>
                 </div>
             </div>

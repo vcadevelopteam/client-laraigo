@@ -12,7 +12,7 @@ import { useSelector } from "hooks";
 import FacebookIcon from '@material-ui/icons/Facebook';
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin, { GoogleLoginResponse, GoogleLoginResponseOffline } from "react-google-login";
-import { CSSProperties, FC, MouseEvent, useContext, useEffect, useState } from "react";
+import React, { FC, MouseEvent, useContext, useEffect, useState } from "react";
 import { LaraigoLogo } from "icons";
 import { OnlyCheckbox } from "components";
 
@@ -41,7 +41,7 @@ const useChannelAddStyles = makeStyles((theme) => ({
         alignItems: 'center!important',
         fontSize: '14px!important',
         fontStyle: 'normal!important',
-        fontWeight: 600,textTransform: 'none',
+        fontWeight: 600, textTransform: 'none',
         justifyContent: 'center!important',
         width: '100%!important',
         cursor: 'pointer!important',
@@ -182,9 +182,9 @@ const FirstStep: FC = () => {
         if (waitSave) {
             if (!signUpState.loading) {
                 if (signUpState.isvalid) {
-                    if(disableButton){
+                    if (disableButton) {
                         showSnackbar({ message: t(langKeys.mustaccepttermsandconditions), severity: "error", show: true })
-                    }else{
+                    } else {
                         setStep(2);
                     }
                     setWaitSave(false);
@@ -311,13 +311,13 @@ const FirstStep: FC = () => {
         <main>
             <meta name="google-signin-client_id" content={`${apiUrls.GOOGLECLIENTID_LOGIN}`} />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
-            <div className={classes.container}>                
+            <div className={classes.container}>
                 <Container component="main" className={classes.containerSignUp}>
                     <div className={classes.childContainer} style={{ height: '100%' }}>
                         <div className={classes.image}>
                             <LaraigoLogo height={42.8} />
                         </div>
-                        
+
                         <div className={classes.paper} style={{ flex: 1 }}>
                             {showLogin ? (<div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.02rem" }}>
                                 <FacebookLogin
@@ -351,8 +351,8 @@ const FirstStep: FC = () => {
                                     onFailure={onGoogleLoginFailure}
                                     onSuccess={onGoogleLoginSucess}
                                 />
-                                
-                            </div>):(
+
+                            </div>) : (
                                 <CircularProgress />
                             )}
                             <div className={classes.separator} />
@@ -366,7 +366,7 @@ const FirstStep: FC = () => {
                                             error={Boolean(errors.loginusername)}
                                             fullWidth
                                             helperText={errors.loginusername?.message}
-                                            label={t(langKeys.email)+ " *"}
+                                            label={t(langKeys.email) + " *"}
                                             margin="normal"
                                             size="small"
                                             type="email"
@@ -393,7 +393,7 @@ const FirstStep: FC = () => {
                                             error={Boolean(errors.loginpassword)}
                                             fullWidth
                                             helperText={errors.loginpassword?.message}
-                                            label={t(langKeys.password)+ " *"}
+                                            label={t(langKeys.password) + " *"}
                                             margin="normal"
                                             size="small"
                                             type={showPassword ? "text" : "password"}
@@ -439,7 +439,7 @@ const FirstStep: FC = () => {
                                             error={Boolean(errors.loginpasswordrepeat)}
                                             fullWidth
                                             helperText={errors.loginpasswordrepeat?.message}
-                                            label={t(langKeys.confirmpassword)+ " *"}
+                                            label={t(langKeys.confirmpassword) + " *"}
                                             margin="normal"
                                             size="small"
                                             type={showPassword ? "text" : "password"}
@@ -470,10 +470,10 @@ const FirstStep: FC = () => {
                                         },
                                     }}
                                 />
-                                <div style={{fontSize:"11px", color: "#b6b4ba"}}>
+                                <div style={{ fontSize: "11px", color: "#b6b4ba" }}>
                                     {t(langKeys.signupfirststepasscond)}
                                 </div>
-                                <div style={{display:"flex"}}>                                    
+                                <div style={{ display: "flex" }}>
                                     <OnlyCheckbox
                                         label=""
                                         valueDefault={acceptTOS}
@@ -481,7 +481,7 @@ const FirstStep: FC = () => {
                                             setAcceptTOS(value);
                                         }}
                                     />
-                                    <div style={{padding: "10px 5px", fontWeight:"bold", fontSize:"14px" }}>
+                                    <div style={{ padding: "10px 5px", fontWeight: "bold", fontSize: "14px" }}>
                                         {t(langKeys.tos1)}
                                         <a
                                             style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
