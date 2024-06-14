@@ -264,7 +264,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '0px 8px 0px 8px',
         width: 500,
         minWidth: 500,
-        marginBottom: 10
+        marginBottom: 10,
     },
     addCard: {
         display: 'flex',
@@ -1566,21 +1566,46 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         const value = e.target.value;
         const cursorPosition = e.target.selectionStart;
         const insertPosition = cursorPosition - 2;
+        const isDeleting = value.length < getValues('header').length;
 
-        if (value.length > 60) {
+        if (!isDeleting && value.length > 60) {
             e.preventDefault();
             return;
         }
 
-        if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
-            if (!isHeaderVariable) {
-                const header = getValues('header')
-                setIsHeaderVariable(true)
-                setValue('headervariables', [''])
-                setValue('header', header + '{1}}')
-                trigger('headervariables')
-                trigger('header')
-                return;
+        if(value.length === 0) {
+            setValue('header', value);
+            setValue('headervariables', ['']);
+            trigger('header');
+            trigger('headervariables');
+            setIsHeaderVariable(false)
+            return;
+        }
+
+        if(isDeleting) {
+            const variableRegex = /\{\{1\}\}/g;
+            const hasVariable = variableRegex.test(value);
+
+            if (!hasVariable) {
+                setValue('headervariables', ['']);
+                setIsHeaderVariable(false);
+                trigger('headervariables');
+            }
+
+            setValue('header', value);
+            trigger('header');
+            return;
+        } else {
+            if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
+                if (!isHeaderVariable) {
+                    const header = getValues('header')
+                    setIsHeaderVariable(true)
+                    setValue('headervariables', [''])
+                    setValue('header', header + '{1}}')
+                    trigger('headervariables')
+                    trigger('header')
+                    return;
+                }
             }
         }
         
@@ -1735,51 +1760,38 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('bodyvariables');
             return;
         }
-
+        
         if (isDeleting) {
-            const insertPosition = cursorPosition - 2;
-            if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
-                const newValue = value.slice(0, insertPosition) + value.slice(cursorPosition);
-                setValue('body', newValue);
-                const variablesInBody = [];
-                let currentIndex = 0;
-                while (currentIndex < newValue.length) {
-                    if (newValue[currentIndex] === '{' && newValue[currentIndex + 1] === '{') {
-                        let variableNumber = '';
-                        currentIndex += 2; // Avanzar pasando '{{'
-                        while (!isNaN(parseInt(newValue[currentIndex], 10))) {
-                            variableNumber += newValue[currentIndex];
-                            currentIndex++;
-                        }
-                        if (newValue[currentIndex] === '}') {
-                            variablesInBody.push(parseInt(variableNumber, 10));
-                        }
-                    }
-                    currentIndex++;
-                }
-                let updatedBodyVariables = getValues('bodyvariables').filter((variable: Dictionary) => variablesInBody.includes(variable.variable));
-                updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
-                    ...variable,
-                    variable: index + 1,
-                }));
-                setValue('bodyvariables', updatedBodyVariables);
-                trigger('bodyvariables');
+            const variableRegex2 = /\{\{(\d+)\}\}/g;
+            let match;
+            const variablesInBody = [];
 
-                const variableRegex = /\{\{(\d+)\}\}/g;
-                let currentIndexInText = 0;
-                const updatedText = newValue.replace(variableRegex, () => {
-                    const variable = updatedBodyVariables[currentIndexInText];
-                    currentIndexInText++;
-                    return `{{${variable.variable}}}`;
-                });
-                setValue('body', updatedText);
-                trigger('body');
-    
-                setTimeout(() => {
-                    e.target.setSelectionRange(insertPosition, insertPosition);
-                }, 0);
-                return;
+            while ((match = variableRegex2.exec(value)) !== null) {
+                const variableNumber = parseInt(match[1], 10);
+                variablesInBody.push(variableNumber);
             }
+            let updatedBodyVariables = getValues('bodyvariables').filter((variable: Dictionary) => variablesInBody.includes(variable.variable));
+            updatedBodyVariables = updatedBodyVariables.map((variable: Dictionary, index: number) => ({
+                ...variable,
+                variable: index + 1,
+            }));
+            setValue('bodyvariables', updatedBodyVariables);
+            trigger('bodyvariables');
+            const cursorPositionAux = cursorPosition;
+            const variableRegex = /\{\{(\d+)\}\}/g;
+            let currentIndexInText = 0;
+            const updatedText = value.replace(variableRegex, () => {
+                const variable = updatedBodyVariables[currentIndexInText];
+                currentIndexInText++;
+                return `{{${variable.variable}}}`;
+            });
+            setValue('body', updatedText);
+            trigger('body');
+            setPreviousLength(updatedText.length);
+            setTimeout(() => {
+                e.target.setSelectionRange(cursorPositionAux, cursorPositionAux);
+            }, 0);
+            return;
         } else {
             const insertPosition = cursorPosition - 2;
             if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
@@ -1880,56 +1892,42 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('carouseldata');
             return;
         }
-
+        //test
         if (isDeleting) {
-            const insertPosition = cursorPosition - 2;
-            if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
-                const newValue = value.slice(0, insertPosition) + value.slice(cursorPosition);
-                setValue(`carouseldata.${index}.body`, newValue);
+            // Recopilar todas las variables actuales del body
+            const variableRegex2 = /\{\{(\d+)\}\}/g;
+            let match;
+            const variablesInBody = [];
 
-                // Recopilar todas las variables actuales del body
-                const variablesInBody = [];
-                let currentIndex = 0;
-                while (currentIndex < newValue.length) {
-                    if (newValue[currentIndex] === '{' && newValue[currentIndex + 1] === '{') {
-                        let variableNumber = '';
-                        currentIndex += 2; // Avanzar pasando '{{'
-                        while (!isNaN(parseInt(newValue[currentIndex], 10))) {
-                            variableNumber += newValue[currentIndex];
-                            currentIndex++;
-                        }
-                        if (newValue[currentIndex] === '}') {
-                            variablesInBody.push(parseInt(variableNumber, 10));
-                        }
-                    }
-                    currentIndex++;
-                }
-
-                // Filtrar bodyvariables para eliminar las que ya no están presentes en variablesInBody
-                let updatedBodyVariables = getValues(`carouseldata.${index}.bodyvariables`).filter(variable => variablesInBody.includes(variable.variable));
-                updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
-                    ...variable,
-                    variable: index + 1,
-                }));
-                setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
-                trigger('carouseldata');
-
-                // Reemplazar los marcadores especiales '{{*}}' por los valores correspondientes de updatedBodyVariables
-                const variableRegex = /\{\{(\d+)\}\}/g;
-                let currentIndexInText = 0;
-                const updatedText = newValue.replace(variableRegex, () => {
-                    const variable = updatedBodyVariables[currentIndexInText];
-                    currentIndexInText++;
-                    return `{{${variable.variable}}}`;
-                });
-                setValue(`carouseldata.${index}.body`, updatedText);
-                trigger('carouseldata');
-
-                setTimeout(() => {
-                    e.target.setSelectionRange(insertPosition, insertPosition);
-                }, 0);
-                return;
+            while ((match = variableRegex2.exec(value)) !== null) {
+                const variableNumber = parseInt(match[1], 10);
+                variablesInBody.push(variableNumber);
             }
+
+            // Filtrar bodyvariables para eliminar las que ya no están presentes en variablesInBody
+            let updatedBodyVariables = getValues(`carouseldata.${index}.bodyvariables`).filter((variable: Dictionary) => variablesInBody.includes(variable.variable));
+            updatedBodyVariables = updatedBodyVariables.map((variable: Dictionary, index: number) => ({
+                ...variable,
+                variable: index + 1,
+            }));
+            setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
+            trigger('carouseldata');
+            
+            const cursorPositionAux = cursorPosition;
+            const variableRegex = /\{\{(\d+)\}\}/g;
+            let currentIndexInText = 0;
+            const updatedText = value.replace(variableRegex, () => {
+                const variable = updatedBodyVariables[currentIndexInText];
+                currentIndexInText++;
+                return `{{${variable.variable}}}`;
+            });
+            setValue(`carouseldata.${index}.body`, updatedText);
+            trigger('carouseldata');
+
+            setTimeout(() => {
+                e.target.setSelectionRange(cursorPositionAux, cursorPositionAux);
+            }, 0);
+            return;
         } else {
             const insertPosition = cursorPosition - 2;
             if (insertPosition >= 0 && value.slice(insertPosition, cursorPosition) === '{{') {
@@ -2129,6 +2127,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             optionValue="value"
                             valueDefault={getValues("type")}
                             variant="outlined"
+                            size="small"
                         />
                         {getValues("type") === '' && (
                             <div className="col-4">
@@ -3296,13 +3295,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                         id={`fileInput-${index}`}
                                                                         disabled={!isNew}
                                                                     />
-                                                                    <label htmlFor={`fileInput-${index}`} style={{ display: 'flex', justifyContent: 'center', width: '100%'}}>
-                                                                        <div className={classes.uploadedImage} style={{cursor: 'pointer'}}>
-                                                                            <ImageIcon style={{color: '#004DB1', height: 170, width: 'auto'}}/>
-                                                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
-                                                                            <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
-                                                                        </div>
-                                                                    </label>
+                                                                    <div style={{width: '50%'}}>
+                                                                        <label htmlFor={`fileInput-${index}`} style={{ display: 'flex', justifyContent: 'center', width: '100%'}}>
+                                                                            <div className={classes.uploadedImage} style={{cursor: 'pointer', width: '100%'}}>
+                                                                                <ImageIcon style={{color: '#004DB1', height: 170, width: 'auto'}}/>
+                                                                                <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
+                                                                                <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
                                                                 </>
                                                             )}
                                                             <div style={{width: '90%', fontWeight: 'bold'}}>

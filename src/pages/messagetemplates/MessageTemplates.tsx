@@ -111,7 +111,7 @@ const MessageTemplates: FC = () => {
                     if (!row || !row.original || !row.original.createdate) {
                         return null;
                     }
-                    return <div style={{ textAlign: 'center' }}>{dateToLocalDate(row.original.createdate)}</div>;
+                    return <div>{dateToLocalDate(row.original.createdate)}</div>;
                 },
             },
             {
@@ -122,7 +122,7 @@ const MessageTemplates: FC = () => {
                     const { row } = props.cell;
                     const { providerstatus } = row?.original || {};
                     if (providerstatus !== 'REJECTED') {
-                        return <div style={{ textAlign: 'center' }}>{row.id}</div>;
+                        return <div style={{ textAlign: 'left' }}>{row.id}</div>;
                     } else {
                         return '';
                     }
@@ -141,7 +141,7 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.language),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
-                    return <div style={{ textAlign: 'center' }}>{row.original.language.toUpperCase()}</div>;
+                    return <div>{row.original.language.toUpperCase()}</div>;
                 }
             },
             {
