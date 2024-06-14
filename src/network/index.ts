@@ -19,3 +19,4 @@ export * as GptService from './service/gpt';
 export * as DeliveryService from './service/delivery';
 
 export * as LlamaService from './service/llama';
+export * as LlamaService3 from './service/llama3';

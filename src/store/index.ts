@@ -17,6 +17,7 @@ import activationUserReducer, { IState as IActivationUser } from './activationus
 import leadReducer, { IState as ILead } from './lead/reducer';
 import gptReducer, { IState as IGpt } from './gpt/reducer';
 import llamaReducer, { IState as ILlama } from './llama/reducer';
+import llama3Reducer, { IState as ILlama3 } from './llama3/reducer';
 import servicedeskReducer, { IState as IServiceDesk } from './servicedesk/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
 import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
@@ -50,6 +51,7 @@ export interface IRootState {
     activationuser: IActivationUser;
     lead: ILead;
     llama: ILlama;
+    llama3: ILlama3;
     culqi: ICulqi;
     dashboard: IDashboard;
     delivery: IDelivery;
@@ -91,6 +93,7 @@ const rootReducer = combineReducers<IRootState>({
     activationuser: activationUserReducer,
     lead: leadReducer,
     llama: llamaReducer,
+    llama3: llama3Reducer,
     culqi: culqiReducer,
     dashboard: dashboardReducer,
     delivery: deliveryReducer,
