@@ -101,7 +101,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error) {
-            setTemplatesList((multiData?.data?.[5]?.data || []).filter(x => x.type === "HSM"))
+            setTemplatesList((multiData?.data?.[5]?.data || []).filter(x => (x.type === "HSM" && x.templatetype !== "CAROUSEL")))
             setchannelsList((multiData?.data?.[13]?.data || []).filter(e => e.type.includes("WHA")) || [])
         }
     }, [multiData])

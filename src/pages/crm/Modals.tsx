@@ -617,7 +617,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
 
     useEffect(() => {
         if (!outboundData.error && !outboundData.loading) {
-            setChannelList(outboundData?.value?.channels?.filter((x: Dictionary) => x.type.includes(messagetype === "HSM" ? "WHA" : messagetype)) || []);
+            setChannelList(outboundData?.value?.channels?.filter((x: Dictionary) => (x.templatetype !== "CAROUSEL" && x.type.includes(messagetype === "HSM" ? "WHA" : messagetype))) || []);
             setTemplatesList(outboundData?.value?.templates?.filter((x: Dictionary) => messagetype !== "MAIL" ? (x.type === messagetype) : (x.type === messagetype || x.type === "HTML")) || []);
         }
     }, [outboundData, messagetype])
