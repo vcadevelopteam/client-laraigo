@@ -1871,7 +1871,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
-            setTemplatesList(domains?.value?.templates?.filter(x => (type !== "MAIL" ? x.type === type : (x.type === type || x.type === "HTML"))) || []);
+            setTemplatesList(domains?.value?.templates?.filter(x => (x.templatetype !== "CAROUSEL" && (type !== "MAIL" ? x.type === type : (x.type === type || x.type === "HTML")))) || []);
             setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
         }
     }, [domains, type])
