@@ -25,6 +25,7 @@ import { deleteFile } from "store/gpt/actions";
 import { addFile, assignFile, verifyFile } from "store/gpt/actions";
 import { addFileLlama, addFilesLlama, deleteFileLlama } from "store/llama/actions";
 import DeleteIcon from '@material-ui/icons/Delete';
+import { addFilesLlama3 } from "store/llama3/actions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -219,6 +220,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const [waitSaveAssignFile, setWaitSaveAssignFile] = useState(false);
     const executeFiles = useSelector((state) => state.gpt.gptResult);
     const llamaResult = useSelector((state) => state.llama.llamaResult);
+    const llm3Result = useSelector(state => state.llama3.llama3Result);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
     const [waitSaveAddFileLlama, setWaitSaveAddFileLlama] = useState(false)
@@ -360,31 +362,57 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     useEffect(() => {
         if (waitSaveAddFileLlama) {
-            if (!llamaResult.loading && !llamaResult.error) {
-                setWaitSaveAddFileLlama(false);
-                fileAttachments.map(async (file) => {
-                    dispatch(execute(insAssistantAiDoc({
-                        assistantaiid: row?.assistantaiid,
-                        id: 0,
-                        description: file.file_name,
-                        url: file.file_url,
-                        fileid: 'llamatest',
-                        type: 'FILE',
-                        status: 'ACTIVO',
-                        operation: 'INSERT',
-                    })))
-                })
-                setWaitSave(true);
-            } else if (llamaResult.error) {
-                const errormessage = t(llamaResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveAddFileLlama(false);
+            if(conector?.provider === "LaraigoLLM") {
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveAddFileLlama(false);
+                    fileAttachments.map(async (file) => {
+                        dispatch(execute(insAssistantAiDoc({
+                            assistantaiid: row?.assistantaiid,
+                            id: 0,
+                            description: file.file_name,
+                            url: file.file_url,
+                            fileid: 'llamatest',
+                            type: 'FILE',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                        })))
+                    })
+                    setWaitSave(true);
+                } else if (llm3Result.error) {
+                    const errormessage = t(llm3Result.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveAddFileLlama(false);
+                }
+            } else {
+                if (!llamaResult.loading && !llamaResult.error) {
+                    setWaitSaveAddFileLlama(false);
+                    fileAttachments.map(async (file) => {
+                        dispatch(execute(insAssistantAiDoc({
+                            assistantaiid: row?.assistantaiid,
+                            id: 0,
+                            description: file.file_name,
+                            url: file.file_url,
+                            fileid: 'llamatest',
+                            type: 'FILE',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                        })))
+                    })
+                    setWaitSave(true);
+                } else if (llamaResult.error) {
+                    const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveAddFileLlama(false);
+                }
             }
         }
-    }, [llamaResult, waitSaveAddFileLlama]);
+    }, [llamaResult, llm3Result, waitSaveAddFileLlama]);
 
     const handleUploadInNewAssistant = () => {
         setViewSelected('main')
@@ -410,11 +438,20 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             setWaitSaveAddFileLlama(true);
         }
 
+        const callbackLlm3 = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(addFilesLlama3({
+                urls: fileAttachments.map((item: Dictionary) => item.file_url),
+                collection: row?.name
+            }))
+            setWaitSaveAddFileLlama(true);
+        }
+
         dispatch(
             manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
-                callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
+                callback: conector?.provider === 'Open AI' ? callback : conector?.provider === 'LaraigoLLM' ? callbackLlm3 : callbackMeta,
             })
         );
     });

@@ -72,6 +72,13 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         }
     ];
 
+    const llama3basemodels = [
+        {
+            "domainvalue": "llama3:70b-instruct",
+            "domaindesc": "llama3:70b-instruct",
+        }
+    ]
+
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -162,7 +169,8 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     data={
                         conector?.provider === 'Open AI' ? retrievalbasemodels :
                         conector?.provider === 'Meta' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
-                        conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral')) : []
+                        conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral')) :
+                        conector?.provider === 'LaraigoLLM' ? llama3basemodels : []
                     }
                     valueDefault={getValues('basemodel')}
                     onChange={(value) => {

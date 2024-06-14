@@ -24,6 +24,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
 import { deleteThreadLlama, query } from "store/llama/actions";
+import { query3 } from "store/llama3/actions";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -170,6 +171,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const executeResult = useSelector((state) => state.main.execute);
     const executeThreads = useSelector((state) => state.gpt.gptResult);
     const llamaResult = useSelector((state) => state.llama.llamaResult);
+    const llm3Result = useSelector(state => state.llama3.llama3Result);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
@@ -315,35 +317,65 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
 
     useEffect(() => {
         if (waitSaveMessageLlama) {
-            if (!llamaResult.loading && !llamaResult.error) {
-                setWaitSaveMessageLlama(false);
-                if (llamaResult.data && llamaResult.data.result) {
-                    dispatch(execute(insMessageAi({
-                        assistantaiid: row?.assistantaiid,
-                        threadid: activeThreadId,
-                        assistantaidocumentid: 0,
-                        id: 0,
-                        messagetext: llamaResult.data.result,
-                        infosource: '',
-                        type: 'BOT',
-                        status: 'ACTIVO',
-                        operation: 'INSERT',
-                    })));
-                    setWaitSaveMessageLlamaAux(true);
-                } else {
-                    dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
+            if(row?.basemodel.startsWith('llama')) {
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveMessageLlama(false);
+                    if (llm3Result.data && llm3Result.data.result) {
+                        dispatch(execute(insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: activeThreadId,
+                            assistantaidocumentid: 0,
+                            id: 0,
+                            messagetext: llm3Result.data.result,
+                            infosource: '',
+                            type: 'BOT',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                        })));
+                        setWaitSaveMessageLlamaAux(true);
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
+                        setIsLoading(false);
+                    }
+                } else if (llm3Result.error) {
+                    const errormessage = t(llm3Result.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                     setIsLoading(false);
+                    setWaitSaveMessageLlama(false);
                 }
-            } else if (llamaResult.error) {
-                const errormessage = t(llamaResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setIsLoading(false);
-                setWaitSaveMessageLlama(false);
+            } else {
+                if (!llamaResult.loading && !llamaResult.error) {
+                    setWaitSaveMessageLlama(false);
+                    if (llamaResult.data && llamaResult.data.result) {
+                        dispatch(execute(insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: activeThreadId,
+                            assistantaidocumentid: 0,
+                            id: 0,
+                            messagetext: llamaResult.data.result,
+                            infosource: '',
+                            type: 'BOT',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                        })));
+                        setWaitSaveMessageLlamaAux(true);
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
+                        setIsLoading(false);
+                    }
+                } else if (llamaResult.error) {
+                    const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    setIsLoading(false);
+                    setWaitSaveMessageLlama(false);
+                }
             }
         }
-    }, [llamaResult, waitSaveMessageLlama]);
+    }, [llamaResult, llm3Result, waitSaveMessageLlama]);
     
 
     useEffect(() => {
@@ -496,6 +528,41 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         }
     }, [executeResult, waitSaveMessage3]);
 
+    const handleSendMessageLLM3 = async () => {
+        setIsLoading(true);
+        const currentThreadLlamaId = selectedChat?.threadid;
+        dispatch(
+            execute(
+                insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: currentThreadLlamaId,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: messageText,
+                    infosource: '',
+                    type: 'USER',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })
+            )
+        );
+        const message = messageText
+        setMessageText('');
+        fetchThreadMessages(selectedChat?.threadid);
+        dispatch(query3({
+            assistant_name: row?.name,
+            query: message,
+            system_prompt: row?.generalprompt,
+            model: row?.basemodel,
+            thread_id: selectedChat?.code,
+            max_new_tokens: row?.max_tokens,
+            temperature: parseFloat(row?.temperature),
+            top_p: parseFloat(row?.top_p),
+        }))
+        setWaitSaveMessageLlama(true)
+        setActiveThreadId(currentThreadLlamaId);
+    }
+
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
@@ -536,6 +603,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 if(row?.basemodel.startsWith('gpt')) handleSendMessage();
+                else if(row?.basemodel.startsWith('llama')) handleSendMessageLLM3();
                 else handleSendMessageLlama();
             }
         };
@@ -547,7 +615,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         return () => {
             document.removeEventListener('keyup', handleKeyUp);
         };
-    }, [handleSendMessage, handleSendMessageLlama]);
+    }, [handleSendMessage, handleSendMessageLlama, handleSendMessageLLM3]);
 
     const handleDeleteChat = (chat: Dictionary) => {
         const callback = async () => {
@@ -743,6 +811,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                             className={classes.sendicon}
                                             onClick={() => {
                                                 if(row?.basemodel.startsWith('gpt')) handleSendMessage()
+                                                else if(row?.basemodel.startsWith('llama')) handleSendMessageLLM3();
                                                 else handleSendMessageLlama()
                                             }}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
