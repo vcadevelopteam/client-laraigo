@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react'; 
-import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
+import { FieldView, FieldEdit, FieldSelect } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { useForm } from 'react-hook-form';
+import { FormControl } from '@material-ui/core';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
 import TemplatePreview from './components/TemplatePreview';
 import { ModalCampaignSchedule } from './components/ModalCampaignSchedule';
-import IconButton from '@material-ui/core/IconButton';
-import { Event as EventIcon } from '@material-ui/icons';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -216,8 +214,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
     const [openModal, setOpenModal] = useState(false);
 
-
     //console.log('Trae todos los templates, incluid tipo sms', dataMessageTemplate)
+    const initialBatchjson = { date: '', time: '', quantity: 1 };
 
     const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
@@ -248,7 +246,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatelanguage: '',
             messagetemplatepriority: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
-            batchjson: detaildata?.batchjson?.[0] || { date: '', time: '', quantity: 0 },
+            batchjson: detaildata?.batchjson?.[0] || initialBatchjson,
             carouseljson: [],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
@@ -328,10 +326,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        if(groupObligatory){
+        if (groupObligatory) {
             register('usergroup', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         }
     }, [edit, register, multiData, groupObligatory]);
+    
 
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
@@ -442,10 +441,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const onChangeGroup = (data: Dictionary) => {
         setValue('usergroup', data?.domainvalue || '');
+        trigger('usergroup');
     }
 
     const onChangeStatus = (data: Dictionary) => {
         setValue('status', data?.domainvalue || '');
+        trigger('status');
     }
 
     const filterDataSource = () => {
@@ -555,10 +556,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
 
-  
-
-
-
+    const classNameCondition = edit && getValues('executiontype') === 'SCHEDULED' ? 'col-12' : 'col-6'
 
     return (
         <React.Fragment>
@@ -575,7 +573,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 variant="outlined"
                                 className="col-12"
                                 valueDefault={getValues('title')}
-                                onChange={(value) => setValue('title', value)}
+                                onChange={(value) => {
+                                    setValue('title', value);
+                                    trigger('title'); 
+                                }}
+                                onBlur={() => trigger('title')} 
                                 error={errors?.title?.message}
                             />                   
                         </FormControl>                                          
@@ -595,7 +597,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             variant="outlined"                 
                             className="col-12"
                             valueDefault={getValues('description')}
-                            onChange={(value) => setValue('description', value)}
+                            onChange={(value) => {
+                                setValue('description', value);
+                                trigger('description'); 
+                            }}
+                            onBlur={() => trigger('description')} 
                             error={errors?.description?.message}
                         />               
                     </FormControl>  
@@ -618,7 +624,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 type="date"                               
                                 className="col-6"
                                 valueDefault={getValues('startdate')}
-                                onChange={(value) => setValue('startdate', value)}
+                                onChange={(value) => {
+                                    setValue('startdate', value);
+                                    trigger('startdate'); 
+                                }}
+                                onBlur={() => trigger('startdate')} 
                                 error={errors?.startdate?.message}
                             />      
                         </FormControl>                         
@@ -638,7 +648,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 type="date"                            
                                 className="col-6"
                                 valueDefault={getValues('enddate')}
-                                onChange={(value) => setValue('enddate', value)}
+                                onChange={(value) => {
+                                    setValue('enddate', value);
+                                    trigger('enddate'); 
+                                }}
+                                onBlur={() => trigger('enddate')} 
                                 error={errors?.enddate?.message}
                             />         
                         </FormControl>                          
@@ -658,7 +672,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 uset={true}                            
                                 className="col-12"
                                 valueDefault={getValues('source')}
-                                onChange={onChangeSource}
+                                onChange={onChangeSource}                                
                                 error={errors?.source?.message}
                                 data={filterDataSource()}
                                 optionDesc="value"
@@ -673,22 +687,87 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                     {edit ?
-                        <FormControl className="col-6" >                       
-                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.executiontype)} </div>
-                            <div className={classes.subtitle}> {t(langKeys.campaign_executiontype_desc)} </div>
-                            <FieldSelect
-                                variant="outlined"       
-                                uset={true}
-                                className={classes.flexgrow1}
-                                valueDefault={getValues('executiontype')}
-                                onChange={onChangeExecutionType}
-                                error={errors?.executiontype?.message}
-                                data={dictToArrayKV(dataExecutionType)}
-                                optionDesc="value"
-                                optionValue="key"
-                            />                              
-                                                   
-                        </FormControl>
+                       <>
+                        <div className="row-zyx">
+                            <FormControl className="col-6" >                       
+                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.executiontype)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_executiontype_desc)} </div>
+                                <FieldSelect
+                                    variant="outlined"       
+                                    uset={true}                                   
+                                    className={classes.flexgrow1}
+                                    valueDefault={getValues('executiontype')}
+                                    onChange={onChangeExecutionType}
+                                    error={errors?.executiontype?.message}
+                                    data={dictToArrayKV(dataExecutionType)}
+                                    optionDesc="value"
+                                    optionValue="key"
+                                />                              
+                                                    
+                            </FormControl>
+                            {edit && getValues('executiontype') === 'SCHEDULED' &&                               
+                                <>
+                                    <FormControl className="col-3">                          
+                                        <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.date)} </div>
+                                        <div className={classes.subtitle}> {t(langKeys.campaign_execution_date)} </div>
+                                        <FieldEdit   
+                                            variant="outlined"                 
+                                            type="date"                               
+                                            className="col-6"
+                                            valueDefault={getValues('batchjson.date')}
+                                            onChange={(value) => {
+                                                const batchjson = getValues('batchjson') || {};
+                                                batchjson.date = value;
+                                                setValue('batchjson', batchjson);
+                                            }}
+                                            error={errors?.batchjson?.date?.message}
+                                        />      
+                                    </FormControl>                      
+                                                                                    
+                                    <FormControl className="col-3">                          
+                                        <div className={classes.title}> {t(langKeys.hour)} </div>
+                                        <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
+                                        <FieldEdit   
+                                            variant="outlined"                 
+                                            type="time"                            
+                                            className="col-6"
+                                            valueDefault={getValues('batchjson.time')}
+                                            onChange={(value) => {
+                                                const batchjson = getValues('batchjson') || {};
+                                                batchjson.time = value;
+                                                setValue('batchjson', batchjson);
+                                                trigger('batchjson.time');
+                                            }}
+                                            error={errors?.batchjson?.time?.message}
+                                        />         
+                                    </FormControl>  
+                                </>                              
+                            }
+                             {edit ?
+                                <FormControl className={classNameCondition}>
+                                    <div style={{ fontSize: '1rem', color: 'black' }}>{t(langKeys.group)}</div>
+                                    <div className={classes.subtitle}>{t(langKeys.campaign_group_desc)}</div>
+                                    <FieldSelect
+                                        variant="outlined"
+                                        className={classNameCondition}
+                                        valueDefault={getValues('usergroup')}
+                                        onChange={onChangeGroup}
+                                        onBlur={() => trigger('usergroup')}
+                                        error={errors?.usergroup?.message}
+                                        data={dataGroup}
+                                        optionDesc="domaindesc"
+                                        optionValue="domainvalue"
+                                    />
+                                </FormControl>                    
+                                :
+                                <FieldView
+                                    label={t(langKeys.group)}
+                                    value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
+                                    className={classNameCondition}
+                                />
+                            }
+                            </div>
+                       </>
                         :
                         <FieldView
                             label={t(langKeys.executiontype)}
@@ -697,85 +776,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
 
-                    {edit && getValues('executiontype') === 'SCHEDULED' &&
-                        <div className="row-zyx">
-                            <FormControl className="col-3">                          
-                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.date)} </div>
-                                <div className={classes.subtitle}> {t(langKeys.campaign_execution_date)} </div>
-                                <FieldEdit   
-                                    variant="outlined"                 
-                                    type="date"                               
-                                    className="col-6"
-                                    valueDefault={getValues('batchjson.date')}
-                                    onChange={(value) => {
-                                        const batchjson = getValues('batchjson') || {};
-                                        batchjson.date = value;
-                                        setValue('batchjson', batchjson);
-                                    }}
-                                    error={errors?.batchjson?.date?.message}
-                                />      
-                            </FormControl>                      
-                                                                            
-                            <FormControl className="col-3">                          
-                                <div className={classes.title}> {t(langKeys.hour)} </div>
-                                <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
-                                <FieldEdit   
-                                    variant="outlined"                 
-                                    type="time"                            
-                                    className="col-6"
-                                    valueDefault={getValues('batchjson.time')}
-                                    onChange={(value) => {
-                                        const batchjson = getValues('batchjson') || {};
-                                        batchjson.time = value;
-                                        setValue('batchjson', batchjson);
-                                    }}
-                                    error={errors?.batchjson?.time?.message}
-                                />         
-                            </FormControl>  
-
-                            <FormControl className="col-3">                          
-                                <div className={classes.title}> {t(langKeys.quantity)} </div>
-                                <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
-                                <FieldEdit   
-                                    variant="outlined"                 
-                                    type="number"                       
-                                    className="col-4"
-                                    valueDefault={getValues('batchjson.quantity')}
-                                    onChange={(value) => {
-                                        const batchjson = getValues('batchjson') || {};
-                                        batchjson.quantity = parseInt(value, 10);
-                                        setValue('batchjson', batchjson);
-                                    }}
-                                    error={errors?.batchjson?.quantity?.message}
-                                    inputProps={{ min: 0, step: 1 }}
-                                />         
-                            </FormControl> 
-                        </div>
-                    }
-
+                   
                     
-                    {edit ?
-                        <FormControl className="col-6" >                      
-                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.group)} </div>
-                            <div className={classes.subtitle}> {t(langKeys.campaign_group_desc)} </div>                           
-                            <FieldSelect
-                                variant="outlined"       
-                                className="col-6"
-                                valueDefault={getValues('usergroup')}
-                                onChange={onChangeGroup}
-                                error={errors?.usergroup?.message}
-                                data={dataGroup}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                        </FormControl>                       
-                        :
-                        <FieldView
-                            label={t(langKeys.group)}
-                            value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
-                            className="col-6"
-                        />
-                    }
+                   
                 </div>
                 <div className="row-zyx">
                     {edit ?
@@ -788,6 +791,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 valueDefault={getValues('communicationchannelid') as any}
                                 disabled={!getValues('isnew')}
                                 onChange={onChangeChannel}
+                                onBlur={() => trigger('communicationchannelid')}
                                 error={errors?.communicationchannelid?.message}
                                 data={dataChannel}
                                 optionDesc="communicationchanneldesc"
@@ -805,7 +809,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 {['HSM'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
-                            <FormControl className="col-6" >                     
+                            <FormControl className="col-12" >                     
                                 <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetemplate)} </div>
                                 <div className={classes.subtitle}> {t(langKeys.campaign_comunicationtemplate_desc)} </div>
                                 <FieldSelect
@@ -828,37 +832,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <FieldView
                                 label={t(langKeys.messagetemplate)}
                                 value={dataMessageTemplate.filter(d => d.id === row?.messagetemplateid)[0].name || ""}
-                                className="col-6"
+                                className="col-12"
                             />
                         }
-                        {edit ?
-                            <FormControl className="col-6" >                       
-                            
-                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.namespace)} </div>
-                                <div className={classes.subtitle}> {t(langKeys.campaign_comunicationtemplate_desc)} </div>
-                            
-                                <FieldEdit
-                                    fregister={{
-                                        ...register(`messagetemplatenamespace`, {
-                                            validate: (value: any) => (getValues('type') !== 'HSM' ? true : value && value.length) || t(langKeys.field_required)
-                                        })
-                                    }}
-                                    variant="outlined"      
-                                    className="col-6"
-                                    valueDefault={getValues('messagetemplatenamespace')}
-                                    onChange={(value) => setValue('messagetemplatenamespace', value)}
-                                    disabled={!getValues('isnew') || getValues('messagetemplateid') !== 0}
-                                    error={errors?.messagetemplatenamespace?.message}
-                                />
-                            </FormControl>  
-                        
-                            :
-                            <FieldView
-                                label={t(langKeys.namespace)}
-                                value={row?.messagetemplatenamespace || ""}
-                                className="col-4"
-                            />
-                        }
+                       
                     </div>
                     : null}
                 {['SMS', 'MAIL'].includes(getValues('type')) ?
@@ -902,6 +879,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 variant="outlined"    
                                 valueDefault={getValues('status')}
                                 onChange={onChangeStatus}
+                                onBlur={() => trigger('usergroup')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
