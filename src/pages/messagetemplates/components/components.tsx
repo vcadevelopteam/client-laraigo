@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { Button, Menu, MenuItem, Tooltip, makeStyles } from "@material-ui/core";
+import { Button, IconButton, Menu, MenuItem, Tooltip, makeStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Dictionary } from "@types";
@@ -13,8 +13,8 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ListIcon from '@material-ui/icons/List';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import ClearIcon from "@material-ui/icons/Clear";
 import NoImage from '../../../icons/noimage.jpg'
-import AllButtonsDialog from "../dialogs/AllButtonsDialog";
 
 const useStyles = makeStyles(() => ({
     main: {
@@ -120,6 +120,15 @@ const useStyles = makeStyles(() => ({
         borderTop: '1px solid #DDDDDD',
         gap: 6,
     },
+    cardButtonModal2: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        color: '#009C8F',
+        borderTop: '1px solid #DDDDDD',
+        gap: 6,
+    },
     icon: {
         color: '#009C8F'
     },
@@ -148,6 +157,30 @@ const useStyles = makeStyles(() => ({
         borderRadius: 5,
         padding: 10,
         gap: 10,
+    },
+    btntext: {
+        flexGrow: 1,
+        textAlign: "center",
+    },
+    dialog: {
+        width: '30%',
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: 'white',
+        padding: 20,
+        border: '1px solid #C7C7C7',
+        borderRadius: 4,
+    },
+    headerStyle: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    title: {
+        flexGrow: 1,
+        textAlign: "center",
+        fontSize: 17,
+        fontWeight: "bold",
     },
 }));
 
@@ -363,7 +396,7 @@ interface MessagePreviewMultimediaProps {
 
 export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink }) => {
     const classes = useStyles();
-    const [openModal, setOpenModal] = useState(false);
+    const [showAllButtons, setShowAllButtons] = useState(false)
     const combinedButtons = [
         ...buttonstext.map(text => ({ type: 'text', text: text })),
         ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
@@ -442,8 +475,8 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
 
     return (
         <>
-            <div className={classes.messagePrevContainer}>
-                <div className={classes.container} style={{ width: 350 }}>
+            <div className={classes.messagePrevContainer} style={{display: 'flex', flexDirection: 'row', gap: 20}}>
+                <div className={classes.container} style={{ width: 350, height: 'fit-content' }}>
                     <div className={classes.messageCard}>
                         {headerType === 'TEXT' ? (
                             <span className={classes.headerText}>{getFormattedHeader()}</span>
@@ -491,6 +524,9 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                                     case 'PHONE':
                                         icon = <PhoneIcon className={classes.icon} />;
                                         break;
+                                    case 'PHONE_NUMBER':
+                                        icon = <PhoneIcon className={classes.icon} />;
+                                        break;
                                     default:
                                         icon = null;
                                 }
@@ -506,7 +542,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                                 );
                             })}
                             {combinedButtons.length > 3 && (
-                                <div className={classes.cardButton2} style={{cursor: 'pointer'}} onClick={() => setOpenModal(true)}>
+                                <div className={classes.cardButton2} style={{cursor: 'pointer'}} onClick={() => setShowAllButtons(true)}>
                                     <ListIcon className={classes.icon} />
                                     <span>See all options</span>
                                 </div>
@@ -514,8 +550,46 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                         </div>
                     </div>
                 </div>
+                {showAllButtons && (
+                    <div className={classes.dialog}>
+                        <div className={classes.headerStyle}>
+                            <IconButton onClick={() => setShowAllButtons(false)}>
+                                <ClearIcon/>
+                            </IconButton>
+                            <span className={classes.title}>All Options</span>
+                        </div>
+                        <div>
+                            {combinedButtons.map((btn: Dictionary, index: number) => {
+                                let icon;
+                                switch (btn.type) {
+                                    case 'text':
+                                        icon = <ReplyIcon className={classes.icon} />;
+                                        break;
+                                    case 'URL':
+                                        icon = <OpenInNewIcon className={classes.icon} />;
+                                        break;
+                                    case 'PHONE':
+                                        icon = <PhoneIcon className={classes.icon} />;
+                                        break;
+                                    case 'PHONE_NUMBER':
+                                        icon = <PhoneIcon className={classes.icon} />;
+                                        break;
+                                    default:
+                                        icon = null;
+                                }
+                                return (
+                                    <div key={index}>
+                                        <div className={index === combinedButtons.length - 1 ? classes.cardButtonModal2 : classes.cardButton}>
+                                            {icon}
+                                            <span className={classes.btntext}>{btn.text}</span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
-            <AllButtonsDialog openModal={openModal} setOpenModal={setOpenModal} buttons={combinedButtons}/>
         </>
     );
 };
