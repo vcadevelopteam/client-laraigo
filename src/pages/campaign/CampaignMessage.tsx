@@ -85,7 +85,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [variableValues, setVariableValues] = useState<Dictionary>({});
     const headers = jsonPersons.length > 0 ? Object.keys(jsonPersons[0]) : [];
     const [selectedHeader, setSelectedHeader] = useState<string | null>(null);
-    const [selectedHeaders, setSelectedHeaders] = useState<{ [key: number]: string }>({});
+    const [selectedHeaders, setSelectedHeaders] = useState<{ [key: string]: string }>({});
     const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
     const [additionalVariableValues, setAdditionalVariableValues] = useState<Dictionary>({});
     const [selectedAdditionalHeaders, setSelectedAdditionalHeaders] = useState<{ [key: number]: string }>({});
@@ -175,6 +175,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };
     
     
+    
       
     const updateTemplate = useCallback(() => {
     
@@ -227,7 +228,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             }
         });       
-        //console.log('updateTemplate - final updatedTemplate:', updatedTemplate);    
+        console.log('updateTemplate - final updatedTemplate:', updatedTemplate);    
 
         setFilledTemplate(updatedTemplate);
         setDetaildata(prev => ({
@@ -256,7 +257,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     uset={true}
                     className="col-12"
                     data={headers
-                        .filter(header => header !== selectedHeader)
+                        .filter(header => !Object.values(selectedHeaders).includes(header))
                         .map(header => ({ key: header, value: header }))}
                     optionDesc="value"
                     optionValue="key"
@@ -360,7 +361,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     uset={true}
                                     label='Campos archivo'
                                     className="col-12"
-                                    data={headers.map(header => ({ key: header, value: header }))}
+                                    data={headers
+                                        .filter(header => !Object.values(selectedHeaders).includes(header))
+                                        .map(header => ({ key: header, value: header }))}
                                     optionDesc="value"
                                     optionValue="key"
                                     valueDefault={selectedHeader ? { key: selectedHeader, value: selectedHeader } : undefined}
@@ -393,7 +396,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             uset={true}
                                             className="col-12"
                                             data={headers
-                                                .filter(header => header !== selectedHeader)
+                                                .filter(header => !Object.values(selectedHeaders).includes(header))
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
                                             optionValue="key"
@@ -413,7 +416,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             uset={true}
                                             className="col-12"
                                             data={headers
-                                                .filter(header => header !== selectedHeader)
+                                                .filter(header => !Object.values(selectedHeaders).includes(header))
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
                                             optionValue="key"
@@ -434,7 +437,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 uset={true}
                                                 className="col-12"
                                                 data={headers
-                                                    .filter(header => header !== selectedHeader)
+                                                    .filter(header => !Object.values(selectedHeaders).includes(header))
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
                                                 optionValue="key"
@@ -455,7 +458,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             uset={true}
                                             className="col-12"
                                             data={headers
-                                                .filter(header => header !== selectedHeader)
+                                                .filter(header => !Object.values(selectedHeaders).includes(header))
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
                                             optionValue="key"
@@ -476,7 +479,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 uset={true}
                                                 className="col-12"
                                                 data={headers
-                                                    .filter(header => header !== selectedHeader)
+                                                    .filter(header => !Object.values(selectedHeaders).includes(header))
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
                                                 optionValue="key"
@@ -514,7 +517,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 uset={true}
                                                 className="col-12"
                                                 data={headers
-                                                    .filter(header => !Object.values(selectedHeaders).includes(header) && !Object.values(selectedAdditionalHeaders).includes(header))
+                                                    .filter(header => !Object.values(selectedHeaders).includes(header))
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
                                                 optionValue="key"

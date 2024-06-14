@@ -105,6 +105,13 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
 
     useEffect(() => {
+        if (jsonPersons) {
+            console.log('jsonPersons in CampaignDetail:', jsonPersons);
+        }
+    }, [jsonPersons]);
+    
+
+    useEffect(() => {
         if (row !== null) {
             dispatch(getMultiCollection([
                 getValuesFromDomain("ESTADOGENERICO"),
@@ -436,8 +443,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }, []);
                 break;
             case 'EXTERNAL':
-                campaignMemberList = detaildata.person?.reduce((ap, p) => {
-                    ap.push({
+                campaignMemberList = detaildata.jsonData?.map((p) => {
+                    return {
                         id: 0,
                         personid: 0,
                         personcommunicationchannel: '',
@@ -462,11 +469,11 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         field15: p[Object.keys(p)[14]] || '',
                         batchindex: 0,
                         operation: detaildata.operation
-                    })
-                    return ap;
-                }, []);
+                    };
+                });
                 break;
-            case 'PERSON': case 'LEAD':
+            case 'PERSON':
+            case 'LEAD':
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                     campaignMemberList = detaildata.person?.reduce((ap, p) => {
                         ap.push({
@@ -559,15 +566,26 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         setCampaignMembers(campaignMemberList);
         setSave('SUBMIT');
     }
+    
+    useEffect(() => {
+        if (detaildata.source === 'EXTERNAL' && detaildata.jsonData) {
+            setJsonPersons(detaildata.jsonData);
+            buildingMembers(); 
+        }
+    }, [detaildata.jsonData]);
+    
 
     const saveCampaign = (data: any) => {
-        //console.log('saveCampaign - data:', data);
         dispatch(execute(insCampaign({...data})));
     };
-    const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
-        header: null,
-        detail: [...data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }))]
-    }, true));
+    
+    const saveCampaignMembers = (data: any, campaignid: number) => {
+        const membersData = data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }));
+        return dispatch(execute({
+            header: null,
+            detail: membersData
+        }, true));
+    }
 
     const onSubmit = () => {
         const callback = () => {

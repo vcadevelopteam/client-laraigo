@@ -8,7 +8,7 @@ import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
+import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate, uploadExcel } from 'common/helpers';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
@@ -183,8 +183,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     
         return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
     };
-
-    //console.log('Nuestro jsonData', jsonData)
 
     const adjustAndDownloadExcel = async (url: string) => {
         const descriptionsMap: { [key: string]: string } = {
@@ -465,91 +463,15 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
 
     // External Data Logic //
-    const handleUpload = (files: FileList | null) => {
-        if (!files || files.length === 0) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
-            return;
-        }
-    
+    const handleUpload = async (files: any) => {
         const file = files[0];
-        if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: "Archivo inválido, solo se permiten archivos Excel" }));
-            return;
+        const data = await uploadExcel(file);
+        setvaluefile('');
+        if (data) {
+            uploadData(data);
         }
-    
-        const reader = new FileReader();
-    
-        reader.onload = (e) => {
-            const data = e.target?.result;
-            if (!data) return;
-    
-            const workbook = XLSX.read(data, { type: 'binary' });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const json = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1 });
-    
-            let headers: string[];
-            let rows: string[][];
-            if (json[0][0].startsWith('|Obligatorio|') && json[1][0] === 'Destinatarios') {
-                headers = json[1] as string[];
-                rows = json.slice(2);
-            } else if (json[0][0] === 'Destinatarios') {
-                headers = json[0] as string[];
-                rows = json.slice(1);
-            } else {
-                dispatch(showSnackbar({ show: true, severity: "error", message: "Formato de archivo incorrecto" }));
-                return;
-            }
-    
-            const filteredRows = rows.filter(row => {
-                return headers.every((header, index) => row[index] !== undefined && row[index] !== null && row[index] !== '');
-            });
-    
-            const uniqueRows: { [key: string]: boolean } = {};
-            const deduplicatedRows: string[][] = [];
-            let duplicatesFound = false;
-    
-            filteredRows.forEach(row => {
-                const rowString = JSON.stringify(row);
-                if (!uniqueRows[rowString]) {
-                    uniqueRows[rowString] = true;
-                    deduplicatedRows.push(row);
-                } else {
-                    duplicatesFound = true;
-                }
-            });
-    
-            if (duplicatesFound) {
-                dispatch(showSnackbar({ show: true, severity: "warning", message: "Se encontraron filas duplicadas y se eliminaron." }));
-            }
-    
-            const processedData = deduplicatedRows.map(row => {
-                const obj: { [key: string]: any } = {};
-                headers.forEach((header: string, index: number) => {
-                    obj[header] = row[index];
-                });
-                return obj;
-            });
-    
-            setJsonData(processedData);
-            setJsonPersons(processedData); 
-    
-            setColumnList(headers);
-            setSelectedColumns({
-                primarykey: headers[0],
-                columns: headers.slice(1),
-            } as SelectedColumns);
-    
-            setHeaders(headers.map(c => ({
-                Header: c,
-                accessor: c
-            })));
-        };
-    
-        reader.readAsBinaryString(file);
-    };
-    
-    
+    }
+
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
@@ -560,48 +482,54 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.too_many_records) }));
             return null;
         }
-        let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
-        let newHeaders = Object.keys(data[0]);
+    
+        const actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
+        const newHeaders = Object.keys(data[0]);
         if (actualHeaders) {
             if (!actualHeaders.every(h => newHeaders?.includes(h))) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_incompatbile_with_previous_one) }));
                 return null;
             }
         }
-        // Set only new records
+    
         setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
-        // Set actual headers or new headers
-        let localColumnList = actualHeaders ? actualHeaders : newHeaders;
+    
+        const localColumnList = actualHeaders ? actualHeaders : newHeaders;
         setColumnList(localColumnList);
-        // Backup of columns if user cancel modal
-        setSelectedColumnsBackup({ ...selectedColumns });
-        // Initialize primary key
-        let localSelectedColumns = { ...selectedColumns };
-        if (!localColumnList.includes(localSelectedColumns.primarykey)) {
-            localSelectedColumns = { ...localSelectedColumns, primarykey: '' };
-        }
-        // Initialize selected column booleans
-        if (selectedColumns.columns.length === 0) {
-            localSelectedColumns = { ...localSelectedColumns, column: new Array(localColumnList.length).fill(false) };
-        }
-        // Code for reuse campaign
-        else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
-            // Asign [true, false] if columns has new order
-            // Asign columns that exist
-            localSelectedColumns = {
-                ...localSelectedColumns,
-                column: localColumnList.map(c => localSelectedColumns.columns.includes(c)),
-                columns: localColumnList.reduce((ac: any, c: any) => {
-                    if (localSelectedColumns.columns.includes(c)) {
-                        ac.push(c);
-                    }
-                    return ac;
-                }, [])
-            };
-        }
+    
+        const primarykey = localColumnList[0];
+        const columns = localColumnList.slice(1);
+    
+        const localSelectedColumns = {
+            primarykey,
+            column: columns.map(() => true),
+            columns: columns
+        };
+        
         setSelectedColumns(localSelectedColumns);
-        setOpenModal(true);
+        setJsonData(data);
+        setJsonPersons(data);
+    
+        setHeaders(localColumnList.map(c => ({
+            Header: c,
+            accessor: c
+        })));
+    
+        setDetaildata({
+            ...detaildata,
+            headers: localColumnList.map(c => ({
+                Header: c,
+                accessor: c
+            })),
+            jsonData: data,
+            selectedColumns: localSelectedColumns,
+        });
     }
+    
+
+
+    
+    
 
     const cleanData = () => {
         setJsonData([]);
@@ -634,7 +562,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     const handleSaveModal = () => {
         if (selectedColumns.primarykey !== '') {
-            let columns = columnList.reduce((h: string[], c: string, i: number) => {
+            const columns = columnList.reduce((h: string[], c: string, i: number) => {
                 if (c !== selectedColumns.primarykey && selectedColumns.column[i]) {
                     h.push(c);
                 }
@@ -647,7 +575,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     ...columns
                 ]))
             )
-            let jsondatadata = [
+            const jsondatadata = [
                 ...JSON.parse(JSON.stringify(jsonData,
                     [
                         selectedColumns.primarykey,
@@ -662,11 +590,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     ]))
             ];
             setJsonData(jsondatadata);
-            // Changing field(n) with new order
+        
             let message: string = detaildata.message || '';
             if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
                 detaildata.fields?.columns.forEach((c: string, i: number) => {
-                    let newi = selectedColumns.columns.findIndex(cs => cs === c);
+                    const newi = selectedColumns.columns.findIndex(cs => cs === c);
                     if (newi === -1) {
                         message = message?.replace(`{{${c}}}`, `{{${i + 1}}}`);
                         message = message?.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
@@ -707,8 +635,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             return headers;
         }
     };
-    // External Data Logic //
 
+    // External Data Logic //
     const changeStep = (step) => {
         switch (detaildata.source) {
             case 'INTERNAL':
@@ -878,8 +806,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             data={jsonData}
                             totalrow={totalrow}
                             pageCount={pageCount}
+                            filterGeneral={false}
                             loading={paginatedAuxResult.loading}
-                            filterrange={true}
                             FiltersElement={<></>}
                             ButtonsElement={() => <>
                                 <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
@@ -899,7 +827,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             data={jsonData}
                             download={false}
                             loading={detaildata.source === 'INTERNAL' && auxResult.loading}
-                            filterGeneral={true}
+                            filterGeneral={false}
                             ButtonsElement={AdditionalButtons}
                             useSelection={true}
                             selectionKey={selectionKey}
