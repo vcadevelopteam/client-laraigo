@@ -4230,7 +4230,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   messagingpackages: 'Recarga de Saldo',
   transactiondate: 'Fecha de Transacción',
-  transactionmessagetype: 'Tipo de Mensaje',
+  transactionmessagetype: 'Tipo de Consumo',
   transactionreference: 'Referencia',
   transactionbalance: 'Saldo',
   purchasemode: "Modalidad compra",

@@ -4345,7 +4345,7 @@ const translation: LangKeys = {
 
   messagingpackages: 'Balance Recharge',
   transactiondate: 'Transaction Date',
-  transactionmessagetype: 'Message Type',
+  transactionmessagetype: 'Consumption Type',
   transactionreference: 'Reference',
   transactionbalance: 'Balance',
   purchasemode: "Purchase mode",
