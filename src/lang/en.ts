@@ -6300,6 +6300,10 @@ const translation: LangKeys = {
   subscription_subtotal: "Sub Total",
   subscription_taxes: "Taxes",
   subscription_total: "Total",
+  propertyshowstartscreen: "Flag to enable/disable the starting Onboarding screen",
+  propertyhabilitarnotificacion_recarga: "Flag to enable/disable the recharge alert notification",
+  propertysaldonotificación_recarga: "Balance recharge that must remain to show the alert notification",
+  propertymensajenotificacion_recarga: "Message that will be shown in the recharge alert notifications",
 };
 
 const enResource: ResourceLanguage = {

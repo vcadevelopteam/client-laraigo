@@ -6248,6 +6248,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   subscription_subtotal: "Sub Total",
   subscription_taxes: "Impuestos",
   subscription_total: "Total",
+  propertyshowstartscreen: "Flag para habilitar/deshabilitar la pantalla de inicio de Onboarding",
+  propertyhabilitarnotificacion_recarga: "Flag para habilitar/deshabilitar la notificación de aviso de recarga",
+  propertysaldonotificación_recarga: "Saldo que debe quedar de recarga para mostrar notificación de aviso",
+  propertymensajenotificacion_recarga: "Mensaje que debe mostrarse en notificaciones para alerta de recarga",
 };
 
 const esResource: ResourceLanguage = {

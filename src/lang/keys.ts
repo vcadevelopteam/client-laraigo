@@ -6246,6 +6246,10 @@ export const langKeys = {
   subscription_subtotal: "subscription_subtotal",
   subscription_taxes: "subscription_taxes",
   subscription_total: "subscription_total",
+  propertyshowstartscreen: "propertyshowstartscreen",
+  propertyhabilitarnotificacion_recarga: "propertyhabilitarnotificacion_recarga",
+  propertysaldonotificación_recarga: "propertysaldonotificación_recarga",
+  propertymensajenotificacion_recarga: "propertymensajenotificacion_recarga",
 };
 
 export type LangKeys = typeof langKeys;

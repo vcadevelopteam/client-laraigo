@@ -1,6 +1,5 @@
 import React, { FC, useState, useEffect } from "react";
-import { createStyles, IconButton, makeStyles, Paper, Theme } from "@material-ui/core";
-import IOSSwitch from "components/fields/IOSSwitch";
+import { createStyles, IconButton, makeStyles, Paper } from "@material-ui/core";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from 'hooks';
@@ -14,7 +13,7 @@ import { manageStatusVox } from "store/voximplant/actions";
 import { useHistory } from "react-router-dom";
 import paths from "common/constants/paths";
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
     createStyles({
         root: {
             backgroundColor: '#F9F9FA', padding: '10px 12px', display: 'flex', height: 42
@@ -31,6 +30,7 @@ const DialogReasonsDisconnection: React.FC<{
 }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+
     const userConnected = useSelector(state => state.inbox.userConnected);
     const domains = useSelector(state => state.login.validateToken.user?.domains);
     const voxiConnection = useSelector(state => state.voximplant.connection);
@@ -100,32 +100,9 @@ const DialogReasonsDisconnection: React.FC<{
 
 const AccountBalance: FC = () => {
     const classes = useStyles();
-    const dispatch = useDispatch();
-    const userConnected = useSelector(state => state.inbox.userConnected);
     const [openDialog, setOpenDialog] = useState(false);
-    const voxiConnection = useSelector(state => state.voximplant.connection);
     const history = useHistory();
     const user = useSelector(state => state.login.validateToken.user);
-
-    const onChecked = () => {
-        if (userConnected) {
-            setOpenDialog(true)
-        } else {
-            if (!voxiConnection.error) {
-                dispatch(manageStatusVox(!userConnected));
-            }
-            dispatch(connectAgentAPI(!userConnected))
-            dispatch(connectAgentUI(!userConnected))
-            dispatch(emitEvent({
-                event: 'connectAgent',
-                data: {
-                    isconnected: !userConnected,
-                    userid: 0,
-                    orgid: 0
-                }
-            }));
-        }
-    }
 
     return (
         <>
@@ -136,7 +113,7 @@ const AccountBalance: FC = () => {
             <Paper elevation={0} className={classes.root}>
                 <label className={classes.connectionText}><Trans>{langKeys.recharge1}</Trans></label>
                 <div style={{ width: 6 }} />
-                <div style={{ border: "solid grey 1px", padding: "0 15px", marginLeft: 5, borderRadius: 10, paddingRight: 3 }}>$ {(user?.balance||0).toFixed(3)}
+                <div style={{ border: "solid grey 1px", padding: "0 15px", marginLeft: 5, borderRadius: 10, paddingRight: 3 }}>$ {(user?.balance?.balanceCurrent || 0).toFixed(3)}
                     <IconButton
                         aria-label="recharge"
                         style={{
@@ -147,7 +124,7 @@ const AccountBalance: FC = () => {
                         onClick={() => {
                             history.push(paths.INVOICE + "?recharge=true");
                         }}>
-                        <ControlPointIcon color="primary" style={{height: 20, width: 20}} />
+                        <ControlPointIcon color="primary" style={{ height: 20, width: 20 }} />
                     </IconButton>
                 </div>
             </Paper>
