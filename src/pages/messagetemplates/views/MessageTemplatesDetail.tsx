@@ -2143,6 +2143,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('body');
     };
 
+    const getQuality = (quality: string) => {
+        if(quality === 'HIGH' || quality === 'MEDIUM' || quality === 'LOW') {
+            return t(`template_${quality}`);
+        } else {
+            return t(langKeys.TEMPLATE_PENDING);
+        }
+    }
+
     const getLimitMessage = (providermessagelimit: string) => {
         let limit;
         if (providermessagelimit) {
@@ -2280,7 +2288,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             <FieldEdit
                                 className="col-2"
                                 variant="outlined"
-                                valueDefault={t(`template_${getValues('providerquality')}`)}
+                                valueDefault={getQuality(getValues('providerquality'))}
                                 disabled
                                 size="small"
                             />
