@@ -89,6 +89,19 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
     const [additionalVariableValues, setAdditionalVariableValues] = useState<Dictionary>({});
     const [selectedAdditionalHeaders, setSelectedAdditionalHeaders] = useState<{ [key: number]: string }>({});
+    const messagetemplateid = multiData[4]?.data?.[0]?.messagetemplateid ?? null;
+
+    const getTemplateById = (id: Dictionary, data: Dictionary) => {
+        return data?.data?.find(template => template.id === id) ?? null;
+    };
+
+    const matchingTemplate = getTemplateById(messagetemplateid, multiData[3]);
+
+    const isEmptyData = (data: Dictionary) => {
+        return Object.keys(data).length === 0 && data.constructor === Object;
+    };
+    
+    const templateToUse = isEmptyData(selectedTemplate) ? matchingTemplate : selectedTemplate;
 
     const handleHeaderChange = (selectedOption: any) => {
         setSelectedHeader(selectedOption.key);
@@ -104,10 +117,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         return matches;
     };
+
     
-    const bodyVariables = detectVariables(selectedTemplate.body);
-    const headerVariables = selectedTemplate.headertype === 'TEXT' ? detectVariables(selectedTemplate.header) : [];
-    const carouselBodyVariables = selectedTemplate.carouseldata
+    const bodyVariables = detectVariables(templateToUse.body);
+    const headerVariables = templateToUse.headertype === 'TEXT' ? detectVariables(templateToUse.header) : [];
+    const carouselBodyVariables = templateToUse.carouseldata
         ? selectedTemplate.carouseldata.flatMap(item => detectVariables(item.body))
         : [];
     const allBodyVariables = bodyVariables.concat(carouselBodyVariables);    
@@ -118,8 +132,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [dynamicUrlValues, setDynamicUrlValues] = useState<Dictionary>({});
     const [bubbleVariableValues, setBubbleVariableValues] = useState<Dictionary>({});
     const [carouselVariableValues, setCarouselVariableValues] = useState<Dictionary>({});
-    const [variableSelections, setVariableSelections] = useState<{ [key: string]: string }>({});
-          
+    const [variableSelections, setVariableSelections] = useState<{ [key: string]: string }>({});    
+   
+    const templateData = multiData[4]?.data?.[0];
+    const columnsArray = templateData ? [templateData.fields.primarykey, ...templateData.fields.columns] : [];
+    const dataToUse = headers.length > 0 ? headers : columnsArray;   
+
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'bubble', carouselIndex?: number) => {
         const header = selectedOption.key;
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
@@ -228,7 +246,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             }
         });       
-        console.log('updateTemplate - final updatedTemplate:', updatedTemplate);    
+
+        console.log('final updatedTemplate:', updatedTemplate);    
 
         setFilledTemplate(updatedTemplate);
         setDetaildata(prev => ({
@@ -244,10 +263,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
     
     
-    
-    
     const renderDynamicUrlFields = () => {
-        const dynamicButtons = selectedTemplate.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
+        const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
         
         return dynamicButtons.map((button, btnIndex) => (
             <div key={`dynamicUrl-${btnIndex}`}>
@@ -256,7 +273,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     variant="outlined"
                     uset={true}
                     className="col-12"
-                    data={headers
+                    data={dataToUse
                         .filter(header => !Object.values(selectedHeaders).includes(header))
                         .map(header => ({ key: header, value: header }))}
                     optionDesc="value"
@@ -310,12 +327,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };
     
     useEffect(() => {
-        const buttons = collectButtonsFromTemplate(selectedTemplate);
+        const buttons = collectButtonsFromTemplate(templateToUse);
         setDetaildata(prev => ({
             ...prev,
             messagetemplatebuttons: buttons
         }));
-    }, [selectedTemplate]);
+    }, [templateToUse]);
 
 
     useEffect(() => {
@@ -342,7 +359,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         else {
             setMessageVariables([]);
         }
-    }, [detaildata.message])
+    }, [detaildata.message]);
 
     return (
         <React.Fragment>
@@ -361,7 +378,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     uset={true}
                                     label='Campos archivo'
                                     className="col-12"
-                                    data={headers
+                                    data={dataToUse
                                         .filter(header => !Object.values(selectedHeaders).includes(header))
                                         .map(header => ({ key: header, value: header }))}
                                     optionDesc="value"
@@ -395,7 +412,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             variant="outlined"
                                             uset={true}
                                             className="col-12"
-                                            data={headers
+                                            data={dataToUse
                                                 .filter(header => !Object.values(selectedHeaders).includes(header))
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
@@ -415,7 +432,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             variant="outlined"
                                             uset={true}
                                             className="col-12"
-                                            data={headers
+                                            data={dataToUse
                                                 .filter(header => !Object.values(selectedHeaders).includes(header))
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
@@ -428,7 +445,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>
-                                {selectedTemplate.carouseldata?.map((item, index) =>
+                                {templateToUse.carouseldata?.map((item, index) =>
                                     item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
                                         <div key={`carousel-${index}-bubble-${variableIndex}`}>
                                             <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
@@ -436,7 +453,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 variant="outlined"
                                                 uset={true}
                                                 className="col-12"
-                                                data={headers
+                                                data={dataToUse
                                                     .filter(header => !Object.values(selectedHeaders).includes(header))
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
@@ -450,14 +467,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>
-                                {selectedTemplate.headertype === 'VIDEO' && (
+                                {templateToUse.headertype === 'VIDEO' && (
                                     <div>
                                         <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
                                         <FieldSelect
                                             variant="outlined"
                                             uset={true}
                                             className="col-12"
-                                            data={headers
+                                            data={dataToUse
                                                 .filter(header => !Object.values(selectedHeaders).includes(header))
                                                 .map(header => ({ key: header, value: header }))}
                                             optionDesc="value"
@@ -470,7 +487,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>
-                                {selectedTemplate.carouseldata?.map((item, index) =>
+                                {templateToUse.carouseldata?.map((item, index) =>
                                     item.header && (
                                         <div key={`cardImage-${index}`}>
                                             <p style={{ marginBottom: '3px' }}>{`Card Imagen ${index + 1}`}</p>
@@ -478,7 +495,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 variant="outlined"
                                                 uset={true}
                                                 className="col-12"
-                                                data={headers
+                                                data={dataToUse
                                                     .filter(header => !Object.values(selectedHeaders).includes(header))
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
@@ -516,7 +533,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 variant="outlined"
                                                 uset={true}
                                                 className="col-12"
-                                                data={headers
+                                                data={dataToUse
                                                     .filter(header => !Object.values(selectedHeaders).includes(header))
                                                     .map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
@@ -536,7 +553,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             
                     <div style={{fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}  </div> 
                     <TemplatePreview
-                        selectedTemplate={selectedTemplate}
+                        selectedTemplate={templateToUse}
                         bodyVariableValues={bodyVariableValues}
                         headerVariableValues={headerVariableValues}
                         videoHeaderValue={videoHeaderValue}

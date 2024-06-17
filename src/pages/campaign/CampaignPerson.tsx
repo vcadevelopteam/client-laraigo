@@ -282,11 +282,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             console.error("Error al ajustar y descargar el archivo Excel", error);
         }
     };
-    
-    
-    
-    
-    
 
     const s2ab = (s: string) => {
         const buf = new ArrayBuffer(s.length);
@@ -527,9 +522,45 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
     
 
+    const transformData = (data: Dictionary, headers: Dictionary): Dictionary[] => {
+        return data.map(item => {
+            const transformedItem = { ...item }; 
+    
+            headers.forEach((header: Dictionary, index: number) => {
+                const accessor = header.accessor;
+                if (accessor === "Destinatarios") {
+                    transformedItem[accessor] = item.personcommunicationchannelowner || '';
+                } else if (accessor === "Nombres") {
+                    transformedItem[accessor] = item.field2 || '';
+                } else if (accessor === "Apellidos") {
+                    transformedItem[accessor] = item.field3 || '';
+                } else {
+                    const fieldNumber = `field${index + 1}`;
+                    transformedItem[accessor] = item[fieldNumber] || '';
+                }
+            });
+    
+            return transformedItem;
+        });
+    };    
+    
+    const transformHeadersToColumns = (headers: any[]): any[] => {
+        return headers.map(header => ({
+            Header: header.Header,
+            accessor: header.accessor,           
+            width: "auto"
+        }));
+    };
 
-    
-    
+    const transformedData = transformData(jsonData, headers);
+    const columns = React.useMemo(() => transformHeadersToColumns(headers), [headers]);
+
+    const isEmptyData = (data: any[]) => {
+        return data.every(item => Object.values(item).every(value => value === ''));
+    };
+
+    const personsToUse = isEmptyData(transformedData) ? jsonData : transformedData;
+
 
     const cleanData = () => {
         setJsonData([]);
@@ -684,7 +715,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
-    
+
 
     const AdditionalButtons = () => {
         if (detaildata.source === 'EXTERNAL') {
@@ -791,10 +822,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         else {
             return <>
-                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+                
             </>
         }
     }
+
 
     return (
         <React.Fragment>
@@ -823,8 +855,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                         :
                         <TableZyx
                             titlemodule=" "
-                            columns={headers}
-                            data={jsonData}
+                            columns={columns}
+                            data={personsToUse}
                             download={false}
                             loading={detaildata.source === 'INTERNAL' && auxResult.loading}
                             filterGeneral={false}
