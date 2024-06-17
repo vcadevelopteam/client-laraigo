@@ -76,6 +76,11 @@ class VariableHandler {
 }
 
 export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, templateAux, jsonPersons}) => {
+    
+   
+    
+    
+    
     const classes = useStyles();
     const { t } = useTranslation();  
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
@@ -85,7 +90,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [variableValues, setVariableValues] = useState<Dictionary>({});
     const headers = jsonPersons.length > 0 ? Object.keys(jsonPersons[0]) : [];
     const [selectedHeader, setSelectedHeader] = useState<string | null>(null);
-    const [selectedHeaders, setSelectedHeaders] = useState<{ [key: string]: string }>({});
+        
+    
+    const [selectedHeaders, setSelectedHeaders] = useState<{ [key: number]: string }>({});
     const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
     const [additionalVariableValues, setAdditionalVariableValues] = useState<Dictionary>({});
     const [selectedAdditionalHeaders, setSelectedAdditionalHeaders] = useState<{ [key: number]: string }>({});
@@ -117,7 +124,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         return matches;
     };
-
     
     const bodyVariables = detectVariables(templateToUse.body);
     const headerVariables = templateToUse.headertype === 'TEXT' ? detectVariables(templateToUse.header) : [];
@@ -135,13 +141,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [variableSelections, setVariableSelections] = useState<{ [key: string]: string }>({});    
    
     const templateData = multiData[4]?.data?.[0];
-    const columnsArray = templateData ? [templateData.fields.primarykey, ...templateData.fields.columns] : [];
+    const columnsArray = templateData && templateData.fields ? [templateData.fields.primarykey, ...templateData.fields.columns] : [];
     const dataToUse = headers.length > 0 ? headers : columnsArray;   
+
+ 
+    
 
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'bubble', carouselIndex?: number) => {
         const header = selectedOption.key;
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
-        
+    
         if (variableType === 'body') {
             setBodyVariableValues(prevValues => ({
                 ...prevValues,
@@ -179,30 +188,34 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }));
         }
     
-        setSelectedHeaders(prev => ({
-            ...prev,
+        const newSelectedHeaders = {
+            ...selectedHeaders,
             [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
-        }));
+        };
+        setSelectedHeaders(newSelectedHeaders);
+        console.log('New Selected Headers:', newSelectedHeaders);
     
-        setVariableSelections(prev => ({
-            ...prev,
+        const newVariableSelections = {
+            ...variableSelections,
             [`${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`]: header
-        }));
+        };
+        setVariableSelections(newVariableSelections);
+        console.log('Variable Selections:', variableNumber, selectedOption, variableType, carouselIndex);
     
         updateTemplate();
     };
     
     
     
+    
       
     const updateTemplate = useCallback(() => {
-    
-        const updatedTemplate = JSON.parse(JSON.stringify(selectedTemplate));
+        const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
     
         Object.keys(variableSelections).forEach(key => {
             const [type, number] = key.split('-');
             const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
-                
+    
             if (type === 'body' && updatedTemplate.body) {
                 updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
             } else if (type === 'header' && updatedTemplate.header) {
@@ -212,12 +225,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 if (!isNaN(index)) {
                     updatedTemplate.carouseldata[index].header = jsonPersons[0][variableSelections[key]];
                 }
-            }               
-
-            else if (type === 'dynamicUrl' && updatedTemplate.buttonsgeneric) {
-                updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {                    
-                    const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`; 
-                    const variableSelectionsValue = variableSelections[buttonKey];             
+            } else if (type === 'dynamicUrl' && updatedTemplate.buttonsgeneric) {
+                updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {
+                    const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
+                    const variableSelectionsValue = variableSelections[buttonKey];
                     if (variableSelectionsValue) {
                         const variableKey = headers.indexOf(variableSelectionsValue);
                         if (variableKey !== -1) {
@@ -232,9 +243,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         console.log(`No selection found for button key: ${buttonKey}`);
                     }
                 });
-            }
-            
-            else if (type === 'carousel' && updatedTemplate.carouseldata) {
+            } else if (type === 'carousel' && updatedTemplate.carouseldata) {
                 const index = parseInt(key.split('-')[2]);
                 if (!isNaN(index)) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
@@ -244,11 +253,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 if (!isNaN(index)) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 }
+            } else  if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
+                const fieldNumber = headers.indexOf(variableSelections['video-videoHeader']) + 1;
+                if (!isNaN(fieldNumber)) {
+                  updatedTemplate.header = `{{field${fieldNumber}}}`;
+                }
             }
-        });       
-
-        console.log('final updatedTemplate:', updatedTemplate);    
-
+        });
+    
         setFilledTemplate(updatedTemplate);
         setDetaildata(prev => ({
             ...prev,
@@ -259,9 +271,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             },
             messagetemplatebuttons: updatedTemplate.buttonsgeneric || []
         }));
-    }, [variableSelections, headers, selectedTemplate, jsonPersons, setDetaildata]);
-    
-    
+    }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata]);
     
     const renderDynamicUrlFields = () => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
@@ -361,6 +371,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [detaildata.message]);
 
+
+
+
+
     return (
         <React.Fragment>
             <div className={classes.containerDetail} style={{display:'flex', width:'100%'}}>
@@ -423,6 +437,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                 ))}
                             </div>
+
+
 
                             <div className={classes.containerStyle}>
                                 {bodyVariables.map((variable: Dictionary) => (
