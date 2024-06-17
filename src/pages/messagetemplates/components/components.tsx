@@ -408,7 +408,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
         ...buttonstext.map(text => ({ type: 'text', text: text })),
         ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
     ];
-    
+
     const parseFormattedText = (text: string) => {
         const monospace = /```(.*?)```/g;
         text = text.replace(monospace, '<code>$1</code>');
@@ -470,7 +470,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
         }
         return header;
     };
-    
+
     const getFormattedBody = () => {
         let formattedBody = body;
         bodyvariables.forEach(variable => {
@@ -482,7 +482,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
 
     return (
         <>
-            <div className={classes.messagePrevContainer} style={{display: 'flex', flexDirection: 'row', gap: 20}}>
+            <div className={classes.messagePrevContainer} style={{ display: 'flex', flexDirection: 'row', gap: 20 }}>
                 <div className={classes.container} style={{ width: 350, height: 'fit-content' }}>
                     <div className={classes.messageCard}>
                         {headerType === 'TEXT' ? (
@@ -549,7 +549,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                                 );
                             })}
                             {combinedButtons.length > 3 && (
-                                <div className={classes.cardButton2} style={{cursor: 'pointer'}} onClick={() => setShowAllButtons(true)}>
+                                <div className={classes.cardButton2} style={{ cursor: 'pointer' }} onClick={() => setShowAllButtons(true)}>
                                     <ListIcon className={classes.icon} />
                                     <span>See all options</span>
                                 </div>
@@ -561,7 +561,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                     <div className={classes.dialog}>
                         <div className={classes.headerStyle}>
                             <IconButton onClick={() => setShowAllButtons(false)}>
-                                <ClearIcon/>
+                                <ClearIcon />
                             </IconButton>
                             <span className={classes.title}>All Options</span>
                         </div>
@@ -677,7 +677,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
         });
         return formattedBody;
     };
-    
+
     return (
         <div className={classes.messagePrevContainer}>
             <div className={classes.container} style={{ width: 350 }}>
@@ -703,8 +703,8 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
                 onTouchEnd={handleTouchEnd}
             >
                 {carouselCards.length > 0 && carouselCards.map((card, index) => (
-                    <div key={index} className={classes.messageCard2} style={{borderRadius: '15px 15px 0px 0px'}}>
-                        <div className={classes.cardMediaContainer} style={{ width: 280}}>
+                    <div key={index} className={classes.messageCard2} style={{ borderRadius: '15px 15px 0px 0px' }}>
+                        <div className={classes.cardMediaContainer} style={{ width: 280 }}>
                             <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
                         </div>
                         <div className={classes.bodyCar}>{getFormattedBody(card.body, card.bodyvariables)}</div>
@@ -713,7 +713,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
             </div>
             <div className={classes.buttonsContainer}>
                 {carouselCards.length > 0 && carouselCards.map((card, index) => (
-                    <div key={index} className={classes.messageCard2} style={{borderRadius: '0px 0px 15px 15px', padding: '15px 10px 10px 10px'}}>
+                    <div key={index} className={classes.messageCard2} style={{ borderRadius: '0px 0px 15px 15px', padding: '15px 10px 10px 10px' }}>
                         {card.buttons.length > 0 && (
                             <>
                                 {card.buttons.map((btn: Dictionary, i: number) => (

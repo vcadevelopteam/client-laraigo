@@ -200,7 +200,7 @@ const MessageTemplates: FC = () => {
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                if(providerstatus === null) statusText = t(langKeys.TEMPLATE2_UNREGISTERED);
+                                if (providerstatus === null) statusText = t(langKeys.TEMPLATE2_UNREGISTERED);
                                 else statusText = t(`TEMPLATE2_${providerstatus}`);
                                 break;
                             default:
@@ -279,7 +279,7 @@ const MessageTemplates: FC = () => {
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                if(!providerquality) {
+                                if (!providerquality) {
                                     return t(langKeys.TEMPLATE2_UNREGISTERED);
                                 }
                                 qText = t(`template_${providerquality}`);
@@ -336,7 +336,7 @@ const MessageTemplates: FC = () => {
                     let limit = '-';
 
                     if (type) {
-                        if(type === 'HSM') {
+                        if (type === 'HSM') {
                             switch (providermessagelimit) {
                                 case "TIER_0.05K":
                                     limit = `50 ${t(langKeys.clients)}/24 ${t(langKeys.hours)}`;
@@ -408,7 +408,6 @@ const MessageTemplates: FC = () => {
         dispatch(
             getCollectionPaginated(
                 getPaginatedMessageTemplate({
-                    communicationchannelid: communicationChannel?.communicationchannelid || 0,
                     enddate: daterange?.endDate!,
                     filters: filters,
                     skip: pageIndex * pageSize,
@@ -611,7 +610,6 @@ const MessageTemplates: FC = () => {
         dispatch(
             exportData(
                 getMessageTemplateExport({
-                    communicationchannelid: communicationChannel?.communicationchannelid || 0,
                     filters: {
                         ...filters,
                     },

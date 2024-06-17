@@ -26,7 +26,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
-import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd"
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd"
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -319,7 +319,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [isHeaderVariable, setIsHeaderVariable] = useState(row?.headervariables?.[0] ? true : false)
     const [headerType, setHeaderType] = useState(
         (row?.headertype === 'VIDEO' || row?.headertype === 'IMAGE' || row?.headertype === 'DOCUMENT') ? 'multimedia' :
-        row?.headertype === 'TEXT' ? 'text' : 'none')
+            row?.headertype === 'TEXT' ? 'text' : 'none')
     const [filename, setFilename] = useState(row ? row?.header?.split('/')?.pop()?.replace(/%20/g, ' ') : '')
     const [uploading, setUploading] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -350,7 +350,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setCursorPositionAux(input.selectionStart ? input.selectionStart : getValues('body').length);
         setShowEmojiPicker(!showEmojiPicker);
     };
-    
+
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
         { value: "MARKETING", description: t(langKeys.TEMPLATE_MARKETING) },
@@ -457,13 +457,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: "STANDARD", text: t(langKeys.messagetemplate_standard) },
         { value: "CAROUSEL", text: t(langKeys.messagetemplate_carousel) },
     ];
-    
+
     const dataHeaderType = [
         { value: "none", text: t(langKeys.none) },
         { value: "text", text: t(langKeys.messagetemplate_text) },
         { value: "multimedia", text: t(langKeys.messagetemplate_multimedia) },
     ];
-    
+
     const dataURLType = [
         { value: "static", text: t(langKeys.static) },
         { value: "dynamic", text: t(langKeys.dynamic) },
@@ -476,11 +476,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     ];
 
     const dataValidityPeriod = [
-        { value: 1, text: `1 ${t(langKeys.minute)}`},
-        { value: 2, text: `2 ${t(langKeys.minutes)}`},
-        { value: 3, text: `3 ${t(langKeys.minutes)}`},
-        { value: 5, text: `5 ${t(langKeys.minutes)}`},
-        { value: 10, text: `10 ${t(langKeys.minutes)}`},
+        { value: 1, text: `1 ${t(langKeys.minute)}` },
+        { value: 2, text: `2 ${t(langKeys.minutes)}` },
+        { value: 3, text: `3 ${t(langKeys.minutes)}` },
+        { value: 5, text: `5 ${t(langKeys.minutes)}` },
+        { value: 10, text: `10 ${t(langKeys.minutes)}` },
     ]
 
     const dataCountryCodes = [
@@ -495,7 +495,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: 1, text: 'US +1' },
         { value: 44, text: 'UK +44' }
     ]
-    
+
     const {
         formState: { errors },
         getValues,
@@ -545,9 +545,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             type: row?.type || "",
         },
     });
-    
+
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
-    
+
     const [type] = watch(["type"]);
     React.useEffect(() => {
         register('authenticationdata');
@@ -573,7 +573,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         return t(langKeys.field_required);
                     }
                     // Extraer todos los tipos de botones de todos los cards
-                    const buttonTypes = value.flatMap((card:Dictionary) => card.buttons.map((button:Dictionary) => button.type));
+                    const buttonTypes = value.flatMap((card: Dictionary) => card.buttons.map((button: Dictionary) => button.type));
                     // Validar que todos los tipos de botones sean iguales
                     const allSameType = buttonTypes.every((type: string, index: number, array) => type === array[0]);
                     if (!allSameType) {
@@ -622,7 +622,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 return true;
             },
         });
-        
+
         switch (type) {
             case "HSM":
                 // register("body", {
@@ -716,13 +716,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setHtmlLoad([html.html({ matchClosingTags: true })]);
         });
     }, []);
-    
+
     useEffect(() => {
         if (!isNew && isProvider) {
             setDisableInput(true);
         }
     }, [isNew, isProvider]);
-    
+
     useEffect(() => {
         if (waitAdd) {
             if (!addRequest.loading && !addRequest.error) {
@@ -799,7 +799,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [waitUploadFile, uploadResult]);
-    
+
     const onSubmit = handleSubmit((data) => {
         if (data.type === "MAIL") {
             data.body = renderToString(toElement(bodyObject));
@@ -828,7 +828,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
                 headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
             }
-            
+
             const callback = () => {
                 if (data.type === "MAIL") {
                     data.body = renderToString(toElement(bodyObject));
@@ -956,7 +956,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("templatetype");
         trigger("type");
     };
-    
+
     const onChangeTemplateMedia = async () => {
         if (getValues("footerenabled")) {
             register("footer", {
@@ -972,11 +972,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onChangeTemplateType = async (data: Dictionary) => {
-        if(isNew) {
+        if (isNew) {
             setValue("templatetype", data?.value || "");
             trigger("templatetype");
 
-            if(data?.value === "CAROUSEL") {
+            if (data?.value === "CAROUSEL") {
                 setValue('carouseldata', [{ header: "", body: '', bodyvariables: [], buttons: [] }])
             } else {
                 setValue('carouseldata', [])
@@ -999,7 +999,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('carouseldata')
         }
     };
-    
+
     const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
         if (value) {
             setValue("headerenabled", value);
@@ -1037,8 +1037,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onChangeHeaderType = async (data: Dictionary) => {
-        if(data) {
-            if(data.value === 'text') {
+        if (data) {
+            if (data.value === 'text') {
                 setHeaderType(data?.value || "");
                 setValue("headertype", data?.value.toUpperCase() || "")
                 setIsHeaderVariable(false)
@@ -1081,7 +1081,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const onClickAddButton = async () => {
-        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'URL'}).length < 2) {
+        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => { return btn.type === 'URL' }).length < 2) {
             setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'URL', btn: { text: "", type: "", url: "", variables: [''] } }]);
         }
         trigger("buttonsgeneric");
@@ -1093,13 +1093,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("buttonsquickreply");
     };
     const onClickAddButtonPhone = async () => {
-        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => {return btn.type === 'PHONE'}).length < 1) {
+        if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => { return btn.type === 'PHONE' }).length < 1) {
             setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'PHONE', btn: { text: "", code: null, phone_number: "" } }]);
         }
         trigger("buttonsgeneric");
     };
     const onClickAddCard = async () => {
-        if(getValues("carouseldata") && getValues('carouseldata').length < 10) {
+        if (getValues("carouseldata") && getValues('carouseldata').length < 10) {
             setValue('carouseldata', [...getValues('carouseldata'), { header: "", body: '', bodyvariables: [], buttons: [] }])
         }
         trigger("carouseldata");
@@ -1114,11 +1114,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onClickAddButtonTCard = async (index: number) => {
         const currentCards = getValues('carouseldata');
         if (currentCards && currentCards.length > index) {
-            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+            const updatedCards = currentCards.map((card: Dictionary, i: number) => {
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'QUICK_REPLY', btn: { text: '', payload: '' }}]
+                        buttons: [...card.buttons, { type: 'QUICK_REPLY', btn: { text: '', payload: '' } }]
                     };
                 }
                 return card;
@@ -1131,11 +1131,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onClickAddButtonLCard = async (index: number) => {
         const currentCards = getValues('carouseldata');
         if (currentCards && currentCards.length > index) {
-            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+            const updatedCards = currentCards.map((card: Dictionary, i: number) => {
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'URL', btn: { text: "", type: "", url: "", variables: [''] }}]
+                        buttons: [...card.buttons, { type: 'URL', btn: { text: "", type: "", url: "", variables: [''] } }]
                     };
                 }
                 return card;
@@ -1148,11 +1148,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onClickAddButtonPCard = async (index: number) => {
         const currentCards = getValues('carouseldata');
         if (currentCards && currentCards.length > index) {
-            const updatedCards = currentCards.map((card:Dictionary, i:number) => {
+            const updatedCards = currentCards.map((card: Dictionary, i: number) => {
                 if (i === index) {
                     return {
                         ...card,
-                        buttons: [...card.buttons, { type: 'PHONE', btn: { text: "", code: "", phone_number: "" }}]
+                        buttons: [...card.buttons, { type: 'PHONE', btn: { text: "", code: "", phone_number: "" } }]
                     };
                 }
                 return card;
@@ -1207,31 +1207,31 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             );
         }
     };
-    
+
     const handleFileChange = useCallback((files: FileList | null) => {
         const file = files?.item(0);
 
         if (file) {
             const fileType = getValues('headertype');
             const validTypes = {
-              IMAGE: ['image/jpeg', 'image/png'],
-              VIDEO: ['video/mp4'],
-              DOCUMENT: ['application/pdf']
+                IMAGE: ['image/jpeg', 'image/png'],
+                VIDEO: ['video/mp4'],
+                DOCUMENT: ['application/pdf']
             };
-        
+
             if (validTypes[fileType]?.includes(file.type)) {
-              setFileAttachment(file);
-              const fd = new FormData();
-              fd.append("file", file, file.name);
-              dispatch(uploadFile(fd));
-              setUploading(true);
-              setWaitUploadFile2(true);
+                setFileAttachment(file);
+                const fd = new FormData();
+                fd.append("file", file, file.name);
+                dispatch(uploadFile(fd));
+                setUploading(true);
+                setWaitUploadFile2(true);
             } else {
-                if(fileType === 'IMAGE') alert("Tipo de archivo inválido. Por favor subir un archivo de imagen adecuado.");
-                else if(fileType === 'VIDEO') alert("Tipo de archivo inválido. Por favor subir un archivo de video adecuado.");
+                if (fileType === 'IMAGE') alert("Tipo de archivo inválido. Por favor subir un archivo de imagen adecuado.");
+                else if (fileType === 'VIDEO') alert("Tipo de archivo inválido. Por favor subir un archivo de video adecuado.");
                 else alert("Tipo de archivo inválido. Por favor subir un archivo de documento adecuado.");
             }
-          }
+        }
     }, [])
 
     useEffect(() => {
@@ -1304,7 +1304,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         trigger("attachment");
     };
-    
+
     const changeProvider = async (value: any) => {
         if (!value || !isProvider) {
             //setValue("category", "");
@@ -1313,7 +1313,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         if (value) {
             setIsProvider(true);
 
-            if(getValues('type') === "HSM") {
+            if (getValues('type') === "HSM") {
                 setValue("communicationchannelid", value.communicationchannelid);
                 setValue("communicationchanneltype", value.type);
                 setValue("communicationchanneldesc", value.communicationchanneldesc)
@@ -1364,7 +1364,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue('buttonsquickreply', [])
         setValue('carouseldata', [])
 
-        if(categoryText === 'AUTHENTICATION') {
+        if (categoryText === 'AUTHENTICATION') {
             setValue('authenticationdata', {
                 buttontext: "",
                 buttontype: null,
@@ -1391,7 +1391,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue(`carouseldata.${index}.header`, "");
         trigger('carouseldata')
     };
-    
+
     const handleFileChangeAux = (files: FileList | null, index: number) => {
         const file = files?.item(0);
         if (file) {
@@ -1424,12 +1424,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [waitUploadFile3, uploadResult])
-    
+
     const handleDragDrop = (results: DropResult) => {
-        const {source, destination, type} = results;
-        if(!destination) return;
-        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
-        if(type === 'group'){
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
             const reorderedItems = [...getValues('buttonsquickreply')];
             const sourceIndex = source.index;
             const destinationIndex = destination.index;
@@ -1442,10 +1442,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleDragDropAux = (results: DropResult) => {
-        const {source, destination, type} = results;
-        if(!destination) return;
-        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
-        if(type === 'group'){
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
             const reorderedItems = [...getValues('buttonsgeneric')];
             const sourceIndex = source.index;
             const destinationIndex = destination.index;
@@ -1458,10 +1458,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleDragDropCarrusel = (results: DropResult, index: number) => {
-        const {source, destination, type} = results;
-        if(!destination) return;
-        if(source.droppableId === destination.droppableId && source.index === destination.index) return;
-        if(type === 'group') {
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
             const reorderedItems = [...getValues(`carouseldata.${index}.buttons`)];
             const sourceIndex = source.index;
             const destinationIndex = destination.index;
@@ -1472,7 +1472,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('carouseldata')
         }
     }
-    
+
     const addEmoji = (emoji: EmojiData) => {
         const currentText = getValues('body');
         const start = currentText.substring(0, cursorPositionAux);
@@ -1487,12 +1487,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const addVariableCard = (index: number) => {
         const newVariableNumber = getValues(`carouseldata.${index}.bodyvariables`).length + 1;
-        if((getValues(`carouseldata.${index}.body`).length + newVariableNumber.toString().length) <= 156) {
+        if ((getValues(`carouseldata.${index}.body`).length + newVariableNumber.toString().length) <= 156) {
             const body = getValues(`carouseldata.${index}.body`);
             const newVariableTag = `{{${newVariableNumber}}}`;
-    
+
             setValue(`carouseldata.${index}.body`, body + newVariableTag);
-            setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), {variable: newVariableNumber, text: ''}])
+            setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), { variable: newVariableNumber, text: '' }])
             trigger('carouseldata')
         }
     }
@@ -1510,10 +1510,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const addVariable = () => {
         const newVariableNumber = getValues('bodyvariables').length + 1;
-        if((getValues('body').length + newVariableNumber.toString().length) <= 1020) {
+        if ((getValues('body').length + newVariableNumber.toString().length) <= 1020) {
             const body = getValues('body');
             const newVariableTag = `{{${newVariableNumber}}}`;
-    
+
             setValue('body', body + newVariableTag);
             trigger('body');
             setValue('bodyvariables', [...getValues('bodyvariables'), { variable: newVariableNumber, text: "" }]);
@@ -1531,7 +1531,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('bodyvariables')
         trigger('body');
     }
-    
+
     const changeHeaderType = (type: string) => {
         setValue('headertype', type)
         trigger('headertype')
@@ -1582,7 +1582,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             return;
         }
 
-        if(value.length === 0) {
+        if (value.length === 0) {
             setValue('header', value);
             setValue('headervariables', ['']);
             trigger('header');
@@ -1591,7 +1591,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             return;
         }
 
-        if(isDeleting) {
+        if (isDeleting) {
             const variableRegex = /\{\{1\}\}/g;
             const hasVariable = variableRegex.test(value);
 
@@ -1629,13 +1629,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 return;
             }
         }
-        
+
         setValue('header', value)
         trigger('header')
     }
 
     const addHeaderVariable = () => {
-        if(isHeaderVariable) {
+        if (isHeaderVariable) {
             setIsHeaderVariable(false)
             setValue('headervariables', [''])
             trigger('headervariables')
@@ -1748,12 +1748,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const addVariableAux = (cursorPosition: number) => {
         let newVariableNumber = 0;
-        if(getValues('bodyvariables').length === 0) {
+        if (getValues('bodyvariables').length === 0) {
             newVariableNumber = 1;
         } else {
             newVariableNumber = getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable + 1;
         }
-        
+
         const body = getValues('body');
         const newVariableTag = `{{${newVariableNumber}}}`;
         const newBody = body.slice(0, cursorPosition) + newVariableTag + body.slice(cursorPosition);
@@ -1774,14 +1774,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             return;
         }
 
-        if(value.length === 0) {
+        if (value.length === 0) {
             setValue('body', value);
             setValue('bodyvariables', []);
             trigger('body');
             trigger('bodyvariables');
             return;
         }
-        
+
         if (isDeleting) {
             const variableRegex2 = /\{\{(\d+)\}\}/g;
             let match;
@@ -1819,12 +1819,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue('body', newValue);
                 trigger('body');
                 if (getValues('bodyvariables').length < 20) {
-                    if(getValues('bodyvariables').length === 0) {
-                        if((getValues('body').length + 1) <= 1020) {
+                    if (getValues('bodyvariables').length === 0) {
+                        if ((getValues('body').length + 1) <= 1020) {
                             addVariableAux(insertPosition);
                         }
                     }
-                    else if((getValues('body').length + (getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable + 1).toString().length) <= 1020) {
+                    else if ((getValues('body').length + (getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable + 1).toString().length) <= 1020) {
                         addVariableAux(insertPosition);
                     }
                 }
@@ -1853,20 +1853,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             auxIndex = num;
                         }
                     });
-            
+
                     if (auxIndex !== null) {
                         // Step 3: Insert new variable object at the correct position
                         updatedBodyVariables.splice(auxIndex - 1, 0, { variable: auxIndex, text: "" });
-            
+
                         // Step 4: Update bodyvariables to have consecutive numbers
                         updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
                             ...variable,
                             variable: index + 1,
                         }));
-            
+
                         // Step 5: Update variablesInBody to be ordered from 1 to n
                         const updatedVariablesInBody = variablesInBody.map((_, index) => index + 1);
-            
+
                         // Step 6: Update body to reflect new variable numbers
                         let currentIndexInText = 0;
                         const updatedText = value.replace(variableRegex2, () => {
@@ -1874,7 +1874,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             currentIndexInText++;
                             return `{{${variableNumber}}}`;
                         });
-            
+
                         setValue('bodyvariables', updatedBodyVariables);
                         trigger('bodyvariables');
                         setValue('body', updatedText);
@@ -1884,7 +1884,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         }, 0);
                         return;
                     } else if (variablesInBody.length > updatedBodyVariables.length) {
-                        updatedBodyVariables = [...updatedBodyVariables, { variable: variablesInBody[variablesInBody.length - 1], text: ""}]
+                        updatedBodyVariables = [...updatedBodyVariables, { variable: variablesInBody[variablesInBody.length - 1], text: "" }]
                         setValue('bodyvariables', updatedBodyVariables);
                         trigger('bodyvariables');
                     }
@@ -1950,7 +1950,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setValue(`carouseldata.${index}.bodyvariables`, [...getValues(`carouseldata.${index}.bodyvariables`), { variable: newVariableNumber, text: "" }]);
         trigger('carouseldata');
     };
-    
+
     const handleInputBodyCard = (e, index: number) => {
         const value = e.target.value;
         const cursorPosition = e.target.selectionStart;
@@ -1961,7 +1961,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             return;
         }
 
-        if(value.length === 0) {
+        if (value.length === 0) {
             setValue(`carouseldata.${index}.body`, value);
             setValue(`carouseldata.${index}.bodyvariables`, []);
             trigger('carouseldata');
@@ -1987,7 +1987,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }));
             setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
             trigger('carouseldata');
-            
+
             const cursorPositionAux = cursorPosition;
             const variableRegex = /\{\{(\d+)\}\}/g;
             let currentIndexInText = 0;
@@ -2037,20 +2037,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             auxIndex = num;
                         }
                     });
-            
+
                     if (auxIndex !== null) {
                         // Step 3: Insert new variable object at the correct position
                         updatedBodyVariables.splice(auxIndex - 1, 0, { variable: auxIndex, text: "" });
-            
+
                         // Step 4: Update bodyvariables to have consecutive numbers
                         updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
                             ...variable,
                             variable: index + 1,
                         }));
-            
+
                         // Step 5: Update variablesInBody to be ordered from 1 to n
                         const updatedVariablesInBody = variablesInBody.map((_, index) => index + 1);
-            
+
                         // Step 6: Update body to reflect new variable numbers
                         let currentIndexInText = 0;
                         const updatedText = value.replace(variableRegex2, () => {
@@ -2058,7 +2058,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             currentIndexInText++;
                             return `{{${variableNumber}}}`;
                         });
-            
+
                         setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
                         setValue(`carouseldata.${index}.body`, updatedText);
                         trigger('carouseldata');
@@ -2067,7 +2067,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         }, 0);
                         return;
                     } else if (variablesInBody.length > updatedBodyVariables.length) {
-                        updatedBodyVariables = [...updatedBodyVariables, { variable: variablesInBody[variablesInBody.length - 1], text: ""}]
+                        updatedBodyVariables = [...updatedBodyVariables, { variable: variablesInBody[variablesInBody.length - 1], text: "" }]
                         setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
                     }
                 }
@@ -2120,25 +2120,25 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         const text = getValues('body');
         const selectionStart = textarea.selectionStart;
         const selectionEnd = textarea.selectionEnd;
-    
+
         if (selectionStart !== selectionEnd) {
-          const selectedText = text.substring(selectionStart, selectionEnd);
-          const formattedText = `${format}${selectedText}${format}`;
-          const newText = text.substring(0, selectionStart) + formattedText + text.substring(selectionEnd);
-    
-          if (newText.length <= 1024) {
-            setValue('body', newText);
-          } else {
-            // Optionally, you can add some feedback to the user that the text is too long
-            console.warn('Formatted text would exceed the maximum length');
-          }
+            const selectedText = text.substring(selectionStart, selectionEnd);
+            const formattedText = `${format}${selectedText}${format}`;
+            const newText = text.substring(0, selectionStart) + formattedText + text.substring(selectionEnd);
+
+            if (newText.length <= 1024) {
+                setValue('body', newText);
+            } else {
+                // Optionally, you can add some feedback to the user that the text is too long
+                console.warn('Formatted text would exceed the maximum length');
+            }
         } else {
-          if (text.length + format.length * 2 <= 1024) {
-            setValue('body', text + format + format);
-          } else {
-            // Optionally, you can add some feedback to the user that the text is too long
-            console.warn('Formatted text would exceed the maximum length');
-          }
+            if (text.length + format.length * 2 <= 1024) {
+                setValue('body', text + format + format);
+            } else {
+                // Optionally, you can add some feedback to the user that the text is too long
+                console.warn('Formatted text would exceed the maximum length');
+            }
         }
         trigger('body');
     };
@@ -2225,28 +2225,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </div>
                     )}
                     <div className='row-zyx'>
-                        <div className="col-4" style={{display: 'flex', flexDirection: 'column'}}>
-                            <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetype)}</span>
+                        <div className="col-4" style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.messagetype)}</span>
                             <span>{t(langKeys.messagetypetext)}</span>
                         </div>
                         {(!isNew && getValues('type') === 'HSM') && (
-                            <div className="col-8" style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
-                                    <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messagetemplateid)}</span>
+                            <div className="col-8" style={{ display: 'flex' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.messagetemplateid)}</span>
                                     <span>{t(langKeys.templateidentifier)}</span>
                                 </div>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
-                                    <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.quality)}</span>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.quality)}</span>
                                     <span>{t(langKeys.templatequalitytext)}</span>
                                 </div>
-                                <div style={{flex: 2, display: 'flex', flexDirection: 'column'}}>
-                                    <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.messageslimit)}</span>
+                                <div style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.messageslimit)}</span>
                                     <span>{t(langKeys.messageslimittext)}</span>
                                 </div>
                             </div>
                         )}
                     </div>
-                    <div className="row-zyx" style={{display: 'flex', alignItems: 'center'}}>
+                    <div className="row-zyx" style={{ display: 'flex', alignItems: 'center' }}>
                         <FieldSelect
                             className="col-4"
                             data={dataMessageType}
@@ -2261,8 +2261,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         />
                         {getValues("type") === '' && (
                             <div className="col-4">
-                                <div className={classes.warningContainer} style={{width: 220}}>
-                                    <WarningIcon style={{color: '#FF7575'}}/>
+                                <div className={classes.warningContainer} style={{ width: 220 }}>
+                                    <WarningIcon style={{ color: '#FF7575' }} />
                                     Selecciona una opción
                                 </div>
                             </div>
@@ -2297,35 +2297,35 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     </div>
                     {getValues("type") === 'HSM' && (
                         <>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{`${t(langKeys.configuration)} ${t(langKeys.template)}`}</span>
+                            <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{`${t(langKeys.configuration)} ${t(langKeys.template)}`}</span>
                             </div>
-                            <div className='row-zyx' style={{display: 'flex', flexDirection: 'column'}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.category)}</span>
+                            <div className='row-zyx' style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.category)}</span>
                                 <span>Elige la categoría que mejor describa tu plantilla de mensaje.</span>
                             </div>
-                            <div style={{display: 'flex', flexDirection: 'row', gap: '0.5rem'}}>
-                                <div className={classes.categoryOption} style={{cursor: !isNew ? '' : 'pointer'}} onClick={() => {if(isNew) changeCategory('MARKETING')}}>
-                                    <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox}/>
-                                    <VolumeUpIcon style={{marginLeft: 10, marginRight: 10}}/>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Marketing</span>
+                            <div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem' }}>
+                                <div className={classes.categoryOption} style={{ cursor: !isNew ? '' : 'pointer' }} onClick={() => { if (isNew) changeCategory('MARKETING') }}>
+                                    <input type="checkbox" checked={category === 'MARKETING'} className={classes.checkbox} />
+                                    <VolumeUpIcon style={{ marginLeft: 10, marginRight: 10 }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>Marketing</span>
                                         <span>Envía promociones o información sobre tus productos, servicios o negocio.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} style={{cursor: !isNew ? '' : 'pointer'}} onClick={() => {if(isNew) changeCategory('UTILITY')}}>
-                                    <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox}/>
-                                    <NotificationsIcon style={{marginLeft: 10, marginRight: 10}}/>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Utilidad</span>
+                                <div className={classes.categoryOption} style={{ cursor: !isNew ? '' : 'pointer' }} onClick={() => { if (isNew) changeCategory('UTILITY') }}>
+                                    <input type="checkbox" checked={category === 'UTILITY'} className={classes.checkbox} />
+                                    <NotificationsIcon style={{ marginLeft: 10, marginRight: 10 }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>Utilidad</span>
                                         <span>Envía mensajes sobre un pedido o cuenta existentes.</span>
                                     </div>
                                 </div>
-                                <div className={classes.categoryOption} style={{cursor: !isNew ? '' : 'pointer'}} onClick={() => {if(isNew) changeCategory('AUTHENTICATION')}}>
-                                    <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox}/>
-                                    <VpnKeyIcon style={{marginLeft: 10, marginRight: 10}}/>
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                        <span style={{fontWeight: 'bold', fontSize: 18}}>Autenticación</span>
+                                <div className={classes.categoryOption} style={{ cursor: !isNew ? '' : 'pointer' }} onClick={() => { if (isNew) changeCategory('AUTHENTICATION') }}>
+                                    <input type="checkbox" checked={category === 'AUTHENTICATION'} className={classes.checkbox} />
+                                    <VpnKeyIcon style={{ marginLeft: 10, marginRight: 10 }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>Autenticación</span>
                                         <span>Envía códigos para verificar una transacción o un inicio de sesión.</span>
                                     </div>
                                 </div>
@@ -2333,7 +2333,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </>
                     )}
                     {getValues('type') === 'HSM' && (
-                        <span style={{color: 'red'}}>{errors?.category?.message}</span>
+                        <span style={{ color: 'red' }}>{errors?.category?.message}</span>
                     )}
                     <div className="row-zyx">
                         {(getValues("type") !== "HSM" && getValues("type") !== '') && (
@@ -2354,19 +2354,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === "HSM" && (
-                        <div style={{display: 'flex', marginBottom: 10}}>
-                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                <span style={{fontWeight: 'bold'}}>{t(langKeys.name)}</span>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.name)}</span>
                                 <span>{t(langKeys.assignnametotemplate)}</span>
                             </div>
-                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                <span style={{fontWeight: 'bold'}}>{t(langKeys.language)}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.language)}</span>
                                 <span>{t(langKeys.chooseyourlanguage)}</span>
                             </div>
                         </div>
                     )}
-                    <div className="row-zyx" style={{marginBottom: 0}}>
-                        {getValues('type') !== '' &&(
+                    <div className="row-zyx" style={{ marginBottom: 0 }}>
+                        {getValues('type') !== '' && (
                             <FieldEdit
                                 className="col-6"
                                 disabled={disableInput}
@@ -2392,7 +2392,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         label={getValues('type') !== 'HSM' ? t(langKeys.language) : ''}
                                         variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
                                         onChange={(value) => {
-                                            if(value) {
+                                            if (value) {
                                                 setValue("language", value.value)
                                                 trigger("language")
                                             } else {
@@ -2417,7 +2417,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         disabled={disableInput}
                                         error={errors?.language?.message}
                                         onChange={(value) => {
-                                            if(value) {
+                                            if (value) {
                                                 setValue("language", value.value)
                                                 trigger("language")
                                             } else {
@@ -2438,15 +2438,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === "HSM" && (
-                        <div style={{display: 'flex', marginBottom: 10}}>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
                             {getValues("category") !== 'AUTHENTICATION' && (
-                                <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.templatetype)}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                    <span style={{ fontWeight: 'bold' }}>{t(langKeys.templatetype)}</span>
                                     <span>Seleccione el tipo de plantilla que utilizarás</span>
                                 </div>
                             )}
-                            <div style={{display: 'flex', flexDirection: 'column', flex: 1}}>
-                                <span style={{fontWeight: 'bold'}}>{t(langKeys.channel)}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.channel)}</span>
                                 <span>Seleccione el canal en el que registrarás tu plantilla</span>
                             </div>
                         </div>
@@ -2457,7 +2457,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 {getValues("category") !== 'AUTHENTICATION' && (
                                     <FieldSelect
                                         className="col-6"
-                                        data={getValues("type") !== 'HSM' ? dataTemplateType : dataTemplateType.filter((x: Dictionary) => {return x.value !== 'STANDARD'})}
+                                        data={getValues("type") !== 'HSM' ? dataTemplateType : dataTemplateType.filter((x: Dictionary) => { return x.value !== 'STANDARD' })}
                                         disabled={templateTypeDisabled || disableInput}
                                         error={errors?.templatetype?.message}
                                         onChange={onChangeTemplateType}
@@ -2488,391 +2488,501 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === 'HSM' &&
-                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && getValues('communicationchannelid') !== 0 &&
-                    (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
-                        <div>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span className={classes.title}>{t(langKeys.templateedition)}</span>
-                            </div>
-                            <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%'}}>
-                                    <span className={classes.title}>{t(langKeys.heading)}</span>
-                                    <span style={{marginBottom: 10}}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
-                                    <div style={{display: 'flex', gap: 10}}>
-                                        <div style={{width: 180, marginBottom: 20}}>
-                                            <FieldSelect
-                                                data={dataHeaderType}
-                                                onChange={onChangeHeaderType}
-                                                optionDesc="text"
-                                                optionValue="value"
-                                                valueDefault={headerType}
-                                                variant="outlined"
-                                                disabled={!isNew}
-                                            />
-                                        </div>
-                                        {getValues('headertype') === 'TEXT' && (
-                                            <div style={{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
-                                                <FieldEditAdvancedAux
-                                                    inputProps={{
-                                                        rows: 1,
-                                                        maxRows: 1
-                                                    }}
-                                                    rows={1}
+                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && getValues('communicationchannelid') !== 0 &&
+                            (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
+                            <div>
+                                <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                    <span className={classes.title}>{t(langKeys.templateedition)}</span>
+                                </div>
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%' }}>
+                                        <span className={classes.title}>{t(langKeys.heading)}</span>
+                                        <span style={{ marginBottom: 10 }}>Añade un título o elige qué tipo de contenido usarás para este encabezado.</span>
+                                        <div style={{ display: 'flex', gap: 10 }}>
+                                            <div style={{ width: 180, marginBottom: 20 }}>
+                                                <FieldSelect
+                                                    data={dataHeaderType}
+                                                    onChange={onChangeHeaderType}
+                                                    optionDesc="text"
+                                                    optionValue="value"
+                                                    valueDefault={headerType}
                                                     variant="outlined"
-                                                    size="small"
-                                                    maxLength={60}
-                                                    valueDefault={getValues('header')}
-                                                    error={errors?.header?.message}
-                                                    onChange={handleInputHeader}
                                                     disabled={!isNew}
-                                                    onInput={handleInputHeader}
-                                                    style={{ border: '1px solid #BDBDBD', borderRadius: '4px', padding: '3px' }}
                                                 />
-                                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                                    <Button
-                                                        className={classes.button}
-                                                        startIcon={isHeaderVariable ? <ClearIcon /> : <AddIcon />}
-                                                        onClick={addHeaderVariable}
-                                                        disabled={!isNew}
-                                                    >
-                                                        {isHeaderVariable ? t(langKeys.deletevariable) : t(langKeys.addvariable)}
-                                                    </Button>
-                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                    {getValues('headertype') === 'TEXT' && isHeaderVariable && (
-                                        <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
-                                            <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                <span>{'{{'}1{'}}'}</span>
-                                                <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                    <FieldEdit
+                                            {getValues('headertype') === 'TEXT' && (
+                                                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                                                    <FieldEditAdvancedAux
+                                                        inputProps={{
+                                                            rows: 1,
+                                                            maxRows: 1
+                                                        }}
+                                                        rows={1}
                                                         variant="outlined"
                                                         size="small"
                                                         maxLength={60}
-                                                        valueDefault={getValues('headervariables')[0]}
-                                                        onChange={(value) => {
-                                                            setValue('headervariables.[0]', value)
-                                                            trigger('headervariables')
-                                                        }}
+                                                        valueDefault={getValues('header')}
+                                                        error={errors?.header?.message}
+                                                        onChange={handleInputHeader}
                                                         disabled={!isNew}
+                                                        onInput={handleInputHeader}
+                                                        style={{ border: '1px solid #BDBDBD', borderRadius: '4px', padding: '3px' }}
                                                     />
-                                                </div>
-                                            </div>
-                                            {getValues('headervariables')[0] === "" && (
-                                                <div className={classes.warningContainer}>
-                                                    <WarningIcon style={{color: '#FF7575'}}/>
-                                                    {t(langKeys.addexampletext)}
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+                                                        <Button
+                                                            className={classes.button}
+                                                            startIcon={isHeaderVariable ? <ClearIcon /> : <AddIcon />}
+                                                            onClick={addHeaderVariable}
+                                                            disabled={!isNew}
+                                                        >
+                                                            {isHeaderVariable ? t(langKeys.deletevariable) : t(langKeys.addvariable)}
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
-                                    )}
-                                    {(headerType !== 'text' && headerType !== 'none') && (
-                                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                                            <div style={{display: 'flex', gap: 20, marginBottom: 20}}>
-                                                <div className={getValues('headertype') === 'IMAGE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('IMAGE')}}>
-                                                    <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'IMAGE'} className={classes.checkboxHeadOption}/>
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <ImageIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'IMAGE' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'IMAGE' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className={getValues('headertype') === 'VIDEO' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('VIDEO')}}>
-                                                    <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'VIDEO'} className={classes.checkboxHeadOption} />
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
+                                        {getValues('headertype') === 'TEXT' && isHeaderVariable && (
+                                            <div style={{ marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: 'bold' }}>Ejemplos de contenido del encabezado</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                    <span>{'{{'}1{'}}'}</span>
+                                                    <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                        <FieldEdit
+                                                            variant="outlined"
+                                                            size="small"
+                                                            maxLength={60}
+                                                            valueDefault={getValues('headervariables')[0]}
+                                                            onChange={(value) => {
+                                                                setValue('headervariables.[0]', value)
+                                                                trigger('headervariables')
+                                                            }}
+                                                            disabled={!isNew}
+                                                        />
                                                     </div>
                                                 </div>
-                                                <div className={getValues('headertype') === 'DOCUMENT' ? classes.headerOptionSelected : classes.headerOption} onClick={() => {if(isNew) changeHeaderType('DOCUMENT')}}>
-                                                    <div style={{ position: 'relative', marginRight: 10 }}>
-                                                        <input type="checkbox" checked={getValues('headertype') === 'DOCUMENT'} className={classes.checkboxHeadOption} />
+                                                {getValues('headervariables')[0] === "" && (
+                                                    <div className={classes.warningContainer}>
+                                                        <WarningIcon style={{ color: '#FF7575' }} />
+                                                        {t(langKeys.addexampletext)}
                                                     </div>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                                        <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'DOCUMENT' ? '#0E60A0' : '#9B9B9B' }} />
-                                                        <span style={{ textAlign: 'center', color: getValues('headertype') === 'DOCUMENT' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
-                                                    </div>
-                                                </div>
+                                                )}
                                             </div>
-                                            {(getValues('headertype') !== 'TEXT' && getValues('headertype') !== 'NONE') && (
-                                                <div style={{marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                    <span style={{fontWeight: 'bold'}}>Ejemplos de contenido del encabezado</span>
-                                                    <div style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        {t(langKeys[getValues('headertype')])}
-                                                        {(getValues('headertype') === 'IMAGE' || getValues('headertype') === 'VIDEO' || getValues('headertype') === 'DOCUMENT') && (
-                                                            <input
-                                                                type="file"
-                                                                accept={getValues('headertype') === 'IMAGE' ? '.jpg,.png' : getValues('headertype') === 'VIDEO' ? '.mp4' : '.pdf'}
-                                                                onChange={(e) => handleFileChange(e.target.files)}
-                                                                style={{ display: 'none' }}
-                                                                disabled={uploading}
-                                                                id="fileInput"
-                                                            />
-                                                        )}
-                                                        {getValues('header') === ''  ? (
-                                                            <label htmlFor="fileInput">
-                                                                <Button
-                                                                    startIcon={getValues('headertype') === 'IMAGE' ? <ImageIcon/> : getValues('headertype') === 'VIDEO' ? <VideoLibraryIcon/> : getValues('headertype') === 'DOCUMENT' ? <PDFRedIcon /> : <></>}
-                                                                    variant="outlined"
-                                                                    style={{backgroundColor: '#F5F5F5'}}
-                                                                    onClick={onClickAttachment}
-                                                                    disabled={uploading || !isNew}
-                                                                    component="span" // Esto es necesario para que el botón funcione como un input de tipo file
-                                                                >
-                                                                    {getValues('headertype') === 'IMAGE' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG'): getValues('headertype') === 'VIDEO' ? 'Elegir archivo MP4' : 'Elegir un documento PDF'}
-                                                                </Button>
-                                                            </label>
-                                                        ) : (
-                                                            <div style={{display: 'flex', alignItems: 'center', flex: 1}}>
-                                                                <div style={{display: 'flex', padding: 10, border: '1px solid #888888', borderRadius: 4, flex: 1}}>
-                                                                    <span style={{color: 'black', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400}}>{filename}</span>
+                                        )}
+                                        {(headerType !== 'text' && headerType !== 'none') && (
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <div style={{ display: 'flex', gap: 20, marginBottom: 20 }}>
+                                                    <div className={getValues('headertype') === 'IMAGE' ? classes.headerOptionSelected : classes.headerOption} onClick={() => { if (isNew) changeHeaderType('IMAGE') }}>
+                                                        <div style={{ position: 'relative', marginRight: 10 }}>
+                                                            <input type="checkbox" checked={getValues('headertype') === 'IMAGE'} className={classes.checkboxHeadOption} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                            <ImageIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'IMAGE' ? '#0E60A0' : '#9B9B9B' }} />
+                                                            <span style={{ textAlign: 'center', color: getValues('headertype') === 'IMAGE' ? '#0E60A0' : '' }}>{t(langKeys.image)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className={getValues('headertype') === 'VIDEO' ? classes.headerOptionSelected : classes.headerOption} onClick={() => { if (isNew) changeHeaderType('VIDEO') }}>
+                                                        <div style={{ position: 'relative', marginRight: 10 }}>
+                                                            <input type="checkbox" checked={getValues('headertype') === 'VIDEO'} className={classes.checkboxHeadOption} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                            <PlayCircleFilledIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '#9B9B9B' }} />
+                                                            <span style={{ textAlign: 'center', color: getValues('headertype') === 'VIDEO' ? '#0E60A0' : '' }}>{t(langKeys.video)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className={getValues('headertype') === 'DOCUMENT' ? classes.headerOptionSelected : classes.headerOption} onClick={() => { if (isNew) changeHeaderType('DOCUMENT') }}>
+                                                        <div style={{ position: 'relative', marginRight: 10 }}>
+                                                            <input type="checkbox" checked={getValues('headertype') === 'DOCUMENT'} className={classes.checkboxHeadOption} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                                            <DescriptionIcon style={{ height: 80, width: 'auto', color: getValues('headertype') === 'DOCUMENT' ? '#0E60A0' : '#9B9B9B' }} />
+                                                            <span style={{ textAlign: 'center', color: getValues('headertype') === 'DOCUMENT' ? '#0E60A0' : '' }}>{t(langKeys.document)}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {(getValues('headertype') !== 'TEXT' && getValues('headertype') !== 'NONE') && (
+                                                    <div style={{ marginBottom: 20, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Ejemplos de contenido del encabezado</span>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                            {t(langKeys[getValues('headertype')])}
+                                                            {(getValues('headertype') === 'IMAGE' || getValues('headertype') === 'VIDEO' || getValues('headertype') === 'DOCUMENT') && (
+                                                                <input
+                                                                    type="file"
+                                                                    accept={getValues('headertype') === 'IMAGE' ? '.jpg,.png' : getValues('headertype') === 'VIDEO' ? '.mp4' : '.pdf'}
+                                                                    onChange={(e) => handleFileChange(e.target.files)}
+                                                                    style={{ display: 'none' }}
+                                                                    disabled={uploading}
+                                                                    id="fileInput"
+                                                                />
+                                                            )}
+                                                            {getValues('header') === '' ? (
+                                                                <label htmlFor="fileInput">
+                                                                    <Button
+                                                                        startIcon={getValues('headertype') === 'IMAGE' ? <ImageIcon /> : getValues('headertype') === 'VIDEO' ? <VideoLibraryIcon /> : getValues('headertype') === 'DOCUMENT' ? <PDFRedIcon /> : <></>}
+                                                                        variant="outlined"
+                                                                        style={{ backgroundColor: '#F5F5F5' }}
+                                                                        onClick={onClickAttachment}
+                                                                        disabled={uploading || !isNew}
+                                                                        component="span" // Esto es necesario para que el botón funcione como un input de tipo file
+                                                                    >
+                                                                        {getValues('headertype') === 'IMAGE' ? (getValues('header') !== '' ? 'Elegir otro archivo JPG o PNG' : 'Elegir archivo JPG o PNG') : getValues('headertype') === 'VIDEO' ? 'Elegir archivo MP4' : 'Elegir un documento PDF'}
+                                                                    </Button>
+                                                                </label>
+                                                            ) : (
+                                                                <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                                                                    <div style={{ display: 'flex', padding: 10, border: '1px solid #888888', borderRadius: 4, flex: 1 }}>
+                                                                        <span style={{ color: 'black', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400 }}>{filename}</span>
+                                                                    </div>
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            setValue('header', '')
+                                                                            setValue('headervariables', [])
+                                                                            setFilename('')
+                                                                        }}
+                                                                        disabled={!isNew}
+                                                                    >
+                                                                        <ClearIcon />
+                                                                    </IconButton>
                                                                 </div>
-                                                                <IconButton
-                                                                    onClick={() => {
-                                                                        setValue('header', '')
-                                                                        setValue('headervariables', [])
-                                                                        setFilename('')
-                                                                    }}
-                                                                    disabled={!isNew}
-                                                                >
-                                                                    <ClearIcon />
-                                                                </IconButton>
+                                                            )}
+                                                            {uploading && (
+                                                                <span>Subiendo...</span>
+                                                            )}
+                                                            <span style={{ color: 'red' }}>{errors?.header?.message}</span>
+                                                        </div>
+                                                        {getValues('header') === '' && (
+                                                            <div className={classes.warningContainer}>
+                                                                <WarningIcon style={{ color: '#FF7575' }} />
+                                                                Añade contenido multimedia de ejemplo
                                                             </div>
                                                         )}
-                                                        {uploading && (
-                                                            <span>Subiendo...</span>
-                                                        )}
-                                                        <span style={{color: 'red'}}>{errors?.header?.message}</span>
                                                     </div>
-                                                    {getValues('header') === '' && (
-                                                        <div className={classes.warningContainer}>
-                                                            <WarningIcon style={{ color: '#FF7575' }} />
-                                                            Añade contenido multimedia de ejemplo
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                    <span className={classes.title}>{t(langKeys.body)}</span>
-                                    <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
-                                    <div>
-                                        <FieldEditAdvancedAux
-                                            id="bodyInput"
-                                            inputProps={{
-                                                rows: 8,
-                                                maxRows: 8
-                                            }}
-                                            valueDefault={getValues('body')}
-                                            onChange={handleInputBody}
-                                            maxLength={1024}
-                                            error={errors?.body?.message}
-                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
-                                            disabled={!isNew}
-                                            onInput={handleInputBody}
-                                            onPaste={handlePaste}
-                                        />
-                                    </div>
-                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
-                                            <EmojiEmotionsIcon />
-                                        </IconButton>
-                                        {showEmojiPicker && (
-                                            <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                <Picker onSelect={addEmoji} />
+                                                )}
                                             </div>
                                         )}
-                                        <IconButton
-                                            onClick={() => handleTextFormatting("*")}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatBoldIcon />
-                                        </IconButton>
-                                        <IconButton 
-                                            onClick={() => handleTextFormatting('_')}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatItalicIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => handleTextFormatting('~')}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatStrikethroughIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => handleTextFormatting('```')}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatCodeIcon />
-                                        </IconButton>
-                                        {getValues('bodyvariables').length < 20 && (
-                                            <Button onClick={addVariable} disabled={!isNew} startIcon={<AddIcon />}>
-                                                Añadir Variable
-                                            </Button>
-                                        )}
-                                        {getValues('bodyvariables').length > 0 && (
-                                            <Button
-                                                className={classes.button}
-                                                startIcon={<CloseIcon />}
-                                                onClick={deleteVariable}
+                                        <span className={classes.title}>{t(langKeys.body)}</span>
+                                        <span style={{ marginBottom: 5 }}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
+                                        <div>
+                                            <FieldEditAdvancedAux
+                                                id="bodyInput"
+                                                inputProps={{
+                                                    rows: 8,
+                                                    maxRows: 8
+                                                }}
+                                                valueDefault={getValues('body')}
+                                                onChange={handleInputBody}
+                                                maxLength={1024}
+                                                error={errors?.body?.message}
+                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                                disabled={!isNew}
+                                                onInput={handleInputBody}
+                                                onPaste={handlePaste}
+                                            />
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+                                            <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
+                                                <EmojiEmotionsIcon />
+                                            </IconButton>
+                                            {showEmojiPicker && (
+                                                <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
+                                                    <Picker onSelect={addEmoji} />
+                                                </div>
+                                            )}
+                                            <IconButton
+                                                onClick={() => handleTextFormatting("*")}
                                                 disabled={!isNew}
                                             >
-                                                {t(langKeys.deletevariable)}
-                                            </Button>
-                                        )}
-                                    </div>
-                                    {getValues('bodyvariables').length > 0 && (
-                                        <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {getValues('bodyvariables').map((v: Dictionary, index: number) => {
-                                                return (
-                                                    <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        <span>{'{{'}{v.variable}{'}}'}</span>
-                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                            <FieldEdit
-                                                                label={`Introduce el contenido para {{${v.variable}}}`}
-                                                                variant="outlined"
-                                                                size="small"
-                                                                valueDefault={v.text}
-                                                                onChange={(value) => {
-                                                                    const newBodyVariables = [...getValues('bodyvariables')];
-                                                                    newBodyVariables[index].text = value;
-                                                                    setValue('bodyvariables', newBodyVariables);
-                                                                    trigger('bodyvariables')
-                                                                }}
-                                                                disabled={!isNew}
-                                                            />
+                                                <FormatBoldIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleTextFormatting('_')}
+                                                disabled={!isNew}
+                                            >
+                                                <FormatItalicIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleTextFormatting('~')}
+                                                disabled={!isNew}
+                                            >
+                                                <FormatStrikethroughIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleTextFormatting('```')}
+                                                disabled={!isNew}
+                                            >
+                                                <FormatCodeIcon />
+                                            </IconButton>
+                                            {getValues('bodyvariables').length < 20 && (
+                                                <Button onClick={addVariable} disabled={!isNew} startIcon={<AddIcon />}>
+                                                    Añadir Variable
+                                                </Button>
+                                            )}
+                                            {getValues('bodyvariables').length > 0 && (
+                                                <Button
+                                                    className={classes.button}
+                                                    startIcon={<CloseIcon />}
+                                                    onClick={deleteVariable}
+                                                    disabled={!isNew}
+                                                >
+                                                    {t(langKeys.deletevariable)}
+                                                </Button>
+                                            )}
+                                        </div>
+                                        {getValues('bodyvariables').length > 0 && (
+                                            <div style={{ marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.text)}</span>
+                                                {getValues('bodyvariables').map((v: Dictionary, index: number) => {
+                                                    return (
+                                                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                            <span>{'{{'}{v.variable}{'}}'}</span>
+                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                <FieldEdit
+                                                                    label={`Introduce el contenido para {{${v.variable}}}`}
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    valueDefault={v.text}
+                                                                    onChange={(value) => {
+                                                                        const newBodyVariables = [...getValues('bodyvariables')];
+                                                                        newBodyVariables[index].text = value;
+                                                                        setValue('bodyvariables', newBodyVariables);
+                                                                        trigger('bodyvariables')
+                                                                    }}
+                                                                    disabled={!isNew}
+                                                                />
+                                                            </div>
                                                         </div>
+                                                    );
+                                                })}
+                                                {getValues('bodyvariables').some(v => v.text === '') && (
+                                                    <div className={classes.warningContainer}>
+                                                        <WarningIcon style={{ color: '#FF7575' }} />
+                                                        {t(langKeys.addexampletext)}
                                                     </div>
-                                                );
-                                            })}
-                                            {getValues('bodyvariables').some(v => v.text === '') && (
-                                                <div className={classes.warningContainer}>
-                                                    <WarningIcon style={{color: '#FF7575'}}/>
-                                                    {t(langKeys.addexampletext)}
+                                                )}
+                                            </div>
+                                        )}
+                                        <span className={classes.title} style={{ marginTop: 20 }}>{t(langKeys.footerpage)}</span>
+                                        <span style={{ marginBottom: 5 }}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
+                                        <FieldEditAdvancedAux
+                                            error={errors?.footer?.message}
+                                            maxLength={60}
+                                            onInput={handleInput}
+                                            onChange={handleInput}
+                                            inputProps={{
+                                                rows: 1,
+                                                maxRows: 1
+                                            }}
+                                            rows={1}
+                                            valueDefault={getValues("footer")}
+                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                            disabled={!isNew}
+                                        />
+                                        <span className={classes.title}>{t(langKeys.buttons)}</span>
+                                        <span style={{ marginBottom: 5 }}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
+                                        <div style={{ display: 'flex' }}>
+                                            {(getValues("buttonsgeneric")?.length + getValues("buttonsquickreply")?.length) < 13 && (
+                                                <div>
+                                                    <AddButtonMenu
+                                                        fastAnswer={onClickAddButtonText}
+                                                        urlWeb={onClickAddButton}
+                                                        callNumber={onClickAddButtonPhone}
+                                                        textbtn={getValues('buttonsquickreply')}
+                                                        urlbtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'URL' })}
+                                                        phonebtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'PHONE' })}
+                                                        isNew={isNew}
+                                                    />
                                                 </div>
                                             )}
                                         </div>
-                                    )}
-                                    <span className={classes.title} style={{marginTop: 20}}>{t(langKeys.footerpage)}</span>
-                                    <span style={{marginBottom: 5}}>Añade una breve línea de texto en la parte inferior de tu plantilla de mensaje.</span>
-                                    <FieldEditAdvancedAux
-                                        error={errors?.footer?.message}
-                                        maxLength={60}
-                                        onInput={handleInput}
-                                        onChange={handleInput}
-                                        inputProps={{
-                                            rows: 1,
-                                            maxRows: 1
-                                        }}
-                                        rows={1}
-                                        valueDefault={getValues("footer")}
-                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
-                                        disabled={!isNew}
-                                    />
-                                    <span className={classes.title}>{t(langKeys.buttons)}</span>
-                                    <span style={{marginBottom: 5}}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
-                                    <div style={{display: 'flex'}}>
-                                        {(getValues("buttonsgeneric")?.length + getValues("buttonsquickreply")?.length) < 13 && (
-                                            <div>
-                                                <AddButtonMenu
-                                                    fastAnswer={onClickAddButtonText}
-                                                    urlWeb={onClickAddButton}
-                                                    callNumber={onClickAddButtonPhone}
-                                                    textbtn={getValues('buttonsquickreply')}
-                                                    urlbtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'URL'})}
-                                                    phonebtn={getValues('buttonsgeneric').filter((btn: Dictionary) => { return btn.type === 'PHONE'})}
-                                                    isNew={isNew}
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 5, marginBottom: 10}}>
-                                        <EmojiObjectsIcon />
-                                        <span style={{marginLeft: 10}}>Si añades más de tres botones, se mostrarán en una lista</span>
-                                    </div>
-                                    <DragDropContext onDragEnd={handleDragDrop}>
-                                        {getValues('buttonsquickreply')?.length > 0 && (
-                                            <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
-                                                <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
-                                                    <ImportExportIcon style={{color: '#0049CF'}} />
-                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.fastanswer)}</span>
-                                                </div>
-                                                <React.Fragment>
-                                                    <Droppable droppableId="root" type="group">
-                                                        {(provided) => (
-                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
-                                                                {getValues("buttonsquickreply")?.map((btn: any, i: number) => {
-                                                                    return (
-                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                            {(provided) => (
-                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                    <div style={{display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5}}>
-                                                                                        <DragIndicatorIcon />
-                                                                                        <div style={{flex: 1}}>
-                                                                                            <FieldEditAdvancedAux
-                                                                                                disabled={disableInput || !isNew}
-                                                                                                label={t(langKeys.buttontext)}
-                                                                                                error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
-                                                                                                onInput={(e) => handleQuickReply(e, i)}
-                                                                                                onChange={(e) => handleQuickReply(e, i)}
-                                                                                                valueDefault={btn?.btn?.text || ""}
-                                                                                                variant="outlined"
-                                                                                                maxLength={25}
-                                                                                                rows={1}
-                                                                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
-                                                                                                fregister={{
-                                                                                                    ...register(`buttonsquickreply.${i}.btn.text`, {
-                                                                                                        validate: (value) =>
-                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                    }),
-                                                                                                }}
-                                                                                            />
+                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 5, marginBottom: 10 }}>
+                                            <EmojiObjectsIcon />
+                                            <span style={{ marginLeft: 10 }}>Si añades más de tres botones, se mostrarán en una lista</span>
+                                        </div>
+                                        <DragDropContext onDragEnd={handleDragDrop}>
+                                            {getValues('buttonsquickreply')?.length > 0 && (
+                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
+                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
+                                                    </div>
+                                                    <React.Fragment>
+                                                        <Droppable droppableId="root" type="group">
+                                                            {(provided) => (
+                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                    {getValues("buttonsquickreply")?.map((btn: any, i: number) => {
+                                                                        return (
+                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                {(provided) => (
+                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                        <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
+                                                                                            <DragIndicatorIcon />
+                                                                                            <div style={{ flex: 1 }}>
+                                                                                                <FieldEditAdvancedAux
+                                                                                                    disabled={disableInput || !isNew}
+                                                                                                    label={t(langKeys.buttontext)}
+                                                                                                    error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
+                                                                                                    onInput={(e) => handleQuickReply(e, i)}
+                                                                                                    onChange={(e) => handleQuickReply(e, i)}
+                                                                                                    valueDefault={btn?.btn?.text || ""}
+                                                                                                    variant="outlined"
+                                                                                                    maxLength={25}
+                                                                                                    rows={1}
+                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                                                                                    fregister={{
+                                                                                                        ...register(`buttonsquickreply.${i}.btn.text`, {
+                                                                                                            validate: (value) =>
+                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                        }),
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+                                                                                            <IconButton onClick={() => onClickRemoveButtonText(i)} disabled={!isNew}>
+                                                                                                <CloseIcon />
+                                                                                            </IconButton>
                                                                                         </div>
-                                                                                        <IconButton onClick={() => onClickRemoveButtonText(i)} disabled={!isNew}>
-                                                                                            <CloseIcon/>
-                                                                                        </IconButton>
                                                                                     </div>
-                                                                                </div>
-                                                                            )}
-                                                                        </Draggable>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        )}
-                                                    </Droppable>
-                                                </React.Fragment>
-                                            </div>
-                                        )}
-                                    </DragDropContext>
-                                    <DragDropContext onDragEnd={handleDragDropAux}>
-                                        {getValues('buttonsgeneric')?.length > 0 && (
-                                            <div className="row-zyx" style={{display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem'}}>
-                                                <div style={{display: 'flex', padding: '10px 0px 0px 20px'}}>
-                                                    <ImportExportIcon style={{color: '#0049CF'}} />
-                                                    <span style={{fontWeight: 'bold'}}>{t(langKeys.calltoaction)}</span>
+                                                                                )}
+                                                                            </Draggable>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                        </Droppable>
+                                                    </React.Fragment>
                                                 </div>
-                                                <React.Fragment>
-                                                    <Droppable droppableId="root2" type="group">
-                                                        {(provided) => (
-                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10}}>
-                                                                {getValues("buttonsgeneric")?.map((btn: any, i: number) => {
-                                                                    return (
-                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                            {(provided) => (
-                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                    {btn.type === 'URL' ? (
-                                                                                        <>
-                                                                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                            )}
+                                        </DragDropContext>
+                                        <DragDropContext onDragEnd={handleDragDropAux}>
+                                            {getValues('buttonsgeneric')?.length > 0 && (
+                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
+                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
+                                                    </div>
+                                                    <React.Fragment>
+                                                        <Droppable droppableId="root2" type="group">
+                                                            {(provided) => (
+                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                    {getValues("buttonsgeneric")?.map((btn: any, i: number) => {
+                                                                        return (
+                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                {(provided) => (
+                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                        {btn.type === 'URL' ? (
+                                                                                            <>
+                                                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                                                    <DragIndicatorIcon />
+                                                                                                    <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                        <div className="row-zyx" style={{ width: '100%', marginBottom: 0, display: 'flex' }}>
+                                                                                                            <SingleLineInput
+                                                                                                                className='col-4'
+                                                                                                                label={t(langKeys.buttontext)}
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                                onChange={(e) => handleActionButtonText(e, i)}
+                                                                                                                valueDefault={btn?.btn?.text || ""}
+                                                                                                                maxLength={25}
+                                                                                                                rows={1}
+                                                                                                                inputProps={{
+                                                                                                                    rows: 1,
+                                                                                                                    maxRows: 1
+                                                                                                                }}
+                                                                                                                fregister={{
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                        validate: (value) =>
+                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                    }),
+                                                                                                                }}
+                                                                                                                disabled={!isNew}
+                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                            />
+                                                                                                            <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
+                                                                                                                <span>{t(langKeys.urltype)}</span>
+                                                                                                                <FieldSelect
+                                                                                                                    data={dataURLType}
+                                                                                                                    error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
+                                                                                                                    onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                    optionDesc="text"
+                                                                                                                    optionValue="value"
+                                                                                                                    valueDefault={btn?.btn?.type || ""}
+                                                                                                                    variant="outlined"
+                                                                                                                    fregister={{
+                                                                                                                        ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                            validate: (value) =>
+                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                        }),
+                                                                                                                    }}
+                                                                                                                    disabled={!isNew}
+                                                                                                                    size="normal"
+                                                                                                                />
+                                                                                                            </div>
+                                                                                                            <SingleLineInput
+                                                                                                                className='col-4'
+                                                                                                                label={t(langKeys.urlwebsite)}
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
+                                                                                                                onInput={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                onChange={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                valueDefault={btn?.btn?.url || ""}
+                                                                                                                rows={1}
+                                                                                                                inputProps={{
+                                                                                                                    rows: 1,
+                                                                                                                    maxRows: 1
+                                                                                                                }}
+                                                                                                                maxLength={2000}
+                                                                                                                fregister={{
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.url`, {
+                                                                                                                        validate: (value) =>
+                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                    }),
+                                                                                                                }}
+                                                                                                                disabled={!isNew}
+                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                            />
+                                                                                                            {btn?.btn?.type === 'dynamic' && (
+                                                                                                                <div className="col-1" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                                                                                    <span>{'{{'}1{'}}'}</span>
+                                                                                                                    <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
+                                                                                                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                                                                    </Tooltip>
+                                                                                                                </div>
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
+                                                                                                        <CloseIcon />
+                                                                                                    </IconButton>
+                                                                                                </div>
+                                                                                                {btn?.btn?.type === 'dynamic' && (
+                                                                                                    <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                                                                                            <span>{'{{'}1{'}}'}</span>
+                                                                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                                                <FieldEdit
+                                                                                                                    label={btn?.btn?.url !== '' ? `Introduce la URL completa de ${btn?.btn?.url}{{1}}` : ''}
+                                                                                                                    variant="outlined"
+                                                                                                                    size="small"
+                                                                                                                    onChange={(value) => {
+                                                                                                                        setValue(`buttonsgeneric.${i}.btn.variables[0]`, value)
+                                                                                                                        trigger('buttonsgeneric')
+                                                                                                                    }}
+                                                                                                                    valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                    disabled={!isNew}
+                                                                                                                />
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        {getValues(`buttonsgeneric.${i}.btn.variables[0]`) === "" && (
+                                                                                                            <div className={classes.warningContainer}>
+                                                                                                                <WarningIcon style={{ color: '#FF7575' }} />
+                                                                                                                {t(langKeys.addexampletext)}
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                )}
+                                                                                            </>
+                                                                                        ) : (
+                                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                                                                 <DragIndicatorIcon />
-                                                                                                <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
-                                                                                                    <div className="row-zyx" style={{width: '100%', marginBottom: 0, display: 'flex'}}>
+                                                                                                <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
                                                                                                         <SingleLineInput
                                                                                                             className='col-4'
                                                                                                             label={t(langKeys.buttontext)}
@@ -2880,6 +2990,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                             onInput={(e) => handleActionButtonText(e, i)}
                                                                                                             onChange={(e) => handleActionButtonText(e, i)}
                                                                                                             valueDefault={btn?.btn?.text || ""}
+                                                                                                            variant="outlined"
                                                                                                             maxLength={25}
                                                                                                             rows={1}
                                                                                                             inputProps={{
@@ -2892,223 +3003,112 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         (value && value.length) || t(langKeys.field_required),
                                                                                                                 }),
                                                                                                             }}
+                                                                                                            size="small"
                                                                                                             disabled={!isNew}
                                                                                                             style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
                                                                                                         />
-                                                                                                        <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
-                                                                                                            <span>{t(langKeys.urltype)}</span>
+                                                                                                        <div className='col-4'>
+                                                                                                            <span>{t(langKeys.country)}</span>
                                                                                                             <FieldSelect
-                                                                                                                data={dataURLType}
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
-                                                                                                                onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                data={dataCountryCodes}
+                                                                                                                onChange={(value) => {
+                                                                                                                    if (value) {
+                                                                                                                        setValue(`buttonsgeneric.${i}.btn.code`, value.value);
+                                                                                                                        trigger('buttonsgeneric')
+                                                                                                                    } else {
+                                                                                                                        setValue(`buttonsgeneric.${i}.btn.code`, null);
+                                                                                                                        trigger('buttonsgeneric')
+                                                                                                                    }
+                                                                                                                }}
                                                                                                                 optionDesc="text"
                                                                                                                 optionValue="value"
-                                                                                                                valueDefault={btn?.btn?.type || ""}
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
+                                                                                                                valueDefault={btn?.btn?.code || ""}
                                                                                                                 variant="outlined"
                                                                                                                 fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.code`, {
                                                                                                                         validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                            (value && value !== 0) || t(langKeys.field_required),
                                                                                                                     }),
                                                                                                                 }}
                                                                                                                 disabled={!isNew}
                                                                                                                 size="normal"
                                                                                                             />
                                                                                                         </div>
-                                                                                                        <SingleLineInput
-                                                                                                            className='col-4'
-                                                                                                            label={t(langKeys.urlwebsite)}
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
-                                                                                                            onInput={(e) => handleActionButtonUrl(e, i)}
-                                                                                                            onChange={(e) => handleActionButtonUrl(e, i)}
-                                                                                                            valueDefault={btn?.btn?.url || ""}
-                                                                                                            rows={1}
-                                                                                                            inputProps={{
-                                                                                                                rows: 1,
-                                                                                                                maxRows: 1
-                                                                                                            }}
-                                                                                                            maxLength={2000}
-                                                                                                            fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.url`, {
-                                                                                                                    validate: (value) =>
-                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                }),
-                                                                                                            }}
-                                                                                                            disabled={!isNew}
-                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                        />
-                                                                                                        {btn?.btn?.type === 'dynamic' && (
-                                                                                                            <div className="col-1" style={{display: 'flex', alignItems: 'center', gap: 5}}>
-                                                                                                                <span>{'{{'}1{'}}'}</span>
-                                                                                                                <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
-                                                                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                                                                                                </Tooltip>
-                                                                                                            </div>
-                                                                                                        )}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
-                                                                                                    <CloseIcon/>
-                                                                                                </IconButton>
-                                                                                            </div>
-                                                                                            {btn?.btn?.type === 'dynamic' && (
-                                                                                                <div style={{marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                                                                    <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10}}>
-                                                                                                        <span>{'{{'}1{'}}'}</span>
-                                                                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                                            <FieldEdit
-                                                                                                                label={btn?.btn?.url !== '' ? `Introduce la URL completa de ${btn?.btn?.url}{{1}}` : ''}
+                                                                                                        <div className='col-4'>
+                                                                                                            <span>{t(langKeys.telephonenumber)}</span>
+                                                                                                            <FieldEditAdvancedAux
+                                                                                                                type="number"
+                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
+                                                                                                                onInput={(e) => handleActionButtonPhone(e, i)}
+                                                                                                                onChange={(e) => handleActionButtonPhone(e, i)}
+                                                                                                                valueDefault={btn?.btn?.phone_number || ""}
                                                                                                                 variant="outlined"
-                                                                                                                size="small"
-                                                                                                                onChange={(value) => {
-                                                                                                                    setValue(`buttonsgeneric.${i}.btn.variables[0]`, value)
-                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                fregister={{
+                                                                                                                    ...register(`buttonsgeneric.${i}.btn.phone_number`, {
+                                                                                                                        validate: (value) =>
+                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                    }),
                                                                                                                 }}
-                                                                                                                valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                maxLength={20}
+                                                                                                                rows={1}
+                                                                                                                inputProps={{
+                                                                                                                    rows: 1,
+                                                                                                                    maxRows: 1
+                                                                                                                }}
                                                                                                                 disabled={!isNew}
+                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
                                                                                                             />
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    {getValues(`buttonsgeneric.${i}.btn.variables[0]`) === "" && (
-                                                                                                        <div className={classes.warningContainer}>
-                                                                                                            <WarningIcon style={{color: '#FF7575'}}/>
-                                                                                                            {t(langKeys.addexampletext)}
-                                                                                                        </div>
-                                                                                                    )}
                                                                                                 </div>
-                                                                                            )}
-                                                                                        </>
-                                                                                    ) : (
-                                                                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                                                                            <DragIndicatorIcon />
-                                                                                            <div style={{display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7}}>
-                                                                                                <div className="row-zyx" style={{width: '100%', marginBottom: 0}}>
-                                                                                                    <SingleLineInput
-                                                                                                        className='col-4'
-                                                                                                        label={t(langKeys.buttontext)}
-                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                        onInput={(e) => handleActionButtonText(e, i)}
-                                                                                                        onChange={(e) => handleActionButtonText(e, i)}
-                                                                                                        valueDefault={btn?.btn?.text || ""}
-                                                                                                        variant="outlined"
-                                                                                                        maxLength={25}
-                                                                                                        rows={1}
-                                                                                                        inputProps={{
-                                                                                                            rows: 1,
-                                                                                                            maxRows: 1
-                                                                                                        }}
-                                                                                                        fregister={{
-                                                                                                            ...register(`buttonsgeneric.${i}.btn.text`, {
-                                                                                                                validate: (value) =>
-                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                            }),
-                                                                                                        }}
-                                                                                                        size="small"
-                                                                                                        disabled={!isNew}
-                                                                                                        style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                    />
-                                                                                                    <div className='col-4'>
-                                                                                                        <span>{t(langKeys.country)}</span>
-                                                                                                        <FieldSelect
-                                                                                                            data={dataCountryCodes}
-                                                                                                            onChange={(value) => {
-                                                                                                                if(value) {
-                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, value.value);
-                                                                                                                    trigger('buttonsgeneric')
-                                                                                                                } else {
-                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, null);
-                                                                                                                    trigger('buttonsgeneric')
-                                                                                                                }
-                                                                                                            }}
-                                                                                                            optionDesc="text"
-                                                                                                            optionValue="value"
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
-                                                                                                            valueDefault={btn?.btn?.code || ""}
-                                                                                                            variant="outlined"
-                                                                                                            fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.code`, {
-                                                                                                                    validate: (value) =>
-                                                                                                                        (value && value !== 0) || t(langKeys.field_required),
-                                                                                                                }),
-                                                                                                            }}
-                                                                                                            disabled={!isNew}
-                                                                                                            size="normal"
-                                                                                                        />
-                                                                                                    </div>
-                                                                                                    <div className='col-4'>
-                                                                                                        <span>{t(langKeys.telephonenumber)}</span>
-                                                                                                        <FieldEditAdvancedAux
-                                                                                                            type="number"
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
-                                                                                                            onInput={(e) => handleActionButtonPhone(e, i)}
-                                                                                                            onChange={(e) => handleActionButtonPhone(e, i)}
-                                                                                                            valueDefault={btn?.btn?.phone_number || ""}
-                                                                                                            variant="outlined"
-                                                                                                            fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.phone_number`, {
-                                                                                                                    validate: (value) =>
-                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                }),
-                                                                                                            }}
-                                                                                                            maxLength={20}
-                                                                                                            rows={1}
-                                                                                                            inputProps={{
-                                                                                                                rows: 1,
-                                                                                                                maxRows: 1
-                                                                                                            }}
-                                                                                                            disabled={!isNew}
-                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                        />
-                                                                                                    </div>
-                                                                                                </div>
+                                                                                                <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
+                                                                                                    <CloseIcon />
+                                                                                                </IconButton>
                                                                                             </div>
-                                                                                            <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
-                                                                                                <CloseIcon/>
-                                                                                            </IconButton>
-                                                                                        </div>
-                                                                                    )}
-                                                                                </div>
-                                                                            )}
-                                                                        </Draggable>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        )}
-                                                    </Droppable>
-                                                </React.Fragment>
-                                            </div>
-                                        )}
-                                    </DragDropContext>
-                                </div>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
-                                    <span className={classes.title}>{t(langKeys.messagepreview)}</span>
-                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
-                                        <MessagePreviewMultimedia
-                                            headerType={getValues('headertype')}
-                                            header={getValues('header')}
-                                            headervariables={getValues('headervariables')}
-                                            body={getValues('body')}
-                                            bodyvariables={getValues('bodyvariables')}
-                                            footer={getValues('footer')}
-                                            buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
-                                            buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
-                                        />
+                                                                                        )}
+                                                                                    </div>
+                                                                                )}
+                                                                            </Draggable>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                        </Droppable>
+                                                    </React.Fragment>
+                                                </div>
+                                            )}
+                                        </DragDropContext>
+                                    </div>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20 }}>
+                                        <span className={classes.title}>{t(langKeys.messagepreview)}</span>
+                                        <span style={{ marginBottom: 10 }}>Vista previa del mensaje configurado a enviar</span>
+                                        <div style={{ height: 'fit-content', width: '100%', border: '1px solid black' }}>
+                                            <MessagePreviewMultimedia
+                                                headerType={getValues('headertype')}
+                                                header={getValues('header')}
+                                                headervariables={getValues('headervariables')}
+                                                body={getValues('body')}
+                                                bodyvariables={getValues('bodyvariables')}
+                                                footer={getValues('footer')}
+                                                buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
+                                                buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     {(getValues("type") === 'HSM' && getValues('category') === 'AUTHENTICATION' && getValues('name') !== '' && getValues('language') !== '' && getValues('communicationchannelid') !== 0) && (
                         <div>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
+                            <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.templateedition)}</span>
                             </div>
-                            <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20}}>
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20 }}>
                                     <span className={classes.title}>{t(langKeys.messagecontent)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.authenticationmessagecontent)}</span>
-                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                    <span style={{ marginBottom: 10 }}>{t(langKeys.authenticationmessagecontent)}</span>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <Checkbox
                                             checked={getValues('authenticationdata.safetyrecommendation')}
                                             color="primary"
@@ -3117,7 +3117,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         />
                                         <span>{t(langKeys.addsecurityadvice)}</span>
                                     </div>
-                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <Checkbox
                                             checked={getValues('authenticationdata.showexpirationdate')}
                                             color="primary"
@@ -3126,11 +3126,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         />
                                         <span>{t(langKeys.addlastdatecode)}</span>
                                     </div>
-                                    <div style={{display: 'flex', flexDirection: 'column', border: '1px solid #B4B4B4', backgroundColor: '#F1F1F1', padding: 15, borderRadius: 10, marginTop: 10, marginBottom: 20}}>
-                                        <span style={{fontWeight: 'bold', marginBottom: 8}}>{t(langKeys.expiresin)}</span>
-                                        <div style={{display: 'flex', gap: 20, alignItems: 'end'}}>
-                                            <div style={{width: 150}}>
-                                                <span style={{fontSize: 10}}>{t(langKeys.minutes)}</span>
+                                    <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid #B4B4B4', backgroundColor: '#F1F1F1', padding: 15, borderRadius: 10, marginTop: 10, marginBottom: 20 }}>
+                                        <span style={{ fontWeight: 'bold', marginBottom: 8 }}>{t(langKeys.expiresin)}</span>
+                                        <div style={{ display: 'flex', gap: 20, alignItems: 'end' }}>
+                                            <div style={{ width: 150 }}>
+                                                <span style={{ fontSize: 10 }}>{t(langKeys.minutes)}</span>
                                                 <FieldEditAdvancedAux
                                                     type="number"
                                                     valueDefault={getValues('authenticationdata.codeexpirationminutes')}
@@ -3164,14 +3164,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 />
                                             </div>
                                             <div className={classes.warningContainer}>
-                                                <WarningIcon style={{color: '#FF7575'}}/>
+                                                <WarningIcon style={{ color: '#FF7575' }} />
                                                 <span>{t(langKeys.introudceavalue)}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <span className={classes.title}>{t(langKeys.buttontext)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.buttontextauth)}</span>
-                                    <div style={{width: '50%', marginBottom: 20}}>
+                                    <span style={{ marginBottom: 10 }}>{t(langKeys.buttontextauth)}</span>
+                                    <div style={{ width: '50%', marginBottom: 20 }}>
                                         <FieldEditAdvanced
                                             inputProps={{
                                                 rows: 1,
@@ -3189,33 +3189,33 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                         />
                                     </div>
-                                    <div style={{display: 'flex', gap: 10, alignItems: 'center', marginBottom: 5}}>
+                                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 5 }}>
                                         <span className={classes.title}>{t(langKeys.advanceconfig)}</span>
                                         <Tooltip title={t(langKeys.validtyperiodtitlehelptext)} arrow placement="top">
                                             <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                         </Tooltip>
                                     </div>
                                     <span className={classes.title}>{t(langKeys.validityperiodmessages)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.validityperiodtext)}</span>
-                                    <div style={{display: 'flex', alignItems: 'start', marginTop: 10}}>
+                                    <span style={{ marginBottom: 10 }}>{t(langKeys.validityperiodtext)}</span>
+                                    <div style={{ display: 'flex', alignItems: 'start', marginTop: 10 }}>
                                         <Checkbox
                                             checked={getValues('authenticationdata.configurevalidityperiod')}
                                             color="primary"
                                             onChange={(e) => configureValidityPeriod(e)}
                                             disabled={!isNew}
                                         />
-                                        <div style={{display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.configvalidityperiod)}</span>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontWeight: 'bold' }}>{t(langKeys.configvalidityperiod)}</span>
                                             <span>{t(langKeys.validityperiodconfigcondition)}</span>
                                         </div>
                                     </div>
                                     {getValues('authenticationdata.configurevalidityperiod') && (
-                                        <div style={{display: 'flex', flexDirection: 'column', padding: '15px 25px', backgroundColor: '#F5F5F5', border: '1px solid #ACACAC', borderRadius: 10, marginTop: 10}}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', padding: '15px 25px', backgroundColor: '#F5F5F5', border: '1px solid #ACACAC', borderRadius: 10, marginTop: 10 }}>
                                             <CustomTitleHelper
                                                 title={t(langKeys.validityperiod) + ' '}
                                                 helperText={t(langKeys.test)}
-                                            /> 
-                                            <div style={{backgroundColor: 'white', width: 250, marginTop: 5}}>
+                                            />
+                                            <div style={{ backgroundColor: 'white', width: 250, marginTop: 5 }}>
                                                 <FieldSelect
                                                     data={dataValidityPeriod}
                                                     optionDesc="text"
@@ -3223,7 +3223,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     variant="outlined"
                                                     valueDefault={getValues('authenticationdata.validityperiod')}
                                                     onChange={(value) => {
-                                                        if(value) {
+                                                        if (value) {
                                                             setValue('authenticationdata.validityperiod', value.value)
                                                             trigger('authenticationdata')
                                                         } else {
@@ -3237,10 +3237,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </div>
                                     )}
                                 </div>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20 }}>
                                     <span className={classes.title}>{t(langKeys.messagepreview)}</span>
-                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 500, width: '100%', border: '1px solid black'}}>
+                                    <span style={{ marginBottom: 10 }}>Vista previa del mensaje configurado a enviar</span>
+                                    <div style={{ height: 500, width: '100%', border: '1px solid black' }}>
                                         <MessagePreviewAuthentication
                                             buttontext={getValues('authenticationdata.buttontext')}
                                             safetyAdvice={getValues('authenticationdata.safetyrecommendation')}
@@ -3248,10 +3248,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             expiresValue={getValues('authenticationdata.codeexpirationminutes')}
                                         />
                                     </div>
-                                    <div style={{height: 100}}/>
+                                    <div style={{ height: 100 }} />
                                     {getValues('authenticationdata.codeexpirationminutes') < getValues('authenticationdata.validityperiod') && (
-                                        <div style={{display: 'flex', padding: 10, borderRadius: 8, gap: 10, backgroundColor: '#FFF5D1', marginTop: 10}}>
-                                            <WarningIcon style={{color: '#D3A500'}}/>
+                                        <div style={{ display: 'flex', padding: 10, borderRadius: 8, gap: 10, backgroundColor: '#FFF5D1', marginTop: 10 }}>
+                                            <WarningIcon style={{ color: '#D3A500' }} />
                                             <span>{t(langKeys.authtemplatemessage)}</span>
                                         </div>
                                     )}
@@ -3260,579 +3260,579 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </div>
                     )}
                     {getValues("type") === 'HSM' &&
-                    (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && getValues('communicationchannelid') !== 0 &&
-                    (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) &&(
-                        <div>
-                            <div className='row-zyx' style={{borderBottom: '1px solid black', paddingBottom: 10}}>
-                                <span style={{fontWeight: 'bold', fontSize: 20}}>{t(langKeys.templateedition)}</span>
-                            </div>
-                            <div style={{display: 'flex'}}>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%'}}>
-                                    <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
-                                    <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
-                                    <div>
-                                        <FieldEditAdvancedAux
-                                            id="bodyInput"
-                                            variant="outlined"
-                                            inputProps={{
-                                                rows: 8,
-                                                maxRows: 8
-                                            }}
-                                            valueDefault={getValues('body')}
-                                            onChange={handleInputBody}
-                                            maxLength={1024}
-                                            disabled={!isNew}
-                                            error={errors?.body?.message}
-                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
-                                            onInput={handleInputBody}
-                                            onPaste={handlePaste}
-                                        />
-                                    </div>
-                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
-                                            <EmojiEmotionsIcon />
-                                        </IconButton>
-                                        {showEmojiPicker && (
-                                            <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                <Picker onSelect={addEmoji} />
-                                            </div>
-                                        )}
-                                        <IconButton
-                                            onClick={() => handleTextFormatting("*")}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatBoldIcon />
-                                        </IconButton>
-                                        <IconButton 
-                                            onClick={() => handleTextFormatting("_")}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatItalicIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => handleTextFormatting("~")}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatStrikethroughIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => handleTextFormatting("```")}
-                                            disabled={!isNew}
-                                        >
-                                            <FormatCodeIcon />
-                                        </IconButton>
-                                        {getValues('bodyvariables').length < 20 &&(
-                                            <Button onClick={addVariable} disabled={!isNew} startIcon={<AddIcon />}>
-                                                Añadir Variable
-                                            </Button>
-                                        )}
-                                        {getValues('bodyvariables').length > 0 && (
-                                            <Button
-                                                className={classes.button}
-                                                startIcon={<CloseIcon />}
-                                                onClick={deleteVariable}
+                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && getValues('communicationchannelid') !== 0 &&
+                            (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
+                            <div>
+                                <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.templateedition)}</span>
+                                </div>
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: 20, maxWidth: '50%' }}>
+                                        <span className={classes.title}>{t(langKeys.bubblemessage)}</span>
+                                        <span style={{ marginBottom: 10 }}>{t(langKeys.bubblemessagetext)}</span>
+                                        <div>
+                                            <FieldEditAdvancedAux
+                                                id="bodyInput"
+                                                variant="outlined"
+                                                inputProps={{
+                                                    rows: 8,
+                                                    maxRows: 8
+                                                }}
+                                                valueDefault={getValues('body')}
+                                                onChange={handleInputBody}
+                                                maxLength={1024}
                                                 disabled={!isNew}
-                                            >
-                                                {t(langKeys.deletevariable)}
-                                            </Button>
-                                        )}
-                                    </div>
-                                    {getValues('bodyvariables').length > 0 && (
-                                        <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                            <span style={{fontWeight: 'bold'}}>{t(langKeys.text)}</span>
-                                            {getValues('bodyvariables').map((v: Dictionary, index: number) => {
-                                                return (
-                                                    <div key={index} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                        <span>{'{{'}{v.variable}{'}}'}</span>
-                                                        <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                            <FieldEdit
-                                                                label={`Introduce el contenido para {{${v.variable}}}`}
-                                                                variant="outlined"
-                                                                size="small"
-                                                                valueDefault={v.text}
-                                                                onChange={(value) => {
-                                                                    setValue(`bodyvariables.${index}.text`, value);
-                                                                    trigger('bodyvariables')
-                                                                }}
-                                                                disabled={!isNew}
-                                                                fregister={{
-                                                                    ...register(`bodyvariables.${index}.text`, {
-                                                                        validate: (value) =>
-                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                    }),
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                            {getValues('bodyvariables').some(v => v.text === '') && (
-                                                <div className={classes.warningContainer}>
-                                                    <WarningIcon style={{color: '#FF7575'}}/>
-                                                    {t(langKeys.addexampletext)}
+                                                error={errors?.body?.message}
+                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                                onInput={handleInputBody}
+                                                onPaste={handlePaste}
+                                            />
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
+                                            <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
+                                                <EmojiEmotionsIcon />
+                                            </IconButton>
+                                            {showEmojiPicker && (
+                                                <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
+                                                    <Picker onSelect={addEmoji} />
                                                 </div>
                                             )}
+                                            <IconButton
+                                                onClick={() => handleTextFormatting("*")}
+                                                disabled={!isNew}
+                                            >
+                                                <FormatBoldIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleTextFormatting("_")}
+                                                disabled={!isNew}
+                                            >
+                                                <FormatItalicIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleTextFormatting("~")}
+                                                disabled={!isNew}
+                                            >
+                                                <FormatStrikethroughIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleTextFormatting("```")}
+                                                disabled={!isNew}
+                                            >
+                                                <FormatCodeIcon />
+                                            </IconButton>
+                                            {getValues('bodyvariables').length < 20 && (
+                                                <Button onClick={addVariable} disabled={!isNew} startIcon={<AddIcon />}>
+                                                    Añadir Variable
+                                                </Button>
+                                            )}
+                                            {getValues('bodyvariables').length > 0 && (
+                                                <Button
+                                                    className={classes.button}
+                                                    startIcon={<CloseIcon />}
+                                                    onClick={deleteVariable}
+                                                    disabled={!isNew}
+                                                >
+                                                    {t(langKeys.deletevariable)}
+                                                </Button>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                                <div style={{flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20}}>
-                                    <span className={classes.title}>{t(langKeys.messagepreview)}</span>
-                                    <span style={{marginBottom: 10}}>Vista previa del mensaje configurado a enviar</span>
-                                    <div style={{height: 'fit-content', width: '100%', border: '1px solid black'}}>
-                                        <MessagePreviewCarousel
-                                            body={getValues('body')}
-                                            bodyvariables={getValues('bodyvariables')}
-                                            carouselCards={getValues('carouseldata')}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="row-zyx" style={{marginTop: 20}}>
-                                <div style={{display: 'flex', flexDirection: 'column'}}>
-                                    <span className={classes.title}>{t(langKeys.messagetemplate_carousel)}</span>
-                                    <span style={{marginBottom: 10}}>Configura tus cards de carrusel añadiendo imágenes, texto, variables y botones</span>
-                                    <span style={{color: 'red', marginBottom: 10}}>{errors?.carouseldata?.message}</span>
-                                </div>
-                                {getValues('carouseldata')?.length > 0 ? (
-                                    <div>
-                                        <div className={classes.carouselContainer}>
-                                            <React.Fragment>
-                                                {getValues("carouseldata")?.map((card: any, index: number) => {
+                                        {getValues('bodyvariables').length > 0 && (
+                                            <div style={{ marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ fontWeight: 'bold' }}>{t(langKeys.text)}</span>
+                                                {getValues('bodyvariables').map((v: Dictionary, index: number) => {
                                                     return (
-                                                        <div key={`card-${index}`} className={classes.carouselCard}>
-                                                            <div style={{display: 'flex', width: '100%', justifyContent: 'end'}}>
-                                                                <IconButton onClick={() => onClickRemoveCard(index)} disabled={!isNew} style={{padding: 0}}>
-                                                                    <ClearIcon className={classes.closeIcon}/>
-                                                                </IconButton>
-                                                            </div>
-                                                            {card.header !== '' ? (
-                                                                <div className={classes.uploadedImage}>
-                                                                    <div className={classes.cardMediaContainer}>
-                                                                        <img src={card.header} alt="Selected Image" className={classes.cardMedia} />
-                                                                    </div>
-                                                                    <div style={{display: 'flex', gap: 10}}>
-                                                                        <span className={classes.imageName}>{card.header.split('/').pop().replace(/%20/g, ' ')}</span>
-                                                                        <IconButton onClick={() => handleImageRemove(index)} disabled={!isNew} style={{padding: 0}}>
-                                                                            <ClearIcon className={classes.closeIcon}/>
-                                                                        </IconButton>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                <>
-                                                                    <input
-                                                                        type="file"
-                                                                        accept={'.jpg,.png'}
-                                                                        onChange={(e) => handleFileChangeAux(e.target.files, index)}
-                                                                        style={{ display: 'none' }}
-                                                                        id={`fileInput-${index}`}
-                                                                        disabled={!isNew}
-                                                                    />
-                                                                    <div style={{width: '50%'}}>
-                                                                        <label htmlFor={`fileInput-${index}`} style={{ display: 'flex', justifyContent: 'center', width: '100%'}}>
-                                                                            <div className={classes.uploadedImage} style={{cursor: 'pointer', width: '100%'}}>
-                                                                                <ImageIcon style={{color: '#004DB1', height: 170, width: 'auto'}}/>
-                                                                                <span style={{fontWeight: 'bold'}}>{t(langKeys.uploadImage)}</span>
-                                                                                <span style={{color: '#004DB1'}}>Tamaño máximo 5 MB</span>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                </>
-                                                            )}
-                                                            <div style={{width: '90%', fontWeight: 'bold'}}>
-                                                                {t(langKeys.body)}
-                                                                <FieldEditAdvancedAux
+                                                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                            <span>{'{{'}{v.variable}{'}}'}</span>
+                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                <FieldEdit
+                                                                    label={`Introduce el contenido para {{${v.variable}}}`}
                                                                     variant="outlined"
-                                                                    inputProps={{
-                                                                        rows: 4,
-                                                                        maxRows: 4
+                                                                    size="small"
+                                                                    valueDefault={v.text}
+                                                                    onChange={(value) => {
+                                                                        setValue(`bodyvariables.${index}.text`, value);
+                                                                        trigger('bodyvariables')
                                                                     }}
-                                                                    maxLength={160}
-                                                                    rows={4}
-                                                                    valueDefault={card?.body || ""}
-                                                                    error={errors?.carouseldata?.[index]?.body?.message ? true : false}
+                                                                    disabled={!isNew}
                                                                     fregister={{
-                                                                        ...register(`carouseldata.${index}.body`, {
+                                                                        ...register(`bodyvariables.${index}.text`, {
                                                                             validate: (value) =>
                                                                                 (value && value.length) || t(langKeys.field_required),
                                                                         }),
                                                                     }}
-                                                                    onChange={(e) => handleInputBodyCard(e, index)}
-                                                                    onInput={(e) => handleInputBodyCard(e, index)}
-                                                                    onPaste={(e) => handlePasteCard(e, index)}
-                                                                    disabled={!isNew}
-                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
                                                                 />
-                                                                {getValues(`carouseldata.${index}.bodyvariables`)?.length < 20 &&(
-                                                                    <div style={{display: 'flex', justifyContent: 'end'}}>
-                                                                        <Button
-                                                                            className={classes.button}
-                                                                            startIcon={<AddIcon />}
-                                                                            onClick={() => addVariableCard(index)}
-                                                                            disabled={!isNew}
-                                                                        >
-                                                                            {t(langKeys.addvariable)}
-                                                                        </Button>
-                                                                    </div>
-                                                                )}
                                                             </div>
-                                                            {(getValues(`carouseldata.${index}.buttons`)?.length < 2 && !(buttonsType === 'phone' && getValues(`carouseldata.${index}.buttons`).length === 1)) && (
-                                                                <div>
-                                                                    <AddButtonMenuCard
-                                                                        fastAnswer={() => onClickAddButtonTCard(index)}
-                                                                        urlWeb={() => onClickAddButtonLCard(index)}
-                                                                        callNumber={() => onClickAddButtonPCard(index)}
-                                                                        textbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'QUICK_REPLY'})}
-                                                                        urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'URL'})}
-                                                                        phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn:Dictionary) => { return btn.type === 'PHONE'})}
-                                                                        isNew={isNew}
-                                                                        buttonsType={buttonsType}
-                                                                    />
-                                                                </div>
-                                                            )}
-                                                            <DragDropContext onDragEnd={(results) => handleDragDropCarrusel(results, index)}>
-                                                                <Droppable droppableId="root3" type="group">
-                                                                    {(provided) => (
-                                                                        <div {...provided.droppableProps} ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', gap: 10, width: '90%'}}>
-                                                                            {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
-                                                                                return (
-                                                                                    <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
-                                                                                        {(provided) => (
-                                                                                            <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5}}>
-                                                                                                    {getValues(`carouseldata.${index}.buttons`).length === 2 &&(
-                                                                                                        <DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/>
-                                                                                                    )}
-                                                                                                    {btn.type === 'QUICK_REPLY' ? (
-                                                                                                        <>
-                                                                                                            <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.fastanswer)}</span>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
-                                                                                                                <div style={{flex: 1}}>
-                                                                                                                    <SingleLineInput
-                                                                                                                        inputProps={{
-                                                                                                                            rows: 1,
-                                                                                                                            maxRows: 1
-                                                                                                                        }}
-                                                                                                                        rows={1}
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onInput={(e) => handleQuickReplyCard(e, index, btni)}
-                                                                                                                        onChange={(e) => handleQuickReplyCard(e, index, btni)}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white'}}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                    <ClearIcon />
-                                                                                                                </IconButton>
-                                                                                                            </div>
-                                                                                                        </>
-                                                                                                    ) : btn.type === 'URL' ?(
-                                                                                                        <>
-                                                                                                            <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.calltoaction)}</span>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
-                                                                                                                <div style={{flex: 1}}>
-                                                                                                                    <SingleLineInput
-                                                                                                                        inputProps={{
-                                                                                                                            rows: 1,
-                                                                                                                            maxRows: 1
-                                                                                                                        }}
-                                                                                                                        rows={1}
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onInput={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                        onChange={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                    <ClearIcon />
-                                                                                                                </IconButton>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urltype)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%', marginBottom: 20, padding: '0px 10px'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldSelect
-                                                                                                                        data={dataURLType}
-                                                                                                                        variant="outlined"
-                                                                                                                        optionDesc="text"
-                                                                                                                        optionValue="value"
-                                                                                                                        valueDefault={btn?.btn?.type}
-                                                                                                                        onChange={(value) => {
-                                                                                                                            if(value) {
-                                                                                                                                onChangeCardsButton(index, btni, "type", value?.value)
-                                                                                                                            } else {
-                                                                                                                                onChangeCardsButton(index, btni, "type", "")
-                                                                                                                            }
-                                                                                                                        }}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%', display:'flex'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.urlwebsite)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex', width: '100%', alignItems: 'start', padding: '0px 10px'}}>
-                                                                                                                <div style={{flex: 1}}>
-                                                                                                                    <SingleLineInput
-                                                                                                                        inputProps={{
-                                                                                                                            rows: 1,
-                                                                                                                            maxRows: 1
-                                                                                                                        }}
-                                                                                                                        rows={1}
-                                                                                                                        maxLength={2000}
-                                                                                                                        valueDefault={btn?.btn?.url}
-                                                                                                                        onInput={(e) => handleActionButtonUrlCard(e, index, btni)}
-                                                                                                                        onChange={(e) => handleActionButtonUrlCard(e, index, btni)}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.url`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                {btn?.btn?.type === 'dynamic' &&(
-                                                                                                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 15}}>{'{{'}1{'}}'}</div>
-                                                                                                                )}
-                                                                                                            </div>
-                                                                                                            {btn?.btn?.type === 'dynamic' && (
-                                                                                                                <>
-                                                                                                                    <div style={{width: '100%', display:'flex'}}>
-                                                                                                                        <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.addexampletext)}</span>
-                                                                                                                    </div>
-                                                                                                                    <div style={{width: '100%', padding: '0px 10px'}}>
-                                                                                                                        <div style={{backgroundColor: 'white'}}>
-                                                                                                                            <FieldEdit
-                                                                                                                                variant="outlined"
-                                                                                                                                size="small"
-                                                                                                                                onChange={(value) => {
-                                                                                                                                    setValue(`carouseldata.${index}.buttons.${btni}.btn.variables[0]`, value);
-                                                                                                                                    trigger('carouseldata')
-                                                                                                                                }}
-                                                                                                                                valueDefault={btn?.btn?.variables[0] || ""}
-                                                                                                                                disabled={!isNew}
-                                                                                                                                fregister={{
-                                                                                                                                    ...register(`carouseldata.${index}.buttons.${btni}.btn.variables.${0}`, {
-                                                                                                                                        validate: (value) =>
-                                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                                    }),
-                                                                                                                                }}
-                                                                                                                            />
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </>
-                                                                                                            )}
-                                                                                                        </>
-                                                                                                    ) : (
-                                                                                                        <>
-                                                                                                            <span style={{fontWeight: 'bold', margin: '6px 0px'}}>{t(langKeys.calltoaction)}</span>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.buttontext)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px'}}>
-                                                                                                                <div style={{flex: 1}}>
-                                                                                                                    <SingleLineInput
-                                                                                                                        inputProps={{
-                                                                                                                            rows: 1,
-                                                                                                                            maxRows: 1
-                                                                                                                        }}
-                                                                                                                        rows={1}
-                                                                                                                        maxLength={25}
-                                                                                                                        valueDefault={btn?.btn?.text}
-                                                                                                                        onInput={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                        onChange={(e) => handleActionButtonTextCard(e, index, btni)}
-                                                                                                                        disabled={!isNew}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                                <IconButton style={{padding: 0, marginTop: 15}} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
-                                                                                                                    <ClearIcon />
-                                                                                                                </IconButton>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.country)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{ width: '100%', marginBottom: 20, padding: '0px 10px'}}>
-                                                                                                                <div style={{backgroundColor: 'white'}}>
-                                                                                                                    <FieldSelect
-                                                                                                                        data={dataCountryCodes}
-                                                                                                                        variant="outlined"
-                                                                                                                        optionDesc="text"
-                                                                                                                        optionValue="value"
-                                                                                                                        valueDefault={btn?.btn?.code}
-                                                                                                                        onChange={(value) => {
-                                                                                                                            if(value) {
-                                                                                                                                onChangeCardsButton(index, btni, "code", value?.value)
-                                                                                                                            } else {
-                                                                                                                                setValue(`carouseldata.${index}.buttons.${btni}.btn.code`, null);
-                                                                                                                                trigger('carouseldata')
-                                                                                                                            }
-                                                                                                                        }}
-                                                                                                                        fregister={{
-                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.code`, {
-                                                                                                                                validate: (value) =>
-                                                                                                                                    (value && value !== 0) || t(langKeys.field_required),
-                                                                                                                            }),
-                                                                                                                        }}
-                                                                                                                        disabled={!isNew}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%'}}>
-                                                                                                                <span style={{textAlign: 'start', paddingLeft: 10}}>{t(langKeys.telephonenumber)}</span>
-                                                                                                            </div>
-                                                                                                            <div style={{width: '100%', padding: '0px 10px'}}>
-                                                                                                                <FieldEditAdvancedAux
-                                                                                                                    inputProps={{
-                                                                                                                        rows: 1,
-                                                                                                                        maxRows: 1
-                                                                                                                    }}
-                                                                                                                    rows={1}
-                                                                                                                    type="number"
-                                                                                                                    maxLength={20}
-                                                                                                                    valueDefault={btn?.btn?.phone_number}
-                                                                                                                    onInput={(e) => handleActionButtonPhoneCard(e, index, btni)}
-                                                                                                                    onChange={(e) => handleActionButtonPhoneCard(e, index, btni)}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.phone_number`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                        </>
-                                                                                                    )}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )}
-                                                                                    </Draggable>
-                                                                                )
-                                                                            })}
-                                                                        </div>
-                                                                    )}
-                                                                </Droppable>
-                                                            </DragDropContext>
                                                         </div>
                                                     );
                                                 })}
-                                                {(getValues("carouseldata") && getValues('carouseldata').length < 10) && (
-                                                    <div 
-                                                        className={classes.addCard}
-                                                        onClick={() => {if(isNew) onClickAddCard()}}
-                                                    >
-                                                        <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
+                                                {getValues('bodyvariables').some(v => v.text === '') && (
+                                                    <div className={classes.warningContainer}>
+                                                        <WarningIcon style={{ color: '#FF7575' }} />
+                                                        {t(langKeys.addexampletext)}
                                                     </div>
                                                 )}
-                                            </React.Fragment>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20 }}>
+                                        <span className={classes.title}>{t(langKeys.messagepreview)}</span>
+                                        <span style={{ marginBottom: 10 }}>Vista previa del mensaje configurado a enviar</span>
+                                        <div style={{ height: 'fit-content', width: '100%', border: '1px solid black' }}>
+                                            <MessagePreviewCarousel
+                                                body={getValues('body')}
+                                                bodyvariables={getValues('bodyvariables')}
+                                                carouselCards={getValues('carouseldata')}
+                                            />
                                         </div>
-                                        {getValues('carouseldata').length > 0 && (
-                                            <>
-                                                {getValues('carouseldata').map((card, cindex: number) => {
-                                                    return (
-                                                        <>
-                                                            {card?.bodyvariables?.length > 0 && (
-                                                                <div style={{marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column'}}>
-                                                                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                                        <span style={{fontWeight: 'bold'}}>Texto {cindex + 1}</span>
-                                                                        <Button
-                                                                            className={classes.button}
-                                                                            startIcon={<CloseIcon />}
-                                                                            onClick={() => deleteVariableCard(cindex)}
-                                                                            disabled={!isNew}
-                                                                        >
-                                                                            {t(langKeys.deletevariable)}
-                                                                        </Button>
+                                    </div>
+                                </div>
+                                <div className="row-zyx" style={{ marginTop: 20 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span className={classes.title}>{t(langKeys.messagetemplate_carousel)}</span>
+                                        <span style={{ marginBottom: 10 }}>Configura tus cards de carrusel añadiendo imágenes, texto, variables y botones</span>
+                                        <span style={{ color: 'red', marginBottom: 10 }}>{errors?.carouseldata?.message}</span>
+                                    </div>
+                                    {getValues('carouseldata')?.length > 0 ? (
+                                        <div>
+                                            <div className={classes.carouselContainer}>
+                                                <React.Fragment>
+                                                    {getValues("carouseldata")?.map((card: any, index: number) => {
+                                                        return (
+                                                            <div key={`card-${index}`} className={classes.carouselCard}>
+                                                                <div style={{ display: 'flex', width: '100%', justifyContent: 'end' }}>
+                                                                    <IconButton onClick={() => onClickRemoveCard(index)} disabled={!isNew} style={{ padding: 0 }}>
+                                                                        <ClearIcon className={classes.closeIcon} />
+                                                                    </IconButton>
+                                                                </div>
+                                                                {card.header !== '' ? (
+                                                                    <div className={classes.uploadedImage}>
+                                                                        <div className={classes.cardMediaContainer}>
+                                                                            <img src={card.header} alt="Selected Image" className={classes.cardMedia} />
+                                                                        </div>
+                                                                        <div style={{ display: 'flex', gap: 10 }}>
+                                                                            <span className={classes.imageName}>{card.header.split('/').pop().replace(/%20/g, ' ')}</span>
+                                                                            <IconButton onClick={() => handleImageRemove(index)} disabled={!isNew} style={{ padding: 0 }}>
+                                                                                <ClearIcon className={classes.closeIcon} />
+                                                                            </IconButton>
+                                                                        </div>
                                                                     </div>
-                                                                    {getValues(`carouseldata.${cindex}.bodyvariables`).map((cv: Dictionary, vindex: number) => {
-                                                                        return (
-                                                                            <div key={vindex} style={{display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px'}}>
-                                                                                <span>{'{{'}{cv.variable}{'}}'}</span>
-                                                                                <div style={{backgroundColor: 'white', width: '100%'}}>
-                                                                                    <FieldEdit
-                                                                                        label={`Introduce contenido para {{${cv.variable}}}`}
-                                                                                        variant="outlined"
-                                                                                        size="small"
-                                                                                        valueDefault={cv.text}
-                                                                                        onChange={(value) => {
-                                                                                            setValue(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, value)
-                                                                                            trigger('carouseldata')
-                                                                                        }}
-                                                                                        disabled={!isNew}
-                                                                                        fregister={{
-                                                                                            ...register(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, {
-                                                                                                validate: (value) =>
-                                                                                                    (value && value.length) || t(langKeys.field_required),
-                                                                                            }),
-                                                                                        }}
-                                                                                    />
+                                                                ) : (
+                                                                    <>
+                                                                        <input
+                                                                            type="file"
+                                                                            accept={'.jpg,.png'}
+                                                                            onChange={(e) => handleFileChangeAux(e.target.files, index)}
+                                                                            style={{ display: 'none' }}
+                                                                            id={`fileInput-${index}`}
+                                                                            disabled={!isNew}
+                                                                        />
+                                                                        <div style={{ width: '50%' }}>
+                                                                            <label htmlFor={`fileInput-${index}`} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                                                                                <div className={classes.uploadedImage} style={{ cursor: 'pointer', width: '100%' }}>
+                                                                                    <ImageIcon style={{ color: '#004DB1', height: 170, width: 'auto' }} />
+                                                                                    <span style={{ fontWeight: 'bold' }}>{t(langKeys.uploadImage)}</span>
+                                                                                    <span style={{ color: '#004DB1' }}>Tamaño máximo 5 MB</span>
                                                                                 </div>
-                                                                            </div>
-                                                                        );
-                                                                    })}
-                                                                    {getValues(`carouseldata.${cindex}.bodyvariables`).some(cv => cv.text === '') && (
-                                                                        <div className={classes.warningContainer}>
-                                                                            <WarningIcon style={{color: '#FF7575'}}/>
-                                                                            {t(langKeys.addexampletext)}
+                                                                            </label>
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                                <div style={{ width: '90%', fontWeight: 'bold' }}>
+                                                                    {t(langKeys.body)}
+                                                                    <FieldEditAdvancedAux
+                                                                        variant="outlined"
+                                                                        inputProps={{
+                                                                            rows: 4,
+                                                                            maxRows: 4
+                                                                        }}
+                                                                        maxLength={160}
+                                                                        rows={4}
+                                                                        valueDefault={card?.body || ""}
+                                                                        error={errors?.carouseldata?.[index]?.body?.message ? true : false}
+                                                                        fregister={{
+                                                                            ...register(`carouseldata.${index}.body`, {
+                                                                                validate: (value) =>
+                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                            }),
+                                                                        }}
+                                                                        onChange={(e) => handleInputBodyCard(e, index)}
+                                                                        onInput={(e) => handleInputBodyCard(e, index)}
+                                                                        onPaste={(e) => handlePasteCard(e, index)}
+                                                                        disabled={!isNew}
+                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                                                    />
+                                                                    {getValues(`carouseldata.${index}.bodyvariables`)?.length < 20 && (
+                                                                        <div style={{ display: 'flex', justifyContent: 'end' }}>
+                                                                            <Button
+                                                                                className={classes.button}
+                                                                                startIcon={<AddIcon />}
+                                                                                onClick={() => addVariableCard(index)}
+                                                                                disabled={!isNew}
+                                                                            >
+                                                                                {t(langKeys.addvariable)}
+                                                                            </Button>
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                            )}
-                                                        </>
-                                                    )
-                                                })}
-                                            </>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div 
-                                        style={{display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer'}}
-                                        onClick={() => {if(isNew) onClickAddCard()}}
-                                        className="col-4"
-                                    >
-                                        <AddIcon style={{color: '#B6B6B6', height: 40, width: 'auto'}}/>
-                                    </div>
-                                )}
+                                                                {(getValues(`carouseldata.${index}.buttons`)?.length < 2 && !(buttonsType === 'phone' && getValues(`carouseldata.${index}.buttons`).length === 1)) && (
+                                                                    <div>
+                                                                        <AddButtonMenuCard
+                                                                            fastAnswer={() => onClickAddButtonTCard(index)}
+                                                                            urlWeb={() => onClickAddButtonLCard(index)}
+                                                                            callNumber={() => onClickAddButtonPCard(index)}
+                                                                            textbtn={getValues(`carouseldata.${index}.buttons`).filter((btn: Dictionary) => { return btn.type === 'QUICK_REPLY' })}
+                                                                            urlbtn={getValues(`carouseldata.${index}.buttons`).filter((btn: Dictionary) => { return btn.type === 'URL' })}
+                                                                            phonebtn={getValues(`carouseldata.${index}.buttons`).filter((btn: Dictionary) => { return btn.type === 'PHONE' })}
+                                                                            isNew={isNew}
+                                                                            buttonsType={buttonsType}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                                <DragDropContext onDragEnd={(results) => handleDragDropCarrusel(results, index)}>
+                                                                    <Droppable droppableId="root3" type="group">
+                                                                        {(provided) => (
+                                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '90%' }}>
+                                                                                {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
+                                                                                    return (
+                                                                                        <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
+                                                                                            {(provided) => (
+                                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5 }}>
+                                                                                                        {getValues(`carouseldata.${index}.buttons`).length === 2 && (
+                                                                                                            <DragIndicatorIcon style={{ transform: 'rotate(90deg)' }} />
+                                                                                                        )}
+                                                                                                        {btn.type === 'QUICK_REPLY' ? (
+                                                                                                            <>
+                                                                                                                <span style={{ fontWeight: 'bold', margin: '6px 0px' }}>{t(langKeys.fastanswer)}</span>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.buttontext)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px' }}>
+                                                                                                                    <div style={{ flex: 1 }}>
+                                                                                                                        <SingleLineInput
+                                                                                                                            inputProps={{
+                                                                                                                                rows: 1,
+                                                                                                                                maxRows: 1
+                                                                                                                            }}
+                                                                                                                            rows={1}
+                                                                                                                            maxLength={25}
+                                                                                                                            valueDefault={btn?.btn?.text}
+                                                                                                                            onInput={(e) => handleQuickReplyCard(e, index, btni)}
+                                                                                                                            onChange={(e) => handleQuickReplyCard(e, index, btni)}
+                                                                                                                            disabled={!isNew}
+                                                                                                                            fregister={{
+                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                    validate: (value) =>
+                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                }),
+                                                                                                                            }}
+                                                                                                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    <IconButton style={{ padding: 0, marginTop: 15 }} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                        <ClearIcon />
+                                                                                                                    </IconButton>
+                                                                                                                </div>
+                                                                                                            </>
+                                                                                                        ) : btn.type === 'URL' ? (
+                                                                                                            <>
+                                                                                                                <span style={{ fontWeight: 'bold', margin: '6px 0px' }}>{t(langKeys.calltoaction)}</span>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.buttontext)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px' }}>
+                                                                                                                    <div style={{ flex: 1 }}>
+                                                                                                                        <SingleLineInput
+                                                                                                                            inputProps={{
+                                                                                                                                rows: 1,
+                                                                                                                                maxRows: 1
+                                                                                                                            }}
+                                                                                                                            rows={1}
+                                                                                                                            maxLength={25}
+                                                                                                                            valueDefault={btn?.btn?.text}
+                                                                                                                            onInput={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                            onChange={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                            disabled={!isNew}
+                                                                                                                            fregister={{
+                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                    validate: (value) =>
+                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                }),
+                                                                                                                            }}
+                                                                                                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    <IconButton style={{ padding: 0, marginTop: 15 }} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                        <ClearIcon />
+                                                                                                                    </IconButton>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.urltype)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%', marginBottom: 20, padding: '0px 10px' }}>
+                                                                                                                    <div style={{ backgroundColor: 'white' }}>
+                                                                                                                        <FieldSelect
+                                                                                                                            data={dataURLType}
+                                                                                                                            variant="outlined"
+                                                                                                                            optionDesc="text"
+                                                                                                                            optionValue="value"
+                                                                                                                            valueDefault={btn?.btn?.type}
+                                                                                                                            onChange={(value) => {
+                                                                                                                                if (value) {
+                                                                                                                                    onChangeCardsButton(index, btni, "type", value?.value)
+                                                                                                                                } else {
+                                                                                                                                    onChangeCardsButton(index, btni, "type", "")
+                                                                                                                                }
+                                                                                                                            }}
+                                                                                                                            disabled={!isNew}
+                                                                                                                            fregister={{
+                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.type`, {
+                                                                                                                                    validate: (value) =>
+                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                }),
+                                                                                                                            }}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%', display: 'flex' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.urlwebsite)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex', width: '100%', alignItems: 'start', padding: '0px 10px' }}>
+                                                                                                                    <div style={{ flex: 1 }}>
+                                                                                                                        <SingleLineInput
+                                                                                                                            inputProps={{
+                                                                                                                                rows: 1,
+                                                                                                                                maxRows: 1
+                                                                                                                            }}
+                                                                                                                            rows={1}
+                                                                                                                            maxLength={2000}
+                                                                                                                            valueDefault={btn?.btn?.url}
+                                                                                                                            onInput={(e) => handleActionButtonUrlCard(e, index, btni)}
+                                                                                                                            onChange={(e) => handleActionButtonUrlCard(e, index, btni)}
+                                                                                                                            disabled={!isNew}
+                                                                                                                            fregister={{
+                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.url`, {
+                                                                                                                                    validate: (value) =>
+                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                }),
+                                                                                                                            }}
+                                                                                                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    {btn?.btn?.type === 'dynamic' && (
+                                                                                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 15 }}>{'{{'}1{'}}'}</div>
+                                                                                                                    )}
+                                                                                                                </div>
+                                                                                                                {btn?.btn?.type === 'dynamic' && (
+                                                                                                                    <>
+                                                                                                                        <div style={{ width: '100%', display: 'flex' }}>
+                                                                                                                            <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.addexampletext)}</span>
+                                                                                                                        </div>
+                                                                                                                        <div style={{ width: '100%', padding: '0px 10px' }}>
+                                                                                                                            <div style={{ backgroundColor: 'white' }}>
+                                                                                                                                <FieldEdit
+                                                                                                                                    variant="outlined"
+                                                                                                                                    size="small"
+                                                                                                                                    onChange={(value) => {
+                                                                                                                                        setValue(`carouseldata.${index}.buttons.${btni}.btn.variables[0]`, value);
+                                                                                                                                        trigger('carouseldata')
+                                                                                                                                    }}
+                                                                                                                                    valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                                    disabled={!isNew}
+                                                                                                                                    fregister={{
+                                                                                                                                        ...register(`carouseldata.${index}.buttons.${btni}.btn.variables.${0}`, {
+                                                                                                                                            validate: (value) =>
+                                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                                        }),
+                                                                                                                                    }}
+                                                                                                                                />
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </>
+                                                                                                                )}
+                                                                                                            </>
+                                                                                                        ) : (
+                                                                                                            <>
+                                                                                                                <span style={{ fontWeight: 'bold', margin: '6px 0px' }}>{t(langKeys.calltoaction)}</span>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.buttontext)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ display: 'flex', alignItems: 'start', width: '100%', padding: '0px 10px' }}>
+                                                                                                                    <div style={{ flex: 1 }}>
+                                                                                                                        <SingleLineInput
+                                                                                                                            inputProps={{
+                                                                                                                                rows: 1,
+                                                                                                                                maxRows: 1
+                                                                                                                            }}
+                                                                                                                            rows={1}
+                                                                                                                            maxLength={25}
+                                                                                                                            valueDefault={btn?.btn?.text}
+                                                                                                                            onInput={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                            onChange={(e) => handleActionButtonTextCard(e, index, btni)}
+                                                                                                                            disabled={!isNew}
+                                                                                                                            fregister={{
+                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.text`, {
+                                                                                                                                    validate: (value) =>
+                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                }),
+                                                                                                                            }}
+                                                                                                                            style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                    <IconButton style={{ padding: 0, marginTop: 15 }} disabled={!isNew} onClick={() => onClickRemoveButtonCard(index, btni)}>
+                                                                                                                        <ClearIcon />
+                                                                                                                    </IconButton>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.country)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%', marginBottom: 20, padding: '0px 10px' }}>
+                                                                                                                    <div style={{ backgroundColor: 'white' }}>
+                                                                                                                        <FieldSelect
+                                                                                                                            data={dataCountryCodes}
+                                                                                                                            variant="outlined"
+                                                                                                                            optionDesc="text"
+                                                                                                                            optionValue="value"
+                                                                                                                            valueDefault={btn?.btn?.code}
+                                                                                                                            onChange={(value) => {
+                                                                                                                                if (value) {
+                                                                                                                                    onChangeCardsButton(index, btni, "code", value?.value)
+                                                                                                                                } else {
+                                                                                                                                    setValue(`carouseldata.${index}.buttons.${btni}.btn.code`, null);
+                                                                                                                                    trigger('carouseldata')
+                                                                                                                                }
+                                                                                                                            }}
+                                                                                                                            fregister={{
+                                                                                                                                ...register(`carouseldata.${index}.buttons.${btni}.btn.code`, {
+                                                                                                                                    validate: (value) =>
+                                                                                                                                        (value && value !== 0) || t(langKeys.field_required),
+                                                                                                                                }),
+                                                                                                                            }}
+                                                                                                                            disabled={!isNew}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%' }}>
+                                                                                                                    <span style={{ textAlign: 'start', paddingLeft: 10 }}>{t(langKeys.telephonenumber)}</span>
+                                                                                                                </div>
+                                                                                                                <div style={{ width: '100%', padding: '0px 10px' }}>
+                                                                                                                    <FieldEditAdvancedAux
+                                                                                                                        inputProps={{
+                                                                                                                            rows: 1,
+                                                                                                                            maxRows: 1
+                                                                                                                        }}
+                                                                                                                        rows={1}
+                                                                                                                        type="number"
+                                                                                                                        maxLength={20}
+                                                                                                                        valueDefault={btn?.btn?.phone_number}
+                                                                                                                        onInput={(e) => handleActionButtonPhoneCard(e, index, btni)}
+                                                                                                                        onChange={(e) => handleActionButtonPhoneCard(e, index, btni)}
+                                                                                                                        disabled={!isNew}
+                                                                                                                        fregister={{
+                                                                                                                            ...register(`carouseldata.${index}.buttons.${btni}.btn.phone_number`, {
+                                                                                                                                validate: (value) =>
+                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                            }),
+                                                                                                                        }}
+                                                                                                                        style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px', backgroundColor: 'white' }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            </>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </Draggable>
+                                                                                    )
+                                                                                })}
+                                                                            </div>
+                                                                        )}
+                                                                    </Droppable>
+                                                                </DragDropContext>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    {(getValues("carouseldata") && getValues('carouseldata').length < 10) && (
+                                                        <div
+                                                            className={classes.addCard}
+                                                            onClick={() => { if (isNew) onClickAddCard() }}
+                                                        >
+                                                            <AddIcon style={{ color: '#B6B6B6', height: 40, width: 'auto' }} />
+                                                        </div>
+                                                    )}
+                                                </React.Fragment>
+                                            </div>
+                                            {getValues('carouseldata').length > 0 && (
+                                                <>
+                                                    {getValues('carouseldata').map((card, cindex: number) => {
+                                                        return (
+                                                            <>
+                                                                {card?.bodyvariables?.length > 0 && (
+                                                                    <div style={{ marginTop: 10, backgroundColor: '#E6E6E6', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                            <span style={{ fontWeight: 'bold' }}>Texto {cindex + 1}</span>
+                                                                            <Button
+                                                                                className={classes.button}
+                                                                                startIcon={<CloseIcon />}
+                                                                                onClick={() => deleteVariableCard(cindex)}
+                                                                                disabled={!isNew}
+                                                                            >
+                                                                                {t(langKeys.deletevariable)}
+                                                                            </Button>
+                                                                        </div>
+                                                                        {getValues(`carouseldata.${cindex}.bodyvariables`).map((cv: Dictionary, vindex: number) => {
+                                                                            return (
+                                                                                <div key={vindex} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0px' }}>
+                                                                                    <span>{'{{'}{cv.variable}{'}}'}</span>
+                                                                                    <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                        <FieldEdit
+                                                                                            label={`Introduce contenido para {{${cv.variable}}}`}
+                                                                                            variant="outlined"
+                                                                                            size="small"
+                                                                                            valueDefault={cv.text}
+                                                                                            onChange={(value) => {
+                                                                                                setValue(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, value)
+                                                                                                trigger('carouseldata')
+                                                                                            }}
+                                                                                            disabled={!isNew}
+                                                                                            fregister={{
+                                                                                                ...register(`carouseldata.${cindex}.bodyvariables.${vindex}.text`, {
+                                                                                                    validate: (value) =>
+                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                }),
+                                                                                            }}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                        {getValues(`carouseldata.${cindex}.bodyvariables`).some(cv => cv.text === '') && (
+                                                                            <div className={classes.warningContainer}>
+                                                                                <WarningIcon style={{ color: '#FF7575' }} />
+                                                                                {t(langKeys.addexampletext)}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        )
+                                                    })}
+                                                </>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #B6B6B6', cursor: 'pointer' }}
+                                            onClick={() => { if (isNew) onClickAddCard() }}
+                                            className="col-4"
+                                        >
+                                            <AddIcon style={{ color: '#B6B6B6', height: 40, width: 'auto' }} />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     {(getValues("type") === "SMS") && (
                         <div className="row-zyx">
                             <FieldEditMulti
