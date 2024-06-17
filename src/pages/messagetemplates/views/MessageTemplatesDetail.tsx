@@ -306,7 +306,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [htmlEdit, setHtmlEdit] = useState(false);
     const [htmlLoad, setHtmlLoad] = useState<any>(undefined);
     const [isNew] = useState(row?.id ? false : true);
-    const [isProvider, setIsProvider] = useState((row?.communicationchannelid && row?.communicationchannelid !== 0) ? true : false);
+    const [isProvider, setIsProvider] = useState((row?.communicationchannelid && row?.communicationchannelid !== "0") ? true : false);
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
@@ -516,7 +516,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             carouseldata: row ? row.carouseldata || [] : [],
             buttonsenabled: row ? row.buttonsenabled : false,
             category: row?.category || "",
-            communicationchannelid: row?.communicationchannelid || 0,
+            communicationchannelid: row?.communicationchannelid || "",
             communicationchanneltype: row?.communicationchanneltype || "",
             communicationchanneldesc: row?.communicationchanneldesc || "",
             communicationchannelphone: row?.communicationchannelphone || "",
@@ -561,7 +561,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         });
         register("communicationchannelid", {
             validate: (value) => {
-                if (type === "HSM") return (value && value !== 0) || t(langKeys.field_required);
+                if (type === "HSM") return (value && value.length && value !== "0") || t(langKeys.field_required);
                 return true;
             },
         });
@@ -929,7 +929,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         setIsProvider(false);
 
-        setValue("communicationchannelid", 0);
+        setValue("communicationchannelid", "");
         setValue("communicationchanneltype", "");
         setValue("type", data?.value || "");
         setValue("category", '');
@@ -1314,7 +1314,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             setIsProvider(true);
 
             if (getValues('type') === "HSM") {
-                setValue("communicationchannelid", value.communicationchannelid);
+                setValue("communicationchannelid", `${value.communicationchannelid}`);
                 setValue("communicationchanneltype", value.type);
                 setValue("communicationchanneldesc", value.communicationchanneldesc)
                 setValue("communicationchannelphone", value.phone)
@@ -1329,7 +1329,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         } else {
             setIsProvider(false);
 
-            setValue("communicationchannelid", 0);
+            setValue("communicationchannelid", "");
             setValue("communicationchanneltype", "");
 
             setDisableNamespace(false);
@@ -2144,7 +2144,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const getQuality = (quality: string) => {
-        if(quality === 'HIGH' || quality === 'MEDIUM' || quality === 'LOW') {
+        if (quality === 'HIGH' || quality === 'MEDIUM' || quality === 'LOW') {
             return t(`template_${quality}`);
         } else {
             return t(langKeys.TEMPLATE_PENDING);
@@ -2496,7 +2496,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         )}
                     </div>
                     {getValues("type") === 'HSM' &&
-                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && getValues('communicationchannelid') !== 0 &&
+                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'MULTIMEDIA' && (getValues('communicationchannelid') !== "0" && getValues('communicationchannelid')) &&
                             (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
                             <div>
                                 <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
@@ -3107,7 +3107,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 </div>
                             </div>
                         )}
-                    {(getValues("type") === 'HSM' && getValues('category') === 'AUTHENTICATION' && getValues('name') !== '' && getValues('language') !== '' && getValues('communicationchannelid') !== 0) && (
+                    {(getValues("type") === 'HSM' && getValues('category') === 'AUTHENTICATION' && getValues('name') !== '' && getValues('language') !== '' && (getValues('communicationchannelid') !== "0" && getValues('communicationchannelid'))) && (
                         <div>
                             <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
                                 <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.templateedition)}</span>
@@ -3268,7 +3268,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         </div>
                     )}
                     {getValues("type") === 'HSM' &&
-                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && getValues('communicationchannelid') !== 0 &&
+                        (getValues('name') !== '' && getValues('language') !== '' && getValues('templatetype') === 'CAROUSEL' && (getValues('communicationchannelid') !== "0" && getValues('communicationchannelid')) &&
                             (getValues('category') === 'UTILITY' || getValues('category') === 'MARKETING')) && (
                             <div>
                                 <div className='row-zyx' style={{ borderBottom: '1px solid black', paddingBottom: 10 }}>
