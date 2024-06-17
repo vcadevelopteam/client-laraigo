@@ -1607,6 +1607,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     return;
                 }
             }
+            else {
+                const variableRegex2 = /\{\{1\}\}/g;
+                const hasVariable = variableRegex2.test(value);
+                if (hasVariable) {
+                    setValue('headervariables', ['']);
+                    setIsHeaderVariable(true);
+                    trigger('headervariables');
+                }
+                setValue('header', value);
+                trigger('header');
+                return;
+            }
         }
         
         setValue('header', value)
@@ -1746,7 +1758,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const handleInputBody = (e) => {
         const value = e.target.value;
         const cursorPosition = e.target.selectionStart;
-        const isDeleting = value.length < previousLength;
+        const isDeleting = value.length < getValues('body').length;
 
         if (!isDeleting && value.length > 1024) {
             e.preventDefault();
@@ -1787,7 +1799,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             });
             setValue('body', updatedText);
             trigger('body');
-            setPreviousLength(updatedText.length);
             setTimeout(() => {
                 e.target.setSelectionRange(cursorPositionAux, cursorPositionAux);
             }, 0);
@@ -1808,17 +1819,72 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         addVariableAux(insertPosition);
                     }
                 }
-                setPreviousLength(newValue.length);
                 setTimeout(() => {
                     e.target.setSelectionRange(insertPosition + 4 + getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable.toString().length, insertPosition + 4 + getValues('bodyvariables')[getValues('bodyvariables').length - 1].variable.toString().length);
                 }, 0);
                 return;
+            } else {
+                const variableRegex2 = /\{\{(\d+)\}\}/g;
+                let match;
+                const variablesInBody = [];
+
+                while ((match = variableRegex2.exec(value)) !== null) {
+                    const variableNumber = parseInt(match[1], 10);
+                    variablesInBody.push(variableNumber);
+                }
+                console.log(variablesInBody)
+                let updatedBodyVariables = getValues('bodyvariables');
+                if (variablesInBody.length !== updatedBodyVariables.length) {
+                    // Step 2: Identify the repeated variable number
+                    const variableCounts = {};
+                    let auxIndex = null;
+                    variablesInBody.forEach((num, index) => {
+                        variableCounts[num] = (variableCounts[num] || 0) + 1;
+                        if (variableCounts[num] > 1) {
+                            auxIndex = num;
+                        }
+                    });
+            
+                    if (auxIndex !== null) {
+                        // Step 3: Insert new variable object at the correct position
+                        updatedBodyVariables.splice(auxIndex - 1, 0, { variable: auxIndex, text: "" });
+            
+                        // Step 4: Update bodyvariables to have consecutive numbers
+                        updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
+                            ...variable,
+                            variable: index + 1,
+                        }));
+            
+                        // Step 5: Update variablesInBody to be ordered from 1 to n
+                        const updatedVariablesInBody = variablesInBody.map((_, index) => index + 1);
+            
+                        // Step 6: Update body to reflect new variable numbers
+                        let currentIndexInText = 0;
+                        const updatedText = value.replace(variableRegex2, () => {
+                            const variableNumber = updatedVariablesInBody[currentIndexInText];
+                            currentIndexInText++;
+                            return `{{${variableNumber}}}`;
+                        });
+            
+                        setValue('bodyvariables', updatedBodyVariables);
+                        trigger('bodyvariables');
+                        setValue('body', updatedText);
+                        trigger('body');
+                        setTimeout(() => {
+                            e.target.setSelectionRange(cursorPosition, cursorPosition);
+                        }, 0);
+                        return;
+                    } else if (variablesInBody.length > updatedBodyVariables.length) {
+                        updatedBodyVariables = [...updatedBodyVariables, { variable: variablesInBody[variablesInBody.length - 1], text: ""}]
+                        setValue('bodyvariables', updatedBodyVariables);
+                        trigger('bodyvariables');
+                    }
+                }
             }
         }
 
         setValue('body', value);
         trigger('body');
-        setPreviousLength(value.length);
     };
 
     const handlePaste = (e) => {
@@ -1941,6 +2007,61 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     e.target.setSelectionRange(insertPosition + 4 + getValues(`carouseldata.${index}.bodyvariables`).length.toString().length, insertPosition + 4 + getValues(`carouseldata.${index}.bodyvariables`).length.toString().length);
                 }, 0);
                 return;
+            } else {
+                const variableRegex2 = /\{\{(\d+)\}\}/g;
+                let match;
+                const variablesInBody = [];
+
+                while ((match = variableRegex2.exec(value)) !== null) {
+                    const variableNumber = parseInt(match[1], 10);
+                    variablesInBody.push(variableNumber);
+                }
+                console.log(variablesInBody)
+                let updatedBodyVariables = getValues(`carouseldata.${index}.bodyvariables`);
+                if (variablesInBody.length !== updatedBodyVariables.length) {
+                    // Step 2: Identify the repeated variable number
+                    const variableCounts = {};
+                    let auxIndex = null;
+                    variablesInBody.forEach((num, index) => {
+                        variableCounts[num] = (variableCounts[num] || 0) + 1;
+                        if (variableCounts[num] > 1) {
+                            auxIndex = num;
+                        }
+                    });
+            
+                    if (auxIndex !== null) {
+                        // Step 3: Insert new variable object at the correct position
+                        updatedBodyVariables.splice(auxIndex - 1, 0, { variable: auxIndex, text: "" });
+            
+                        // Step 4: Update bodyvariables to have consecutive numbers
+                        updatedBodyVariables = updatedBodyVariables.map((variable, index) => ({
+                            ...variable,
+                            variable: index + 1,
+                        }));
+            
+                        // Step 5: Update variablesInBody to be ordered from 1 to n
+                        const updatedVariablesInBody = variablesInBody.map((_, index) => index + 1);
+            
+                        // Step 6: Update body to reflect new variable numbers
+                        let currentIndexInText = 0;
+                        const updatedText = value.replace(variableRegex2, () => {
+                            const variableNumber = updatedVariablesInBody[currentIndexInText];
+                            currentIndexInText++;
+                            return `{{${variableNumber}}}`;
+                        });
+            
+                        setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
+                        setValue(`carouseldata.${index}.body`, updatedText);
+                        trigger('carouseldata');
+                        setTimeout(() => {
+                            e.target.setSelectionRange(cursorPosition, cursorPosition);
+                        }, 0);
+                        return;
+                    } else if (variablesInBody.length > updatedBodyVariables.length) {
+                        updatedBodyVariables = [...updatedBodyVariables, { variable: variablesInBody[variablesInBody.length - 1], text: ""}]
+                        setValue(`carouseldata.${index}.bodyvariables`, updatedBodyVariables);
+                    }
+                }
             }
         }
 
