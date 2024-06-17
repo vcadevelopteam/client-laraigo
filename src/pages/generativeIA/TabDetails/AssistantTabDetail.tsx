@@ -76,6 +76,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         {
             "domainvalue": "llama3:70b-instruct",
             "domaindesc": "llama3:70b-instruct",
+        },
+        {
+            "domainvalue": "llama3:8b",
+            "domaindesc": "llama3:8b",
         }
     ]
 
