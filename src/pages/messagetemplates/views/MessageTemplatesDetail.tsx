@@ -45,6 +45,7 @@ import {
     FieldEditAdvanced,
     FieldEditAdvancedAux,
     FieldEditMulti,
+    FieldMultiSelect,
     FieldSelect,
     FieldView,
     SingleLineInput,
@@ -2478,19 +2479,36 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     />
                                 )}
                                 {getValues("type") === "HSM" && (
-                                    <FieldSelect
-                                        className="col-6"
-                                        data={dataChannel}
-                                        disabled={!isNew || disableInput}
-                                        error={errors?.communicationchannelid?.message}
-                                        optionDesc="communicationchanneldesc"
-                                        optionValue="communicationchannelid"
-                                        onChange={(value) => changeProvider(value)}
-                                        valueDefault={getValues("communicationchannelid")}
-                                        label={getValues('type') !== 'HSM' ? t(langKeys.channel) : ''}
-                                        variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
-                                        size="normal"
-                                    />
+                                    <>
+                                        {(!isNew) ? (
+                                            <FieldMultiSelect
+                                                className="col-6"
+                                                data={dataChannel}
+                                                disabled
+                                                error={errors?.communicationchannelid?.message}
+                                                optionDesc="communicationchanneldesc"
+                                                optionValue="communicationchannelid"
+                                                valueDefault={getValues("communicationchannelid")}
+                                                label={getValues('type') !== 'HSM' ? t(langKeys.channel) : ''}
+                                                variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
+                                                size="normal"
+                                            />
+                                        ) : (
+                                            <FieldSelect
+                                                className="col-6"
+                                                data={dataChannel}
+                                                disabled={!isNew || disableInput}
+                                                error={errors?.communicationchannelid?.message}
+                                                optionDesc="communicationchanneldesc"
+                                                optionValue="communicationchannelid"
+                                                onChange={(value) => changeProvider(value)}
+                                                valueDefault={getValues("communicationchannelid")}
+                                                label={getValues('type') !== 'HSM' ? t(langKeys.channel) : ''}
+                                                variant={getValues('type') !== 'HSM' ? 'standard' : "outlined"}
+                                                size="normal"
+                                            />
+                                        )}
+                                    </>
                                 )}
                             </>
                         )}
