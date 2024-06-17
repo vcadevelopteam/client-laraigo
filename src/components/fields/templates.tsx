@@ -349,6 +349,7 @@ interface InputProps {
     onInput?: any;
     resize?: string;
     onPaste?: any;
+    id?: string;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -652,7 +653,7 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
     )
 }
 
-export const FieldEditAdvancedAux: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false, onInput = {}, onPaste = {} }) => {
+export const FieldEditAdvancedAux: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false, onInput = {}, onPaste = {}, id }) => {
     const [value, setvalue] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
@@ -722,6 +723,7 @@ export const FieldEditAdvancedAux: React.FC<InputProps> = ({ label, className, d
             </div>}
             <TextField
                 {...fregister}
+                id={id}
                 color="primary"
                 fullWidth
                 disabled={disabled}

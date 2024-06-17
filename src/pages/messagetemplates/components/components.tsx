@@ -47,11 +47,9 @@ const useStyles = makeStyles(() => ({
     messageCard2: {
         display: 'flex',
         width: 300,
-        height: 'fit-content',
         flexDirection: 'column',
-        padding: 10,
+        padding: '10px 10px 0px 10px',
         backgroundColor: 'white',
-        borderRadius: 15,
         gap: 10,
     },
     messagePrevContainer: {
@@ -139,8 +137,8 @@ const useStyles = makeStyles(() => ({
     },
     containerCarousel: {
         backgroundColor: '#DFD6C6',
-        padding: '5px 5px 5px 10px',
-        borderRadius: 5,
+        padding: '5px 5px 0px 10px',
+        borderRadius: '5px 5px 0px 0px',
         overflowX: 'hidden',
         display: 'flex',
         width: 'fit-content',
@@ -181,6 +179,15 @@ const useStyles = makeStyles(() => ({
         textAlign: "center",
         fontSize: 17,
         fontWeight: "bold",
+    },
+    buttonsContainer: {
+        display: 'flex',
+        backgroundColor: '#DFD6C6',
+        padding: '0px 5px 5px 10px',
+        overflowX: 'hidden',
+        maxWidth: 640,
+        width: 'fit-content',
+        borderRadius: '0px 0px 5px 5px',
     },
 }));
 
@@ -696,11 +703,17 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
                 onTouchEnd={handleTouchEnd}
             >
                 {carouselCards.length > 0 && carouselCards.map((card, index) => (
-                    <div key={index} className={classes.messageCard2}>
-                        <div className={classes.cardMediaContainer}>
+                    <div key={index} className={classes.messageCard2} style={{borderRadius: '15px 15px 0px 0px'}}>
+                        <div className={classes.cardMediaContainer} style={{ width: 280}}>
                             <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
                         </div>
                         <div className={classes.bodyCar}>{getFormattedBody(card.body, card.bodyvariables)}</div>
+                    </div>
+                ))}
+            </div>
+            <div className={classes.buttonsContainer}>
+                {carouselCards.length > 0 && carouselCards.map((card, index) => (
+                    <div key={index} className={classes.messageCard2} style={{borderRadius: '0px 0px 15px 15px', padding: '15px 10px 10px 10px'}}>
                         {card.buttons.length > 0 && (
                             <>
                                 {card.buttons.map((btn: Dictionary, i: number) => (

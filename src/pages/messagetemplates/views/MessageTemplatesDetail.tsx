@@ -326,8 +326,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const emojiButtonRef = useRef(null);
     const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
     const [cardAux, setCardAux] = useState<number | null>(null)
-    const [previousLength, setPreviousLength] = useState(0);
     const [buttonsType, setButtonsType] = useState('none')
+    const [cursorPositionAux, setCursorPositionAux] = useState(0);
 
     useEffect(() => {
         if (showEmojiPicker && emojiButtonRef.current) {
@@ -344,6 +344,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             });
         }
     }, [showEmojiPicker]);
+
+    const handleEmojiPickerClick = () => {
+        const input = document.getElementById('bodyInput');
+        setCursorPositionAux(input.selectionStart ? input.selectionStart : getValues('body').length);
+        setShowEmojiPicker(!showEmojiPicker);
+    };
     
     const dataNewCategory = [
         { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
@@ -1468,9 +1474,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
     
     const addEmoji = (emoji: EmojiData) => {
-        if(getValues('body').length <= 1022) {
-            const currentText = getValues('body');
-            setValue('body', currentText + emoji.native);
+        const currentText = getValues('body');
+        const start = currentText.substring(0, cursorPositionAux);
+        const end = currentText.substring(cursorPositionAux);
+
+        if (currentText.length <= 1022) {
+            setValue('body', start + emoji.native + end);
             trigger('body');
         }
         setShowEmojiPicker(false);
@@ -2654,6 +2663,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span style={{marginBottom: 5}}>Introduce el texto de tu mensaje en el idioma que has seleccionado.</span>
                                     <div>
                                         <FieldEditAdvancedAux
+                                            id="bodyInput"
                                             inputProps={{
                                                 rows: 8,
                                                 maxRows: 8
@@ -2669,7 +2679,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)} disabled={!isNew}>
+                                        <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
                                             <EmojiEmotionsIcon />
                                         </IconButton>
                                         {showEmojiPicker && (
@@ -3262,6 +3272,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span style={{marginBottom: 10}}>{t(langKeys.bubblemessagetext)}</span>
                                     <div>
                                         <FieldEditAdvancedAux
+                                            id="bodyInput"
                                             variant="outlined"
                                             inputProps={{
                                                 rows: 8,
@@ -3278,7 +3289,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         />
                                     </div>
                                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                                        <IconButton ref={emojiButtonRef} onClick={() => setShowEmojiPicker(!showEmojiPicker)} disabled={!isNew}>
+                                        <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
                                             <EmojiEmotionsIcon />
                                         </IconButton>
                                         {showEmojiPicker && (
