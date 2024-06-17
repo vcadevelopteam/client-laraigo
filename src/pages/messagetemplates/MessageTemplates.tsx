@@ -282,7 +282,10 @@ const MessageTemplates: FC = () => {
                                 if (!providerquality) {
                                     return t(langKeys.TEMPLATE2_UNREGISTERED);
                                 }
-                                qText = t(`template_${providerquality}`);
+                                else if(providerquality === 'HIGH' || providerquality === 'MEDIUM' || providerquality === 'LOW') {
+                                    return t(`template_${providerquality}`);
+                                }
+                                qText = t(langKeys.TEMPLATE_PENDING);
                                 break;
                             default:
                                 qText = "-";
