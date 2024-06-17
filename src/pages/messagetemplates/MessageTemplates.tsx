@@ -269,6 +269,7 @@ const MessageTemplates: FC = () => {
                     { key: t(langKeys.template_HIGH), value: "HIGH" },
                     { key: t(langKeys.template_MEDIUM), value: "MEDIUM" },
                     { key: t(langKeys.template_LOW), value: "LOW" },
+                    { key: t(langKeys.productcatalog_reviewstatus_pending), value: 'NA'}
                 ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -283,9 +284,11 @@ const MessageTemplates: FC = () => {
                                     return t(langKeys.TEMPLATE2_UNREGISTERED);
                                 }
                                 else if (providerquality === 'HIGH' || providerquality === 'MEDIUM' || providerquality === 'LOW') {
-                                    return t(`template_${providerquality}`);
+                                    qText = t(`template_${providerquality}`);
                                 }
-                                qText = t(langKeys.TEMPLATE_PENDING);
+                                else {
+                                    qText = t(langKeys.TEMPLATE_PENDING);
+                                }
                                 break;
                             default:
                                 qText = "-";
@@ -303,6 +306,9 @@ const MessageTemplates: FC = () => {
                                 break;
                             case 'Alto':
                                 color = 'green';
+                                break;
+                            case 'PENDIENTE':
+                                color = '#E6C300';
                                 break;
                             default:
                                 color = 'black';
