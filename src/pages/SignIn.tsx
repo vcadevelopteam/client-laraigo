@@ -317,17 +317,19 @@ const SignIn = () => {
         dispatch(login(dataAuth.username, dataAuth.password, "", "", token));
     }
 
-    const onAuthWithFacebook = (r: AuthResponse) => {
+    const onAuthWithFacebook = async (r: AuthResponse) => {
         if (r && r.id) {
             setshowError(true);
-            dispatch(login(null, null, r.id));
+            const token = await recaptchaRef?.current?.executeAsync();
+            dispatch(login(null, null, r.id, null, token));
         }
     }
 
-    const onGoogleLoginSucess = (r: AuthResponse | GoogleLoginResponse | GoogleLoginResponseOffline) => {
+    const onGoogleLoginSucess = async (r: AuthResponse | GoogleLoginResponse | GoogleLoginResponseOffline) => {
         if ((r as AuthResponse)?.googleId) {
             setshowError(true);
-            dispatch(login(null, null, null, (r as AuthResponse).googleId));
+            const token = await recaptchaRef?.current?.executeAsync();
+            dispatch(login(null, null, null, (r as AuthResponse).googleId, token));
         }
     }
 
