@@ -298,13 +298,13 @@ const MessageTemplates: FC = () => {
                         let color = '';
 
                         switch (qText) {
-                            case 'Medio':
+                            case 'Media':
                                 color = '#E6C300';
                                 break;
-                            case 'Bajo':
+                            case 'Baja':
                                 color = 'red';
                                 break;
-                            case 'Alto':
+                            case 'Alta':
                                 color = 'green';
                                 break;
                             case 'PENDIENTE':

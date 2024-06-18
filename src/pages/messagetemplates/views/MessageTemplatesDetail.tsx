@@ -2289,7 +2289,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             <FieldEdit
                                 className="col-2"
                                 variant="outlined"
-                                valueDefault={getQuality(getValues('providerquality'))}
+                                valueDefault={getQuality(getValues('providerquality')).toUpperCase()}
                                 disabled
                                 size="small"
                             />
