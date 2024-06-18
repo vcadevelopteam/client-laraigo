@@ -212,6 +212,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const updateTemplate = useCallback(() => {
         const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
     
+        if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
+            updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
+        }
+    
         Object.keys(variableSelections).forEach(key => {
             const [type, number] = key.split('-');
             const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
@@ -253,14 +257,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 if (!isNaN(index)) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 }
-            } else  if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
+            } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
                 const fieldNumber = headers.indexOf(variableSelections['video-videoHeader']) + 1;
                 if (!isNaN(fieldNumber)) {
-                  updatedTemplate.header = `{{field${fieldNumber}}}`;
+                    updatedTemplate.header = `{{field${fieldNumber}}}`;
                 }
             }
         });
     
+        if (updatedTemplate.category === "AUTHENTICATION" && variableSelections['body-authentication']) {
+            const fieldNumber = headers.indexOf(variableSelections['body-authentication']) + 1;
+            if (!isNaN(fieldNumber)) {
+                updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
+            }
+        }    
+        
+        console.log('final updatedTemplate:', updatedTemplate);    
         setFilledTemplate(updatedTemplate);
         setDetaildata(prev => ({
             ...prev,
@@ -272,6 +284,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatebuttons: updatedTemplate.buttonsgeneric || []
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata]);
+    
     
     const renderDynamicUrlFields = () => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
@@ -308,6 +321,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             return prev;
         });
     };
+
+
 
     const handleRemoveVariable = (indexToRemove: number) => {   
         setAdditionalVariables(prev => {
@@ -459,6 +474,26 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                 ))}
                             </div>
+
+                            {templateToUse.category === "AUTHENTICATION" && (
+                                <div className={classes.containerStyle}>
+                                    <div key="authentication-variable">
+                                        <p style={{ marginBottom: '3px' }}>{`Variable Autenticación`}</p>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            data={dataToUse
+                                                .filter(header => !Object.values(selectedHeaders).includes(header))
+                                                .map(header => ({ key: header, value: header }))}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            valueDefault={headers}
+                                            onChange={(selectedOption) => handleVariableChange('authentication', selectedOption, 'body')}
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             <div className={classes.containerStyle}>
                                 {templateToUse.carouseldata?.map((item, index) =>
