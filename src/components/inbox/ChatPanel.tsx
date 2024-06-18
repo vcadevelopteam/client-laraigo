@@ -515,7 +515,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
             let groups = user?.groups ? user?.groups.split(",") : [];
             if(rules?.data && propertyGrupoDelegacion){
-                debugger
                 let extragroups = rules.data.map(item => item.assignedgroup)
                 groups = extragroups.length?extragroups:groups
             }
@@ -1196,6 +1195,17 @@ const applySearch = (list: Dictionary[], index: number) => {
     }
 }
 
+function highlightTerm(element:any, term:any, originalText:string) {
+    element.innerHTML = originalText;
+    if (!term) return;
+
+    const text = element.textContent;
+    const regex = new RegExp(`(${term})`, 'gi');
+
+    const highlightedText = text.replace(regex, '<span style="background-color: yellow;">$1</span>');
+    element.innerHTML = highlightedText;
+}
+
 const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> = ({ setShowSearcher }) => {
     const [value, setvalue] = useState('');
     const timeOut = React.useRef<NodeJS.Timeout | null>(null);
@@ -1208,6 +1218,12 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
 
     const handleChange = (e: any) => {
         const text = e.target.value.toLocaleLowerCase().trim();
+        interactionList.forEach(x=>{
+            if(x.interactiontype === "text"){
+                const interaction = document.getElementById(`interaction-${x.interactionid}`)
+                highlightTerm(interaction?.querySelector('span'),text, x.interactiontext)
+            }
+        })
         if (text) {
             const inttfound = interactionList.filter(x => x.interactiontext.toLocaleLowerCase().includes(text) && typeText.includes(x.interactiontype))
             setListFound(inttfound);
@@ -1265,7 +1281,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 style={{ marginTop: 2, marginBottom: 2 }}
             />
             <div style={{ display: 'inline', color: '#8F92A1' }}>
-                {indexSearch + 1}/{listFound.length}
+                {!!listFound.length?indexSearch + 1:0}/{listFound.length}
             </div>
             <IconButton size="small" onClick={() => handlerManageFilter('up')}>
                 <KeyboardArrowDownIcon style={{ color: '#8F92A1' }} />
