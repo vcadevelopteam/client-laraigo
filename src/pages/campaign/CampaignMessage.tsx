@@ -321,9 +321,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             });
             updatedTemplate.carouseljson = JSON.stringify(carouselData);
         }
+
+        updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
+            header => `field${headers.indexOf(header) + 1}`
+        );
     
-        console.log('final updatedTemplate:', updatedTemplate);
-        
+        console.log('final updatedTemplate:', updatedTemplate);        
     
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
@@ -334,9 +337,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 value: updatedTemplate.header
             },
             messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
-            carouseljson: updatedTemplate.carouseldata
+            carouseljson: updatedTemplate.carouseldata,
+            variableshidden: updatedTemplate.variableshidden
+
         }));
-    }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata]);
+    }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
     
     
 
