@@ -24,7 +24,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
 import { deleteThreadLlama, query } from "store/llama/actions";
-import { query3 } from "store/llama3/actions";
+import { deleteThreadLlama3, query3 } from "store/llama3/actions";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -301,19 +301,33 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
 
     useEffect(() => {
         if (waitSaveThreadDeleteLlama) {
-            if (!llamaResult.loading && !llamaResult.error) {
-                setWaitSaveThreadDeleteLlama(false);
-                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
-                setWaitSaveCreateThread(true);
-                setCardDelete(null);
-            } else if (llamaResult.error) {
-                setWaitSaveThreadDeleteLlama(false);
-                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
-                setWaitSaveCreateThread(true);
-                setCardDelete(null);
+            if(row?.basemodel.startsWith('llama')) {
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                } else if (llm3Result.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                }
+            } else {
+                if (!llamaResult.loading && !llamaResult.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                } else if (llamaResult.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                }
             }
         }
-    }, [llamaResult, waitSaveThreadDeleteLlama]);
+    }, [llamaResult, llm3Result, waitSaveThreadDeleteLlama]);
 
     useEffect(() => {
         if (waitSaveMessageLlama) {
@@ -635,12 +649,20 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             setCardDelete(chat)
             setWaitSaveThreadDeleteLlama(true);
         };
+        const callbackLlm3 = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(deleteThreadLlama3({
+                threadid: selectedChat?.threadid
+            }))
+            setCardDelete(chat)
+            setWaitSaveThreadDeleteLlama(true);
+        };
       
         dispatch(
             manageConfirmation({
               visible: true,
               question: t(langKeys.confirmation_delete),
-              callback: row?.basemodel.startsWith('gpt') ? callback : callbackMeta,
+              callback: row?.basemodel.startsWith('gpt') ? callback : row?.basemodel.startsWith('llama') ? callbackLlm3 : callbackMeta,
             })
         );
     };

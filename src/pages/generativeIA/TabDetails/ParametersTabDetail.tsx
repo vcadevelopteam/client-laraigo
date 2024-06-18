@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { Button, Card, Grid } from "@material-ui/core";
 import { BaseAIPersonalityIcon, ClientServicePersonalityIcon, HelpDeskPersonalityIcon, PersonalizedPersonalityIcon, SalesPersonalityIcon, TechSupportPersonalityIcon } from "icons";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { FieldEdit, FieldEditMulti, FieldEditMultiAux, FieldMultiSelect, FieldSelect } from "components";
+import { FieldEdit, FieldEditMultiAux, FieldMultiSelect, FieldSelect } from "components";
 import { Dictionary } from "@types";
 import { FieldErrors } from "react-hook-form";
 import Tooltip from '@material-ui/core/Tooltip';

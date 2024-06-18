@@ -20,7 +20,7 @@ import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantA
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
 import { createCollection, createCollectionDocuments, editCollection } from "store/llama/actions";
-import { createCollection3, editCollection3 } from "store/llama3/actions";
+import { createCollection3, createCollectionDocuments3, editCollection3 } from "store/llama3/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -544,11 +544,19 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
             setGeneralPrompt(generalprompt)
 
-            dispatch(createCollectionDocuments({
-                urls: cosFile.map((item: Dictionary) => item.file_url),
-                collection: data.name
-            }))
-            setWaitSaveCreateCollection(true)
+            if(provider === "LaraigoLLM") {
+                dispatch(createCollectionDocuments3({
+                    urls: cosFile.map((item: Dictionary) => item.file_url),
+                    collection: data.name
+                }))
+                setWaitSaveCreateCollection(true)
+            } else {
+                dispatch(createCollectionDocuments({
+                    urls: cosFile.map((item: Dictionary) => item.file_url),
+                    collection: data.name
+                }))
+                setWaitSaveCreateCollection(true)
+            }
         };
         dispatch(
             manageConfirmation({
@@ -593,20 +601,35 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     useEffect(() => {
         if (waitSaveCreateCollection) {
-            if (!metaResult.loading && !metaResult.error) {
-                setWaitSaveCreateCollection(false);
-                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
-                setWaitSaveCreateCollectionDoc(true);
-            } else if (metaResult.error) {
-                const errormessage = t(metaResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveCreateCollection(false);
+            if(provider === "LaraigoLLM") {
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveCreateCollection(false);
+                    dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                    setWaitSaveCreateCollectionDoc(true);
+                } else if (llm3Result.error) {
+                    const errormessage = t(llm3Result.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveCreateCollection(false);
+                }
+            } else {
+                if (!metaResult.loading && !metaResult.error) {
+                    setWaitSaveCreateCollection(false);
+                    dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                    setWaitSaveCreateCollectionDoc(true);
+                } else if (metaResult.error) {
+                    const errormessage = t(metaResult.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveCreateCollection(false);
+                }
             }
         }
-    }, [metaResult, waitSaveCreateCollection]);
+    }, [metaResult, llm3Result, waitSaveCreateCollection]);
 
     useEffect(() => {
         if (waitSaveCreateCollectionDoc) {
