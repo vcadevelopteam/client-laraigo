@@ -128,7 +128,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const bodyVariables = detectVariables(templateToUse.body);
     const headerVariables = templateToUse.headertype === 'TEXT' ? detectVariables(templateToUse.header) : [];
     const carouselBodyVariables = templateToUse.carouseldata
-        ? selectedTemplate.carouseldata.flatMap(item => detectVariables(item.body))
+        ? (selectedTemplate.carouseldata ? selectedTemplate.carouseldata.flatMap(item => detectVariables(item.body)) : [])
         : [];
     const allBodyVariables = bodyVariables.concat(carouselBodyVariables);    
     const [bodyVariableValues, setBodyVariableValues] = useState<Dictionary>({});
@@ -205,10 +205,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         updateTemplate();
     };
     
-    
-    
-    
-      
     const updateTemplate = useCallback(() => {
         const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
     
@@ -225,9 +221,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             } else if (type === 'header' && updatedTemplate.header) {
                 updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
             } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
-                const index = parseInt(key.split('-')[2]);
-                if (!isNaN(index)) {
-                    updatedTemplate.carouseldata[index].header = jsonPersons[0][variableSelections[key]];
+                const index = parseInt(key.split('-')[2]) - 1;
+                if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
+                    updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
                 }
             } else if (type === 'dynamicUrl' && updatedTemplate.buttonsgeneric) {
                 updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {
@@ -270,9 +266,25 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             if (!isNaN(fieldNumber)) {
                 updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
             }
-        }    
-        
-        console.log('final updatedTemplate:', updatedTemplate);    
+        }
+    
+        if (updatedTemplate.messagetemplatetype === "CAROUSEL" && updatedTemplate.carouseljson) {
+            const carouselData = JSON.parse(updatedTemplate.carouseljson);
+            carouselData.forEach((item: Dictionary, index: number) => {
+                const key = `cardImage-cardImage-${index + 1}`;
+                const variableSelectionKey = variableSelections[key];
+                if (variableSelectionKey) {
+                    const fieldNumber = headers.indexOf(variableSelectionKey) + 1;
+                    if (!isNaN(fieldNumber)) {
+                        item.header = `{{field${fieldNumber}}}`;
+                    }
+                }
+            });
+            updatedTemplate.carouseljson = JSON.stringify(carouselData);
+        }
+    
+        console.log('final updatedTemplate:', updatedTemplate);
+    
         setFilledTemplate(updatedTemplate);
         setDetaildata(prev => ({
             ...prev,
@@ -284,6 +296,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatebuttons: updatedTemplate.buttonsgeneric || []
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata]);
+    
     
     
     const renderDynamicUrlFields = () => {
