@@ -2805,7 +2805,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <span className={classes.title}>{t(langKeys.buttons)}</span>
                                         <span style={{ marginBottom: 5 }}>Crea botones que permitan a los clientes responder a tu mensaje o llevar a cabo alguna acción.</span>
                                         <div style={{ display: 'flex' }}>
-                                            {(getValues("buttonsgeneric")?.length + getValues("buttonsquickreply")?.length) < 13 && (
+                                            {(getValues("buttonsgeneric")?.length + getValues("buttonsquickreply")?.length) < 10 && (
                                                 <div>
                                                     <AddButtonMenu
                                                         fastAnswer={onClickAddButtonText}
