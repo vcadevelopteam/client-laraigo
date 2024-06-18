@@ -12,7 +12,6 @@ import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
 import TemplatePreview from './components/TemplatePreview';
-import { ModalCampaignSchedule } from './components/ModalCampaignSchedule';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -214,7 +213,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
     const [openModal, setOpenModal] = useState(false);
 
-    //console.log('Trae todos los templates, incluid tipo sms', dataMessageTemplate)
     const initialBatchjson = { date: '', time: '', quantity: 1 };
 
     const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
@@ -267,8 +265,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     let fieldCounter = 5; 
     const initialFieldCounter = fieldCounter; 
     fieldCounter = initialFieldCounter;
-
-    // console.log('Template en General', selectedTemplate)
 
     const carouseljsonData: any[] = selectedTemplate.carouseldata
     ? selectedTemplate.carouseldata.map(({ bodyvariables, buttons, ...rest }: { bodyvariables: any, buttons: any[] }) => ({
@@ -416,6 +412,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('executiontype', data?.key || '');
         await trigger('executiontype');
     }
+
+
+
 
     const onChangeChannel = async (data: Dictionary) => {
         setValue('communicationchannelid', data?.communicationchannelid || 0);
@@ -929,17 +928,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     <div style={{fontSize:'1.2rem', marginTop:'2.1rem'}}>{t('Previsualización de la Plantilla')}</div> 
                     <TemplatePreview selectedTemplate={selectedTemplate} variableValues={[]}/>
 
-                </div>  
-            
+                </div>             
 
             </div>
-
-            <ModalCampaignSchedule
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                data={getValues('batchjson')}
-                parentSetValue={setValue}
-            />
+           
         </React.Fragment>
     )
 }

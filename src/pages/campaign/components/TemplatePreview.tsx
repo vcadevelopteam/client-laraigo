@@ -297,7 +297,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                 </div>
                             ) : selectedTemplate?.category === "AUTHENTICATION" ? (
                                 <div>
-                                    <p>Tu código de verificación es 12345678.
+                                    <p>Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
                                         {selectedTemplate.authenticationdata.safetyrecommendation && (
                                             <span> Por tu seguridad, no lo compartas</span>
                                         )}
