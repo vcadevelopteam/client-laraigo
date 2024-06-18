@@ -26,6 +26,7 @@ import DialogInteractions from 'components/inbox/DialogInteractions';
 import { CellProps } from 'react-table';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import ClearIcon from "@material-ui/icons/Clear";
+import VisibilityIcon from '@material-ui/icons/Visibility';
 const isIncremental = window.location.href.includes("incremental")
 
 const selectionKey = 'conversationid';
@@ -483,7 +484,8 @@ const IconOptions: React.FC<{
     onHandlerShowHistory?: (e?: any) => void;
     onHandlerCallRecord?: (e?: any) => void;
     onHandlerAnalyticsIA?: (e?: any) => void;
-}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, onHandlerAnalyticsIA, disabled }) => {
+    onHandlerView?: (e?: any) => void;
+}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, onHandlerAnalyticsIA, disabled, onHandlerView }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
 
@@ -515,6 +517,17 @@ const IconOptions: React.FC<{
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
+                {onHandlerView &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerView();
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <VisibilityIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.posthistory_seedetail)}
+                    </MenuItem>
+                }
                 {onHandlerReassign &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null);
@@ -1430,9 +1443,12 @@ const Tickets = () => {
                 width: "1%",
                 Cell: (props: CellProps<Dictionary>) => {
                     const ticket = props.cell.row.original;
-
                     return (
                         <IconOptions
+                            onHandlerView={()=>{
+                                setRowDetail({ row:ticket, columnid:null, open: true });
+                                setViewSelected("view-2");
+                            }}
                             onHandlerReassign={
                                 ticket && ticket.estadoconversacion === "CERRADO"
                                     ? undefined
@@ -1867,11 +1883,6 @@ const Tickets = () => {
         }
     }, [mainResult?.multiData])
 
-    const handleView = (row: Dictionary, columnid: string) => {
-        setRowDetail({ row, columnid, open: true });
-        setViewSelected("view-2");
-    }
-
     const FilterElements = React.useMemo(() => (
         <>
             <FieldMultiSelect
@@ -1981,7 +1992,6 @@ const Tickets = () => {
                     pageCount={pageCount}
                     filterrange={true}
                     download={true}
-                    onClickRow={handleView}
                     ButtonsElement={() => (
                         <>
                             {
