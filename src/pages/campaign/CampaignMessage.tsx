@@ -267,8 +267,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
             }
         }
-    
+        
         if (updatedTemplate.messagetemplatetype === "CAROUSEL" && updatedTemplate.carouseljson) {
+     
             const carouselData = JSON.parse(updatedTemplate.carouseljson);
             carouselData.forEach((item: Dictionary, index: number) => {
                 const key = `cardImage-cardImage-${index + 1}`;
@@ -283,21 +284,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             updatedTemplate.carouseljson = JSON.stringify(carouselData);
         }
     
-        console.log('final updatedTemplate:', updatedTemplate);
-    
         setFilledTemplate(updatedTemplate);
-        setDetaildata(prev => ({
+        setDetaildata((prev: any) => ({
             ...prev,
             message: updatedTemplate.body,
             messagetemplateheader: {
                 ...prev.messagetemplateheader,
                 value: updatedTemplate.header
             },
-            messagetemplatebuttons: updatedTemplate.buttonsgeneric || []
+            messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
+            carouseljson: updatedTemplate.carouseldata,
+
+
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata]);
-    
-    
     
     const renderDynamicUrlFields = () => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
