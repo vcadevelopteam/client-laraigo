@@ -177,6 +177,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         fields: { ...new SelectedColumns(), ...data?.fields },
                         operation: 'UPDATE',
                         carouseljson: data?.carouseljson || [],
+                        variableshidden: data?.variableshidden || [],
                         person: mainResult.multiData.data[5] && mainResult.multiData.data[5].success ? mainResult.multiData.data[5].data : []
                     });
                     setFrameProps({
@@ -401,6 +402,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
                 carouseljson: detaildata.carouseljson,
+                variableshidden: detaildata.variableshidden,
                 message: newmessages.message,
             });
     
