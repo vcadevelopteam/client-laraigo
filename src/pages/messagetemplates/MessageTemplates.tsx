@@ -266,10 +266,10 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.quality),
                 type: "select",
                 listSelectFilter: [
-                    { key: t(langKeys.template_HIGH), value: "HIGH" },
-                    { key: t(langKeys.template_MEDIUM), value: "MEDIUM" },
-                    { key: t(langKeys.template_LOW), value: "LOW" },
-                    { key: t(langKeys.productcatalog_reviewstatus_pending), value: 'NA'}
+                    { key: t(langKeys.messagetemplate_high).toUpperCase(), value: "HIGH" },
+                    { key: t(langKeys.messagetemplate_medium).toUpperCase(), value: "MEDIUM" },
+                    { key: t(langKeys.messagetemplate_low).toUpperCase(), value: "LOW" },
+                    { key: t(langKeys.productcatalog_reviewstatus_pending).toUpperCase(), value: 'NA'}
                 ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
