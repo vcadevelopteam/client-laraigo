@@ -9,7 +9,7 @@ import { Button, Card, Grid, IconButton, Modal, Typography } from "@material-ui/
 import TableZyx from "components/fields/table-simple";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
-import { FieldEdit, TemplateIcons } from "components";
+import { FieldEdit } from "components";
 import { execute, uploadFile } from "store/main/actions";
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from "@types";
@@ -22,10 +22,10 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import CachedIcon from '@material-ui/icons/Cached';
 import { UploadFileIcon } from "icons";
 import { deleteFile } from "store/gpt/actions";
-import { addFile, assignFile, verifyFile } from "store/gpt/actions";
-import { addFileLlama, addFilesLlama, deleteFileLlama } from "store/llama/actions";
+import { addFile, assignFile } from "store/gpt/actions";
+import { addFilesLlama, deleteFileLlama } from "store/llama/actions";
 import DeleteIcon from '@material-ui/icons/Delete';
-import { addFilesLlama3 } from "store/llama3/actions";
+import { addFilesLlama3, deleteFileLlama3 } from "store/llama3/actions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -476,10 +476,17 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             const callback = async () => {
                 dispatch(showBackdrop(true));
                 rowWithDataSelected.map(async (row2) => {
-                    dispatch(deleteFileLlama({
-                        collection: row?.name,
-                        filename: row2?.description,
-                    }))
+                    if(row?.basemodel.startsWith('llama')) {
+                        dispatch(deleteFileLlama3({
+                            collection: row?.name,
+                            filename: row2?.description,
+                        }))
+                    } else {
+                        dispatch(deleteFileLlama({
+                            collection: row?.name,
+                            filename: row2?.description,
+                        }))
+                    }
                 })
                 rowWithDataSelected.map(async (row2) => {
                     dispatch(execute(insAssistantAiDoc({
