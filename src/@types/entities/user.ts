@@ -20,6 +20,14 @@ interface Organization {
     corpdesc: string;
 }
 
+interface Balance {
+    balanceCurrent: number;
+    balanceNotificationEnabled: boolean | undefined;
+    balanceNotificationMessage: string;
+    balanceNotificationMinimum: number;
+    showBalance: boolean | undefined;
+}
+
 interface Properties {
     alertTicketNew: boolean | undefined;
     alertMessageIn: boolean | undefined;
@@ -86,6 +94,7 @@ export interface IUser {
     startlogourl?: string;
     iconurl?: string;
     samlAuth?: boolean;
+    balance: Balance;
     // notifications: Notification[];
 }
 

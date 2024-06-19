@@ -235,7 +235,7 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
     parameters: { type, classificationid }
 });
 
-export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS", variablecontext={}  }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS", variablecontext = {} }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language, variablecontext }
@@ -708,15 +708,15 @@ export const getCustomVariableSel = (): IRequestBody => ({
     key: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
     parameters: {}
 })
-export const getCustomVariableSelByTableName = (tablename:string, customvariableapplicationid:number=0): IRequestBody => ({
+export const getCustomVariableSelByTableName = (tablename: string, customvariableapplicationid: number = 0): IRequestBody => ({
     method: "UFN_CUSTOM_VARIABLE_SEL",
     key: "UFN_CUSTOM_VARIABLE_SEL",
-    parameters: {tablename, customvariableapplicationid}
+    parameters: { tablename, customvariableapplicationid }
 })
-export const insCustomVariable = ({id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname=""}:Dictionary): IRequestBody => ({
+export const insCustomVariable = ({ id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname = "" }: Dictionary): IRequestBody => ({
     method: "UFN_CUSTOM_VARIABLE_INS",
     key: "UFN_CUSTOM_VARIABLE_INS",
-    parameters: {id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname}
+    parameters: { id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname }
 })
 
 export const getDocumentLibrary = (): IRequestBody => ({
@@ -801,7 +801,7 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname, olddomainname }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext={} }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext = {} }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
     parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext }
@@ -1098,8 +1098,8 @@ export const insIntegrationManager = ({
     operation,
     results,
     orgid,
-    code_table= {},
-    person_table={}
+    code_table = {},
+    person_table = {}
 }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
     parameters: {
@@ -1429,7 +1429,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
 export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
-    parameters: {       
+    parameters: {
         startdate: null,
         enddate: null,
         offset: (new Date().getTimezoneOffset() / 60) * -1
@@ -1503,7 +1503,7 @@ export const insCampaign = ({
         messagetemplatepriority: messagetemplatepriority || null,
         executiontype,
         batchjson: JSON.stringify(batchjson),
-        fields: JSON.stringify(selectedColumns || fields),       
+        fields: JSON.stringify(selectedColumns || fields),
         operation,
         carouseljson: JSON.stringify(carouseljson)
     }
@@ -1821,7 +1821,7 @@ export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: nu
     method: "UFN_CAMPAIGNMEMBER_STATUS",
     parameters: {
         campaignid,
-        campaignmemberid, 
+        campaignmemberid,
         status
     },
 });
@@ -2638,7 +2638,7 @@ export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody =
     }
 });
 
-export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email, phase,variablecontext  }: Dictionary): IRequestBody => ({
+export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email, phase, variablecontext }: Dictionary): IRequestBody => ({
     method: 'UFN_LEAD_INS',
     key: "UFN_LEAD_INS",
     parameters: {
@@ -3294,17 +3294,17 @@ export const getColumnsOrigin = (tablename: string): IRequestBody => ({
     key: "UFN_REPORT_PERSONALIZED_COLUMNS_SEL",
     parameters: { tablename },
 });
-export const getBillingMessagingSel = ({ year, month }: Dictionary): IRequestBody => ({
+export const getBillingMessagingSel = ({ year, month, countrycode }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGMESSAGING_SEL",
     key: "UFN_BILLINGMESSAGING_SEL",
-    parameters: { year, month }
+    parameters: { year, month, countrycode }
 })
 
 
-export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, username, operation, countrycode, plancurrency, minimumquantitysms, fixedfeesms, minimumquantitymail, fixedfeemail, priceperchatweb, vcacomissionperchatweb, minimumquantitychatweb, fixedfeechatweb, priceperfacebook, vcacomissionperfacebook, minimumquantityfacebook, fixedfeefacebook, pricepermybusiness, vcacomissionpermybusiness, minimumquantitymybusiness, fixedfeemybusiness, priceperinstagram, vcacomissionperinstagram, minimumquantityinstagram, fixedfeeinstagram, priceperinstagramdm, vcacomissionperinstagramdm, minimumquantityinstagramdm, fixedfeeinstagramdm, pricepermessenger, vcacomissionpermessenger, minimumquantitymessenger, fixedfeemessenger, pricepertelegram, vcacomissionpertelegram, minimumquantitytelegram, fixedfeetelegram, pricepertiktok, vcacomissionpertiktok, minimumquantitytiktok, fixedfeetiktok, pricepervoice, vcacomissionpervoice, minimumquantityvoice, fixedfeevoice, pricepertwitter, vcacomissionpertwitter, minimumquantitytwitter, fixedfeetwitter, priceperyoutube, vcacomissionperyoutube, minimumquantityyoutube, fixedfeeyoutube }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGMESSAGING_INS",
     key: "UFN_BILLINGMESSAGING_INS",
-    parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }
+    parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, username, operation, countrycode, plancurrency, minimumquantitysms, fixedfeesms, minimumquantitymail, fixedfeemail, priceperchatweb, vcacomissionperchatweb, minimumquantitychatweb, fixedfeechatweb, priceperfacebook, vcacomissionperfacebook, minimumquantityfacebook, fixedfeefacebook, pricepermybusiness, vcacomissionpermybusiness, minimumquantitymybusiness, fixedfeemybusiness, priceperinstagram, vcacomissionperinstagram, minimumquantityinstagram, fixedfeeinstagram, priceperinstagramdm, vcacomissionperinstagramdm, minimumquantityinstagramdm, fixedfeeinstagramdm, pricepermessenger, vcacomissionpermessenger, minimumquantitymessenger, fixedfeemessenger, pricepertelegram, vcacomissionpertelegram, minimumquantitytelegram, fixedfeetelegram, pricepertiktok, vcacomissionpertiktok, minimumquantitytiktok, fixedfeetiktok, pricepervoice, vcacomissionpervoice, minimumquantityvoice, fixedfeevoice, pricepertwitter, vcacomissionpertwitter, minimumquantitytwitter, fixedfeetwitter, priceperyoutube, vcacomissionperyoutube, minimumquantityyoutube, fixedfeeyoutube }
 })
 
 export const invoiceRefresh = ({ corpid, orgid, invoiceid, year, month }: Dictionary): IRequestBody => ({
@@ -5110,28 +5110,27 @@ export const getDomainByDomainName = (domainname: string) => ({
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
 });
-export const getDomainByDomainNameList = (domainnamelist:string) => ({
+export const getDomainByDomainNameList = (domainnamelist: string) => ({
     method: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
     key: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
     parameters: { domainnamelist },
 });
-export const editCalendarBooking = ({calendarbookingid,personmail,personname,notes,comments}:Dictionary) => ({
+export const editCalendarBooking = ({ calendarbookingid, personmail, personname, notes, comments }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_EDIT",
     key: "UFN_CALENDARBOOKING_EDIT",
-    parameters: { calendarbookingid,personmail,personname,notes,comments },
+    parameters: { calendarbookingid, personmail, personname, notes, comments },
 });
-
-export const integrationManagerBulkloadIns = ({integrationmanagerid, table, type}:Dictionary) => ({
+export const integrationManagerBulkloadIns = ({ integrationmanagerid, table, type }: Dictionary) => ({
     method: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
     key: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
     parameters: { integrationmanagerid, table, type },
 });
-export const integrationManagerCodePersonSel = ({integrationmanagerid, type}:Dictionary) => ({
+export const integrationManagerCodePersonSel = ({ integrationmanagerid, type }: Dictionary) => ({
     method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
     parameters: { integrationmanagerid, type },
 });
-export const integrationManagerCodePersonDel = ({integrationmanagerid, type, ids}:Dictionary) => ({
+export const integrationManagerCodePersonDel = ({ integrationmanagerid, type, ids }: Dictionary) => ({
     method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     parameters: { integrationmanagerid, type, ids },

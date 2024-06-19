@@ -39,6 +39,7 @@ export const ChannelAddAppStore: FC<{ edit: boolean }> = ({ edit }) => {
     const [setins, setSetins] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const dispatch = useDispatch();
     const classes = useChannelAddStyles();
@@ -130,9 +131,13 @@ export const ChannelAddAppStore: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            channel?.status === "INACTIVO"
-                                ? history.push(paths.CHANNELS, whatsAppData)
-                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+                            if(newChannels){
+                                history.push(paths.METACHANNELS, whatsAppData)
+                            }else{
+                                channel?.status === "INACTIVO"
+                                    ? history.push(paths.CHANNELS, whatsAppData)
+                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}

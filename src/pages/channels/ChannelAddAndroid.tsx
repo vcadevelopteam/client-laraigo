@@ -2746,6 +2746,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const whatsAppData = location.state as WhatsAppData | null;
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
     const [viewSelected, setViewSelected] = useState("main-view");
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     useEffect(() => {
         dispatch(getMultiCollection([getInputValidationSel(0)]));
@@ -2912,9 +2913,13 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        channel?.status === "INACTIVO"
-                            ? history.push(paths.CHANNELS, whatsAppData)
-                            : history.push(paths.CHANNELS_ADD, whatsAppData);
+                        if(newChannels){
+                            history.push(paths.METACHANNELS, whatsAppData)
+                        }else{
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+                        }
                     }}
                 >
                     {t(langKeys.previoustext)}

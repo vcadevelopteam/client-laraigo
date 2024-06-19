@@ -98,6 +98,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const whatsAppData = location.state as WhatsAppData | null;
     const set360 = false;
     const setsmooch = false;
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const errors = {
         accesstoken: "",
@@ -781,9 +782,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 key={"mainview"}
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    channel?.status === "INACTIVO"
-                                        ? history.push(paths.CHANNELS, whatsAppData)
-                                        : history.push(paths.CHANNELS_ADD, whatsAppData);
+                                    if(newChannels){
+                                        history.push(paths.METACHANNELS, whatsAppData)
+                                    }else{
+                                        channel?.status === "INACTIVO"
+                                            ? history.push(paths.CHANNELS, whatsAppData)
+                                            : history.push(paths.CHANNELS_ADD, whatsAppData);
+                                    }
                                 }}
                             >
                                 {t(langKeys.previoustext)}

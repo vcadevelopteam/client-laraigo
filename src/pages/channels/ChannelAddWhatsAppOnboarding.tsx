@@ -50,6 +50,7 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
     const [showLastStep, setShowLastStep] = useState(false);
     const [waitList, setWaitList] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
@@ -256,9 +257,13 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
                     key={"mainview"}
                     onClick={(e) => {
                         e.preventDefault();
-                        channel?.status === "INACTIVO"
-                            ? history.push(paths.CHANNELS, whatsAppData)
-                            : history.push(paths.CHANNELS_ADD, whatsAppData);
+                        if(newChannels){
+                            history.push(paths.METACHANNELS, whatsAppData)
+                        }else{
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+                        }
                     }}
                 >
                     {t(langKeys.previoustext)}

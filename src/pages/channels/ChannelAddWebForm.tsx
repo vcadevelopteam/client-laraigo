@@ -1042,6 +1042,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation();
     const service = useRef<IFormWebAdd | null>(null);
     const whatsAppData = location.state as WhatsAppData | null;
+    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
 
@@ -1204,7 +1205,8 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
-        if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
+        if (newChannels) {history.push(paths.METACHANNELS)}
+        else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
     if (edit && !channel) {

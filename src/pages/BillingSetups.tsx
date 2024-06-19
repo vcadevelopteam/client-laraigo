@@ -1676,8 +1676,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
         row
             ? `${row.year}-${String(row.month).padStart(2, "0")}`
             : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
-                  new Date(new Date().setDate(1)).getMonth() + 1
-              ).padStart(2, "0")}`
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
     );
 
     const arrayBreadContractedPlan = [
@@ -2489,8 +2489,8 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
         row
             ? `${row.year}-${String(row.month).padStart(2, "0")}`
             : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
-                  new Date(new Date().setDate(1)).getMonth() + 1
-              ).padStart(2, "0")}`
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
     );
 
     const arrayBreadConversationCost = [
@@ -3145,8 +3145,8 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
         row
             ? `${row.year}-${String(row.month).padStart(2, "0")}`
             : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
-                  new Date(new Date().setDate(1)).getMonth() + 1
-              ).padStart(2, "0")}`
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
     );
 
     const arrayBread = [
@@ -3741,8 +3741,8 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
         row
             ? `${row.year}-${String(row.month).padStart(2, "0")}`
             : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
-                  new Date(new Date().setDate(1)).getMonth() + 1
-              ).padStart(2, "0")}`
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
     );
 
     const arrayBread = [
@@ -4265,8 +4265,8 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
         row
             ? `${row.year}-${String(row.month).padStart(2, "0")}`
             : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
-                  new Date(new Date().setDate(1)).getMonth() + 1
-              ).padStart(2, "0")}`
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
     );
 
     const arrayBreadConversationCost = [
