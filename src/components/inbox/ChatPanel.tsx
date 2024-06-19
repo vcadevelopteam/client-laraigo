@@ -1232,6 +1232,8 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 setIndexSearch(0);
                 setTriggerSearch(!triggerSearch);
             }
+        }else{
+            setListFound([]);
         }
     }
 
