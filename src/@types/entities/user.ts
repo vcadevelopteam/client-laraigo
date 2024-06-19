@@ -25,6 +25,7 @@ interface Balance {
     balanceNotificationEnabled: boolean | undefined;
     balanceNotificationMessage: string;
     balanceNotificationMinimum: number;
+    showBalance: boolean | undefined;
 }
 
 interface Properties {
