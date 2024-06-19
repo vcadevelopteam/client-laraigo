@@ -1007,27 +1007,20 @@ export const insMessageTemplate = (
         headertype,
         header,
         body,
+        bodyobject,
         footerenabled,
         footer,
         buttonsenabled,
+        buttons,
         priority,
         attachment,
+        fromprovider,
+        externalid,
+        externalstatus,
         communicationchannelid,
         communicationchanneltype,
-        authenticationdata,
-        bodyvariables,
-        buttonsgeneric,
-        buttonsquickreply,
-        carouseldata,
-        headervariables,
-        provideraccountid,
-        providerexternalid,
-        providerid,
-        providermessagelimit,
-        providerpartnerid,
-        providerquality,
-        providerstatus,
-        operation,
+        exampleparameters,
+        operation
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1045,27 +1038,20 @@ export const insMessageTemplate = (
             headertype,
             header,
             body,
+            bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer,
+            footer: footer || "",
             buttonsenabled,
+            buttons: JSON.stringify(buttons),
             priority,
             attachment,
+            fromprovider,
+            externalid,
+            externalstatus,
             communicationchannelid,
             communicationchanneltype,
-            authenticationdata: JSON.stringify(authenticationdata),
-            bodyvariables: JSON.stringify(bodyvariables),
-            buttonsgeneric: JSON.stringify(buttonsgeneric),
-            buttonsquickreply: JSON.stringify(buttonsquickreply),
-            carouseldata: JSON.stringify(carouseldata),
-            headervariables: JSON.stringify(headervariables),
-            provideraccountid,
-            providerexternalid,
-            providerid,
-            providermessagelimit,
-            providerpartnerid,
-            providerquality,
-            providerstatus,
-            operation,
+            exampleparameters,
+            operation
         }
     });
 
@@ -1473,6 +1459,7 @@ export const insCampaign = ({
     fields,
     operation,
     carouseljson,
+    variableshidden, 
     selectedColumns
 }: Dictionary): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
@@ -1505,9 +1492,11 @@ export const insCampaign = ({
         batchjson: JSON.stringify(batchjson),
         fields: JSON.stringify(selectedColumns || fields),
         operation,
-        carouseljson: JSON.stringify(carouseljson)
+        carouseljson: JSON.stringify(carouseljson),
+        variableshidden: JSON.stringify(variableshidden),
     }
 });
+
 
 export const delCampaign = ({
     id,
