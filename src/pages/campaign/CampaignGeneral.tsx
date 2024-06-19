@@ -190,6 +190,7 @@ type FormFields = {
     quantity: number,
     batchjson: BatchJson,
     carouseljson: Dictionary[],
+    variableshidden: Dictionary[],
     fields: SelectedColumns,
     operation: string,
     sourcechanged: boolean,
@@ -246,6 +247,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: detaildata?.batchjson?.[0] || initialBatchjson,
             carouseljson: [],
+            variableshidden: [],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
             sourcechanged: false,           
@@ -379,6 +381,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('carouseljson', carouseljsonData || ['faileaste']);
         setValue('fields', { ...new SelectedColumns(), ...data.fields });
     }
+    
 
     useEffect(() => {
         if (frameProps.checkPage) {
