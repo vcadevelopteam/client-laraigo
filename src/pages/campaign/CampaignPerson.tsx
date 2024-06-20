@@ -839,6 +839,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             totalrow={totalrow}
                             pageCount={pageCount}
                             filterGeneral={false}
+                            
                             loading={paginatedAuxResult.loading}
                             FiltersElement={<></>}
                             ButtonsElement={() => <>
@@ -858,6 +859,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             columns={columns}
                             data={personsToUse}
                             download={false}
+                            
                             loading={detaildata.source === 'INTERNAL' && auxResult.loading}
                             filterGeneral={false}
                             ButtonsElement={AdditionalButtons}
