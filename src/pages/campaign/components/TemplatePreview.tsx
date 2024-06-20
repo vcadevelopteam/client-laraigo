@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ReplyIcon from '@material-ui/icons/Reply';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import ListIcon from '@material-ui/icons/List';
+import CloseIcon from '@material-ui/icons/Close';
 import { Dictionary } from '@types';
+import { IconButton, Modal } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -45,8 +48,21 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: '#FBFBFB',
         },
     },
+    buttonPreview2: {          
+        padding: '0.8rem 1rem',
+        display: 'flex',
+        justifyContent: 'left',
+        textAlign: 'center',
+        cursor: 'pointer',
+        color:'grey',
+        textDecoration: 'none',
+        borderBottom: '1px solid #f9f9f9',
+        '&:hover': {
+            backgroundColor: '#FBFBFB',
+        },
+    },
     previewHour: {
-        display:'flex', justifyContent:'right', fontSize:'0.78rem', color:'grey', margin:'10px 0'
+        display:'flex', justifyContent:'right', fontSize:'0.9rem', color:'grey', margin:'10px 0'
     }, 
     pdfPreview: {
         width: '100%',
@@ -101,6 +117,46 @@ const useStyles = makeStyles((theme) => ({
         padding: '1rem',
         textAlign: 'center',
     },
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalContent: {
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+        borderRadius: '0.5rem',
+    },
+    dropdownContent: {
+        position: 'absolute',
+        backgroundColor: '#f9f9f9',
+        minWidth: '35rem',
+        boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
+        zIndex: 1,
+        borderTopLeftRadius: '8px',
+        borderTopRightRadius: '8px',
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',
+        padding: '12px 16px',
+    },    
+    
+    closeButton: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        margin:'1rem 1rem 0rem 1rem'
+    },
+    dropDownList: {
+        position: 'absolute',
+        bottom: 0,
+        backgroundColor: 'white',
+        boxShadow: '0px 4px 6px rgba(0,0,0,0.1)',
+        border: 'none',
+        borderRadius: '4px',
+        zIndex: 10,
+        width: '100%',
+    },
 }));
 
 interface PdfAttachmentProps {
@@ -137,39 +193,71 @@ const PdfAttachment: React.FC<PdfAttachmentProps> = ({ url }) => {
 
 const ButtonList: React.FC<{ buttons: any }> = ({ buttons }) => {
     const classes = useStyles();
+    const [showAllButtons, setShowAllButtons] = useState(false);
+
+    const handleShowAllButtons = () => {
+        setShowAllButtons(true);
+    };
+
+    const handleClose = () => {
+        setShowAllButtons(false);
+    };
 
     const getButtonIcon = (type: string) => {
         switch (type) {
             case 'URL':
-                return <OpenInNewIcon style={{ height: '18px' }} />;
+                return <OpenInNewIcon style={{ height: '24px' }} />;
             case 'PHONE':
             case 'PHONE_NUMBER':
-                return <PhoneIcon style={{ height: '18px' }} />;
+                return <PhoneIcon style={{ height: '24px' }} />;
             case 'QUICK_REPLY':
-                return <ReplyIcon style={{ height: '18px' }} />;
+                return <ReplyIcon style={{ height: '24px' }} />;
             case 'AUTHENTICATION':
-                return <FileCopyIcon style={{ height: '18px' }} />;
+                return <FileCopyIcon style={{ height: '24px' }} />;
             default:
-                return <ReplyIcon style={{ height: '18px' }} />;
+                return <ReplyIcon style={{ height: '24px' }} />;
         }
     };
 
-    return (
-        <div>
-            {Array.isArray(buttons) ? buttons.map((button: Dictionary, index: number) => (
-                <a className={classes.buttonPreview} key={index}>
+    const renderButtons = (buttonsToRender: any[], className: string = classes.buttonPreview) => {
+        if (!Array.isArray(buttonsToRender)) {
+            return null;
+        }
+        return buttonsToRender.map((button: Dictionary, index: number) => (
+            <a className={className} key={index}>
+                <div style={{ fontSize: '1.2rem', display: 'flex', alignContent: 'center', gap: '4px' }}>
                     {getButtonIcon(button.type)} {button.btn.text}
-                </a>
-            )) : (
-                buttons && (
-                    <div className={classes.buttonPreview}>
-                        {getButtonIcon('AUTHENTICATION')} {buttons}
+                </div>
+            </a>
+        ));
+    };
+    
+
+    return (
+        <div style={{ position: 'relative' }}>
+            {renderButtons(buttons.slice(0, 2))}
+            {buttons.length > 2 && (
+                <a className={classes.buttonPreview} onClick={handleShowAllButtons}>
+                    <div style={{ fontSize: '1.2rem', display: 'flex', alignContent: 'center', gap: '4px' }}>
+                        <ListIcon /> See all options
                     </div>
-                )
+                </a>
+            )}
+            {showAllButtons && (
+                <div className={classes.dropDownList}>
+                    <div style={{ cursor: 'pointer' }}>
+                        <div style={{ height: '6px', width: '10%', backgroundColor: 'grey', borderRadius: '4px', margin: '0 auto' }}></div>
+                        <CloseIcon onClick={handleClose} className={classes.closeButton} />
+                        <div style={{ textAlign: 'center', width: '100%', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>All Options</div>
+                    </div>
+                    {renderButtons(buttons.slice(2), classes.buttonPreview2)}
+                </div>
             )}
         </div>
     );
 };
+
+
 
 const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     const classes = useStyles();
@@ -182,7 +270,7 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
                         alt="Carousel Header"
                         style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
                     />
-                    <p>{item.body}</p>
+                    <p style={{fontSize:'1rem'}}>{item.body}</p>
                     {item.buttons?.length > 0 && (
                         <ButtonList buttons={item.buttons} />
                     )}
@@ -191,6 +279,7 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
         </div>
     );
 };
+
 
 interface TemplatePreviewProps {
     selectedTemplate: Dictionary;
@@ -239,13 +328,20 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             }
         })) || []
     })) || [];
+
+    const combinedButtons = [
+        ...(selectedTemplate.buttonsgeneric || []),
+        ...(selectedTemplate.buttonsquickreply || [])
+    ];
+
+    console.log("Combined buttons:", combinedButtons);
     
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
             <div className={classes.containerDetail} style={{ display: 'block', alignContent: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                    <div style={{ maxWidth: '25rem', borderRadius: '0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}>
+                    <div style={{ maxWidth: '40rem', borderRadius: '0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}>
                        
                         <div className='templatePreview'>
                             {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
@@ -264,47 +360,39 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                             style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
                                         />
                                     ) : selectedTemplate?.headertype === "TEXT" ? (
-                                        <div style={{ fontSize: '1.2rem' }}>{renderedHeader}</div>
+                                        <div style={{ fontSize: '1.5rem' }}>{renderedHeader}</div> //cambia texto
                                     ) : selectedTemplate?.headertype === "VIDEO" ? (
                                         <video controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
                                             <source src={selectedTemplate.header} type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
                                     ) : (
-                                        <div style={{ fontSize: '1.2rem' }}>{renderedHeader}</div>
+                                        <div style={{ fontSize: '1.1rem' }}>{renderedHeader}</div>
                                     )}
 
-                                    <p>{renderedBody}</p>
+                                    <p style={{fontSize:'1.1rem'}}>{renderedBody}</p>
 
                                     {selectedTemplate?.templatetype === "CAROUSEL" && renderedCarouselData.length > 0 && (
                                         <CarouselPreview carouselData={renderedCarouselData} />
                                     )}
 
-                                    <p style={{ color: 'grey', fontSize: '0.8rem' }}>{selectedTemplate.footer}</p>
+                                    <p style={{ color: 'grey', fontSize: '1.2rem' }}>{selectedTemplate.footer}</p>
                                     <span className={classes.previewHour}> 11:12</span>
 
-                                    {selectedTemplate.buttonsenabled && selectedTemplate.buttons?.length > 0 && (
-                                        <ButtonList buttons={selectedTemplate.buttons} />
-                                    )}
-
-                                    {selectedTemplate.buttonsenabled && selectedTemplate.buttonsgeneric?.length > 0 && (
-                                        <ButtonList buttons={selectedTemplate.buttonsgeneric} />
-                                    )}
-
-                                    {selectedTemplate.buttonsenabled && selectedTemplate.buttonsquickreply?.length > 0 && (
-                                        <ButtonList buttons={selectedTemplate.buttonsquickreply} />
+                                    {selectedTemplate.buttonsenabled && combinedButtons.length > 0 && (
+                                        <ButtonList buttons={combinedButtons} />
                                     )}
                                 </div>
                             ) : selectedTemplate?.category === "AUTHENTICATION" ? (
                                 <div>
-                                    <p>Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
+                                    <p style={{fontSize:'1.2rem'}}>Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
                                         {selectedTemplate.authenticationdata.safetyrecommendation && (
                                             <span> Por tu seguridad, no lo compartas</span>
                                         )}
                                     </p>
                                     {selectedTemplate.authenticationdata.showexpirationdate && (
                                         <div>
-                                            <p>Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.</p>
+                                            <p style={{fontSize:'1rem'}}>Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.</p>
                                         </div>
                                     )}
                                     <span className={classes.previewHour}> 11:12</span>

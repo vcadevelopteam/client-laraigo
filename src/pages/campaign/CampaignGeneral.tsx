@@ -559,6 +559,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const classNameCondition = edit && getValues('executiontype') === 'SCHEDULED' ? 'col-12' : 'col-6'
+    console.log(selectedTemplate)
 
     return (
         <React.Fragment>
