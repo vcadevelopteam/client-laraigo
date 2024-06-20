@@ -231,7 +231,6 @@ const ButtonList: React.FC<{ buttons: any }> = ({ buttons }) => {
             </a>
         ));
     };
-    
 
     return (
         <div style={{ position: 'relative' }}>
@@ -250,12 +249,13 @@ const ButtonList: React.FC<{ buttons: any }> = ({ buttons }) => {
                         <CloseIcon onClick={handleClose} className={classes.closeButton} />
                         <div style={{ textAlign: 'center', width: '100%', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>All Options</div>
                     </div>
-                    {renderButtons(buttons.slice(2), classes.buttonPreview2)}
+                    {renderButtons(buttons, classes.buttonPreview2)}
                 </div>
             )}
         </div>
     );
 };
+
 
 
 

@@ -217,10 +217,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         updateTemplate();
     };
     
-    
-    
-    
-
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         return `${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`;
     };
@@ -228,15 +224,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const getValueDefault = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         const key = generateKey(variableType, variableNumber, carouselIndex);
         const header = selectedHeaders[key];
+    
         if (variableType === 'video' && header === 'default') {
-            return undefined; 
-        } else {
-            return header ? { key: header, value: header } : undefined;
+            return { key: 'default', value: 'Default ' };
         }
+    
+        return header ? { key: header, value: header } : undefined;
     };
-    
-    
-    
     
     const updateTemplate = useCallback(() => {
         const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
@@ -364,7 +358,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
         updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
-        );  
+        );
+    
+        console.log('Transformed variableshidden:', updatedTemplate.variableshidden);
+    
+        console.log('final updatedTemplate:', updatedTemplate);        
     
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
@@ -382,7 +380,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
     
     
-   
+    
 
     const renderDynamicUrlFields = () => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
@@ -465,9 +463,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             return newHeaders;
         });
     
+        // Actualizar variableshidden
         const newVariablesHidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
-        );   
+        );
+        console.log('Updated variablesHidden:', newVariablesHidden);
+    
         updateTemplate();
     };
     
@@ -516,19 +517,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [detaildata.message]);
 
    
-    console.log('a ver', multiData[4])
-    const [fieldSelectValue, setFieldSelectValue] = useState();
-
-
-    useEffect(() => {
-        const primarykey = multiData[4]?.data?.[0]?.fields?.primarykey;
-        console.log('Primary key encontrado:', primarykey); 
-        if (primarykey) {
-            setSelectedHeader(primarykey);
-            setSelectedHeaders(prev => ({ ...prev, main: primarykey }));
-            setFieldSelectValue({ key: primarykey, value: primarykey });
-        }
-    }, [multiData]);
     
 
 
@@ -539,16 +527,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                 
                 <div style={{width:'50%'}}>
-                    <div className="row-zyx">       
-
-                    <FormControl className="col-12">                          
-                        <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
-                        <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>                        
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                            <div style={{ flex: 1 }}>
-                                {console.log('Field select value:', fieldSelectValue)}
+                    <div className="row-zyx">                       
+                        <FormControl className="col-12">                          
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
+                            <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>                        
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <div style={{ flex: 1 }}>
                                 <FieldSelect
-                                    key={fieldSelectValue?.key || 'default-key'}
                                     variant="outlined"
                                     uset={true}
                                     label='Campos archivo'
@@ -556,20 +541,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     data={availableData.map(header => ({ key: header, value: header }))}
                                     optionDesc="value"
                                     optionValue="key"
-                                    valueDefault={fieldSelectValue}
+                                    valueDefault={selectedHeader ? { key: selectedHeader, value: selectedHeader } : undefined}
                                     onChange={handleHeaderChange}
                                 />
-                            </div>                                   
-                            <Tooltip
-                                title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
-                                arrow
-                                placement="top"
-                            >
-                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                            </Tooltip>        
-                        </div>         
-                    </FormControl>
 
+                                </div>                                   
+                                <Tooltip
+                                    title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
+                                    arrow
+                                    placement="top"
+                                >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>        
+                            </div>         
+                        </FormControl>     
 
 
                            
