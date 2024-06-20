@@ -6186,6 +6186,9 @@ export const langKeys = {
   successful_plural: 'successful_plural',
   read: 'read',
   contested: 'contested',
+  shippingdateandtime: 'shippingdateandtime',
+  recipient:'recipient',
+  shipment:'shipment',
 };
 
 export type LangKeys = typeof langKeys;

@@ -1,38 +1,116 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, getHSMShipping } from 'common/helpers';
-import { Dictionary, IFetchData } from "@types";
-import { exportData, getCollectionAux, getCollectionAux2, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
+import { convertLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail } from 'common/helpers';
+import { Dictionary } from "@types";
+import { getCollectionAux, getCollectionAux2, getMultiCollection, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
+import { TemplateBreadcrumbs, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { DownloadIcon } from 'icons';
 import { Button } from '@material-ui/core';
-import TablePaginated from 'components/fields/table-paginated';
+import ListIcon from '@material-ui/icons/List';
 import TableZyx from 'components/fields/table-simple';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
-import { FieldErrors } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import DialogInteractions from 'components/inbox/DialogInteractions';
+import Graphic from 'components/fields/Graphic';
 
 interface DetailProps {
-    setViewSelected?: (view: string) => void;
-    externalUse?: boolean;
+    setViewSelected: (view: string) => void;
     setValue: Dictionary
     getValues: Dictionary,
     errors: FieldErrors
 }
 
-const arrayBread = [
-    { id: "view-1", name: "Campaign" },
-    { id: "view-2", name: "Campaign report" }
-];
 
-const useStyles = makeStyles(() => ({
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
+    columns: Dictionary[];
+}
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, columns }) => {
+    const { t } = useTranslation();
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: '',
+            columntext: ''
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
+
+    const triggerGraphic = (data: any) => {
+        setView(`CHART-${data.graphictype}-${data.column}-${data.columntext}`);
+        setOpenModal(false);
+
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_configuration)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_type)}
+                    className="col-12"
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.key)}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    uset={true}
+                    prefixTranslation="graphic_"
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_view_by)}
+                    className="col-12"
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => {
+                        setValue('column', value?.accessor || '');
+                        setValue('columntext', value?.Header || '');
+                    }}
+                    data={columns}
+                    optionDesc="Header"
+                    optionValue="accessor"
+                />
+            </div>
+        </DialogZyx>
+    )
+}
+
+
+const useStyles = makeStyles((theme) => ({
     select: {
         width: '200px'
     },
@@ -53,20 +131,236 @@ const useStyles = makeStyles(() => ({
     filterComponent: {
         width: '180px'
     },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
+    itemFlex: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: theme.spacing(1),
+        justifyContent: 'end',
+    },
+    containerFilters: {
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        justifyContent: 'end',
+        gap: theme.spacing(1),
+        marginTop: theme.spacing(1),
+        backgroundColor: '#FFF',
+        padding: theme.spacing(1),
+    },
 }));
-
-const dataReportType = {
-    default: 'default',
-    proactive: 'proactive'
-}
 
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
+const cell = (props: CellProps<Dictionary>) => {
+    const column = props.cell.column;
+    const row = props.cell.row.original;
+    return (
+        <div>
+            {column.sortType === "datetime" && !!row[column.id]
+                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })
+                : row[column.id]}
+        </div>
+    )
+}
 
-export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected, externalUse }) => {
+export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setViewSelected: (view: string) => void; }> = ({ setViewSelected, row, arrayBread }) => {
+    const { t } = useTranslation();
+    const multidata = useSelector(state => state.main.multiData);
+    const classes = useStyles();
+    const mainResult = useSelector(state => state.main);
+    const [openModal, setOpenModal] = useState(false);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [showDialogGraphic, setShowDialogGraphic] = useState(false);
+    const [view, setView] = useState('GRID');
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.ticket_number),
+                accessor: 'ticketnum',
+                showGroupedBy: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    if (row && row.ticketnum) {
+                        return (
+                            <label
+                                className={classes.labellink}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    openDialogInteractions(row)
+                                }}
+                            >
+                                {row.ticketnum}
+                            </label>
+                        );
+                    } else {
+                        return "";
+                    }
+                },
+            },
+            {
+                Header: t(langKeys.templatecategory),
+                accessor: 'createdate',
+                sortType: 'datetime',
+                type: 'datetime',
+                showGroupedBy: true,
+                Cell: cell
+            },
+            {
+                Header: `${t(langKeys.name)} ${t(langKeys.campaign).toLocaleLowerCase()}`,
+                accessor: 'campaignname',
+                showGroupedBy: true,
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.recipient),
+                accessor: 'contact',
+                showGroupedBy: true,
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.origin),
+                accessor: 'origin',
+                showGroupedBy: true,
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.shipment),
+                accessor: 'total',
+                type: 'number',
+                sortType: 'number',
+                showGroupedBy: true,
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.read),
+                accessor: 'seen',
+                type: 'number',
+                sortType: 'number',
+                showGroupedBy: true,
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.contested),
+                accessor: 'answered',
+                type: 'number',
+                sortType: 'number',
+                showGroupedBy: true,
+                Cell: cell
+            },
+            {
+                Header: "Log",
+                accessor: 'log',
+                showGroupedBy: true,
+                Cell: cell
+            },
+        ],
+        []
+    );
+
+
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModal(true);
+        setRowSelected({ ...row, displayname: row.name, ticketnum: row.ticketnum })
+    }, [mainResult]);
+
+    return (<div style={{ width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+                <TemplateBreadcrumbs
+                    breadcrumbs={[...arrayBread, { id: "view-3", name: (t('report_hsmshipping') + t(langKeys.detail)) }]}
+                    handleClick={setViewSelected}
+                />
+            </div>
+        </div>
+        {view !== "GRID" && <div className={classes.containerFilters}>
+            <div className={classes.itemFlex}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={multidata.loading || !(multidata?.data?.[0]?.data?.length||0 > 0)}
+                    onClick={() => setShowDialogGraphic(true)}
+                    startIcon={<AssessmentIcon />}
+                >
+                    {t(langKeys.configuration)}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setView('GRID')}
+                    startIcon={<ListIcon />}
+                >
+                    {t(langKeys.grid_view)}
+                </Button>
+            </div>
+        </div>}
+        {view === "GRID" && <div style={{ position: 'relative', height: '100%' }}>
+            <TableZyx
+                columns={columns}
+                ButtonsElement={<div className={classes.itemFlex}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={multidata.loading || !(multidata?.data?.[0]?.data?.length||0 > 0)}
+                        onClick={() => setShowDialogGraphic(true)}
+                        startIcon={<AssessmentIcon />}
+                    >
+                        {t(langKeys.graphic_view)}
+                    </Button>
+                </div>}
+                data={multidata?.data?.[0]?.data || []}
+                loading={multidata.loading}
+                download={true}
+                filterGeneral={false}
+                groupedBy={true}
+                showHideColumns={true}
+            />
+        </div>}
+        {view !== "GRID" && (
+            <Graphic
+                graphicType={view.split("-")?.[1] || "BAR"}
+                column={view.split("-")?.[2] || "summary"}
+                openModal={showDialogGraphic}
+                setOpenModal={setShowDialogGraphic}
+                daterange={{}}
+                setView={setView}
+                withFilters={false}
+                withButtons={false}
+                data={multidata?.data?.[0]?.data || []}
+                loading={multidata.loading}
+                handlerSearchGraphic={() => null}
+                columnDesc={view.split("-")?.[3] || "summary"}
+            />
+        )}
+        <SummaryGraphic
+            openModal={showDialogGraphic}
+            setOpenModal={setShowDialogGraphic}
+            setView={setView}
+            columns={columns}
+        />
+        <DialogInteractions
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            ticket={rowSelected}
+        />
+    </div>
+    )
+}
+export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -75,36 +369,19 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected, exte
     const [waitExport, setWaitExport] = useState(false);
 
     const [openModal, setOpenModal] = useState(false);
-    const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
-
-    const [reportType, setReportType] = useState<string>('default');
 
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [viewSelected2, setViewSelected2] = useState("view-2");
+
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.report_plural) },
+        { id: "view-2", name: t('report_hsmshipping') }
+    ];
 
     const filterChannel = useSelector((state) => state.main.mainAux)
 
-    const cell = (props: CellProps<Dictionary>) => {
-        const column = props.cell.column;
-        const row = props.cell.row.original;
-        return (
-            <div onClick={() => {
-                setSelectedRow(row);
-                setOpenModal(true);
-            }}>
-                {column.sortType === "datetime" && !!row[column.id]
-                    ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "numeric",
-                        minute: "numeric",
-                        second: "numeric"
-                    })
-                    : row[column.id]}
-            </div>
-        )
-    }
 
     const columns = React.useMemo(
         () => [
@@ -125,7 +402,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected, exte
                 accessor: 'total',
                 type: 'number',
                 sortType: 'number',
-                showGroupedBy: true, 
+                showGroupedBy: true,
                 Cell: cell
             },
             {
@@ -133,7 +410,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected, exte
                 accessor: 'satisfactory',
                 type: 'number',
                 sortType: 'number',
-                showGroupedBy: true, 
+                showGroupedBy: true,
                 Cell: cell
             },
             {
@@ -141,7 +418,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected, exte
                 accessor: 'failed',
                 type: 'number',
                 sortType: 'number',
-                showGroupedBy: true, 
+                showGroupedBy: true,
                 Cell: cell
             },
             {
@@ -149,24 +426,20 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected, exte
                 accessor: 'seen',
                 type: 'number',
                 sortType: 'number',
-                showGroupedBy: true, 
+                showGroupedBy: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.contested),
                 type: 'number',
                 sortType: 'number',
-                showGroupedBy: true, 
                 accessor: 'answered',
+                showGroupedBy: true,
                 Cell: cell
             },
         ],
         []
     );
-
-    React.useEffect(() => {
-        console.log(filterChannel)
-    }, [filterChannel]);
 
     const fetchData = () => {
         dispatch(showBackdrop(true))
@@ -207,102 +480,118 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected, exte
         if (!mainAux.loading && !mainAux.error) {
             dispatch(showBackdrop(false));
         }
-    }, [mainAux]);  
+    }, [mainAux]);
 
-    //channel Filter ----------------------------------------------------------------------------------
-    const channelTypeList = filterChannel.data || [];
-    const channelTypeFilteredList = new Set();
+
     const [selectedChannel, setSelectedChannel] = useState(0);
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
-    return (
-        <div style={{ width: '100%' }}>
-            {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={setViewSelected}
-                    />
-                    <TitleDetail
-                        title={t(langKeys.report)}
-                    />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected && setViewSelected("view-1")}
-                    >{t(langKeys.back)}</Button>
-                </div>
-            </div>}
-            {externalUse && <div style={{ height: 10 }}></div>}
-
-
-
-            <div style={{ position: 'relative', height: '100%' }}>
-
-                <div style={{ width: 'calc(100% - 60px)', display: 'flex', background: 'white', padding: '1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>
-
-                    <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto' }}>
-                        <DateRangePicker
-                            open={openDateRangeCreateDateModal}
-                            setOpen={setOpenDateRangeCreateDateModal}
-                            range={dateRangeCreateDate}
-                            onSelect={setDateRangeCreateDate}
-                        >
-                            <Button
-                                className={classes.itemDate}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                            >
-                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                            </Button>
-                        </DateRangePicker>
-
-                        <FieldSelect
-                            label={t(langKeys.channel)}
-                            variant="outlined"
-                            className={classes.filterComponent}
-                            data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
-                            valueDefault={selectedChannel}
-                            onChange={(value) => setSelectedChannel(value?.type || 0)}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected2("view-3");
+        dispatch(getMultiCollection([
+            getHSMShippingDetail(
+                {
+                    startdate: dateRangeCreateDate.startDate,
+                    enddate: dateRangeCreateDate.endDate,
+                    communicationchannelid: selectedChannel || 0,
+                    messagetemplateid: row.messagetemplateid
+                }
+            )
+        ]))
+        setRowSelected({ row, edit: true });
+    };
+    const setView = (e: string) => {
+        if (e === "view-1") {
+            setViewSelected(e)
+            setViewSelected2("view-2");
+        } else {
+            setViewSelected2(e)
+        }
+    }
+    if (viewSelected2 === "view-2") {
+        return (
+            <div style={{ width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setView}
                         />
-
-                        <Button
-                            disabled={mainAux.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={() => fetchData()}
-                        >
-                            {t(langKeys.search)}
-                        </Button>
-
                     </div>
                 </div>
+                <div style={{ position: 'relative', height: '100%' }}>
 
-                <TableZyx
-                    columns={columns}
-                    data={mainAux.data}
-                    groupedBy={true}
-                    loading={mainAux.loading}
-                    showHideColumns={true}
-                    download={true}
-                />
+                    <div style={{ width: 'calc(100% - 60px)', display: 'flex', background: 'white', padding: '1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>
+
+                        <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto' }}>
+                            <DateRangePicker
+                                open={openDateRangeCreateDateModal}
+                                setOpen={setOpenDateRangeCreateDateModal}
+                                range={dateRangeCreateDate}
+                                onSelect={setDateRangeCreateDate}
+                            >
+                                <Button
+                                    className={classes.itemDate}
+                                    startIcon={<CalendarIcon />}
+                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                >
+                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                </Button>
+                            </DateRangePicker>
+
+                            <FieldSelect
+                                label={t(langKeys.channel)}
+                                variant="outlined"
+                                className={classes.filterComponent}
+                                data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
+                                valueDefault={selectedChannel}
+                                onChange={(value) => setSelectedChannel(value?.type || 0)}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                            />
+
+                            <Button
+                                disabled={mainAux.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => fetchData()}
+                            >
+                                {t(langKeys.search)}
+                            </Button>
+
+                        </div>
+                    </div>
+
+                    <TableZyx
+                        columns={columns}
+                        data={mainAux.data}
+                        groupedBy={true}
+                        showHideColumns={true}
+                        loading={mainAux.loading}
+                        onClickRow={handleEdit}
+                        download={true}
+                        filterGeneral={false}
+                    />
+                </div>
+
+                {openModal && <ModalReport
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    row={rowSelected}
+                />}
             </div>
-
-            {openModal && <ModalReport
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                row={selectedRow}
-            />}
-        </div>
-    )
+        )
+    } else if (viewSelected2 === "view-3") {
+        return <ReportHSMShippingDetail
+            row={rowSelected}
+            arrayBread={arrayBread}
+            setViewSelected={setView}
+        />
+    } else {
+        return <div>error</div>
+    }
 }
 
 interface ModalProps {

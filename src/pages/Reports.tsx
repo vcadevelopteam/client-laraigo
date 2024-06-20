@@ -1791,12 +1791,8 @@ const Reports: FC = () => {
         return (
             <>
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('report_hsmshipping'), t(langKeys.report_plural))}
-                        handleClick={handleSelectedString}
-                    />
                     <ReportHSMShipping
-                        externalUse={true}
+                        setViewSelected={handleSelectedString}
                     />
                 </div>
             </>

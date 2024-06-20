@@ -6240,6 +6240,9 @@ const translation: LangKeys = {
   successful_plural: 'Successful',
   read: 'Read',
   contested: 'Contested',
+  shippingdateandtime: 'Shipping date and time',
+  recipient:'Recipient',
+  shipment:'Shipment',
 };
 
 const enResource: ResourceLanguage = {

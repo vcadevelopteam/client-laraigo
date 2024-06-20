@@ -6188,6 +6188,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   successful_plural: 'Exitosos',
   read: 'Leídos',
   contested: 'Contestados',
+  shippingdateandtime: 'Fecha y hora de envío',
+  recipient:'Destinatario',
+  shipment:'Envío',
 };
 
 const esResource: ResourceLanguage = {
