@@ -1,15 +1,17 @@
-import { Box, FormControlLabel, Tabs, TextField } from "@material-ui/core";
-import { Dictionary, MultiData } from "@types";
+import { Box, FormControlLabel, Tabs, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
+import { Dictionary, MultiData, IBillingMessaging } from "@types";
 import { getCountryList } from "store/signup/actions";
 import { langKeys } from "lang/keys";
 import { makeStyles } from "@material-ui/core/styles";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { Search } from "@material-ui/icons";
+import { Trans } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -22,6 +24,7 @@ import {
     appsettingInvoiceSel,
     artificialIntelligencePlanSel,
     artificialIntelligenceServiceSel,
+    array_trimmer,
     billingArtificialIntelligenceIns,
     billingArtificialIntelligenceSel,
     billingConfigurationIns,
@@ -31,6 +34,8 @@ import {
     currencySel,
     dataMonths,
     dataYears,
+    exportExcel,
+    uploadExcel,
     formatNumber,
     formatNumberFourDecimals,
     formatNumberNoDecimals,
@@ -43,6 +48,7 @@ import {
     getPaymentPlanSel,
     getPlanSel,
     getValuesFromDomainCorp,
+    templateMaker,
 } from "common/helpers";
 
 import {
@@ -4010,6 +4016,7 @@ const MessagingCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPla
         year: String(new Date().getFullYear()),
     });
 
+    const [importData, setImportData] = useState<Dictionary>([]);
     const [disableSearch, setdisableSearch] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -4149,6 +4156,285 @@ const MessagingCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPla
         );
     };
 
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+        ];
+
+        const header = [
+            "year",
+            "month",
+            "description",
+            "countrycode",
+            "plancurrency",
+            "pricepersms",
+            "vcacomissionpersms",
+            "minimumquantitysms",
+            "fixedfeesms",
+            "pricepermail",
+            "vcacomissionpermail",
+            "minimumquantitymail",
+            "fixedfeemail",
+            "priceperchatweb",
+            "vcacomissionperchatweb",
+            "minimumquantitychatweb",
+            "fixedfeechatweb",
+            "priceperfacebook",
+            "vcacomissionperfacebook",
+            "minimumquantityfacebook",
+            "fixedfeefacebook",
+            "pricepermybusiness",
+            "vcacomissionpermybusiness",
+            "minimumquantitymybusiness",
+            "fixedfeemybusiness",
+            "priceperinstagram",
+            "vcacomissionperinstagram",
+            "minimumquantityinstagram",
+            "fixedfeeinstagram",
+            "priceperinstagramdm",
+            "vcacomissionperinstagramdm",
+            "minimumquantityinstagramdm",
+            "fixedfeeinstagramdm",
+            "pricepermessenger",
+            "vcacomissionpermessenger",
+            "minimumquantitymessenger",
+            "fixedfeemessenger",
+            "pricepertelegram",
+            "vcacomissionpertelegram",
+            "minimumquantitytelegram",
+            "fixedfeetelegram",
+            "pricepertiktok",
+            "vcacomissionpertiktok",
+            "minimumquantitytiktok",
+            "fixedfeetiktok",
+            "pricepervoice",
+            "vcacomissionpervoice",
+            "minimumquantityvoice",
+            "fixedfeevoice",
+            "pricepertwitter",
+            "vcacomissionpertwitter",
+            "minimumquantitytwitter",
+            "fixedfeetwitter",
+            "priceperyoutube",
+            "vcacomissionperyoutube",
+            "minimumquantityyoutube",
+            "fixedfeeyoutube",
+        ];
+
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
+    }
+
+    const handleUpload = async (files: any) => {
+        const file = files?.item(0);
+        files = null;
+
+        if (file) {
+            const excel: any = await uploadExcel(file, undefined);
+
+            let data: IBillingMessaging[] = array_trimmer(excel);
+
+            data = data.filter((f: IBillingMessaging) =>
+                (f.year !== undefined && f.year >= 0)
+                && (f.month !== undefined && f.month >= 0)
+                && (f.description !== undefined && f?.description?.length > 0)
+                && (f.countrycode !== undefined && f?.countrycode?.length > 0)
+                && (f.plancurrency !== undefined && f?.plancurrency?.length > 0)
+                && (f.pricepersms !== undefined)
+                && (f.vcacomissionpersms !== undefined)
+                && (f.minimumquantitysms !== undefined)
+                && (f.fixedfeesms !== undefined)
+                && (f.pricepermail !== undefined)
+                && (f.vcacomissionpermail !== undefined)
+                && (f.minimumquantitymail !== undefined)
+                && (f.fixedfeemail !== undefined)
+                && (f.priceperchatweb !== undefined)
+                && (f.vcacomissionperchatweb !== undefined)
+                && (f.minimumquantitychatweb !== undefined)
+                && (f.fixedfeechatweb !== undefined)
+                && (f.priceperfacebook !== undefined)
+                && (f.vcacomissionperfacebook !== undefined)
+                && (f.minimumquantityfacebook !== undefined)
+                && (f.fixedfeefacebook !== undefined)
+                && (f.pricepermybusiness !== undefined)
+                && (f.vcacomissionpermybusiness !== undefined)
+                && (f.minimumquantitymybusiness !== undefined)
+                && (f.fixedfeemybusiness !== undefined)
+                && (f.priceperinstagram !== undefined)
+                && (f.vcacomissionperinstagram !== undefined)
+                && (f.minimumquantityinstagram !== undefined)
+                && (f.fixedfeeinstagram !== undefined)
+                && (f.priceperinstagramdm !== undefined)
+                && (f.vcacomissionperinstagramdm !== undefined)
+                && (f.minimumquantityinstagramdm !== undefined)
+                && (f.fixedfeeinstagramdm !== undefined)
+                && (f.pricepermessenger !== undefined)
+                && (f.vcacomissionpermessenger !== undefined)
+                && (f.minimumquantitymessenger !== undefined)
+                && (f.fixedfeemessenger !== undefined)
+                && (f.pricepertelegram !== undefined)
+                && (f.vcacomissionpertelegram !== undefined)
+                && (f.minimumquantitytelegram !== undefined)
+                && (f.fixedfeetelegram !== undefined)
+                && (f.pricepertiktok !== undefined)
+                && (f.vcacomissionpertiktok !== undefined)
+                && (f.minimumquantitytiktok !== undefined)
+                && (f.fixedfeetiktok !== undefined)
+                && (f.pricepervoice !== undefined)
+                && (f.vcacomissionpervoice !== undefined)
+                && (f.minimumquantityvoice !== undefined)
+                && (f.fixedfeevoice !== undefined)
+                && (f.pricepertwitter !== undefined)
+                && (f.vcacomissionpertwitter !== undefined)
+                && (f.minimumquantitytwitter !== undefined)
+                && (f.fixedfeetwitter !== undefined)
+                && (f.priceperyoutube !== undefined)
+                && (f.vcacomissionperyoutube !== undefined)
+                && (f.minimumquantityyoutube !== undefined)
+                && (f.fixedfeeyoutube !== undefined)
+            );
+
+            if (data.length > 0) {
+                const table: Dictionary = data.reduce((a: any, d: IBillingMessaging, i: number) => ({
+                    ...a,
+                    [`${d.year}_${d.month}_${d.countrycode}_${i}`]: {
+                        year: d.year || null,
+                        month: d.month || null,
+                        id: 0,
+                        description: d.description || null,
+                        status: 'ACTIVO',
+                        type: '',
+                        operation: 'INSERT',
+                        countrycode: d.countrycode || null,
+                        plancurrency: d.plancurrency || null,
+                        pricepersms: d.pricepersms || null,
+                        vcacomissionpersms: d.vcacomissionpersms || null,
+                        minimumquantitysms: d.minimumquantitysms || null,
+                        fixedfeesms: d.fixedfeesms || null,
+                        pricepermail: d.pricepermail || null,
+                        vcacomissionpermail: d.vcacomissionpermail || null,
+                        minimumquantitymail: d.minimumquantitymail || null,
+                        fixedfeemail: d.fixedfeemail || null,
+                        priceperchatweb: d.priceperchatweb || null,
+                        vcacomissionperchatweb: d.vcacomissionperchatweb || null,
+                        minimumquantitychatweb: d.minimumquantitychatweb || null,
+                        fixedfeechatweb: d.fixedfeechatweb || null,
+                        priceperfacebook: d.priceperfacebook || null,
+                        vcacomissionperfacebook: d.vcacomissionperfacebook || null,
+                        minimumquantityfacebook: d.minimumquantityfacebook || null,
+                        fixedfeefacebook: d.fixedfeefacebook || null,
+                        pricepermybusiness: d.pricepermybusiness || null,
+                        vcacomissionpermybusiness: d.vcacomissionpermybusiness || null,
+                        minimumquantitymybusiness: d.minimumquantitymybusiness || null,
+                        fixedfeemybusiness: d.fixedfeemybusiness || null,
+                        priceperinstagram: d.priceperinstagram || null,
+                        vcacomissionperinstagram: d.vcacomissionperinstagram || null,
+                        minimumquantityinstagram: d.minimumquantityinstagram || null,
+                        fixedfeeinstagram: d.fixedfeeinstagram || null,
+                        priceperinstagramdm: d.priceperinstagramdm || null,
+                        vcacomissionperinstagramdm: d.vcacomissionperinstagramdm || null,
+                        minimumquantityinstagramdm: d.minimumquantityinstagramdm || null,
+                        fixedfeeinstagramdm: d.fixedfeeinstagramdm || null,
+                        pricepermessenger: d.pricepermessenger || null,
+                        vcacomissionpermessenger: d.vcacomissionpermessenger || null,
+                        minimumquantitymessenger: d.minimumquantitymessenger || null,
+                        fixedfeemessenger: d.fixedfeemessenger || null,
+                        pricepertelegram: d.pricepertelegram || null,
+                        vcacomissionpertelegram: d.vcacomissionpertelegram || null,
+                        minimumquantitytelegram: d.minimumquantitytelegram || null,
+                        fixedfeetelegram: d.fixedfeetelegram || null,
+                        pricepertiktok: d.pricepertiktok || null,
+                        vcacomissionpertiktok: d.vcacomissionpertiktok || null,
+                        minimumquantitytiktok: d.minimumquantitytiktok || null,
+                        fixedfeetiktok: d.fixedfeetiktok || null,
+                        pricepervoice: d.pricepervoice || null,
+                        vcacomissionpervoice: d.vcacomissionpervoice || null,
+                        minimumquantityvoice: d.minimumquantityvoice || null,
+                        fixedfeevoice: d.fixedfeevoice || null,
+                        pricepertwitter: d.pricepertwitter || null,
+                        vcacomissionpertwitter: d.vcacomissionpertwitter || null,
+                        minimumquantitytwitter: d.minimumquantitytwitter || null,
+                        fixedfeetwitter: d.fixedfeetwitter || null,
+                        priceperyoutube: d.priceperyoutube || null,
+                        vcacomissionperyoutube: d.vcacomissionperyoutube || null,
+                        minimumquantityyoutube: d.minimumquantityyoutube || null,
+                        fixedfeeyoutube: d.fixedfeeyoutube || null,
+                    }
+                }), {});
+
+                setImportData(table);
+
+                const callback = () => {
+                    dispatch(showBackdrop(true));
+                }
+
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback,
+                }))
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
+            }
+        }
+    }
+
     if (viewSelected === "view-1") {
         return (
             <Fragment>
@@ -4207,6 +4493,16 @@ const MessagingCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPla
                             >
                                 {t(langKeys.search)}
                             </Button>
+                            <Button
+                                color="primary"
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                onClick={handleTemplate}
+                                startIcon={<ListAltIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >
+                                <Trans i18nKey={langKeys.template} />
+                            </Button>
                         </div>
                     )}
                     columns={columns}
@@ -4214,6 +4510,7 @@ const MessagingCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPla
                     download={true}
                     filterGeneral={false}
                     handleRegister={handleRegister}
+                    importCSV={handleUpload}
                     loading={mainResult.mainData.loading}
                     onClickRow={handleEdit}
                     register={true}
@@ -4256,6 +4553,8 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
 
+    const [openWarning, setOpenWarning] = useState(false);
+    const [isModified, setIsModified] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
     const [datetoshow, setdatetoshow] = useState(
@@ -4270,6 +4569,10 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
         { id: "view-1", name: t(langKeys.messagingcost) },
         { id: "view-2", name: t(langKeys.messagingcostdetail) },
     ];
+
+    const handleClose = () => {
+        setOpenWarning(false);
+    };
 
     const {
         formState: { errors },
@@ -4482,690 +4785,718 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     });
 
     return (
-        <div style={{ width: "100%" }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                        <TemplateBreadcrumbs breadcrumbs={arrayBreadConversationCost} handleClick={setViewSelected} />
-                        {row && <TitleDetail title={t(langKeys.messagingcost)} />}
-                        {!row && <TitleDetail title={t(langKeys.newmessagingplan)} />}
+        <>
+            <Dialog
+                aria-describedby="alert-dialog-description"
+                aria-labelledby="alert-dialog-title"
+                onClose={handleClose}
+                open={openWarning}
+            >
+                <DialogTitle>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <Trans i18nKey={langKeys.cancel} />
+                        </div>
                     </div>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <Button
-                            color="primary"
-                            disabled={executeResult.loading}
-                            onClick={() => setViewSelected("view-1")}
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            type="button"
-                            variant="contained"
-                        >
-                            {t(langKeys.back)}
-                        </Button>
-                        {edit && (
+                </DialogTitle>
+                <DialogContent>
+                    <Trans i18nKey={langKeys.goback} />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        <Trans i18nKey={langKeys.no} />
+                    </Button>
+                    <Button onClick={() => setViewSelected("view-1")} color="primary" autoFocus>
+                        <Trans i18nKey={langKeys.yes} />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <div style={{ width: "100%" }}>
+                <form onSubmit={onSubmit}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <div>
+                            <TemplateBreadcrumbs breadcrumbs={arrayBreadConversationCost} handleClick={(value) => { isModified ? setOpenWarning(true) : setViewSelected(value) }} />
+                            {row && <TitleDetail title={t(langKeys.messagingcost)} />}
+                            {!row && <TitleDetail title={t(langKeys.newmessagingplan)} />}
+                        </div>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                             <Button
-                                className={classes.button}
                                 color="primary"
                                 disabled={executeResult.loading}
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                                type="submit"
+                                onClick={() => { isModified ? setOpenWarning(true) : setViewSelected("view-1") }}
+                                startIcon={<ClearIcon color="secondary" />}
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                type="button"
                                 variant="contained"
                             >
-                                {t(langKeys.save)}
+                                {t(langKeys.back)}
                             </Button>
-                        )}
+                            {edit && (
+                                <Button
+                                    className={classes.button}
+                                    color="primary"
+                                    disabled={executeResult.loading}
+                                    startIcon={<SaveIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                    type="submit"
+                                    variant="contained"
+                                >
+                                    {t(langKeys.save)}
+                                </Button>
+                            )}
+                        </div>
                     </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <TextField
-                            className="col-6"
-                            id="date"
-                            onChange={(e) => handleDateChange(e.target.value)}
-                            size="small"
-                            type="month"
-                            value={datetoshow}
-                            variant="outlined"
-                        />
-                        <FieldSelect
-                            className="col-6"
-                            data={dataPlan}
-                            error={errors?.countrycode?.message}
-                            label={t(langKeys.country)}
-                            onChange={(value) => setValue("countrycode", value?.code)}
-                            optionDesc="description"
-                            optionValue="code"
-                            orderbylabel={true}
-                            valueDefault={getValues("countrycode")}
-                        />
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <TextField
+                                className="col-6"
+                                id="date"
+                                onChange={(e) => { handleDateChange(e.target.value); setIsModified(true) }}
+                                size="small"
+                                type="month"
+                                value={datetoshow}
+                                variant="outlined"
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                data={dataPlan}
+                                error={errors?.countrycode?.message}
+                                label={t(langKeys.country)}
+                                onChange={(value) => { setValue("countrycode", value?.code); setIsModified(true) }}
+                                optionDesc="description"
+                                optionValue="code"
+                                orderbylabel={true}
+                                valueDefault={getValues("countrycode")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.description?.message}
+                                label={t(langKeys.description)}
+                                onChange={(value) => { setValue("description", value); setIsModified(true) }}
+                                valueDefault={getValues("description")}
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList ?? []}
+                                error={errors?.plancurrency?.message}
+                                label={t(langKeys.billingconfiguration_plancurrency)}
+                                onChange={(value) => {
+                                    setValue("plancurrency", value?.code);
+                                    setIsModified(true);
+                                }}
+                                optionDesc="description"
+                                optionValue="code"
+                                orderbylabel={true}
+                                valueDefault={getValues("plancurrency")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_channel)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_minimumfree)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_fixedfee)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_pricepermessage)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_vcacomission)} />
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_chatweb)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitychatweb?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitychatweb", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitychatweb")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeechatweb?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeechatweb", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeechatweb")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.priceperchatweb?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("priceperchatweb", value); setIsModified(true) }}
+                                                    valueDefault={getValues("priceperchatweb")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionperchatweb?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionperchatweb", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionperchatweb")}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_mail)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitymail?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitymail", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitymail")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeemail?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeemail", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeemail")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepermail?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepermail", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepermail")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpermail?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpermail", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpermail")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_facebook)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantityfacebook?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantityfacebook", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantityfacebook")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeefacebook?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeefacebook", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeefacebook")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.priceperfacebook?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("priceperfacebook", value); setIsModified(true) }}
+                                                    valueDefault={getValues("priceperfacebook")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionperfacebook?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionperfacebook", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionperfacebook")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_mybusiness)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitymybusiness?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitymybusiness", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitymybusiness")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeemybusiness?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeemybusiness", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeemybusiness")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepermybusiness?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepermybusiness", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepermybusiness")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpermybusiness?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpermybusiness", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpermybusiness")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_instagram)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantityinstagram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantityinstagram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantityinstagram")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeeinstagram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeeinstagram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeeinstagram")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.priceperinstagram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("priceperinstagram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("priceperinstagram")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionperinstagram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionperinstagram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionperinstagram")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_instagramdm)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantityinstagramdm?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantityinstagramdm", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantityinstagramdm")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeeinstagramdm?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeeinstagramdm", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeeinstagramdm")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.priceperinstagramdm?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("priceperinstagramdm", value); setIsModified(true) }}
+                                                    valueDefault={getValues("priceperinstagramdm")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionperinstagramdm?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionperinstagramdm", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionperinstagramdm")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_messenger)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitymessenger?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitymessenger", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitymessenger")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeemessenger?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeemessenger", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeemessenger")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepermessenger?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepermessenger", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepermessenger")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpermessenger?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpermessenger", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpermessenger")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_sms)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitysms?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitysms", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitysms")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeesms?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeesms", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeesms")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepersms?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepersms", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepersms")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpersms?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpersms", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpersms")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_telegram)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitytelegram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitytelegram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitytelegram")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeetelegram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeetelegram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeetelegram")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepertelegram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepertelegram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepertelegram")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpertelegram?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpertelegram", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpertelegram")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_tiktok)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitytiktok?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitytiktok", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitytiktok")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeetiktok?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeetiktok", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeetiktok")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepertiktok?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepertiktok", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepertiktok")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpertiktok?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpertiktok", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpertiktok")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_twitter)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantitytwitter?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantitytwitter", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantitytwitter")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeetwitter?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeetwitter", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeetwitter")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepertwitter?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepertwitter", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepertwitter")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpertwitter?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpertwitter", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpertwitter")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_voice)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantityvoice?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantityvoice", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantityvoice")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeevoice?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeevoice", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeevoice")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.pricepervoice?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("pricepervoice", value); setIsModified(true) }}
+                                                    valueDefault={getValues("pricepervoice")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionpervoice?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionpervoice", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionpervoice")}
+                                                />
+                                            </TableCell>
+                                        </TableRow><TableRow>
+                                            <TableCell>
+                                                <FieldView label={""} value={t(langKeys.messaging_youtube)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.minimumquantityyoutube?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("minimumquantityyoutube", value); setIsModified(true) }}
+                                                    valueDefault={getValues("minimumquantityyoutube")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.fixedfeeyoutube?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("fixedfeeyoutube", value); setIsModified(true) }}
+                                                    valueDefault={getValues("fixedfeeyoutube")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.priceperyoutube?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("priceperyoutube", value); setIsModified(true) }}
+                                                    valueDefault={getValues("priceperyoutube")}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    error={errors?.vcacomissionperyoutube?.message}
+                                                    inputProps={{ step: "any" }}
+                                                    label={""}
+                                                    type="number"
+                                                    onChange={(value) => { setValue("vcacomissionperyoutube", value); setIsModified(true) }}
+                                                    valueDefault={getValues("vcacomissionperyoutube")}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.description?.message}
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue("description", value)}
-                            valueDefault={getValues("description")}
-                        />
-                        <FieldSelect
-                            className="col-6"
-                            data={currencyList ?? []}
-                            error={errors?.plancurrency?.message}
-                            label={t(langKeys.billingconfiguration_plancurrency)}
-                            onChange={(value) => {
-                                setValue("plancurrency", value?.code);
-                            }}
-                            optionDesc="description"
-                            optionValue="code"
-                            orderbylabel={true}
-                            valueDefault={getValues("plancurrency")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_channel)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_minimumfree)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_fixedfee)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_pricepermessage)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_vcacomission)} />
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_chatweb)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitychatweb?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitychatweb", value)}
-                                                valueDefault={getValues("minimumquantitychatweb")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeechatweb?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeechatweb", value)}
-                                                valueDefault={getValues("fixedfeechatweb")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.priceperchatweb?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("priceperchatweb", value)}
-                                                valueDefault={getValues("priceperchatweb")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionperchatweb?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionperchatweb", value)}
-                                                valueDefault={getValues("vcacomissionperchatweb")}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_mail)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitymail?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitymail", value)}
-                                                valueDefault={getValues("minimumquantitymail")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeemail?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeemail", value)}
-                                                valueDefault={getValues("fixedfeemail")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepermail?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepermail", value)}
-                                                valueDefault={getValues("pricepermail")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpermail?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpermail", value)}
-                                                valueDefault={getValues("vcacomissionpermail")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_facebook)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantityfacebook?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantityfacebook", value)}
-                                                valueDefault={getValues("minimumquantityfacebook")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeefacebook?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeefacebook", value)}
-                                                valueDefault={getValues("fixedfeefacebook")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.priceperfacebook?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("priceperfacebook", value)}
-                                                valueDefault={getValues("priceperfacebook")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionperfacebook?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionperfacebook", value)}
-                                                valueDefault={getValues("vcacomissionperfacebook")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_mybusiness)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitymybusiness?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitymybusiness", value)}
-                                                valueDefault={getValues("minimumquantitymybusiness")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeemybusiness?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeemybusiness", value)}
-                                                valueDefault={getValues("fixedfeemybusiness")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepermybusiness?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepermybusiness", value)}
-                                                valueDefault={getValues("pricepermybusiness")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpermybusiness?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpermybusiness", value)}
-                                                valueDefault={getValues("vcacomissionpermybusiness")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_instagram)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantityinstagram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantityinstagram", value)}
-                                                valueDefault={getValues("minimumquantityinstagram")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeeinstagram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeeinstagram", value)}
-                                                valueDefault={getValues("fixedfeeinstagram")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.priceperinstagram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("priceperinstagram", value)}
-                                                valueDefault={getValues("priceperinstagram")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionperinstagram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionperinstagram", value)}
-                                                valueDefault={getValues("vcacomissionperinstagram")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_instagramdm)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantityinstagramdm?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantityinstagramdm", value)}
-                                                valueDefault={getValues("minimumquantityinstagramdm")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeeinstagramdm?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeeinstagramdm", value)}
-                                                valueDefault={getValues("fixedfeeinstagramdm")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.priceperinstagramdm?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("priceperinstagramdm", value)}
-                                                valueDefault={getValues("priceperinstagramdm")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionperinstagramdm?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionperinstagramdm", value)}
-                                                valueDefault={getValues("vcacomissionperinstagramdm")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_messenger)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitymessenger?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitymessenger", value)}
-                                                valueDefault={getValues("minimumquantitymessenger")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeemessenger?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeemessenger", value)}
-                                                valueDefault={getValues("fixedfeemessenger")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepermessenger?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepermessenger", value)}
-                                                valueDefault={getValues("pricepermessenger")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpermessenger?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpermessenger", value)}
-                                                valueDefault={getValues("vcacomissionpermessenger")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_sms)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitysms?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitysms", value)}
-                                                valueDefault={getValues("minimumquantitysms")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeesms?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeesms", value)}
-                                                valueDefault={getValues("fixedfeesms")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepersms?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepersms", value)}
-                                                valueDefault={getValues("pricepersms")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpersms?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpersms", value)}
-                                                valueDefault={getValues("vcacomissionpersms")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_telegram)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitytelegram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitytelegram", value)}
-                                                valueDefault={getValues("minimumquantitytelegram")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeetelegram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeetelegram", value)}
-                                                valueDefault={getValues("fixedfeetelegram")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepertelegram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepertelegram", value)}
-                                                valueDefault={getValues("pricepertelegram")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpertelegram?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpertelegram", value)}
-                                                valueDefault={getValues("vcacomissionpertelegram")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_tiktok)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitytiktok?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitytiktok", value)}
-                                                valueDefault={getValues("minimumquantitytiktok")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeetiktok?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeetiktok", value)}
-                                                valueDefault={getValues("fixedfeetiktok")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepertiktok?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepertiktok", value)}
-                                                valueDefault={getValues("pricepertiktok")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpertiktok?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpertiktok", value)}
-                                                valueDefault={getValues("vcacomissionpertiktok")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_twitter)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantitytwitter?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantitytwitter", value)}
-                                                valueDefault={getValues("minimumquantitytwitter")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeetwitter?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeetwitter", value)}
-                                                valueDefault={getValues("fixedfeetwitter")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepertwitter?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepertwitter", value)}
-                                                valueDefault={getValues("pricepertwitter")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpertwitter?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpertwitter", value)}
-                                                valueDefault={getValues("vcacomissionpertwitter")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_voice)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantityvoice?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantityvoice", value)}
-                                                valueDefault={getValues("minimumquantityvoice")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeevoice?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeevoice", value)}
-                                                valueDefault={getValues("fixedfeevoice")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.pricepervoice?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("pricepervoice", value)}
-                                                valueDefault={getValues("pricepervoice")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionpervoice?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionpervoice", value)}
-                                                valueDefault={getValues("vcacomissionpervoice")}
-                                            />
-                                        </TableCell>
-                                    </TableRow><TableRow>
-                                        <TableCell>
-                                            <FieldView label={""} value={t(langKeys.messaging_youtube)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.minimumquantityyoutube?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("minimumquantityyoutube", value)}
-                                                valueDefault={getValues("minimumquantityyoutube")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.fixedfeeyoutube?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("fixedfeeyoutube", value)}
-                                                valueDefault={getValues("fixedfeeyoutube")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.priceperyoutube?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("priceperyoutube", value)}
-                                                valueDefault={getValues("priceperyoutube")}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FieldEditArray
-                                                error={errors?.vcacomissionperyoutube?.message}
-                                                inputProps={{ step: "any" }}
-                                                label={""}
-                                                type="number"
-                                                onChange={(value) => setValue("vcacomissionperyoutube", value)}
-                                                valueDefault={getValues("vcacomissionperyoutube")}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </>
     );
 };
 
