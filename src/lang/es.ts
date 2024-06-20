@@ -1786,7 +1786,7 @@ const translation: LangKeys = {
   totalcharge: "Monto Total",
   numberofactiveagents: "Cantidad de Agentes Activos",
   numberofadvisers: "Cantidad de Asesores",
-  templatename: "Nombre Plantilla",
+  templatename: "Nombre de la plantilla",
   hsmquantitysimple: "Cantidad HSM",
   messagesbydaytooltip: "Muestra la cantidad de HSM enviados por Día.",
   tmotooltip: "Tiempo promedio de la conversación (duración real + tiempo pausado).",
@@ -2627,6 +2627,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_sentmessages_failedp: '% Fallido',
 
   report_conversationwhatsapp: 'Conversaciones Whatsapp',
+  report_hsmshipping: 'Envíos HSM',
 
   report_survey: 'Encuestas de satisfacción',
   report_survey_ticketnum: 'Ticket',
@@ -6182,6 +6183,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   footerpage: 'Pié de página',
   dynamicbuttontext: 'Al añadir una variable se crea un enlace personalizado para que el cliente consulte su información. Solo se puede añadir una variable al final de la URL.',
   validtyperiodtitlehelptext: 'El periodo de validez del mensaje es diferente del tiempo de caducidad del código. La fecha de caducidad del código es un contenido que puedes añadir a tus mensajes para que los clientes sepan cuando caduca el código de acceso OTP.',
+  templatecategory: 'Categoría de la plantilla',
+  failed_plural:'Fallidos',
+  successful_plural: 'Exitosos',
+  read: 'Leídos',
+  contested: 'Contestados',
 };
 
 const esResource: ResourceLanguage = {

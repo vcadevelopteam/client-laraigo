@@ -2965,6 +2965,7 @@ export const langKeys = {
   report_sentmessages_failedp: 'report_sentmessages_failedp',
 
   report_conversationwhatsapp: 'report_conversationwhatsapp',
+  report_hsmshipping: 'report_hsmshipping',
 
   "personalizedreport_hsmcampaign": "personalizedreport_hsmcampaign",
   "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
@@ -6180,6 +6181,11 @@ export const langKeys = {
   footerpage: 'footerpage',
   dynamicbuttontext: 'dynamicbuttontext',
   validtyperiodtitlehelptext: 'validtyperiodtitlehelptext',
+  templatecategory: 'templatecategory',
+  failed_plural:'failed_plural',
+  successful_plural: 'successful_plural',
+  read: 'read',
+  contested: 'contested',
 };
 
 export type LangKeys = typeof langKeys;

@@ -1746,6 +1746,27 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+export const getHSMShipping= ({ startdate, enddate, communicationchannelid }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
+    key: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
+    parameters: {
+        startdate,
+        enddate,
+        communicationchannelid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid, messagetemplateid }: Dictionary): IRequestBody => ({
+    method: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
+    key: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
+    parameters: {
+        startdate,
+        enddate,
+        communicationchannelid,
+        messagetemplateid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
 
 export const getCampaignReportPaginated = ({ startdate, enddate, channeltype, filters, sorts, take, skip, distinct }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_CAMPAIGNREPORT_SEL",

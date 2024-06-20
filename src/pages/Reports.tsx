@@ -52,6 +52,7 @@ import TipificationReport from './staticReports/ReportTipification';
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
 import InputRetryReport from './staticReports/ReportInputRetry';
+import { ReportHSMShipping } from './staticReports/ReportHSMShipping';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1190,6 +1191,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'HSMSHIPING':
+                return (
+                    <Grid item key={"hsmshipping"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("hsmshipping")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
+                                    title={t(langKeys.report_hsmshipping)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t(langKeys.report_hsmshipping)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'COMPLIANCESLA':
                 return (
                     <Grid item key={"reportcompliancesla"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1760,6 +1782,20 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <CampaignReport
+                        externalUse={true}
+                    />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "hsmshipping") {
+        return (
+            <>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_hsmshipping'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportHSMShipping
                         externalUse={true}
                     />
                 </div>
