@@ -211,12 +211,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
         setVariablesHidden(newVariablesHidden);
-        
+    
+    
         updateTemplate();
     };
-    
-    
-    
     
 
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
@@ -362,8 +360,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
         updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
-        );
-    
+        );  
     
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
@@ -381,7 +378,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
     
     
-    
+   
 
     const renderDynamicUrlFields = () => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
@@ -466,8 +463,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
         const newVariablesHidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
-        );
-    
+        );   
         updateTemplate();
     };
     
@@ -488,6 +484,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }));
     }, [templateToUse]);
 
+
     useEffect(() => {
         if (frameProps.checkPage) {
             setFrameProps({ ...frameProps, executeSave: false, checkPage: false });
@@ -497,6 +494,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
     }, [frameProps.checkPage])
+
 
     useEffect(() => {
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
@@ -513,6 +511,21 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [detaildata.message]);
 
+   
+    const [fieldSelectValue, setFieldSelectValue] = useState();
+
+
+    useEffect(() => {
+        const primarykey = multiData[4]?.data?.[0]?.fields?.primarykey;
+        if (primarykey) {
+            setSelectedHeader(primarykey);
+            setSelectedHeaders(prev => ({ ...prev, main: primarykey }));
+            setFieldSelectValue({ key: primarykey, value: primarykey });
+        }
+    }, [multiData]);
+    
+
+
 
     return (
         <React.Fragment>
@@ -520,13 +533,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                 
                 <div style={{width:'50%'}}>
-                    <div className="row-zyx">                       
-                        <FormControl className="col-12">                          
-                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
-                            <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>                        
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                <div style={{ flex: 1 }}>
+                    <div className="row-zyx">       
+
+                    <FormControl className="col-12">                          
+                        <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
+                        <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                            <div style={{ flex: 1 }}>
                                 <FieldSelect
+                                    key={fieldSelectValue?.key || 'default-key'}
                                     variant="outlined"
                                     uset={true}
                                     label='Campos archivo'
@@ -534,20 +549,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     data={availableData.map(header => ({ key: header, value: header }))}
                                     optionDesc="value"
                                     optionValue="key"
-                                    valueDefault={selectedHeader ? { key: selectedHeader, value: selectedHeader } : undefined}
+                                    valueDefault={fieldSelectValue}
                                     onChange={handleHeaderChange}
                                 />
+                            </div>                                   
+                            <Tooltip
+                                title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
+                                arrow
+                                placement="top"
+                            >
+                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                            </Tooltip>        
+                        </div>         
+                    </FormControl>
 
-                                </div>                                   
-                                <Tooltip
-                                    title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
-                                    arrow
-                                    placement="top"
-                                >
-                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                </Tooltip>        
-                            </div>         
-                        </FormControl>     
 
 
                            
