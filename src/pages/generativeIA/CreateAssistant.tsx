@@ -159,6 +159,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',
             status: row?.status || 'ACTIVO',
+            decoding_method: row?.decoding_method || "sample",
             operation: edit ? 'UPDATE' : 'INSERT',
         }
     });
