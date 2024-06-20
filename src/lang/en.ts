@@ -2790,6 +2790,7 @@ const translation: LangKeys = {
   sinonim: "Sinonim",
 
   report_conversationwhatsapp: 'Whatsapp conversations',
+  report_hsmshipping: 'HSM shipping',
 
   "personalizedreport_hsmcampaign": "HSM Shipping Status",
   "personalizedreport_conversation.userjoy": "conversation user joy",
@@ -6255,6 +6256,14 @@ const translation: LangKeys = {
   footerpage: 'Footer',
   dynamicbuttontext: 'Adding a variable creates a custom link for the customer to query your information. You can only add a variable at the end of the URL.',
   validtyperiodtitlehelptext: 'The validity period of the message is different from the code expiration time. The code expiration date is content that you can add to your messages to let customers know when the OTP access code expires.',
+  templatecategory: 'Template Category',
+  failed_plural:'Failed',
+  successful_plural: 'Successful',
+  read: 'Read',
+  contested: 'Contested',
+  shippingdateandtime: 'Shipping date and time',
+  recipient:'Recipient',
+  shipment:'Shipment',
   TEMPLATE2_APPROVED: "APPROVED",
   TEMPLATE2_REJECTED: "REJECTED",
   TEMPLATE2_PENDING: "IN REVIEW",
