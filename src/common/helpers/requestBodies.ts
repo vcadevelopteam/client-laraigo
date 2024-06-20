@@ -4890,10 +4890,10 @@ export const assistantAiSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation }: Dictionary) => ({
+export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation }: Dictionary) => ({
     method: "UFN_ASSISTANTAI_INS",
     key: "UFN_ASSISTANTAI_INS",
-    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation },
+    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation },
 });
 
 export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({

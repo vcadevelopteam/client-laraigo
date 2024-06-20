@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { Button, Card, Grid } from "@material-ui/core";
 import { BaseAIPersonalityIcon, ClientServicePersonalityIcon, HelpDeskPersonalityIcon, PersonalizedPersonalityIcon, SalesPersonalityIcon, TechSupportPersonalityIcon } from "icons";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { FieldEdit, FieldEditMultiAux, FieldMultiSelect, FieldSelect } from "components";
+import { FieldEdit, FieldEditMultiAux, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { Dictionary } from "@types";
 import { FieldErrors } from "react-hook-form";
 import Tooltip from '@material-ui/core/Tooltip';
@@ -142,6 +142,12 @@ const useStyles = makeStyles((theme) => ({
         height: 23,
         cursor: 'pointer',
     },
+    decodingContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5,
+        marginBottom: 15,
+    }
 }));
 interface CardDataType {
     title: string;
@@ -586,6 +592,27 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
+                            <div className={classes.decodingContainer}>
+                                <span className={classes.detailTitle}>Decoding</span>
+                                <div style={{display: 'flex', gap: 5}}>
+                                    <span className={classes.text}>Greedy</span>
+                                    <IOSSwitch
+                                        checked={getValues("decoding_method") === "sample"}
+                                        style={{color: '#078548'}}
+                                        onChange={() => {
+                                            if(getValues("decoding_method") === "sample") {
+                                                setValue("decoding_method", "greedy")
+                                                trigger("decoding_method")
+                                            }
+                                            else {
+                                                setValue("decoding_method", "sample")
+                                                trigger("decoding_method")
+                                            }
+                                        }}
+                                    />
+                                    <span className={classes.text}>Sampling</span>
+                                </div>
+                            </div>
                             <div>
                                 <div className={classes.parameterContainer}>
                                     <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
@@ -805,6 +832,27 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
+                            <div className={classes.decodingContainer}>
+                                <span className={classes.detailTitle}>Decoding</span>
+                                <div style={{display: 'flex', gap: 5}}>
+                                    <span className={classes.text}>Greedy</span>
+                                    <IOSSwitch
+                                        checked={getValues("decoding_method") === "sample"}
+                                        style={{color: '#078548'}}
+                                        onChange={() => {
+                                            if(getValues("decoding_method") === "sample") {
+                                                setValue("decoding_method", "greedy")
+                                                trigger("decoding_method")
+                                            }
+                                            else {
+                                                setValue("decoding_method", "sample")
+                                                trigger("decoding_method")
+                                            }
+                                        }}
+                                    />
+                                    <span className={classes.text}>Sampling</span>
+                                </div>
+                            </div>
                             <div className={classes.parameterContainer}>
                                 <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
                                 <div className={classes.widthBlock10}/>

@@ -607,6 +607,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             max_new_tokens: row?.max_tokens,
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
+            decoding_method: row?.decoding_method ? row.decoding_method : "sample",
         }))
         setWaitSaveMessageLlama(true)
         setActiveThreadId(currentThreadLlamaId);
