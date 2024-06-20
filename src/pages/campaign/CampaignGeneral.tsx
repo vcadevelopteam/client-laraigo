@@ -900,7 +900,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     {edit ?
                         <FormControl className="col-6" >                       
                         
-                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetype)} </div>
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Tipo de mensaje'} </div>
                             <div className={classes.subtitle}> {t(langKeys.campaign_messagetype_desc)} </div>
                         
                             <FieldSelect

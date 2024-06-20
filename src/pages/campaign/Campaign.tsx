@@ -287,6 +287,7 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.action),
                 accessor: 'execute',
                 isComponent: true,
+                width:'150px',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     if (!row || !row.original) {
