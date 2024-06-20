@@ -332,10 +332,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const combinedButtons = [
         ...(selectedTemplate.buttonsgeneric || []),
         ...(selectedTemplate.buttonsquickreply || [])
-    ];
-
-    console.log("Combined buttons:", combinedButtons);
-    
+    ];   
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
@@ -376,7 +373,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                         <CarouselPreview carouselData={renderedCarouselData} />
                                     )}
 
-                                    <p style={{ color: 'grey', fontSize: '1.2rem' }}>{selectedTemplate.footer}</p>
+                                    <p style={{ color: 'grey', fontSize: '1rem' }}>{selectedTemplate.footer}</p>
                                     <span className={classes.previewHour}> 11:12</span>
 
                                     {selectedTemplate.buttonsenabled && combinedButtons.length > 0 && (
