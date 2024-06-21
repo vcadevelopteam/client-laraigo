@@ -580,51 +580,126 @@ export const Campaign: FC = () => {
     const AdditionalButtons = () => {
         return (
             <React.Fragment>        
-
-                <div style={{ display: "flex", backgroundColor:'white', padding:'0.5rem'}}>
+                <div style={{ display: "flex", backgroundColor: 'white', padding: '0.5rem 0' }}>
                     <Box width={1}>
                         <Box
                             className={classes.containerHeader}
                             justifyContent="space-between"
                             alignItems="center"
                         >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                <DateRangePicker
-                                    open={openDateRangeModal}
-                                    setOpen={setOpenDateRangeModal}
-                                    range={dateRange}
-                                    onSelect={setdateRange}
-                                >
-                                    <Button
-                                        disabled={detailCustomReport.loading}
-                                        style={{ border: "1px solid #bfbfc0", borderRadius: 4, color: "rgb(143, 146, 161)",}}
-                                        startIcon={<CalendarIcon />}
-                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                            <div style={{ display: "flex", justifyContent: "space-between", width: '100%' }}>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <DateRangePicker
+                                        open={openDateRangeModal}
+                                        setOpen={setOpenDateRangeModal}
+                                        range={dateRange}
+                                        onSelect={setdateRange}
                                     >
-                                        {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
-                                    </Button>
-                                </DateRangePicker>
+                                        <Button
+                                            disabled={detailCustomReport.loading}
+                                            style={{ border: "1px solid #bfbfc0", borderRadius: 4, color: "rgb(143, 146, 161)" }}
+                                            startIcon={<CalendarIcon />}
+                                            onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                        >
+                                            {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
+                                        </Button>
+                                    </DateRangePicker>
 
-                                <Button
-                                    disabled={mainResult.mainData.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    onClick={fetchData}
-                                >
-                                    {t(langKeys.search)}
-                                </Button>
+                                    <Button
+                                        disabled={mainResult.mainData.loading}
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                        style={{ width: 120, backgroundColor: "#55BD84" }}
+                                        onClick={fetchData}
+                                    >
+                                        {t(langKeys.search)}
+                                    </Button>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        color="primary"
+                                        type='button'
+                                        disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0}
+                                        startIcon={<DeleteIcon color="secondary" />}
+                                        onClick={() => {
+                                            handleDeleteSelection(rowWithDataSelected);
+                                        }}
+                                        style={{
+                                            backgroundColor: mainResult.mainData.loading || Object.keys(selectedRows).length === 0 ? undefined : "#FB5F5F"
+                                        }}
+                                    >
+                                        <Trans i18nKey={langKeys.delete} />
+                                    </Button>
+
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={mainResult.mainData.loading}
+                                        startIcon={<AddIcon color="secondary" />}
+                                        onClick={() => handleRegister()}
+                                        style={{ backgroundColor: "#22b66e" }}
+                                    >
+                                        <Trans i18nKey={langKeys.register} />
+                                    </Button>
+
+                                    <IconButton
+                                        aria-label="more"
+                                        id="long-button"
+                                        onClick={handleClickSeButtons}
+                                        style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
+                                    >
+                                        <MoreVertIcon />
+                                    </IconButton>
+
+                                    <Menu
+                                        id="long-menu"
+                                        anchorEl={anchorElSeButtons}
+                                        open={open}
+                                        onClose={handleCloseSeButtons}
+                                        PaperProps={{
+                                            style: {
+                                                maxHeight: 48 * 4.5,
+                                                width: '16ch',
+                                                marginTop: '3.5rem'
+                                            },
+                                        }}
+                                    >
+                                        <MenuItem
+                                            disabled={mainResult.mainData.loading}
+                                            style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                            onClick={(e) => { setViewSelected("blacklist"); e.stopPropagation(); }}
+                                        >
+                                            <ListItemIcon>
+                                                <BlockIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                            </ListItemIcon>
+                                            <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
+                                        </MenuItem>
+
+                                        <Divider />
+
+                                        <a style={{ textDecoration: 'none', color: 'inherit' }} onClick={handleDownload}>
+                                            <MenuItem
+                                                disabled={mainResult.mainData.loading}
+                                                style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                            >
+                                                <ListItemIcon>
+                                                    <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                </ListItemIcon>
+                                                <Typography variant="inherit">Descargar</Typography>
+                                            </MenuItem>
+                                        </a>
+
+                                    </Menu>
+                                </div>
                             </div>
                         </Box>
                     </Box>
                 </div>  
-
-            
-              
-
-               
-                
             </React.Fragment>
         )
     }
@@ -642,96 +717,10 @@ export const Campaign: FC = () => {
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                     <div>
                         <h2> <Trans i18nKey={langKeys.campaign_plural} /></h2>
-                    </div>
-
-                    <div style={{display:'flex', justifyContent:'right', gap:'0.5rem'}}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type='button'       
-                            disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0 }
-                            startIcon={<DeleteIcon color="secondary" />}
-                            onClick={() => {
-                                handleDeleteSelection(rowWithDataSelected);
-                            }}
-                            style={{ 
-                                backgroundColor: mainResult.mainData.loading || Object.keys(selectedRows).length === 0 ? undefined : "#FB5F5F" 
-                            }}
-                        >   
-                            <Trans i18nKey={langKeys.delete} />
-                        </Button>
-
-
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={mainResult.mainData.loading}
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={() => handleRegister()}
-                            style={{ backgroundColor: "#22b66e" }}
-                        >   
-                            <Trans i18nKey={langKeys.register} />
-                        </Button>
-                        
-                        
-                        <IconButton
-                            aria-label="more"
-                            id="long-button"
-                            onClick={handleClickSeButtons}
-                            style={{ backgroundColor: openSeButtons ? '#F6E9FF' : undefined, color: openSeButtons ? '#7721AD' : undefined }}
-                        >
-                            <MoreVertIcon />
-                        </IconButton>
-
-
-                        <Menu
-                            id="long-menu"
-                            anchorEl={anchorElSeButtons}
-                            open={open}
-                            onClose={handleCloseSeButtons}
-                            PaperProps={{
-                                style: {
-                                    maxHeight: 48 * 4.5,
-                                    width: '16ch',
-                                    marginTop:'3.5rem'
-                                },
-                            }}
-                        >
-                            <MenuItem 
-                                disabled={mainResult.mainData.loading}
-                                style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}} 
-                                onClick={(e) => {setViewSelected("blacklist");  e.stopPropagation();}}
-                            >
-                                <ListItemIcon>
-                                    <BlockIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                </ListItemIcon>
-                                <Typography variant="inherit">{t(langKeys.blacklist)}</Typography>
-                            </MenuItem>  
-
-                            <Divider />
-
-                            <a style={{ textDecoration: 'none', color: 'inherit' }} onClick={handleDownload}>
-                                <MenuItem 
-                                    disabled={mainResult.mainData.loading}
-                                    style={{padding:'0.7rem 1rem', fontSize:'0.96rem'}}
-                                >
-                                    <ListItemIcon>
-                                        <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height:'23px' }}/>
-                                    </ListItemIcon>
-                                    <Typography variant="inherit">Descargar</Typography>
-                                </MenuItem>
-                            </a>
-                             
-                        </Menu>
-
-                      
-                    </div>
+                    </div>                     
                 </div>
 
-               
-                
+            
                 <TableZyx      
                     columns={columns}
                     data={modifiedData}             
