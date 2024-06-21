@@ -213,7 +213,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 },
             },
             {
-                Header: t(langKeys.templatecategory),
+                Header: t(langKeys.shippingdateandtime),
                 accessor: 'createdate',
                 sortType: 'datetime',
                 type: 'datetime',
@@ -255,7 +255,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 Cell: cell
             },
             {
-                Header: t(langKeys.contested),
+                Header: t(langKeys.contestedagain),
                 accessor: 'answered',
                 type: 'number',
                 sortType: 'number',

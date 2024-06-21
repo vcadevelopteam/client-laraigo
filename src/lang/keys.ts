@@ -6189,6 +6189,7 @@ export const langKeys = {
   shippingdateandtime: 'shippingdateandtime',
   recipient:'recipient',
   shipment:'shipment',
+  contestedagain:'contestedagain',
 };
 
 export type LangKeys = typeof langKeys;

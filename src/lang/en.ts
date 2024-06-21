@@ -6243,6 +6243,7 @@ const translation: LangKeys = {
   shippingdateandtime: 'Shipping date and time',
   recipient:'Recipient',
   shipment:'Shipment',
+  contestedagain:'Contested',
 };
 
 const enResource: ResourceLanguage = {
