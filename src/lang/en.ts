@@ -6244,6 +6244,7 @@ const translation: LangKeys = {
   recipient:'Recipient',
   shipment:'Shipment',
   contestedagain:'Contested',
+  origin_helpText: 'Displays the HSM shipping source module.',
 };
 
 const enResource: ResourceLanguage = {

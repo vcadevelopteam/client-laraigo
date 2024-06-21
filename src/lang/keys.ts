@@ -6190,6 +6190,7 @@ export const langKeys = {
   recipient:'recipient',
   shipment:'shipment',
   contestedagain:'contestedagain',
+  origin_helpText: 'origin_helpText',
 };
 
 export type LangKeys = typeof langKeys;

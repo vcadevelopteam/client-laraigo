@@ -6192,6 +6192,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   recipient:'Destinatario',
   shipment:'Envío',
   contestedagain:'Respondido',
+  origin_helpText: 'Muestra el módulo de origen del envío del HSM.',
 };
 
 const esResource: ResourceLanguage = {
