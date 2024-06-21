@@ -6224,6 +6224,7 @@ export const langKeys = {
   recipient:'recipient',
   shipment:'shipment',
   contestedagain:'contestedagain',
+  origin_helpText: 'origin_helpText',
   TEMPLATE2_APPROVED: "TEMPLATE2_APPROVED",
   TEMPLATE2_REJECTED: "TEMPLATE2_REJECTED",
   TEMPLATE2_PENDING: "TEMPLATE2_PENDING",

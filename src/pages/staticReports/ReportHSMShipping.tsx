@@ -236,6 +236,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 accessor: 'origin',
                 showGroupedBy: true,
                 showColumn: true,
+                helpText: t(langKeys.origin_helpText)
                 //Cell: cell
             },
             {
