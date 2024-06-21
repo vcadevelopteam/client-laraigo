@@ -6278,6 +6278,7 @@ const translation: LangKeys = {
   shippingdateandtime: 'Shipping date and time',
   recipient:'Recipient',
   shipment:'Shipment',
+  contestedagain:'Contested',
   TEMPLATE2_APPROVED: "APPROVED",
   TEMPLATE2_REJECTED: "REJECTED",
   TEMPLATE2_PENDING: "IN REVIEW",

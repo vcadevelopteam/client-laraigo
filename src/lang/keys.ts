@@ -6223,6 +6223,7 @@ export const langKeys = {
   shippingdateandtime: 'shippingdateandtime',
   recipient:'recipient',
   shipment:'shipment',
+  contestedagain:'contestedagain',
   TEMPLATE2_APPROVED: "TEMPLATE2_APPROVED",
   TEMPLATE2_REJECTED: "TEMPLATE2_REJECTED",
   TEMPLATE2_PENDING: "TEMPLATE2_PENDING",
