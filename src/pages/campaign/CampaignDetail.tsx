@@ -106,7 +106,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     useEffect(() => {
         if (jsonPersons) {
-            console.log('jsonPersons in CampaignDetail:', jsonPersons);
+            //console.log('jsonPersons in CampaignDetail:', jsonPersons);
         }
     }, [jsonPersons]);
     
