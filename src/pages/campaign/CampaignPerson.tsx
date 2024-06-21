@@ -240,16 +240,21 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 return acc.concat(dynamicButtons.map((btn, index) => `Url Dinamico ${index + 1}`));
             }, [] as string[]);
             
-            const newColumnNames = columnNames.slice(0, 3)
+            let newColumnNames = columnNames.slice(0, 3)
                 .concat(headerVariableColumns)
                 .concat(headerMultimediaColumns)
                 .concat(requiredVariableColumns)
                 .concat(carouselVariableColumns)
                 .concat(dynamicUrlColumns)
                 .concat(carouselDynamicUrlColumns)
-                .concat(imageCardColumns)
-                .concat("Variable Adicional 1");
+                .concat(imageCardColumns);
             
+            if (templateAux.category === "AUTHENTICATION") {
+                newColumnNames.push("Variable 1");
+            }
+            
+            newColumnNames = newColumnNames.concat("Variable Adicional 1");
+                    
             const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
 
             newColumnNames.forEach((columnName, index) => {

@@ -191,7 +191,7 @@ const PdfAttachment: React.FC<PdfAttachmentProps> = ({ url }) => {
     );
 };
 
-const ButtonList: React.FC<{ buttons: any }> = ({ buttons }) => {
+const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({ buttons, authenticationButton }) => {
     const classes = useStyles();
     const [showAllButtons, setShowAllButtons] = useState(false);
 
@@ -232,10 +232,12 @@ const ButtonList: React.FC<{ buttons: any }> = ({ buttons }) => {
         ));
     };
 
+    const allButtons = authenticationButton ? [{ btn: { text: authenticationButton }, type: 'AUTHENTICATION' }, ...buttons] : buttons;
+
     return (
         <div style={{ position: 'relative' }}>
-            {renderButtons(buttons.slice(0, 2))}
-            {buttons.length > 2 && (
+            {renderButtons(allButtons.slice(0, 2))}
+            {allButtons.length > 2 && (
                 <a className={classes.buttonPreview} onClick={handleShowAllButtons}>
                     <div style={{ fontSize: '1.2rem', display: 'flex', alignContent: 'center', gap: '4px' }}>
                         <ListIcon /> See all options
@@ -249,12 +251,14 @@ const ButtonList: React.FC<{ buttons: any }> = ({ buttons }) => {
                         <CloseIcon onClick={handleClose} className={classes.closeButton} />
                         <div style={{ textAlign: 'center', width: '100%', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>All Options</div>
                     </div>
-                    {renderButtons(buttons, classes.buttonPreview2)}
+                    {renderButtons(allButtons, classes.buttonPreview2)}
                 </div>
             )}
         </div>
     );
 };
+
+
 
 
 
@@ -384,21 +388,24 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                 </div>
                             ) : selectedTemplate?.category === "AUTHENTICATION" ? (
                                 <div>
-                                    <p style={{ fontSize: '1.2rem' }}>Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
-                                        {selectedTemplate.authenticationdata.safetyrecommendation && (
-                                            <span> Por tu seguridad, no lo compartas</span>
-                                        )}
-                                    </p>
-                                    {selectedTemplate.authenticationdata.showexpirationdate && (
-                                        <div>
-                                            <p style={{ fontSize: '1rem' }}>Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.</p>
-                                        </div>
+                                <p style={{ fontSize: '1.2rem' }}>
+                                    Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
+                                    {selectedTemplate.authenticationdata.safetyrecommendation && (
+                                        <span> Por tu seguridad, no lo compartas</span>
                                     )}
-                                    <span className={classes.previewHour}> 11:12</span>
-                                    {selectedTemplate.authenticationdata.buttontext && (
-                                        <ButtonList buttons={selectedTemplate.authenticationdata.buttontext} />
-                                    )}
-                                </div>
+                                </p>
+                                {selectedTemplate.authenticationdata.showexpirationdate && (
+                                    <div>
+                                        <p style={{ fontSize: '1rem' }}>
+                                            Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.
+                                        </p>
+                                    </div>
+                                )}
+                                <span className={classes.previewHour}> 11:12</span>
+                                {selectedTemplate.authenticationdata.buttontext && (
+                                    <ButtonList buttons={[]} authenticationButton={selectedTemplate.authenticationdata.buttontext} />
+                                )}
+                            </div>
                             ) : (
                                 <div>
                                     <p>No se ha seleccionado una Plantilla</p>
