@@ -851,25 +851,25 @@ const TableZyx = React.memo(({
                     width: 80,
                     disableGroupBy: true,
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
-                        <div>
+                        <div style={{ textAlign: 'right' }}>
                             <Checkbox
                                 color="primary"
-                                style={{ padding: '0 24px 0 16px' }}
+                                style={{ padding: 0 }}
                                 {...getToggleAllPageRowsSelectedProps()}
                             />
                         </div>
                     ),
                     Cell: ({ row }: CellProps<Dictionary>) => (
-                        <div>
+                        <div style={{ textAlign: 'right' }}>
                             {checkHistoryCenter === true ? <Checkbox
                                 color="primary"
-                                style={{ padding: '0 24px 0 16px', height: 68 }}
+                                style={{ padding: 0 }}
                                 checked={row.isSelected}
                                 onChange={(e) => row.toggleRowSelected()}
                             /> :
                                 <Checkbox
                                     color="primary"
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    style={{ padding: 0 }}
                                     checked={row.isSelected}
                                     onChange={(e) => row.toggleRowSelected()}
                                 />}
@@ -948,6 +948,7 @@ const TableZyx = React.memo(({
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
+            console.log("sadsada")
             style = { ...style, display: 'flex', alignItems: 'flex-end', cursor: onClickRow ? 'pointer' : 'default' }
             const row = page[index]
             prepareRow(row);
@@ -1363,7 +1364,7 @@ const TableZyx = React.memo(({
                                     style={{ overflowX: 'hidden' }}
                                     direction="vertical"
                                     width="auto"
-                                    height={page.length*43}
+                                    height={page.length * heightWithCheck}
                                     itemCount={page.length}
                                     itemSize={heightWithCheck}
                                 >

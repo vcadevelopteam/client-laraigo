@@ -187,6 +187,75 @@ export const Campaign: FC = () => {
                 }
             },
             {
+                Header: t(langKeys.action),
+                accessor: 'execute',
+                isComponent: true,
+                width:'150px',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    if (!row || !row.original) {
+                        return null;
+                    }
+                
+                    const { id, status, startdate, enddate,executiontype } = row.original;
+                
+                    if (
+                        dateToLocalDate(startdate, 'date') <= todayDate() &&
+                        todayDate() <= dateToLocalDate(enddate, 'date') && executiontype ==="MANUAL"
+                    ) {
+                        if (status === 'EJECUTANDO') {
+                            return (
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStatus(id);
+                                    }}
+                                    style={{ backgroundColor: "#55bd84" }}
+                                >
+                                    <Trans i18nKey={langKeys.status} />
+                                </Button>
+                            );
+                        } else if (status === 'ACTIVO') {
+                            return (
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStart(id);
+                                    }}
+                                    style={{ backgroundColor: "#55bd84" }}
+                                >
+                                    <Trans i18nKey={langKeys.execute} />
+                                </Button>
+                            );
+                        } else {
+                            return null;
+                        }
+                    } else if(executiontype === "SCHEDULED" && status === 'EJECUTANDO'){
+                        return <Button
+                            className={classes.buttonProgrammed}
+                            variant="contained"
+                            color="primary"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatus(id);
+                            }}
+                            style={{ backgroundColor: "#efe4b0" }}
+                        >
+                            <Trans i18nKey={langKeys.programmed} />
+                        </Button>
+                    }else{
+                        return null
+                    }
+                }
+                
+            },
+            {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
                 width: '200px',               
@@ -283,75 +352,7 @@ export const Campaign: FC = () => {
                     }
                 }
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'execute',
-                isComponent: true,
-                width:'150px',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;
-                    if (!row || !row.original) {
-                        return null;
-                    }
-                
-                    const { id, status, startdate, enddate,executiontype } = row.original;
-                
-                    if (
-                        dateToLocalDate(startdate, 'date') <= todayDate() &&
-                        todayDate() <= dateToLocalDate(enddate, 'date') && executiontype ==="MANUAL"
-                    ) {
-                        if (status === 'EJECUTANDO') {
-                            return (
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleStatus(id);
-                                    }}
-                                    style={{ backgroundColor: "#55bd84" }}
-                                >
-                                    <Trans i18nKey={langKeys.status} />
-                                </Button>
-                            );
-                        } else if (status === 'ACTIVO') {
-                            return (
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleStart(id);
-                                    }}
-                                    style={{ backgroundColor: "#55bd84" }}
-                                >
-                                    <Trans i18nKey={langKeys.execute} />
-                                </Button>
-                            );
-                        } else {
-                            return null;
-                        }
-                    } else if(executiontype === "SCHEDULED" && status === 'EJECUTANDO'){
-                        return <Button
-                            className={classes.buttonProgrammed}
-                            variant="contained"
-                            color="primary"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleStatus(id);
-                            }}
-                            style={{ backgroundColor: "#efe4b0" }}
-                        >
-                            <Trans i18nKey={langKeys.programmed} />
-                        </Button>
-                    }else{
-                        return null
-                    }
-                }
-                
-            },
+            
         ],
         []
     )
@@ -741,6 +742,7 @@ export const Campaign: FC = () => {
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}                
                     ButtonsElement={AdditionalButtons}     
+                    heightWithCheck={51}
                     filterGeneral={false}                 
                 />
             </div>
