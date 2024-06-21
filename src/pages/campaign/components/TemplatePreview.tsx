@@ -314,7 +314,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
 }) => {
     const classes = useStyles();
     const renderedHeader = replaceVariables(selectedTemplate.header || "", headerVariableValues);
-    const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues);
+    const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues).replace(/\n/g, '<br />');
 
     const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
         ...item,
@@ -330,9 +330,11 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     })) || [];
 
     const combinedButtons = [
-        ...(selectedTemplate.buttonsgeneric || []),
-        ...(selectedTemplate.buttonsquickreply || [])
+        ...(selectedTemplate.buttonsquickreply || []),
+        ...(selectedTemplate.buttonsgeneric || [])
     ];   
+
+    console.log(selectedTemplate)
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
@@ -357,7 +359,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                             style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
                                         />
                                     ) : selectedTemplate?.headertype === "TEXT" ? (
-                                        <div style={{ fontSize: '1.5rem' }}>{renderedHeader}</div> //cambia texto
+                                        <div style={{ fontSize: '1.5rem' }}>{renderedHeader}</div>
                                     ) : selectedTemplate?.headertype === "VIDEO" ? (
                                         <video controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
                                             <source src={selectedTemplate.header} type="video/mp4" />
@@ -367,7 +369,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                         <div style={{ fontSize: '1.1rem' }}>{renderedHeader}</div>
                                     )}
 
-                                    <p style={{fontSize:'1.1rem'}}>{renderedBody}</p>
+                                    <p style={{ fontSize: '1.1rem' }} dangerouslySetInnerHTML={{ __html: renderedBody }}></p>
 
                                     {selectedTemplate?.templatetype === "CAROUSEL" && renderedCarouselData.length > 0 && (
                                         <CarouselPreview carouselData={renderedCarouselData} />
@@ -382,14 +384,14 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                 </div>
                             ) : selectedTemplate?.category === "AUTHENTICATION" ? (
                                 <div>
-                                    <p style={{fontSize:'1.2rem'}}>Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
+                                    <p style={{ fontSize: '1.2rem' }}>Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
                                         {selectedTemplate.authenticationdata.safetyrecommendation && (
                                             <span> Por tu seguridad, no lo compartas</span>
                                         )}
                                     </p>
                                     {selectedTemplate.authenticationdata.showexpirationdate && (
                                         <div>
-                                            <p style={{fontSize:'1rem'}}>Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.</p>
+                                            <p style={{ fontSize: '1rem' }}>Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.</p>
                                         </div>
                                     )}
                                     <span className={classes.previewHour}> 11:12</span>
