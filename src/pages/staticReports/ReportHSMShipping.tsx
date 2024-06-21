@@ -545,7 +545,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                                 className={classes.filterComponent}
                                 data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
                                 valueDefault={selectedChannel}
-                                onChange={(value) => setSelectedChannel(value?.type || 0)}
+                                onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
                                 optionDesc="communicationchanneldesc"
                                 optionValue="communicationchannelid"
                             />
