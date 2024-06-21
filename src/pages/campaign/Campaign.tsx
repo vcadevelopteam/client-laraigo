@@ -239,16 +239,21 @@ export const Campaign: FC = () => {
                 
             },
             {
-                Header: t(langKeys.datetimestart_campaign),
-                accessor: 'datetimestart',             
-                width: 'auto',
-                prefixTranslation: 'datetimestart',
+                Header: 'Fecha de Ejecución',
+                accessor: 'datestart',             
+                width: '200px',
+                type: 'date',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;
-                    const datetimestart = row && row.original && row.original.datetimestart;
-                    const formattedDate = formatDate(datetimestart, { withTime: true }) || '';
-                    return formattedDate;
+                    const row = props.cell.row.original;
+                    return (
+                        <div>{row && row.enddate ? dateToLocalDate(row.enddate) : ''}</div>
+                    );
                 }                
+            },
+            {
+                Header: 'Hora de Ejecución',
+                accessor: 'hourstart',             
+                width: 'auto'                         
             },
             {
                 Header: t(langKeys.executiontype_campaign),
