@@ -20,7 +20,6 @@ import { FieldErrors, useForm } from "react-hook-form";
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import Graphic from 'components/fields/Graphic';
-import SettingsIcon from '@material-ui/icons/Settings';
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
@@ -84,7 +83,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
                     onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' }]}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"
@@ -186,7 +185,6 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
     const mainResult = useSelector(state => state.main);
     const [openModal, setOpenModal] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    const [maindata, setMaindata] = useState<any>([]);
     const [showDialogGraphic, setShowDialogGraphic] = useState(false);
     const [view, setView] = useState('GRID');
     const columns = React.useMemo(
@@ -242,19 +240,25 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
             },
             {
                 Header: t(langKeys.shipment),
-                accessor: 'satisfactory',
+                accessor: 'total',
+                type: 'number',
+                sortType: 'number',
                 showGroupedBy: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.read),
                 accessor: 'seen',
+                type: 'number',
+                sortType: 'number',
                 showGroupedBy: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.contestedagain),
                 accessor: 'answered',
+                type: 'number',
+                sortType: 'number',
                 showGroupedBy: true,
                 Cell: cell
             },
@@ -273,24 +277,12 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         setOpenModal(true);
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.ticketnum })
     }, [mainResult]);
-    
-    useEffect(() => {
-        if(!multidata.loading && !multidata.error){
-            const stdby = multidata?.data?.[0]?.data
-            setMaindata(stdby.map(x=>{
-                x.failed = x.failed? "Ok": "Fail"
-                x.satisfactory = x.satisfactory? "Ok": "Fail"
-                x.seen = x.seen? "Ok": "Fail"
-                x.answered = x.answered? "Ok": "Fail"
-                return x;
-            })||[])
-        }
-    }, [multidata]);
+
     return (<div style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div>
                 <TemplateBreadcrumbs
-                    breadcrumbs={[...arrayBread, { id: "view-3", name: (t('report_hsmshipping') + " " + t(langKeys.detail)) }]}
+                    breadcrumbs={[...arrayBread, { id: "view-3", name: (t('report_hsmshipping') + t(langKeys.detail)) }]}
                     handleClick={setViewSelected}
                 />
             </div>
@@ -302,7 +294,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                     color="primary"
                     disabled={multidata.loading || !(multidata?.data?.[0]?.data?.length||0 > 0)}
                     onClick={() => setShowDialogGraphic(true)}
-                    startIcon={<SettingsIcon />}
+                    startIcon={<AssessmentIcon />}
                 >
                     {t(langKeys.configuration)}
                 </Button>
@@ -330,7 +322,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                         {t(langKeys.graphic_view)}
                     </Button>
                 </div>}
-                data={maindata}
+                data={multidata?.data?.[0]?.data || []}
                 loading={multidata.loading}
                 download={true}
                 filterGeneral={false}
@@ -339,25 +331,20 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
             />
         </div>}
         {view !== "GRID" && (
-            <>            
-            <div style={{ fontWeight: 500, padding: 16 }}>
-                    {t(langKeys.graphic_report_of, { report: t(langKeys.report_hsmshipping), column: t((view.split("-")?.[3] || "summary")) })}
-                </div>
-                <Graphic
-                    graphicType={view.split("-")?.[1] || "BAR"}
-                    column={view.split("-")?.[2] || "summary"}
-                    openModal={showDialogGraphic}
-                    setOpenModal={setShowDialogGraphic}
-                    daterange={{}}
-                    setView={setView}
-                    withFilters={false}
-                    withButtons={false}
-                    data={maindata}
-                    loading={multidata.loading}
-                    handlerSearchGraphic={() => null}
-                    columnDesc={view.split("-")?.[3] || "summary"}
-                />
-            </>
+            <Graphic
+                graphicType={view.split("-")?.[1] || "BAR"}
+                column={view.split("-")?.[2] || "summary"}
+                openModal={showDialogGraphic}
+                setOpenModal={setShowDialogGraphic}
+                daterange={{}}
+                setView={setView}
+                withFilters={false}
+                withButtons={false}
+                data={multidata?.data?.[0]?.data || []}
+                loading={multidata.loading}
+                handlerSearchGraphic={() => null}
+                columnDesc={view.split("-")?.[3] || "summary"}
+            />
         )}
         <SummaryGraphic
             openModal={showDialogGraphic}
