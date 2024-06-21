@@ -8,7 +8,7 @@ import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate, uploadExcel } from 'common/helpers';
+import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate, uploadExcel, uploadExcelCampaign } from 'common/helpers';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
@@ -250,9 +250,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 .concat(imageCardColumns)
                 .concat("Variable Adicional 1");
             
-    
             const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
-    
+
             newColumnNames.forEach((columnName, index) => {
                 let descriptionKey = columnName;
                 if (descriptionKey.startsWith("Variable Adicional")) {
@@ -460,13 +459,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     // External Data Logic //
     const handleUpload = async (files: any) => {
         const file = files[0];
-        const data = await uploadExcel(file);
-        setvaluefile('');
+        const data = await uploadExcelCampaign(file, dispatch, showSnackbar);
         if (data) {
             uploadData(data);
         }
-    }
-
+    };
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
@@ -519,7 +516,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             jsonData: data,
             selectedColumns: localSelectedColumns,
         });
-    }
+    };
+    
     
 
     const transformData = (data: Dictionary, headers: Dictionary): Dictionary[] => {

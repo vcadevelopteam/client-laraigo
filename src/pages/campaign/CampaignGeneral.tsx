@@ -309,7 +309,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('startdate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('startdate', {
+            validate: {
+                value: (value: any) => (value && value.length) || t(langKeys.field_required),
+                notPastDate: (value: any) => validateDate(value) || "La fecha es menor a la actual"
+            }
+        });
         register('enddate', {
             validate: {
                 value: (value: any) => (value && value.length) || t(langKeys.field_required),
@@ -317,7 +322,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         });
         register('executiontype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('batchjson.date', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required) });
+        register('batchjson.date', {
+            validate: {
+                value: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required),
+                notPastDate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || validateDate(value)) || "La fecha es menor a la actual"
+            }
+        });
         register('batchjson.time', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required) });
         register('batchjson.quantity', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value > 0)) || t(langKeys.field_required) });
         register('communicationchannelid', { validate: (value: any) => (value && value > 0) || t(langKeys.field_required) });
@@ -408,16 +418,22 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [frameProps.checkPage])
 
     const validateDate = (value: string): any => {
-        return new Date(value) >= new Date(getValues('startdate'))
-    }
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); 
+    
+        const selectedDate = new Date(value);
+        selectedDate.setHours(0, 0, 0, 0);
+    
+        const oneDayBefore = new Date(currentDate);
+        oneDayBefore.setDate(currentDate.getDate() - 1); 
+    
+        return selectedDate >= oneDayBefore;
+    }; 
 
     const onChangeExecutionType = async (data: Dictionary) => {
         setValue('executiontype', data?.key || '');
         await trigger('executiontype');
     }
-
-
-
 
     const onChangeChannel = async (data: Dictionary) => {
         setValue('communicationchannelid', data?.communicationchannelid || 0);
@@ -559,12 +575,13 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const classNameCondition = edit && getValues('executiontype') === 'SCHEDULED' ? 'col-12' : 'col-6'
-    
+    //console.log(selectedTemplate)
+
     return (
         <React.Fragment>
             <div style={{display:'flex', gap: '1rem', width:'100%'}}>
 
-                <div className={classes.containerDetail}  style={{width:'50%'}}>
+                <div className={classes.containerDetail}  style={{width:'60%'}}>
 
                 <div className="row-zyx">
                     {edit ?
@@ -690,13 +707,17 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                     {edit ?
                        <>
-                        <div className="row-zyx">
-                            <FormControl className="col-6" >                       
+
+                    <div className="row-zyx" style={{ display: 'flex', marginBottom: '0', padding:'1rem 1rem 0 0' }}>
+                        <FormControl className="col-6" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                            <div>
                                 <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.executiontype)} </div>
                                 <div className={classes.subtitle}> {t(langKeys.campaign_executiontype_desc)} </div>
+                            </div>
+                            <div style={{ marginTop: 'auto' }}>
                                 <FieldSelect
-                                    variant="outlined"       
-                                    uset={true}                                   
+                                    variant="outlined"
+                                    uset={true}
                                     className={classes.flexgrow1}
                                     valueDefault={getValues('executiontype')}
                                     onChange={onChangeExecutionType}
@@ -704,34 +725,43 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     data={dictToArrayKV(dataExecutionType)}
                                     optionDesc="value"
                                     optionValue="key"
-                                />                              
-                                                    
-                            </FormControl>
-                            {edit && getValues('executiontype') === 'SCHEDULED' &&                               
-                                <>
-                                    <FormControl className="col-3">                          
+                                />
+                            </div>
+                        </FormControl>
+                        {edit && getValues('executiontype') === 'SCHEDULED' &&
+                            <>
+                               <FormControl className="col-3" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                    <div>
                                         <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.date)} </div>
                                         <div className={classes.subtitle}> {t(langKeys.campaign_execution_date)} </div>
-                                        <FieldEdit   
-                                            variant="outlined"                 
-                                            type="date"                               
+                                    </div>
+                                    <div style={{ marginTop: 'auto' }}>
+                                        <FieldEdit
+                                            variant="outlined"
+                                            type="date"
                                             className="col-6"
                                             valueDefault={getValues('batchjson.date')}
                                             onChange={(value) => {
                                                 const batchjson = getValues('batchjson') || {};
                                                 batchjson.date = value;
                                                 setValue('batchjson', batchjson);
+                                                trigger('batchjson.date');
                                             }}
                                             error={errors?.batchjson?.date?.message}
-                                        />      
-                                    </FormControl>                      
-                                                                                    
-                                    <FormControl className="col-3">                          
+                                        />
+                                    </div>
+                                </FormControl>
+
+
+                                <FormControl className="col-3" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                    <div>
                                         <div className={classes.title}> {t(langKeys.hour)} </div>
                                         <div className={classes.subtitle}> {t(langKeys.campaign_execution_time)} </div>
-                                        <FieldEdit   
-                                            variant="outlined"                 
-                                            type="time"                            
+                                    </div>
+                                    <div style={{ marginTop: 'auto' }}>
+                                        <FieldEdit
+                                            variant="outlined"
+                                            type="time"
                                             className="col-6"
                                             valueDefault={getValues('batchjson.time')}
                                             onChange={(value) => {
@@ -741,14 +771,18 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 trigger('batchjson.time');
                                             }}
                                             error={errors?.batchjson?.time?.message}
-                                        />         
-                                    </FormControl>  
-                                </>                              
-                            }
-                             {edit ?
-                                <FormControl className={classNameCondition}>
+                                        />
+                                    </div>
+                                </FormControl>
+                            </>
+                        }
+                        {edit ?
+                            <FormControl className={classNameCondition} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                <div>
                                     <div style={{ fontSize: '1rem', color: 'black' }}>{t(langKeys.group)}</div>
                                     <div className={classes.subtitle}>{t(langKeys.campaign_group_desc)}</div>
+                                </div>
+                                <div style={{ marginTop: 'auto' }}>
                                     <FieldSelect
                                         variant="outlined"
                                         className={classNameCondition}
@@ -760,15 +794,22 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         optionDesc="domaindesc"
                                         optionValue="domainvalue"
                                     />
-                                </FormControl>                    
-                                :
-                                <FieldView
-                                    label={t(langKeys.group)}
-                                    value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
-                                    className={classNameCondition}
-                                />
-                            }
-                            </div>
+                                </div>
+                            </FormControl>
+                            :
+                            <FieldView
+                                label={t(langKeys.group)}
+                                value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
+                                className={classNameCondition}
+                            />
+                        }
+                    </div>
+
+
+
+
+
+
                        </>
                         :
                         <FieldView
@@ -782,6 +823,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     
                    
                 </div>
+
+
+                
                 <div className="row-zyx">
                     {edit ?
                         <FormControl className="col-12" >                      
@@ -807,7 +851,67 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-12"
                         />
                     }                 
-                </div>               
+                </div>    
+
+                    <div className="row-zyx" style={{ display: 'flex', padding:'0rem 1rem 0 0'  }}>
+                    {edit ?
+                        <FormControl className="col-6" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                            <div>
+                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.status)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_status_desc)} </div>
+                            </div>
+                            <div style={{ marginTop: 'auto' }}>
+                                <FieldSelect
+                                    variant="outlined"
+                                    valueDefault={getValues('status')}
+                                    onChange={onChangeStatus}
+                                    onBlur={() => trigger('usergroup')}
+                                    error={errors?.status?.message}
+                                    data={dataStatus}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                            </div>
+                        </FormControl>
+                        :
+                        <FieldView
+                            label={t(langKeys.status)}
+                            value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
+                            className="col-6"
+                        />
+                    }
+
+                    {edit ?
+                        <FormControl className="col-6" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                            <div>
+                                <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.messagetype)} </div>
+                                <div className={classes.subtitle}> {t(langKeys.campaign_messagetype_desc)} </div>
+                            </div>
+                            <div style={{ marginTop: 'auto' }}>
+                                <FieldSelect
+                                    variant="outlined"
+                                    uset={true}
+                                    className="col-6"
+                                    valueDefault={getValues('type')}
+                                    disabled={!getValues('isnew')}
+                                    onChange={onChangeType}
+                                    error={errors?.type?.message}
+                                    data={filterDataCampaignType()}
+                                    optionDesc="value"
+                                    optionValue="key"
+                                />
+                            </div>
+                        </FormControl>
+                        :
+                        <FieldView
+                            label={t(langKeys.messagetype)}
+                            value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
+                            className="col-6"
+                        />
+                    }
+                </div>
+ 
+
                 {['HSM'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
@@ -872,58 +976,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     </div>
                     : null}
 
-                <div className="row-zyx">
-                    {edit ?
-                        <FormControl className="col-6" >                      
-                            <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.status)} </div>
-                            <div className={classes.subtitle}> {t(langKeys.campaign_status_desc)} </div>                          
-                            <FieldSelect
-                                variant="outlined"    
-                                valueDefault={getValues('status')}
-                                onChange={onChangeStatus}
-                                onBlur={() => trigger('usergroup')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                        </FormControl>  
-                    
-                        :
-                        <FieldView
-                            label={t(langKeys.status)}
-                            value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
-                            className="col-6"
-                        />
-                    }
-                
-                    {edit ?
-                        <FormControl className="col-6" >                       
-                        
-                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Tipo de mensaje'} </div>
-                            <div className={classes.subtitle}> {t(langKeys.campaign_messagetype_desc)} </div>
-                        
-                            <FieldSelect
-                                variant="outlined"       
-                                uset={true}                              
-                                className="col-6"
-                                valueDefault={getValues('type')}
-                                disabled={!getValues('isnew')}
-                                onChange={onChangeType}
-                                error={errors?.type?.message}
-                                data={filterDataCampaignType()}
-                                optionDesc="value"
-                                optionValue="key"
-                            />
-                        </FormControl>                       
-                        :
-                        <FieldView
-                            label={t(langKeys.messagetype)}
-                            value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
-                            className="col-6"
-                        />
-                    }                
-                </div>
+            
+
 
                 </div>
                 

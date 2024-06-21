@@ -1,7 +1,7 @@
 import { Button, LinearProgress, Paper, Tooltip, Typography, makeStyles, withStyles } from '@material-ui/core';
 import paths from 'common/constants/paths';
 import { useSelector } from 'hooks';
-import { AndroidColor, AppStoreColor, BloggerColor, ChatWebColor, ClientIcon, DashboardIcon, DashboardRouteIcon, FacebookColor, FacebookMessengerColor, FormColor, InstagramColor, IosColor, LinkedInColor, MailColor, MessageInboxIcon, MetaColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, UserGroupIcon, VoiceColor, WhatsAppColor, WhatsAppOnboardingColor, WorkplaceColor, WorkplaceWallColor, YouTubeColor } from 'icons';
+import { AndroidColor, AppStoreColor, BloggerColor, ChatWebColor, ClientIcon, DashboardRouteIcon, FacebookColor, FacebookMessengerColor, FormColor, InstagramColor, IosColor, LinkedInColor, MailColor, MessageInboxIcon, MetaColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, UserGroupIcon, VoiceColor, WhatsAppColor, WorkplaceColor, WorkplaceWallColor, YouTubeColor } from 'icons';
 import { langKeys } from 'lang/keys';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ const BorderLinearProgress = withStyles((theme) => ({
     },
 }))(LinearProgress);
 
-const useMetaChannelsStyles = makeStyles((theme) => ({
+const useMetaChannelsStyles = makeStyles(() => ({
     containerBorder: {
         border: "1px solid #A93DBE",
         borderRadius: "8px",
@@ -67,14 +67,15 @@ interface ChannelOption {
     icon: (className: string) => React.ReactNode;
     label: React.ReactNode;
     onClick: () => void;
-    tooltip?:string;
-    clear?:string;
+    tooltip?: string;
+    clear?: string;
 }
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
 }
-const ColorButton = withStyles((theme) => ({
+
+const ColorButton = withStyles(() => ({
     root: {
         color: "white",
         backgroundColor: "#40c351",
@@ -83,7 +84,8 @@ const ColorButton = withStyles((theme) => ({
         },
     },
 }))(Button);
-const ColorButton2 = withStyles((theme) => ({
+
+const ColorButton2 = withStyles(() => ({
     root: {
         color: "white",
         backgroundColor: "#A93DBE",
@@ -101,12 +103,10 @@ const MetaChannels: FC = () => {
     const dispatch = useDispatch();
     const location = useLocation<WhatsAppData>();
     const whatsAppData = location.state as WhatsAppData | null;
-    const [view, setView] = useState("view-1")
-    const [metatype, setMetaType] = useState("")
-    const [channelList, setchannelList] = useState(["Facebook", "Messenger", "Instagram", "Instagram Direct"])
-    const [metachannelsDone, setmetachannelsDone] = useState<any>([])
-    
-
+    const [view, setView] = useState("view-1");
+    const [metatype, setMetaType] = useState("");
+    const [channelList, setchannelList] = useState(["Facebook", "Messenger", "Instagram", "Instagram Direct"]);
+    const [metachannelsDone, setmetachannelsDone] = useState<any>([]);
 
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -162,7 +162,7 @@ const MetaChannels: FC = () => {
                 //history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData);
                 setView("view-2")
                 setMetaType("Instagram")
-                setchannelList(["Instagram Direct","Facebook", "Messenger"].filter(channel => !metachannelsDone.includes(channel)))
+                setchannelList(["Instagram Direct", "Facebook", "Messenger"].filter(channel => !metachannelsDone.includes(channel)))
             },
             tooltip: t(langKeys.tooltipchannel1)
         },
@@ -174,7 +174,7 @@ const MetaChannels: FC = () => {
                 //history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData);                
                 setView("view-2")
                 setMetaType("Instagram Direct")
-                setchannelList(["Instagram","Facebook", "Messenger"].filter(channel => !metachannelsDone.includes(channel)))
+                setchannelList(["Instagram", "Facebook", "Messenger"].filter(channel => !metachannelsDone.includes(channel)))
             },
             tooltip: t(langKeys.tooltipchannel1)
         },
@@ -308,6 +308,7 @@ const MetaChannels: FC = () => {
             },
         },
     ];
+
     const Option: FC<{ option: ChannelOption }> = ({ option }) => {
         const content = (
             <Paper className={classes.optionContainer} elevation={0} onClick={option.onClick}>
@@ -330,7 +331,7 @@ const MetaChannels: FC = () => {
                 </div>
             </Paper>
         );
-    
+
         return option.tooltip ? (
             <Tooltip title={option.tooltip}>
                 {content}
@@ -339,7 +340,7 @@ const MetaChannels: FC = () => {
             content
         );
     };
-    if(view === "view-1"){
+    if (view === "view-1") {
         return (
             <div style={{ margin: "20px 30px", width: "100%" }}>
                 <h1 style={{ margin: 0 }}>{t(langKeys.greetinguser, { username: user?.firstname })}</h1>
@@ -359,7 +360,7 @@ const MetaChannels: FC = () => {
                             </div>
                             <p>{t(langKeys.whatsapp2)}</p>
                             <div style={{ justifyContent: "center", display: "flex" }}>
-                                <ColorButton variant="contained" color="primary" onClick={(e) => {
+                                <ColorButton variant="contained" color="primary" onClick={() => {
                                     const callback = () => {
                                         history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData);
                                     }
@@ -412,7 +413,6 @@ const MetaChannels: FC = () => {
                                             <Option key={`social_media_option_${i}`} option={e} />
                                         ))}
                                     </div>
-    
                                 </div>
                                 <div className='col-6'>
                                     <Typography className={classes.subtitle}>{t(langKeys.business2)}</Typography>
@@ -427,19 +427,15 @@ const MetaChannels: FC = () => {
                                             <Option key={`business_channel_option_${i}`} option={e} />
                                         ))}
                                     </div>
-    
                                 </div>
-    
                             </div>
                         </div>
-    
                     </div>
                         <div className='row-zyx' style={{ marginTop: 20, marginBottom: 0 }}>
                             <div className='col-6'>
                                 <Paper elevation={3}>
                                     <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
                                         <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-    
                                             <UserGroupIcon className={classes.icon} style={{ width: 40, height: 40 }} />
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
@@ -447,7 +443,6 @@ const MetaChannels: FC = () => {
                                             <p style={{ margin: 0 }}>{t(langKeys.createusrandpermits2)}</p>
                                             <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
                                                 history.push(paths.USERS, whatsAppData);
-    
                                             }}>{t(langKeys.create)}</Button>
                                         </div>
                                     </div>
@@ -457,7 +452,6 @@ const MetaChannels: FC = () => {
                                 <Paper elevation={3}>
                                     <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
                                         <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-    
                                             <ClientIcon className={classes.icon} style={{ width: 40, height: 40 }} />
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
@@ -465,7 +459,6 @@ const MetaChannels: FC = () => {
                                             <p style={{ margin: 0 }}>{t(langKeys.importlist2)}</p>
                                             <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
                                                 history.push(paths.PERSON, whatsAppData);
-    
                                             }}>{t(langKeys.import)}</Button>
                                         </div>
                                     </div>
@@ -477,7 +470,6 @@ const MetaChannels: FC = () => {
                                 <Paper elevation={3}>
                                     <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
                                         <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-    
                                             <DashboardRouteIcon className={classes.icon} style={{ width: 40, height: 40 }} />
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
@@ -485,7 +477,6 @@ const MetaChannels: FC = () => {
                                             <p style={{ margin: 0 }}>{t(langKeys.recharge2)}</p>
                                             <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
                                                 history.push(paths.INVOICE + "?recharge=true", whatsAppData);
-    
                                             }}>{t(langKeys.messagetemplate_reload)}</Button>
                                         </div>
                                     </div>
@@ -495,16 +486,13 @@ const MetaChannels: FC = () => {
                                 <Paper elevation={3}>
                                     <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
                                         <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-    
                                             <MessageInboxIcon className={classes.icon} style={{ width: 40, height: 40 }} />
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
                                             <h2 style={{ margin: 0 }}>{t(langKeys.talkwithadviser1)}</h2>
                                             <p style={{ margin: 0 }}>{t(langKeys.talkwithadviser2)}</p>
                                             <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-    
                                                 window.open('https://api.whatsapp.com/send?phone=51941865635', '_blank');
-    
                                             }}>{t(langKeys.contact2)}</Button>
                                         </div>
                                     </div>
@@ -512,12 +500,12 @@ const MetaChannels: FC = () => {
                             </div>
                         </div>
                     </div>
-    
+
                 </div>
             </div>
         );
-    }else{
-        return <MetaChannelsConfig setView={setView} metatype={metatype} channelList={channelList} setchannelList={setchannelList} setmetachannelsDone={setmetachannelsDone} metachannelsDone={metachannelsDone}/>
+    } else {
+        return <MetaChannelsConfig setView={setView} metatype={metatype} channelList={channelList} setchannelList={setchannelList} setmetachannelsDone={setmetachannelsDone} metachannelsDone={metachannelsDone} />
     }
 }
 
