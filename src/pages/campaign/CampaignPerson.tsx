@@ -190,10 +190,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             "Nombres": "|Opcional|Completa la lista con los nombres del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\". Nota: No alteres el valor del titulo de la columna, ya que se asigna automáticamente.",
             "Apellidos": "|Opcional|Completa la lista con los apellidos del cliente a contactar para una mayor trazabilidad, esto se verá reflejado en el reporte de \"Campañas\". Nota: No alteres el valor del titulo de la columna, ya que se asigna automáticamente.",
             "Variable Adicional": "|Opcional|Puedes añadir una variable adicional que no se enviará en el cuerpo del HSM al cliente, sino que se alojará como parte de las variables que se reciban de la conversación. Nota: También puedes cambiar el nombre de la columna o eliminar dicha columna, para usar esta variable dentro de un flujo o reporte usa la variable \"variable_hidden_{num}\"",
-            "Variable Cabecera": "|Obligatorio|Completa colocando la variable que se asignará en el template, depediendo del destinatario enviado. Ejemplo: Marcos",
             "Variable": "|Obligatorio|Completa la lista con la variable {num} por configurar del template usado. Nota: Se puede cambiar el nombre del titulo de la columna para un mejor entendimiento según el caso.",
             "Url Dinamico": "|Obligatorio| Completa tu URL dinámico {num} para cada cliente, deberas indicar el código o sección de la url personalizado. Ejemplo: JK589kl",
-            "Variable burbuja": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado.",
             "Card Imagen": "|Opcional|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) se procederá a configurar como cabecera del card {num}, depediendo del destinatario enviado. Nota: Por defecto traerá la imagen que se mandó a aprobar con la plantilla si no se configura esta columna.",
             "Cabecera Multimedia": "|Obligatorio|Completa colocando una URL que contenga el archivo multimedia (Imagen, Video, Archivo) que se procederá a configurar como cabecera del HSM, depediendo del destinatario enviado."
         };
@@ -211,7 +209,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             const columnNames: string[] = sheetData[1];
     
             let variableCounter = 1;
-
+    
             const bodyVariables = templateAux.body.match(/{{\d+}}/g) || [];
             const requiredVariableColumns = bodyVariables.map((_, index) => `Variable ${index + 1}`);
             variableCounter += bodyVariables.length;
@@ -228,16 +226,16 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url Dinamico ${index + 1}`);
             
             const imageCards = templateAux.carouseldata || [];
-            const carouselVariableColumns = imageCards.reduce((acc, card) => {
+            const carouselVariableColumns = imageCards.reduce((acc, card, cardIndex) => {
                 const cardVariables = card.body.match(/{{\d+}}/g) || [];
-                return acc.concat(cardVariables.map(() => `Variable ${variableCounter++}`));
+                return acc.concat(cardVariables.map((_, varIndex) => `Card ${cardIndex + 1} - Variable ${varIndex + 1}`));
             }, [] as string[]);
             
-            const imageCardColumns = imageCards.map((card, index) => card.header ? `Card Imagen ${index + 1}` : '').filter(Boolean);
+            const imageCardColumns = imageCards.map((card, index) => card.header ? `Card ${index + 1} - Imagen` : '').filter(Boolean);
             
-            const carouselDynamicUrlColumns = imageCards.reduce((acc, card) => {
+            const carouselDynamicUrlColumns = imageCards.reduce((acc, card, cardIndex) => {
                 const dynamicButtons = card.buttons?.filter(button => button.btn.type === 'dynamic') || [];
-                return acc.concat(dynamicButtons.map((btn, index) => `Url Dinamico ${index + 1}`));
+                return acc.concat(dynamicButtons.map((_, btnIndex) => `Card ${cardIndex + 1} - Url Dinamico ${btnIndex + 1}`));
             }, [] as string[]);
             
             let newColumnNames = columnNames.slice(0, 3)
@@ -256,7 +254,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             newColumnNames = newColumnNames.concat("Variable Adicional 1");
                     
             const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
-
+    
             newColumnNames.forEach((columnName, index) => {
                 let descriptionKey = columnName;
                 if (descriptionKey.startsWith("Variable Adicional")) {
@@ -269,9 +267,15 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     const urlNum = columnName.split(' ')[2];
                     newSheetData[0][index] = descriptionsMap["Url Dinamico"].replace("{num}", urlNum);
                     return;
-                } else if (descriptionKey.startsWith("Card Imagen")) {
-                    const cardNum = columnName.split(' ')[2];
-                    newSheetData[0][index] = descriptionsMap["Card Imagen"].replace("{num}", cardNum);
+                } else if (descriptionKey.startsWith("Card")) {
+                    if (descriptionKey.includes("Imagen")) {
+                        const cardNum = columnName.split(' ')[1];
+                        newSheetData[0][index] = descriptionsMap["Card Imagen"].replace("{num}", cardNum);
+                    } else {
+                        const cardNum = columnName.split(' ')[1];
+                        const varNum = columnName.split(' ')[4];
+                        newSheetData[0][index] = descriptionsMap["Variable"].replace("{num}", `${varNum} (card ${cardNum})`);
+                    }
                     return;
                 }
                 newSheetData[0][index] = descriptionsMap[descriptionKey] || "";
@@ -286,7 +290,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             console.error("Error al ajustar y descargar el archivo Excel", error);
         }
     };
-
+    
     const s2ab = (s: string) => {
         const buf = new ArrayBuffer(s.length);
         const view = new Uint8Array(buf);
@@ -295,6 +299,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return buf;
     };
+    
+    
     
     useEffect(() => {
         if (frameProps.checkPage) {

@@ -650,6 +650,10 @@ export function uploadExcelCampaign(file: any, dispatch: any, owner: any = {}) {
                     }, {})
                 );
 
+                rowsx = rowsx.filter(row => {
+                    return Object.values(row).some(value => value !== undefined && value !== '');
+                });
+
                 const uniqueRows = new Map<string, any>();
                 const duplicatedRows = new Set<string>();
 
@@ -673,8 +677,6 @@ export function uploadExcelCampaign(file: any, dispatch: any, owner: any = {}) {
         });
     });
 }
-
-
 
 export const uploadExcelBuffer = (buffer: any) => {
     return new Promise((res, rej) => {
