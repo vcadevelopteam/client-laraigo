@@ -824,7 +824,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             variant="outlined"
                             onChange={(value) => setMessageText(value)}
                             valueDefault={messageText}
-                            disabled={!selectedChat || isLoading}
+                            disabled={!selectedChat}
                             InputProps={{
                                 multiline: true,
                                 maxRows: 7,

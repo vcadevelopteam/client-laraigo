@@ -6329,6 +6329,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   messaging_twitter: "X",
   messaging_voice: "Voz",
   messaging_youtube: "YouTube",
+  origin_helpText: 'Muestra el módulo de origen del envío del HSM.',
 };
 
 const esResource: ResourceLanguage = {

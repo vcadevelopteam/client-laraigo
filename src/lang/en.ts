@@ -6378,6 +6378,7 @@ const translation: LangKeys = {
   messaging_twitter: "X",
   messaging_voice: "Voice",
   messaging_youtube: "YouTube",
+  origin_helpText: 'Displays the HSM shipping source module.',
 };
 
 const enResource: ResourceLanguage = {

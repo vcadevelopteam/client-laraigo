@@ -286,8 +286,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             }
         }
     }, [mainGraphicRes, data, loading])
-    console.log(row?.origin)
-
+    
     return (
         <>
             {(withFilters || withButtons) && (

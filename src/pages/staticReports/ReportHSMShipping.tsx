@@ -61,6 +61,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     });
 
     const triggerGraphic = (data: any) => {
+        setView("GRID")
         setView(`CHART-${data.graphictype}-${data.column}-${data.columntext}`);
         setOpenModal(false);
 
@@ -163,18 +164,10 @@ const initialRange = {
 const cell = (props: CellProps<Dictionary>) => {
     const column = props.cell.column;
     const row = props.cell.row.original;
+    debugger
     return (
-        <div>
-            {column.sortType === "datetime" && !!row[column.id]
-                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                })
-                : row[column.id]}
+        <div style={{textAlign: column.sortType === "number"? "start": "inherit"}}>
+            {row[column.id]}
         </div>
     )
 }
@@ -195,6 +188,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 Header: t(langKeys.ticket_number),
                 accessor: 'ticketnum',
                 showGroupedBy: true,
+                showColumn: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     if (row && row.ticketnum) {
@@ -220,49 +214,58 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 sortType: 'datetime',
                 type: 'datetime',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: `${t(langKeys.name)} ${t(langKeys.campaign).toLocaleLowerCase()}`,
                 accessor: 'campaignname',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.recipient),
                 accessor: 'contact',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.origin),
                 accessor: 'origin',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                helpText: t(langKeys.origin_helpText)
+                //Cell: cell
             },
             {
                 Header: t(langKeys.shipment),
                 accessor: 'satisfactory',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.read),
                 accessor: 'seen',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.contestedagain),
                 accessor: 'answered',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: "Log",
                 accessor: 'log',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
         ],
         []
@@ -276,16 +279,25 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
     
     useEffect(() => {
         if(!multidata.loading && !multidata.error){
-            const stdby = multidata?.data?.[0]?.data
+            const stdby = multidata?.data?.[0]?.data||[]
             setMaindata(stdby.map(x=>{
                 x.failed = x.failed? "Ok": "Fail"
                 x.satisfactory = x.satisfactory? "Ok": "Fail"
                 x.seen = x.seen? "Ok": "Fail"
                 x.answered = x.answered? "Ok": "Fail"
+                x.createdate=convertLocalDate(x.createdate).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })
                 return x;
             })||[])
         }
     }, [multidata]);
+    
     return (<div style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div>
@@ -402,13 +414,15 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 Header: t(langKeys.templatename),
                 accessor: 'templatename',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.templatecategory),
                 accessor: 'category',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.sent_plural),
@@ -416,7 +430,8 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 type: 'number',
                 sortType: 'number',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.successful_plural),
@@ -424,7 +439,8 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 type: 'number',
                 sortType: 'number',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.failed_plural),
@@ -432,7 +448,8 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 type: 'number',
                 sortType: 'number',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.read),
@@ -440,7 +457,8 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 type: 'number',
                 sortType: 'number',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
             {
                 Header: t(langKeys.contested),
@@ -448,7 +466,8 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 sortType: 'number',
                 accessor: 'answered',
                 showGroupedBy: true,
-                Cell: cell
+                showColumn: true,
+                //Cell: cell
             },
         ],
         []
