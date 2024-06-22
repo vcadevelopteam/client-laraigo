@@ -8,7 +8,7 @@ import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate, uploadExcel, uploadExcelCampaign } from 'common/helpers';
+import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate, uploadExcelCampaign } from 'common/helpers';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
@@ -461,6 +461,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }, [paginatedAuxResult]);
 
 
+    //console.log(jsonData)
     // External Data Logic //
     const handleUpload = async (files: any) => {
         const file = files[0];
@@ -587,66 +588,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             selectedRows: {},
             person: []
         });
-    }
-
-    const handleCancelModal = () => {
-        setSelectedColumns({ ...selectedColumnsBackup } as SelectedColumns);
-        setOpenModal(false);
-    }
-
-    const handleSaveModal = () => {
-        if (selectedColumns.primarykey !== '') {
-            const columns = columnList.reduce((h: string[], c: string, i: number) => {
-                if (c !== selectedColumns.primarykey && selectedColumns.column[i]) {
-                    h.push(c);
-                }
-                return h
-            }, []);
-            setSelectedColumns({ ...selectedColumns, columns: columns });
-            setJsonDataTemp(
-                JSON.parse(JSON.stringify(jsonDataTemp, [
-                    selectedColumns.primarykey,
-                    ...columns
-                ]))
-            )
-            const jsondatadata = [
-                ...JSON.parse(JSON.stringify(jsonData,
-                    [
-                        selectedColumns.primarykey,
-                        ...columns
-                    ])),
-                ...JSON.parse(JSON.stringify(jsonDataTemp.filter(j =>
-                    !jsonData.map(jd => jd[selectedColumns.primarykey])
-                        .includes(j[selectedColumns.primarykey])),
-                    [
-                        selectedColumns.primarykey,
-                        ...columns
-                    ]))
-            ];
-            setJsonData(jsondatadata);
-        
-            let message: string = detaildata.message || '';
-            if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
-                detaildata.fields?.columns.forEach((c: string, i: number) => {
-                    const newi = selectedColumns.columns.findIndex(cs => cs === c);
-                    if (newi === -1) {
-                        message = message?.replace(`{{${c}}}`, `{{${i + 1}}}`);
-                        message = message?.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
-                    }
-                    else {
-                        message = message?.replace(`{{field${i + 2}}}`, `{{${c}}}`);
-                    }
-                });
-                setDetaildata({ ...detaildata, message: message });
-            }
-            else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
-                message?.match(/({{)(.*?)(}})/g)?.forEach((c: string, i: number) => {
-                    message = message?.replace(`${c}`, `{{${i + 1}}}`);
-                });
-                setDetaildata({ ...detaildata, message: message });
-            }
-            setOpenModal(false);
-        }
     }
 
     useEffect(() => {
@@ -841,13 +782,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             data={jsonData}
                             totalrow={totalrow}
                             pageCount={pageCount}
-                            filterGeneral={false}
-                            
+                            filterGeneral={false}                            
                             loading={paginatedAuxResult.loading}
                             FiltersElement={<></>}
-                            ButtonsElement={() => <>
-                                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
-                            </>}
+                            ButtonsElement={() => 
+                                <> <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b> </>
+                            }
                             fetchData={fetchPaginatedData}
                             useSelection={true}
                             selectionKey={selectionKey}

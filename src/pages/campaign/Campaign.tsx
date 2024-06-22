@@ -732,6 +732,7 @@ export const Campaign: FC = () => {
                     useSelection={true}
                     setSelectedRows={setSelectedRows}
                     selectionKey={selectionKey}
+                    heightWithCheck={51}
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}                
                     ButtonsElement={AdditionalButtons}     

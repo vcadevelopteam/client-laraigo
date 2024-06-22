@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
@@ -8,7 +8,6 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ListIcon from '@material-ui/icons/List';
 import CloseIcon from '@material-ui/icons/Close';
 import { Dictionary } from '@types';
-import { IconButton, Modal } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -109,12 +108,11 @@ const useStyles = makeStyles((theme) => ({
         padding: '1rem 0',
     },
     carouselItem: {
-        minWidth: '200px',
-        maxWidth: '300px',
+        minWidth: '290px',
         borderRadius: '0.5rem',
         backgroundColor: '#fff',
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-        padding: '1rem',
+        padding: '0 1rem',
         textAlign: 'center',
     },
     modal: {
@@ -156,6 +154,23 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '4px',
         zIndex: 10,
         width: '100%',
+    },
+    imageContainer: {
+        width: '100%',
+        height: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '1rem',
+    },
+    carouselImage: {
+        maxWidth: '100%',
+        maxHeight: '230px',
+        objectFit: 'cover',
+        borderRadius: '0.5rem',
+    },
+    bodyContainer: {       
+        textAlign: 'left',        
     },
 }));
 
@@ -206,16 +221,16 @@ const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({
     const getButtonIcon = (type: string) => {
         switch (type) {
             case 'URL':
-                return <OpenInNewIcon style={{ height: '24px' }} />;
+                return <OpenInNewIcon style={{ height: '22px' }} />;
             case 'PHONE':
             case 'PHONE_NUMBER':
-                return <PhoneIcon style={{ height: '24px' }} />;
+                return <PhoneIcon style={{ height: '22px' }} />;
             case 'QUICK_REPLY':
-                return <ReplyIcon style={{ height: '24px' }} />;
+                return <ReplyIcon style={{ height: '22px' }} />;
             case 'AUTHENTICATION':
-                return <FileCopyIcon style={{ height: '24px' }} />;
+                return <FileCopyIcon style={{ height: '22px' }} />;
             default:
-                return <ReplyIcon style={{ height: '24px' }} />;
+                return <ReplyIcon style={{ height: '22px' }} />;
         }
     };
 
@@ -225,7 +240,7 @@ const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({
         }
         return buttonsToRender.map((button: Dictionary, index: number) => (
             <a className={className} key={index}>
-                <div style={{ fontSize: '1.2rem', display: 'flex', alignContent: 'center', gap: '4px' }}>
+                <div style={{ fontSize: '1rem', display: 'flex', alignContent: 'center', gap: '4px' }}>
                     {getButtonIcon(button.type)} {button.btn.text}
                 </div>
             </a>
@@ -258,32 +273,47 @@ const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({
     );
 };
 
-
-
-
-
-
 const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     const classes = useStyles();
+    const [maxCardHeight, setMaxCardHeight] = useState(0);
+    const cardRefs = useRef<HTMLDivElement[]>([]);
+
+    useEffect(() => {
+        if (cardRefs.current.length > 0) {
+            const heights = cardRefs.current.map(ref => ref?.offsetHeight || 0);
+            setMaxCardHeight(Math.max(...heights));
+        }
+    }, [carouselData]);
+
     return (
         <div className={classes.carouselContainer}>
             {carouselData.map((item: Dictionary, index: number) => (
-                <div className={classes.carouselItem} key={index}>
-                    <img
-                        src={item.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                        alt="Carousel Header"
-                        style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
-                    />
-                    <p style={{fontSize:'1rem'}}>{item.body}</p>
+                <div
+                    className={classes.carouselItem}
+                    key={index}
+                    ref={el => cardRefs.current[index] = el!}
+                >
+                    <div className={classes.imageContainer}>
+                        <img
+                            src={item.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
+                            alt="Carousel Header"
+                            className={classes.carouselImage}
+                            style={{ height: maxCardHeight }}
+                        />
+                    </div>
+                      <div className={classes.bodyContainer}>
+                        <p dangerouslySetInnerHTML={{ __html: item.body }}></p>
+                    </div>
                     {item.buttons?.length > 0 && (
-                        <ButtonList buttons={item.buttons} />
+                        <div>
+                            <ButtonList buttons={item.buttons} />
+                        </div>
                     )}
                 </div>
             ))}
         </div>
     );
 };
-
 
 interface TemplatePreviewProps {
     selectedTemplate: Dictionary;
@@ -294,17 +324,29 @@ interface TemplatePreviewProps {
     cardImageValues: Dictionary;
     dynamicUrlValues: Dictionary;
     carouselVariableValues: Dictionary;
+    selectedAuthVariable: string;
 }
 
-const replaceVariables = (text: string, bodyVariableValues: Dictionary = {}, bubbleVariableValues: Dictionary = {}, dynamicUrlValues: Dictionary = {}, cardImageValues: Dictionary = {}, carouselVariableValues: Dictionary = {}, carouselIndex?: number) => {
+const isValidUrl = (string: string) => {
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;  
+    }
+};
+
+const replaceVariables = (text: string, bodyVariableValues: Dictionary = {}, bubbleVariableValues: Dictionary = {}, dynamicUrlValues: Dictionary = {}, cardImageValues: Dictionary = {}, carouselVariableValues: Dictionary = {}, carouselIndex?: number, authVariableValue?: string) => {
     return text.replace(/{{(\d+)}}/g, (_, variableNumber) => {
+        if (variableNumber === '1' && authVariableValue) {
+            return authVariableValue;
+        }
         if (carouselIndex !== undefined && carouselVariableValues[carouselIndex]) {
             return carouselVariableValues[carouselIndex][variableNumber] || `{{${variableNumber}}}`;
         }
         return bodyVariableValues[variableNumber] || bubbleVariableValues[variableNumber] || dynamicUrlValues[variableNumber] || (carouselIndex !== undefined && cardImageValues[carouselIndex]?.[variableNumber]) || `{{${variableNumber}}}`;
     });
 };
-
 
 const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     selectedTemplate,
@@ -314,16 +356,26 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     videoHeaderValue,
     cardImageValues,
     dynamicUrlValues,
-    carouselVariableValues
+    carouselVariableValues,
+    selectedAuthVariable
 }) => {
     const classes = useStyles();
     const renderedHeader = replaceVariables(selectedTemplate.header || "", headerVariableValues);
-    const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues).replace(/\n/g, '<br />');
+    const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues, {}, {}, {}, {}, undefined, selectedAuthVariable).replace(/\n/g, '<br />');
+    const [maxCardHeight, setMaxCardHeight] = useState(0);
+    const cardRefs = useRef<HTMLDivElement[]>([]);
+
+    useEffect(() => {
+        if (cardRefs.current.length > 0) {
+            const heights = cardRefs.current.map(ref => ref?.offsetHeight || 0);
+            setMaxCardHeight(Math.max(...heights));
+        }
+    }, [cardImageValues, bodyVariableValues]);
 
     const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
         ...item,
-        header: cardImageValues?.[index] || item.header,
-        body: replaceVariables(item.body || "", {}, bubbleVariableValues, {}, {}, carouselVariableValues, index),
+        header: cardImageValues?.[index + 1] || item.header, 
+        body: replaceVariables(item.body || "", {}, bubbleVariableValues, {}, {}, carouselVariableValues, index).replace(/\n/g, '<br />'),
         buttons: item.buttons?.map((button: Dictionary) => ({
             ...button,
             btn: {
@@ -336,16 +388,13 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const combinedButtons = [
         ...(selectedTemplate.buttonsquickreply || []),
         ...(selectedTemplate.buttonsgeneric || [])
-    ];   
-
-    console.log(selectedTemplate)
+    ];    
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
             <div className={classes.containerDetail} style={{ display: 'block', alignContent: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                     <div style={{ maxWidth: '40rem', borderRadius: '0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}>
-                       
                         <div className='templatePreview'>
                             {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
                                 <div>
@@ -353,22 +402,30 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                         <PdfAttachment url={selectedTemplate.header} />
                                     ) : selectedTemplate?.headertype === "MULTIMEDIA" ? (
                                         <iframe
-                                            src={selectedTemplate.header || "https://d36ai2hkxl16us.cloudfront.net/thoughtindustries/image/upload/a_exif,c_fill,w_750/v1/course-uploads/7a95ec5e-b843-4247-bc86-c6e2676404fd/15ax1uzck54z-NuxeoGeneric.png"}
+                                            src={selectedTemplate.header || "https://d36ai2hkxl16us.cloud-object-storage.appdomain.cloud/CLARO%20-%20GIANCARLO/5d8a286a-ea7e-44aa-b138-585f5c20da77/WhatsApp%20Video%202024-06-12%20at%2010.06.02%20PM.mp4"}
                                             style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
                                         />
                                     ) : selectedTemplate?.headertype === "IMAGE" ? (
-                                        <img
-                                            src={selectedTemplate.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                                            alt="Carousel Header"
-                                            style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
-                                        />
+                                        isValidUrl(videoHeaderValue || selectedTemplate.header) ? (
+                                            <img
+                                                src={videoHeaderValue || selectedTemplate.header}
+                                                alt="Carousel Header"
+                                                style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
+                                            />
+                                        ) : (
+                                            <div>La variable seleccionada no es una imagen</div>
+                                        )
                                     ) : selectedTemplate?.headertype === "TEXT" ? (
                                         <div style={{ fontSize: '1.5rem' }}>{renderedHeader}</div>
                                     ) : selectedTemplate?.headertype === "VIDEO" ? (
-                                        <video controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
-                                            <source src={selectedTemplate.header} type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
+                                        isValidUrl(videoHeaderValue || selectedTemplate.header) ? (
+                                            <video key={videoHeaderValue || selectedTemplate.header} controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
+                                                <source src={videoHeaderValue || selectedTemplate.header} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        ) : (
+                                            <div>La variable seleccionada no es un video</div>
+                                        )
                                     ) : (
                                         <div style={{ fontSize: '1.1rem' }}>{renderedHeader}</div>
                                     )}
@@ -388,31 +445,30 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                 </div>
                             ) : selectedTemplate?.category === "AUTHENTICATION" ? (
                                 <div>
-                                <p style={{ fontSize: '1.2rem' }}>
-                                    Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: '{{1}}' }}></span>.
-                                    {selectedTemplate.authenticationdata.safetyrecommendation && (
-                                        <span> Por tu seguridad, no lo compartas</span>
+                                    <p style={{ fontSize: '1.2rem' }}>
+                                        Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: selectedAuthVariable || '{{1}}' }}></span>.
+                                        {selectedTemplate.authenticationdata.safetyrecommendation && (
+                                            <span> Por tu seguridad, no lo compartas</span>
+                                        )}
+                                    </p>
+                                    {selectedTemplate.authenticationdata.showexpirationdate && (
+                                        <div>
+                                            <p style={{ fontSize: '1rem' }}>
+                                                Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.
+                                            </p>
+                                        </div>
                                     )}
-                                </p>
-                                {selectedTemplate.authenticationdata.showexpirationdate && (
-                                    <div>
-                                        <p style={{ fontSize: '1rem' }}>
-                                            Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.
-                                        </p>
-                                    </div>
-                                )}
-                                <span className={classes.previewHour}> 11:12</span>
-                                {selectedTemplate.authenticationdata.buttontext && (
-                                    <ButtonList buttons={[]} authenticationButton={selectedTemplate.authenticationdata.buttontext} />
-                                )}
-                            </div>
+                                    <span className={classes.previewHour}> 11:12</span>
+                                    {selectedTemplate.authenticationdata.buttontext && (
+                                        <ButtonList buttons={[]} authenticationButton={selectedTemplate.authenticationdata.buttontext} />
+                                    )}
+                                </div>
                             ) : (
                                 <div>
                                     <p>No se ha seleccionado una Plantilla</p>
                                 </div>
                             )}
                         </div>
-                        
                     </div>
                 </div>
             </div>
