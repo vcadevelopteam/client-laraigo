@@ -552,21 +552,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>
-                                {templateToUse.headertype === 'VIDEO' || templateToUse.headertype === 'IMAGE' && (
-                                    <div>
-                                        <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
-                                        <FieldSelect
-                                            variant="outlined"
-                                            uset={true}
-                                            className="col-12"
-                                            data={[{ key: 'default', value: 'Default ' }, ...availableData.map(header => ({ key: header, value: header }))]}
-                                            optionDesc="value"
-                                            optionValue="key"
-                                            valueDefault={getValueDefault('video', 'videoHeader')}
-                                            onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
-                                        />
-                                    </div>
-                                )}
+                            {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
+                                <div>
+                                    <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
+                                    <FieldSelect
+                                        variant="outlined"
+                                        uset={true}
+                                        className="col-12"
+                                        data={[{ key: 'default', value: 'Default ' }, ...availableData.map(header => ({ key: header, value: header }))]}
+                                        optionDesc="value"
+                                        optionValue="key"
+                                        valueDefault={getValueDefault('video', 'videoHeader')}
+                                        onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
+                                    />
+                                </div>
+                            )}
+
                             </div>
 
 
