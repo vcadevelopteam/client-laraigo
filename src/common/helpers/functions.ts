@@ -605,10 +605,10 @@ export function uploadExcelCampaign(file: any, dispatch: any, owner: any = {}) {
             reader.readAsBinaryString(file);
             reader.onload = (event: any) => {
                 var data = event.target.result;
-                let workbook = XLSX.read(data, { type: 'binary' });
+                let workbook = XLSX.read(data, { type: 'binary', cellDates: true });
                 const wsname = workbook.SheetNames[0];
                 let sheet = workbook.Sheets[wsname];
-                let sheetArray = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                let sheetArray = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true });
 
                 let headers = sheetArray[0];
                 const containsRequiredOrOptional = headers.some((header: string) => header.includes('|Opcional|') || header.includes('|Obligatorio|'));
@@ -640,10 +640,19 @@ export function uploadExcelCampaign(file: any, dispatch: any, owner: any = {}) {
 
                 let rowsx = sheetArray.map((row: any[]) =>
                     headers.reduce((obj: any, header: string, index: number) => {
-                        obj[header.trim()] = row[index];
+                        if (row[index] instanceof Date) {
+                            const dateValue = XLSX.SSF.format('dd/mm/yyyy', row[index]);
+                            obj[header.trim()] = dateValue;
+                        } else {
+                            obj[header.trim()] = row[index];
+                        }
                         return obj;
                     }, {})
                 );
+
+                rowsx = rowsx.filter(row => {
+                    return Object.values(row).some(value => value !== undefined && value !== '');
+                });
 
                 const uniqueRows = new Map<string, any>();
                 const duplicatedRows = new Set<string>();
@@ -668,7 +677,6 @@ export function uploadExcelCampaign(file: any, dispatch: any, owner: any = {}) {
         });
     });
 }
-
 
 export const dateToLocalDate = (date: string, returnType = 'string'): string | Date => {
     if (!date) return new Date().toLocaleDateString();
