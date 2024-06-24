@@ -473,4 +473,8 @@ export const apiUrls = {
     LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
     
     CORP_URL: `${BASE_URL}/corp`,
+    DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
+
+    PROCESSZIPINTEGRATION: `${BASE_URL}/integrationmanager/file_upload`,
+    SAML_LOGIN: `${BASE_URL}/auth/idps/saml20/sso/login`,
 };

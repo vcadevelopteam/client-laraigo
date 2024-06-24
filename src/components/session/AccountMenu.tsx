@@ -5,7 +5,7 @@ import { ArrowDropDownIcon } from "icons";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from 'hooks';
-import { invokeIncremental, logout } from 'store/login/actions';
+import { cleanValidateToken, invokeIncremental, logout } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
@@ -14,6 +14,7 @@ import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 import { disconnectVoxi } from "store/voximplant/actions";
 import { apiUrls } from 'common/constants';
+import { showBackdrop } from "store/popus/actions";
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -82,30 +83,46 @@ const AccountMenu: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const resInvokeIncremental = useSelector(state => state.login.invokeIncremental);
     const userConnected = useSelector(state => state.inbox.userConnected);
-
+    const resLogout = useSelector(state => state.login.logout);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
+    const [waitingLogout, setwaitingLogout] = useState(false);
     const handleClose = () => {
         setAnchorEl(null);
     };
 
     const signOut = () => {
-        dispatch(connectAgentUI(false))
-        if (!voxiConnection.error) {
-            dispatch(disconnectVoxi())
-        }
-        dispatch(emitEvent({
-            event: 'connectAgent',
-            data: {
-                isconnected: false,
-                userid: 0,
-                orgid: 0
-            }
-        }));
         dispatch(logout());
-        dispatch(disconnectSocket());
-        history.push('/sign-in');
+        dispatch(showBackdrop(true));
+        setwaitingLogout(true);
     }
+
+    React.useEffect(() => {
+        if (!resLogout.error && !resLogout.loading && waitingLogout) {
+            dispatch(showBackdrop(false));
+            setwaitingLogout(false);
+            dispatch(connectAgentUI(false))
+            dispatch(cleanValidateToken())
+            if (!voxiConnection.error) {
+                dispatch(disconnectVoxi())
+            }
+            dispatch(emitEvent({
+                event: 'connectAgent',
+                data: {
+                    isconnected: false,
+                    userid: 0,
+                    orgid: 0
+                }
+            }));
+            dispatch(disconnectSocket());
+            if (resLogout.data?.redirectUrl) {
+                window.location.href = resLogout.data?.redirectUrl;
+            } else {
+                history.push('/sign-in');
+            }
+        }
+    }, [resLogout, waitingLogout])
+
+
     const gotoSettings = () => {
         setAnchorEl(null);
         history.push('/usersettings');
@@ -115,16 +132,16 @@ const AccountMenu: FC = () => {
     }
 
     React.useEffect(() => {
-		if (waitResInvokeIncremental && !resInvokeIncremental.error && !resInvokeIncremental.loading) {
+        if (waitResInvokeIncremental && !resInvokeIncremental.error && !resInvokeIncremental.loading) {
             const accessToken = localStorage.accessToken
-			if (window.location.hostname === 'claro.laraigo.com') {
+            if (window.location.hostname === 'claro.laraigo.com') {
                 window.open(`https://incremental-claro.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             } else {
                 window.open(`https://incremental-prod.laraigo.com/sign-in?accesstoken=${(accessToken)}`, '_blank');
             }
             setwaitResInvokeIncremental(false);
-		}
-	}, [resInvokeIncremental.loading])
+        }
+    }, [resInvokeIncremental.loading])
 
     const consultHistoricalData = () => {
         const accessToken = localStorage.accessToken
