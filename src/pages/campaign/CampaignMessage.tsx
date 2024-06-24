@@ -155,20 +155,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             [key]: header
         };
         setVariableSelections(newVariableSelections);
-    
-        const newVariablesHidden = [...variablesHidden];
-        if (header && !newVariablesHidden.includes(header)) {
-            newVariablesHidden.push(header);
-        } else if (!header && newVariablesHidden.includes(header)) {
-            const index = newVariablesHidden.indexOf(header);
-            if (index > -1) {
-                newVariablesHidden.splice(index, 1);
-            }
-        }
-        setVariablesHidden(newVariablesHidden);
-    
-        console.log('Updated variablesHidden:', newVariablesHidden);
-    
         updateTemplate();
     };
     
@@ -518,7 +504,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             <p style={{ marginBottom: '3px' }}>Variable Autenticación</p>
                                             <FieldSelect
                                                 variant="outlined"
-                                                uset={true}
                                                 className="col-12"
                                                 data={availableData.map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
