@@ -185,7 +185,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [date, setDate] = useState('');
     const endOfMessagesRef = useRef(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
-
+    const textFieldRef = useRef(null);
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
@@ -698,6 +698,16 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         fetchThreadMessages(chat?.threadid)
     };
 
+    const handleSendMessageGeneral = () => {
+        if (row?.basemodel.startsWith('gpt')) handleSendMessage();
+        else if (row?.basemodel.startsWith('llama')) handleSendMessageLLM3();
+        else handleSendMessageLlama();
+    
+        if (textFieldRef.current) {
+          textFieldRef.current.focus();
+        }
+    };
+
     return (
         <div className={classes.container}>
             <Paper className={classes.chatList}>
@@ -832,11 +842,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                     <InputAdornment position="end">
                                         <IconButton                                           
                                             className={classes.sendicon}
-                                            onClick={() => {
-                                                if(row?.basemodel.startsWith('gpt')) handleSendMessage()
-                                                else if(row?.basemodel.startsWith('llama')) handleSendMessageLLM3();
-                                                else handleSendMessageLlama()
-                                            }}
+                                            onClick={handleSendMessageGeneral}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
                                           <SendMesageIcon color="secondary" />
@@ -844,9 +850,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                     </InputAdornment>
                                 ),
                             }}
+                            inputRef={textFieldRef}
                         />
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
     );
