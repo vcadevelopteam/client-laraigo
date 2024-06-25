@@ -47,6 +47,7 @@ const useStyles = makeStyles(() => ({
     messageCard2: {
         display: 'flex',
         width: 300,
+        minWidth: 300,
         flexDirection: 'column',
         padding: '10px 10px 0px 10px',
         backgroundColor: 'white',
@@ -189,6 +190,12 @@ const useStyles = makeStyles(() => ({
         width: 'fit-content',
         borderRadius: '0px 0px 5px 5px',
     },
+    combinedContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        overflowX: 'scroll',
+        cursor: 'grab',
+    }
 }));
 
 interface TemplateIconsProps {
@@ -610,6 +617,7 @@ interface MessagePreviewCarouselProps {
 export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ body, bodyvariables, carouselCards }) => {
     const classes = useStyles();
     const containerRef = useRef(null);
+    const containerRef2 = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
@@ -634,6 +642,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
         const x = e.pageX - containerRef.current.offsetLeft;
         const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
         containerRef.current.scrollLeft = scrollLeft - walk;
+        containerRef2.current.scrollLeft = scrollLeft - walk;
     };
 
     const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -647,6 +656,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
         const x = e.touches[0].pageX - containerRef.current.offsetLeft;
         const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
         containerRef.current.scrollLeft = scrollLeft - walk;
+        containerRef2.current.scrollLeft = scrollLeft - walk;
     };
 
     const handleTouchEnd = () => {
@@ -692,8 +702,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
             </div>
             <div style={{ height: 6 }} />
             <div
-                ref={containerRef}
-                className={classes.containerCarousel}
+                className={classes.combinedContainer}
                 onMouseDown={handleMouseDown}
                 onMouseLeave={handleMouseLeave}
                 onMouseUp={handleMouseUp}
@@ -702,36 +711,38 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             >
-                {carouselCards.length > 0 && carouselCards.map((card, index) => (
-                    <div key={index} className={classes.messageCard2} style={{ borderRadius: '15px 15px 0px 0px' }}>
-                        <div className={classes.cardMediaContainer} style={{ width: 280 }}>
-                            <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
+                <div className={classes.containerCarousel} ref={containerRef}>
+                    {carouselCards.length > 0 && carouselCards.map((card, index) => (
+                        <div key={index} className={classes.messageCard2} style={{ borderRadius: '15px 15px 0px 0px' }}>
+                            <div className={classes.cardMediaContainer} style={{ width: 280 }}>
+                                <img src={card.header ? card.header : NoImage} alt="Selected Image" className={classes.cardMedia} />
+                            </div>
+                            <div className={classes.bodyCar}>{getFormattedBody(card.body, card.bodyvariables)}</div>
                         </div>
-                        <div className={classes.bodyCar}>{getFormattedBody(card.body, card.bodyvariables)}</div>
-                    </div>
-                ))}
-            </div>
-            <div className={classes.buttonsContainer}>
-                {carouselCards.length > 0 && carouselCards.map((card, index) => (
-                    <div key={index} className={classes.messageCard2} style={{ borderRadius: '0px 0px 15px 15px', padding: '15px 10px 10px 10px' }}>
-                        {card.buttons.length > 0 && (
-                            <>
-                                {card.buttons.map((btn: Dictionary, i: number) => (
-                                    <div key={i} className={classes.cardButton2}>
-                                        {btn.type === 'QUICK_REPLY' ? (
-                                            <ReplyIcon className={classes.icon} />
-                                        ) : btn.type === 'URL' ? (
-                                            <OpenInNewIcon className={classes.icon} />
-                                        ) : (
-                                            <PhoneIcon className={classes.icon} />
-                                        )}
-                                        <span>{btn.btn.text}</span>
-                                    </div>
-                                ))}
-                            </>
-                        )}
-                    </div>
-                ))}
+                    ))}
+                </div>
+                <div className={classes.buttonsContainer} ref={containerRef2}>
+                    {carouselCards.length > 0 && carouselCards.map((card, index) => (
+                        <div key={index} className={classes.messageCard2} style={{ borderRadius: '0px 0px 15px 15px', padding: '15px 10px 10px 10px' }}>
+                            {card.buttons.length > 0 && (
+                                <>
+                                    {card.buttons.map((btn: Dictionary, i: number) => (
+                                        <div key={i} className={classes.cardButton2}>
+                                            {btn.type === 'QUICK_REPLY' ? (
+                                                <ReplyIcon className={classes.icon} />
+                                            ) : btn.type === 'URL' ? (
+                                                <OpenInNewIcon className={classes.icon} />
+                                            ) : (
+                                                <PhoneIcon className={classes.icon} />
+                                            )}
+                                            <span>{btn.btn.text}</span>
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
