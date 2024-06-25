@@ -309,18 +309,20 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('startdate', {
-            validate: {
-                value: (value: any) => (value && value.length) || t(langKeys.field_required),
-                notPastDate: (value: any) => validateDate(value) || "La fecha es menor a la actual"
-            }
-        });
-        register('enddate', {
-            validate: {
-                value: (value: any) => (value && value.length) || t(langKeys.field_required),
-                afterstart: (value: any) => validateDate(value) || t(langKeys.field_afterstart)
-            }
-        });
+        register('startdate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('enddate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        // register('startdate', {
+        //     validate: {
+        //         value: (value: any) => (value && value.length) || t(langKeys.field_required),
+        //         notPastDate: (value: any) => validateDate(value) || "La fecha es menor a la actual"
+        //     }
+        // });
+        // register('enddate', {
+        //     validate: {
+        //         value: (value: any) => (value && value.length) || t(langKeys.field_required),
+        //         afterstart: (value: any) => validateDate(value) || t(langKeys.field_afterstart)
+        //     }
+        // });
         register('executiontype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('batchjson.date', {
             validate: {
@@ -576,6 +578,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const classNameCondition = edit && getValues('executiontype') === 'SCHEDULED' ? 'col-12' : 'col-6'
     //console.log(selectedTemplate)
+    //console.log("Campaign General Data:", detaildata);
 
     return (
         <React.Fragment>

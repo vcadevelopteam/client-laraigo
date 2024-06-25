@@ -45,17 +45,14 @@ export interface ICampaign {
 	fields?: Dictionary,
 	operation?: string,
 	carouseljson?: Dictionary[],
-
 	headers?: any[],
 	jsonData?: any[],
 	selectedColumns?: SelectedColumns,
 	selectedRows?: any,
 	person?: any[],
-
 	subject?: string,
 	message?: string,
 	variablereplace?: string[],
-
 	sourcechanged?: boolean,
 }
 
