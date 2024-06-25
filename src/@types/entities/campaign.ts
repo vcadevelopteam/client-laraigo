@@ -51,11 +51,9 @@ export interface ICampaign {
 	selectedColumns?: SelectedColumns,
 	selectedRows?: any,
 	person?: any[],
-
 	subject?: string,
 	message?: string,
 	variablereplace?: string[],
-
 	sourcechanged?: boolean,
 }
 

@@ -61,7 +61,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
     const [filledTemplate, setFilledTemplate] = useState<Dictionary>({ ...selectedTemplate });
     const headers = jsonPersons.length > 0 ? Object.keys(jsonPersons[0]) : [];
-    const [selectedHeader, setSelectedHeader] = useState<string | null>(null);       
+    const [selectedHeader, setSelectedHeader] = useState<string>('');
     const [selectedHeaders, setSelectedHeaders] = useState<{ [key: number]: string }>({});
     const [additionalVariables, setAdditionalVariables] = useState<number[]>([1]);
     const [additionalVariableValues, setAdditionalVariableValues] = useState<Dictionary>({});
@@ -89,6 +89,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         return matches;
     };    
+
+    const detectVariablesField = (text: string) => {
+        const regex = /{{(field\d+|\d+)}}/g;
+        const matches = [];
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            matches.push({ variable: match[1] });
+        }
+        return matches;
+    };
+     
     const bodyVariables = detectVariables(templateToUse.body);
     const headerVariables = templateToUse.headertype === 'TEXT' ? detectVariables(templateToUse.header) : [];    
     const [bodyVariableValues, setBodyVariableValues] = useState<Dictionary>({});
@@ -104,6 +115,121 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataToUse = headers.length > 0 ? headers : columnsArray;      
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const availableData = dataToUse.filter(header => !Object.values({ ...selectedHeaders, ...selectedAdditionalHeaders }).includes(header));
+    const [campaignViewDetails, setCampaignViewDetails] = useState<ICampaign | null>(null);
+
+    const processMultiData = (data) => {
+        const processedData = {
+            bodyVariableValues: {},
+            headerVariableValues: {},
+            videoHeaderValue: '',
+            cardImageValues: {},
+            dynamicUrlValues: {},
+            bubbleVariableValues: {},
+            carouselVariableValues: {},
+            additionalVariableValues: {},
+            selectedAdditionalHeaders: {},
+            selectedAuthVariable: ''
+        };
+    
+        const campaignData = data[0];
+    
+        if (campaignData) {
+            const bodyVariables = detectVariablesField(campaignData.message);
+            console.log('Detected Body Variables:', bodyVariables);
+    
+            bodyVariables.forEach((variable, index) => {
+                const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
+                processedData.bodyVariableValues[index + 1] = `field${fieldIndex}`;
+            });
+    
+            if (campaignData.headertype === 'TEXT') {
+                const headerVariables = detectVariablesField(campaignData.header);
+                console.log('Detected Header Variables:', headerVariables);
+                headerVariables.forEach((variable, index) => {
+                    const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
+                    processedData.headerVariableValues[index + 1] = `field${fieldIndex}`;
+                });
+            }
+    
+            processedData.videoHeaderValue = campaignData.messagetemplateheader?.value || '';
+    
+            if (campaignData.carouseljson) {
+                campaignData.carouseljson.forEach((item, carouselIndex) => {
+                    processedData.carouselVariableValues[carouselIndex] = {};
+                    if (item.bodyvariables) {
+                        item.bodyvariables.forEach((variable, index) => {
+                            const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
+                            processedData.carouselVariableValues[carouselIndex][index + 1] = `field${fieldIndex}`;
+                        });
+                    }
+                });
+            }
+        }
+    
+        console.log('Processed Data:', processedData);
+        return processedData;
+    };
+    
+    useEffect(() => {
+        if (multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
+            const combinedData: ICampaign = {
+                ...multiData[4].data[0],
+                operation: 'UPDATE',
+            };
+    
+            setCampaignViewDetails(combinedData);
+            const processedData = processMultiData(multiData[4].data);
+    
+            const newBodyVariableValues = {};
+            if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
+                const personData = multiData[5].data[0];
+                console.log('Person Data:', personData); 
+                console.log('Processed Body Variables:', processedData.bodyVariableValues);
+    
+                Object.entries(processedData.bodyVariableValues).forEach(([key, fieldKey], index) => {
+                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10);
+                    console.log(`Mapping ${fieldKey} to index ${index + 1} with value: ${personData[fieldKey]}`);
+                    newBodyVariableValues[index + 1] = personData[fieldKey];
+                });
+            }
+    
+            console.log('New Body Variable Values:', newBodyVariableValues); 
+            setBodyVariableValues(newBodyVariableValues);
+            setHeaderVariableValues(processedData.headerVariableValues);
+            setVideoHeaderValue(processedData.videoHeaderValue);
+            setCardImageValues(processedData.cardImageValues);
+            setDynamicUrlValues(processedData.dynamicUrlValues);
+            setBubbleVariableValues(processedData.bubbleVariableValues);
+            setCarouselVariableValues(processedData.carouselVariableValues);
+            setAdditionalVariableValues(processedData.additionalVariableValues);
+            setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
+            setSelectedAuthVariable(processedData.selectedAuthVariable);
+    
+            if (combinedData.fields && combinedData.fields.primarykey) {
+                setSelectedHeader(combinedData.fields.primarykey);
+            }
+    
+            const bodyVars = detectVariablesField(combinedData.message);
+            const newSelectedHeaders = { ...selectedHeaders };
+    
+            bodyVars.forEach((variable, index) => {
+                let fieldIndex;
+                if (typeof variable.variable === 'string' && variable.variable.startsWith('field')) {
+                    fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                } else {
+                    fieldIndex = parseInt(variable.variable, 10);
+                }
+                const header = combinedData.fields.columns[fieldIndex - 2]; 
+                newSelectedHeaders[`body-${index + 1}`] = header;
+            });
+    
+            setSelectedHeaders(newSelectedHeaders);
+    
+            console.log('selectedHeaders:', newSelectedHeaders);
+        }
+    }, [multiData]);
+    
+    //console.log("campaignViewDetails:", campaignViewDetails);    
     
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication', carouselIndex?: number) => {
         const header = selectedOption ? selectedOption.key : '';
@@ -155,9 +281,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             [key]: header
         };
         setVariableSelections(newVariableSelections);
+    
         updateTemplate();
     };
-    
     
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         return `${variableType}-${variableNumber}${carouselIndex !== undefined ? `-${carouselIndex}` : ''}`;
@@ -171,6 +297,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }    
         return header ? { key: header, value: header } : undefined;
     };
+
+ 
+    console.log("bodyVariableValues", bodyVariableValues)
+    console.log("personas", multiData[5])
     
     const updateTemplate = useCallback(() => {
         const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
@@ -300,7 +430,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             header => `field${headers.indexOf(header) + 1}`
         );
         
-        console.log('Updated Template:', updatedTemplate);      
+        //console.log('Updated Template:', updatedTemplate);      
     
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
@@ -354,7 +484,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         updateTemplate();
     }, [variableSelections, selectedAdditionalHeaders]);
-    console.log(selectedTemplate)
+    //console.log(selectedTemplate)
     const handleAddVariable = () => {
         setAdditionalVariables(prev => {
             if (prev.length < 10) {
@@ -420,47 +550,51 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 type: 'text'
             })));
         }
-        else {
+        else {-
             setMessageVariables([]);
         }
     }, [detaildata.message]);
 
+    
+
     return (
         <React.Fragment>
-            <div className={classes.containerDetail} style={{display:'flex', width:'100%'}}>
-                <div style={{width:'50%'}}>
-                    <div className="row-zyx">                       
-                        <FormControl className="col-12">                          
+            <div className={classes.containerDetail} style={{ display: 'flex', width: '100%' }}>
+                <div style={{ width: '50%' }}>
+                    <div className="row-zyx">
+                        <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
-                            <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>                        
+                            <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                                 <div style={{ flex: 1 }}>
-                                <FieldSelect
-                                    variant="outlined"
-                                    uset={true}
-                                    label='Campos archivo'
-                                    className="col-12"
-                                    data={availableData.map(header => ({ key: header, value: header }))}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                    valueDefault={selectedHeader ? { key: selectedHeader, value: selectedHeader } : undefined}
-                                    onChange={handleHeaderChange}
-                                />
-
-                                </div>                                   
+                                    <FieldSelect
+                                        variant="outlined"
+                                        uset={true}
+                                        label='Campos archivo'
+                                        className="col-12"
+                                        data={availableData.map(header => ({ key: header, value: header }))}
+                                        optionDesc="value"
+                                        optionValue="key"
+                                        valueDefault={selectedHeader ? selectedHeader : ''}
+                                        onChange={handleHeaderChange}
+                                    />
+                                </div>
                                 <Tooltip
                                     title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
                                     arrow
                                     placement="top"
                                 >
                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                </Tooltip>        
-                            </div>         
-                        </FormControl>     
-                           
+                                </Tooltip>
+                            </div>
+                        </FormControl>
+
+
+    
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
-                            <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>                         
+                            <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
+                            
                             <div className={classes.containerStyle}>
                                 {headerVariables.map((variable: Dictionary) => (
                                     <div key={variable.variable}>
@@ -478,23 +612,29 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                 ))}
                             </div>
-
+    
                             <div className={classes.containerStyle}>
-                                {bodyVariables.map((variable: Dictionary) => (
-                                    <div key={variable.variable}>
-                                        <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
-                                        <FieldSelect
-                                            variant="outlined"
-                                            uset={true}
-                                            className="col-12"
-                                            data={availableData.map(header => ({ key: header, value: header }))}
-                                            optionDesc="value"
-                                            optionValue="key"
-                                            valueDefault={selectedHeaders[`body-${variable.variable}`] ? { key: selectedHeaders[`body-${variable.variable}`], value: selectedHeaders[`body-${variable.variable}`] } : undefined}
-                                            onChange={(selectedOption) => handleVariableChange(variable.variable, selectedOption, 'body')}
-                                        />
-                                    </div>
-                                ))}
+                                {bodyVariables.map((variable, index) => {
+                                    const valueDefault = selectedHeaders[`body-${index + 1}`]
+                                        ? { key: selectedHeaders[`body-${index + 1}`], value: selectedHeaders[`body-${index + 1}`] }
+                                        : undefined;
+                                    //console.log(`Variable: ${index + 1}, Value Default: ${JSON.stringify(valueDefault)}`);
+                                    return (
+                                        <div key={`body-${index + 1}`}>
+                                            <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
+                                            <FieldSelect
+                                                variant="outlined"
+                                                uset={true}
+                                                className="col-12"
+                                                data={availableData.map(header => ({ key: header, value: header }))}
+                                                optionDesc="value"
+                                                optionValue="key"
+                                                valueDefault={valueDefault}
+                                                onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
+                                            />
+                                        </div>
+                                    );
+                                })}
                             </div>
 
                             {templateToUse.category === "AUTHENTICATION" && (
@@ -504,6 +644,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             <p style={{ marginBottom: '3px' }}>Variable Autenticación</p>
                                             <FieldSelect
                                                 variant="outlined"
+                                                uset={true}
                                                 className="col-12"
                                                 data={availableData.map(header => ({ key: header, value: header }))}
                                                 optionDesc="value"
@@ -515,7 +656,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     )}
                                 </div>
                             )}
-
+    
                             <div className={classes.containerStyle}>
                                 {templateToUse.carouseldata?.map((item, index) =>
                                     item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
@@ -535,27 +676,25 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     ))
                                 )}
                             </div>
-
+    
                             <div className={classes.containerStyle}>
-                            {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
-                                <div>
-                                    <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
-                                    <FieldSelect
-                                        variant="outlined"
-                                        uset={true}
-                                        className="col-12"
-                                        data={[{ key: 'default', value: 'Default ' }, ...availableData.map(header => ({ key: header, value: header }))]}
-                                        optionDesc="value"
-                                        optionValue="key"
-                                        valueDefault={getValueDefault('video', 'videoHeader')}
-                                        onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
-                                    />
-                                </div>
-                            )}
-
+                                {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
+                                    <div>
+                                        <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
+                                        <FieldSelect
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            data={[{ key: 'default', value: 'Default ' }, ...availableData.map(header => ({ key: header, value: header }))]}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            valueDefault={getValueDefault('video', 'videoHeader')}
+                                            onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
+                                        />
+                                    </div>
+                                )}
                             </div>
-
-
+    
                             <div className={classes.containerStyle}>
                                 {templateToUse.carouseldata?.map((item, index) =>
                                     item.header && (
@@ -575,11 +714,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     )
                                 )}
                             </div>
+                            
                             <div className={classes.containerStyle}>
                                 {renderDynamicUrlFields()}
                             </div>
                         </FormControl>
-
+    
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                             <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>
@@ -609,8 +749,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 ))}
                             </div>
                         </FormControl>
-                    </div> 
-                </div>  
+                    </div>
+                </div>
 
                 <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             
                     <div style={{fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}</div> 
