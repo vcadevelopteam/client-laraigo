@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FieldEdit, FieldSelect } from 'components';
+import { FieldEdit, FieldSelect, FieldView } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { FormControl } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import AddIcon from '@material-ui/icons/Add';
+import { langKeys } from 'lang/keys';
 import TemplatePreview from './components/TemplatePreview';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -116,8 +117,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const availableData = dataToUse.filter(header => !Object.values({ ...selectedHeaders, ...selectedAdditionalHeaders }).includes(header));
     const [campaignViewDetails, setCampaignViewDetails] = useState<ICampaign | null>(null);
+    const [variablesBodyView, setVariablesBodyView] = useState<Dictionary[]>([]);
+    const [variablesAdditionalView, setVariablesAdditionalView] = useState<string[]>([]);
+
 
     const processMultiData = (data) => {
+
         const processedData = {
             bodyVariableValues: {},
             headerVariableValues: {},
@@ -135,8 +140,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
         if (campaignData) {
             const bodyVariables = detectVariablesField(campaignData.message);
-            console.log('Detected Body Variables:', bodyVariables);
-    
+            const variablesHiddenMultidata = campaignData.variableshidden || [];
+
+            setVariablesBodyView(bodyVariables)
+            setVariablesAdditionalView(variablesHiddenMultidata);
+
             bodyVariables.forEach((variable, index) => {
                 const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
                 processedData.bodyVariableValues[index + 1] = `field${fieldIndex}`;
@@ -144,7 +152,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
             if (campaignData.headertype === 'TEXT') {
                 const headerVariables = detectVariablesField(campaignData.header);
-                console.log('Detected Header Variables:', headerVariables);
                 headerVariables.forEach((variable, index) => {
                     const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
                     processedData.headerVariableValues[index + 1] = `field${fieldIndex}`;
@@ -166,7 +173,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
     
-        console.log('Processed Data:', processedData);
+     
         return processedData;
     };
     
@@ -176,24 +183,34 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 ...multiData[4].data[0],
                 operation: 'UPDATE',
             };
-    
+
             setCampaignViewDetails(combinedData);
             const processedData = processMultiData(multiData[4].data);
-    
+
+            const bodyVariables = detectVariablesField(combinedData.message);
+            const variablesHiddenMultidata = combinedData.variableshidden || [];
+
+            setVariablesBodyView(bodyVariables);
+            setVariablesAdditionalView(variablesHiddenMultidata);
+
             const newBodyVariableValues = {};
+            const newAdditionalVariableValues = {};
+
             if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
                 const personData = multiData[5].data[0];
-                console.log('Person Data:', personData); 
-                console.log('Processed Body Variables:', processedData.bodyVariableValues);
-    
+                
                 Object.entries(processedData.bodyVariableValues).forEach(([key, fieldKey], index) => {
-                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10);
-                    console.log(`Mapping ${fieldKey} to index ${index + 1} with value: ${personData[fieldKey]}`);
                     newBodyVariableValues[index + 1] = personData[fieldKey];
                 });
+
+                variablesHiddenMultidata.forEach(variable => {
+                    const fieldIndex = parseInt(variable.replace('field', ''), 10);
+                    if (personData[`field${fieldIndex}`]) {
+                        newAdditionalVariableValues[variable] = personData[`field${fieldIndex}`];
+                    }
+                });
             }
-    
-            console.log('New Body Variable Values:', newBodyVariableValues); 
+
             setBodyVariableValues(newBodyVariableValues);
             setHeaderVariableValues(processedData.headerVariableValues);
             setVideoHeaderValue(processedData.videoHeaderValue);
@@ -201,17 +218,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setDynamicUrlValues(processedData.dynamicUrlValues);
             setBubbleVariableValues(processedData.bubbleVariableValues);
             setCarouselVariableValues(processedData.carouselVariableValues);
-            setAdditionalVariableValues(processedData.additionalVariableValues);
+            setAdditionalVariableValues(newAdditionalVariableValues);
             setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
             setSelectedAuthVariable(processedData.selectedAuthVariable);
-    
+
             if (combinedData.fields && combinedData.fields.primarykey) {
                 setSelectedHeader(combinedData.fields.primarykey);
             }
-    
+
             const bodyVars = detectVariablesField(combinedData.message);
             const newSelectedHeaders = { ...selectedHeaders };
-    
+
             bodyVars.forEach((variable, index) => {
                 let fieldIndex;
                 if (typeof variable.variable === 'string' && variable.variable.startsWith('field')) {
@@ -222,14 +239,26 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 const header = combinedData.fields.columns[fieldIndex - 2]; 
                 newSelectedHeaders[`body-${index + 1}`] = header;
             });
-    
+
             setSelectedHeaders(newSelectedHeaders);
-    
-            console.log('selectedHeaders:', newSelectedHeaders);
         }
-    }, [multiData]);
-    
-    //console.log("campaignViewDetails:", campaignViewDetails);    
+    }, [multiData]); 
+
+    useEffect(() => {
+        if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
+            const newAdditionalVariableValues = {};
+            const personData = multiData[5].data[0];
+
+            variablesAdditionalView.forEach(variable => {
+                const fieldIndex = parseInt(variable.replace('field', ''), 10);
+                if (personData[`field${fieldIndex}`]) {
+                    newAdditionalVariableValues[variable] = personData[`field${fieldIndex}`];
+                }
+            });
+
+            setAdditionalVariableValues(newAdditionalVariableValues);
+        }
+    }, [variablesAdditionalView, multiData[5]]);
     
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication', carouselIndex?: number) => {
         const header = selectedOption ? selectedOption.key : '';
@@ -297,10 +326,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }    
         return header ? { key: header, value: header } : undefined;
     };
-
- 
-    console.log("bodyVariableValues", bodyVariableValues)
-    console.log("personas", multiData[5])
     
     const updateTemplate = useCallback(() => {
         const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
@@ -429,9 +454,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
         );
-        
-        //console.log('Updated Template:', updatedTemplate);      
-    
+
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
             ...prev,
@@ -447,16 +470,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
     
-    const renderDynamicUrlFields = () => {
+    const renderDynamicUrlFields = (carouselIndex) => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
         const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item, index) => 
-            item.buttons.filter(button => button.btn.type === 'dynamic').map((button, btnIndex) => ({
+            item.buttons.filter(button => button.btn.type === 'dynamic' && index === carouselIndex).map((button, btnIndex) => ({
                 button,
                 btnIndex,
                 carouselIndex: index
             }))
         ) || [];
-    
         const allDynamicButtons = [...dynamicButtons, ...carouselDynamicButtons];
     
         return allDynamicButtons.map((buttonData, index) => {
@@ -484,7 +506,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         updateTemplate();
     }, [variableSelections, selectedAdditionalHeaders]);
-    //console.log(selectedTemplate)
+
     const handleAddVariable = () => {
         setAdditionalVariables(prev => {
             if (prev.length < 10) {
@@ -589,8 +611,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
                         </FormControl>
 
-
-    
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
                             <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
@@ -612,29 +632,56 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                 ))}
                             </div>
-    
+                           
                             <div className={classes.containerStyle}>
-                                {bodyVariables.map((variable, index) => {
-                                    const valueDefault = selectedHeaders[`body-${index + 1}`]
-                                        ? { key: selectedHeaders[`body-${index + 1}`], value: selectedHeaders[`body-${index + 1}`] }
-                                        : undefined;
-                                    //console.log(`Variable: ${index + 1}, Value Default: ${JSON.stringify(valueDefault)}`);
-                                    return (
-                                        <div key={`body-${index + 1}`}>
-                                            <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
-                                            <FieldSelect
-                                                variant="outlined"
-                                                uset={true}
-                                                className="col-12"
-                                                data={availableData.map(header => ({ key: header, value: header }))}
-                                                optionDesc="value"
-                                                optionValue="key"
-                                                valueDefault={valueDefault}
-                                                onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
-                                            />
-                                        </div>
-                                    );
-                                })}
+                                {row ? (
+                                    <>
+                                        {variablesBodyView.map((variable, index) => {                                   
+                                            const confe = parseInt(variable.variable.replace("field", ""), 10)-2    
+                                            const valor = templateData.fields.columns[confe]                                    
+                                            return (
+                                                <div key={`body-${index + 1}`}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${index+1}}}`}</p>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valor}
+                                                        onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </>                                    
+                                ) : (
+                                    
+                                   <>
+                                        {bodyVariables.map((variable, index) => {
+                                            const valueDefault = selectedHeaders[`body-${index + 1}`]
+                                                ? { key: selectedHeaders[`body-${index + 1}`], value: selectedHeaders[`body-${index + 1}`] }
+                                                : undefined;
+                                            return (
+                                                <div key={`body-${index + 1}`}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={availableData.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valueDefault}
+                                                        onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                   </>
+                                   
+                                )}
                             </div>
 
                             {templateToUse.category === "AUTHENTICATION" && (
@@ -656,27 +703,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     )}
                                 </div>
                             )}
-    
-                            <div className={classes.containerStyle}>
-                                {templateToUse.carouseldata?.map((item, index) =>
-                                    item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
-                                        <div key={`carousel-${index}-bubble-${variableIndex}`}>
-                                            <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
-                                            <FieldSelect
-                                                variant="outlined"
-                                                uset={true}
-                                                className="col-12"
-                                                data={availableData.map(header => ({ key: header, value: header }))}
-                                                optionDesc="value"
-                                                optionValue="key"
-                                                valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
-                                                onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
-                                            />
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-    
+
                             <div className={classes.containerStyle}>
                                 {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
                                     <div>
@@ -694,30 +721,55 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                 )}
                             </div>
-    
-                            <div className={classes.containerStyle}>
-                                {templateToUse.carouseldata?.map((item, index) =>
-                                    item.header && (
-                                        <div key={`cardImage-${index}`}>
-                                            <p style={{ marginBottom: '3px' }}>{`Card Imagen ${index + 1}`}</p>
-                                            <FieldSelect
-                                                variant="outlined"
-                                                uset={true}
-                                                className="col-12"
-                                                data={availableData.map(header => ({ key: header, value: header }))}
-                                                optionDesc="value"
-                                                optionValue="key"
-                                                valueDefault={getValueDefault('cardImage', (index + 1).toString())}
-                                                onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
-                                            />
-                                        </div>
-                                    )
-                                )}
-                            </div>
-                            
-                            <div className={classes.containerStyle}>
-                                {renderDynamicUrlFields()}
-                            </div>
+
+                           <div style={{marginTop:'1rem'}}>
+                            {templateToUse.carouseldata?.map((item, index) => (
+                                <div key={`card-${index}`} style={{ marginBottom: '20px', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
+                                    <div style={{fontSize:'1.2rem', fontWeight:'bolder'}}>{`Card ${index + 1}`}</div>
+
+                                    <div className={classes.containerStyle}>
+                                        {item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
+                                            <div key={`carousel-${index}-bubble-${variableIndex}`}>
+                                                <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
+                                                <FieldSelect
+                                                    variant="outlined"
+                                                    uset={true}
+                                                    className="col-12"
+                                                    data={availableData.map(header => ({ key: header, value: header }))}
+                                                    optionDesc="value"
+                                                    optionValue="key"
+                                                    valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
+                                                    onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>                          
+
+                                    <div className={classes.containerStyle}>
+                                        {item.header && (
+                                            <div key={`cardImage-${index}`}>
+                                                <p style={{ marginBottom: '3px' }}>{`Card Imagen ${index + 1}`}</p>
+                                                <FieldSelect
+                                                    variant="outlined"
+                                                    uset={true}
+                                                    className="col-12"
+                                                    data={availableData.map(header => ({ key: header, value: header }))}
+                                                    optionDesc="value"
+                                                    optionValue="key"
+                                                    valueDefault={getValueDefault('cardImage', (index + 1).toString())}
+                                                    onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    <div className={classes.containerStyle}>
+                                        {renderDynamicUrlFields(index)}
+                                    </div>
+                                </div>
+                            ))}
+                           </div>
+
                         </FormControl>
     
                         <FormControl className="col-12">
@@ -726,27 +778,59 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
                                 <AddIcon /> Añadir variable adicional
                             </div>
+
                             <div className={classes.containerStyle}>
-                                {additionalVariables.map((variable, index) => (
-                                    <div style={{ flex: 1 }} key={index}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                            <p>{`Variable {{${variable}}}`}</p>
-                                            <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <FieldSelect
-                                                variant="outlined"
-                                                uset={true}
-                                                className="col-12"
-                                                data={availableData.map(header => ({ key: header, value: header }))}
-                                                optionDesc="value"
-                                                optionValue="key"
-                                                valueDefault={selectedAdditionalHeaders[variable] ? { key: selectedAdditionalHeaders[variable], value: selectedAdditionalHeaders[variable] } : undefined}
-                                                onChange={(selectedOption) => handleAdditionalVariableChange(variable, selectedOption)}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
+                                {row ? (
+                                    <>
+                                        {variablesAdditionalView.map((variable, index) => {
+                                            const fieldNumber = parseInt(variable.replace("field", ""), 10) - 2;
+                                            const columnName = templateData.fields.columns[fieldNumber];                                           
+                                            return (
+                                                <div style={{ flex: 1 }} key={`body-${index + 1}`}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                        <p>{`Variable {{${index + 1}}}`}</p>
+                                                        <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <FieldSelect
+                                                            variant="outlined"
+                                                            uset={true}
+                                                            className="col-12"
+                                                            data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                            optionDesc="value"
+                                                            optionValue="key"
+                                                            valueDefault={columnName}
+                                                            onChange={(selectedOption) => handleAdditionalVariableChange(index + 1, selectedOption)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </>
+                                ) : (
+                                    <>
+                                        {additionalVariables.map((variable, index) => (
+                                            <div style={{ flex: 1 }} key={index}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                    <p>{`Variable {{${variable}}}`}</p>
+                                                    <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={availableData.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={selectedAdditionalHeaders[variable] ? { key: selectedAdditionalHeaders[variable], value: selectedAdditionalHeaders[variable] } : undefined}
+                                                        onChange={(selectedOption) => handleAdditionalVariableChange(variable, selectedOption)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                             </div>
                         </FormControl>
                     </div>
@@ -765,24 +849,45 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         carouselVariableValues={carouselVariableValues}
                         selectedAuthVariable={selectedAuthVariable}
                     />                    
-                    <FormControl className="col-12">                          
+                    <FormControl className="col-12">
                         <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
-                        <div className={classes.subtitle}> {'Previsualiza un ejemplo de las variables adicionales elegidas en el apartado de Variables Adicionales'} </div>                      
+                        <div className={classes.subtitle}> {'Previsualiza un ejemplo de las variables adicionales elegidas en el apartado de Variables Adicionales'} </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-                        {additionalVariables.map((variable, index) => (
-                            <div style={{ flex: 1 }} key={index}>
-                                <p>{`Variable ${variable}`}</p>
-                                <div style={{ flex: 1 }}>
-                                <FieldEdit
-                                    variant="outlined"
-                                    uset={true}
-                                    className="col-12"
-                                    valueDefault={additionalVariableValues[variable] || ''}
-                                    disabled
-                                />
-                                </div>
-                            </div>
-                        ))}
+                            {row ? (
+                                variablesAdditionalView.map((variable, index) => {
+                                    const fieldNumber = parseInt(variable.replace("field", ""), 10) - 2;
+                                    const columnName = templateData.fields.columns[fieldNumber];
+                                    return (
+                                        <div style={{ flex: 1 }} key={`body-${index + 1}`}>
+                                            <p>{`Variable ${index + 1}`}</p>
+                                            <div style={{ flex: 1 }}>
+                                                <FieldEdit
+                                                    variant="outlined"
+                                                    uset={true}
+                                                    className="col-12"
+                                                    valueDefault={additionalVariableValues[variable] || columnName}
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                additionalVariables.map((variable, index) => (
+                                    <div style={{ flex: 1 }} key={index}>
+                                        <p>{`Variable ${variable}`}</p>
+                                        <div style={{ flex: 1 }}>
+                                        <FieldEdit
+                                            variant="outlined"
+                                            uset={true}
+                                            className="col-12"
+                                            valueDefault={additionalVariableValues[variable] || ''}
+                                            disabled
+                                        />
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </FormControl>
 
