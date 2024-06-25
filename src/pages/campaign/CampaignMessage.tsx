@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FieldEdit, FieldSelect } from 'components';
+import { FieldEdit, FieldSelect, FieldView } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { FormControl } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import AddIcon from '@material-ui/icons/Add';
+import { langKeys } from 'lang/keys';
 import TemplatePreview from './components/TemplatePreview';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -116,8 +117,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const availableData = dataToUse.filter(header => !Object.values({ ...selectedHeaders, ...selectedAdditionalHeaders }).includes(header));
     const [campaignViewDetails, setCampaignViewDetails] = useState<ICampaign | null>(null);
+    const [variablesAux, setVariablesAux] = useState<Dictionary[]>([]);
+
 
     const processMultiData = (data) => {
+
         const processedData = {
             bodyVariableValues: {},
             headerVariableValues: {},
@@ -135,8 +139,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
         if (campaignData) {
             const bodyVariables = detectVariablesField(campaignData.message);
-            console.log('Detected Body Variables:', bodyVariables);
-    
+            setVariablesAux(bodyVariables)
             bodyVariables.forEach((variable, index) => {
                 const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
                 processedData.bodyVariableValues[index + 1] = `field${fieldIndex}`;
@@ -144,7 +147,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
             if (campaignData.headertype === 'TEXT') {
                 const headerVariables = detectVariablesField(campaignData.header);
-                console.log('Detected Header Variables:', headerVariables);
                 headerVariables.forEach((variable, index) => {
                     const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
                     processedData.headerVariableValues[index + 1] = `field${fieldIndex}`;
@@ -166,7 +168,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
     
-        console.log('Processed Data:', processedData);
+     
         return processedData;
     };
     
@@ -183,17 +185,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             const newBodyVariableValues = {};
             if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
                 const personData = multiData[5].data[0];
-                console.log('Person Data:', personData); 
-                console.log('Processed Body Variables:', processedData.bodyVariableValues);
+              
     
                 Object.entries(processedData.bodyVariableValues).forEach(([key, fieldKey], index) => {
                     const fieldIndex = parseInt(fieldKey.replace('field', ''), 10);
-                    console.log(`Mapping ${fieldKey} to index ${index + 1} with value: ${personData[fieldKey]}`);
                     newBodyVariableValues[index + 1] = personData[fieldKey];
                 });
             }
     
-            console.log('New Body Variable Values:', newBodyVariableValues); 
             setBodyVariableValues(newBodyVariableValues);
             setHeaderVariableValues(processedData.headerVariableValues);
             setVideoHeaderValue(processedData.videoHeaderValue);
@@ -229,7 +228,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [multiData]);
     
-    //console.log("campaignViewDetails:", campaignViewDetails);    
     
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication', carouselIndex?: number) => {
         const header = selectedOption ? selectedOption.key : '';
@@ -297,10 +295,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }    
         return header ? { key: header, value: header } : undefined;
     };
-
- 
-    console.log("bodyVariableValues", bodyVariableValues)
-    console.log("personas", multiData[5])
     
     const updateTemplate = useCallback(() => {
         const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
@@ -429,9 +423,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
         );
-        
-        //console.log('Updated Template:', updatedTemplate);      
-    
+
+        console.log('row', row)
+            
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
             ...prev,
@@ -484,7 +478,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         updateTemplate();
     }, [variableSelections, selectedAdditionalHeaders]);
-    //console.log(selectedTemplate)
+
     const handleAddVariable = () => {
         setAdditionalVariables(prev => {
             if (prev.length < 10) {
@@ -612,30 +606,59 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                 ))}
                             </div>
-    
+                           
                             <div className={classes.containerStyle}>
-                                {bodyVariables.map((variable, index) => {
-                                    const valueDefault = selectedHeaders[`body-${index + 1}`]
-                                        ? { key: selectedHeaders[`body-${index + 1}`], value: selectedHeaders[`body-${index + 1}`] }
-                                        : undefined;
-                                    //console.log(`Variable: ${index + 1}, Value Default: ${JSON.stringify(valueDefault)}`);
-                                    return (
-                                        <div key={`body-${index + 1}`}>
-                                            <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
-                                            <FieldSelect
-                                                variant="outlined"
-                                                uset={true}
-                                                className="col-12"
-                                                data={availableData.map(header => ({ key: header, value: header }))}
-                                                optionDesc="value"
-                                                optionValue="key"
-                                                valueDefault={valueDefault}
-                                                onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
-                                            />
-                                        </div>
-                                    );
-                                })}
+                                {row ? (
+                                    <>
+                                        {variablesAux.map((variable, index) => {                                   
+                                            const confe = parseInt(variable.variable.replace("field", ""), 10)-2    
+                                            const valor = templateData.fields.columns[confe]                                    
+                                            return (
+                                                <div key={`body-${index + 1}`}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${index+1}}}`}</p>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valor}
+                                                        onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </>                                    
+                                ) : (
+                                    
+                                   <>
+                                        {bodyVariables.map((variable, index) => {
+                                            const valueDefault = selectedHeaders[`body-${index + 1}`]
+                                                ? { key: selectedHeaders[`body-${index + 1}`], value: selectedHeaders[`body-${index + 1}`] }
+                                                : undefined;
+                                            return (
+                                                <div key={`body-${index + 1}`}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={availableData.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valueDefault}
+                                                        onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                   </>
+                                   
+                                )}
                             </div>
+
+
 
                             {templateToUse.category === "AUTHENTICATION" && (
                                 <div className={classes.containerStyle}>

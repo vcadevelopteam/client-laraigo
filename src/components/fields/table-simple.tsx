@@ -948,7 +948,6 @@ const TableZyx = React.memo(({
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
-            console.log("sadsada")
             style = { ...style, display: 'flex', alignItems: 'flex-end', cursor: onClickRow ? 'pointer' : 'default' }
             const row = page[index]
             prepareRow(row);
