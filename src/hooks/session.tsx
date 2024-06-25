@@ -3,11 +3,11 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { resetForcedDisconnection } from 'store/inbox/actions';
+import { showSnackbar } from 'store/popus/actions';
 import { useSelector } from './store';
 import { disconnectVoxi } from "store/voximplant/actions";
 import { logout } from 'network/service/common';
 import { cleanValidateToken } from 'store/login/actions';
-import { showSnackbar } from 'store/popus/actions';
 
 export function useForcedDisconnection(callback?: () => void) {
     const { t } = useTranslation();
@@ -28,12 +28,12 @@ export function useForcedDisconnection(callback?: () => void) {
             dispatch(resetForcedDisconnection());
             if (user?.samlAuth) {
                 logout({session_expired: true}).then(({data}) => {
+                    dispatch(cleanValidateToken())
                     if (data?.data?.redirectUrl) {
                         window.location.href = data.data.redirectUrl;
                     }
                 });
             }
-            dispatch(cleanValidateToken())
             callback?.();
             // if (!voxiConnection.error) {
             dispatch(disconnectVoxi())
