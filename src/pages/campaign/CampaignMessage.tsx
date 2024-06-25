@@ -454,7 +454,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
         );
-                    
+
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
             ...prev,
@@ -470,16 +470,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
     
-    const renderDynamicUrlFields = () => {
+    const renderDynamicUrlFields = (carouselIndex) => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
         const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item, index) => 
-            item.buttons.filter(button => button.btn.type === 'dynamic').map((button, btnIndex) => ({
+            item.buttons.filter(button => button.btn.type === 'dynamic' && index === carouselIndex).map((button, btnIndex) => ({
                 button,
                 btnIndex,
                 carouselIndex: index
             }))
         ) || [];
-    
         const allDynamicButtons = [...dynamicButtons, ...carouselDynamicButtons];
     
         return allDynamicButtons.map((buttonData, index) => {
@@ -612,8 +611,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
                         </FormControl>
 
-
-    
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
                             <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
@@ -687,8 +684,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 )}
                             </div>
 
-
-
                             {templateToUse.category === "AUTHENTICATION" && (
                                 <div className={classes.containerStyle}>
                                     {templateAux.category === "AUTHENTICATION" && (
@@ -708,27 +703,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     )}
                                 </div>
                             )}
-    
-                            <div className={classes.containerStyle}>
-                                {templateToUse.carouseldata?.map((item, index) =>
-                                    item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
-                                        <div key={`carousel-${index}-bubble-${variableIndex}`}>
-                                            <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
-                                            <FieldSelect
-                                                variant="outlined"
-                                                uset={true}
-                                                className="col-12"
-                                                data={availableData.map(header => ({ key: header, value: header }))}
-                                                optionDesc="value"
-                                                optionValue="key"
-                                                valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
-                                                onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
-                                            />
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-    
+
                             <div className={classes.containerStyle}>
                                 {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
                                     <div>
@@ -746,30 +721,55 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                 )}
                             </div>
-    
-                            <div className={classes.containerStyle}>
-                                {templateToUse.carouseldata?.map((item, index) =>
-                                    item.header && (
-                                        <div key={`cardImage-${index}`}>
-                                            <p style={{ marginBottom: '3px' }}>{`Card Imagen ${index + 1}`}</p>
-                                            <FieldSelect
-                                                variant="outlined"
-                                                uset={true}
-                                                className="col-12"
-                                                data={availableData.map(header => ({ key: header, value: header }))}
-                                                optionDesc="value"
-                                                optionValue="key"
-                                                valueDefault={getValueDefault('cardImage', (index + 1).toString())}
-                                                onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
-                                            />
-                                        </div>
-                                    )
-                                )}
-                            </div>
-                            
-                            <div className={classes.containerStyle}>
-                                {renderDynamicUrlFields()}
-                            </div>
+
+                           <div style={{marginTop:'1rem'}}>
+                            {templateToUse.carouseldata?.map((item, index) => (
+                                <div key={`card-${index}`} style={{ marginBottom: '20px', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
+                                    <div style={{fontSize:'1.2rem', fontWeight:'bolder'}}>{`Card ${index + 1}`}</div>
+
+                                    <div className={classes.containerStyle}>
+                                        {item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
+                                            <div key={`carousel-${index}-bubble-${variableIndex}`}>
+                                                <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
+                                                <FieldSelect
+                                                    variant="outlined"
+                                                    uset={true}
+                                                    className="col-12"
+                                                    data={availableData.map(header => ({ key: header, value: header }))}
+                                                    optionDesc="value"
+                                                    optionValue="key"
+                                                    valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
+                                                    onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>                          
+
+                                    <div className={classes.containerStyle}>
+                                        {item.header && (
+                                            <div key={`cardImage-${index}`}>
+                                                <p style={{ marginBottom: '3px' }}>{`Card Imagen ${index + 1}`}</p>
+                                                <FieldSelect
+                                                    variant="outlined"
+                                                    uset={true}
+                                                    className="col-12"
+                                                    data={availableData.map(header => ({ key: header, value: header }))}
+                                                    optionDesc="value"
+                                                    optionValue="key"
+                                                    valueDefault={getValueDefault('cardImage', (index + 1).toString())}
+                                                    onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    <div className={classes.containerStyle}>
+                                        {renderDynamicUrlFields(index)}
+                                    </div>
+                                </div>
+                            ))}
+                           </div>
+
                         </FormControl>
     
                         <FormControl className="col-12">
