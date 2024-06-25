@@ -26,6 +26,7 @@ const actionType = {
     CHANGE_PWD_FIRST_LOGIN: 'login/CHANGE_PWD_FIRST_LOGIN',
     NEW_NOTIFICATION: 'login/NEW_NOTIFICATION',
     UPDATE_CONNECTION: 'login/UPDATE_CONNECTION',
+    CLEAN_VALIDATETOKEN: 'login/CLEAN_VALIDATETOKEN',
 };
 
 export default actionType;
