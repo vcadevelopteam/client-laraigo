@@ -6,11 +6,14 @@ import { resetForcedDisconnection } from 'store/inbox/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { useSelector } from './store';
 import { disconnectVoxi } from "store/voximplant/actions";
+import { logout } from 'network/service/common';
+import { cleanValidateToken } from 'store/login/actions';
 
 export function useForcedDisconnection(callback?: () => void) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const fd = useSelector(state => state.inbox.forceddisconnect);
+    const user = useSelector((state) => state.login.validateToken.user);
     // const voxiConnection = useSelector(state => state.voximplant.connection);    
 
     useEffect(() => {
@@ -23,11 +26,19 @@ export function useForcedDisconnection(callback?: () => void) {
                 severity: "error"
             }));
             dispatch(resetForcedDisconnection());
+            if (user?.samlAuth) {
+                logout({session_expired: true}).then(({data}) => {
+                    dispatch(cleanValidateToken())
+                    if (data?.data?.redirectUrl) {
+                        window.location.href = data.data.redirectUrl;
+                    }
+                });
+            }
             callback?.();
             // if (!voxiConnection.error) {
             dispatch(disconnectVoxi())
             // }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fd, callback, t, dispatch]);
+    }, [fd, callback, t, dispatch, user]);
 }

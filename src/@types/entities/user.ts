@@ -85,6 +85,7 @@ export interface IUser {
     logourl?: string;
     startlogourl?: string;
     iconurl?: string;
+    samlAuth?: boolean;
     // notifications: Notification[];
 }
 
