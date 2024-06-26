@@ -471,6 +471,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     // External Data Logic //
     const handleUpload = async (files: any) => {
         const file = files[0];
+        setvaluefile(null)
         const data = await uploadExcelCampaign(file, dispatch, showSnackbar);
         if (data) {
             uploadData(data);
