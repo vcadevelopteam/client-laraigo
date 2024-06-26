@@ -33,6 +33,19 @@ const useStyles = makeStyles((theme) => ({
        fontSize: '1rem', 
        color: 'black' 
     },
+    buttonPreviewCarrusel: {
+        color: '#009C8F',    
+        padding: '0.8rem 0 0 0',
+        display: 'flex',
+        justifyContent: 'center',
+        textAlign: 'center',
+        cursor: 'pointer',   
+        textDecoration: 'none',
+        borderTop: '1px solid #D7D7D7',
+        '&:hover': {
+            backgroundColor: '#FBFBFB',
+        },
+    },
     buttonPreview: {
         color: '#009C8F',    
         padding: '0.8rem 1rem',
@@ -112,8 +125,11 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '0.5rem',
         backgroundColor: '#fff',
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-        padding: '0 1rem',
+        padding: '1rem',
         textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
     },
     modal: {
         display: 'flex',
@@ -170,7 +186,11 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '0.5rem',
     },
     bodyContainer: {       
-        textAlign: 'left',        
+        textAlign: 'left',
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'flex-start',
+        flexDirection: 'column'
     },
 }));
 
@@ -206,7 +226,7 @@ const PdfAttachment: React.FC<PdfAttachmentProps> = ({ url }) => {
     );
 };
 
-const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({ buttons, authenticationButton }) => {
+const ButtonList: React.FC<{ buttons: any, authenticationButton?: string, className?: string }> = ({ buttons, authenticationButton, className }) => {
     const classes = useStyles();
     const [showAllButtons, setShowAllButtons] = useState(false);
 
@@ -234,12 +254,12 @@ const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({
         }
     };
 
-    const renderButtons = (buttonsToRender: any[], className: string = classes.buttonPreview) => {
+    const renderButtons = (buttonsToRender: any[], defaultClassName: string) => {
         if (!Array.isArray(buttonsToRender)) {
             return null;
         }
         return buttonsToRender.map((button: Dictionary, index: number) => (
-            <a className={className} key={index}>
+            <a className={className || defaultClassName} key={index}>
                 <div style={{ fontSize: '1rem', display: 'flex', alignContent: 'center', gap: '4px' }}>
                     {getButtonIcon(button.type)} {button.btn.text}
                 </div>
@@ -251,7 +271,7 @@ const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({
 
     return (
         <div style={{ position: 'relative' }}>
-            {renderButtons(allButtons.slice(0, 2))}
+            {renderButtons(allButtons.slice(0, 2), classes.buttonPreview)}
             {allButtons.length > 2 && (
                 <a className={classes.buttonPreview} onClick={handleShowAllButtons}>
                     <div style={{ fontSize: '1.2rem', display: 'flex', alignContent: 'center', gap: '4px' }}>
@@ -272,6 +292,7 @@ const ButtonList: React.FC<{ buttons: any, authenticationButton?: string }> = ({
         </div>
     );
 };
+
 
 const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     const classes = useStyles();
@@ -301,12 +322,12 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
                             style={{ height: maxCardHeight }}
                         />
                     </div>
-                      <div className={classes.bodyContainer}>
+                    <div className={classes.bodyContainer}>
                         <p dangerouslySetInnerHTML={{ __html: item.body }}></p>
                     </div>
                     {item.buttons?.length > 0 && (
                         <div>
-                            <ButtonList buttons={item.buttons} />
+                            <ButtonList buttons={item.buttons} className={classes.buttonPreviewCarrusel} />
                         </div>
                     )}
                 </div>
@@ -314,6 +335,7 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
         </div>
     );
 };
+
 
 interface TemplatePreviewProps {
     selectedTemplate: Dictionary;
@@ -336,17 +358,43 @@ const isValidUrl = (string: string) => {
     }
 };
 
-const replaceVariables = (text: string, bodyVariableValues: Dictionary = {}, bubbleVariableValues: Dictionary = {}, dynamicUrlValues: Dictionary = {}, cardImageValues: Dictionary = {}, carouselVariableValues: Dictionary = {}, carouselIndex?: number, authVariableValue?: string) => {
-    return text.replace(/{{(\d+)}}/g, (_, variableNumber) => {
+const transformTextStyles = (text: string) => {
+    text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>')    
+    text = text.replace(/_(.*?)_/g, '<em>$1</em>')
+    text = text.replace(/```(.*?)```/g, '<span style="background-color: #f0f0f0;">$1</span>')
+    return text;
+};
+
+const replaceVariables = (
+    text: string,
+    bodyVariableValues: { [key: string]: string } = {},
+    bubbleVariableValues: { [key: number]: { [key: string]: string } } = {},
+    dynamicUrlValues: { [key: string]: string } = {},
+    cardImageValues: { [key: number]: { [key: string]: string } } = {},
+    carouselVariableValues: { [key: number]: { [key: string]: string } } = {},
+    carouselIndex?: number,
+    authVariableValue?: string
+) => {
+    const transformedText = text.replace(/{{(\d+)}}/g, (_, variableNumber) => {
         if (variableNumber === '1' && authVariableValue) {
             return authVariableValue;
         }
-        if (carouselIndex !== undefined && carouselVariableValues[carouselIndex]) {
-            return carouselVariableValues[carouselIndex][variableNumber] || `{{${variableNumber}}}`;
+        if (carouselIndex !== undefined) {
+            if (bubbleVariableValues[carouselIndex]?.[variableNumber]) {
+                return bubbleVariableValues[carouselIndex][variableNumber];
+            }
+            if (carouselVariableValues[carouselIndex]?.[variableNumber]) {
+                return carouselVariableValues[carouselIndex][variableNumber];
+            }
+            if (cardImageValues[carouselIndex]?.[variableNumber]) {
+                return cardImageValues[carouselIndex][variableNumber];
+            }
         }
-        return bodyVariableValues[variableNumber] || bubbleVariableValues[variableNumber] || dynamicUrlValues[variableNumber] || (carouselIndex !== undefined && cardImageValues[carouselIndex]?.[variableNumber]) || `{{${variableNumber}}}`;
+        return bodyVariableValues[variableNumber] || dynamicUrlValues[variableNumber] || `{{${variableNumber}}}`;
     });
+    return transformTextStyles(transformedText);
 };
+
 
 const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     selectedTemplate,
@@ -360,8 +408,8 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     selectedAuthVariable
 }) => {
     const classes = useStyles();
-    const renderedHeader = replaceVariables(selectedTemplate.header || "", headerVariableValues);
-    const renderedBody = replaceVariables(selectedTemplate.body || "", bodyVariableValues, {}, {}, {}, {}, undefined, selectedAuthVariable).replace(/\n/g, '<br />');
+    const renderedHeader = transformTextStyles(replaceVariables(selectedTemplate.header || "", headerVariableValues));
+    const renderedBody = transformTextStyles(replaceVariables(selectedTemplate.body || "", bodyVariableValues, {}, {}, {}, {}, undefined, selectedAuthVariable)).replace(/\n/g, '<br />');
     const [maxCardHeight, setMaxCardHeight] = useState(0);
     const cardRefs = useRef<HTMLDivElement[]>([]);
 
@@ -375,7 +423,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
         ...item,
         header: cardImageValues?.[index + 1] || item.header, 
-        body: replaceVariables(item.body || "", {}, bubbleVariableValues, {}, {}, carouselVariableValues, index).replace(/\n/g, '<br />'),
+        body: transformTextStyles(replaceVariables(item.body || "", {}, bubbleVariableValues, {}, {}, carouselVariableValues, index)).replace(/\n/g, '<br />'),
         buttons: item.buttons?.map((button: Dictionary) => ({
             ...button,
             btn: {
