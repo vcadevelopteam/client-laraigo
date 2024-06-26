@@ -117,12 +117,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const availableData = dataToUse.filter(header => !Object.values({ ...selectedHeaders, ...selectedAdditionalHeaders }).includes(header));
     const [campaignViewDetails, setCampaignViewDetails] = useState<ICampaign | null>(null);
+    
     const [variablesBodyView, setVariablesBodyView] = useState<Dictionary[]>([]);
     const [variablesAdditionalView, setVariablesAdditionalView] = useState<string[]>([]);
+    const [variablesCarouselBubbleView, setVariablesCarouselBubbleView] = useState<Dictionary[][]>([]);
+    const [variablesUrlView, setVariablesUrlView] = useState<Dictionary[]>([]);
+    const [variablesCarouselImageView, setVariablesCarouselImageView] = useState<Dictionary[]>([]);
 
 
     const processMultiData = (data) => {
-
         const processedData = {
             bodyVariableValues: {},
             headerVariableValues: {},
@@ -137,14 +140,28 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         };
     
         const campaignData = data[0];
-    
+        console.log('campaignData', multiData[4])
+
         if (campaignData) {
             const bodyVariables = detectVariablesField(campaignData.message);
             const variablesHiddenMultidata = campaignData.variableshidden || [];
+            const carouselBubbleVariables = campaignData.carouseljson ? campaignData.carouseljson.map(item => {
+                return detectVariablesField(item.body);
+            }) : [];
+            const carouselUrlVariables = campaignData.carouseljson ? campaignData.carouseljson.flatMap(item => {
+                return item.buttons ? item.buttons.flatMap(button => detectVariablesField(button.btn.url)) : [];
+            }) : [];    
+            const templateButtonsUrlVariables = campaignData.messagetemplatebuttons ? campaignData.messagetemplatebuttons.flatMap(button => {
+                return detectVariablesField(button.btn.url);
+            }) : [];
+            const allUrlVariables = [...carouselUrlVariables, ...templateButtonsUrlVariables];
 
             setVariablesBodyView(bodyVariables)
             setVariablesAdditionalView(variablesHiddenMultidata);
-
+            setVariablesCarouselBubbleView(carouselBubbleVariables);
+            setVariablesUrlView(allUrlVariables);           
+            console.log('a ver', variablesUrlView)
+            
             bodyVariables.forEach((variable, index) => {
                 const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
                 processedData.bodyVariableValues[index + 1] = `field${fieldIndex}`;
@@ -156,10 +173,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
                     processedData.headerVariableValues[index + 1] = `field${fieldIndex}`;
                 });
-            }
-    
-            processedData.videoHeaderValue = campaignData.messagetemplateheader?.value || '';
-    
+            }    
+
+            processedData.videoHeaderValue = campaignData.messagetemplateheader?.value || '';    
             if (campaignData.carouseljson) {
                 campaignData.carouseljson.forEach((item, carouselIndex) => {
                     processedData.carouselVariableValues[carouselIndex] = {};
@@ -171,9 +187,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 });
             }
-        }
-    
-     
+        }    
         return processedData;
     };
     
@@ -186,37 +200,63 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
             setCampaignViewDetails(combinedData);
             const processedData = processMultiData(multiData[4].data);
-
             const bodyVariables = detectVariablesField(combinedData.message);
-            const variablesHiddenMultidata = combinedData.variableshidden || [];
+            const variablesHiddenMultidata = combinedData.variableshidden || [];           
+            const carouselBubbleVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => {
+                return detectVariablesField(item.body);
+            }) : [];
+            const urlVariables = combinedData.carouseljson ? combinedData.carouseljson.flatMap(item => {
+                return item.buttons ? item.buttons.flatMap(button => detectVariablesField(button.btn.url)) : [];
+            }) : [];
+            const templateButtonsUrlVariables = combinedData.messagetemplatebuttons ? combinedData.messagetemplatebuttons.flatMap(button => {
+                return detectVariablesField(button.btn.url);
+            }) : [];    
+            const allUrlVariables = [...urlVariables, ...templateButtonsUrlVariables];
 
-            setVariablesBodyView(bodyVariables);
-            setVariablesAdditionalView(variablesHiddenMultidata);
+            setVariablesBodyView(bodyVariables)
+            setVariablesAdditionalView(variablesHiddenMultidata)
+            setVariablesCarouselBubbleView(carouselBubbleVariables)
+            setVariablesUrlView(allUrlVariables)
 
-            const newBodyVariableValues = {};
-            const newAdditionalVariableValues = {};
+            const newBodyVariableValues = {}
+            const newAdditionalVariableValues = {}
+            const newCarouselBubbleVariableValues = {}
+            const newDynamicUrlValues = {}
 
             if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
-                const personData = multiData[5].data[0];
+                const personData = multiData[5].data[0]
                 
                 Object.entries(processedData.bodyVariableValues).forEach(([key, fieldKey], index) => {
                     newBodyVariableValues[index + 1] = personData[fieldKey];
-                });
+                })
 
                 variablesHiddenMultidata.forEach(variable => {
                     const fieldIndex = parseInt(variable.replace('field', ''), 10);
                     if (personData[`field${fieldIndex}`]) {
                         newAdditionalVariableValues[variable] = personData[`field${fieldIndex}`];
                     }
-                });
+                })
+
+                carouselBubbleVariables.forEach((variables, carouselIndex) => {
+                    newCarouselBubbleVariableValues[carouselIndex] = {};
+                    variables.forEach((variable, index) => {
+                        const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                        newCarouselBubbleVariableValues[carouselIndex][index + 1] = personData[`field${fieldIndex}`];
+                    })
+                })
+
+                allUrlVariables.forEach((variable, index) => {
+                    const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                    newDynamicUrlValues[index + 1] = personData[`field${fieldIndex}`];
+                })
             }
 
             setBodyVariableValues(newBodyVariableValues);
             setHeaderVariableValues(processedData.headerVariableValues);
             setVideoHeaderValue(processedData.videoHeaderValue);
             setCardImageValues(processedData.cardImageValues);
-            setDynamicUrlValues(processedData.dynamicUrlValues);
-            setBubbleVariableValues(processedData.bubbleVariableValues);
+            setDynamicUrlValues(newDynamicUrlValues);
+            setBubbleVariableValues(newCarouselBubbleVariableValues);
             setCarouselVariableValues(processedData.carouselVariableValues);
             setAdditionalVariableValues(newAdditionalVariableValues);
             setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
@@ -470,7 +510,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
     
-    const renderDynamicUrlFields = (carouselIndex) => {
+    const renderDynamicUrlFields = (carouselIndex, row) => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
         const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item, index) => 
             item.buttons.filter(button => button.btn.type === 'dynamic' && index === carouselIndex).map((button, btnIndex) => ({
@@ -485,6 +525,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             const key = buttonData.carouselIndex !== undefined ? 
                 `dynamicUrl-${buttonData.carouselIndex}-${buttonData.btnIndex}` : 
                 `dynamicUrl-${index + 1}`;
+    
+            let columnName;
+            if (row) {
+                const fieldNumber = parseInt(variablesUrlView[index]?.variable.replace("field", ""), 10) - 2;
+                columnName = templateData.fields.columns[fieldNumber];
+            } else {
+                const match = buttonData.button.btn.url.match(/{{(\d+)}}/);
+                if (match) {
+                    const variableNumber = parseInt(match[1], 10) - 2;
+                    columnName = templateData.fields.columns[variableNumber];
+                } else {
+                    columnName = ''; 
+                }
+            }    
             return (
                 <div key={key}>
                     <p style={{ marginBottom: '3px' }}>{`Url Dinamico {{${index + 1}}}`}</p>
@@ -495,14 +549,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         data={availableData.map(header => ({ key: header, value: header }))}
                         optionDesc="value"
                         optionValue="key"
-                        valueDefault={headers}
+                        valueDefault={columnName}
                         onChange={(selectedOption) => handleVariableChange(key, selectedOption, 'dynamicUrl')}
                     />
                 </div>
             );
         });
     };
-
+    
     useEffect(() => {
         updateTemplate();
     }, [variableSelections, selectedAdditionalHeaders]);
@@ -577,7 +631,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [detaildata.message]);
 
-    
+    console.log('bubbleVariableValues', bubbleVariableValues)
 
     return (
         <React.Fragment>
@@ -727,24 +781,46 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 <div key={`card-${index}`} style={{ marginBottom: '20px', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
                                     <div style={{fontSize:'1.2rem', fontWeight:'bolder'}}>{`Card ${index + 1}`}</div>
 
-                                    <div className={classes.containerStyle}>
-                                        {item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
-                                            <div key={`carousel-${index}-bubble-${variableIndex}`}>
-                                                <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
-                                                <FieldSelect
-                                                    variant="outlined"
-                                                    uset={true}
-                                                    className="col-12"
-                                                    data={availableData.map(header => ({ key: header, value: header }))}
-                                                    optionDesc="value"
-                                                    optionValue="key"
-                                                    valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
-                                                    onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>                          
-
+                                    <div className={classes.containerStyle}>                                       
+                                        {row ? (
+                                            variablesCarouselBubbleView[index]?.map((variable, variableIndex) => {
+                                                const fieldNumber = parseInt(variable.variable.replace("field", ""), 10) - 2;
+                                                const columnName = templateData.fields.columns[fieldNumber];
+                                                return (
+                                                    <div key={`carousel-${index}-bubble-${variableIndex}`}>
+                                                        <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
+                                                        <FieldSelect
+                                                            variant="outlined"
+                                                            uset={true}
+                                                            className="col-12"
+                                                            data={availableData.map(header => ({ key: header, value: header }))}
+                                                            optionDesc="value"
+                                                            optionValue="key"
+                                                            valueDefault={columnName}
+                                                            onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                                        />
+                                                    </div>
+                                                );
+                                            })
+                                        ) : (
+                                            item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
+                                                <div key={`carousel-${index}-bubble-${variableIndex}`}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={availableData.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
+                                                        onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                                    />
+                                                </div>
+                                            ))
+                                        )}  
+                                    </div>                                       
+                                      
                                     <div className={classes.containerStyle}>
                                         {item.header && (
                                             <div key={`cardImage-${index}`}>
@@ -764,8 +840,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     </div>
                                     
                                     <div className={classes.containerStyle}>
-                                        {renderDynamicUrlFields(index)}
+                                        {renderDynamicUrlFields(index, row)}
                                     </div>
+
                                 </div>
                             ))}
                            </div>

@@ -341,10 +341,18 @@ const replaceVariables = (text: string, bodyVariableValues: Dictionary = {}, bub
         if (variableNumber === '1' && authVariableValue) {
             return authVariableValue;
         }
-        if (carouselIndex !== undefined && carouselVariableValues[carouselIndex]) {
-            return carouselVariableValues[carouselIndex][variableNumber] || `{{${variableNumber}}}`;
+        if (carouselIndex !== undefined) {
+            if (bubbleVariableValues[carouselIndex]?.[variableNumber]) {
+                return bubbleVariableValues[carouselIndex][variableNumber];
+            }
+            if (carouselVariableValues[carouselIndex]?.[variableNumber]) {
+                return carouselVariableValues[carouselIndex][variableNumber];
+            }
+            if (cardImageValues[carouselIndex]?.[variableNumber]) {
+                return cardImageValues[carouselIndex][variableNumber];
+            }
         }
-        return bodyVariableValues[variableNumber] || bubbleVariableValues[variableNumber] || dynamicUrlValues[variableNumber] || (carouselIndex !== undefined && cardImageValues[carouselIndex]?.[variableNumber]) || `{{${variableNumber}}}`;
+        return bodyVariableValues[variableNumber] || dynamicUrlValues[variableNumber] || `{{${variableNumber}}}`;
     });
 };
 
