@@ -10,8 +10,10 @@ import { styled } from "@material-ui/core/styles";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import LockIcon from '@material-ui/icons/Lock';
 
+import LockIcon from "@material-ui/icons/Lock";
+import Tooltip from "@material-ui/core/Tooltip";
+import Zoom from "@material-ui/core/Zoom";
 import MuiPhoneNumber from "material-ui-phone-number";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 
@@ -31,7 +33,7 @@ const useChannelAddStyles = makeStyles((theme) => ({
     containerBorder: {
         border: "1px solid",
         borderRadius: "8px",
-        padding: "18px",
+        padding: "14px",
     },
     containerInfoPay: {
         width: "50%",
@@ -51,26 +53,28 @@ const useChannelAddStyles = makeStyles((theme) => ({
         },
     },
     noBorder: {
-        '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-                border: 'none',
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                border: "none",
             },
         },
     },
     customFontSize: {
-        '& .MuiInputBase-input': {
-            fontSize: '25px',
+        "& .MuiInputBase-input": {
+            fontSize: "25px",
         },
-        '& .MuiFormHelperText-root': {
-            fontSize: '25px',
+        "& .MuiFormHelperText-root": {
+            fontSize: "25px",
         },
+        color: "#3F3F3F",
     },
     centeredPlaceholder: {
-        '&::placeholder': {
-            textAlign: 'center',
+        "&::placeholder": {
+            textAlign: "center",
         },
+        textAlign: "center",
+        color: "#3F3F3F",
     },
-
 }));
 
 const CssPhonemui = styled(MuiPhoneNumber)({
@@ -230,7 +234,7 @@ const SecondStep = () => {
                             render={({ field }) => (
                                 <RadioGroup {...field} row
                                     onChange={(e) => {
-                                        setValue('iscompany', e.target.value === "true")
+                                        setValue("iscompany", e.target.value === "true")
                                         setValue("companyname", "")
                                         setValue("companydocument", "")
                                         setValue("contactdocumenttype", 0)
@@ -309,7 +313,7 @@ const SecondStep = () => {
                         render={({ field, formState: { errors } }) => (
                             <div className="col-3">
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
-                                    {t(langKeys.docNumber)}<div style={{ color: "red" }}>*</div>
+                                    {t(langKeys.subscription_documentnumber)}<div style={{ color: "red" }}>*</div>
                                 </Box>
                                 <TextField
                                     {...field}
@@ -394,7 +398,7 @@ const SecondStep = () => {
                         render={({ field, formState: { errors } }) => (
                             <div className="col-9">
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
-                                    {t(langKeys.subscription_address)}<div style={{ color: "red" }}>*</div>
+                                    {getValues("iscompany") ? t(langKeys.subscription_businessaddress) : t(langKeys.subscription_address)}<div style={{ color: "red" }}>*</div>
                                 </Box>
                                 <TextField
                                     {...field}
@@ -508,10 +512,12 @@ const SecondStep = () => {
                         )}
                         rules={{
                             validate: (value) => {
-                                if (getValues("iscompany")) return true
-                                if (value.length === 0) {
-                                    return `${t(langKeys.field_required)}`;
+                                if (getValues("iscompany")) {
+                                    if (value.length === 0 || !value) {
+                                        return `${t(langKeys.field_required)}`;
+                                    }
                                 }
+                                return true;
                             },
                         }}
                     />
@@ -538,8 +544,12 @@ const SecondStep = () => {
                         )}
                         rules={{
                             validate: (value) => {
-                                if (getValues("iscompany")) return true
-                                if (value === null || value === undefined) return `${t(langKeys.field_required)}`;
+                                if (getValues("iscompany")) {
+                                    if (value.length === 0 || !value) {
+                                        return `${t(langKeys.field_required)}`;
+                                    }
+                                }
+                                return true;
                             },
                         }}
                     />
@@ -592,7 +602,7 @@ const SecondStep = () => {
                             >
                                 {t(langKeys.summaryofplan)}
                             </h3>
-                            <div style={{ whiteSpace: 'pre-wrap' }}>{t(langKeys.subscription_language) === "english" ? planData?.plan?.descriptionen : planData?.plan?.descriptiones}</div>
+                            <div style={{ whiteSpace: "pre-wrap", "textAlign": "center" }}>{t(langKeys.subscription_language) === "english" ? planData?.plan?.descriptionen : planData?.plan?.descriptiones}</div>
                         </div>
                     </div>
                 </div>
@@ -869,10 +879,12 @@ const SecondStep = () => {
                                         textAlign: "center",
                                         border: "1px solid #50ab54",
                                         borderRadius: "15px",
-                                        margin: "10px",
                                         padding: "20px",
                                         paddingTop: "auto",
-                                        color: "#50ab54"
+                                        color: "#50ab54",
+                                        height: "inherit",
+                                        marginLeft: "10px",
+                                        marginRight: "10px",
                                     }}
                                 >
                                     <LockIcon style={{ height: 60, width: 60 }} />
@@ -884,58 +896,64 @@ const SecondStep = () => {
                     </div>
                 </div>
             </div>
-            <p>{t(langKeys.signupcond1)}</p>
+            <Tooltip TransitionComponent={Zoom} title={t(langKeys.signupcond4)}>
+                <p><i>{t(langKeys.signupcond1)}</i>*</p>
+            </Tooltip>
             <div className={classes.containerBorder}>
                 <h3 style={{ fontWeight: "bold", marginTop: 0 }}>{t(langKeys.signupcond2)}</h3>
                 <p style={{ margin: 0 }}>{t(langKeys.signupcond3)}</p>
-                <div style={{ display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between" }}>
-                    <div className={classes.containerBorder} style={{ width: 300, cursor: "pointer" }}
+                <div style={{ display: "flex", margin: "15px 20%", gap: "15%", justifyContent: "space-between" }}>
+                    <div className={classes.containerBorder} style={{ width: 240, cursor: "pointer", position: "relative", borderColor: ((Number(getValues("recharge.rechargeamount")) || 0) === 100 ? "green" : "#7721ad") }}
                         onClick={() => {
                             const currentval = getValues("recharge.rechargeamount") || 0;
                             setValue("recharge.rechargeamount", parseFloat(`${currentval}`) + 100);
                         }}>
-                        <h3 style={{ fontWeight: "bold", color: "#7721ad", textAlign: "center", margin: 0, fontSize: 25, paddingTop: 10.5 }}>$100 USD</h3>
+                        <div style={{ position: "absolute", top: "0px", right: "7px", color: ((Number(getValues("recharge.rechargeamount")) || 0) === 100 ? "green" : "#7721ad") }}>+</div>
+                        <div style={{ position: "absolute", top: "1px", right: "6px", color: ((Number(getValues("recharge.rechargeamount")) || 0) === 100 ? "green" : "#7721ad") }}>O</div>
+                        <h3 style={{ fontWeight: "bold", color: ((Number(getValues("recharge.rechargeamount")) || 0) === 100 ? "green" : "#7721ad"), textAlign: "center", margin: 0, fontSize: 25, paddingTop: 10.5 }}>$100 USD</h3>
                     </div>
-                    <div className={classes.containerBorder} style={{ width: 300 }}>
+                    <div className={classes.containerBorder} style={{ width: 240 }}>
                         <Controller
                             control={control}
                             name="recharge.rechargeamount"
                             render={({ field, formState: { errors } }) => (
                                 <div className="col-12">
-                                    <TextField
-                                        {...field}
-                                        error={Boolean(errors?.recharge?.rechargeamount)}
-                                        fullWidth
-                                        style={{ marginTop: 0 }}
-                                        helperText={errors?.recharge?.rechargeamount?.message}
-                                        margin="normal"
-                                        size="small"
-                                        variant="outlined"
-                                        type="number"
-                                        inputProps={{ className: classes.centeredPlaceholder }}
-                                        placeholder="$20 USD"
-                                        className={`${classes.noBorder} ${classes.customFontSize}`}
-                                    />
+                                    <span style={{ display: "inline-block", position: "relative" }}>
+                                        {getValues("recharge.rechargeamount") && <span style={{ color: "#3F3F3F", position: "absolute", fontSize: "25px", right: 50 / `${Number(getValues("recharge.rechargeamount")) || 0}`.length, top: "9px" }}>USD</span>}
+                                        {getValues("recharge.rechargeamount") && <span style={{ color: "#3F3F3F", position: "absolute", fontSize: "25px", left: 82 / `${Number(getValues("recharge.rechargeamount")) || 0}`.length, top: "9px" }}>$</span>}
+                                        <TextField
+                                            {...field}
+                                            error={Boolean(errors?.recharge?.rechargeamount)}
+                                            fullWidth
+                                            style={{ marginTop: 0, color: "#3F3F3F" }}
+                                            helperText={""}
+                                            margin="normal"
+                                            size="small"
+                                            variant="outlined"
+                                            type="numeric"
+                                            inputProps={{ className: classes.centeredPlaceholder }}
+                                            placeholder="$20 USD"
+                                            className={`${classes.noBorder} ${classes.customFontSize}`}
+                                        />
+                                    </span>
                                 </div>
                             )}
                             rules={{
                                 validate: (value) => {
                                     if (value) {
                                         if (value < 20) {
-                                            return `${t(langKeys.errorvaluebiggerthan, { value: 20 })} `;
+                                            return `${t(langKeys.errorvaluebiggerthan, { value: 20 })}`;
                                         }
-                                    } else {
-                                        return `${t(langKeys.field_required)}`;
                                     }
                                 },
                             }}
                         /></div>
                 </div>
-                <div style={{ display: "flex", margin: "15px 10%", gap: "15%", justifyContent: "space-between" }}>
-                    <div style={{ width: 300, textAlign: "center", margin: 0 }}>
+                <div style={{ display: "flex", margin: "15px 20%", gap: "15%", justifyContent: "space-between" }}>
+                    <div style={{ width: 240, textAlign: "center", margin: 0 }}>
                         <p style={{ margin: 0 }}>{t(langKeys.suggestedamount)}</p>
                     </div>
-                    <div style={{ width: 300, textAlign: "center", margin: 0 }}>
+                    <div style={{ width: 240, textAlign: "center", margin: 0 }}>
                         <p style={{ margin: 0 }}>{t(langKeys.addminimum)} $20</p>
                     </div>
                 </div>
@@ -960,19 +978,22 @@ const SecondStep = () => {
                     </div>
                 </div>
             </div>
-            <Button
-                className={commonClasses.button}
-                color="primary"
-                disabled={insertResult.loading}
-                style={{ marginTop: "10px" }}
-                variant="contained"
-                onClick={(e) => {
-                    e.preventDefault();
-                    finishRegister();
-                }}
-            >
-                <Trans i18nKey={langKeys.pay} />
-            </Button>
+            <hr></hr>
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <Button
+                    className={commonClasses.button}
+                    color="primary"
+                    disabled={insertResult.loading}
+                    style={{ marginTop: "10px", maxWidth: "340px", marginLeft: "auto", marginRight: "auto" }}
+                    variant="contained"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        finishRegister();
+                    }}
+                >
+                    <Trans i18nKey={langKeys.pay} />
+                </Button>
+            </div>
         </div>
     );
 };

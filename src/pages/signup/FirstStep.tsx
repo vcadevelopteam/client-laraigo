@@ -514,7 +514,7 @@ const FirstStep: FC = () => {
                                         }
                                     }}
                                 >
-                                    <Trans i18nKey={langKeys.next} />
+                                    <Trans i18nKey={langKeys.continue} />
                                 </Button>
                             </div>
                         </div>

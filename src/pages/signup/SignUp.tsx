@@ -5,7 +5,7 @@ import { RouteParams, SubscriptionContext, SubscriptionProvider, usePlanData } f
 import { useTranslation } from "react-i18next";
 import { loadScripts } from 'common/helpers';
 import { useRouteMatch } from 'react-router-dom';
-import { LaraigoLogo } from "icons";
+import { LaraigoLogoWhite } from "icons";
 
 import Popus from "components/layout/Popus";
 import RightSideMenu from "./RightSideMenu";
@@ -152,7 +152,7 @@ const SignUpFunc: FC = () => {
                         <div className={classes.container} style={{ width: "100%", margin: "0 10px 0 0" }}>
                             <div>
                                 <div className={classes.image}>
-                                    <LaraigoLogo height={60} />
+                                    <LaraigoLogoWhite height={60} />
                                 </div>
                                 <div style={{ color: "#FFBF00", fontWeight: "bold", fontSize: "2em", textAlign: "center" }}>
                                     {t(langKeys.signupstep2ms1)}

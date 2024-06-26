@@ -6187,6 +6187,7 @@ export const langKeys = {
   signupcond1: 'signupcond1',
   signupcond2: 'signupcond2',
   signupcond3: 'signupcond3',
+  signupcond4: 'signupcond4',
   suggestedamount: 'suggestedamount',
   addminimum: 'addminimum',
   sutaxes: 'sutaxes',
@@ -6283,6 +6284,7 @@ export const langKeys = {
   messaging_twitter: "messaging_twitter",
   messaging_voice: "messaging_voice",
   messaging_youtube: "messaging_youtube",
+  subscription_businessaddress: "subscription_businessaddress",
 };
 
 export type LangKeys = typeof langKeys;
