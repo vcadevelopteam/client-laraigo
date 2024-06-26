@@ -341,6 +341,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [edit, register, multiData, groupObligatory]);
     
+    console.log(selectedTemplate)
 
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
