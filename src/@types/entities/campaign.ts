@@ -45,6 +45,7 @@ export interface ICampaign {
 	fields?: Dictionary,
 	operation?: string,
 	carouseljson?: Dictionary[],
+	variableshidden?: Dictionary[],
 	headers?: any[],
 	jsonData?: any[],
 	selectedColumns?: SelectedColumns,

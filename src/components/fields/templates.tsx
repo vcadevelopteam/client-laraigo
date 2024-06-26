@@ -951,7 +951,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     if (readOnly) return;
                     setValue(newValue);
                     onChange && onChange(newValue);
-                }}              
+                }}
                 getOptionSelected={(option, value) => option[optionValue] === value[optionValue]}
                 getOptionLabel={option => option ? (uset && Object.keys(langKeys).includes(prefixTranslation + option[optionDesc]?.toLowerCase()) ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={dataG}

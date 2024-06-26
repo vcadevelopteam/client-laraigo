@@ -1831,7 +1831,7 @@ export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: nu
     method: "UFN_CAMPAIGNMEMBER_STATUS",
     parameters: {
         campaignid,
-        campaignmemberid,
+        campaignmemberid, 
         status
     },
 });
