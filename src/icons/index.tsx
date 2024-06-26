@@ -234,6 +234,7 @@ export { ReactComponent as XlsIcon } from './xlsIcon.svg';
 export { ReactComponent as DuplicateIcon } from './duplicate.svg';
 
 export { ReactComponent as LaraigoLogo } from './Laraigo-logo.svg';
+export { ReactComponent as LaraigoLogoWhite } from './Laraigo-logo-white.svg';
 export { ReactComponent as LogoSuscription } from './LogoSuscription.svg';
 export { ReactComponent as LaraigoOnlyLogo } from './laraigo-onlylogo.svg';
 export { ReactComponent as EnvioIcon } from './envioAuto-01.svg';

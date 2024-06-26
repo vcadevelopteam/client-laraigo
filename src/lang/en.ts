@@ -5842,7 +5842,7 @@ const translation: LangKeys = {
   channel_workplacedm: 'Workplace DM',
   subscription_billingregister: 'General information input',
   subscription_companyorname: 'Full Name',
-  subscription_documentnumber: 'Document number',
+  subscription_documentnumber: 'Document Number',
   subscription_address: 'Address',
   subscription_email: 'Electronic Mail',
   subscription_creditcardnumber: 'Card number',
@@ -6239,9 +6239,10 @@ const translation: LangKeys = {
   sinupfeature3: '24/7 support',
   sinupfeature4: 'AI API',
   safepurchase: 'Safe purchase',
-  signupcond1: 'The first billing will correspond to the contacts managed during the first month*',
+  signupcond1: 'The costs of the first month of service will be calculated in proportion to the contracted days of service',
   signupcond2: 'Recharge balance to send your conversations',
   signupcond3: 'Select or write the balance amount you want to recharge to be consumed in each channel',
+  signupcond4: 'The payment for the first month\'s subscription will be made only for the days that you will use the platform, that is, from the day you subscribe until the end of the month, then the payment will be made on a full monthly basis.',
   suggestedamount: 'Suggested amount',
   addminimum: 'Add minimum',
   sutaxes: 'Taxes',
@@ -6380,6 +6381,7 @@ const translation: LangKeys = {
   messaging_voice: "Voice",
   messaging_youtube: "YouTube",
   origin_helpText: 'Displays the HSM shipping source module.',
+  subscription_businessaddress: "Business Address",
 };
 
 const enResource: ResourceLanguage = {
