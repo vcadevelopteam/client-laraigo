@@ -562,11 +562,6 @@ const SignIn = () => {
                                                             onFailure={onGoogleLoginFailure}
                                                             onSuccess={onGoogleLoginSucess}
                                                         />
-                                                        <SamlLogin
-                                                            buttonText={t(langKeys.login_with_saml)}
-                                                            onFailure={onSamlLoginError}
-                                                            onSuccess={onSamlLoginSuccess}
-                                                        />
                                                         <Button
                                                             variant="outlined"
                                                             fullWidth
