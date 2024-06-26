@@ -246,7 +246,7 @@ export const Campaign: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original;
                     return (
-                        <div>{row && row.enddate ? dateToLocalDate(row.enddate) : ''}</div>
+                        <div>{row && row.datestart ? dateToLocalDate(row.datestart) : ''}</div>
                     );
                 }                
             },
