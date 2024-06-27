@@ -975,6 +975,7 @@ const TableZyx = React.memo(({
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
+                                    paddingRight: cell.column.type === "number"?54:24,
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
                             })}                            
@@ -1392,6 +1393,7 @@ const TableZyx = React.memo(({
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
                                                         whiteSpace: 'nowrap',
+                                                        paddingRight: cell.column.type === "number"?54:24,
                                                         ...(toolsFooter ? {} : { padding: '0px' }),
                                                         textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                     },

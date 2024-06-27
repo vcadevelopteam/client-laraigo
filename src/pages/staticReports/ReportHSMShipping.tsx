@@ -587,7 +587,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                                 valueDefault={selectedUser}
                                 onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.userid).join() : '')}
                                 variant="outlined"
-                                data={multiaux?.data?.[3]?.data||[]}
+                                data={[{userid: -1, userdesc: "EXTERNAL"},...(multiaux?.data?.[3]?.data||[])]}
                                 optionDesc="userdesc"
                                 optionValue="userid"
                                 disabled={multiaux.loading}
