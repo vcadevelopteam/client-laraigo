@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail } from 'common/helpers';
+import { convertLocalDate, dateToLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail } from 'common/helpers';
 import { Dictionary } from "@types";
 import { getCollectionAux, getCollectionAux2, getMultiCollection, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { TemplateBreadcrumbs, DialogZyx, FieldSelect, DateRangePicker } from 'components';
+import { TemplateBreadcrumbs, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -161,16 +161,6 @@ const initialRange = {
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
-const cell = (props: CellProps<Dictionary>) => {
-    const column = props.cell.column;
-    const row = props.cell.row.original;
-    debugger
-    return (
-        <div style={{textAlign: column.sortType === "number"? "start": "inherit"}}>
-            {row[column.id]}
-        </div>
-    )
-}
 
 export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setViewSelected: (view: string) => void; }> = ({ setViewSelected, row, arrayBread }) => {
     const { t } = useTranslation();
@@ -209,10 +199,22 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 },
             },
             {
-                Header: t(langKeys.shippingdateandtime),
+                Header: t(langKeys.shippingdate),
                 accessor: 'createdate',
-                sortType: 'datetime',
-                type: 'datetime',
+                type: 'date',
+                showGroupedBy: true,
+                showColumn: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <div>{row && row.createdate ? dateToLocalDate(row.createdate) : ''}</div>
+                    );
+                }
+                //Cell: cell
+            },
+            {
+                Header: t(langKeys.dashboard_operationalpush_hsmrank_senthour),
+                accessor: 'createhour',
                 showGroupedBy: true,
                 showColumn: true,
                 //Cell: cell
@@ -247,7 +249,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 //Cell: cell
             },
             {
-                Header: t(langKeys.read),
+                Header: t(langKeys.read_singular),
                 accessor: 'seen',
                 showGroupedBy: true,
                 showColumn: true,
@@ -270,7 +272,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         ],
         []
     );
-
+    console.log(row)
 
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
@@ -281,18 +283,12 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         if(!multidata.loading && !multidata.error){
             const stdby = multidata?.data?.[0]?.data||[]
             setMaindata(stdby.map(x=>{
+                x.log= x.satisfactory? '[Success,{"error"...}]':x.log
                 x.failed = x.failed? "Ok": "Fail"
                 x.satisfactory = x.satisfactory? "Ok": "Fail"
                 x.seen = x.seen? "Ok": "Fail"
                 x.answered = x.answered? "Ok": "Fail"
-                x.createdate=convertLocalDate(x.createdate).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                })
+                x.createdate= new Date(new Date(x.createdate).getTime() + 5 * 60 * 60 * 1000).toISOString();
                 return x;
             })||[])
         }
@@ -331,7 +327,8 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         {view === "GRID" && <div style={{ position: 'relative', height: '100%' }}>
             <TableZyx
                 columns={columns}
-                ButtonsElement={<div className={classes.itemFlex}>
+                titlemodule={row.row.templatename}
+                ButtonsElement={() => (<div className={classes.itemFlex}>
                     <Button
                         variant="contained"
                         color="primary"
@@ -341,7 +338,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                     >
                         {t(langKeys.graphic_view)}
                     </Button>
-                </div>}
+                </div>)}
                 data={maindata}
                 loading={multidata.loading}
                 download={true}
@@ -406,6 +403,8 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
     ];
 
     const filterChannel = useSelector((state) => state.main.mainAux)
+    const multiaux = useSelector((state) => state.main.multiDataAux)
+    console.log(multiaux)
 
 
     const columns = React.useMemo(
@@ -516,6 +515,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
 
 
     const [selectedChannel, setSelectedChannel] = useState(0);
+    const [selectedUser, setSelectedUser] = useState("");
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
     const handleEdit = (row: Dictionary) => {
@@ -553,7 +553,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 </div>
                 <div style={{ position: 'relative', height: '100%' }}>
 
-                    <div style={{ width: 'calc(100% - 60px)', display: 'flex', background: 'white', padding: '1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>
+                    <div style={{ width: 'calc(100% - 60px)', display: 'flex', background: 'white', padding: '5px 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>
 
                         <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto' }}>
                             <DateRangePicker
@@ -581,6 +581,18 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                                 optionDesc="communicationchanneldesc"
                                 optionValue="communicationchannelid"
                             />
+                            <FieldMultiSelect
+                                label={t(langKeys.user)}
+                                className={classes.filterComponent}
+                                valueDefault={selectedUser}
+                                onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                                variant="outlined"
+                                data={multiaux?.data?.[3]?.data||[]}
+                                optionDesc="userdesc"
+                                optionValue="userid"
+                                disabled={multiaux.loading}
+                            />
+
 
                             <Button
                                 disabled={mainAux.loading}

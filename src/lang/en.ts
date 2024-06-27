@@ -6239,6 +6239,7 @@ const translation: LangKeys = {
   failed_plural:'Failed',
   successful_plural: 'Successful',
   read: 'Read',
+  read_singular: 'Read',
   contested: 'Contested',
   shippingdateandtime: 'Shipping date and time',
   recipient:'Recipient',

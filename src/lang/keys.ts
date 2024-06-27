@@ -6185,6 +6185,7 @@ export const langKeys = {
   failed_plural:'failed_plural',
   successful_plural: 'successful_plural',
   read: 'read',
+  read_singular: 'read_singular',
   contested: 'contested',
   shippingdateandtime: 'shippingdateandtime',
   recipient:'recipient',
