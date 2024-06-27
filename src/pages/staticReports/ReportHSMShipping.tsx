@@ -479,6 +479,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
                 communicationchannelid: selectedChannel || 0,
+                userSid: selectedUser || ""
             }
         )));
     };
