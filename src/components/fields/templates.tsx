@@ -378,7 +378,7 @@ interface TemplateAutocompletePropsDisabled extends InputProps {
     getOptionDisabled?: Dictionary;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -1063,7 +1063,7 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
                 options={dataG}
                 loading={loading}
                 size={size}
-                getOptionDisabled={getOptionDisabled} // Asegúrate de pasar la función para deshabilitar opciones
+                getOptionDisabled={getOptionDisabled}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -1088,7 +1088,6 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
         </div>
     );
 }
-
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
