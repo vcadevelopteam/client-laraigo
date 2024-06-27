@@ -6334,6 +6334,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   messaging_youtube: "YouTube",
   origin_helpText: 'Muestra el módulo de origen del envío del HSM.',
   subscription_businessaddress: "Dirección de Empresa",
+  advancedtemplatescampaigns: "Plantillas y Campañas Avanzadas",
+  advanced: "Avanzado",
+  templates: "Plantillas",
+  templatestext: "Gestiona tus plantillas de comunicación con las nuevas funcionalidades que ofrecemos: plantillas carrusel, plantillas con botones de redirección, etc.",
+  campaignstext: "Gestiona tus campañas de contacto con las nuevas funcionalidades y diseño que ofrecemos para una mejor experiencia.",
 };
 
 const esResource: ResourceLanguage = {

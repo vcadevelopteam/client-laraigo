@@ -17,8 +17,7 @@ import {
 } from "store/main/actions";
 
 import {
-    FieldSelect,
-    TemplateIcons,
+    TemplateBreadcrumbs,
 } from "components";
 
 import {
@@ -32,21 +31,43 @@ import {
 
 import Button from "@material-ui/core/Button";
 import React, { FC, useEffect, useMemo, useState } from "react";
-import RefreshIcon from "@material-ui/icons/Refresh";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import DetailMessageTemplates from "./views/MessageTemplatesDetail";
+import { makeStyles } from "@material-ui/core/styles";
 
+const useStyles = makeStyles(() => ({
+    titleandcrumbs: {
+        marginBottom: 4,
+        marginTop: 4,
+    },
+    container: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+    },
+}));
 interface RowSelected {
     edit: boolean;
     row: Dictionary | null;
 }
+type BreadCrumb = {
+    id: string,
+    name: string
+}
+interface MessageTemplatesProps {
+    arrayBread: BreadCrumb[];
+    setAuxViewSelected: (view: string) => void;  
+}
 
-const MessageTemplates: FC = () => {
+const MessageTemplates: React.FC<MessageTemplatesProps> = ({ 
+    setAuxViewSelected,
+    arrayBread,
+}) => {
     const dispatch = useDispatch();
-
+    const classes = useStyles();
     const { t } = useTranslation();
-
     const location = useLocation();
     const mainDelete = useSelector((state) => state.channel.requestDeleteTemplate);
     const mainPaginated = useSelector((state) => state.main.mainPaginated);
@@ -56,7 +77,10 @@ const MessageTemplates: FC = () => {
     const params = useQueryParams(query, { ignore: ["channelTypes"] });
     const resExportData = useSelector((state) => state.main.exportData);
     const selectionKey = "id";
-
+    const newArrayBread = [
+        ...arrayBread,
+        { id: "templates", name: t(langKeys.templates) },
+    ];
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
         daterange: null,
         filters: {},
@@ -64,7 +88,6 @@ const MessageTemplates: FC = () => {
         pageSize: 20,
         sorts: {},
     });
-
     const [rowSelected, setRowSelected] = useState<RowSelected>({
         edit: false,
         row: null,
@@ -634,47 +657,65 @@ const MessageTemplates: FC = () => {
         setWaitSaveExport(true);
     };
 
+    const functionChange = (change:string) => {
+        if(change === "templates"){
+            setViewSelected("view-1")
+        }else{
+            setAuxViewSelected(change);
+        }
+    }
+
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
         }
         return (
-            <TablePaginated
-                ButtonsElement={() => (
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <Button
-                            color="primary"
-                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<Delete style={{ color: "white" }} />}
-                            variant="contained"
-                            onClick={() => {
-                                handleBulkDelete(rowWithDataSelected);
-                            }}
-                        >
-                            {t(langKeys.delete)}
-                        </Button>
+            <div className={classes.container}>
+                <div className={classes.titleandcrumbs}>
+                    <div style={{ flexGrow: 1}}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={newArrayBread}
+                            handleClick={functionChange}
+                        />
                     </div>
-                )}
-                autotrigger={true}
-                columns={columns}
-                data={mainPaginated.data}
-                download={true}
-                exportPersonalized={triggerExportData}
-                fetchData={fetchData}
-                filterGeneral={true}
-                handleRegister={handleRegister}
-                initialFilters={params.filters}
-                initialPageIndex={params.page}
-                loading={mainPaginated.loading}
-                onClickRow={handleEdit}
-                pageCount={pageCount}
-                register={true}
-                selectionKey={selectionKey}
-                setSelectedRows={setSelectedRows}
-                titlemodule={t(langKeys.messagetemplate_plural)}
-                totalrow={totalRow}
-                useSelection={true}
-            />
+                </div>
+                <TablePaginated
+                    ButtonsElement={() => (
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            <Button
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                startIcon={<Delete style={{ color: "white" }} />}
+                                variant="contained"
+                                onClick={() => {
+                                    handleBulkDelete(rowWithDataSelected);
+                                }}
+                            >
+                                {t(langKeys.delete)}
+                            </Button>
+                        </div>
+                    )}
+                    autotrigger={true}
+                    columns={columns}
+                    data={mainPaginated.data}
+                    download={true}
+                    exportPersonalized={triggerExportData}
+                    fetchData={fetchData}
+                    filterGeneral={true}
+                    handleRegister={handleRegister}
+                    initialFilters={params.filters}
+                    initialPageIndex={params.page}
+                    loading={mainPaginated.loading}
+                    onClickRow={handleEdit}
+                    pageCount={pageCount}
+                    register={true}
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
+                    titlemodule={t(langKeys.messagetemplate_plural)}
+                    totalrow={totalRow}
+                    useSelection={true}
+                />
+            </div>
         );
     } else
         return (

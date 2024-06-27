@@ -6383,6 +6383,11 @@ const translation: LangKeys = {
   messaging_youtube: "YouTube",
   origin_helpText: 'Displays the HSM shipping source module.',
   subscription_businessaddress: "Business Address",
+  advancedtemplatescampaigns: "Advanced Templates and Campaigns",
+  advanced: "Advanced",
+  templates: "Templates",
+  templatestext: "Manage your communication templates with the new features we offer: carousel templates, templates with redirection buttons, etc.",
+  campaignstext: "Manage your contact campaigns with the new functionalities and design we offer for a better experience.",
 };
 
 const enResource: ResourceLanguage = {
