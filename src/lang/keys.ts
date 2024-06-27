@@ -4376,6 +4376,7 @@ export const langKeys = {
   recoverpassword_expired: 'recoverpassword_expired',
   recoverpassword_finish: 'recoverpassword_finish',
   propertyocultarlogconversacion: 'propertyocultarlogconversacion',
+  propertycopilotlaraigo: 'propertycopilotlaraigo',
   productcatalog: 'productcatalog',
   productcatalogcategory: 'productcatalogcategory',
   productcatalogunitprice: 'productcatalogunitprice',

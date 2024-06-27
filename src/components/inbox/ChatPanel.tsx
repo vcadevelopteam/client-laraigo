@@ -1330,7 +1330,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                 <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
             </div>
             {showSearcher &&
-                <div style={{ position: 'absolute', zIndex: 9999, right: 16, marginTop: 8 }}>
+                <div style={{  zIndex: 9999, right: 16, margin: 8 }}>
                     <SearchOnInteraction setShowSearcher={setShowSearcher} />
                 </div>
             }
