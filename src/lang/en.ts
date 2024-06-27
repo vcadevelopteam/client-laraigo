@@ -4446,6 +4446,7 @@ const translation: LangKeys = {
   recoverpassword_expired: 'Link expired. Retry the recovery process',
   recoverpassword_finish: 'Process finished. Use this button to go back to the log-in screen.',
   propertyocultarlogconversacion: 'Switch used to hide the conversation log',
+  propertycopilotlaraigo: 'Enable copilot laraigo for timely management and handling of conversations.',
   productcatalog: 'Product Catalog',
   productcatalogcategory: 'Category',
   productcatalogunitprice: 'Sell Price',

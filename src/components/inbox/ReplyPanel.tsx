@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon } from "icons";
+import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IARouteIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -760,6 +760,24 @@ const RecordAudioIcon: React.FC<{
     );
 };
 
+const CopilotLaraigoIcon: React.FC<{
+    classes: ClassNameMap;
+    enabled: boolean
+}> = ({ classes, enabled }) => {
+    const { t } = useTranslation();
+
+    return (
+        <div style={{ display: "flex" }}>
+            <Tooltip title={t(langKeys.record_audio)} arrow placement="top">
+                <IARouteIcon
+                    className={enabled?classes.iconResponse:""}
+                    style={{ width: 22, height: 22, fill: enabled?"black":"lightgray" }}
+                />
+            </Tooltip>
+        </div>
+    );
+};
+
 const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: string) => void }> = ({
     classes,
     setText,
@@ -956,11 +974,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
     const listAllowRecords = ["FBDM", "FBMS", "WHA", "INDM", "INMS"];
     const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
-    
+
     const resReplyTicket = useSelector((state) => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
     const [lastSelection, setLastSelection] = useState(0);
-    
+
     const variablecontext = useSelector((state) => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector((state) => state.inbox.agentSelected);
     const user = useSelector((state) => state.login.validateToken.user);
@@ -976,6 +994,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [typeHotKey, setTypeHotKey] = useState("");
     const quickReplies = useSelector((state) => state.inbox.quickreplies);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([]);
+    const [propertyCopilotLaraigo, setPropertyCopilotLaraigo] = useState(false);
     const [emojiFavorite, setemojiFavorite] = useState<string[]>([]);
     const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([]);
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
@@ -1266,6 +1285,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setemojiNoShow(multiData?.data?.[10]?.data.filter((x) => x.restricted).map((x) => x.emojihex) || []);
             setemojiFavorite(multiData?.data?.[10]?.data.filter((x) => x.favorite).map((x) => x.emojihex) || []);
+            setPropertyCopilotLaraigo(multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMECOPILOTLARAIGO")?.data?.[0]?.propertyvalue === "1")
             setinnappropiatewordsList(multiData?.data?.[11]?.data || []);
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
@@ -1447,7 +1467,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     className={clsx(classes.iconSend, {
                                                         [classes.iconSendDisabled]: !(
                                                             renderToString(toElement(bodyobject)) !==
-                                                                `<div data-reactroot=""><p><span></span></p></div>` ||
+                                                            `<div data-reactroot=""><p><span></span></p></div>` ||
                                                             files.filter((x) => x.url).length > 0
                                                         ),
                                                     })}
@@ -1493,23 +1513,23 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             >
                                                 {typeHotKey === "quickreply"
                                                     ? quickRepliesToShow.map((item) => (
-                                                          <div
-                                                              key={item.quickreplyid}
-                                                              className={classes.hotKeyQuickReply}
-                                                              onClick={() => selectQuickReply(item.quickreply)}
-                                                          >
-                                                              {item.description}
-                                                          </div>
-                                                      ))
+                                                        <div
+                                                            key={item.quickreplyid}
+                                                            className={classes.hotKeyQuickReply}
+                                                            onClick={() => selectQuickReply(item.quickreply)}
+                                                        >
+                                                            {item.description}
+                                                        </div>
+                                                    ))
                                                     : richResponseToShow.map((item) => (
-                                                          <div
-                                                              key={item.id}
-                                                              className={classes.hotKeyQuickReply}
-                                                              onClick={() => selectRichResponse(item)}
-                                                          >
-                                                              {item.title}
-                                                          </div>
-                                                      ))}
+                                                        <div
+                                                            key={item.id}
+                                                            className={classes.hotKeyQuickReply}
+                                                            onClick={() => selectRichResponse(item)}
+                                                        >
+                                                            {item.title}
+                                                        </div>
+                                                    ))}
                                             </div>
                                         </div>
                                     )}
@@ -1606,23 +1626,23 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 >
                                                     {typeHotKey === "quickreply"
                                                         ? quickRepliesToShow.map((item) => (
-                                                              <div
-                                                                  key={item.quickreplyid}
-                                                                  className={classes.hotKeyQuickReply}
-                                                                  onClick={() => selectQuickReply(item.quickreply)}
-                                                              >
-                                                                  {item.description}
-                                                              </div>
-                                                          ))
+                                                            <div
+                                                                key={item.quickreplyid}
+                                                                className={classes.hotKeyQuickReply}
+                                                                onClick={() => selectQuickReply(item.quickreply)}
+                                                            >
+                                                                {item.description}
+                                                            </div>
+                                                        ))
                                                         : richResponseToShow.map((item) => (
-                                                              <div
-                                                                  key={item.id}
-                                                                  className={classes.hotKeyQuickReply}
-                                                                  onClick={() => selectRichResponse(item)}
-                                                              >
-                                                                  {item.title}
-                                                              </div>
-                                                          ))}
+                                                            <div
+                                                                key={item.id}
+                                                                className={classes.hotKeyQuickReply}
+                                                                onClick={() => selectRichResponse(item)}
+                                                            >
+                                                                {item.title}
+                                                            </div>
+                                                        ))}
                                                 </div>
                                             </div>
                                         )}
@@ -1661,11 +1681,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             onSelect={(e) => {
                                                 lastSelection < (text || "").length - 1
                                                     ? setText(
-                                                          (p) =>
-                                                              p.substring(0, lastSelection) +
-                                                              e.native +
-                                                              p.substring(lastSelection)
-                                                      )
+                                                        (p) =>
+                                                            p.substring(0, lastSelection) +
+                                                            e.native +
+                                                            p.substring(lastSelection)
+                                                    )
                                                     : setText((p) => p + e.native);
                                             }}
                                             emojisNoShow={emojiNoShow}
@@ -1680,6 +1700,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             startRecording={startRecording}
                                         />
                                     )}
+                                    <CopilotLaraigoIcon 
+                                        classes={classes}
+                                        enabled={propertyCopilotLaraigo}
+                                    />
                                 </div>
                                 <div
                                     className={clsx(classes.iconSend, {
