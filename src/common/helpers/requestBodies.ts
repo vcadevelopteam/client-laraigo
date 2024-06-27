@@ -1753,13 +1753,14 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const getHSMShipping= ({ startdate, enddate, communicationchannelid }: Dictionary): IRequestBody => ({
+export const getHSMShipping= ({ startdate, enddate, communicationchannelid, userSid }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
     key: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
     parameters: {
         startdate,
         enddate,
         communicationchannelid,
+        userSid,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });

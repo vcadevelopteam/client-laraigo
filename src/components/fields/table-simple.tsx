@@ -294,7 +294,8 @@ export const DateOptionsMenuComponent = ({value, handleDate}:any) => {
                 onChange={(e: any) => {
                     const date = new Date(e);
                     if(!isNaN(date.getTime())){
-                        handleDate(e);
+                        date.setHours(10)
+                        handleDate(date);
                         setvalue2(e)
                     }
                 }}
@@ -974,6 +975,7 @@ const TableZyx = React.memo(({
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
+                                    paddingRight: cell.column.type === "number"?54:24,
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
                             })}                            
@@ -1391,6 +1393,7 @@ const TableZyx = React.memo(({
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
                                                         whiteSpace: 'nowrap',
+                                                        paddingRight: cell.column.type === "number"?54:24,
                                                         ...(toolsFooter ? {} : { padding: '0px' }),
                                                         textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                     },
