@@ -83,6 +83,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [allRowsSelected, setAllRowsSelected] = useState<boolean>(false);
 
     const fetchCampaignInternalData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
+    const [fileKey, setFileKey] = useState(Date.now());
 
     const paginatedAuxResult = useSelector(state => state.main.mainPaginatedAux);
     const [paginatedWait, setPaginatedWait] = useState(false);
@@ -470,8 +471,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     //console.log(jsonData)
     // External Data Logic //
     const handleUpload = async (files: any) => {
+        console.log("files", files)
         const file = files[0];
-        setvaluefile(null)
+        // fileInputRef.current.value = null;
+        setFileKey(Date.now());
+
         const data = await uploadExcelCampaign(file, dispatch, showSnackbar);
         if (data) {
             uploadData(data);
@@ -693,10 +697,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
                         <input
                             id="upload-file"
+                            key={fileKey}
                             name="file"
                             type="file"
                             accept=".xls,.xlsx"
-                            value={valuefile}
+                            // value={valuefile}
                             style={{ display: 'none' }}
                             onChange={(e) => handleUpload(e.target.files)}
                         />
