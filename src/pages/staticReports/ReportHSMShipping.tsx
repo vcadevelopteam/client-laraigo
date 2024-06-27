@@ -272,27 +272,26 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         ],
         []
     );
-    console.log(row)
 
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.ticketnum })
     }, [mainResult]);
-    
+
     useEffect(() => {
-        if(!multidata.loading && !multidata.error){
-            const stdby = multidata?.data?.[0]?.data||[]
-            setMaindata(stdby.map(x=>{
-                x.log= x.satisfactory? '[Success,{"error"...}]':x.log
-                x.failed = x.failed? "Ok": "Fail"
-                x.satisfactory = x.satisfactory? "Ok": "Fail"
-                x.seen = x.seen? "Ok": "Fail"
-                x.answered = x.answered? "Ok": "Fail"
+        if (!multidata.loading && !multidata.error) {
+            const stdby = multidata?.data?.[0]?.data || []
+            setMaindata(stdby.map(x => {
+                x.log = x.satisfactory ? '[Success,{"error"...}]' : x.log
+                x.failed = x.failed ? "Ok" : "Fail"
+                x.satisfactory = x.satisfactory ? "Ok" : "Fail"
+                x.seen = x.seen ? "Ok" : "Fail"
+                x.answered = x.answered ? "Ok" : "Fail"
                 return x;
-            })||[])
+            }) || [])
         }
     }, [multidata]);
-    
+
     return (<div style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div>
@@ -307,7 +306,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={multidata.loading || !(multidata?.data?.[0]?.data?.length||0 > 0)}
+                    disabled={multidata.loading || !(multidata?.data?.[0]?.data?.length || 0 > 0)}
                     onClick={() => setShowDialogGraphic(true)}
                     startIcon={<SettingsIcon />}
                 >
@@ -331,7 +330,7 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={multidata.loading || !(multidata?.data?.[0]?.data?.length||0 > 0)}
+                        disabled={multidata.loading || !(multidata?.data?.[0]?.data?.length || 0 > 0)}
                         onClick={() => setShowDialogGraphic(true)}
                         startIcon={<AssessmentIcon />}
                     >
@@ -347,8 +346,8 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
             />
         </div>}
         {view !== "GRID" && (
-            <>            
-            <div style={{ fontWeight: 500, padding: 16 }}>
+            <>
+                <div style={{ fontWeight: 500, padding: 16 }}>
                     {t(langKeys.graphic_report_of, { report: t(langKeys.report_hsmshipping), column: t((view.split("-")?.[3] || "summary")) })}
                 </div>
                 <Graphic
@@ -553,60 +552,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 </div>
                 <div style={{ position: 'relative', height: '100%' }}>
 
-                    <div style={{ width: 'calc(100% - 60px)', display: 'flex', background: 'white', padding: '5px 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>
 
-                        <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto' }}>
-                            <DateRangePicker
-                                open={openDateRangeCreateDateModal}
-                                setOpen={setOpenDateRangeCreateDateModal}
-                                range={dateRangeCreateDate}
-                                onSelect={setDateRangeCreateDate}
-                            >
-                                <Button
-                                    className={classes.itemDate}
-                                    startIcon={<CalendarIcon />}
-                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                                >
-                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                </Button>
-                            </DateRangePicker>
-
-                            <FieldSelect
-                                label={t(langKeys.channel)}
-                                variant="outlined"
-                                className={classes.filterComponent}
-                                data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
-                                valueDefault={selectedChannel}
-                                onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
-                                optionDesc="communicationchanneldesc"
-                                optionValue="communicationchannelid"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.user)}
-                                className={classes.filterComponent}
-                                valueDefault={selectedUser}
-                                onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.userid).join() : '')}
-                                variant="outlined"
-                                data={[{userid: -1, userdesc: "EXTERNAL"},...(multiaux?.data?.[3]?.data||[])]}
-                                optionDesc="userdesc"
-                                optionValue="userid"
-                                disabled={multiaux.loading}
-                            />
-
-
-                            <Button
-                                disabled={mainAux.loading}
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                onClick={() => fetchData()}
-                            >
-                                {t(langKeys.search)}
-                            </Button>
-
-                        </div>
-                    </div>
 
                     <TableZyx
                         columns={columns}
@@ -616,6 +562,61 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                         loading={mainAux.loading}
                         onClickRow={handleEdit}
                         download={true}
+                        ButtonsElement={() => (
+                            <>
+                                <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto' }}>
+                                    <DateRangePicker
+                                        open={openDateRangeCreateDateModal}
+                                        setOpen={setOpenDateRangeCreateDateModal}
+                                        range={dateRangeCreateDate}
+                                        onSelect={setDateRangeCreateDate}
+                                    >
+                                        <Button
+                                            className={classes.itemDate}
+                                            startIcon={<CalendarIcon />}
+                                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                        >
+                                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                        </Button>
+                                    </DateRangePicker>
+
+                                    <FieldSelect
+                                        label={t(langKeys.channel)}
+                                        variant="outlined"
+                                        className={classes.filterComponent}
+                                        data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
+                                        valueDefault={selectedChannel}
+                                        onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
+                                        optionDesc="communicationchanneldesc"
+                                        optionValue="communicationchannelid"
+                                    />
+                                    <FieldMultiSelect
+                                        label={t(langKeys.user)}
+                                        className={classes.filterComponent}
+                                        valueDefault={selectedUser}
+                                        onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                                        variant="outlined"
+                                        data={[{ userid: -1, userdesc: "EXTERNAL" }, ...(multiaux?.data?.[3]?.data || [])]}
+                                        optionDesc="userdesc"
+                                        optionValue="userid"
+                                        disabled={multiaux.loading}
+                                    />
+
+
+                                    <Button
+                                        disabled={mainAux.loading}
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                        style={{ width: 120, backgroundColor: "#55BD84" }}
+                                        onClick={() => fetchData()}
+                                    >
+                                        {t(langKeys.search)}
+                                    </Button>
+
+                                </div>
+                            </>
+                        )}
                         filterGeneral={false}
                     />
                 </div>
