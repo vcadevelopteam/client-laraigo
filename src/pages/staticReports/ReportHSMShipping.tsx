@@ -288,7 +288,6 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 x.satisfactory = x.satisfactory? "Ok": "Fail"
                 x.seen = x.seen? "Ok": "Fail"
                 x.answered = x.answered? "Ok": "Fail"
-                x.createdate= new Date(new Date(x.createdate).getTime() + 5 * 60 * 60 * 1000).toISOString();
                 return x;
             })||[])
         }
