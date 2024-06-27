@@ -330,7 +330,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [variablesAdditionalView, multiData[5]]);
     
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication', carouselIndex?: number) => {
-        console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption);
+        //console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption);
         const header = selectedOption ? selectedOption.key : '';
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
         //console.log('selectedOption', selectedOption, "variableType", variableNumber, "variableNumber", )
@@ -343,7 +343,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     [variableNumber]: value
                 };
                 setSelectedAuthVariable(newBodyVariableValues['authentication'] || '');
-                console.log(`desde condicional Handling body - variableNumber: ${variableNumber}, value: ${value}`);
                 return newBodyVariableValues;
             });
         } else if (variableType === 'header') {
@@ -356,8 +355,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 ...prevValues,
                 [variableNumber]: value
             }));
-            console.log(`desde condicional Handling card - variableNumber: ${variableNumber}, value: ${value}`);
-
         } else if (variableType === 'dynamicUrl') {
             setDynamicUrlValues(prevValues => ({
                 ...prevValues,
@@ -424,7 +421,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
                     updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
                 } else {
-                    console.log(`Invalid carousel index ${index} or missing carousel data for key: ${key}`);
+                    //console.log(`Invalid carousel index ${index} or missing carousel data for key: ${key}`);
                 }
             } else if (type === 'dynamicUrl') {
                 if (updatedTemplate.buttonsgeneric) {
@@ -553,32 +550,36 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
     
-    const renderDynamicUrlFields = (carouselIndex: Dictionary, row: any) => {
+    const renderDynamicUrlFields = (carouselIndex: Dictionary, row: any, buttons: Dictionary[]) => {    
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
-        const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item: Dictionary, index: Dictionary) => 
+        const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item: Dictionary, index: Dictionary) =>
             item.buttons.filter(button => button.btn.type === 'dynamic' && index === carouselIndex).map((button: Dictionary, btnIndex: Dictionary) => ({
                 button,
                 btnIndex,
                 carouselIndex: index
             }))
         ) || [];
-        const allDynamicButtons = [...dynamicButtons, ...carouselDynamicButtons];
-    
-        return allDynamicButtons.map((buttonData, index) => {
-            const key = buttonData.carouselIndex !== undefined ? 
-                `dynamicUrl-${buttonData.carouselIndex}-${buttonData.btnIndex}` : 
-                `dynamicUrl-${index + 1}`;
+        const allDynamicButtons = buttons.length ? buttons : [...dynamicButtons, ...carouselDynamicButtons];
 
+        return allDynamicButtons.map((buttonData, index) => {
+            const key = buttonData.carouselIndex !== undefined ?
+                `dynamicUrl-${buttonData.carouselIndex}-${buttonData.btnIndex}` :
+                `dynamicUrl-${index + 1}`;
+    
             let columnName;
     
             if (row) {
                 const fieldNumber = parseInt(variablesUrlView[index]?.variable.replace("field", ""), 10) - 2;
                 columnName = templateData.fields.columns[fieldNumber];
             } else {
-                const match = buttonData.button.btn.url.match(/{{(\d+)}}/);
-                if (match) {
-                    const variableNumber = parseInt(match[1], 10) - 2;
-                    columnName = templateData.fields.columns[variableNumber];
+                if (buttonData && buttonData.button) {
+                    const match = buttonData.button.btn.url.match(/{{(\d+)}}/);
+                    if (match) {
+                        const variableNumber = parseInt(match[1], 10) - 2;
+                        columnName = templateData.fields.columns[variableNumber];
+                    }
+                } else {
+                    console.error("buttonData or buttonData.button is undefined");
                 }
             }
     
@@ -586,7 +587,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 const defaultValue = getValueDefault('dynamicUrl', key);
                 columnName = defaultValue ? defaultValue.value : '';
             }
-    
+        
             return (
                 <div key={key}>
                     <p style={{ marginBottom: '3px' }}>{`Url Dinamico {{${index + 1}}}`}</p>
@@ -605,7 +606,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             );
         });
     };
-    
+    //console.log('templateToUse', templateToUse)    
     useEffect(() => {
         updateTemplate();
     }, [variableSelections, selectedAdditionalHeaders]);
@@ -874,15 +875,33 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                            <div style={{marginTop:'1rem'}}>
-                            {templateToUse.carouseldata?.map((item, index) => (
-                                <div key={`card-${index}`} style={{ marginBottom: '20px', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
-                                    <div style={{fontSize:'1.2rem', fontWeight:'bolder'}}>{`Card ${index + 1}`}</div>
-                                    <div className={classes.containerStyle}>                                       
-                                        {row ? (
-                                            variablesCarouselBubbleView[index]?.map((variable, variableIndex) => {
-                                                const fieldNumber = parseInt(variable.variable.replace("field", ""), 10) - 2;
-                                                const columnName = templateData.fields.columns[fieldNumber];
-                                                return (
+                                {templateToUse.carouseldata?.map((item, index) => (
+                                    <div key={`card-${index}`} style={{ marginBottom: '20px', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
+                                        <div style={{fontSize:'1.2rem', fontWeight:'bolder'}}>{`Card ${index + 1}`}</div>
+                                        <div className={classes.containerStyle}>                                       
+                                            {row ? (
+                                                variablesCarouselBubbleView[index]?.map((variable, variableIndex) => {
+                                                    const fieldNumber = parseInt(variable.variable.replace("field", ""), 10) - 2;
+                                                    const columnName = templateData.fields.columns[fieldNumber];
+                                                    return (
+                                                        <div key={`carousel-${index}-bubble-${variableIndex}`}>
+                                                            <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
+                                                            <FieldSelectDisabled
+                                                                variant="outlined"
+                                                                uset={true}
+                                                                className="col-12"
+                                                                data={availableData.map(header => ({ key: header, value: header }))}
+                                                                optionDesc="value"
+                                                                optionValue="key"
+                                                                valueDefault={columnName}
+                                                                onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                                                getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                                            />
+                                                        </div>
+                                                    );
+                                                })
+                                            ) : (
+                                                item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
                                                     <div key={`carousel-${index}-bubble-${variableIndex}`}>
                                                         <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
                                                         <FieldSelectDisabled
@@ -892,42 +911,41 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             data={availableData.map(header => ({ key: header, value: header }))}
                                                             optionDesc="value"
                                                             optionValue="key"
-                                                            valueDefault={columnName}
+                                                            valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
                                                             onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
                                                             getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                         />
                                                     </div>
-                                                );
-                                            })
-                                        ) : (
-                                            item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
-                                                <div key={`carousel-${index}-bubble-${variableIndex}`}>
-                                                    <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
-                                                    <FieldSelectDisabled
-                                                        variant="outlined"
-                                                        uset={true}
-                                                        className="col-12"
-                                                        data={availableData.map(header => ({ key: header, value: header }))}
-                                                        optionDesc="value"
-                                                        optionValue="key"
-                                                        valueDefault={getValueDefault('carousel', (variableIndex + 1).toString(), index)}
-                                                        onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
-                                                        getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                    />
-                                                </div>
-                                            ))
-                                        )}  
-                                    </div>                                       
-                                      
-                                    <div className={classes.containerStyle}>                                       
-                                         {item.header && (
-                                            row ? (
-                                                variablesCardImageView[index]?.map((variable, variableIndex) => {
-                                                    const fieldNumber = parseInt(variable.variable.replace("field", ""), 10) - 2;
-                                                    const columnName = templateData.fields.columns[fieldNumber];
-                                                    return (
-                                                        <div key={`cardImage-${index}-${variableIndex}`}>
-                                                            <p style={{ marginBottom: '3px' }}>{`Card Imagen {{${variableIndex + 1}}}`}</p>
+                                                ))
+                                            )}  
+                                        </div>                                       
+                                        
+                                        <div className={classes.containerStyle}>                                       
+                                            {item.header && (
+                                                row ? (
+                                                    variablesCardImageView[index]?.map((variable, variableIndex) => {
+                                                        const fieldNumber = parseInt(variable.variable.replace("field", ""), 10) - 2;
+                                                        const columnName = templateData.fields.columns[fieldNumber];
+                                                        return (
+                                                            <div key={`cardImage-${index}-${variableIndex}`}>
+                                                                <p style={{ marginBottom: '3px' }}>{`Card Imagen {{${variableIndex + 1}}}`}</p>
+                                                                <FieldSelectDisabled
+                                                                    variant="outlined"
+                                                                    uset={true}
+                                                                    className="col-12"
+                                                                    data={availableData.map(header => ({ key: header, value: header }))}
+                                                                    optionDesc="value"
+                                                                    optionValue="key"
+                                                                    valueDefault={columnName}
+                                                                    onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'cardImage', index)}
+                                                                    getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <div>
+                                                        <p style={{ marginBottom: '3px' }}>{`Card Imagen`}</p>
                                                             <FieldSelectDisabled
                                                                 variant="outlined"
                                                                 uset={true}
@@ -935,39 +953,29 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                 data={availableData.map(header => ({ key: header, value: header }))}
                                                                 optionDesc="value"
                                                                 optionValue="key"
-                                                                valueDefault={columnName}
-                                                                onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'cardImage', index)}
+                                                                valueDefault={getValueDefault('cardImage', (index + 1).toString())}
+                                                                onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
                                                                 getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                             />
-                                                        </div>
-                                                    );
-                                                })
-                                            ) : (
-                                                <div>
-                                                    <p style={{ marginBottom: '3px' }}>{`Card Imagen`}</p>
-                                                        <FieldSelectDisabled
-                                                            variant="outlined"
-                                                            uset={true}
-                                                            className="col-12"
-                                                            data={availableData.map(header => ({ key: header, value: header }))}
-                                                            optionDesc="value"
-                                                            optionValue="key"
-                                                            valueDefault={getValueDefault('cardImage', (index + 1).toString())}
-                                                            onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
-                                                            getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                        />
-                                                </div>
-                                            )
-                                        )}
-                                    </div>                                    
-                                    <div className={classes.containerStyle}>
-                                        {renderDynamicUrlFields(index, row)}
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>                                    
+                                        <div className={classes.containerStyle}>
+                                        {renderDynamicUrlFields(index, row, [])}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
                            </div>
+
+                           <div className={classes.containerStyle}>
+                                {renderDynamicUrlFields(null, row, templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [])}
+                            </div>
+
                         </FormControl>
     
+                      
+
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                             <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>
