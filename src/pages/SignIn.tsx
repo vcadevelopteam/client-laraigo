@@ -40,7 +40,7 @@ import SamlLogin from 'components/fields/SamlLogin';
 
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 // Declara la nueva propiedad en el objeto `window`
-// let isClaroEnviroment = apiUrls.LOGIN_URL.includes("stagingapix")
+const enableSaml = apiUrls.LOGIN_URL.includes("claroapi")
 let isClaroEnviroment = false
 const debugParam = new URLSearchParams(window.location.search).get('debug');
 if (debugParam === "true") isClaroEnviroment = !isClaroEnviroment
@@ -415,10 +415,11 @@ const SignIn = () => {
         }
     }, [resLogin]);
 
-    const onSamlLoginSuccess = (data: ISamlAuthResponse) => {
+    const onSamlLoginSuccess = async (data: ISamlAuthResponse) => {
         if (data && data.code){
             setshowError(true);
-            dispatch(login(null, null, null, null, null, data.code));
+            const token = await recaptchaRef?.current?.executeAsync();
+            dispatch(login(null, null, null, null, token, data.code));
         }
     }
 
@@ -562,6 +563,13 @@ const SignIn = () => {
                                                             onFailure={onGoogleLoginFailure}
                                                             onSuccess={onGoogleLoginSucess}
                                                         />
+                                                        {enableSaml && (
+                                                            <SamlLogin
+                                                                buttonText={t(langKeys.login_with_isam)}
+                                                                onFailure={onSamlLoginError}
+                                                                onSuccess={onSamlLoginSuccess}
+                                                            />
+                                                        )}
                                                         <Button
                                                             variant="outlined"
                                                             fullWidth
