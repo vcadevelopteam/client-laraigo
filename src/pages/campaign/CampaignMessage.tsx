@@ -140,7 +140,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         };
 
         const campaignData = data[0];
-        console.log('campaignData', multiData[4])
+        //console.log('campaignData', multiData[4])
 
         if (campaignData) {
             const bodyVariables = detectVariablesField(campaignData.message);
@@ -272,7 +272,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setAdditionalVariableValues(newAdditionalVariableValues);
             setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
             setSelectedAuthVariable(processedData.selectedAuthVariable);
-            console.log('newHeaderValue', newBodyVariableValues)
+            //console.log('newHeaderValue', newBodyVariableValues)
 
             if (combinedData.fields && combinedData.fields.primarykey) {
                 setSelectedHeader(combinedData.fields.primarykey);
@@ -315,7 +315,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication', carouselIndex?: number) => {
         const header = selectedOption ? selectedOption.key : '';
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
-        console.log('selectedOption', selectedOption, "variableType", variableNumber, "variableNumber", )
+        //console.log('selectedOption', selectedOption, "variableType", variableNumber, "variableNumber", )
 
         if (variableType === 'video') {
             setVideoHeaderValue(value);
@@ -400,7 +400,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             } else if (type === 'header' && updatedTemplate.header) {
                 updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
             } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
-                const index = parseInt(carouselIndexStr) - 1;
+                const index = parseInt(carouselIndexStr, 10);
                 if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
                     updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
                 }
@@ -448,12 +448,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     });
                 }
             } else if (type === 'carousel' && updatedTemplate.carouseldata) {
-                const index = parseInt(carouselIndexStr);
+                const index = parseInt(carouselIndexStr, 10);
                 if (!isNaN(index)) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 }
             } else if (type === 'bubble' && updatedTemplate.carouseldata) {
-                const index = parseInt(carouselIndexStr);
+                const index = parseInt(carouselIndexStr, 10);
                 if (!isNaN(index)) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 }
@@ -511,9 +511,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
             header => `field${headers.indexOf(header) + 1}`
         );
-
-        //console.log('final updatedTemplate:', updatedTemplate);        
-
+    
+        console.log('final updatedTemplate:', updatedTemplate);        
+    
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
             ...prev,
@@ -528,6 +528,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
         }));
     }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
+    
+    
     
     const renderDynamicUrlFields = (carouselIndex: Dictionary, row: Dictionary) => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
