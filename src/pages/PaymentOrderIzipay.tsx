@@ -244,10 +244,10 @@ export const PaymentOrderIzipay: FC = () => {
         }
 
         if (payMethod) {
-            payMethod = "CARD,QR,YAPE_CODE";
+            payMethod = payMethod.slice(0, -1);
         }
         else {
-            payMethod = payMethod.slice(0, -1);
+            payMethod = "CARD,QR,YAPE_CODE";
         }
 
         script.setAttribute("type", "module");
