@@ -242,7 +242,6 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
         e.stopPropagation();
         setAnchorEl(null);
     };
-
     return (
         <div className={classes.main}>
             <Button

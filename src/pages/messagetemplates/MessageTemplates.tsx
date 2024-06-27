@@ -230,7 +230,6 @@ const MessageTemplates: FC = () => {
                                 color = 'black';
                                 break;
                         }
-
                         return (
                             <span style={{ color: color, textAlign: 'center' }}>
                                 {statusText.toUpperCase()}

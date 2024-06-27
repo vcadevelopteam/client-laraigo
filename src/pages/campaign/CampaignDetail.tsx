@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
@@ -101,6 +100,16 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
     ];
+    const [idAux, setIdAux] = useState(0)
+    const [templateAux, setTemplateAux] = useState<Dictionary>({})
+    const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
+
+    useEffect(() => {
+        if (jsonPersons) {
+            //console.log('jsonPersons in CampaignDetail:', jsonPersons);
+        }
+    }, [jsonPersons]);
+    
 
     useEffect(() => {
         if (row !== null) {
@@ -158,7 +167,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         messagetemplatenamespace: data?.messagetemplatenamespace,
                         messagetemplatetype: data?.messagetemplatetype,
                         messagetemplateheader: data?.messagetemplateheader || {},
-                        messagetemplatebuttons: data?.messagetemplatebuttons || [],
+                        messagetemplatebuttons: detaildata.messagetemplatebuttons || [],                        
                         messagetemplatefooter: data?.messagetemplatefooter || '',
                         messagetemplateattachment: data?.messagetemplateattachment || '',
                         messagetemplatelanguage: data?.messagetemplatelanguage || '',
@@ -167,6 +176,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         batchjson: data?.batchjson || [],
                         fields: { ...new SelectedColumns(), ...data?.fields },
                         operation: 'UPDATE',
+                        carouseljson: data?.carouseljson || [],
+                        variableshidden: data?.variableshidden || [],
                         person: mainResult.multiData.data[5] && mainResult.multiData.data[5].success ? mainResult.multiData.data[5].data : []
                     });
                     setFrameProps({
@@ -189,6 +200,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
+    
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
             let splitMessage = message.split('{{');
             messageVariables.forEach((v, i) => {
@@ -196,27 +208,81 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             });
             message = splitMessage.join('{{');
         }
+    
+        let localtablevariable = [];
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
-                // field i + 2 because i + 1 is used for primary key, pccowner
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                    let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
-                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
+                    const localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values());
+                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v, i) => {
                         message = message.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
                     });
-                }
-                else {
-                    let localtablevariable = Array.from(new Set([
+                } else {
+                    localtablevariable = Array.from(new Set([
                         ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
                         ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
                         ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
                     ]));
                     localtablevariable = localtablevariable.map(x => x.slice(2, -2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
                     if (Object.keys(usedTablevariable).length > 0) {
-                        Object.entries(usedTablevariable).forEach((v: any) => {
+                        Object.entries(usedTablevariable).forEach((v) => {
                             subject = subject.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                             header = header.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                             message = message.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                        });
+                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x);
+                    }
+                    localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
+                        ...actv,
+                        [`field${tvi + 2}`]: tv
+                    }), {});
+                    setUsedTableVariable(localtablevariable);
+                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v, i) => {
+                        subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                        header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                        message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                    });
+                }
+            }
+        } else if (['EXTERNAL'].includes(detaildata.source || '')) {
+            tablevariable.forEach((v, i) => {
+                subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+                header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+                message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+            });
+        }
+    
+        return { subject, header, message };
+    };
+    
+
+    const formatMessageGeneric = (message:string) => {
+        let modifiedMessage = message; 
+    
+        if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+            let splitMessage = message.split('{{');
+            messageVariables.forEach((v, i) => {
+                splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
+            });
+            modifiedMessage = splitMessage.join('{{');
+        }
+    
+        if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
+            if (detaildata.person && detaildata.person?.length > 0) {
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                    let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
+                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
+                        modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
+                    });
+                }
+                else {
+                    let localtablevariable = Array.from(new Set([
+                        ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
+                    ]));
+                    localtablevariable = localtablevariable.map(x => x.slice(2, -2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
+                    if (Object.keys(usedTablevariable).length > 0) {
+                        Object.entries(usedTablevariable).forEach((v: any) => {
+                            modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
                         });
                         localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
                     }
@@ -226,21 +292,18 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     }), {});
                     setUsedTableVariable(localtablevariable);
                     tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
-                        subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                        header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                        message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                        modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
                     });
                 }
             }
         }
         else if (['EXTERNAL'].includes(detaildata.source || '')) {
             tablevariable.forEach((v: any, i: number) => {
-                subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
-                header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
-                message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+                modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
         }
-        return { subject, header, message }
+    
+        return modifiedMessage;
     }
     const formatMessageGeneric = (message:string) => {
         let modifiedMessage = message; 
@@ -293,77 +356,102 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         return modifiedMessage;
     }
 
-    const checkValidation = () => {
+    const checkValidation = () => {        
         if (!frameProps.valid[0]) {
+            console.error("Validation failed: required fields are missing in the initial section.");
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
-        }
-        else if (!frameProps.valid[1]) {
+        } else if (!frameProps.valid[1]) {
+            console.error("Validation failed: missing people in the campaign.");
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_people) }));
-        }
-        else {
+        } else {
             let valid = true;
+    
             if (detaildata.messagetemplatetype === 'MULTIMEDIA'
                 && (detaildata?.messagetemplateheader?.type || '') !== ''
                 && detaildata.messagetemplateheader?.value === '') {
                 valid = false;
+                console.error("Validation failed: missing header for multimedia message.");
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
-            let newmessages = formatMessage();
-            let localsubject = newmessages.subject || '';
-            let localheader = newmessages.header || '';
-            let localmessage = newmessages.message || '';
-
+    
+            const newmessages = formatMessage();
+            const localsubject = newmessages.subject || '';
+            const localheader = newmessages.header || '';
+            const localmessage = newmessages.message || '';   
+    
             let elemVariables: string[] = [];
             let errorIndex = null;
 
-            let auxbuttons = detaildata
-            if (auxbuttons?.messagetemplatebuttons) {
-                auxbuttons.messagetemplatebuttons.forEach((button: any) => {
-                    if (button.payload) {
-                        button.payload = formatMessageGeneric(button.payload);
-                    }
-                });
-            }
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                let vars = extractVariables(localsubject);
+                const vars = extractVariables(localsubject);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
+                    console.error("Validation failed: missing header variable in email communication channel.");
                     dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.missing_header)} ${vars[errorIndex]}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+    
             if (detaildata.messagetemplatetype === 'MULTIMEDIA' && localheader !== '') {
-                let vars = extractVariables(localheader);
+                const vars = extractVariables(localheader);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1 || localheader.includes('{{}}')) {
                     valid = false;
+                    console.error("Validation failed: invalid parameter in multimedia message header.");
                     dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+    
             if (localmessage !== '') {
-                let vars = extractVariables(localmessage)
+                const vars = extractVariables(localmessage);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
+    
                 if (errorIndex !== -1 || localmessage.includes('{{}}')) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
+    
+                    const errorDetail = {
+                        localmessage,
+                        vars,
+                        errorIndex,
+                        problematicVariable: vars[errorIndex],
+                        tableDescriptions: tablevariable.map(t => t.description),
+                    };
+    
+                    console.error("Validation Error Details:", errorDetail);                       
+                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;    
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
                 }
+    
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+    
+            if (detaildata.executiontype === 'SCHEDULED') {
+                const { date, time, quantity } = detaildata.batchjson || {};
+                if (!date || !time || !quantity) {
+                    valid = false;
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
+                }
+            }
+    
             setDetaildata({
                 ...detaildata,
                 variablereplace: elemVariables,
                 batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
                 subject: newmessages.subject,
                 messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
+                messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
+                carouseljson: detaildata.carouseljson,
+                variableshidden: detaildata.variableshidden,
                 message: newmessages.message,
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons
             });
+    
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
         }
     }
-
+    
     const buildingMembers = () => {
         let campaignMemberList: any[] = [];
         switch (detaildata.source) {
@@ -399,8 +487,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }, []);
                 break;
             case 'EXTERNAL':
-                campaignMemberList = detaildata.person?.reduce((ap, p) => {
-                    ap.push({
+                campaignMemberList = detaildata.jsonData?.map((p) => {
+                    return {
                         id: 0,
                         personid: 0,
                         personcommunicationchannel: '',
@@ -425,11 +513,11 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         field15: p[Object.keys(p)[14]] || '',
                         batchindex: 0,
                         operation: detaildata.operation
-                    })
-                    return ap;
-                }, []);
+                    };
+                });
                 break;
-            case 'PERSON': case 'LEAD':
+            case 'PERSON':
+            case 'LEAD':
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                     campaignMemberList = detaildata.person?.reduce((ap, p) => {
                         ap.push({
@@ -499,24 +587,31 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 break;
         }
         if (detaildata.executiontype === 'SCHEDULED') {
-            let batchjsontemp = [...(detaildata.batchjson || [])];
-            batchjsontemp = batchjsontemp.map((d: any, i: number) => ({ ...d, batchindex: i + 1 }));
-            setDetaildata({
-                ...detaildata,
-                batchjson: batchjsontemp,
-            });
-            batchjsontemp.reduce((bda, bdc, i) => {
-                campaignMemberList.filter((cm, j) => j >= bda && j < bda + parseInt(bdc.quantity)).map(cm => cm.batchindex = bdc.batchindex);
-                return bda + parseInt(bdc.quantity);
-            }, 0);
-        }
+            const batchjson = detaildata.batchjson?.[0] || {};
+            const { date, time, quantity } = batchjson;
+            if (date && time && quantity) {
+                const newBatchjson = [{
+                    date,
+                    time,
+                    quantity,
+                    batchindex: 1
+                }];
+                setDetaildata({
+                    ...detaildata,
+                    batchjson: newBatchjson,
+                });
+                campaignMemberList.forEach((cm, j) => {
+                    if (j < quantity) {
+                        cm.batchindex = 1;
+                    }
+                });
+            }
+        }    
         setCampaignMembers(campaignMemberList);
         setSave('SUBMIT');
     }
 
-    const saveCampaign = (data: any) => {               
-        dispatch(execute(insCampaign({...data})));
-    }
+    const saveCampaign = (data: any) => dispatch(execute(insCampaign(data)));
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
         detail: [...data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }))]
@@ -527,29 +622,32 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             dispatch(showBackdrop(true));
             setSave('PARENT');
             saveCampaign(detaildata);
-        }
-        let errormessage = false
-        if(detaildata.operation ==="UPDATE"){
-            if(row?.startdate !== detaildata.startdate){
-                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+        };
+    
+        let errormessage = false;
+        if(detaildata.operation === "UPDATE") {
+            if(row?.startdate !== detaildata.startdate) {
+                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
             }
-            if(row?.enddate !== detaildata.enddate){
-                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+            if(row?.enddate !== detaildata.enddate) {
+                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
             }
-        }else{            
-            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
-            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true
+        } else {
+            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
+            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
         }
-        if(errormessage){
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }))
-        }else{
+    
+        if(errormessage) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }));
+        } else {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
                 callback
-            }))
+            }));
         }
     };
+    
 
     useEffect(() => {
         if (save === 'VALIDATION') {
@@ -727,6 +825,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    setIdAux={setIdAux}
+                    setTemplateAux={setTemplateAux}
                 />
                 : null}
             {pageSelected === 1 ?
@@ -742,6 +842,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    idAux={idAux}
+                    templateAux={templateAux}
+                    setJsonPersons={setJsonPersons}
                 />
                 : null}
             {pageSelected === 2 ?
@@ -760,8 +863,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setSave={setSave}
                     messageVariables={messageVariables}
                     setMessageVariables={setMessageVariables}
-                    dataButtons={dataButtons}
-                    setDataButtons={setDataButtons}
                 />
                 : null}
         </div>

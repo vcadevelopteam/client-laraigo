@@ -6085,6 +6085,7 @@ export const langKeys = {
   expectedValueConfig: 'expectedValueConfig',
   expected: 'expected',
   numbers: 'numbers',
+<<<<<<< HEAD
   corporate: 'corporate',
   cancelassistantcreation: 'cancelassistantcreation',
   cancelassistantedit: 'cancelassistantedit',
@@ -6105,6 +6106,8 @@ export const langKeys = {
   tmeDescription: 'tmeDescription',
   tmrDescription: 'tmrDescription',
 
+=======
+>>>>>>> feature/RLA511
   quality: 'quality',
   messageslimit: 'messageslimit',
   templatesdeletemessage: 'templatesdeletemessage',
@@ -6141,6 +6144,7 @@ export const langKeys = {
   validityperiodhelptext: 'validityperiodhelptext',
   bubblemessage: 'bubblemessage',
   bubblemessagetext: 'bubblemessagetext',
+<<<<<<< HEAD
   code_table: 'code_table',
   codes_table_helper: 'codes_table_helper',
   tracking_fields: 'tracking_fields',
@@ -6194,6 +6198,27 @@ export const langKeys = {
   templateidentifier: "templateidentifier",
   templatequalitytext: "templatequalitytext",
   messageslimittext: "messageslimittext",
+=======
+
+  campaign_title_desc: 'campaign_title_desc',
+  campaign_description_desc: 'campaign_description_desc',
+  campaign_startdate_desc: 'campaign_startdate_desc',
+  campaign_enddate_desc: 'campaign_enddate_desc',
+  campaign_origin_desc: 'campaign_origin_desc',
+  campaign_executiontype_desc: 'campaign_executiontype_desc',
+  campaign_group_desc: 'campaign_group_desc',
+  campaign_channel_desc: 'campaign_channel_desc',
+  campaign_comunicationtemplate_desc: 'campaign_comunicationtemplate_desc',
+  campaign_status_desc: 'campaign_status_desc',
+  campaign_messagetype_desc: 'campaign_messagetype_desc',
+  campaign_execution_date: 'campaign_execution_date',
+  campaign_execution_time: 'campaign_execution_time',
+
+  campaign_templatepreview: 'campaign_templatepreview',
+  programmed: 'programmed',
+  contactdetails: 'contactdetails',
+
+>>>>>>> feature/RLA511
 };
 
 export type LangKeys = typeof langKeys;

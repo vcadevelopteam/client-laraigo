@@ -1623,7 +1623,7 @@ const translation: LangKeys = {
   blacklist: 'Blacklist',
   executiontype: 'Tipo de ejecución',
   manual: 'Manual',
-  scheduled: 'Programar',
+  scheduled: 'Programada',
   source: 'Fuente',
   datasource_internal: 'Interna',
   datasource_external: 'Externa',

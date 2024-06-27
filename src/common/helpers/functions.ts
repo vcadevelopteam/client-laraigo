@@ -1,6 +1,7 @@
 /* eslint-disable no-eval */
 /* eslint-disable no-useless-escape */
 import { Dictionary } from "@types";
+import { showSnackbar } from 'store/popus/actions';
 // import * as XLSX from 'xlsx';
 
 export const contactCalculateList = [
@@ -612,6 +613,86 @@ export const uploadExcelBuffer = (buffer: any) => {
             res(rowsx)
         })      
     })
+}
+
+export function uploadExcelCampaign(file: any, dispatch: any, owner: any = {}) {
+    return new Promise((res, rej) => {
+        import('xlsx').then(XLSX => {
+            var reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = (event: any) => {
+                var data = event.target.result;
+                let workbook = XLSX.read(data, { type: 'binary', cellDates: true });
+                const wsname = workbook.SheetNames[0];
+                let sheet = workbook.Sheets[wsname];
+                let sheetArray = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true });
+
+                let headers = sheetArray[0];
+                const containsRequiredOrOptional = headers.some((header: string) => header.includes('|Opcional|') || header.includes('|Obligatorio|'));
+
+                if (containsRequiredOrOptional) {
+                    headers = sheetArray[1];
+                    sheetArray = sheetArray.slice(2);
+                } else {
+                    sheetArray = sheetArray.slice(1);
+                }
+
+                const uniqueHeaders = new Set<string>();
+                const duplicateHeaders = new Set<string>();
+
+                headers.forEach((header: string) => {
+                    if (uniqueHeaders.has(header)) {
+                        duplicateHeaders.add(header);
+                    } else {
+                        uniqueHeaders.add(header);
+                    }
+                });
+
+                if (duplicateHeaders.size > 0) {
+                    const duplicatesArray = Array.from(duplicateHeaders);
+                    const duplicatesMessage = duplicatesArray.join(', ');
+                    dispatch(showSnackbar({ show: true, severity: "warning", message: `Se eliminaron las filas duplicadas encontradas para los headers: "${duplicatesMessage}"` }));
+                    headers = headers.filter((header: string, index: number) => headers.indexOf(header) === index);
+                }
+
+                let rowsx = sheetArray.map((row: any[]) =>
+                    headers.reduce((obj: any, header: string, index: number) => {
+                        if (row[index] instanceof Date) {
+                            const dateValue = XLSX.SSF.format('dd/mm/yyyy', row[index]);
+                            obj[header.trim()] = dateValue;
+                        } else {
+                            obj[header.trim()] = row[index];
+                        }
+                        return obj;
+                    }, {})
+                );
+
+                rowsx = rowsx.filter(row => {
+                    return Object.values(row).some(value => value !== undefined && value !== '');
+                });
+
+                const uniqueRows = new Map<string, any>();
+                const duplicatedRows = new Set<string>();
+
+                rowsx.forEach(row => {
+                    const rowString = JSON.stringify(row);
+                    if (uniqueRows.has(rowString)) {
+                        duplicatedRows.add(rowString);
+                    } else {
+                        uniqueRows.set(rowString, row);
+                    }
+                });
+
+                if (duplicatedRows.size > 0) {
+                    dispatch(showSnackbar({ show: true, severity: "warning", message: "Se eliminaron personas duplicadas" }));
+                }
+
+                rowsx = Array.from(uniqueRows.values());
+
+                res(rowsx);
+            };
+        });
+    });
 }
 
 export const dateToLocalDate = (date: string, returnType = 'string'): string | Date => {
