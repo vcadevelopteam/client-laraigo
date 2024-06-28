@@ -1431,7 +1431,7 @@ export const insCampaign = ({
     carouseljson,
     variableshidden, 
     selectedColumns
-}: Dictionary): IRequestBody => ({
+}: Dictionary, membercount: number = 0): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
     parameters: {
         id,
@@ -1464,6 +1464,8 @@ export const insCampaign = ({
         operation,
         carouseljson: JSON.stringify(carouseljson),
         variableshidden: JSON.stringify(variableshidden),
+        membercount,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 
