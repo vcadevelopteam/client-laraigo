@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
+import { extractVariables, getCampaignMemberSel, getCampaignSel, getCampaignStart, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
@@ -11,7 +11,7 @@ import { CampaignMessage } from './CampaignMessage';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Button, Tabs } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
-import { AntTab, TemplateBreadcrumbs, TitleDetail } from 'components';
+import { AntTab, AntTabPanel, AntTabPanelAux, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 
 interface RowSelected {
@@ -78,24 +78,19 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
+    const [catchPersonTab, setcatchPersonTab] = useState(false);
     const [pageSelected, setPageSelected] = useState<number>(0);
     const [auxData, setAuxData] = useState<Dictionary[]>([]);
     const [detaildata, setDetaildata] = useState<ICampaign>({});
     const [waitView, setWaitView] = useState(false);
-
     const executeRes = useSelector(state => state.main.execute);
     const [save, setSave] = useState('');
     const [campaignMembers, setCampaignMembers] = useState<any[]>([]);
-
     const [tablevariable, setTableVariable] = useState<any[]>([]);
     const [usedTablevariable, setUsedTableVariable] = useState<any>({});
-
     const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
-
     const [messageVariables, setMessageVariables] = useState<any[]>([]);
-
     const [dataButtons, setDataButtons] = useState<any[]>([])
-
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
@@ -103,13 +98,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [idAux, setIdAux] = useState(0)
     const [templateAux, setTemplateAux] = useState<Dictionary>({})
     const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
-
-    useEffect(() => {
-        if (jsonPersons) {
-            //console.log('jsonPersons in CampaignDetail:', jsonPersons);
-        }
-    }, [jsonPersons]);
-    
 
     useEffect(() => {
         if (row !== null) {
@@ -167,7 +155,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         messagetemplatenamespace: data?.messagetemplatenamespace,
                         messagetemplatetype: data?.messagetemplatetype,
                         messagetemplateheader: data?.messagetemplateheader || {},
-                        messagetemplatebuttons: detaildata.messagetemplatebuttons || [],                        
+                        messagetemplatebuttons: detaildata.messagetemplatebuttons || [],
                         messagetemplatefooter: data?.messagetemplatefooter || '',
                         messagetemplateattachment: data?.messagetemplateattachment || '',
                         messagetemplatelanguage: data?.messagetemplatelanguage || '',
@@ -196,11 +184,12 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }, [mainResult, waitView]);
 
+    console.log("save", save, "pageSelected", pageSelected)
     const formatMessage = () => {
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
-    
+
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
             let splitMessage = message.split('{{');
             messageVariables.forEach((v, i) => {
@@ -208,7 +197,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             });
             message = splitMessage.join('{{');
         }
-    
+
         let localtablevariable = [];
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
@@ -251,14 +240,14 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
         }
-    
+
         return { subject, header, message };
     };
-    
 
-    const formatMessageGeneric = (message:string) => {
-        let modifiedMessage = message; 
-    
+
+    const formatMessageGeneric = (message: string) => {
+        let modifiedMessage = message;
+
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
             let splitMessage = message.split('{{');
             messageVariables.forEach((v, i) => {
@@ -266,7 +255,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             });
             modifiedMessage = splitMessage.join('{{');
         }
-    
+
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
@@ -302,11 +291,11 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
         }
-    
+
         return modifiedMessage;
     }
 
-    const checkValidation = () => {        
+    const checkValidation = () => {
         if (!frameProps.valid[0]) {
             console.error("Validation failed: required fields are missing in the initial section.");
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
@@ -315,7 +304,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_people) }));
         } else {
             let valid = true;
-    
+
             if (detaildata.messagetemplatetype === 'MULTIMEDIA'
                 && (detaildata?.messagetemplateheader?.type || '') !== ''
                 && detaildata.messagetemplateheader?.value === '') {
@@ -323,15 +312,15 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 console.error("Validation failed: missing header for multimedia message.");
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
-    
+
             const newmessages = formatMessage();
             const localsubject = newmessages.subject || '';
             const localheader = newmessages.header || '';
-            const localmessage = newmessages.message || '';   
-    
+            const localmessage = newmessages.message || '';
+
             let elemVariables: string[] = [];
             let errorIndex = null;
-    
+
             const auxbuttons = detaildata;
             if (auxbuttons?.messagetemplatebuttons) {
                 auxbuttons.messagetemplatebuttons.forEach((button: any) => {
@@ -340,7 +329,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     }
                 });
             }
-    
+
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                 const vars = extractVariables(localsubject);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
@@ -351,7 +340,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
-    
+
             if (detaildata.messagetemplatetype === 'MULTIMEDIA' && localheader !== '') {
                 const vars = extractVariables(localheader);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
@@ -362,14 +351,14 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
-    
+
             if (localmessage !== '') {
                 const vars = extractVariables(localmessage);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-    
+
                 if (errorIndex !== -1 || localmessage.includes('{{}}')) {
                     valid = false;
-    
+
                     const errorDetail = {
                         localmessage,
                         vars,
@@ -377,15 +366,15 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         problematicVariable: vars[errorIndex],
                         tableDescriptions: tablevariable.map(t => t.description),
                     };
-    
-                    console.error("Validation Error Details:", errorDetail);                       
-                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;    
+
+                    console.error("Validation Error Details:", errorDetail);
+                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;
                     dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
                 }
-    
+
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
-    
+
             if (detaildata.executiontype === 'SCHEDULED') {
                 const { date, time, quantity } = detaildata.batchjson || {};
                 if (!date || !time || !quantity) {
@@ -393,7 +382,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
                 }
             }
-    
+
             setDetaildata({
                 ...detaildata,
                 variablereplace: elemVariables,
@@ -405,12 +394,12 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 variableshidden: detaildata.variableshidden,
                 message: newmessages.message,
             });
-    
+
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
         }
     }
-    
-    const buildingMembers = () => {
+
+    const buildingMembers = (onlyCheck: boolean = false) => {
         let campaignMemberList: any[] = [];
         switch (detaildata.source) {
             case 'INTERNAL':
@@ -564,52 +553,65 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     }
                 });
             }
-        }    
-        setCampaignMembers(campaignMemberList);
-        setSave('SUBMIT');
+        }
+        if (!onlyCheck) {
+            setCampaignMembers(campaignMemberList);
+            setSave('SUBMIT');
+        }
+        return campaignMemberList;
     }
-    
+
     useEffect(() => {
         if (detaildata.source === 'EXTERNAL' && detaildata.jsonData) {
             setJsonPersons(detaildata.jsonData);
-            buildingMembers(); 
+            buildingMembers();
         }
     }, [detaildata.jsonData]);
-    
 
-    const saveCampaign = (data: any) => {
-        dispatch(execute(insCampaign({...data})));
+    const [campaignId, setCampaignId] = useState<number | null>(null);
+
+    const handleStart = (id: number) => {
+        dispatch(execute(getCampaignStart(id)));
     };
-    
+
+    const saveCampaign = (data: any, memberscount: number) => {
+        dispatch(execute(insCampaign({ ...data }, memberscount)));
+    };
+
     const saveCampaignMembers = (data: any, campaignid: number) => {
         const membersData = data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }));
         return dispatch(execute({
             header: null,
             detail: membersData
         }, true));
-    }
+    };
 
     const onSubmit = () => {
+        const members = buildingMembers(true);
+        if (members.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: "No hay miembros ha insertar." }));
+            return;
+        }
         const callback = () => {
             dispatch(showBackdrop(true));
             setSave('PARENT');
-            saveCampaign(detaildata);
+            saveCampaign(detaildata, members.length);
         };
-    
+
         let errormessage = false;
-        if(detaildata.operation === "UPDATE") {
-            if(row?.startdate !== detaildata.startdate) {
-                if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
+        if (detaildata.operation === "UPDATE") {
+            if (row?.startdate !== detaildata.startdate) {
+                if (Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage = true;
             }
-            if(row?.enddate !== detaildata.enddate) {
-                if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
+            if (row?.enddate !== detaildata.enddate) {
+                if (Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage = true;
             }
         } else {
-            if(Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
-            if(Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage=true;
+            if (Math.abs(Number(new Date(String(detaildata.startdate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage = true;
+            if (Math.abs(Number(new Date(String(detaildata.enddate))) - Number(new Date())) / (1000 * 60 * 60 * 24 * 365) > 1) errormessage = true;
         }
-    
-        if(errormessage) {
+
+        if (errormessage) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_campaign_date) }));
         } else {
             dispatch(manageConfirmation({
@@ -619,7 +621,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             }));
         }
     };
-    
 
     useEffect(() => {
         if (save === 'VALIDATION') {
@@ -637,28 +638,35 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 if (!executeRes.loading && !executeRes.error) {
                     setSave('MEMBERS');
                     saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
+                    setCampaignId(executeRes.data[0]?.p_campaignid);
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
             }
             else if (save === 'MEMBERS') {
                 if (!executeRes.loading && !executeRes.error) {
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
                     fetchData();
                     dispatch(showBackdrop(false));
                     setViewSelected("view-1");
+
+                    // if (detaildata.executiontype === "SCHEDULED" && campaignId !== null) {
+                    //     handleStart(campaignId);
+                    //     setCampaignId(null);
+                    // }
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
             }
         }
-    }, [save, executeRes])
+    }, [save, executeRes]);
+
 
     useEffect(() => {
         if (pageSelected === 2) {
@@ -732,6 +740,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     ]);
                     break;
             }
+        } else if (pageSelected === 1) {
+            setcatchPersonTab(true)
         }
     }, [pageSelected]);
 
@@ -784,7 +794,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 <AntTab label={t(langKeys.person_plural)} />
                 <AntTab label={t(langKeys.message)} />
             </Tabs>
-            {pageSelected === 0 ?
+            <AntTabPanel currentIndex={0} index={pageSelected}>
                 <CampaignGeneral
                     row={row}
                     edit={edit}
@@ -800,26 +810,28 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setIdAux={setIdAux}
                     setTemplateAux={setTemplateAux}
                 />
-                : null}
-            {pageSelected === 1 ?
-                <CampaignPerson
-                    row={row}
-                    edit={edit}
-                    auxdata={auxData}
-                    detaildata={detaildata}
-                    setDetaildata={setDetaildata}
-                    multiData={mainResult.multiData.data}
-                    fetchData={fetchData}
-                    frameProps={frameProps}
-                    setFrameProps={setFrameProps}
-                    setPageSelected={setPageSelected}
-                    setSave={setSave}
-                    idAux={idAux}
-                    templateAux={templateAux}
-                    setJsonPersons={setJsonPersons}
-                />
-                : null}
-            {pageSelected === 2 ?
+            </AntTabPanel>
+            {catchPersonTab && (
+                <AntTabPanelAux currentIndex={1} index={pageSelected}>
+                    <CampaignPerson
+                        row={row}
+                        edit={edit}
+                        auxdata={auxData}
+                        detaildata={detaildata}
+                        setDetaildata={setDetaildata}
+                        multiData={mainResult.multiData.data}
+                        fetchData={fetchData}
+                        frameProps={frameProps}
+                        setFrameProps={setFrameProps}
+                        setPageSelected={setPageSelected}
+                        setSave={setSave}
+                        idAux={idAux}
+                        templateAux={templateAux}
+                        setJsonPersons={setJsonPersons}
+                    />
+                </AntTabPanelAux>
+            )}
+            <AntTabPanel currentIndex={2} index={pageSelected}>
                 <CampaignMessage
                     row={row}
                     edit={edit}
@@ -840,7 +852,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     templateAux={templateAux}
                     jsonPersons={jsonPersons}
                 />
-                : null}
+            </AntTabPanel>
         </div>
     )
 }

@@ -319,7 +319,7 @@ const Campaign: React.FC<CampaignProps> = ({
                         return null;
                     }
                 
-                    const { id, status, startdate, enddate,executiontype } = row.original;
+                    const { id, status, startdate, enddate,executiontype, datestart, hourstart  } = row.original;
                 
                     if (
                         dateToLocalDate(startdate, 'date') <= todayDate() &&
@@ -358,20 +358,22 @@ const Campaign: React.FC<CampaignProps> = ({
                         } else {
                             return null;
                         }
-                    } else if(executiontype === "SCHEDULED" && status === 'EJECUTANDO'){
-                        return <Button
-                            className={classes.buttonProgrammed}
-                            variant="contained"
-                            color="primary"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleStatus(id);
-                            }}
-                            style={{ backgroundColor: "#efe4b0" }}
-                        >
-                            <Trans i18nKey={langKeys.programmed} />
-                        </Button>
-                    }else{
+                    } else if ((status === "EJECUTANDO")) {
+                        return (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    dispatch(showSnackbar({ show: true, severity: "success", message: `Campaña ya programada el ${datestart}, a las ${hourstart}`}));
+                                }}
+                                style={{ backgroundColor: "#EFE4B0" }}
+                            >
+                                <Trans i18nKey={langKeys.programmed} />
+                            </Button>
+                        );
+                    } else{
                         return null
                     }
                 }
@@ -409,7 +411,7 @@ const Campaign: React.FC<CampaignProps> = ({
             dispatch(getCollectionAux(getCampaignStart(id)));
             setWaitStart(true);
         }
-    }
+    }  
 
     useEffect(() => {
         fetchData();

@@ -364,6 +364,19 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
+interface TemplateAutocompletePropsDisabled extends InputProps {
+    data: Dictionary[],
+    optionValue: string;
+    optionDesc: string;
+    loading?: boolean;
+    triggerOnChangeOnFirst?: boolean;
+    readOnly?: boolean;
+    limitTags?: number;
+    multiline?: boolean;
+    orderbylabel?: boolean;
+    getOptionDisabled?: Dictionary;
+}
+
 export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "" }) => {
     const [value, setvalue] = useState("");
 
@@ -980,6 +993,100 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
         </div>
     )
 }
+
+export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', getOptionDisabled }) => {
+    const { t } = useTranslation();
+    const [value, setValue] = useState<Dictionary | null>(null);
+    const [dataG, setDataG] = useState<Dictionary[]>([]);
+
+    useEffect(() => {
+        if (orderbylabel) {
+            if (data.length > 0) {
+                if (uset) {
+                    const datatmp = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                    setDataG(datatmp);
+                    return;
+                }
+                else {
+                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    setDataG(datatmp);
+                    return;
+                }
+            }
+        }
+        setDataG(data);
+    }, [data]);
+
+    useEffect(() => {
+        if (valueDefault && data.length > 0) {
+            const optionfound = data.find((o: Dictionary) => o[optionValue] === valueDefault);
+            if (optionfound) {
+                setValue(optionfound);
+                if (triggerOnChangeOnFirst)
+                    onChange && onChange(optionfound);
+            }
+        } else {
+            setValue(null);
+        }
+    }, [data, valueDefault]);
+
+    return (
+        <div className={className}>
+            {(variant === "standard" && !!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
+            }
+            <Autocomplete
+                filterSelectedOptions
+                style={style}
+                fullWidth
+                {...fregister}
+                disabled={disabled}
+                value={data?.length > 0 ? value : null}
+                onChange={(_, newValue) => {
+                    if (readOnly) return;
+                    setValue(newValue);
+                    onChange && onChange(newValue);
+                }}
+                getOptionSelected={(option, value) => option[optionValue] === value[optionValue]}
+                getOptionLabel={option => option ? (uset && Object.keys(langKeys).includes(prefixTranslation + option[optionDesc]?.toLowerCase()) ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
+                options={dataG}
+                loading={loading}
+                size={size}
+                getOptionDisabled={getOptionDisabled} // Asegúrate de pasar la función para deshabilitar opciones
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
+                        multiline={multiline}
+                        helperText={error || null}
+                        error={!!error}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                            readOnly,
+                        }}
+                    />
+                )}
+            />
+        </div>
+    );
+}
+
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;

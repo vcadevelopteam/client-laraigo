@@ -315,12 +315,16 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
                     ref={el => cardRefs.current[index] = el!}
                 >
                     <div className={classes.imageContainer}>
-                        <img
-                            src={item.header || "https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg"}
-                            alt="Carousel Header"
-                            className={classes.carouselImage}
-                            style={{ height: maxCardHeight }}
-                        />
+                        {isValidImageUrl(item.header) ? (
+                            <img
+                                src={item.header}
+                                alt="Carousel Header"
+                                className={classes.carouselImage}
+                                style={{ height: maxCardHeight }}
+                            />
+                        ) : (                         
+                            <div>La variable seleccionada no es una imagen</div>                          
+                        )}
                     </div>
                     <div className={classes.bodyContainer}>
                         <p dangerouslySetInnerHTML={{ __html: item.body }}></p>
@@ -349,14 +353,26 @@ interface TemplatePreviewProps {
     selectedAuthVariable: string;
 }
 
-const isValidUrl = (string: string) => {
+const isValidImageUrl = (url: string) => {
     try {
-        new URL(string);
-        return true;
+        const validUrl = new URL(url);
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+        return imageExtensions.some(ext => validUrl.pathname.toLowerCase().includes(ext));
     } catch (_) {
         return false;  
     }
 };
+
+const isValidVideoUrl = (url: string) => {
+    const videoExtensions = ['.mp4', '.webm', '.ogg'];
+    try {
+        const parsedUrl = new URL(url);
+        return videoExtensions.some(ext => parsedUrl.pathname.endsWith(ext));
+    } catch (_) {
+        return false;
+    }
+};
+
 
 const transformTextStyles = (text: string) => {
     text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>')    
@@ -400,7 +416,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     selectedTemplate,
     bodyVariableValues,
     bubbleVariableValues,
-    headerVariableValues,
+    headerVariableValues = {}, 
     videoHeaderValue,
     cardImageValues,
     dynamicUrlValues,
@@ -412,7 +428,9 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const renderedBody = transformTextStyles(replaceVariables(selectedTemplate.body || "", bodyVariableValues, {}, {}, {}, {}, undefined, selectedAuthVariable)).replace(/\n/g, '<br />');
     const [maxCardHeight, setMaxCardHeight] = useState(0);
     const cardRefs = useRef<HTMLDivElement[]>([]);
-
+    const videoUrl = (headerVariableValues && headerVariableValues[1]) ? headerVariableValues[1] : videoHeaderValue || selectedTemplate.header;
+    //console.log('bodyVariableValues llegando', bodyVariableValues)
+    
     useEffect(() => {
         if (cardRefs.current.length > 0) {
             const heights = cardRefs.current.map(ref => ref?.offsetHeight || 0);
@@ -420,9 +438,11 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         }
     }, [cardImageValues, bodyVariableValues]);
 
+    const authVariableValue = selectedAuthVariable || (bodyVariableValues && bodyVariableValues[1]) || '{{1}}';
+
     const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
         ...item,
-        header: cardImageValues?.[index + 1] || item.header, 
+        header: cardImageValues?.[index + 1] || item.header,
         body: transformTextStyles(replaceVariables(item.body || "", {}, bubbleVariableValues, {}, {}, carouselVariableValues, index)).replace(/\n/g, '<br />'),
         buttons: item.buttons?.map((button: Dictionary) => ({
             ...button,
@@ -436,7 +456,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const combinedButtons = [
         ...(selectedTemplate.buttonsquickreply || []),
         ...(selectedTemplate.buttonsgeneric || [])
-    ];    
+    ];
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
@@ -446,17 +466,10 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                         <div className='templatePreview'>
                             {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
                                 <div>
-                                    {selectedTemplate?.headertype === "DOCUMENT" ? (
-                                        <PdfAttachment url={selectedTemplate.header} />
-                                    ) : selectedTemplate?.headertype === "MULTIMEDIA" ? (
-                                        <iframe
-                                            src={selectedTemplate.header || "https://d36ai2hkxl16us.cloud-object-storage.appdomain.cloud/CLARO%20-%20GIANCARLO/5d8a286a-ea7e-44aa-b138-585f5c20da77/WhatsApp%20Video%202024-06-12%20at%2010.06.02%20PM.mp4"}
-                                            style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
-                                        />
-                                    ) : selectedTemplate?.headertype === "IMAGE" ? (
-                                        isValidUrl(videoHeaderValue || selectedTemplate.header) ? (
+                                    {selectedTemplate?.headertype === "IMAGE" ? (
+                                        isValidImageUrl(videoUrl) ? (
                                             <img
-                                                src={videoHeaderValue || selectedTemplate.header}
+                                                src={videoUrl}
                                                 alt="Carousel Header"
                                                 style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
                                             />
@@ -466,9 +479,9 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                     ) : selectedTemplate?.headertype === "TEXT" ? (
                                         <div style={{ fontSize: '1.5rem' }}>{renderedHeader}</div>
                                     ) : selectedTemplate?.headertype === "VIDEO" ? (
-                                        isValidUrl(videoHeaderValue || selectedTemplate.header) ? (
-                                            <video key={videoHeaderValue || selectedTemplate.header} controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
-                                                <source src={videoHeaderValue || selectedTemplate.header} type="video/mp4" />
+                                        isValidVideoUrl(videoUrl) ? (
+                                            <video key={videoUrl} controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
+                                                <source src={videoUrl} type="video/mp4" />
                                                 Your browser does not support the video tag.
                                             </video>
                                         ) : (
@@ -494,7 +507,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                             ) : selectedTemplate?.category === "AUTHENTICATION" ? (
                                 <div>
                                     <p style={{ fontSize: '1.2rem' }}>
-                                        Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: selectedAuthVariable || '{{1}}' }}></span>.
+                                        Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: authVariableValue || '{{1}}' }}></span>.
                                         {selectedTemplate.authenticationdata.safetyrecommendation && (
                                             <span> Por tu seguridad, no lo compartas</span>
                                         )}
@@ -523,5 +536,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         </div>
     );
 };
+
+
 
 export default TemplatePreview;
