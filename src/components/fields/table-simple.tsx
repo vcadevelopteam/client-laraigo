@@ -143,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'grid',
         gridAutoFlow: 'column',
         alignItems: 'center',
+        alignSelf: "flex-start"
     },
     containerHeader: {
         display: 'block',
