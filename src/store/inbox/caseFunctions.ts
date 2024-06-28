@@ -645,6 +645,15 @@ export const newCallTicket = (state: IState, action: IAction): IState => ({
     },
 })
 
+
+export const setSearchTerm = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        searchTerm: action.payload||"",
+    };
+};
+
+
 export const resetShowModal = (state: IState, action: IAction): IState => ({
     ...state,
     showModalClose: 0,

@@ -8,7 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson, setSearchTerm } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson, updateGroupOnHSM } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
@@ -1340,6 +1340,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
     const [value, setvalue] = useState('');
     const timeOut = React.useRef<NodeJS.Timeout | null>(null);
     const { t } = useTranslation();
+    const dispatch = useDispatch();
 
     const interactionList = useSelector(state => state.inbox.interactionBaseList);
     const [indexSearch, setIndexSearch] = useState(0);
@@ -1348,12 +1349,6 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
 
     const handleChange = (e: any) => {
         const text = e.target.value.toLocaleLowerCase().trim();
-        interactionList.forEach(x=>{
-            if(x.interactiontype === "text"){
-                const interaction = document.getElementById(`interaction-${x.interactionid}`)
-                highlightTerm(interaction?.querySelector('span'),text, x.interactiontext)
-            }
-        })
         if (text) {
             const inttfound = interactionList.filter(x => x.interactiontext.toLocaleLowerCase().includes(text) && typeText.includes(x.interactiontype))
             setListFound(inttfound);
@@ -1386,6 +1381,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         setvalue(event.target.value);
+        dispatch(setSearchTerm(event.target.value))
 
         if (timeOut.current) clearTimeout(timeOut.current);
 
