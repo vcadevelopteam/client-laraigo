@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
+import { extractVariables, getCampaignMemberSel, getCampaignSel, getCampaignStart, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
@@ -82,34 +82,21 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [auxData, setAuxData] = useState<Dictionary[]>([]);
     const [detaildata, setDetaildata] = useState<ICampaign>({});
     const [waitView, setWaitView] = useState(false);
-
     const executeRes = useSelector(state => state.main.execute);
     const [save, setSave] = useState('');
     const [campaignMembers, setCampaignMembers] = useState<any[]>([]);
-
     const [tablevariable, setTableVariable] = useState<any[]>([]);
     const [usedTablevariable, setUsedTableVariable] = useState<any>({});
-
     const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
-
     const [messageVariables, setMessageVariables] = useState<any[]>([]);
-
     const [dataButtons, setDataButtons] = useState<any[]>([])
-
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
     ];
     const [idAux, setIdAux] = useState(0)
     const [templateAux, setTemplateAux] = useState<Dictionary>({})
-    const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
-
-    useEffect(() => {
-        if (jsonPersons) {
-            //console.log('jsonPersons in CampaignDetail:', jsonPersons);
-        }
-    }, [jsonPersons]);
-    
+    const [jsonPersons, setJsonPersons] = useState<Dictionary>({})    
 
     useEffect(() => {
         if (row !== null) {
@@ -575,20 +562,25 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             buildingMembers(); 
         }
     }, [detaildata.jsonData]);
-    
+
+    const [campaignId, setCampaignId] = useState<number | null>(null);
+
+    const handleStart = (id: number) => {
+        dispatch(execute(getCampaignStart(id)));
+    };
 
     const saveCampaign = (data: any) => {
         dispatch(execute(insCampaign({...data})));
     };
-    
+
     const saveCampaignMembers = (data: any, campaignid: number) => {
         const membersData = data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }));
         return dispatch(execute({
             header: null,
             detail: membersData
         }, true));
-    }
-
+    };
+    
     const onSubmit = () => {
         const callback = () => {
             dispatch(showBackdrop(true));
@@ -620,7 +612,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     };
     
-
     useEffect(() => {
         if (save === 'VALIDATION') {
             checkValidation();
@@ -637,28 +628,35 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 if (!executeRes.loading && !executeRes.error) {
                     setSave('MEMBERS');
                     saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
+                    setCampaignId(executeRes.data[0]?.p_campaignid);
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
             }
             else if (save === 'MEMBERS') {
                 if (!executeRes.loading && !executeRes.error) {
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
                     fetchData();
                     dispatch(showBackdrop(false));
                     setViewSelected("view-1");
+
+                    if (detaildata.executiontype === "SCHEDULED" && campaignId !== null) {
+                        handleStart(campaignId);
+                        setCampaignId(null);
+                    }
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
             }
         }
-    }, [save, executeRes])
+    }, [save, executeRes]);
+    
 
     useEffect(() => {
         if (pageSelected === 2) {

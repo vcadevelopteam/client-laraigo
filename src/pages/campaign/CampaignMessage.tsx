@@ -468,7 +468,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             } else if (type === 'carousel' && updatedTemplate.carouseldata) {
                 const index = parseInt(carouselIndexStr, 10);
-                if (!isNaN(index)) {
+                if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 }
             } else if (type === 'bubble' && updatedTemplate.carouseldata) {
@@ -535,7 +535,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             header => `field${headers.indexOf(header) + 1}`
         );
     
-        //console.log('final updatedTemplate:', updatedTemplate);        
+        console.log('final updatedTemplate:', updatedTemplate);        
         setFilledTemplate(updatedTemplate);
         setDetaildata((prev: any) => ({
             ...prev,
@@ -872,7 +872,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         </div>
                                     )
                                 )}
-
                             </div>
 
                            <div style={{marginTop:'1rem'}}>
