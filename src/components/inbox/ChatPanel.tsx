@@ -932,7 +932,8 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
                     onChange={onChangeTipificationLevel1}
                     error={errors?.classificationid1?.message}
                     data={multiData?.data[2] && multiData?.data[2].data.filter(obj => {
-                        const channelsInMultiData = `${obj.communicationchannel}`.split(',').map((channel: string) => channel.trim());
+                        const channelsobj = obj.communicationchannel.includes("WHA")? obj.communicationchannel + ",WHAC,WHAD": obj.communicationchannel
+                        const channelsInMultiData = `${channelsobj}`.split(',').map((channel: string) => channel.trim());
                         return channelsInMultiData.includes(`${ticketSelected?.communicationchanneltype}`);
                     })}
                     optionDesc="path"

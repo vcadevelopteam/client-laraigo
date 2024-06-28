@@ -227,12 +227,18 @@ export const logoutSuccess = (state: IState, action: IAction): IState => {
         ...state,
         logout: {
             ...state.logout,
+            data: action.payload.data,
             loading: false,
             error: false,
         },
-        validateToken: initialState.validateToken,
+        // validateToken: initialState.validateToken,
     }
 };
+
+export const cleanValidateToken = (state: IState, action: IAction): IState => ({
+    ...state,
+    validateToken: initialState.validateToken,
+});
 
 export const logoutFailure = (state: IState, action: IAction): IState => {
     return {

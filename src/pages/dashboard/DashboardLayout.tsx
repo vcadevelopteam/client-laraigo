@@ -105,8 +105,8 @@ const DashboardLayout: FC = () => {
     const [openDatePicker, setOpenDatePicker] = useState(false);
     const [layout, setLayout] = useState<{ layout: RGL.Layout[], detail: Items }>({ layout: [], detail: {} });
     const [dateRange, setDateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(1)),
-        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        startDate: new Date(),
+        endDate: new Date(),
         key: 'selection',
     });
     const tempDaterange = useRef<Range | null>(null);
@@ -374,31 +374,31 @@ const DashboardLayout: FC = () => {
                     >
                         <Trans i18nKey={langKeys.back} />
                     </Button>
-                    {!isIncremental &&                    
-                    <>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<EditIcon color="secondary" />}
-                            onClick={() => {
-                                if (!dashboardtemplate.value) return;
-                                const id = dashboardtemplate.value!.dashboardtemplateid;
-                                history.push(paths.DASHBOARD_EDIT.resolve(id));
-                            }}
-                            disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                        >
-                            <Trans i18nKey={langKeys.edit} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<DeleteIcon color="secondary" />}
-                            onClick={onDelete}
-                            disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                        >
-                            <Trans i18nKey={langKeys.delete} />
-                        </Button>
-                    </>}
+                    {!isIncremental &&
+                        <>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<EditIcon color="secondary" />}
+                                onClick={() => {
+                                    if (!dashboardtemplate.value) return;
+                                    const id = dashboardtemplate.value!.dashboardtemplateid;
+                                    history.push(paths.DASHBOARD_EDIT.resolve(id));
+                                }}
+                                disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                            >
+                                <Trans i18nKey={langKeys.edit} />
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<DeleteIcon color="secondary" />}
+                                onClick={onDelete}
+                                disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                            >
+                                <Trans i18nKey={langKeys.delete} />
+                            </Button>
+                        </>}
                 </div>
             </div>
             <div style={{ height: '0.5em' }} />
