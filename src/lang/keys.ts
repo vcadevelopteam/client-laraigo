@@ -6332,6 +6332,11 @@ export const langKeys = {
   messaging_voice: "messaging_voice",
   messaging_youtube: "messaging_youtube",
   subscription_businessaddress: "subscription_businessaddress",
+  advancedtemplatescampaigns: "advancedtemplatescampaigns",
+  advanced: "advanced",
+  templates: "templates",
+  templatestext: "templatestext",
+  campaignstext: "campaignstext",
 };
 
 export type LangKeys = typeof langKeys;

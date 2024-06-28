@@ -87,7 +87,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const newArrayBread = [
         ...arrayBread,
-        { id: "generativeia", name: t(langKeys.generativeailow) },       
+        { id: "generativeia", name: t(langKeys.generativeailow) },
     ];
     const [waitSave, setWaitSave] = useState(false);
     const executeAssistants = useSelector((state) => state.gpt.gptResult);

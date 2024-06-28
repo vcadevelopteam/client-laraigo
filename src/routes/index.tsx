@@ -38,7 +38,8 @@ const PersonDetail = lazy(() => import('pages/PersonDetail'));
 const MetaChannels = lazy(() => import('pages/MetaChannels'));
 const Supervisor = lazy(() => import('pages/Supervisor'));
 const MessageInbox = lazy(() => import('pages/MessageInbox'));
-const MessageTemplates = lazy(() => import('pages/messagetemplates/MessageTemplates'));
+const AdvancedTemplatesCampaigns = lazy(() => import('pages/AdvancedTemplatesCampaigns'));
+const MessageTemplatesOld = lazy(() => import('pages/MessageTemplatesOld'));
 const Tipifications = lazy(() => import('pages/Tipifications'));
 const InputValidation = lazy(() => import('pages/InputValidation'));
 const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
@@ -46,7 +47,7 @@ const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
 const CustomVariable = lazy(() => import('pages/CustomVariable'));
 const Emojis = lazy(() => import('pages/Emojis'));
 const IATraining = lazy(() => import('pages/LaraigoIA'));
-const Campaign = lazy(() => import('pages/campaign/Campaign'));
+const CampaignOld = lazy(() => import('pages/campaignold/Campaign'));
 const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
@@ -367,9 +368,10 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.PERSON} component={() => <Layout mainClasses={classes.main}><Person /></Layout>} />
 					<ProtectRoute exact path={paths.PERSON_DETAIL.path} component={() => <Layout mainClasses={classes.main}><PersonDetail /></Layout>} />
 					<ProtectRoute exact path={paths.METACHANNELS} component={() => <Layout mainClasses={classes.main}><MetaChannels /></Layout>} />
-					<ProtectRoute exact path={paths.MESSAGETEMPLATE} component={() => <Layout mainClasses={classes.main}><MessageTemplates /></Layout>} />
+					<ProtectRoute exact path={paths.ADVANCEDTEMPLATESCAMPAIGNS} component={() => <Layout mainClasses={classes.main}><AdvancedTemplatesCampaigns /></Layout>} />
+					<ProtectRoute exact path={paths.MESSAGETEMPLATE} component={() => <Layout mainClasses={classes.main}><MessageTemplatesOld /></Layout>} />
 					<ProtectRoute exact path={paths.INTEGRATIONMANAGER} component={() => <Layout mainClasses={classes.main}><IntegrationManager /></Layout>} />
-					<ProtectRoute exact path={paths.CAMPAIGN} component={() => <Layout mainClasses={classes.main}><Campaign /></Layout>} />
+					<ProtectRoute exact path={paths.CAMPAIGN} component={() => <Layout mainClasses={classes.main}><CampaignOld /></Layout>} />
 					<ProtectRoute exact path={paths.BOTDESIGNER} component={() => <Layout mainClasses={classes.main}><BotDesigner /></Layout>} />
 					<ProtectRoute exact path={paths.VARIABLECONFIGURATION} component={() => <Layout mainClasses={classes.main}><VariableConfiguration /></Layout>} />
 					<ProtectRoute exact path={paths.CUSTOMVARIABLE} component={() => <Layout mainClasses={classes.main}><CustomVariable /></Layout>} />
