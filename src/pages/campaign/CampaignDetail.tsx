@@ -648,15 +648,17 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             }
             else if (save === 'MEMBERS') {
                 if (!executeRes.loading && !executeRes.error) {
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
-                    fetchData();
-                    dispatch(showBackdrop(false));
-                    setViewSelected("view-1");
+                    setTimeout(() => {
+                        dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
+                        dispatch(showBackdrop(false));
+                        fetchData();
+                        setViewSelected("view-1");
+                    }, 1000);
 
-                    // if (detaildata.executiontype === "SCHEDULED" && campaignId !== null) {
-                    //     handleStart(campaignId);
-                    //     setCampaignId(null);
-                    // }
+                    if (detaildata.executiontype === "SCHEDULED" && campaignId !== null) {
+                        handleStart(campaignId);
+                        setCampaignId(null);
+                    }
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                     dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
