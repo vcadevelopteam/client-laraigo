@@ -985,6 +985,14 @@ export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, sta
     }
 })
 
+export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",
+    parameters: {
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, newversion: false
+    }
+})
+
 export const getMessageTemplateLst = (type: string): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_LST",
     parameters: {
@@ -1066,6 +1074,84 @@ export const insMessageTemplate = (
             providerquality,
             providerstatus,
             operation,
+        }
+    });
+
+export const insMessageTemplateOld = (
+    {
+        id,
+        description,
+        type,
+        status,
+        name,
+        namespace,
+        category,
+        language,
+        templatetype,
+        headerenabled,
+        headertype,
+        header,
+        body,
+        footerenabled,
+        footer,
+        buttonsenabled,
+        priority,
+        attachment,
+        communicationchannelid,
+        communicationchanneltype,
+        authenticationdata,
+        bodyvariables,
+        buttonsgeneric,
+        buttonsquickreply,
+        carouseldata,
+        headervariables,
+        provideraccountid,
+        providerexternalid,
+        providerid,
+        providermessagelimit,
+        providerpartnerid,
+        providerquality,
+        providerstatus,
+        operation,
+    }: Dictionary): IRequestBody => ({
+
+        method: "UFN_MESSAGETEMPLATE_INS_OLD",
+        parameters: {
+            id,
+            description,
+            type,
+            status,
+            name,
+            namespace,
+            category,
+            language,
+            templatetype,
+            headerenabled,
+            headertype,
+            header,
+            body,
+            footerenabled,
+            footer,
+            buttonsenabled,
+            priority,
+            attachment,
+            communicationchannelid,
+            communicationchanneltype,
+            authenticationdata: JSON.stringify(authenticationdata),
+            bodyvariables: JSON.stringify(bodyvariables),
+            buttonsgeneric: JSON.stringify(buttonsgeneric),
+            buttonsquickreply: JSON.stringify(buttonsquickreply),
+            carouseldata: JSON.stringify(carouseldata),
+            headervariables: JSON.stringify(headervariables),
+            provideraccountid,
+            providerexternalid,
+            providerid,
+            providermessagelimit,
+            providerpartnerid,
+            providerquality,
+            providerstatus,
+            operation,
+            newversion: false
         }
     });
 

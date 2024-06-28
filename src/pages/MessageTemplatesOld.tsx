@@ -40,9 +40,9 @@ import {
     getCustomVariableSelByTableName,
     getDomainByDomainNameList,
     getMessageTemplateExport,
-    getPaginatedMessageTemplate,
+    getPaginatedMessageTemplateOld,
     getValuesFromDomain,
-    insMessageTemplate,
+    insMessageTemplateOld,
     richTextToString,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
@@ -295,7 +295,7 @@ const MessageTemplatesOld: FC = () => {
         setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
         dispatch(
             getCollectionPaginated(
-                getPaginatedMessageTemplate({
+                getPaginatedMessageTemplateOld({
                     communicationchannelid: communicationChannel?.communicationchannelid || 0,
                     enddate: daterange?.endDate!,
                     filters: filters,
@@ -671,7 +671,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     useEffect(() => {
         if (multiData[3]) {
             const variableDataList = multiData[3].data ||[]
-            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext?.[x.variablename]||""})))
         }
     }, [multiData]);
 
@@ -1158,7 +1158,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({
+                dispatch(execute(insMessageTemplateOld({
                     ...data,
                     authenticationdata: {},
                     bodyobject: bodyObject,
