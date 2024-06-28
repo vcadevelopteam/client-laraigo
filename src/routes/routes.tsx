@@ -53,6 +53,7 @@ import {
     OrdersListIcon,
     OrdersInAttentionIcon,
     ConfigurationDeliveryIcon,
+    FlaskIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -381,6 +382,13 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.campaign} count={2} />,
         path: paths.CAMPAIGN,
         icon: (className) => <OutboundIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
+    {
+        key: paths.ADVANCEDTEMPLATESCAMPAIGNS,
+        description: <Trans i18nKey={langKeys.advancedtemplatescampaigns} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.advancedtemplatescampaigns} count={2} />,
+        path: paths.ADVANCEDTEMPLATESCAMPAIGNS,
+        icon: (className) => <FlaskIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
         key: paths.BOTDESIGNER,

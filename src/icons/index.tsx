@@ -356,3 +356,6 @@ export {ReactComponent as ActionsImage} from './actions_wat.svg'
 
 export {ReactComponent as GoogleDriveIcon} from './google-drive.svg';
 export {ReactComponent as ExcelFileIcon} from './excel-file.svg';
+export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
+export {ReactComponent as CampaignsIcon} from './campañas.svg'
+export {ReactComponent as FlaskIcon} from './flask_icon.svg'

@@ -22,7 +22,7 @@ import StopIcon from '@material-ui/icons/Stop';
 import { formatDate} from 'common/helpers';
 import { CellProps } from 'react-table';
 import AddIcon from '@material-ui/icons/Add';
-import { DateRangePicker } from 'components';
+import { DateRangePicker, TemplateBreadcrumbs } from 'components';
 import { CalendarIcon } from 'icons';
 import { Range } from "react-date-range";
 import { Search as SearchIcon } from '@material-ui/icons';
@@ -68,6 +68,10 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up("sm")]: {
             display: "flex",
         },
+    },
+    titleandcrumbs: {
+        marginBottom: 4,
+        marginTop: 4,
     },
 }));
 
@@ -117,13 +121,29 @@ const IconOptions: React.FC<{
     )
 }
 
-export const Campaign: FC = () => {
+type BreadCrumb = {
+    id: string,
+    name: string
+}
+interface CampaignProps {
+    arrayBread: BreadCrumb[];
+    setAuxViewSelected: (view: string) => void;  
+}
+
+const Campaign: React.FC<CampaignProps> = ({ 
+    setAuxViewSelected,
+    arrayBread,
+}) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const auxResult = useSelector(state => state.main.mainAux);
     const executeResult = useSelector(state => state.main.execute);
+    const newArrayBread = [
+        ...arrayBread,
+        { id: "campaigns", name: t(langKeys.app_campaign) },
+    ];
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -711,23 +731,29 @@ export const Campaign: FC = () => {
         )
     }
 
-    if (viewSelected === "view-1") {
+    const functionChange = (change:string) => {
+        if(change === "campaigns") {
+            setViewSelected("view-1")
+        }else{
+            setAuxViewSelected(change);
+        }
+    }
 
+    if (viewSelected === "view-1") {
         if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;
         }
-
         return (
-            
            <div style={{display:'block', width:'100%'}}>
-
-                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                    <div>
-                        <h2> <Trans i18nKey={langKeys.campaign_plural} /></h2>
-                    </div>                     
+                <div className={classes.titleandcrumbs}>
+                    <div style={{ flexGrow: 1}}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={newArrayBread}
+                            handleClick={functionChange}
+                        />
+                    </div>
+                    <div style={{fontWeight: 'bold', fontSize: 22}}>{t(langKeys.campaign_plural)}</div>
                 </div>
-
-            
                 <TableZyx      
                     columns={columns}
                     data={modifiedData}             
@@ -738,7 +764,7 @@ export const Campaign: FC = () => {
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}                
                     ButtonsElement={AdditionalButtons}     
-                    filterGeneral={false}                 
+                    filterGeneral={false}
                 />
             </div>
         )
