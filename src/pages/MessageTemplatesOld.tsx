@@ -1114,8 +1114,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         return;
                     }
                 }
-
-                dispatch(addTemplate({ ...data, bodyobject: bodyObject }));
+                const {buttons, ...dataAux} = data;
+                dispatch(addTemplate({
+                    ...dataAux,
+                    bodyobject: bodyObject,
+                    provideraccountid: null,
+                    providerexternalid: null,
+                    providerid: null,
+                    providermessagelimit: null,
+                    providerpartnerid: null,
+                    providerquality: null,
+                    providerstatus: null,
+                }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
             };
@@ -1148,8 +1158,24 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject,
-                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                dispatch(execute(insMessageTemplate({
+                    ...data,
+                    authenticationdata: {},
+                    bodyobject: bodyObject,
+                    bodyvariables: [],
+                    buttonsgeneric: [],
+                    buttonsquickreply: [],
+                    carouseldata: [],
+                    headervariables: [],
+                    provideraccountid: null,
+                    providerexternalid: null,
+                    providerid: null,
+                    providermessagelimit: null,
+                    providerpartnerid: null,
+                    providerquality: null,
+                    providerstatus: null,
+                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{},
+                )
                 })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);

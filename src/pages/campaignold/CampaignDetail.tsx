@@ -515,7 +515,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     }
 
     const saveCampaign = (data: any) => {               
-        dispatch(execute(insCampaign({...data})));
+        dispatch(execute(insCampaign({...data, carouseljson: "", variableshidden: ""})));
     }
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
