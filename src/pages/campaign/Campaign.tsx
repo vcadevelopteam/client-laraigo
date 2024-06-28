@@ -351,7 +351,22 @@ export const Campaign: FC = () => {
                         >
                             <Trans i18nKey={langKeys.programmed} />
                         </Button>
-                    }else{
+                    }else if ((status === "EJECUTANDO")) {
+                        return (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleStatus(id);
+                                }}
+                                style={{ backgroundColor: "#EFE4B0" }}
+                            >
+                                <Trans i18nKey={langKeys.programmed} />
+                            </Button>
+                        );
+                    } else{
                         return null
                     }
                 }

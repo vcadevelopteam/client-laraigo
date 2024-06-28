@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux, setJsonPersons}) => {
+export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux, setJsonPersons }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -93,8 +93,23 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openCleanDialog, setOpenCleanDialog] = useState(false);
 
+
+    const messagetemplateName = multiData[4]?.data?.[0]?.messagetemplatename;
+    const matchedTemplate = multiData[3].data.find(item => item.name === messagetemplateName); 
+    const [currentTemplateAux, setCurrentTemplateAux] = useState<Dictionary>({});
+
+    useEffect(() => {
+      if (Object.keys(templateAux).length === 0 && matchedTemplate) {
+        setCurrentTemplateAux(matchedTemplate);
+      } else {
+        setCurrentTemplateAux(templateAux);
+      }
+    }, [templateAux, matchedTemplate]);  
+    //console.log('Current TemplateAux:', currentTemplateAux);
+    //console.log('jsonData', jsonData)
+
     const handleDeleteSelectedRows = () => {
-        const updatedJsonData = jsonData.filter((item, index) => !selectedRows[index]);
+        const updatedJsonData = jsonData.filter((item, index) => !selectedRows[index]) || [];
         setJsonData(updatedJsonData); 
         setSelectedRows({});
         setOpenDeleteDialog(false);
@@ -153,31 +168,31 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     };
 
     const getDownloadLink = () => {
-        if (templateAux.headertype === "TEXT" && !templateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
+        if (currentTemplateAux.headertype === "TEXT" && !currentTemplateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
             return "/templates/Template Cabecera Texto y 3 variables.xlsx";
         }
     
-        if (templateAux.headertype === "TEXT" && templateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
+        if (currentTemplateAux.headertype === "TEXT" && currentTemplateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
             return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
         }
     
         if (
-            templateAux.templatetype === "CAROUSEL" &&
-            templateAux.carouseldata &&
-            templateAux.carouseldata.length > 0 &&
-            templateAux.buttonsgeneric &&
-            templateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")
+            currentTemplateAux.templatetype === "CAROUSEL" &&
+            currentTemplateAux.carouseldata &&
+            currentTemplateAux.carouseldata.length > 0 &&
+            currentTemplateAux.buttonsgeneric &&
+            currentTemplateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")
         ) {
             return "/templates/Template Carrusel, 2 variables y 1 variable URL dinámica.xlsx";
         }
     
         if (
-            templateAux.templatetype === "MULTIMEDIA" &&
-            (templateAux.headertype === "VIDEO" || templateAux.headertype === "DOCUMENT") &&
-            templateAux.header &&
-            templateAux.header.trim() !== "" &&
-            templateAux.bodyvariables &&
-            templateAux.bodyvariables.length > 0
+            currentTemplateAux.templatetype === "MULTIMEDIA" &&
+            (currentTemplateAux.headertype === "VIDEO" || currentTemplateAux.headertype === "DOCUMENT") &&
+            currentTemplateAux.header &&
+            currentTemplateAux.header.trim() !== "" &&
+            currentTemplateAux.bodyvariables &&
+            currentTemplateAux.bodyvariables.length > 0
         ) {
             return "/templates/Template Cabecera Multimedia y 3 variables.xlsx";
         }
@@ -211,22 +226,22 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     
             let variableCounter = 1;
     
-            const bodyVariables = templateAux.body.match(/{{\d+}}/g) || [];
+            const bodyVariables = currentTemplateAux.body ? currentTemplateAux.body.match(/{{\d+}}/g) || [] : [];
             const requiredVariableColumns = bodyVariables.map((_, index) => `Variable ${index + 1}`);
             variableCounter += bodyVariables.length;
             
-            const headerVariableColumns = templateAux.headertype === "TEXT" && templateAux.headervariables
-                ? templateAux.headervariables.map((_, index) => `Variable Cabecera ${index + 1}`)
+            const headerVariableColumns = currentTemplateAux.headertype === "TEXT" && currentTemplateAux.headervariables
+                ? currentTemplateAux.headervariables.map((_, index) => `Variable Cabecera ${index + 1}`)
                 : [];
             
-            const headerMultimediaColumns = templateAux.headertype === "DOCUMENT" || templateAux.headertype === "VIDEO" || templateAux.headertype === "IMAGE"
+            const headerMultimediaColumns = currentTemplateAux.headertype === "DOCUMENT" || currentTemplateAux.headertype === "VIDEO" || currentTemplateAux.headertype === "IMAGE"
                 ? ["Cabecera Multimedia"]
                 : [];
             
-            const dynamicUrlButtons = templateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
+            const dynamicUrlButtons = currentTemplateAux.buttonsgeneric?.filter(btn => btn.type === "URL" && btn.btn.type === "dynamic") || [];
             const dynamicUrlColumns = dynamicUrlButtons.map((btn, index) => `Url Dinamico ${index + 1}`);
             
-            const imageCards = templateAux.carouseldata || [];
+            const imageCards = currentTemplateAux.carouseldata || [];
             const carouselVariableColumns = imageCards.reduce((acc, card, cardIndex) => {
                 const cardVariables = card.body.match(/{{\d+}}/g) || [];
                 return acc.concat(cardVariables.map((_, varIndex) => `Card ${cardIndex + 1} - Variable ${varIndex + 1}`));
@@ -248,7 +263,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 .concat(carouselDynamicUrlColumns)
                 .concat(imageCardColumns);
             
-            if (templateAux.category === "AUTHENTICATION") {
+            if (currentTemplateAux.category === "AUTHENTICATION") {
                 newColumnNames.push("Variable 1");
             }
             
@@ -671,6 +686,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         return true;
     }
 
+ 
+
+
 
     const AdditionalButtons = () => {
         if (detaildata.source === 'EXTERNAL') {
@@ -718,6 +736,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                       </>
                         
                     )}
+
+                    
 
                     {jsonData.length > 0 && (
                         <>
@@ -809,22 +829,126 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             setAllRowsSelected={setAllRowsSelected}
                         />
                         :
-                        <TableZyx
-                            titlemodule=" "
-                            columns={columns}
-                            data={personsToUse}
-                            download={false}
-                            
-                            loading={detaildata.source === 'INTERNAL' && auxResult.loading}
-                            filterGeneral={false}
-                            ButtonsElement={AdditionalButtons}
-                            useSelection={true}
-                            selectionKey={selectionKey}
-                            initialSelectedRows={selectedRows}
-                            setSelectedRows={setSelectedRows}
-                            allRowsSelected={allRowsSelected}
-                            setAllRowsSelected={setAllRowsSelected}
-                        />
+
+                        <>
+                            {(detaildata.source === 'EXTERNAL' || detaildata.source === 'INTERNAL') && (
+                                <React.Fragment>
+                                    {jsonData.length === 0 && (
+                                        <div style={{display:'flex', gap:'1rem', justifyContent:'right'}}>
+                                            <a
+                                                href="#"
+                                                onClick={() => adjustAndDownloadExcel(getDownloadLink())}
+                                                style={{ textDecoration: 'none' }}
+                                            >
+                                                <Button
+                                                    component="span"
+                                                    className={classes.button}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    style={{ backgroundColor: "#5AB986" }}
+                                                >
+                                                    <DescriptionIcon style={{ marginRight: '4px' }} />
+                                                    <Trans i18nKey={'Descargar Formato de Carga'} />
+                                                </Button>
+                                            </a>
+                        
+                                            <input
+                                                id="upload-file"
+                                                key={fileKey}
+                                                name="file"
+                                                type="file"
+                                                accept=".xls,.xlsx"
+                                                // value={valuefile}
+                                                style={{ display: 'none' }}
+                                                onChange={(e) => handleUpload(e.target.files)}
+                                            />
+                                            <label htmlFor="upload-file">
+                                                <Button
+                                                    component="span"
+                                                    className={classes.button}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    style={{ backgroundColor: "#5AB986" }}
+                                                ><CloudUploadIcon style={{ marginRight: '4px' }} /><Trans i18nKey={'Importar Base'} />
+                                                </Button>
+                                            </label>
+                                        </div>
+                                    )}
+                        
+                                    {jsonData.length > 0 && (
+                                        <div style={{display:'flex', gap:'1rem', justifyContent:'right'}}>
+                                            <Button
+                                                disabled={Object.keys(selectedColumns).length === 0}
+                                                variant="contained"
+                                                color="primary"
+                                                startIcon={<DeleteIcon />}
+                                                style={{ backgroundColor: !Object.keys(selectedRows).length ? "#e0e0e0" : "#7721ad" }}
+                                                onClick={() => setOpenDeleteDialog(true)}
+                        
+                                            >
+                                                {t(langKeys.delete)}
+                                            </Button>
+                        
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={() => cleanData()}
+                                                style={{ backgroundColor: "#53a6fa" }}
+                                            ><Trans i18nKey={langKeys.clean} />
+                                            </Button>
+                                        </div>
+                                    )}
+                        
+                                    <DialogZyx3Opt
+                                        open={openDeleteDialog}
+                                        title={t(langKeys.confirmation)}
+                                        buttonText1={t(langKeys.cancel)}
+                                        buttonText2={t(langKeys.accept)}
+                                        handleClickButton1={() => setOpenDeleteDialog(false)}
+                                        handleClickButton2={handleDeleteSelectedRows}
+                                        maxWidth={'xs'}
+                                    >
+                                        <div>{' ¿Está seguro que desea eliminar a esta(s) persona(s)?'}</div>
+                                        <div className="row-zyx">
+                                        </div>
+                                    </DialogZyx3Opt>
+                        
+                        
+                                    <DialogZyx3Opt
+                                        open={openCleanDialog}
+                                        title={t(langKeys.confirmation)}
+                                        buttonText1={t(langKeys.cancel)}
+                                        buttonText2={t(langKeys.accept)}
+                                        handleClickButton1={() => setOpenCleanDialog(false)}
+                                        handleClickButton2={handleCleanConfirmed}
+                                        maxWidth={'xs'}
+                                    >
+                                        <div>{' ¿Está seguro que desea eliminar toda la tabla?'}</div>
+                                        <div className="row-zyx">
+                                        </div>
+                                    </DialogZyx3Opt>
+                                </React.Fragment>
+                            )}
+                        
+                            <TableZyx
+                                titlemodule=" "
+                                columns={columns}
+                                data={personsToUse}
+                                download={false}
+                                loading={detaildata.source === 'INTERNAL' && auxResult.loading}
+                                filterGeneral={false}
+                                //ButtonsElement={AdditionalButtons}
+                                useSelection={true}
+                                selectionKey={selectionKey}
+                                initialSelectedRows={selectedRows}
+                                setSelectedRows={setSelectedRows}
+                                allRowsSelected={allRowsSelected}
+                                setAllRowsSelected={setAllRowsSelected}
+                            />
+                        </>
+                    
+                      
                 }
 
             </div>
