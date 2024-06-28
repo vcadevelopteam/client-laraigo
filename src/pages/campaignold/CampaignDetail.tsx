@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaignOld, insCampaignMember } from 'common/helpers';
+import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLstOld, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaignOld, insCampaignMember } from 'common/helpers';
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
@@ -108,7 +108,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 getValuesFromDomain("ESTADOGENERICO"),
                 getCommChannelLst(),
                 getUserGroupsSel(),
-                getMessageTemplateLst(''),
+                getMessageTemplateLstOld(''),
                 getCampaignSel(row?.id),
                 getCampaignMemberSel(row?.id),
                 getPropertySelByName("VALIDACIONCAMPAÑASGRUPO", "VALIDACIONCAMPAÑASGRUPO")
@@ -124,7 +124,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 getValuesFromDomain("ESTADOGENERICO"),
                 getCommChannelLst(),
                 getUserGroupsSel(),
-                getMessageTemplateLst(''),
+                getMessageTemplateLstOld(''),
                 getPropertySelByName("VALIDACIONCAMPAÑASGRUPO", "VALIDACIONCAMPAÑASGRUPO")
             ]));
             setPageSelected(0);

@@ -1000,6 +1000,14 @@ export const getMessageTemplateLst = (type: string): IRequestBody => ({
     }
 });
 
+export const getMessageTemplateLstOld = (type: string): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_LST_OLD",
+    parameters: {
+        type: type,
+        newversion: false,
+    }
+});
+
 export const insMessageTemplate = (
     {
         id,
