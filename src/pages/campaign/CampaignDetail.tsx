@@ -397,7 +397,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }
     
-    const buildingMembers = () => {
+    const buildingMembers = (onlyCheck: boolean = false) => {
         let campaignMemberList: any[] = [];
         switch (detaildata.source) {
             case 'INTERNAL':
@@ -551,9 +551,12 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     }
                 });
             }
-        }    
-        setCampaignMembers(campaignMemberList);
-        setSave('SUBMIT');
+        }
+        if (!onlyCheck) {
+            setCampaignMembers(campaignMemberList);
+            setSave('SUBMIT');
+        }
+        return campaignMemberList;
     }
     
     useEffect(() => {
@@ -569,8 +572,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         dispatch(execute(getCampaignStart(id)));
     };
 
-    const saveCampaign = (data: any) => {
-        dispatch(execute(insCampaign({...data})));
+    const saveCampaign = (data: any, memberscount: number) => {
+        dispatch(execute(insCampaign({...data}, memberscount)));
     };
 
     const saveCampaignMembers = (data: any, campaignid: number) => {
@@ -582,10 +585,15 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     };
     
     const onSubmit = () => {
+        const members = buildingMembers(true);
+        if (members.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: "No hay miembros ha insertar." }));
+            return;
+        }
         const callback = () => {
             dispatch(showBackdrop(true));
             setSave('PARENT');
-            saveCampaign(detaildata);
+            saveCampaign(detaildata, members.length);
         };
     
         let errormessage = false;
@@ -643,10 +651,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showBackdrop(false));
                     setViewSelected("view-1");
 
-                    if (detaildata.executiontype === "SCHEDULED" && campaignId !== null) {
-                        handleStart(campaignId);
-                        setCampaignId(null);
-                    }
+                    // if (detaildata.executiontype === "SCHEDULED" && campaignId !== null) {
+                    //     handleStart(campaignId);
+                    //     setCampaignId(null);
+                    // }
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                     dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
