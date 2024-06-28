@@ -468,7 +468,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             } else if (type === 'carousel' && updatedTemplate.carouseldata) {
                 const index = parseInt(carouselIndexStr, 10);
-                if (!isNaN(index)) {
+                if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 }
             } else if (type === 'bubble' && updatedTemplate.carouseldata) {
