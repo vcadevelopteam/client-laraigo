@@ -59,13 +59,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const { t } = useTranslation();
 
     const auxResult = useSelector(state => state.main.mainAux);
-
-    const [valuefile, setvaluefile] = useState('');
     const [openModal, setOpenModal] = useState<boolean | null>(null);
     const [columnList, setColumnList] = useState<string[]>([]);
     const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.headers || [] : []);
     const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.jsonData || [] : []);
-    const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
+    // const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
     const [jsonDataPerson, setJsonDataPerson] = useState<any[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
@@ -94,7 +92,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [openCleanDialog, setOpenCleanDialog] = useState(false);
 
 
-    const messagetemplateName = multiData[4]?.data?.[0]?.messagetemplatename;
+    const messagetemplateName = multiData?.[4]?.data?.[0]?.messagetemplatename;
     const matchedTemplate = multiData[3].data.find(item => item.name === messagetemplateName); 
     const [currentTemplateAux, setCurrentTemplateAux] = useState<Dictionary>({});
 
@@ -438,9 +436,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         // Clean selected data on source change
         if (detaildata.sourcechanged) {
+            setJsonData([])
+            setJsonDataPerson([])
             setDetaildata({ ...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
         }
-    }, [])
+    }, [detaildata.source])
 
     // Internal data
     useEffect(() => {
@@ -516,7 +516,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             }
         }
     
-        setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
+        // setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
     
         const localColumnList = actualHeaders ? actualHeaders : newHeaders;
         setColumnList(localColumnList);
@@ -685,127 +685,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
-
- 
-
-
-
-    const AdditionalButtons = () => {
-        if (detaildata.source === 'EXTERNAL') {
-            return (
-                <React.Fragment>  
-                    {jsonData.length === 0 && (                
-                      <>
-                        <a 
-                            href="#"
-                            onClick={() => adjustAndDownloadExcel(getDownloadLink())}
-                            style={{ textDecoration: 'none' }}
-                        >
-                            <Button
-                                component="span"
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                style={{ backgroundColor: "#5AB986" }}
-                            >
-                                <DescriptionIcon style={{ marginRight: '4px' }} />
-                                <Trans i18nKey={'Descargar Formato de Carga'} />
-                            </Button>
-                        </a>
-
-                        <input
-                            id="upload-file"
-                            key={fileKey}
-                            name="file"
-                            type="file"
-                            accept=".xls,.xlsx"
-                            // value={valuefile}
-                            style={{ display: 'none' }}
-                            onChange={(e) => handleUpload(e.target.files)}
-                        />
-                        <label htmlFor="upload-file">                     
-                            <Button
-                                component="span"
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                style={{ backgroundColor: "#5AB986" }}
-                            ><CloudUploadIcon style={{marginRight:'4px'}}/><Trans i18nKey={'Importar Base'} />
-                            </Button>
-                        </label>
-                      </>
-                        
-                    )}
-
-                    
-
-                    {jsonData.length > 0 && (
-                        <>
-                            <Button        
-                                disabled={ Object.keys(selectedColumns).length === 0}        
-                                variant="contained"
-                                color="primary"
-                                startIcon={<DeleteIcon />}
-                                style={{ backgroundColor: !Object.keys(selectedRows).length ? "#e0e0e0" : "#7721ad" }}
-                                onClick={() => setOpenDeleteDialog(true)}
-
-                            >
-                                {t(langKeys.delete)} 
-                            </Button>
-
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                onClick={() => cleanData()}
-                                style={{ backgroundColor: "#53a6fa" }}
-                                ><Trans i18nKey={langKeys.clean} />
-                            </Button>
-                        </>
-                    )}      
-
-                    <DialogZyx3Opt
-                        open={openDeleteDialog}
-                        title={t(langKeys.confirmation)}
-                        buttonText1={t(langKeys.cancel)}                   
-                        buttonText2={t(langKeys.accept)}
-                        handleClickButton1={() => setOpenDeleteDialog(false)}                    
-                        handleClickButton2={handleDeleteSelectedRows}
-                        maxWidth={'xs'}
-                    >
-                        <div>{' ¿Está seguro que desea eliminar a esta(s) persona(s)?'}</div>
-                        <div className="row-zyx">
-                        </div>
-                    </DialogZyx3Opt>
-
-
-                    <DialogZyx3Opt
-                        open={openCleanDialog}
-                        title={t(langKeys.confirmation)}
-                        buttonText1={t(langKeys.cancel)}                   
-                        buttonText2={t(langKeys.accept)}
-                        handleClickButton1={() => setOpenCleanDialog(false)}
-                        handleClickButton2={handleCleanConfirmed}
-                        maxWidth={'xs'}
-                    >
-                        <div>{' ¿Está seguro que desea eliminar toda la tabla?'}</div>
-                        <div className="row-zyx">
-                        </div>
-                    </DialogZyx3Opt>                 
-
-                </React.Fragment>
-            )
-        }
-        else {
-            return <>
-                
-            </>
-        }
-    }
-
-
     return (
-        <React.Fragment>
             <div className={classes.containerDetail}>
                 {
                     ['PERSON', 'LEAD'].includes(detaildata?.source || '') ?
@@ -953,6 +833,5 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
             </div>
           
-        </React.Fragment>
     )
 }
