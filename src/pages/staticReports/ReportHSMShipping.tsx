@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dateToLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail } from 'common/helpers';
+import { convertLocalDate, dateToLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail, getUserMessageOutbound } from 'common/helpers';
 import { Dictionary } from "@types";
-import { getCollectionAux, getCollectionAux2, getMultiCollection, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
+import { getCollectionAux, getCollectionAux2, getMultiCollection, getMultiCollectionAux3, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
@@ -384,7 +384,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const mainAux = useSelector(state => state.main.mainAux2);
+    const multiAux3 = useSelector(state => state.main.multiDataAux3);
     const resExportData = useSelector(state => state.main.exportData);
     const [waitExport, setWaitExport] = useState(false);
 
@@ -401,8 +401,6 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
     ];
 
     const filterChannel = useSelector((state) => state.main.mainAux)
-    const multiaux = useSelector((state) => state.main.multiDataAux)
-    console.log(multiaux)
 
 
     const columns = React.useMemo(
@@ -472,14 +470,20 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
 
     const fetchData = () => {
         dispatch(showBackdrop(true))
-        dispatch(getCollectionAux2(getHSMShipping(
+        dispatch(getMultiCollectionAux3([getHSMShipping(
             {
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
                 communicationchannelid: selectedChannel || 0,
                 userSid: selectedUser || ""
             }
-        )));
+        ), getUserMessageOutbound(
+            {
+                startdate: dateRangeCreateDate.startDate,
+                enddate: dateRangeCreateDate.endDate,
+                communicationchannelid: selectedChannel || 0,
+            }
+        )]));
     };
 
     useEffect(() => {
@@ -507,10 +511,10 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
     }, [resExportData, waitExport]);
 
     useEffect(() => {
-        if (!mainAux.loading && !mainAux.error) {
+        if (!multiAux3.loading && !multiAux3.error) {
             dispatch(showBackdrop(false));
         }
-    }, [mainAux]);
+    }, [multiAux3]);
 
 
     const [selectedChannel, setSelectedChannel] = useState(0);
@@ -556,10 +560,10 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
 
                     <TableZyx
                         columns={columns}
-                        data={mainAux.data}
+                        data={multiAux3?.data?.[0]?.data || []}
                         groupedBy={true}
                         showHideColumns={true}
-                        loading={mainAux.loading}
+                        loading={multiAux3.loading}
                         onClickRow={handleEdit}
                         download={true}
                         ButtonsElement={() => (
@@ -594,17 +598,17 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                                         label={t(langKeys.user)}
                                         className={classes.filterComponent}
                                         valueDefault={selectedUser}
-                                        onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                                        onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.username).join() : '')}
                                         variant="outlined"
-                                        data={[{ userid: -1, userdesc: "EXTERNAL" }, ...(multiaux?.data?.[3]?.data || [])]}
-                                        optionDesc="userdesc"
-                                        optionValue="userid"
-                                        disabled={multiaux.loading}
+                                        data={[{ username: "EXTERNAL" }, ...(multiAux3?.data?.[1]?.data || [])]}
+                                        optionDesc="username"
+                                        optionValue="username"
+                                        disabled={multiAux3.loading}
                                     />
 
 
                                     <Button
-                                        disabled={mainAux.loading}
+                                        disabled={multiAux3.loading}
                                         variant="contained"
                                         color="primary"
                                         startIcon={<SearchIcon style={{ color: 'white' }} />}

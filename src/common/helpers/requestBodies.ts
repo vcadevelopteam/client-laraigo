@@ -5130,3 +5130,12 @@ export const integrationManagerCodePersonDel = ({integrationmanagerid, type, ids
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     parameters: { integrationmanagerid, type, ids },
 });
+export const getUserMessageOutbound = ({startdate, enddate, communicationchannelid}:Dictionary) => ({
+    method: "UFN_USER_MESSAGE_OUTBOUND",
+    key: "UFN_USER_MESSAGE_OUTBOUND",
+    parameters: { 
+        startdate,
+        enddate,
+        communicationchannelid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, },
+});
