@@ -72,11 +72,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 ? { ...detaildata.fields } as SelectedColumns
                 : new SelectedColumns());
     const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
-    const [selectionKey, setSelectionKey] = useState<string | any>(
-        detaildata.source === 'EXTERNAL' ? selectedColumns.primarykey :
-            detaildata.source === 'PERSON' ? 'personid' :
-                detaildata.source === 'LEAD' ? 'leadid' :
-                    'campaignmemberid')
+    const [selectionKey, setSelectionKey] = useState<string | any>('')
     const [selectedRows, setSelectedRows] = useState<any>(detaildata.sourcechanged ? {} : detaildata.selectedRows || {});
     const [allRowsSelected, setAllRowsSelected] = useState<boolean>(false);
 
@@ -436,6 +432,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         // Clean selected data on source change
         if (detaildata.sourcechanged) {
+            setSelectionKey(
+                detaildata.source === 'EXTERNAL' ? selectedColumns.primarykey :
+                    detaildata.source === 'PERSON' ? 'personid' :
+                        detaildata.source === 'LEAD' ? 'leadid' :
+                            'campaignmemberid')
             setJsonData([])
             setJsonDataPerson([])
             setDetaildata({ ...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
