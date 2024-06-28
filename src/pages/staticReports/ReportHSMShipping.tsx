@@ -564,7 +564,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                         download={true}
                         ButtonsElement={() => (
                             <>
-                                <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto' }}>
+                                <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto', marginTop: 5 }}>
                                     <DateRangePicker
                                         open={openDateRangeCreateDateModal}
                                         setOpen={setOpenDateRangeCreateDateModal}
