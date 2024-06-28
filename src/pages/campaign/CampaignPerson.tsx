@@ -63,7 +63,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [columnList, setColumnList] = useState<string[]>([]);
     const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.headers || [] : []);
     const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.jsonData || [] : []);
-    const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
+    // const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
     const [jsonDataPerson, setJsonDataPerson] = useState<any[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
@@ -436,9 +436,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         // Clean selected data on source change
         if (detaildata.sourcechanged) {
+            setJsonData([])
+            setJsonDataPerson([])
             setDetaildata({ ...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
         }
-    }, [])
+    }, [detaildata.source])
 
     // Internal data
     useEffect(() => {
@@ -514,7 +516,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             }
         }
     
-        setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
+        // setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
     
         const localColumnList = actualHeaders ? actualHeaders : newHeaders;
         setColumnList(localColumnList);
@@ -683,7 +685,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
-
     return (
             <div className={classes.containerDetail}>
                 {
