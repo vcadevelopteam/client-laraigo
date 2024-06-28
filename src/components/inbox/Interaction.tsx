@@ -437,13 +437,31 @@ const checkUrl = (url: string) => {
     const hasExtension = url.replace(/^.*[\\/]/, '').includes('.');
     return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
+const highlightWords = (text:any, searchTerm:any) => {
+    if (!searchTerm) return text;
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<span style="background-color: yellow;">$1</span>');
+};
+
+const HighlightedText = ({ interactiontext, searchTerm, showfulltext }) => {
+    const textToShow = showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ";
+    const highlightedText = highlightWords(textToShow, searchTerm);
+
+    return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
+};
+
+const HighlightedTextSimple = ({ interactiontext, searchTerm }) => {
+    const highlightedText = highlightWords(interactiontext, searchTerm);
+
+    return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
+};
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy, reply }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
+    const searchTerm = useSelector(state => state.inbox.searchTerm);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
-    console.log("interactiontype, interactiontext", interactiontype, interactiontext, reply)
     const [height, setHeight] = React.useState("0px");
 
     const onLoad = () => {
@@ -461,7 +479,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 })}
                 style={{ marginLeft: reply ? 24 : 0 }}
             >
-                <span dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}></span>
+                <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
                 {!showfulltext && (
                     <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
                 )
@@ -615,8 +633,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             return (
                 <div className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
-                })} style={{ display: 'inline-block' }}>
-                    {text}
+                })} style={{ display: 'inline-block' }}>                    
+                    <HighlightedTextSimple interactiontext={text} searchTerm={searchTerm}/>
                     <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex" }}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
@@ -740,6 +758,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
+                <HighlightedTextSimple interactiontext = {textres} searchTerm={searchTerm}/>
                 {textres}
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />

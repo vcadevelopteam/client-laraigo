@@ -147,7 +147,8 @@ const actionType = {
     SHOW_LOG_INTERACTIONS: 'socket/SHOW_LOG_INTERACTIONS',
     SET_HIDE_LOGS_ON_TICKET: 'socket/SET_HIDE_LOGS_ON_TICKET',
     
-SET_LIBRARY: 'inbox/SET_LIBRARY',
+    SET_LIBRARY: 'inbox/SET_LIBRARY',
+    SET_SEARCHTERM: 'inbox/SET_SEARCHTERM',
 };
 
 export default actionType;
