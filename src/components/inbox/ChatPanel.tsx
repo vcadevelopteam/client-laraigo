@@ -1325,17 +1325,6 @@ const applySearch = (list: Dictionary[], index: number) => {
     }
 }
 
-function highlightTerm(element:any, term:any, originalText:string) {
-    element.innerHTML = originalText;
-    if (!term) return;
-
-    const text = element.textContent;
-    const regex = new RegExp(`(${term})`, 'gi');
-
-    const highlightedText = text.replace(regex, '<span style="background-color: yellow;">$1</span>');
-    element.innerHTML = highlightedText;
-}
-
 const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> = ({ setShowSearcher }) => {
     const [value, setvalue] = useState('');
     const timeOut = React.useRef<NodeJS.Timeout | null>(null);
@@ -1367,6 +1356,10 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
             applySearch(listFound, indexSearch);
         }
     }, [triggerSearch])
+    useEffect(() => {
+        setvalue("");
+        dispatch(setSearchTerm(""))
+    }, [interactionList])
 
     const handlerManageFilter = (type: string) => {
         if (type === "down") {
