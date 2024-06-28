@@ -1436,6 +1436,17 @@ export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     }
 });
 
+export const getCampaignOldLst = (startdate: any, enddate: any): IRequestBody => ({
+    method: "UFN_CAMPAIGN_LST_OLD",
+    key: "UFN_CAMPAIGN_LST_OLD",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        newversion: false
+    }
+});
+
 export const getCampaignSel = (id: number): IRequestBody => ({
     method: "UFN_CAMPAIGN_SEL",
     parameters: {
@@ -1510,6 +1521,77 @@ export const insCampaign = ({
         variableshidden: JSON.stringify(variableshidden),
         membercount,
         offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const insCampaignOld = ({
+    id,
+    communicationchannelid,
+    usergroup,
+    type,
+    status,
+    title,
+    description,
+    subject,
+    message,
+    startdate,
+    enddate,
+    repeatable,
+    frecuency,
+    messagetemplateid,
+    messagetemplatename,
+    messagetemplatenamespace,
+    messagetemplateheader,
+    messagetemplatebuttons,
+    messagetemplatefooter,
+    messagetemplatetype,
+    messagetemplateattachment,
+    source,
+    messagetemplatelanguage,
+    messagetemplatepriority,
+    executiontype,
+    batchjson,
+    fields,
+    operation,
+    carouseljson,
+    variableshidden, 
+    selectedColumns
+}: Dictionary, membercount: number = 0): IRequestBody => ({
+    method: "UFN_CAMPAIGN_INS_OLD",
+    parameters: {
+        id,
+        communicationchannelid,
+        usergroup,
+        type,
+        status,
+        title,
+        description,
+        subject,
+        message,
+        startdate,
+        enddate,
+        repeatable,
+        frecuency,
+        messagetemplateid,
+        messagetemplatename,
+        messagetemplatenamespace,
+        messagetemplateheader: JSON.stringify(messagetemplateheader),
+        messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
+        messagetemplatefooter: messagetemplatefooter || null,
+        messagetemplatetype: messagetemplatetype || null,
+        messagetemplateattachment: messagetemplateattachment || null,
+        source: source || null,
+        messagetemplatelanguage: messagetemplatelanguage || null,
+        messagetemplatepriority: messagetemplatepriority || null,
+        executiontype,
+        batchjson: JSON.stringify(batchjson),
+        fields: JSON.stringify(selectedColumns || fields),
+        operation,
+        carouseljson: JSON.stringify(carouseljson),
+        variableshidden: JSON.stringify(variableshidden),
+        membercount,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        newversion: false,
     }
 });
 

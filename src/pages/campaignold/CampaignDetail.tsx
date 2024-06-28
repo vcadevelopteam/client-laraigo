@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
+import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaignOld, insCampaignMember } from 'common/helpers';
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
@@ -515,7 +515,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     }
 
     const saveCampaign = (data: any) => {               
-        dispatch(execute(insCampaign({...data, carouseljson: "", variableshidden: ""})));
+        dispatch(execute(insCampaignOld({...data, carouseljson: "", variableshidden: ""})));
     }
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
