@@ -1201,7 +1201,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
+                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/9c213ebc-6282-4948-9f9b-6342069ff560/Recurso%206Envios%20HSM02.png"
                                     title={t(langKeys.report_hsmshipping)}
                                 />
                                 <CardContent>
