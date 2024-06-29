@@ -214,7 +214,7 @@ const MessageTemplatesOld: FC = () => {
                         Cell: (props: CellProps<Dictionary>) => {
                             const { row } = props.cell;
                             return showId ? <div>{row.id}</div> : null;
-                        }                        
+                        }
                     },
                 ]
                 : []),
@@ -236,10 +236,10 @@ const MessageTemplatesOld: FC = () => {
                     if (category && type) {
                         return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
                     } else {
-                        return ''; 
+                        return '';
                     }
                 }
-                          
+
             },
             {
                 accessor: "language",
@@ -256,11 +256,11 @@ const MessageTemplatesOld: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const body = row?.original?.body;
-                    
-                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || ''; 
+
+                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || '';
                 }
-                
-                           
+
+
             },
         ],
         [showId]
@@ -286,7 +286,7 @@ const MessageTemplatesOld: FC = () => {
     }, []);
 
     useEffect(() => {
-        if(!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[3]){
+        if (!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[3]) {
             dispatch(getCollectionAux2(getDomainByDomainNameList(mainResult.multiData?.data?.[3]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
         }
     }, [mainResult.multiData]);
@@ -655,8 +655,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [pageSelected, setPageSelected] = useState(0);
     useEffect(() => {
         if (multiData[3]) {
-            const variableDataList = multiData[3].data ||[]
-            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext?.[x.variablename]||""})))
+            const variableDataList = multiData[3].data || []
+            setTableDataVariables(variableDataList.map(x => ({ ...x, value: row?.variablecontext?.[x.variablename] || "" })))
         }
     }, [multiData]);
 
@@ -1099,10 +1099,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         return;
                     }
                 }
-                const {buttons, ...dataAux} = data;
+                const { buttons, ...dataAux } = data;
                 dispatch(addTemplate({
                     ...dataAux,
                     bodyobject: bodyObject,
+                    buttons: buttons,
                     provideraccountid: null,
                     providerexternalid: null,
                     providerid: null,
@@ -1110,6 +1111,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     providerpartnerid: null,
                     providerquality: null,
                     providerstatus: null,
+                    oldversion: true,
                 }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
@@ -1159,8 +1161,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     providerpartnerid: null,
                     providerquality: null,
                     providerstatus: null,
-                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{},
-                )
+                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},
+                    )
                 })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
@@ -1453,7 +1455,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 sortType: 'string',
                 prefixTranslation: 'datatype_',
                 Cell: (props: any) => {
-                    const { variabletype } = props.cell.row.original || {}; 
+                    const { variabletype } = props.cell.row.original || {};
                     return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -1529,7 +1531,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                 </Tooltip>
                             </div>
-                        )}/>
+                        )} />
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     {row?.showid && (
@@ -2041,19 +2043,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     )}
                 </div>}
                 {pageSelected === 1 &&
-                <div className={classes.containerDetail}>                    
-                    <CustomTableZyxEditable
-                        columns={columns}
-                        data={tableDataVariables}
-                        download={false}
-                        dataDomains={domainsCustomTable?.data||[]}
-                        //loading={multiData.loading}
-                        register={false}
-                        filterGeneral={false}
-                        updateCell={updateCell}
-                        skipAutoReset={skipAutoReset}
-                    />
-                </div>}
+                    <div className={classes.containerDetail}>
+                        <CustomTableZyxEditable
+                            columns={columns}
+                            data={tableDataVariables}
+                            download={false}
+                            dataDomains={domainsCustomTable?.data || []}
+                            //loading={multiData.loading}
+                            register={false}
+                            filterGeneral={false}
+                            updateCell={updateCell}
+                            skipAutoReset={skipAutoReset}
+                        />
+                    </div>}
             </form>
         </div>
     );
