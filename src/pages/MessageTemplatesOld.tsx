@@ -570,21 +570,6 @@ const MessageTemplatesOld: FC = () => {
                                 setCommunicationChannel(value);
                             }}
                         />
-                        <Button
-                            color="primary"
-                            startIcon={<RefreshIcon style={{ color: "white" }} />}
-                            style={{ width: 140, backgroundColor: "#55BD84" }}
-                            variant="contained"
-                            disabled={
-                                mainPaginated.loading ||
-                                (!communicationChannel && Object.keys(selectedRows).length === 0)
-                            }
-                            onClick={() => {
-                                handleSynchronize(communicationChannel, rowWithDataSelected);
-                            }}
-                        >
-                            {t(langKeys.messagetemplate_synchronize)}
-                        </Button>
                     </div>
                 )}
                 autotrigger={true}
