@@ -328,12 +328,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setAdditionalVariableValues(newAdditionalVariableValues);
         }
     }, [variablesAdditionalView, multiData[5]]);
-    
+
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication', carouselIndex?: number) => {
-        //console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption);
+        console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption);
         const header = selectedOption ? selectedOption.key : '';
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
-        //console.log('selectedOption', selectedOption, "variableType", variableNumber, "variableNumber", )
+        
         if (variableType === 'video') {
             setVideoHeaderValue(value);
         } else if (variableType === 'body') {
@@ -371,26 +371,26 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         } else if (variableType === 'authentication') {
             setSelectedAuthVariable(value);
         }
-    
+
         const key = generateKey(variableType, variableNumber, carouselIndex);
         const newSelectedHeaders = {
             ...selectedHeaders,
             [key]: header
         };
         setSelectedHeaders(newSelectedHeaders);
-    
+
         const newVariableSelections = {
             ...variableSelections,
             [key]: header
         };
         setVariableSelections(newVariableSelections);
-    
+
         updateTemplate();
     };
-    
+
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         return carouselIndex !== undefined ? `${variableType}-${carouselIndex}-${variableNumber}` : `${variableType}-${variableNumber}`;
-    };    
+    };
     
     const getValueDefault = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         const key = generateKey(variableType, variableNumber, carouselIndex);
@@ -408,9 +408,18 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
         }
     
+        console.log('Initial updatedTemplate:', updatedTemplate);
+        console.log('variableSelections:', variableSelections);
+    
         Object.keys(variableSelections).forEach(key => {
-            const [type, number, carouselIndexStr] = key.split('-');
+            let type, number, carouselIndexStr;    
+            if (key.startsWith('carousel')) {
+                [type, carouselIndexStr, number] = key.split('-');
+            } else {
+                [type, number, carouselIndexStr] = key.split('-');
+            }
             const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
+            console.log(`Processing key: ${key} - type: ${type}, number: ${number}, carouselIndexStr: ${carouselIndexStr}, fieldNumber: ${fieldNumber}`);
     
             if (type === 'body' && updatedTemplate.body) {
                 updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
@@ -421,7 +430,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
                     updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
                 } else {
-                    //console.log(`Invalid carousel index ${index} or missing carousel data for key: ${key}`);
+                    console.log(`Invalid carousel index ${index} or missing carousel data for key: ${key}`);
                 }
             } else if (type === 'dynamicUrl') {
                 if (updatedTemplate.buttonsgeneric) {
@@ -470,6 +479,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 const index = parseInt(carouselIndexStr, 10);
                 if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
                     updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                } else {
+                    console.log(`Invalid carousel index ${index} or missing carousel data for key: ${key}`);
                 }
             } else if (type === 'bubble' && updatedTemplate.carouseldata) {
                 const index = parseInt(carouselIndexStr, 10);
@@ -513,7 +524,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
                 item.buttons.forEach((button: Dictionary, btnIndex: number) => {
                     if (button.btn.type === 'dynamic') {
-                        const buttonKey = `dynamicUrl-${index}-${btnIndex}`;
+                        const buttonKey = `dynamicUrl-dynamicUrl-${index}-${btnIndex}`; //const buttonKey = `dynamicUrl-${index}-${btnIndex}`;
                         const variableSelectionsValue = variableSelections[buttonKey];
                         if (variableSelectionsValue) {
                             const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
@@ -524,6 +535,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 const regex = /{{\d+}}/g;
                                 button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
                             }
+                        } else {
+                            console.log(`No variable selected for dynamic URL - index: ${index}, btnIndex: ${btnIndex}`);
                         }
                     }
                 });
@@ -548,8 +561,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             carouseljson: updatedTemplate.carouseldata,
             variableshidden: updatedTemplate.variableshidden
         }));
-    }, [variableSelections, headers, templateToUse, jsonPersons, setDetaildata, selectedAdditionalHeaders]);
+    }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons]);
     
+    
+
+
+
+
+
+
+
+
+
+
+
     const renderDynamicUrlFields = (carouselIndex: Dictionary, row: any, buttons: Dictionary[]) => {    
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
         const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item: Dictionary, index: Dictionary) =>
