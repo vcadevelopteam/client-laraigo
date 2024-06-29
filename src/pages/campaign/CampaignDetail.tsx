@@ -184,7 +184,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }, [mainResult, waitView]);
 
-    console.log("save", save, "pageSelected", pageSelected)
     const formatMessage = () => {
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';

@@ -30,6 +30,7 @@ import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as A
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import BlockIcon from '@material-ui/icons/Block';
 import { getDateCleaned } from 'common/helpers';
+import CommentIcon from '@material-ui/icons/Comment';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -575,6 +576,16 @@ export const Campaign: FC = () => {
         }
     };
 
+    const gotoReport = () => {
+        if (viewSelected === "report") {
+            return (
+                <CampaignReport
+                    setViewSelected={setViewSelected}
+                />
+            )
+        }
+    };
+
 
     const modifiedData = useMemo(() => {
         return mainResult.mainData.data.map((item: any) => ({
@@ -700,7 +711,18 @@ export const Campaign: FC = () => {
                                                 <Typography variant="inherit">Descargar</Typography>
                                             </MenuItem>
                                         </a>
-
+                                        <Divider />
+                                        <a style={{ textDecoration: 'none', color: 'inherit' }}  onClick={() => setViewSelected("report")}>
+                                            <MenuItem
+                                                disabled={mainResult.mainData.loading}
+                                                style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
+                                            >
+                                                <ListItemIcon>
+                                                    <CommentIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                </ListItemIcon>
+                                                <Typography variant="inherit">Reporte</Typography>
+                                            </MenuItem>
+                                        </a>
                                     </Menu>
                                 </div>
                             </div>
