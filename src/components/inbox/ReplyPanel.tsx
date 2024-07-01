@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IARouteIcon } from "icons";
@@ -47,6 +47,7 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
+import FormatBoldIcon from '@material-ui/icons/FormatBold';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -770,8 +771,8 @@ const CopilotLaraigoIcon: React.FC<{
         <div style={{ display: "flex" }}>
             <Tooltip title={t(langKeys.record_audio)} arrow placement="top">
                 <IARouteIcon
-                    className={enabled?classes.iconResponse:""}
-                    style={{ width: 22, height: 22, fill: enabled?"black":"lightgray" }}
+                    className={enabled ? classes.iconResponse : ""}
+                    style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
                 />
             </Tooltip>
         </div>
@@ -874,7 +875,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
-                                        <div>{t(langKeys.sentoblock)}</div>
+                                        <div>User Rich Response</div>
                                         <IconButton size="small" onClick={() => setShowSearch(true)} edge="end">
                                             <SearchIcon />
                                         </IconButton>
@@ -1012,6 +1013,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [flagredo, setflagredo] = useState(false);
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
+    const inputRef = useRef(null);
 
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
@@ -1594,7 +1596,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <div style={{display: "flex"}}>
+                                        <div style={{ display: "flex" }}>
                                             <InputBase
                                                 fullWidth
                                                 value={text}
@@ -1606,6 +1608,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 inputProps={{ "aria-label": "naked" }}
                                                 onPaste={onPasteTextbar}
                                                 onSelect={handleSelectionChange}
+                                                ref={inputRef}
                                             />
                                             {!files.length && !text && allowRecording && (
                                                 <RecordAudioIcon
@@ -1702,10 +1705,22 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             }
                                         />
                                     )}
-                                    <CopilotLaraigoIcon 
+                                    <CopilotLaraigoIcon
                                         classes={classes}
                                         enabled={propertyCopilotLaraigo}
                                     />
+                                    <span>
+                                        <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                            <IconButton onClick={() => {
+                                                //text
+                                                const input = inputRef.current
+                                            }
+                                            } size='small'>
+                                                <FormatBoldIcon className={classes.root} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </span>
+
                                 </div>
                                 <div
                                     className={clsx(classes.iconSend, {
