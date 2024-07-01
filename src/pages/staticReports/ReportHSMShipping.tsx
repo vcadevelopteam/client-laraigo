@@ -600,7 +600,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                                         valueDefault={selectedUser}
                                         onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.username).join() : '')}
                                         variant="outlined"
-                                        data={[{ username: "EXTERNAL" }, ...(multiAux3?.data?.[1]?.data || [])]}
+                                        data={multiAux3?.data?.[1]?.data?[{ username: "EXTERNAL" }, ...multiAux3?.data?.[1]?.data] : []}
                                         optionDesc="username"
                                         optionValue="username"
                                         disabled={multiAux3.loading}
