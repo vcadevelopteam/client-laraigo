@@ -6181,6 +6181,7 @@ export const langKeys = {
   footerpage: 'footerpage',
   dynamicbuttontext: 'dynamicbuttontext',
   validtyperiodtitlehelptext: 'validtyperiodtitlehelptext',
+  sentoblock: 'sentoblock',
 };
 
 export type LangKeys = typeof langKeys;

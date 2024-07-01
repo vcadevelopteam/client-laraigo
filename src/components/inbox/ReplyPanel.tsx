@@ -874,7 +874,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
-                                        <div>User Rich Response</div>
+                                        <div>{t(langKeys.sentoblock)}</div>
                                         <IconButton size="small" onClick={() => setShowSearch(true)} edge="end">
                                             <SearchIcon />
                                         </IconButton>
@@ -1594,18 +1594,28 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <InputBase
-                                            fullWidth
-                                            value={text}
-                                            onChange={(e) => setText(e.target.value)}
-                                            placeholder="Send your message..."
-                                            onKeyPress={handleKeyPress}
-                                            rows={2}
-                                            multiline
-                                            inputProps={{ "aria-label": "naked" }}
-                                            onPaste={onPasteTextbar}
-                                            onSelect={handleSelectionChange}
-                                        />
+                                        <div style={{display: "flex"}}>
+                                            <InputBase
+                                                fullWidth
+                                                value={text}
+                                                onChange={(e) => setText(e.target.value)}
+                                                placeholder="Send your message..."
+                                                onKeyPress={handleKeyPress}
+                                                rows={2}
+                                                multiline
+                                                inputProps={{ "aria-label": "naked" }}
+                                                onPaste={onPasteTextbar}
+                                                onSelect={handleSelectionChange}
+                                            />
+                                            {!files.length && !text && allowRecording && (
+                                                <RecordAudioIcon
+                                                    classes={classes}
+                                                    setRecord={setRecord}
+                                                    setStartRecording={setStartRecording}
+                                                    startRecording={startRecording}
+                                                />
+                                            )}
+                                        </div>
                                         {openDialogHotKey && (
                                             <div
                                                 style={{
@@ -1666,16 +1676,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         />
                                     )}
                                     {!record && !startRecording && (
-                                        <GifPickerZyx
-                                            onSelect={(url: string) =>
-                                                setFiles((p) => [
-                                                    ...p,
-                                                    { type: "image", url, id: new Date().toISOString() },
-                                                ])
-                                            }
-                                        />
-                                    )}
-                                    {!record && !startRecording && (
                                         <EmojiPickerZyx
                                             emojisIndexed={EMOJISINDEXED}
                                             onSelect={(e) => {
@@ -1692,12 +1692,14 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             emojiFavorite={emojiFavorite}
                                         />
                                     )}
-                                    {!files.length && !text && allowRecording && (
-                                        <RecordAudioIcon
-                                            classes={classes}
-                                            setRecord={setRecord}
-                                            setStartRecording={setStartRecording}
-                                            startRecording={startRecording}
+                                    {!record && !startRecording && (
+                                        <GifPickerZyx
+                                            onSelect={(url: string) =>
+                                                setFiles((p) => [
+                                                    ...p,
+                                                    { type: "image", url, id: new Date().toISOString() },
+                                                ])
+                                            }
                                         />
                                     )}
                                     <CopilotLaraigoIcon 
