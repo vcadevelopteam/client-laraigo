@@ -282,11 +282,11 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         if (!multidata.loading && !multidata.error) {
             const stdby = multidata?.data?.[0]?.data || []
             setMaindata(stdby.map(x => {
-                x.log = x.satisfactory ? '[Success,{"error"...}]' : x.log
+                x.log = x.satisfactory ? 'Success' : x.log
                 x.failed = x.failed ? "Ok" : "Fail"
                 x.satisfactory = x.satisfactory ? "Ok" : "Fail"
-                x.seen = x.seen ? "Ok" : "Fail"
-                x.answered = x.answered ? "Ok" : "Fail"
+                x.seen = x.satisfactory ? (x.seen ? "Ok" : "Waiting"):"Fail"
+                x.answered = x.satisfactory ? (x.answered ? "Ok" : "Waiting"):"Fail"
                 return x;
             }) || [])
         }
