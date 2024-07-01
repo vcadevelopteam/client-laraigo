@@ -1359,6 +1359,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
     useEffect(() => {
         setvalue("");
         dispatch(setSearchTerm(""))
+        setListFound([])
     }, [interactionList])
 
     const handlerManageFilter = (type: string) => {

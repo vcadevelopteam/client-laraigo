@@ -6337,6 +6337,7 @@ export const langKeys = {
   templates: "templates",
   templatestext: "templatestext",
   campaignstext: "campaignstext",
+  sentoblock: 'sentoblock',
 };
 
 export type LangKeys = typeof langKeys;
