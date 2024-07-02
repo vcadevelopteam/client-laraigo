@@ -282,11 +282,12 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         if (!multidata.loading && !multidata.error) {
             const stdby = multidata?.data?.[0]?.data || []
             setMaindata(stdby.map(x => {
-                x.log = x.satisfactory ? 'Success' : x.log
+                const sfail = (x.satisfactory === 1 || x.satisfactory === "Ok")
+                x.log = sfail ? 'Success' : x.log
                 x.failed = x.failed ? "Ok" : "Fail"
-                x.satisfactory = x.satisfactory ? "Ok" : "Fail"
-                x.seen = x.satisfactory ? (x.seen ? "Ok" : "Waiting"):"Fail"
-                x.answered = x.satisfactory ? (x.answered ? "Ok" : "Waiting"):"Fail"
+                x.satisfactory = sfail ? "Ok" : "Fail"
+                x.seen = sfail ? (x.seen ? "Ok" : "Waiting"):"Fail"
+                x.answered = sfail ? (x.answered ? "Ok" : "Waiting"):"Fail"
                 return x;
             }) || [])
         }
@@ -529,7 +530,8 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                     startdate: dateRangeCreateDate.startDate,
                     enddate: dateRangeCreateDate.endDate,
                     communicationchannelid: selectedChannel || 0,
-                    messagetemplateid: row.messagetemplateid
+                    messagetemplateid: row.messagetemplateid,
+                    usersid: selectedUser || ""
                 }
             )
         ]))
