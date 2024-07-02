@@ -178,9 +178,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
-    const [isStore, setIsStore] = useState(false)
-    const [isWarehouse, setIsWarehouse] = useState(false)
-
+    const [isStore, setIsStore] = useState(row?.storeid ? true : false)
+    const [isWarehouse, setIsWarehouse] = useState(row?.warehouseid ? true : false)
+    
     const {
         register,
         handleSubmit,
