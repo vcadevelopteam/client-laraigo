@@ -458,6 +458,15 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         ...(selectedTemplate.buttonsgeneric || [])
     ];
 
+    const replaceVariablesMail = (text: string, variables: Dictionary) => {
+        if (!text) return "";
+        return text.replace(/{{(\d+)}}/g, (_: any, number: number) => (variables && variables[number]) ? variables[number] : `{{${number}}}`);
+    };
+    
+
+    const replacedBodyMail = replaceVariablesMail(selectedTemplate.body, bodyVariableValues);
+    
+
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
             <div className={classes.containerDetail} style={{ display: 'block', alignContent: 'center' }}>
@@ -503,6 +512,8 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                     {selectedTemplate.buttonsenabled && combinedButtons.length > 0 && (
                                         <ButtonList buttons={combinedButtons} />
                                     )}
+
+
                                 </div>
                             ) : selectedTemplate?.category === "AUTHENTICATION" ? (
                                 <div>
@@ -524,11 +535,18 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                         <ButtonList buttons={[]} authenticationButton={selectedTemplate.authenticationdata.buttontext} />
                                     )}
                                 </div>
+                            ) : selectedTemplate?.type === "MAIL" ? (
+                                <div>
+                                    <p style={{fontSize:'1.2rem', fontWeight:'bold'}}>{selectedTemplate.header}</p>                                
+
+                                    <div dangerouslySetInnerHTML={{ __html: replacedBodyMail }} />                              
+                                </div>
                             ) : (
                                 <div>
                                     <p>No se ha seleccionado una Plantilla</p>
                                 </div>
-                            )}
+                            )}                           
+
                         </div>
                     </div>
                 </div>
@@ -536,7 +554,5 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         </div>
     );
 };
-
-
 
 export default TemplatePreview;

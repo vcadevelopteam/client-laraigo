@@ -827,12 +827,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                                 allRowsSelected={allRowsSelected}
                                 setAllRowsSelected={setAllRowsSelected}
                             />
-                        </>
-                    
-                      
+                        </>                  
                 }
 
-            </div>
-          
+            </div>          
     )
 }
