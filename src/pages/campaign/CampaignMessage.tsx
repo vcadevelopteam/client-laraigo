@@ -448,6 +448,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         });    
         return fields;
     };
+
+    const [unavailableVariables, setUnavailableVariables] = useState([]);
+
     
     const updateTemplate = useCallback((resetField = false, fieldToReset = null) => {
        
@@ -826,13 +829,70 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 carouseljson: updatedTemplate.carouseldata,
                 variableshidden: updatedTemplate.variableshidden
             }));
+
+             // Calcular las variables no disponibles
+             const getUsedVariables = (template) => {
+                const regex = /{{field(\d+)}}/g;
+                const usedVariables = new Set();
+
+                const extractVariables = (str) => {
+                    let match;
+                    while ((match = regex.exec(str)) !== null) {
+                        usedVariables.add(`field${match[1]}`);
+                    }
+                };
+
+                if (template.body) extractVariables(template.body);
+                if (template.header) extractVariables(template.header);
+                if (template.footer) extractVariables(template.footer);
+                if (template.buttonsgeneric) {
+                    template.buttonsgeneric.forEach(button => {
+                        if (button.btn.url) extractVariables(button.btn.url);
+                    });
+                }
+                if (template.carouseldata) {
+                    template.carouseldata.forEach(carousel => {
+                        if (carousel.body) extractVariables(carousel.body);
+                        if (carousel.header) extractVariables(carousel.header);
+                        carousel.buttons.forEach(button => {
+                            if (button.btn.url) extractVariables(button.btn.url);
+                        });
+                    });
+                }
+                if (template.variableshidden) {
+                    template.variableshidden.forEach(variable => {
+                        usedVariables.add(variable);
+                    });
+                }
+
+                return usedVariables;
+            };
+            
+            const usedVariables = getUsedVariables(updatedTemplate);
+            setUnavailableVariables([...usedVariables]);   
         }
-
-
-
     }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons, variablesBodyView, variablesAdditionalView, variablesCarouselBubbleView, variablesUrlView, variablesHeaderView, variablesCardImageView]);
+
+    const [unavailableValues, setUnavailableValues] = useState([]);   
+    useEffect(() => {
+        const getUnavailableVariableValues = () => {
+            const unavailableValues = unavailableVariables.map(variable => {
+                const fieldIndex = parseInt(variable.replace('field', ''), 10) - 2;
+                return templateData.fields.columns[fieldIndex];
+            });
+            setUnavailableValues(unavailableValues);  
+        };
+    
+        getUnavailableVariableValues();
+    }, [unavailableVariables, templateData.fields.columns]);
     
     
+    const getAvailableOptions = (dataToUse, unavailableValues) => {
+        return dataToUse.filter(option => option !== 'Destinatarios' && !unavailableValues.includes(option));
+    };
+    
+    const availableOptions = getAvailableOptions(dataToUse, unavailableValues);
+
     const renderDynamicUrlFields = (carouselIndex: number | undefined, row: boolean, buttons: Dictionary[]) => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
         const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item: Dictionary, index: number) =>
@@ -889,7 +949,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         variant="outlined"
                         uset={true}
                         className="col-12"
-                        data={dataToUse.map(header => ({ key: header, value: header }))}
+                        data={availableOptions.map(header => ({ key: header, value: header }))}
                         optionDesc="value"
                         optionValue="key"
                         valueDefault={valueDefault}
@@ -977,6 +1037,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [detaildata.message]);
 
 
+    
+
+
     return (
         <React.Fragment>
             <div className={classes.containerDetail} style={{ display: 'flex', width: '100%' }}>
@@ -990,9 +1053,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     <FieldSelectDisabled
                                         variant="outlined"
                                         uset={true}
+                                        disabled={true}
                                         label='Campos archivo'
                                         className="col-12"
-                                        data={availableData.map(header => ({ key: header, value: header }))}
+                                        data={dataToUse.map(header => ({ key: header, value: header }))}
                                         optionDesc="value"
                                         optionValue="key"
                                         valueDefault={selectedHeader ? selectedHeader : ''}
@@ -1016,7 +1080,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                            
                             <div className={classes.containerStyle}>                             
                                 {row ? (
-                                    templateData.headertype === "VIDEO" || templateData.headertype === "IMAGE" || templateData.headertype === "FILE" || templateData.headertype !== "TEXT" ? (
+                                    ((templateData.headertype === "VIDEO") && (templateData.headertype !== "TEXT")) ? (    
                                         <>
                                             {variablesHeaderView.map((variable, index) => {
                                                 const fieldsInHeader = extractFieldKeysFromTemplate(currentTemplate.header);
@@ -1038,7 +1102,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             variant="outlined"
                                                             uset={true}
                                                             className="col-12"
-                                                            data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                            data={availableOptions.map(header => ({ key: header, value: header }))}
                                                             optionDesc="value"
                                                             optionValue="key"
                                                             valueDefault={valueDefault}
@@ -1093,7 +1157,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                         variant="outlined"
                                                         uset={true}
                                                         className="col-12"
-                                                        data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                        data={availableOptions.map(header => ({ key: header, value: header }))}
                                                         optionDesc="value"
                                                         optionValue="key"
                                                         valueDefault={valueDefault}
@@ -1176,7 +1240,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             variant="outlined"
                                                             uset={true}
                                                             className="col-12"
-                                                            data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                            data={availableOptions.map(header => ({ key: header, value: header }))}
                                                             optionDesc="value"
                                                             optionValue="key"
                                                             valueDefault={valueDefault}
@@ -1233,7 +1297,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                 variant="outlined"
                                                                 uset={true}
                                                                 className="col-12"
-                                                                data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                                data={availableOptions.map(header => ({ key: header, value: header }))}
                                                                 optionDesc="value"
                                                                 optionValue="key"
                                                                 valueDefault={valueDefault}
@@ -1287,7 +1351,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                     variant="outlined"
                                                                     uset={true}
                                                                     className="col-12"
-                                                                    data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                                    data={availableOptions.map(header => ({ key: header, value: header }))}
                                                                     optionDesc="value"
                                                                     optionValue="key"
                                                                     valueDefault={valueDefault}
@@ -1361,7 +1425,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             variant="outlined"
                                                             uset={true}
                                                             className="col-12"
-                                                            data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                            data={availableOptions.map(header => ({ key: header, value: header }))}
                                                             optionDesc="value"
                                                             optionValue="key"
                                                             valueDefault={columnName}
