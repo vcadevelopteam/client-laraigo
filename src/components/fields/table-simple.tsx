@@ -294,7 +294,10 @@ export const DateOptionsMenuComponent = ({value, handleDate}:any) => {
                 value={value2}
                 onChange={(e: any) => {
                     const date = new Date(e);
-                    if(!isNaN(date.getTime())){
+                    if(!e) {
+                        handleDate(e)
+                        setvalue2(e)
+                    } else if(!isNaN(date.getTime())){
                         date.setHours(10)
                         handleDate(date);
                         setvalue2(e)
