@@ -6184,6 +6184,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   dynamicbuttontext: 'Al añadir una variable se crea un enlace personalizado para que el cliente consulte su información. Solo se puede añadir una variable al final de la URL.',
   validtyperiodtitlehelptext: 'El periodo de validez del mensaje es diferente del tiempo de caducidad del código. La fecha de caducidad del código es un contenido que puedes añadir a tus mensajes para que los clientes sepan cuando caduca el código de acceso OTP.',
   sentoblock: 'Enviar a bloque',
+  strikethrough:'Tachado',
+  monospaced:'Monoespaciado',
 };
 
 const esResource: ResourceLanguage = {

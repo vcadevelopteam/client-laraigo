@@ -6182,6 +6182,8 @@ export const langKeys = {
   dynamicbuttontext: 'dynamicbuttontext',
   validtyperiodtitlehelptext: 'validtyperiodtitlehelptext',
   sentoblock: 'sentoblock',
+  strikethrough:'strikethrough',
+  monospaced:'monospaced',
 };
 
 export type LangKeys = typeof langKeys;
