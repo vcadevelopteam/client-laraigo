@@ -830,18 +830,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 variableshidden: updatedTemplate.variableshidden
             }));
 
-             // Calcular las variables no disponibles
              const getUsedVariables = (template) => {
                 const regex = /{{field(\d+)}}/g;
                 const usedVariables = new Set();
-
                 const extractVariables = (str) => {
                     let match;
                     while ((match = regex.exec(str)) !== null) {
                         usedVariables.add(`field${match[1]}`);
                     }
                 };
-
                 if (template.body) extractVariables(template.body);
                 if (template.header) extractVariables(template.header);
                 if (template.footer) extractVariables(template.footer);
@@ -864,10 +861,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         usedVariables.add(variable);
                     });
                 }
-
                 return usedVariables;
-            };
-            
+            };            
             const usedVariables = getUsedVariables(updatedTemplate);
             setUnavailableVariables([...usedVariables]);   
         }
@@ -884,7 +879,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         };
     
         getUnavailableVariableValues();
-    }, [unavailableVariables, templateData.fields.columns]);
+    }, [unavailableVariables, templateData.fields?.columns]);
     
     
     const getAvailableOptions = (dataToUse, unavailableValues) => {
@@ -1037,6 +1032,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [detaildata.message]);
 
 
+    console.log('templateToUse', templateToUse)
+    console.log('bodyVariableValues', bodyVariableValues)
+    console.log('headerVariableValues', headerVariableValues)
+    console.log('videoHeaderValue', videoHeaderValue)
+    console.log('cardImageValues', cardImageValues)
+    console.log('dynamicUrlValues', dynamicUrlValues)
+    console.log('bubbleVariableValues', bubbleVariableValues)
+    console.log('carouselVariableValues', carouselVariableValues)
+    console.log('selectedAuthVariable', selectedAuthVariable)
+
+
     
 
 
@@ -1053,7 +1059,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     <FieldSelectDisabled
                                         variant="outlined"
                                         uset={true}
-                                        disabled={true}
+                                        disabled={row ? true : false}
                                         label='Campos archivo'
                                         className="col-12"
                                         data={dataToUse.map(header => ({ key: header, value: header }))}
