@@ -135,16 +135,27 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     const scheduleOrder = () => {
         const allNew = rowWithDataSelected.every(row => row.orderstatus === 'new');
-        if(allNew && Object.keys(selectedRows).length !== 0) setOpenModalManualScheduling(true)
+        const allNotImmediate = rowWithDataSelected.every(row => row.schedulingtype !== 'immediate');
+        if(allNew && allNotImmediate && Object.keys(selectedRows).length !== 0) setOpenModalManualScheduling(true)
         else {
             if(Object.keys(selectedRows).length !== 0) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.scheduleerror),
-                    })
-                );
+                if(!allNotImmediate) {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.immediateorderserror),
+                        })
+                    );
+                } else {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.scheduleerror),
+                        })
+                    );
+                }
             } else {
                 dispatch(
                     showSnackbar({
@@ -549,6 +560,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 Header: t(langKeys.totalamount),
                 accessor: "amount",
                 width: "auto",
+                Cell: (props: any) => {
+                    const { amount } = props.cell.row.original;
+                    return (amount?.toFixed(2) || 0);
+                }
             },
             {
                 Header: t(langKeys.orderstatus),

@@ -669,7 +669,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                     onChange={(value) => {
                                         if(value) {
                                             setValue('warehouseid', value.warehouseid)
-                                            trigger('warehousei')
+                                            trigger('warehouseid')
                                         } else {
                                             setValue('warehouseid', 0)
                                             trigger('warehouseid')
