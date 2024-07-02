@@ -1757,7 +1757,7 @@ export const getHSMShipping= ({ startdate, enddate, communicationchannelid, user
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid, messagetemplateid }: Dictionary): IRequestBody => ({
+export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid, messagetemplateid,usersid }: Dictionary): IRequestBody => ({
     method: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
     key: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
     parameters: {
@@ -1765,6 +1765,7 @@ export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid
         enddate,
         communicationchannelid,
         messagetemplateid,
+        usersid,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
