@@ -478,11 +478,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 setPageCount(Math.ceil(paginatedAuxResult.count / fetchDataAux.pageSize));
                 setTotalRow(paginatedAuxResult.count);
                 setJsonData(paginatedAuxResult.data);
+                setJsonPersons(paginatedAuxResult.data)
                 setPaginatedWait(false);
             }
         }
     }, [paginatedAuxResult]);
-
 
     //console.log(jsonData)
     // External Data Logic //
