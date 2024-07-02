@@ -121,7 +121,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [variablesCardImageView, setVariablesCardImageView] = useState<Dictionary[]>([]);
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const [variablesHeaderView, setVariablesHeaderView] = useState<Dictionary[]>([]);
-    
+   
+
     if (availableData.length === 0) {
         availableData.push('No quedan más variables');
     }
@@ -141,7 +142,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         };
 
         const campaignData = data[0];
-        //console.log('campaignData', multiData[4])
 
         if (campaignData) {
             const bodyVariables = detectVariablesField(campaignData.message);
@@ -168,7 +168,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setSelectedAuthVariable(bodyVariableValues);    
             setVariablesHeaderView(headerVariable);
             setVariablesCardImageView(cardImageVariables); 
-            //console.log('cardImageVariables en proccessed data', cardImageVariables)
             
             bodyVariables.forEach((variable, index) => {
                 const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
@@ -289,7 +288,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setAdditionalVariableValues(newAdditionalVariableValues);
             setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
             setSelectedAuthVariable(processedData.selectedAuthVariable);
-            //console.log('newCardImageValue', newCardImageValue);
     
             if (combinedData.fields && combinedData.fields.primarykey) {
                 setSelectedHeader(combinedData.fields.primarykey);
@@ -310,8 +308,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             });
     
             setSelectedHeaders(newSelectedHeaders);
+            updateTemplate(); 
         }
     }, [multiData]);
+    
     
     useEffect(() => {
         if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
@@ -329,11 +329,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [variablesAdditionalView, multiData[5]]);
 
-    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication', carouselIndex?: number) => {
-        console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption);
+    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional', carouselIndex?: number) => {
+        //console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption);
         const header = selectedOption ? selectedOption.key : '';
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
-        
+    
         if (variableType === 'video') {
             setVideoHeaderValue(value);
         } else if (variableType === 'body') {
@@ -370,27 +370,41 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }));
         } else if (variableType === 'authentication') {
             setSelectedAuthVariable(value);
+        } else if (variableType === 'additional') {
+            setAdditionalVariableValues(prevValues => ({
+                ...prevValues,
+                [variableNumber]: value
+            }));
         }
-
+    
         const key = generateKey(variableType, variableNumber, carouselIndex);
         const newSelectedHeaders = {
             ...selectedHeaders,
             [key]: header
         };
         setSelectedHeaders(newSelectedHeaders);
-
+    
         const newVariableSelections = {
             ...variableSelections,
             [key]: header
         };
         setVariableSelections(newVariableSelections);
-
-        updateTemplate();
+    
+        if (!header) {
+            updateTemplate(true, variableNumber);
+        } else {
+            updateTemplate();
+        }
     };
-
+    
+    
+    
+    
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         return carouselIndex !== undefined ? `${variableType}-${carouselIndex}-${variableNumber}` : `${variableType}-${variableNumber}`;
     };
+    
+    
     
     const getValueDefault = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         const key = generateKey(variableType, variableNumber, carouselIndex);
@@ -401,218 +415,473 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return header ? { key: header, value: header } : undefined;
     };
     
-    const updateTemplate = useCallback(() => {
-        const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
-    
-        if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
-            updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
+
+
+
+    const [currentTemplate, setCurrentTemplate] = useState(templateToUse);
+
+    const extractFieldKeysFromTemplate = (templatePart: any) => {
+        const regex = /{{field(\d+)}}/g;
+        let match;
+        const fields = [];
+        while ((match = regex.exec(templatePart)) !== null) {
+            fields.push(`field${match[1]}`);
         }
-    
-        console.log('Initial updatedTemplate:', updatedTemplate);
-        console.log('variableSelections:', variableSelections);
-    
-        Object.keys(variableSelections).forEach(key => {
-            let type, number, carouselIndexStr;    
-            if (key.startsWith('carousel')) {
-                [type, carouselIndexStr, number] = key.split('-');
-            } else {
-                [type, number, carouselIndexStr] = key.split('-');
+        return fields;
+    };
+
+    const extractFieldKeysFromButtonsgeneric = (buttonsgeneric: Dictionary[], carouseldata?: Dictionary[]) => {
+        const fields = [];
+        buttonsgeneric?.forEach(button => {
+            const match = button.btn.url.match(/{{field(\d+)}}/);
+            if (match) {
+                fields.push(`field${match[1]}`);
             }
-            const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
-            console.log(`Processing key: ${key} - type: ${type}, number: ${number}, carouselIndexStr: ${carouselIndexStr}, fieldNumber: ${fieldNumber}`);
+        });    
+        carouseldata?.forEach(carousel => {
+            carousel.buttons?.forEach(button => {
+                const match = button.btn.url.match(/{{field(\d+)}}/);
+                if (match) {
+                    fields.push(`field${match[1]}`);
+                }
+            });
+        });    
+        return fields;
+    };
     
-            if (type === 'body' && updatedTemplate.body) {
-                updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-            } else if (type === 'header' && updatedTemplate.header) {
-                updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-            } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
-                const index = parseInt(number, 10) - 1;
-                if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
-                    updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
+    const updateTemplate = useCallback((resetField = false, fieldToReset = null) => {
+       
+        if(!row) {
+            const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
+    
+            if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
+                updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
+            }        
+         
+            Object.keys(variableSelections).forEach(key => {
+                let type, number, carouselIndexStr;    
+                if (key.startsWith('carousel')) {
+                    [type, carouselIndexStr, number] = key.split('-');
                 } else {
-                    console.log(`Invalid carousel index ${index} or missing carousel data for key: ${key}`);
+                    [type, number, carouselIndexStr] = key.split('-');
                 }
-            } else if (type === 'dynamicUrl') {
-                if (updatedTemplate.buttonsgeneric) {
-                    updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {
-                        const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
-                        const variableSelectionsValue = variableSelections[buttonKey];
-                        if (variableSelectionsValue) {
-                            const variableKey = headers.indexOf(variableSelectionsValue);
-                            if (variableKey !== -1) {
-                                if (button.btn.type === 'dynamic' && button.btn.url) {
-                                    if (!button.btn.url.includes('{{')) {
-                                        button.btn.url += '/{{1}}';
-                                    }
-                                    const regex = /{{\d+}}/g;
-                                    button.btn.url = button.btn.url.replace(regex, `{{field${variableKey + 1}}}`);
-                                }
-                            } else {
-                                console.log(`Value "${variableSelectionsValue}" not found in headers`);
-                            }
-                        } else {
-                            console.log(`No selection found for button key: ${buttonKey}`);
-                        }
-                    });
-                }
-                if (updatedTemplate.carouseldata) {
-                    updatedTemplate.carouseldata.forEach((item: Dictionary, carouselIndex: number) => {
-                        item.buttons.forEach((button: Dictionary, btnIndex: number) => {
-                            if (button.btn.type === 'dynamic') {
-                                const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
-                                const variableSelectionsValue = variableSelections[buttonKey];                                
-                                if (variableSelectionsValue) {
-                                    const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;                                  
-                                    if (!isNaN(fieldNumber)) {
+                const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
+        
+                if (type === 'body' && updatedTemplate.body) {
+                    updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                } else if (type === 'header' && updatedTemplate.header) {
+                    updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                    const index = parseInt(number, 10) - 1;
+                    if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
+                        updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
+                    }
+                } else if (type === 'dynamicUrl') {
+                    if (updatedTemplate.buttonsgeneric) {
+                        updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {
+                            const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
+                            const variableSelectionsValue = variableSelections[buttonKey];
+                            if (variableSelectionsValue) {
+                                const variableKey = headers.indexOf(variableSelectionsValue);
+                                if (variableKey !== -1) {
+                                    if (button.btn.type === 'dynamic' && button.btn.url) {
                                         if (!button.btn.url.includes('{{')) {
                                             button.btn.url += '/{{1}}';
                                         }
                                         const regex = /{{\d+}}/g;
-                                        button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
+                                        button.btn.url = button.btn.url.replace(regex, `{{field${variableKey + 1}}}`);
                                     }
+                                }
+                            } 
+                        });
+                    }
+                    if (updatedTemplate.carouseldata) {
+                        updatedTemplate.carouseldata.forEach((item: Dictionary, carouselIndex: number) => {
+                            item.buttons.forEach((button: Dictionary, btnIndex: number) => {
+                                if (button.btn.type === 'dynamic') {
+                                    const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
+                                    const variableSelectionsValue = variableSelections[buttonKey];                                
+                                    if (variableSelectionsValue) {
+                                        const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;                                  
+                                        if (!isNaN(fieldNumber)) {
+                                            if (!button.btn.url.includes('{{')) {
+                                                button.btn.url += '/{{1}}';
+                                            }
+                                            const regex = /{{\d+}}/g;
+                                            button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else if (type === 'carousel' && updatedTemplate.carouseldata) {
+                    const index = parseInt(carouselIndexStr, 10);
+                    if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
+                        updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                    }
+                } else if (type === 'bubble' && updatedTemplate.carouseldata) {
+                    const index = parseInt(carouselIndexStr, 10);
+                    if (!isNaN(index)) {
+                        updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                    }
+                } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
+                    const selectedHeader = variableSelections['video-videoHeader'];
+                    if (selectedHeader === 'default') {
+                        updatedTemplate.header = templateToUse.header;
+                    } else {
+                        const fieldNumber = headers.indexOf(selectedHeader) + 1;
+                        if (!isNaN(fieldNumber)) {
+                            updatedTemplate.header = `{{field${fieldNumber}}}`;
+                        }
+                    }
+                }
+            });
+        
+            if (updatedTemplate.category === "AUTHENTICATION" && selectedHeaders['body-authentication']) {
+                const fieldNumber = headers.indexOf(selectedHeaders['body-authentication']) + 1;
+                if (!isNaN(fieldNumber)) {
+                    updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
+                }
+            }
+        
+            if (updatedTemplate.messagetemplatetype === "CAROUSEL" && updatedTemplate.carouseljson) {
+                const carouselData = JSON.parse(updatedTemplate.carouseljson);
+                carouselData.forEach((item: Dictionary, index: number) => {
+                    const key = `cardImage-cardImage-${index + 1}`;
+                    const variableSelectionKey = variableSelections[key];
+                    if (variableSelectionKey) {
+                        const fieldNumber = headers.indexOf(variableSelectionKey) + 1;
+                        if (!isNaN(fieldNumber)) {
+                            item.header = `{{field${fieldNumber}}}`;
+                        } 
+                    }
+                    item.buttons.forEach((button: Dictionary, btnIndex: number) => {
+                        if (button.btn.type === 'dynamic') {
+                            const buttonKey = `dynamicUrl-dynamicUrl-${index}-${btnIndex}`;
+                            const variableSelectionsValue = variableSelections[buttonKey];
+                            if (variableSelectionsValue) {
+                                const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
+                                if (!isNaN(fieldNumber)) {
+                                    if (!button.btn.url.includes('{{')) {
+                                        button.btn.url += '/{{1}}';
+                                    }
+                                    const regex = /{{\d+}}/g;
+                                    button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
+                                }
+                            } 
+                        }
+                    });
+                });
+                updatedTemplate.carouseljson = JSON.stringify(carouselData);
+            }
+        
+            updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
+                header => `field${headers.indexOf(header) + 1}`
+            );
+        
+            console.log('final updatedTemplate:', updatedTemplate);        
+            setFilledTemplate(updatedTemplate);
+            setDetaildata((prev: any) => ({
+                ...prev,
+                message: updatedTemplate.body,
+                messagetemplateheader: {
+                    ...prev.messagetemplateheader,
+                    value: updatedTemplate.header
+                },
+                messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
+                carouseljson: updatedTemplate.carouseldata,
+                variableshidden: updatedTemplate.variableshidden
+            }));
+        }
+
+       if (row) {
+            const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
+
+            if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
+                updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
+            }
+
+            if (variablesBodyView.length > 0 && updatedTemplate.body) {
+                let bodyIndex = 1;
+                variablesBodyView.forEach(variable => {
+                    const placeholder = `{{${bodyIndex}}}`;
+                    if (updatedTemplate.body.indexOf(placeholder) !== -1) {
+                        updatedTemplate.body = updatedTemplate.body.replace(placeholder, `{{${variable.variable}}}`);
+                    }
+                    bodyIndex++;
+                });
+            }
+
+            if (variablesCarouselBubbleView.length > 0 && updatedTemplate.carouseldata) {
+                variablesCarouselBubbleView.forEach((variables, carouselIndex) => {
+                    if (updatedTemplate.carouseldata[carouselIndex]) {
+                        let bodyIndex = 1;
+                        variables.forEach(variable => {
+                            const placeholder = `{{${bodyIndex}}}`;
+                            if (updatedTemplate.carouseldata[carouselIndex].body.indexOf(placeholder) !== -1) {
+                                updatedTemplate.carouseldata[carouselIndex].body = updatedTemplate.carouseldata[carouselIndex].body.replace(placeholder, `{{${variable.variable}}}`);
+                            }
+                            bodyIndex++;
+                        });
+                    }
+                });
+            }
+
+             if (variablesAdditionalView.length > 0) {
+                updatedTemplate.variableshidden = variablesAdditionalView;
+            }
+
+            if (variablesUrlView.length > 0) {
+                if (updatedTemplate.buttonsgeneric) {
+                    updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
+                        if (button.btn.type === 'dynamic') {
+                            const variable = variablesUrlView[btnIndex];
+                            if (variable && variable.variable) {
+                                if (!button.btn.url.includes('{{')) {
+                                    button.btn.url += '/{{1}}';
+                                }
+                                const regex = /{{\d+}}/g;
+                                button.btn.url = button.btn.url.replace(regex, `{{${variable.variable}}}`);
+                            }
+                        }
+                    });
+                }
+                if (updatedTemplate.carouseldata) {
+                    updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
+                        item.buttons.forEach((button, btnIndex) => {
+                            if (button.btn.type === 'dynamic') {
+                                const variable = variablesUrlView[btnIndex];
+                                if (variable && variable.variable) {
+                                    if (!button.btn.url.includes('{{')) {
+                                        button.btn.url += '/{{1}}';
+                                    }
+                                    const regex = /{{\d+}}/g;
+                                    button.btn.url = button.btn.url.replace(regex, `{{${variable.variable}}}`);
                                 }
                             }
                         });
                     });
                 }
-            } else if (type === 'carousel' && updatedTemplate.carouseldata) {
-                const index = parseInt(carouselIndexStr, 10);
-                if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
-                    updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                } else {
-                    console.log(`Invalid carousel index ${index} or missing carousel data for key: ${key}`);
-                }
-            } else if (type === 'bubble' && updatedTemplate.carouseldata) {
-                const index = parseInt(carouselIndexStr, 10);
-                if (!isNaN(index)) {
-                    updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                }
-            } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
-                const selectedHeader = variableSelections['video-videoHeader'];
-                if (selectedHeader === 'default') {
-                    updatedTemplate.header = templateToUse.header;
-                } else {
-                    const fieldNumber = headers.indexOf(selectedHeader) + 1;
-                    if (!isNaN(fieldNumber)) {
-                        updatedTemplate.header = `{{field${fieldNumber}}}`;
-                    }
-                }
             }
-        });
-    
-        if (updatedTemplate.category === "AUTHENTICATION" && selectedHeaders['body-authentication']) {
-            const fieldNumber = headers.indexOf(selectedHeaders['body-authentication']) + 1;
-            if (!isNaN(fieldNumber)) {
-                updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
-            }
-        }
-    
-        if (updatedTemplate.messagetemplatetype === "CAROUSEL" && updatedTemplate.carouseljson) {
-            const carouselData = JSON.parse(updatedTemplate.carouseljson);
-            carouselData.forEach((item: Dictionary, index: number) => {
-                const key = `cardImage-cardImage-${index + 1}`;
-                const variableSelectionKey = variableSelections[key];
-                if (variableSelectionKey) {
-                    const fieldNumber = headers.indexOf(variableSelectionKey) + 1;
-                    if (!isNaN(fieldNumber)) {
-                        item.header = `{{field${fieldNumber}}}`;
-                    } else {
-                        console.log(`Invalid field number for cardImage - index: ${index}, variableSelectionKey: ${variableSelectionKey}`);
-                    }
-                } else {
-                    console.log(`No variable selected for cardImage - index: ${index}`);
-                }
-                item.buttons.forEach((button: Dictionary, btnIndex: number) => {
-                    if (button.btn.type === 'dynamic') {
-                        const buttonKey = `dynamicUrl-dynamicUrl-${index}-${btnIndex}`; //const buttonKey = `dynamicUrl-${index}-${btnIndex}`;
-                        const variableSelectionsValue = variableSelections[buttonKey];
-                        if (variableSelectionsValue) {
-                            const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
-                            if (!isNaN(fieldNumber)) {
-                                if (!button.btn.url.includes('{{')) {
-                                    button.btn.url += '/{{1}}';
-                                }
-                                const regex = /{{\d+}}/g;
-                                button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
-                            }
-                        } else {
-                            console.log(`No variable selected for dynamic URL - index: ${index}, btnIndex: ${btnIndex}`);
-                        }
+
+            if (variablesCardImageView.length > 0 && updatedTemplate.carouseldata) {
+                variablesCardImageView.forEach((variables, carouselIndex) => {
+                    if (variables.length > 0 && variables[0].variable) {
+                        updatedTemplate.carouseldata[carouselIndex].header = `{{${variables[0].variable}}}`;
                     }
                 });
+            }
+
+            if (variablesHeaderView.length > 0 && updatedTemplate.header) {
+                variablesHeaderView.forEach((variable, index) => {
+                    const placeholder = `{{${index + 1}}}`;
+                    if (updatedTemplate.header.indexOf(placeholder) !== -1) {
+                        updatedTemplate.header = updatedTemplate.header.replace(placeholder, `{{${variable.variable}}}`);
+                    } else {
+                        updatedTemplate.header = `{{${variable.variable}}}`;
+                    }
+                });
+            }
+
+
+            Object.keys(variableSelections).forEach(key => {
+                let type, number, carouselIndexStr;
+                if (key.startsWith('carousel')) {
+                    [type, carouselIndexStr, number] = key.split('-');
+                } else {
+                    [type, number, carouselIndexStr] = key.split('-');
+                }
+                const header = variableSelections[key];
+                const columns = templateData.fields?.columns || [];
+                const fieldNumber = columns.indexOf(header) + 2;            
+
+                if (type === 'body' && updatedTemplate.body) {
+                    const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
+                    if (placeholders.length >= number) {
+                        const currentField = placeholders[number - 1][0];
+                        const newField = `{{field${fieldNumber}}}`;
+                        updatedTemplate.body = updatedTemplate.body.replace(currentField, newField);                       
+                    }
+                } else if (type === 'header' && updatedTemplate.header) {
+                    const placeholders = [...updatedTemplate.header.matchAll(/{{field(\d+)}}/g)];
+                    if (placeholders.length >= number) {
+                        const currentField = placeholders[number - 1][0];
+                        const newField = `{{field${fieldNumber}}}`;
+                        updatedTemplate.header = updatedTemplate.header.replace(currentField, newField);
+                    }
+                } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                    const carouselIndex = parseInt(number, 10);
+                    const index = parseInt(number, 10) - 1;
+                    if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
+                        const placeholders = [...updatedTemplate.carouseldata[carouselIndex].header.matchAll(/{{field(\d+)}}/g)];
+                        if (placeholders.length >= 1) {
+                            const currentField = placeholders[0][0];
+                            const newField = `{{field${fieldNumber}}}`;
+                            updatedTemplate.carouseldata[carouselIndex].header = updatedTemplate.carouseldata[carouselIndex].header.replace(currentField, newField);
+                        } 
+                    } 
+                }                
+                else if (type === 'dynamicUrl') {
+                    if (updatedTemplate.buttonsgeneric) {
+                        updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
+                            const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
+                            const variableSelectionsValue = variableSelections[buttonKey];
+                            if (variableSelectionsValue) {
+                                const variableKey = columns.indexOf(variableSelectionsValue) + 2;                                
+                                if (variableKey !== -1) {
+                                    if (button.btn.type === 'dynamic' && button.btn.url) {
+                                        if (!button.btn.url.includes('{{')) {
+                                            button.btn.url += '/{{1}}';
+                                        }
+                                        const regex = /{{field(\d+)}}/g;
+                                        button.btn.url = button.btn.url.replace(regex, `{{field${variableKey}}}`);
+                                    }
+                                } 
+                            }
+                        });
+                    }         
+
+                    if (updatedTemplate.carouseldata) {
+                        updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
+                            item.buttons.forEach((button, btnIndex) => {
+                                if (button.btn.type === 'dynamic') {
+                                    const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
+                                    const variableSelectionsValue = variableSelections[buttonKey];
+                                    if (variableSelectionsValue) {
+                                        const variableKey = columns.indexOf(variableSelectionsValue) + 2;
+                                        if (variableKey !== -1) {
+                                            if (button.btn.type === 'dynamic' && button.btn.url) {
+                                                if (!button.btn.url.includes('{{')) {
+                                                    button.btn.url += '/{{1}}';
+                                                }
+                                                const regex = /{{field(\d+)}}/g;
+                                                button.btn.url = button.btn.url.replace(regex, `{{field${variableKey}}}`);
+                                            }
+                                        } 
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    
+                } else if (type === 'carousel' && updatedTemplate.carouseldata) {
+                    const carouselIndex = parseInt(carouselIndexStr, 10);
+                    if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
+                        const placeholders = [...updatedTemplate.carouseldata[carouselIndex].body.matchAll(/{{field(\d+)}}/g)];
+                        if (placeholders.length >= number) {
+                            const currentField = placeholders[number - 1][0];
+                            const newField = `{{field${fieldNumber}}}`;
+                            updatedTemplate.carouseldata[carouselIndex].body = updatedTemplate.carouseldata[carouselIndex].body.replace(currentField, newField);
+                        } 
+                    }
+                }                
+
+                else if (type === 'additional') {
+                    const additionalIndex = parseInt(number, 10) - 1;
+                    if (!isNaN(additionalIndex) && updatedTemplate.variableshidden) {
+                        if (updatedTemplate.variableshidden[additionalIndex]) {
+                            updatedTemplate.variableshidden[additionalIndex] = `field${fieldNumber}`;
+                        } 
+                    }
+                }   
+                
+                else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
+                    const selectedHeader = variableSelections['video-videoHeader'];
+                    if (selectedHeader === 'default') {
+                        updatedTemplate.header = templateToUse.header;
+                    } else {
+                        const fieldNumber = columns.indexOf(selectedHeader) + 2;
+                        if (!isNaN(fieldNumber)) {
+                            updatedTemplate.header = `{{field${fieldNumber}}}`;
+                        }
+                    }
+                }
             });
-            updatedTemplate.carouseljson = JSON.stringify(carouselData);
+           
+            if (!row) {
+                updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
+                    header => `field${columns.indexOf(header) + 2}`
+                );
+            }
+
+            if (resetField && fieldToReset !== null) {
+                const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
+                if (placeholders.length >= fieldToReset) {
+                    const currentField = placeholders[fieldToReset - 1][0];
+                    updatedTemplate.body = updatedTemplate.body.replace(currentField, `{{${fieldToReset}}}`);
+                }
+            }
+
+            console.log('final updatedTemplate:', updatedTemplate);
+            setCurrentTemplate(updatedTemplate);
+            setDetaildata((prev: any) => ({
+                ...prev,
+                message: updatedTemplate.body,
+                messagetemplateheader: {
+                    ...prev.messagetemplateheader,
+                    value: updatedTemplate.header
+                },
+                messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
+                carouseljson: updatedTemplate.carouseldata,
+                variableshidden: updatedTemplate.variableshidden
+            }));
         }
-    
-        updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
-            header => `field${headers.indexOf(header) + 1}`
-        );
-    
-        console.log('final updatedTemplate:', updatedTemplate);        
-        setFilledTemplate(updatedTemplate);
-        setDetaildata((prev: any) => ({
-            ...prev,
-            message: updatedTemplate.body,
-            messagetemplateheader: {
-                ...prev.messagetemplateheader,
-                value: updatedTemplate.header
-            },
-            messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
-            carouseljson: updatedTemplate.carouseldata,
-            variableshidden: updatedTemplate.variableshidden
-        }));
-    }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons]);
+
+
+
+    }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons, variablesBodyView, variablesAdditionalView, variablesCarouselBubbleView, variablesUrlView, variablesHeaderView, variablesCardImageView]);
     
     
-
-
-
-
-
-
-
-
-
-
-
-    const renderDynamicUrlFields = (carouselIndex: Dictionary, row: any, buttons: Dictionary[]) => {    
+    const renderDynamicUrlFields = (carouselIndex: number | undefined, row: boolean, buttons: Dictionary[]) => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [];
-        const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item: Dictionary, index: Dictionary) =>
-            item.buttons.filter(button => button.btn.type === 'dynamic' && index === carouselIndex).map((button: Dictionary, btnIndex: Dictionary) => ({
+        const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item: Dictionary, index: number) =>
+            item.buttons.filter(button => button.btn.type === 'dynamic').map((button: Dictionary, btnIndex: number) => ({
                 button,
                 btnIndex,
                 carouselIndex: index
             }))
         ) || [];
         const allDynamicButtons = buttons.length ? buttons : [...dynamicButtons, ...carouselDynamicButtons];
-
+    
         return allDynamicButtons.map((buttonData, index) => {
             const key = buttonData.carouselIndex !== undefined ?
                 `dynamicUrl-${buttonData.carouselIndex}-${buttonData.btnIndex}` :
                 `dynamicUrl-${index + 1}`;
-    
-            let columnName;
+            let valueDefault;
     
             if (row) {
-                const fieldNumber = parseInt(variablesUrlView[index]?.variable.replace("field", ""), 10) - 2;
-                columnName = templateData.fields.columns[fieldNumber];
+                const fieldsInButtons = extractFieldKeysFromButtonsgeneric(currentTemplate.buttonsgeneric, currentTemplate.carouseldata);
+                const fieldKey = fieldsInButtons[index];
+                if (fieldKey) {
+                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                    const valor = templateData.fields.columns[fieldIndex];
+                    valueDefault = valor ? valor : undefined;
+                } else {
+                    valueDefault = undefined;
+                }
             } else {
                 if (buttonData && buttonData.button) {
-                    const match = buttonData.button.btn.url.match(/{{(\d+)}}/);
+                    const match = buttonData.button.btn.url.match(/{{field(\d+)}}/);
                     if (match) {
-                        const variableNumber = parseInt(match[1], 10) - 2;
-                        columnName = templateData.fields.columns[variableNumber];
+                        const fieldNumber = parseInt(match[1], 10) - 2;
+                        valueDefault = templateData.fields.columns[fieldNumber];
                     }
-                } else {
-                    console.error("buttonData or buttonData.button is undefined");
                 }
             }
     
-            if (!columnName) {
+            const selectedValue = variableSelections[key];
+            if (selectedValue) {
+                valueDefault = selectedValue;
+            } else if (!valueDefault || valueDefault === 'default') {
                 const defaultValue = getValueDefault('dynamicUrl', key);
-                columnName = defaultValue ? defaultValue.value : '';
+                valueDefault = defaultValue ? defaultValue.value : '';
             }
-        
+    
+            if (buttonData.carouselIndex !== undefined && row && buttons.length > 0) {
+                return null; 
+            }
+    
             return (
                 <div key={key}>
                     <p style={{ marginBottom: '3px' }}>{`Url Dinamico {{${index + 1}}}`}</p>
@@ -620,10 +889,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         variant="outlined"
                         uset={true}
                         className="col-12"
-                        data={availableData.map(header => ({ key: header, value: header }))}
+                        data={dataToUse.map(header => ({ key: header, value: header }))}
                         optionDesc="value"
                         optionValue="key"
-                        valueDefault={columnName}
+                        valueDefault={valueDefault}
                         onChange={(selectedOption) => handleVariableChange(key, selectedOption, 'dynamicUrl')}
                         getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                     />
@@ -631,7 +900,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             );
         });
     };
-    //console.log('templateToUse', templateToUse)    
+    
+    
     useEffect(() => {
         updateTemplate();
     }, [variableSelections, selectedAdditionalHeaders]);
@@ -706,6 +976,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [detaildata.message]);
 
+
     return (
         <React.Fragment>
             <div className={classes.containerDetail} style={{ display: 'flex', width: '100%' }}>
@@ -738,32 +1009,47 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 </Tooltip>
                             </div>
                         </FormControl>
+
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
                             <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
+                           
                             <div className={classes.containerStyle}>                             
                                 {row ? (
-                                    <>
-                                        {variablesHeaderView.map((variable, index) => {                                   
-                                            const confe = parseInt(variable.variable.replace("field", ""), 10) - 2;    
-                                            const valor = templateData.fields.columns[confe];                                    
-                                            return (
-                                                <div key={`header-${index + 1}`}>
-                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${index+1}}}`}</p>
-                                                    <FieldSelect
-                                                        variant="outlined"
-                                                        uset={true}
-                                                        className="col-12"
-                                                        data={[{ key: 'default', value: 'Default ' }, ...availableData.map(header => ({ key: header, value: header }))]}
-                                                        optionDesc="value"
-                                                        optionValue="key"
-                                                        valueDefault={valor}
-                                                        onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'header')}
-                                                    />
-                                                </div>
-                                            );
-                                        })}
-                                    </>
+                                    templateData.headertype === "VIDEO" || templateData.headertype === "IMAGE" || templateData.headertype === "FILE" || templateData.headertype !== "TEXT" ? (
+                                        <>
+                                            {variablesHeaderView.map((variable, index) => {
+                                                const fieldsInHeader = extractFieldKeysFromTemplate(currentTemplate.header);
+                                                const fieldKey = fieldsInHeader[index];
+                                                let valueDefault;
+
+                                                if (fieldKey) {
+                                                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                    const valor = templateData.fields.columns[fieldIndex];
+                                                    valueDefault = valor ? valor : undefined;
+                                                } else {
+                                                    valueDefault = undefined;
+                                                }
+
+                                                return (
+                                                    <div key={`header-${index + 1}`}>
+                                                        <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${index + 1}}}`}</p>
+                                                        <FieldSelect
+                                                            variant="outlined"
+                                                            uset={true}
+                                                            className="col-12"
+                                                            data={dataToUse.map(header => ({ key: header, value: header }))}
+                                                            optionDesc="value"
+                                                            optionValue="key"
+                                                            valueDefault={valueDefault}
+                                                            onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'header')}
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
+                                        </>
+
+                                    ) : null
                                 ) : (
                                     <>
                                        {headerVariables.map((variable: Dictionary) => (
@@ -789,28 +1075,36 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <div className={classes.containerStyle}>
                                 {row ? (
                                     <>
-                                        {variablesBodyView.map((variable, index) => {                                   
-                                            const confe = parseInt(variable.variable.replace("field", ""), 10)-2    
-                                            const valor = templateData.fields.columns[confe]                                    
+                                        {variablesBodyView.map((variable, index) => {
+                                            const fieldsInBody = extractFieldKeysFromTemplate(currentTemplate.body);
+                                            const fieldKey = fieldsInBody[index];
+                                            let valueDefault;                                     
+                                            if (fieldKey) {
+                                                const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                const valor = templateData.fields.columns[fieldIndex];                                       
+                                                valueDefault = valor ? valor : undefined;
+                                            } else {
+                                                valueDefault = undefined;
+                                            }
                                             return (
                                                 <div key={`body-${index + 1}`}>
-                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${index+1}}}`}</p>
-                                                    <FieldSelect
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${index + 1}}}`}</p>
+                                                    <FieldSelectDisabled
                                                         variant="outlined"
                                                         uset={true}
                                                         className="col-12"
                                                         data={dataToUse.map(header => ({ key: header, value: header }))}
                                                         optionDesc="value"
                                                         optionValue="key"
-                                                        valueDefault={valor}
+                                                        valueDefault={valueDefault}
                                                         onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
                                                     />
                                                 </div>
                                             );
                                         })}
-                                    </>                                    
-                                ) : (                                    
-                                   <>
+                                    </>                              
+                                ) : (
+                                    <>
                                         {bodyVariables.map((variable, index) => {
                                             const valueDefault = selectedHeaders[`body-${index + 1}`]
                                                 ? { key: selectedHeaders[`body-${index + 1}`], value: selectedHeaders[`body-${index + 1}`] }
@@ -832,9 +1126,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 </div>
                                             );
                                         })}
-                                   </>                                   
+                                    </>
                                 )}
-                            </div>                        
+                            </div>
+                  
+
+
 
                             {templateToUse.category === "AUTHENTICATION" && (
                                 <div className={classes.containerStyle}>
@@ -861,26 +1158,34 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
                                     row ? (
                                         <>
-                                            {variablesHeaderView.map((variable, index) => {                                   
-                                                const confe = parseInt(variable.variable.replace("field", ""), 10) - 2;    
-                                                const valor = templateData.fields.columns[confe];                                    
+                                            {variablesHeaderView.map((variable, index) => {
+                                                const fieldsInHeader = extractFieldKeysFromTemplate(currentTemplate.header);                                    
+                                                const fieldKey = fieldsInHeader[index];                                    
+                                                let valueDefault;                                    
+                                                if (fieldKey) {
+                                                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;                                    
+                                                    const valor = templateData.fields.columns[fieldIndex];
+                                                    valueDefault = valor ? valor : undefined;
+                                                } else {
+                                                    valueDefault = undefined;
+                                                }                                    
                                                 return (
                                                     <div key={`header-${index + 1}`}>
-                                                        <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia {{${index+1}}}`}</p>
-                                                        <FieldSelect
+                                                        <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia {{${index + 1}}}`}</p>
+                                                        <FieldSelectDisabled
                                                             variant="outlined"
                                                             uset={true}
                                                             className="col-12"
-                                                            data={[{ key: 'default', value: 'Default ' }, ...availableData.map(header => ({ key: header, value: header }))]}
+                                                            data={dataToUse.map(header => ({ key: header, value: header }))}
                                                             optionDesc="value"
                                                             optionValue="key"
-                                                            valueDefault={valor}
+                                                            valueDefault={valueDefault}
                                                             onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'header')}
                                                         />
                                                     </div>
                                                 );
                                             })}
-                                        </>
+                                        </>                                    
                                     ) : (
                                         <div>
                                             <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
@@ -900,14 +1205,27 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                            <div style={{marginTop:'1rem'}}>
-                                {templateToUse.carouseldata?.map((item, index) => (
+                           {templateToUse.carouseldata?.map((item, index) => {
+                                const hasDynamicButton = item.buttons.some(button => button.btn.type === 'dynamic');
+                                return (
                                     <div key={`card-${index}`} style={{ marginBottom: '20px', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
                                         <div style={{fontSize:'1.2rem', fontWeight:'bolder'}}>{`Card ${index + 1}`}</div>
+                                        
                                         <div className={classes.containerStyle}>                                       
                                             {row ? (
                                                 variablesCarouselBubbleView[index]?.map((variable, variableIndex) => {
-                                                    const fieldNumber = parseInt(variable.variable.replace("field", ""), 10) - 2;
-                                                    const columnName = templateData.fields.columns[fieldNumber];
+                                                    const fieldsInBody = extractFieldKeysFromTemplate(currentTemplate.carouseldata[index].body);
+                                                    const fieldKey = fieldsInBody[variableIndex];
+                                                    let valueDefault;
+                                                
+                                                    if (fieldKey) {
+                                                        const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                        const valor = templateData.fields.columns[fieldIndex];
+                                                        valueDefault = valor ? valor : undefined;
+                                                    } else {
+                                                        valueDefault = undefined;
+                                                    }
+                                                
                                                     return (
                                                         <div key={`carousel-${index}-bubble-${variableIndex}`}>
                                                             <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
@@ -915,16 +1233,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                 variant="outlined"
                                                                 uset={true}
                                                                 className="col-12"
-                                                                data={availableData.map(header => ({ key: header, value: header }))}
+                                                                data={dataToUse.map(header => ({ key: header, value: header }))}
                                                                 optionDesc="value"
                                                                 optionValue="key"
-                                                                valueDefault={columnName}
+                                                                valueDefault={valueDefault}
                                                                 onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
                                                                 getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                             />
                                                         </div>
                                                     );
                                                 })
+                                            
                                             ) : (
                                                 item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
                                                     <div key={`carousel-${index}-bubble-${variableIndex}`}>
@@ -947,10 +1266,20 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         
                                         <div className={classes.containerStyle}>                                       
                                             {item.header && (
-                                                row ? (
+                                                row ? (                                                    
                                                     variablesCardImageView[index]?.map((variable, variableIndex) => {
-                                                        const fieldNumber = parseInt(variable.variable.replace("field", ""), 10) - 2;
-                                                        const columnName = templateData.fields.columns[fieldNumber];
+                                                        const fieldsInHeader = extractFieldKeysFromTemplate(currentTemplate.carouseldata[index].header);
+                                                        const fieldKey = fieldsInHeader[variableIndex];
+                                                        let valueDefault;
+                                                    
+                                                        if (fieldKey) {
+                                                            const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                            const valor = templateData.fields.columns[fieldIndex];
+                                                            valueDefault = valor ? valor : undefined;
+                                                        } else {
+                                                            valueDefault = undefined;
+                                                        }
+                                                    
                                                         return (
                                                             <div key={`cardImage-${index}-${variableIndex}`}>
                                                                 <p style={{ marginBottom: '3px' }}>{`Card Imagen {{${variableIndex + 1}}}`}</p>
@@ -958,16 +1287,18 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                     variant="outlined"
                                                                     uset={true}
                                                                     className="col-12"
-                                                                    data={availableData.map(header => ({ key: header, value: header }))}
+                                                                    data={dataToUse.map(header => ({ key: header, value: header }))}
                                                                     optionDesc="value"
                                                                     optionValue="key"
-                                                                    valueDefault={columnName}
+                                                                    valueDefault={valueDefault}
                                                                     onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'cardImage', index)}
                                                                     getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                                 />
                                                             </div>
                                                         );
                                                     })
+                                                    
+                                                    
                                                 ) : (
                                                     <div>
                                                         <p style={{ marginBottom: '3px' }}>{`Card Imagen`}</p>
@@ -985,17 +1316,23 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                     </div>
                                                 )
                                             )}
-                                        </div>                                    
-                                        <div className={classes.containerStyle}>
-                                        {renderDynamicUrlFields(index, row, [])}
-                                        </div>
+                                        </div>  
+
+                                        {hasDynamicButton && (
+                                            <div className={classes.containerStyle}>
+                                                {renderDynamicUrlFields(index, row, [])}
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
+                                );
+                            })}
                            </div>
 
-                           <div className={classes.containerStyle}>
-                                {renderDynamicUrlFields(null, row, templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [])}
-                            </div>
+                           {(templateToUse.buttonsgeneric?.some(button => button.btn.type === 'dynamic')) && (
+                                <div className={classes.containerStyle}>
+                                    {renderDynamicUrlFields(null, row, templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [])}
+                                </div>
+                            )}
 
                         </FormControl>
     
@@ -1012,7 +1349,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     <>
                                         {variablesAdditionalView.map((variable, index) => {
                                             const fieldNumber = parseInt(variable.replace("field", ""), 10) - 2;
-                                            const columnName = templateData.fields.columns[fieldNumber];                                           
+                                            const columnName = templateData.fields.columns[fieldNumber];                                    
                                             return (
                                                 <div style={{ flex: 1 }} key={`body-${index + 1}`}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -1028,7 +1365,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             optionDesc="value"
                                                             optionValue="key"
                                                             valueDefault={columnName}
-                                                            onChange={(selectedOption) => handleAdditionalVariableChange(index + 1, selectedOption)}
+                                                            onChange={(selectedOption) => {
+                                                                handleVariableChange(index + 1, selectedOption, 'additional');
+                                                            }}
                                                         />
                                                     </div>
                                                 </div>
