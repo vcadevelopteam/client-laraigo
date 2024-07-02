@@ -6250,6 +6250,7 @@ export const langKeys = {
   decline: 'decline',
   skip: 'skip',
   mustaccepttermsandconditions: 'mustaccepttermsandconditions',
+  subscription_billingdocument: 'subscription_billingdocument',
   subscription_billingno: 'subscription_billingno',
   subscription_billingdni: 'subscription_billingdni',
   subscription_billingextra: 'subscription_billingextra',
