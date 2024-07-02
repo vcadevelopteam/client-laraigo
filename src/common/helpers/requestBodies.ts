@@ -1145,7 +1145,8 @@ export const insMessageTemplateOld = (
             providerquality,
             providerstatus,
             operation,
-            newversion: false
+            newversion: false,
+            buttons: []
         }
     });
 
