@@ -194,6 +194,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             key={"mainview"}
                             href="/"
                             onClick={(e) => {
+                                e.preventDefault()
                                 setView("view-1")
                             }}
                         >
@@ -225,7 +226,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             paddingBottom: 0
                         }}
                     >
-                        {t(langKeys.connectmetachannels)}
+                        {metatype.includes("Instagram") ? t(langKeys.connectinsta) : t(langKeys.connectface)}
                     </div>
                     <div
                         style={{
@@ -259,7 +260,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                         fields="name,email,picture"
                         scope={getScope()}
                         callback={processFacebookCallback}
-                        textButton={t(langKeys.linkfacebookpage)}
+                        textButton={metatype.includes("Instagram") ? t(langKeys.linkinstagrampage) : t(langKeys.linkfacebookpage)}
                         icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
                         onClick={(e: any) => {
                             e.view.window.FB.init({
@@ -284,6 +285,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             key={"mainview"}
                             href="/"
                             onClick={(e) => {
+                                e.preventDefault();
                                 dispatch(manageConfirmation({
                                     visible: true,
                                     question: t(langKeys.channelconfigsave),

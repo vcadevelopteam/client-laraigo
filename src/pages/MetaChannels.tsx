@@ -357,171 +357,188 @@ const MetaChannels: FC = () => {
                 <BorderLinearProgress variant="determinate" value={10} />
                 <p style={{ margin: 0, marginBottom: 20 }}>10% {t(langKeys.potentiallaraigo)}</p>
                 <div className='row-zyx' style={{ backgroundColor: "#f9f9fa" }}>
-                    <div className='col-3'>
-                        <div className={classes.containerBorder}>
-                            <div style={{ display: "flex", gap: 8 }}>
-                                <WhatsAppColor className={classes.icon} style={{ height: 60, width: 60 }} />
-                                <h2 style={{ margin: 0 }}>{t(langKeys.whatsapp1)}</h2>
-                            </div>
-                            <p>{t(langKeys.whatsapp2)}</p>
-                            <div style={{ justifyContent: "center", display: "flex" }}>
-                                <ColorButton variant="contained" color="primary" onClick={() => {
-                                    const callback = () => {
-                                        history.push(paths.CHANNELS_ADD_WHATSAPP.path, {
-                                            row: null,
-                                            typeWhatsApp: "NONE",
-                                            onboarding: true,
-                                        });
-                                    }
+                    <div className='row-zyx'>
+                        <div className='col-3' style={{ display: "flex" }}>
+                            <div className={classes.containerBorder} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                <div>
+                                    <div style={{ display: "flex", gap: 8 }}>
+                                        <WhatsAppColor className={classes.icon} style={{ height: 60, width: 60 }} />
+                                        <h2 style={{ margin: 0 }}>{t(langKeys.whatsapp1)}</h2>
+                                    </div>
+                                    <p>{t(langKeys.whatsapp2)}</p>
+                                </div>
+                                <div style={{ justifyContent: "center", display: "flex", marginTop: 'auto' }}>
+                                    <ColorButton variant="contained" color="primary" onClick={() => {
+                                        const callback = () => {
+                                            history.push(paths.CHANNELS_ADD_WHATSAPP.path, {
+                                                row: null,
+                                                typeWhatsApp: "NONE",
+                                                onboarding: true,
+                                            });
+                                        }
 
-                                    const callbackcancel = () => {
-                                        history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, {
-                                            row: null,
-                                            typeWhatsApp: "NONE",
-                                            onboarding: true,
-                                        });
-                                    }
+                                        const callbackcancel = () => {
+                                            history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, {
+                                                row: null,
+                                                typeWhatsApp: "NONE",
+                                                onboarding: true,
+                                            });
+                                        }
 
-                                    dispatch(manageConfirmation({
-                                        callback,
-                                        callbackcancel,
-                                        question: t(langKeys.askwhatsapptype),
-                                        textCancel: "No",
-                                        textConfirm: t(langKeys.yes),
-                                        visible: true,
-                                    }))
-                                }}>
-                                    {t(langKeys.connect) + " WhatsApp"}
-                                </ColorButton>
+                                        dispatch(manageConfirmation({
+                                            callback,
+                                            callbackcancel,
+                                            question: t(langKeys.askwhatsapptype),
+                                            textCancel: "No",
+                                            textConfirm: t(langKeys.yes),
+                                            visible: true,
+                                        }))
+                                    }}>
+                                        {t(langKeys.connect) + " WhatsApp"}
+                                    </ColorButton>
+                                </div>
                             </div>
                         </div>
-                        <div style={{ marginTop: 10 }} className={classes.containerBorder}>
-                            <div style={{ display: "flex", gap: 8 }}>
-                                <VoiceColor className={classes.icon} style={{ height: 60, width: 60 }} />
-                                <h2 style={{ margin: 0 }}>{t(langKeys.voicechannelconf1)}</h2>
-                            </div>
-                            <p>{t(langKeys.voicechannelconf2)}</p>
-                            <div style={{ justifyContent: "center", display: "flex" }}>
-                                <ColorButton2 variant="contained" color="primary" onClick={(e) => {
-                                    e.preventDefault();
-                                    history.push(paths.CHANNELS_ADD_PHONE.path, {
-                                        onboarding: true,
-                                    });
-                                }}>
-                                    {t(langKeys.configure) + " " + t(langKeys.channel)}
-                                </ColorButton2>
-                            </div></div>
-                    </div>
-                    <div className='col-9'><div className={classes.containerBorder} style={{ paddingBottom: 0 }}>
-                        <div>
-                            <h2 style={{ margin: 0 }}>{t(langKeys.configureotherchannels)}</h2>
-                            <div className='row-zyx' style={{ margin: 0 }}>
-                                <div className='col-5'>
-                                    <Typography className={classes.subtitle}>{t(langKeys.socialmedias)}</Typography>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            flexWrap: "wrap",
-                                            gap: 8,
-                                        }}
-                                    >
-                                        {socialMediaOptions.filter(channel => !metachannelsDone.includes(channel.clear)).map((e, i) => (
-                                            <Option key={`social_media_option_${i}`} option={e} />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className='col-7'>
-                                    <Typography className={classes.subtitle}>{t(langKeys.business2)}</Typography>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            flexWrap: "wrap",
-                                        }}
-                                    >
-                                        {businessChannelOptions.map((e, i) => (
-                                            <Option key={`business_channel_option_${i}`} option={e} />
-                                        ))}
+
+                        <div className='col-9' style={{ display: "flex" }}>
+                            <div className={classes.containerBorder} style={{ paddingBottom: 0 }}>
+                                <div>
+                                    <h2 style={{ margin: 0 }}>{t(langKeys.configureotherchannels)}</h2>
+                                    <div className='row-zyx' style={{ margin: 0 }}>
+                                        <div className='col-5'>
+                                            <Typography className={classes.subtitle}>{t(langKeys.socialmedias)}</Typography>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                    flexWrap: "wrap",
+                                                    gap: 8,
+                                                }}
+                                            >
+                                                {socialMediaOptions.filter(channel => !metachannelsDone.includes(channel.clear)).map((e, i) => (
+                                                    <Option key={`social_media_option_${i}`} option={e} />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className='col-7'>
+                                            <Typography className={classes.subtitle}>{t(langKeys.business2)}</Typography>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                    flexWrap: "wrap",
+                                                }}
+                                            >
+                                                {businessChannelOptions.map((e, i) => (
+                                                    <Option key={`business_channel_option_${i}`} option={e} />
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                        <div className='row-zyx' style={{ marginTop: 20, marginBottom: 0 }}>
-                            <div className='col-6'>
-                                <Paper elevation={3}>
-                                    <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
-                                        <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-                                            <UserGroupIcon className={classes.icon} style={{ width: 40, height: 40 }} />
-                                        </div>
-                                        <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
-                                            <h2 style={{ margin: 0 }}>{t(langKeys.createusrandpermits1)}</h2>
-                                            <p style={{ margin: 0 }}>{t(langKeys.createusrandpermits2)}</p>
-                                            <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-                                                history.push(paths.USERS, {
-                                                    onboarding: true,
-                                                });
-                                            }}>{t(langKeys.create)}</Button>
-                                        </div>
+                    <div className='row-zyx'>
+                        <div className='col-3' style={{ display: "flex" }}>
+                            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} className={classes.containerBorder}>
+                                <div>
+                                    <div style={{ display: "flex", gap: 8 }}>
+                                        <VoiceColor className={classes.icon} style={{ height: 60, width: 60 }} />
+                                        <h2 style={{ margin: 0 }}>{t(langKeys.voicechannelconf1)}</h2>
                                     </div>
-                                </Paper>
-                            </div>
-                            <div className='col-6'>
-                                <Paper elevation={3}>
-                                    <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
-                                        <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-                                            <ClientIcon className={classes.icon} style={{ width: 40, height: 40 }} />
-                                        </div>
-                                        <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
-                                            <h2 style={{ margin: 0 }}>{t(langKeys.importlist1)}</h2>
-                                            <p style={{ margin: 0 }}>{t(langKeys.importlist2)}</p>
-                                            <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-                                                history.push(paths.PERSON, {
-                                                    onboarding: true,
-                                                });
-                                            }}>{t(langKeys.import)}</Button>
-                                        </div>
-                                    </div>
-                                </Paper>
+                                    <p>{t(langKeys.voicechannelconf2)}</p>
+                                </div>
+                                <div style={{ justifyContent: "center", display: "flex", marginTop: 'auto' }}>
+                                    <ColorButton2 variant="contained" color="primary" onClick={(e) => {
+                                        e.preventDefault();
+                                        history.push(paths.CHANNELS_ADD_PHONE.path, {
+                                            onboarding: true,
+                                        });
+                                    }}>
+                                        {t(langKeys.configure) + " " + t(langKeys.channel)}
+                                    </ColorButton2>
+                                </div>
                             </div>
                         </div>
-                        <div className='row-zyx' style={{ marginTop: 8 }}>
-                            <div className='col-6'>
-                                <Paper elevation={3}>
-                                    <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
-                                        <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-                                            <DashboardRouteIcon className={classes.icon} style={{ width: 40, height: 40 }} />
+
+                        <div className='col-9'>
+                            <div className='row-zyx' style={{ marginTop: 20, marginBottom: 0, display: 'flex' }}>
+                                <div className='col-6' style={{ flex: 1 }}>
+                                    <Paper elevation={3} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                        <div style={{ display: "flex", alignItems: "center", padding: 15 }} className='col-12'>
+                                            <div style={{ width: 100, height: 100, marginLeft: 10 }}>
+                                                <UserGroupIcon className={classes.icon} style={{ width: 40, height: 40 }} />
+                                            </div>
+                                            <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
+                                                <h2 style={{ margin: 0 }}>{t(langKeys.createusrandpermits1)}</h2>
+                                                <p style={{ margin: 0 }}>{t(langKeys.createusrandpermits2)}</p>
+                                            </div>
                                         </div>
-                                        <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
-                                            <h2 style={{ margin: 0 }}>{t(langKeys.recharge1)}</h2>
-                                            <p style={{ margin: 0 }}>{t(langKeys.recharge2)}</p>
-                                            <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-                                                history.push(paths.INVOICE + "?recharge=true", {
-                                                    onboarding: true,
-                                                });
-                                            }}>{t(langKeys.messagetemplate_reload)}</Button>
+                                        <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", margin: "0 15px 15px 0" }} onClick={() => {
+                                            history.push(paths.USERS, {
+                                                onboarding: true,
+                                            });
+                                        }}>{t(langKeys.create)}</Button>
+                                    </Paper>
+                                </div>
+                                <div className='col-6' style={{ flex: 1 }}>
+                                    <Paper elevation={3} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                        <div style={{ display: "flex", alignItems: "center", padding: 15 }} className='col-12'>
+                                            <div style={{ width: 100, height: 100, marginLeft: 10 }}>
+                                                <ClientIcon className={classes.icon} style={{ width: 40, height: 40 }} />
+                                            </div>
+                                            <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
+                                                <h2 style={{ margin: 0 }}>{t(langKeys.importlist1)}</h2>
+                                                <p style={{ margin: 0 }}>{t(langKeys.importlist2)}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Paper>
+                                        <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", margin: "0 15px 15px 0" }} onClick={() => {
+                                            history.push(paths.PERSON, {
+                                                onboarding: true,
+                                            });
+                                        }}>{t(langKeys.import)}</Button>
+                                    </Paper>
+                                </div>
                             </div>
-                            <div className='col-6'>
-                                <Paper elevation={3}>
-                                    <div style={{ display: "flex", alignItems: "center", padding: 15 }}>
-                                        <div style={{ width: 100, height: 100, marginLeft: 10 }}>
-                                            <MessageInboxIcon className={classes.icon} style={{ width: 40, height: 40 }} />
+                            <div className='row-zyx' style={{ marginBottom: 0, display: 'flex' }}>
+                                <div className='col-6' style={{ flex: 1 }}>
+                                    <Paper elevation={3} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                        <div style={{ display: "flex", alignItems: "center", padding: 15 }} className='col-12'>
+                                            <div style={{ width: 100, height: 100, marginLeft: 10 }}>
+                                                <DashboardRouteIcon className={classes.icon} style={{ width: 40, height: 40 }} />
+                                            </div>
+                                            <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
+                                                <h2 style={{ margin: 0 }}>{t(langKeys.recharge1)}</h2>
+                                                <p style={{ margin: 0 }}>{t(langKeys.recharge2)}</p>
+                                            </div>
                                         </div>
-                                        <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
-                                            <h2 style={{ margin: 0 }}>{t(langKeys.talkwithadviser1)}</h2>
-                                            <p style={{ margin: 0 }}>{t(langKeys.talkwithadviser2)}</p>
-                                            <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-                                                window.open('https://api.whatsapp.com/send?phone=51941865635', '_blank');
-                                            }}>{t(langKeys.contact2)}</Button>
+                                        <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", margin: "0 15px 15px 0" }} onClick={() => {
+                                            history.push(paths.INVOICE + "?recharge=true", {
+                                                onboarding: true,
+                                            });
+                                        }}>{t(langKeys.messagetemplate_reload)}</Button>
+                                    </Paper>
+                                </div>
+                                <div className='col-6' style={{ flex: 1 }}>
+                                    <Paper elevation={3} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                        <div style={{ display: "flex", alignItems: "center", padding: 15 }} className='col-12'>
+                                            <div style={{ width: 100, height: 100, marginLeft: 10 }}>
+                                                <MessageInboxIcon className={classes.icon} style={{ width: 40, height: 40 }} />
+                                            </div>
+                                            <div style={{ display: "flex", flexDirection: "column", marginLeft: "8px", width: "100%" }}>
+                                                <h2 style={{ margin: 0 }}>{t(langKeys.talkwithadviser1)}</h2>
+                                                <p style={{ margin: 0 }}>{t(langKeys.talkwithadviser2)}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Paper>
+                                        <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", margin: "0 15px 15px 0" }} onClick={() => {
+                                            window.open('https://api.whatsapp.com/send?phone=51941865635', '_blank');
+                                        }}>{t(langKeys.contact2)}</Button>
+                                    </Paper>
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
                 </div>
