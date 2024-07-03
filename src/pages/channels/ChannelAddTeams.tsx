@@ -18,6 +18,7 @@ import React, { FC, useEffect, useState } from "react";
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -47,7 +48,6 @@ export const ChannelAddTeams: FC<{ edit: boolean }> = ({ edit }) => {
     const classes = useChannelAddStyles();
     const location = useLocation<WhatsAppData>();
     const whatsAppData = location.state as WhatsAppData | null;
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const channel = whatsAppData?.row as IChannel | null;
 
@@ -126,9 +126,10 @@ export const ChannelAddTeams: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            if(newChannels){
-                                history.push(paths.METACHANNELS, whatsAppData)
-                            }else{
+
+                            if (whatsAppData?.onboarding) {
+                                history.push(paths.METACHANNELS, whatsAppData);
+                            } else {
                                 channel?.status === "INACTIVO"
                                     ? history.push(paths.CHANNELS, whatsAppData)
                                     : history.push(paths.CHANNELS_ADD, whatsAppData);
@@ -159,11 +160,11 @@ export const ChannelAddTeams: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => {
                                 setNextbutton(
                                     value === "" ||
-                                        fields.service.url === "" ||
-                                        !/\S+@\S+\.\S+/.test(value) ||
-                                        !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
-                                            fields.service.url
-                                        )
+                                    fields.service.url === "" ||
+                                    !/\S+@\S+\.\S+/.test(value) ||
+                                    !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
+                                        fields.service.url
+                                    )
                                 );
                                 const partialf = fields;
                                 partialf.service.account = value;
@@ -180,11 +181,11 @@ export const ChannelAddTeams: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => {
                                 setNextbutton(
                                     value === "" ||
-                                        fields.service.account === "" ||
-                                        !/\S+@\S+\.\S+/.test(fields.service.account) ||
-                                        !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
-                                            value
-                                        )
+                                    fields.service.account === "" ||
+                                    !/\S+@\S+\.\S+/.test(fields.service.account) ||
+                                    !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
+                                        value
+                                    )
                                 );
                                 const partialf = fields;
                                 partialf.service.url = value;
@@ -211,9 +212,9 @@ export const ChannelAddTeams: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             </div>
         )
-    } else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (

@@ -41,12 +41,6 @@ const useChannelAddStyles = makeStyles((theme) => ({
             width: "100%",
         },
     },
-    centeredElement: {
-        alignItems: "center",
-        display: "inline-block",
-        height: "100%",
-        justifyContent: "center",
-    },
     containerOther: {
         [theme.breakpoints.down("xs")]: {
             flexWrap: "wrap",
@@ -75,6 +69,13 @@ const useChannelAddStyles = makeStyles((theme) => ({
         textAlign: "center",
         color: "#3F3F3F",
     },
+    centeredPlaceholderError: {
+        "&::placeholder": {
+            textAlign: "center",
+        },
+        textAlign: "center",
+        color: "red",
+    },
 }));
 
 const CssPhonemui = styled(MuiPhoneNumber)({
@@ -92,6 +93,10 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 const URL = "https://ipapi.co/json/";
+
+function isNumeric(value: string) {
+    return /^-?\d+$/.test(value);
+}
 
 const SecondStep = () => {
     const { commonClasses, finishRegister } = useContext(SubscriptionContext);
@@ -126,10 +131,10 @@ const SecondStep = () => {
 
         switch (documentType) {
             case 1:
-                return documentNumber.length !== 8 ? t(langKeys.doctype_dni_error) : undefined;
+                return (documentNumber.length !== 8 || !isNumeric(documentNumber)) ? t(langKeys.doctype_dni_error) : undefined;
 
             case 6:
-                return documentNumber.length !== 11 ? t(langKeys.doctype_ruc_error) : undefined;
+                return (documentNumber.length !== 11 || !isNumeric(documentNumber)) ? t(langKeys.doctype_ruc_error) : undefined;
 
             case 0:
             case 4:
@@ -163,7 +168,12 @@ const SecondStep = () => {
         { id: 50, desc: t(langKeys.subscription_colombianitother) },
     ]
 
-    const dataBillingOther = [
+    const dataBillingOtherPerson = [
+        { id: 0, desc: t(langKeys.subscription_billingdocument) },
+        { id: 4, desc: t(langKeys.subscription_billingextra) },
+    ]
+
+    const dataBillingOtherCompany = [
         { id: 0, desc: t(langKeys.subscription_billingno) },
     ]
 
@@ -286,7 +296,7 @@ const SecondStep = () => {
                                     {t(langKeys.docType)}<div style={{ color: "red" }}>*</div>
                                 </Box>
                                 <FieldSelect
-                                    data={getValues("contactcountry") === "PE" ? (getValues("iscompany") ? dataBillingCompanyPeru : dataBillingPersonPeru) : (getValues("contactcountry") === "CO" ? (getValues("iscompany") ? dataBillingCompanyColombia : dataBillingPersonColombia) : dataBillingOther)}
+                                    data={getValues("contactcountry") === "PE" ? (getValues("iscompany") ? dataBillingCompanyPeru : dataBillingPersonPeru) : (getValues("contactcountry") === "CO" ? (getValues("iscompany") ? dataBillingCompanyColombia : dataBillingPersonColombia) : (getValues("iscompany") ? dataBillingOtherCompany : dataBillingOtherPerson))}
                                     error={errors.contactdocumenttype?.message}
                                     optionDesc="desc"
                                     optionValue="id"
@@ -294,13 +304,14 @@ const SecondStep = () => {
                                     valueDefault={getValues("contactdocumenttype")}
                                     variant="outlined"
                                     onChange={(data) => {
-                                        onChange(data?.id || "0");
+                                        onChange(data?.id || (data?.id === 0 ? "0" : null));
                                     }}
                                 />
                             </div>
                         )}
                         rules={{
                             validate: (value) => {
+                                console.log(value);
                                 if (value === null || value === undefined) {
                                     return `${t(langKeys.field_required)}`;
                                 }
@@ -323,7 +334,7 @@ const SecondStep = () => {
                                     margin="normal"
                                     style={{ marginTop: 0 }}
                                     size="small"
-                                    type="number"
+                                    type="numeric"
                                     variant="outlined"
                                 />
                             </div>
@@ -537,7 +548,7 @@ const SecondStep = () => {
                                     helperText={errors.companydocument?.message}
                                     margin="normal"
                                     size="small"
-                                    type="number"
+                                    type="numeric"
                                     variant="outlined"
                                 />
                             </div>
@@ -777,8 +788,8 @@ const SecondStep = () => {
                             </div>
                             <div className="row-zyx" style={{ marginBottom: 0 }}>
                                 <div className="row-zyx col-12" style={{ marginBottom: 0 }} >
-                                    <div className="row-zyx col-6" style={{ marginBottom: 0 }}>
-                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex" }}>
+                                    <div className="row-zyx col-8" style={{ marginBottom: 0 }}>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex", marginBottom: "6px" }}>
                                             {t(langKeys.dueDate)}
                                         </Box>
                                         <Controller
@@ -835,19 +846,18 @@ const SecondStep = () => {
                                                 },
                                             }}
                                         />
-
                                     </div>
-
-                                    <Controller
-                                        control={control}
-                                        name="cardsecuritycode"
-                                        render={({ field, formState: { errors } }) => (
-                                            <div className="col-6">
-                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex" }}>
-                                                    CCV
-                                                </Box>
+                                    <div className="row-zyx col-4" style={{ marginBottom: 0 }}>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary" style={{ display: "flex", marginBottom: "6px" }}>
+                                            CCV
+                                        </Box>
+                                        <Controller
+                                            control={control}
+                                            name="cardsecuritycode"
+                                            render={({ field, formState: { errors } }) => (
                                                 <TextField
                                                     {...field}
+                                                    className="col-12"
                                                     error={Boolean(errors.cardsecuritycode)}
                                                     fullWidth
                                                     helperText={errors.cardsecuritycode?.message}
@@ -861,37 +871,40 @@ const SecondStep = () => {
                                                         maxLength: limitNumbers === 18 ? 4 : 3,
                                                     }}
                                                 />
-                                            </div>
-                                        )}
-                                        rules={{
-                                            validate: (value) => {
-                                                if (value?.length === 0) return `${t(langKeys.field_required)}`;
-                                            },
-                                        }}
-                                    />
+                                            )}
+                                            rules={{
+                                                validate: (value) => {
+                                                    if (value?.length === 0) return `${t(langKeys.field_required)}`;
+                                                },
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className={classes.containerInfoPay}>
-                            <div className={classes.centeredElement}>
-                                <div
-                                    style={{
-                                        textAlign: "center",
-                                        border: "1px solid #50ab54",
-                                        borderRadius: "15px",
-                                        padding: "20px",
-                                        paddingTop: "auto",
-                                        color: "#50ab54",
-                                        height: "inherit",
-                                        marginLeft: "10px",
-                                        marginRight: "10px",
-                                    }}
-                                >
-                                    <LockIcon style={{ height: 60, width: 60 }} />
-                                    <h3>{t(langKeys.safepurchase)}</h3>
-                                    <p>{t(langKeys.finishregwarn2)}</p>
-                                </div>
-                            </div>
+                            <div style={{ display: "flex", height: "100%" }}> <div
+                                style={{
+                                    textAlign: "center",
+                                    border: "1px solid #50ab54",
+                                    borderRadius: "15px",
+                                    padding: "20px",
+                                    paddingTop: "auto",
+                                    color: "#50ab54",
+                                    height: "inherit",
+                                    marginLeft: "10px",
+                                    marginRight: "10px",
+                                    marginTop: "auto",
+                                    marginBottom: "auto",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <div style={{ display: "block" }}> <LockIcon style={{ height: 60, width: 60 }} />
+                                    <h2 style={{ marginTop: "4px", marginBottom: "4px" }}>{t(langKeys.safepurchase)}</h2>
+                                    <p>{t(langKeys.finishregwarn2)}</p></div>
+                            </div></div>
                         </div>
                     </div>
                 </div>
@@ -918,12 +931,12 @@ const SecondStep = () => {
                             name="recharge.rechargeamount"
                             render={({ field, formState: { errors } }) => (
                                 <div className="col-12">
-                                    <span style={{ display: "inline-block", position: "relative" }}>
-                                        {getValues("recharge.rechargeamount") && <span style={{ color: "#3F3F3F", position: "absolute", fontSize: "25px", right: 50 / `${Number(getValues("recharge.rechargeamount")) || 0}`.length, top: "9px" }}>USD</span>}
-                                        {getValues("recharge.rechargeamount") && <span style={{ color: "#3F3F3F", position: "absolute", fontSize: "25px", left: 82 / `${Number(getValues("recharge.rechargeamount")) || 0}`.length, top: "9px" }}>$</span>}
+                                    <span style={{ display: "inline-block", position: "relative", overflow: "hidden" }}>
+                                        {getValues("recharge.rechargeamount") && <span style={{ color: errors?.recharge?.rechargeamount?.message ? "red" : "#3F3F3F", position: "absolute", fontSize: "25px", right: (50 - (8 * `${Number(getValues("recharge.rechargeamount")) || 0}`.length)), top: "9px" }}>USD</span>}
+                                        {getValues("recharge.rechargeamount") && <span style={{ color: errors?.recharge?.rechargeamount?.message ? "red" : "#3F3F3F", position: "absolute", fontSize: "25px", left: (90 - (8 * `${Number(getValues("recharge.rechargeamount")) || 0}`.length)), top: "9px" }}>$</span>}
                                         <TextField
                                             {...field}
-                                            error={Boolean(errors?.recharge?.rechargeamount)}
+                                            error={Boolean(errors?.recharge?.rechargeamount?.message)}
                                             fullWidth
                                             style={{ marginTop: 0, color: "#3F3F3F" }}
                                             helperText={""}
@@ -931,9 +944,17 @@ const SecondStep = () => {
                                             size="small"
                                             variant="outlined"
                                             type="numeric"
-                                            inputProps={{ className: classes.centeredPlaceholder }}
+                                            inputProps={{ className: errors?.recharge?.rechargeamount?.message ? classes.centeredPlaceholderError : classes.centeredPlaceholder }}
                                             placeholder="$20 USD"
                                             className={`${classes.noBorder} ${classes.customFontSize}`}
+                                            onKeyPress={(event) => {
+                                                if (!/[0-9]/.test(event.key)) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
+                                            onPaste={(event) => {
+                                                event.preventDefault();
+                                            }}
                                         />
                                     </span>
                                 </div>

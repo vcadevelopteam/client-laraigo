@@ -1766,6 +1766,7 @@ const useStyles = makeStyles((theme) => ({
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
@@ -1784,7 +1785,6 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     const service = useRef<IChatWebAdd | null>(null);
     const whatsAppData = location.state as WhatsAppData | null;
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     if (!whatsAppData?.row) {
         if (channel && !service.current && channel.servicecredentials.length > 0) {
@@ -1794,7 +1794,11 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     useEffect(() => {
         if (edit && !channel) {
-            history.push(paths.CHANNELS);
+            if (whatsAppData?.onboarding) {
+                history.push(paths.METACHANNELS, whatsAppData);
+            } else {
+                history.push(paths.CHANNELS);
+            }
         }
 
         return () => {
@@ -1835,15 +1839,20 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 })
             );
         } else if (editChannel.success) {
-            if(edit && !channel?.haveflow){
+            if (edit && !channel?.haveflow) {
                 setViewSelected("enable-virtual-assistant")
-            }else{
+            } else {
                 dispatch(showSnackbar({
                     message: t(langKeys.channeleditsuccess),
                     show: true,
                     severity: "success"
                 }));
-                history.push(paths.CHANNELS);
+
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                } else {
+                    history.push(paths.CHANNELS);
+                }
             }
         }
     }, [dispatch, editChannel]);
@@ -1941,7 +1950,10 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
-        if (newChannels) {history.push(paths.METACHANNELS)}
+
+        if (whatsAppData?.onboarding) {
+            history.push(paths.METACHANNELS)
+        }
         else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
@@ -1950,7 +1962,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     if (viewSelected !== "main-view") {
-        return <ChannelEnableVirtualAssistant/>
+        return <ChannelEnableVirtualAssistant />
     }
 
     return (
@@ -2067,7 +2079,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const { t } = useTranslation();
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
-    const [enableVirtual, setEnableVirtual] = useState<number|null>(null);
+    const [enableVirtual, setEnableVirtual] = useState<number | null>(null);
     const [coloricon, setColoricon] = useState("#7721ad");
     const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
@@ -2083,7 +2095,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const handleend = () => {
         setEnableVirtual(insertChannel.value.result.ufn_communicationchannel_ins)
     }
-    if(enableVirtual){
+    if (enableVirtual) {
         return <ChannelEnableVirtualAssistant
             communicationchannelid={enableVirtual}
         />
@@ -2185,7 +2197,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                     </code>
                 </pre>
                 <div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                <Button variant="contained" color="primary" onClick={() => {
+                    if (whatsAppData?.onboarding) {
+                        history.push(paths.METACHANNELS, whatsAppData);
+                    } else {
+                        history.push(paths.CHANNELS);
+                    }
+                }}>
                     {t(langKeys.close)}
                 </Button>
             </div>

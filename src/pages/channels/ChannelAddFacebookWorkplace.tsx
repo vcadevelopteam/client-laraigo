@@ -18,6 +18,7 @@ import React, { FC, useEffect, useState } from "react";
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -50,7 +51,6 @@ export const ChannelAddFacebookWorkplace: FC<{ edit: boolean }> = ({ edit }) => 
     const mainResult = useSelector((state) => state.channel.channelList);
     const grouplist = useSelector((state) => state.channel.requestGetGroupList);
     const whatsAppData = location.state as WhatsAppData | null;
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const channel = whatsAppData?.row as IChannel | null;
 
@@ -167,9 +167,10 @@ export const ChannelAddFacebookWorkplace: FC<{ edit: boolean }> = ({ edit }) => 
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            if(newChannels){
-                                history.push(paths.METACHANNELS, whatsAppData)
-                            }else{
+
+                            if (whatsAppData?.onboarding) {
+                                history.push(paths.METACHANNELS, whatsAppData);
+                            } else {
                                 channel?.status === "INACTIVO"
                                     ? history.push(paths.CHANNELS, whatsAppData)
                                     : history.push(paths.CHANNELS_ADD, whatsAppData);
@@ -311,9 +312,9 @@ export const ChannelAddFacebookWorkplace: FC<{ edit: boolean }> = ({ edit }) => 
                 </div>
             </div>
         )
-    }else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (

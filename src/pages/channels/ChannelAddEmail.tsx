@@ -21,6 +21,7 @@ import React, { FC, useEffect, useState } from "react";
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -68,7 +69,6 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation<WhatsAppData>();
     const mainResult = useSelector((state) => state.channel.channelList);
     const whatsAppData = location.state as WhatsAppData | null;
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const channel = whatsAppData?.row as IChannel | null;
 
@@ -152,9 +152,9 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                             severity: "error",
                             message: t(
                                 exchangeCodeResult.msg ??
-                                    exchangeCodeResult.message ??
-                                    exchangeCodeResult.code ??
-                                    "error_unexpected_error"
+                                exchangeCodeResult.message ??
+                                exchangeCodeResult.code ??
+                                "error_unexpected_error"
                             ),
                         })
                     );
@@ -194,9 +194,9 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
     if (edit && !channel) {
         return <div />;
     }
-    if(viewSelected==="enable-virtual-assistant"){
+    if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     }
     if (viewSelected === "view1") {
@@ -241,12 +241,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         value === "" ||
-                                            fields.service.emittername === "" ||
-                                            fields.service.url === "" ||
-                                            !/\S+@\S+\.\S+/.test(fields.service.emittername) ||
-                                            !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+\\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
-                                                fields.service.url
-                                            )
+                                        fields.service.emittername === "" ||
+                                        fields.service.url === "" ||
+                                        !/\S+@\S+\.\S+/.test(fields.service.emittername) ||
+                                        !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+\\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
+                                            fields.service.url
+                                        )
                                     );
                                     const partialf = fields;
                                     partialf.service.apikey = value;
@@ -263,12 +263,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         value === "" ||
-                                            fields.service.emittername === "" ||
-                                            fields.service.apikey === "" ||
-                                            !/\S+@\S+\.\S+/.test(fields.service.emittername) ||
-                                            !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
-                                                value
-                                            )
+                                        fields.service.emittername === "" ||
+                                        fields.service.apikey === "" ||
+                                        !/\S+@\S+\.\S+/.test(fields.service.emittername) ||
+                                        !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
+                                            value
+                                        )
                                     );
                                     const partialf = fields;
                                     partialf.service.url = value;
@@ -285,12 +285,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         value === "" ||
-                                            fields.service.apikey === "" ||
-                                            fields.service.url === "" ||
-                                            !/\S+@\S+\.\S+/.test(value) ||
-                                            !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
-                                                fields.service.url
-                                            )
+                                        fields.service.apikey === "" ||
+                                        fields.service.url === "" ||
+                                        !/\S+@\S+\.\S+/.test(value) ||
+                                        !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
+                                            fields.service.url
+                                        )
                                     );
                                     const partialf = fields;
                                     partialf.service.emittername = value;
@@ -434,12 +434,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         value === "" ||
-                                            fields.service.imappassword === "" ||
-                                            fields.service.imapincomingendpoint === "" ||
-                                            fields.service.imaphost === "" ||
-                                            fields.service.imapincomingport === "" ||
-                                            fields.service.imapport === "" ||
-                                            fields.service.imapssl === ""
+                                        fields.service.imappassword === "" ||
+                                        fields.service.imapincomingendpoint === "" ||
+                                        fields.service.imaphost === "" ||
+                                        fields.service.imapincomingport === "" ||
+                                        fields.service.imapport === "" ||
+                                        fields.service.imapssl === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imapusername = value;
@@ -456,12 +456,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         fields.service.imapusername === "" ||
-                                            value === "" ||
-                                            fields.service.imapincomingendpoint === "" ||
-                                            fields.service.imaphost === "" ||
-                                            fields.service.imapincomingport === "" ||
-                                            fields.service.imapport === "" ||
-                                            fields.service.imapssl === ""
+                                        value === "" ||
+                                        fields.service.imapincomingendpoint === "" ||
+                                        fields.service.imaphost === "" ||
+                                        fields.service.imapincomingport === "" ||
+                                        fields.service.imapport === "" ||
+                                        fields.service.imapssl === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imappassword = value;
@@ -478,12 +478,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         fields.service.imapusername === "" ||
-                                            fields.service.imappassword === "" ||
-                                            fields.service.imapincomingendpoint === "" ||
-                                            fields.service.imaphost === "" ||
-                                            fields.service.imapincomingport === "" ||
-                                            fields.service.imapport === "" ||
-                                            fields.service.imapssl === ""
+                                        fields.service.imappassword === "" ||
+                                        fields.service.imapincomingendpoint === "" ||
+                                        fields.service.imaphost === "" ||
+                                        fields.service.imapincomingport === "" ||
+                                        fields.service.imapport === "" ||
+                                        fields.service.imapssl === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imapaccesstoken = value;
@@ -500,12 +500,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         fields.service.imapusername === "" ||
-                                            fields.service.imappassword === "" ||
-                                            value === "" ||
-                                            fields.service.imaphost === "" ||
-                                            fields.service.imapincomingport === "" ||
-                                            fields.service.imapport === "" ||
-                                            fields.service.imapssl === ""
+                                        fields.service.imappassword === "" ||
+                                        value === "" ||
+                                        fields.service.imaphost === "" ||
+                                        fields.service.imapincomingport === "" ||
+                                        fields.service.imapport === "" ||
+                                        fields.service.imapssl === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imapincomingendpoint = value;
@@ -522,12 +522,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         fields.service.imapusername === "" ||
-                                            fields.service.imappassword === "" ||
-                                            fields.service.imapincomingendpoint === "" ||
-                                            fields.service.imaphost === "" ||
-                                            value === "" ||
-                                            fields.service.imapport === "" ||
-                                            fields.service.imapssl === ""
+                                        fields.service.imappassword === "" ||
+                                        fields.service.imapincomingendpoint === "" ||
+                                        fields.service.imaphost === "" ||
+                                        value === "" ||
+                                        fields.service.imapport === "" ||
+                                        fields.service.imapssl === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imapincomingport = value;
@@ -544,12 +544,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         fields.service.imapusername === "" ||
-                                            fields.service.imappassword === "" ||
-                                            fields.service.imapincomingendpoint === "" ||
-                                            value === "" ||
-                                            fields.service.imapincomingport === "" ||
-                                            fields.service.imapport === "" ||
-                                            fields.service.imapssl === ""
+                                        fields.service.imappassword === "" ||
+                                        fields.service.imapincomingendpoint === "" ||
+                                        value === "" ||
+                                        fields.service.imapincomingport === "" ||
+                                        fields.service.imapport === "" ||
+                                        fields.service.imapssl === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imaphost = value;
@@ -566,12 +566,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         fields.service.imapusername === "" ||
-                                            fields.service.imappassword === "" ||
-                                            fields.service.imapincomingendpoint === "" ||
-                                            fields.service.imaphost === "" ||
-                                            fields.service.imapincomingport === "" ||
-                                            value === "" ||
-                                            fields.service.imapssl === ""
+                                        fields.service.imappassword === "" ||
+                                        fields.service.imapincomingendpoint === "" ||
+                                        fields.service.imaphost === "" ||
+                                        fields.service.imapincomingport === "" ||
+                                        value === "" ||
+                                        fields.service.imapssl === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imapport = value;
@@ -588,12 +588,12 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 onChange={(value) => {
                                     setNextbutton(
                                         fields.service.imapusername === "" ||
-                                            fields.service.imappassword === "" ||
-                                            fields.service.imapincomingendpoint === "" ||
-                                            fields.service.imaphost === "" ||
-                                            fields.service.imapincomingport === "" ||
-                                            fields.service.imapport === "" ||
-                                            value === ""
+                                        fields.service.imappassword === "" ||
+                                        fields.service.imapincomingendpoint === "" ||
+                                        fields.service.imaphost === "" ||
+                                        fields.service.imapincomingport === "" ||
+                                        fields.service.imapport === "" ||
+                                        value === ""
                                     );
                                     const partialf = fields;
                                     partialf.service.imapssl = value;
@@ -620,9 +620,9 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                     </div>
                 </div>
             )
-        }else if(viewSelected==="enable-virtual-assistant"){
+        } else if (viewSelected === "enable-virtual-assistant") {
             return <ChannelEnableVirtualAssistant
-                communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+                communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
             />
         }
         else {
@@ -636,9 +636,10 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                 href="/"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    if(newChannels){
-                                        history.push(paths.METACHANNELS, whatsAppData)
-                                    }else{
+
+                                    if (whatsAppData?.onboarding) {
+                                        history.push(paths.METACHANNELS, whatsAppData);
+                                    } else {
                                         channel?.status === "INACTIVO"
                                             ? history.push(paths.CHANNELS, whatsAppData)
                                             : history.push(paths.CHANNELS_ADD, whatsAppData);
