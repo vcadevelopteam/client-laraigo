@@ -6336,6 +6336,9 @@ export const langKeys = {
   templates: "templates",
   templatestext: "templatestext",
   campaignstext: "campaignstext",
+  selectcorrectimage: "selectcorrectimage",
+  selectcorrectvideo: "selectcorrectvideo",
+  selectcorrectdocument: "selectcorrectdocument",
 };
 
 export type LangKeys = typeof langKeys;

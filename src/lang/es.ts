@@ -6339,6 +6339,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   templates: "Plantillas",
   templatestext: "Gestiona tus plantillas de comunicación, con las nuevas funcionalidades como: plantillas carrusel, plantillas con botones de llamada y url, plantillas de autenticación, plantillas con imágenes o videos, etc.",
   campaignstext: "Gestiona tus campañas de contacto con las nuevas funcionalidades y diseño que ofrecemos para una mejor experiencia.",
+  selectcorrectimage: "Selecciona un archivo de imagen correcto",
+  selectcorrectvideo: "Selecciona un archivo de video correcto",
+  selectcorrectdocument: "Selecciona un archivo de documento correcto",
 };
 
 const esResource: ResourceLanguage = {
