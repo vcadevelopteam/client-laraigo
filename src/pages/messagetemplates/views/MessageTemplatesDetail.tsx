@@ -1532,16 +1532,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('bodyvariables')
         trigger('body');
     }
-
+    
     const changeHeaderType = (type: string) => {
         if(getValues('headertype') === "TEXT") {
             setValue('header', '')
             trigger('header')
+            setValue('headervariables', [])
+            trigger('headervariables')
         }
         setValue('headertype', type)
         trigger('headertype')
-        setValue('headervariables', [])
-        trigger('headervariables')
     }
 
     const changeSafetyRecommendation = (e: ChangeEvent<HTMLInputElement>) => {
