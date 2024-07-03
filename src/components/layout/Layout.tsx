@@ -282,7 +282,6 @@ const WelcomeDialog = React.memo(() => {
 
     useEffect(() => {
         if (newChannels && localStorage.getItem("firstLoad")) {
-            console.log(localStorage.getItem("firstLoad"))
             history.push("/metachannels")
         }
     }, [])

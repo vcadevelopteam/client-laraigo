@@ -69,6 +69,13 @@ const useChannelAddStyles = makeStyles((theme) => ({
         textAlign: "center",
         color: "#3F3F3F",
     },
+    centeredPlaceholderError: {
+        "&::placeholder": {
+            textAlign: "center",
+        },
+        textAlign: "center",
+        color: "red",
+    },
 }));
 
 const CssPhonemui = styled(MuiPhoneNumber)({
@@ -924,12 +931,12 @@ const SecondStep = () => {
                             name="recharge.rechargeamount"
                             render={({ field, formState: { errors } }) => (
                                 <div className="col-12">
-                                    <span style={{ display: "inline-block", position: "relative" }}>
-                                        {getValues("recharge.rechargeamount") && <span style={{ color: "#3F3F3F", position: "absolute", fontSize: "25px", right: 50 / `${Number(getValues("recharge.rechargeamount")) || 0}`.length, top: "9px" }}>USD</span>}
-                                        {getValues("recharge.rechargeamount") && <span style={{ color: "#3F3F3F", position: "absolute", fontSize: "25px", left: 82 / `${Number(getValues("recharge.rechargeamount")) || 0}`.length, top: "9px" }}>$</span>}
+                                    <span style={{ display: "inline-block", position: "relative", overflow: "hidden" }}>
+                                        {getValues("recharge.rechargeamount") && <span style={{ color: errors?.recharge?.rechargeamount?.message ? "red" : "#3F3F3F", position: "absolute", fontSize: "25px", right: (50 - (8 * `${Number(getValues("recharge.rechargeamount")) || 0}`.length)), top: "9px" }}>USD</span>}
+                                        {getValues("recharge.rechargeamount") && <span style={{ color: errors?.recharge?.rechargeamount?.message ? "red" : "#3F3F3F", position: "absolute", fontSize: "25px", left: (90 - (8 * `${Number(getValues("recharge.rechargeamount")) || 0}`.length)), top: "9px" }}>$</span>}
                                         <TextField
                                             {...field}
-                                            error={Boolean(errors?.recharge?.rechargeamount)}
+                                            error={Boolean(errors?.recharge?.rechargeamount?.message)}
                                             fullWidth
                                             style={{ marginTop: 0, color: "#3F3F3F" }}
                                             helperText={""}
@@ -937,9 +944,17 @@ const SecondStep = () => {
                                             size="small"
                                             variant="outlined"
                                             type="numeric"
-                                            inputProps={{ className: classes.centeredPlaceholder }}
+                                            inputProps={{ className: errors?.recharge?.rechargeamount?.message ? classes.centeredPlaceholderError : classes.centeredPlaceholder }}
                                             placeholder="$20 USD"
                                             className={`${classes.noBorder} ${classes.customFontSize}`}
+                                            onKeyPress={(event) => {
+                                                if (!/[0-9]/.test(event.key)) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
+                                            onPaste={(event) => {
+                                                event.preventDefault();
+                                            }}
                                         />
                                     </span>
                                 </div>

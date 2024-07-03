@@ -40,9 +40,9 @@ const useMetaChannelsStyles = makeStyles(() => ({
         flexDirection: "column",
         fontSize: 16,
         fontWeight: 400,
-        height: 90,
+        height: 84,
         margin: 4,
-        width: 100,
+        width: 84,
         "&:hover": {
             boxShadow: "none",
             color: "#A59F9F",
@@ -114,7 +114,6 @@ const MetaChannels: FC = () => {
             label: t(langKeys.channel_facebook),
             clear: "Facebook",
             onClick: () => {
-                //history.push(paths.CHANNELS_ADD_FACEBOOK.path, whatsAppData);
                 setView("view-2")
                 setMetaType("Facebook")
                 setchannelList(["Messenger", "Instagram", "Instagram Direct"].filter(channel => !metachannelsDone.includes(channel)))
@@ -126,7 +125,6 @@ const MetaChannels: FC = () => {
             label: t(langKeys.channel_messenger),
             clear: "Messenger",
             onClick: () => {
-                //history.push(paths.CHANNELS_ADD_MESSENGER.path, whatsAppData);
                 setView("view-2")
                 setMetaType("Messenger")
                 setchannelList(["Facebook", "Instagram", "Instagram Direct"].filter(channel => !metachannelsDone.includes(channel)))
@@ -159,7 +157,6 @@ const MetaChannels: FC = () => {
             label: t(langKeys.channel_instagram),
             clear: "Instagram",
             onClick: () => {
-                //history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData);
                 setView("view-2")
                 setMetaType("Instagram")
                 setchannelList(["Instagram Direct", "Facebook", "Messenger"].filter(channel => !metachannelsDone.includes(channel)))
@@ -171,7 +168,6 @@ const MetaChannels: FC = () => {
             label: t(langKeys.channel_instagramdm),
             clear: "Instagram Direct",
             onClick: () => {
-                //history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData);                
                 setView("view-2")
                 setMetaType("Instagram Direct")
                 setchannelList(["Instagram", "Facebook", "Messenger"].filter(channel => !metachannelsDone.includes(channel)))
@@ -199,20 +195,6 @@ const MetaChannels: FC = () => {
                 history.push(paths.CHANNELS_ADD_YOUTUBE.path, whatsAppData);
             },
         },
-        /*{
-            icon: (c) => <WhatsAppColor className={c} />,
-            label: t(langKeys.channel_whatsapp),
-            onClick: () => {
-                history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData);
-            },
-        },
-        {
-            icon: (c) => <WhatsAppOnboardingColor className={c} />,
-            label: t(langKeys.channel_whatsapponboarding),
-            onClick: () => {
-                history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData);
-            },
-        },*/
     ];
 
     const businessChannelOptions: ChannelOption[] = [
@@ -293,13 +275,6 @@ const MetaChannels: FC = () => {
                 history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, whatsAppData);
             },
         },
-        /*{
-            icon: (c) => <VoiceColor className={c} />,
-            label: t(langKeys.channel_phone),
-            onClick: () => {
-                history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData);
-            },
-        },*/
         {
             icon: (c) => <WorkplaceWallColor className={c} />,
             label: t(langKeys.channel_workplace),
@@ -399,7 +374,7 @@ const MetaChannels: FC = () => {
                         <div>
                             <h2 style={{ margin: 0 }}>{t(langKeys.configureotherchannels)}</h2>
                             <div className='row-zyx' style={{ margin: 0 }}>
-                                <div className='col-6'>
+                                <div className='col-5'>
                                     <Typography className={classes.subtitle}>{t(langKeys.socialmedias)}</Typography>
                                     <div
                                         style={{
@@ -414,7 +389,7 @@ const MetaChannels: FC = () => {
                                         ))}
                                     </div>
                                 </div>
-                                <div className='col-6'>
+                                <div className='col-7'>
                                     <Typography className={classes.subtitle}>{t(langKeys.business2)}</Typography>
                                     <div
                                         style={{
