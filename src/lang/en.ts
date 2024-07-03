@@ -6390,6 +6390,8 @@ const translation: LangKeys = {
   templatestext: "Manage your communication templates with the new features we offer: carousel templates, templates with redirection buttons, etc.",
   campaignstext: "Manage your contact campaigns with the new functionalities and design we offer for a better experience.",
   sentoblock: 'Sen to block',
+  strikethrough:'Strikethrough',
+  monospaced:'Monospaced',
 };
 
 const enResource: ResourceLanguage = {

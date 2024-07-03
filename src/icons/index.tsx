@@ -359,3 +359,8 @@ export {ReactComponent as ExcelFileIcon} from './excel-file.svg';
 export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
 export {ReactComponent as CampaignsIcon} from './campañas.svg'
 export {ReactComponent as FlaskIcon} from './flask_icon.svg'
+export {ReactComponent as CodeSnippetIcon} from './codeSnippetIcon.svg'
+export {ReactComponent as BoldNIcon} from './boldN.svg'
+export {ReactComponent as ItalicKIcon} from './italicKIcon.svg'
+export {ReactComponent as UnderlineSIcon} from './underlineSIcon.svg'
+export {ReactComponent as StrikethroughLineIcon} from './strikethroughLineIcon.svg'

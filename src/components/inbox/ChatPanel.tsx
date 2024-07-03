@@ -1186,7 +1186,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                <Tooltip title={t(!hideLogs ? langKeys.show_logs : langKeys.hide_logs) || ""} arrow placement="top">
+                <Tooltip title={t(!hideLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <IOSSwitch checked={hideLogs} onChange={handlerShowLogs} name="checkedB" />
                     </div>

@@ -6338,6 +6338,8 @@ export const langKeys = {
   templatestext: "templatestext",
   campaignstext: "campaignstext",
   sentoblock: 'sentoblock',
+  strikethrough:'strikethrough',
+  monospaced:'monospaced',
 };
 
 export type LangKeys = typeof langKeys;

@@ -6341,6 +6341,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   templatestext: "Gestiona tus plantillas de comunicación con las nuevas funcionalidades que ofrecemos: plantillas carrusel, plantillas con botones de redirección, etc.",
   campaignstext: "Gestiona tus campañas de contacto con las nuevas funcionalidades y diseño que ofrecemos para una mejor experiencia.",
   sentoblock: 'Enviar a bloque',
+  strikethrough:'Tachado',
+  monospaced:'Monoespaciado',
 };
 
 const esResource: ResourceLanguage = {
