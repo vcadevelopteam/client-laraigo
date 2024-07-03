@@ -6392,6 +6392,9 @@ const translation: LangKeys = {
   sentoblock: 'Sen to block',
   strikethrough:'Strikethrough',
   monospaced:'Monospaced',
+  selectcorrectimage: "Select a correct image file",
+  selectcorrectvideo: "Select a correct video file",
+  selectcorrectdocument: "Select a correct document file",
 };
 
 const enResource: ResourceLanguage = {

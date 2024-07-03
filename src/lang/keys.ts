@@ -6340,6 +6340,9 @@ export const langKeys = {
   sentoblock: 'sentoblock',
   strikethrough:'strikethrough',
   monospaced:'monospaced',
+  selectcorrectimage: "selectcorrectimage",
+  selectcorrectvideo: "selectcorrectvideo",
+  selectcorrectdocument: "selectcorrectdocument",
 };
 
 export type LangKeys = typeof langKeys;

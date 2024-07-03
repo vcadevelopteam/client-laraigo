@@ -410,6 +410,7 @@ interface MessagePreviewMultimediaProps {
 
 export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink }) => {
     const classes = useStyles();
+    const { t } = useTranslation();
     const [showAllButtons, setShowAllButtons] = useState(false)
     const combinedButtons = [
         ...buttonstext.map(text => ({ type: 'text', text: text })),
@@ -497,17 +498,35 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                         ) : (headerType !== 'TEXT' && headerType !== 'NONE') ? (
                             <>
                                 {(header !== '' && headerType === 'IMAGE') ? (
-                                    <div className={classes.cardMediaContainer}>
-                                        <img src={header} alt="Cabecera" className={classes.cardMedia} />
-                                    </div>
+                                    <>
+                                        {(header.endsWith(".jpg") || header.endsWith(".png")) ? (
+                                            <div className={classes.cardMediaContainer}>
+                                                <img src={header} alt="Cabecera" className={classes.cardMedia} />
+                                            </div>
+                                        ) : (
+                                            <div>{t(langKeys.selectcorrectimage)}</div>
+                                        )}
+                                    </>
                                 ) : (header !== '' && headerType === 'VIDEO') ? (
-                                    <video controls className={classes.cardMedia}>
-                                        <source src={header} type="video/mp4" />
-                                        Tu navegador no soporta la etiqueta de video.
-                                    </video>
+                                    <>
+                                        {header.endsWith(".mp4") ? (
+                                            <video controls className={classes.cardMedia}>
+                                                <source src={header} type="video/mp4" />
+                                                Tu navegador no soporta la etiqueta de video.
+                                            </video>
+                                        ) : (
+                                            <div>{t(langKeys.selectcorrectvideo)}</div>
+                                        )}
+                                    </>
                                 ) : (header !== '' && headerType === 'DOCUMENT') ? (
                                     <>
-                                        {getFileIcon(header)}
+                                        {header.endsWith(".pdf") ? (
+                                            <>
+                                                {getFileIcon(header)}
+                                            </>
+                                        ) : (
+                                            <div>{t(langKeys.selectcorrectdocument)}</div>
+                                        )}
                                     </>
                                 ) : (
                                     <span>No media selected</span>

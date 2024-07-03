@@ -542,7 +542,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             providerquality: row?.providerquality || null,
             providerstatus: row?.providerstatus || null,
             status: row?.status || "ACTIVO",
-            templatetype: row?.templatetype || "",
+            templatetype: row?.templatetype === "STANDARD" ? "MULTIMEDIA" : (row?.templatetype || ""),
             type: row?.type || "",
         },
     });
@@ -1534,12 +1534,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const changeHeaderType = (type: string) => {
+        if(getValues('headertype') === "TEXT") {
+            setValue('header', '')
+            trigger('header')
+        }
         setValue('headertype', type)
         trigger('headertype')
-        setValue('header', '')
         setValue('headervariables', [])
         trigger('headervariables')
-        trigger('header')
     }
 
     const changeSafetyRecommendation = (e: ChangeEvent<HTMLInputElement>) => {
