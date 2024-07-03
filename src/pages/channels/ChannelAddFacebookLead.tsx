@@ -21,6 +21,7 @@ import React, { FC, useEffect, useState } from "react";
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -50,7 +51,6 @@ export const ChannelAddFacebookLead: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation<WhatsAppData>();
     const mainResult = useSelector((state) => state.channel.channelList);
     const whatsAppData = location.state as WhatsAppData | null;
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const channel = whatsAppData?.row as IChannel | null;
 
@@ -155,9 +155,10 @@ export const ChannelAddFacebookLead: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            if(newChannels){
-                                history.push(paths.METACHANNELS, whatsAppData)
-                            }else{
+
+                            if (whatsAppData?.onboarding) {
+                                history.push(paths.METACHANNELS, whatsAppData);
+                            } else {
                                 channel?.status === "INACTIVO"
                                     ? history.push(paths.CHANNELS, whatsAppData)
                                     : history.push(paths.CHANNELS_ADD, whatsAppData);

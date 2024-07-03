@@ -63,8 +63,8 @@ export interface IUser {
     status: string;
     token: string;
     usr: string;
-    /**SUPERADMIN | ASESOR | ... */
-    roledesc: string;
+
+    roledesc: string; //SUPERADMIN | ASESOR | ...
     corpdesc: string;
     ownervoxi: string | null;
     sitevoxi: string | null;
@@ -95,7 +95,7 @@ export interface IUser {
     iconurl?: string;
     balance: Balance;
     samlAuth?: boolean;
-    // notifications: Notification[];
+    //notifications: Notification[];
 }
 
 export interface NotificationZyx {

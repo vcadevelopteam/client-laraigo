@@ -5,7 +5,7 @@ import { AndroidColor, AppStoreColor, BloggerColor, ChatWebColor, ClientIcon, Da
 import { langKeys } from 'lang/keys';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { manageConfirmation } from 'store/popus/actions';
 import MetaChannelsConfig from './MetaChannelsConfig';
@@ -70,10 +70,6 @@ interface ChannelOption {
     tooltip?: string;
     clear?: string;
 }
-interface WhatsAppData {
-    row?: unknown;
-    typeWhatsApp?: string;
-}
 
 const ColorButton = withStyles(() => ({
     root: {
@@ -101,8 +97,6 @@ const MetaChannels: FC = () => {
     const classes = useMetaChannelsStyles();
     const history = useHistory();
     const dispatch = useDispatch();
-    const location = useLocation<WhatsAppData>();
-    const whatsAppData = location.state as WhatsAppData | null;
     const [view, setView] = useState("view-1");
     const [metatype, setMetaType] = useState("");
     const [channelList, setchannelList] = useState(["Facebook", "Messenger", "Instagram", "Instagram Direct"]);
@@ -135,21 +129,27 @@ const MetaChannels: FC = () => {
             icon: (c) => <TwitterColor className={c} />,
             label: t(langKeys.channel_twitter),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_TWITTER.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_TWITTER.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <TwitterColor className={c} />,
             label: t(langKeys.channel_twitterdm),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_TWITTERDM.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <TikTokColor className={c} />,
             label: t(langKeys.channel_tiktok),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_TIKTOK.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_TIKTOK.path, {
+                    onboarding: true,
+                });
             },
         },
         {
@@ -178,21 +178,27 @@ const MetaChannels: FC = () => {
             icon: (c) => <LinkedInColor className={c} />,
             label: t(langKeys.channel_linkedin),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_LINKEDIN.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_LINKEDIN.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <TelegramColor className={c} />,
             label: t(langKeys.channel_telegram),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_TELEGRAM.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <YouTubeColor className={c} />,
             label: t(langKeys.channel_youtube),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_YOUTUBE.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_YOUTUBE.path, {
+                    onboarding: true,
+                });
             },
         },
     ];
@@ -207,14 +213,18 @@ const MetaChannels: FC = () => {
             icon: (c) => <SmsColor className={c} />,
             label: t(langKeys.channel_sms),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_SMS.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_SMS.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <MailColor className={c} />,
             label: t(langKeys.channel_email),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_EMAIL.path, {
+                    onboarding: true,
+                });
             },
         },
         {
@@ -225,61 +235,81 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <BloggerColor className={c} />,
             label: t(langKeys.channel_blogger),
-            onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, whatsAppData),
+            onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, {
+                onboarding: true,
+            }),
         },
         {
             icon: (c) => <MyBusinessColor className={c} />,
             label: t(langKeys.channel_business),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_BUSINESS.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_BUSINESS.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <MetaColor className={c} />,
             label: t(langKeys.channel_metalead),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_FACEBOOK_LEAD.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_FACEBOOK_LEAD.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <TeamsColor className={c} />,
             label: t(langKeys.channel_teams),
-            onClick: () => history.push(paths.CHANNELS_ADD_TEAMS.path, whatsAppData),
+            onClick: () => history.push(paths.CHANNELS_ADD_TEAMS.path, {
+                onboarding: true,
+            }),
         },
         {
             icon: (c) => <PlayStoreColor className={c} />,
             label: t(langKeys.channel_playstore),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_PLAYSTORE.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_PLAYSTORE.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <AppStoreColor className={c} />,
             label: t(langKeys.channel_appstore),
-            onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, whatsAppData),
+            onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, {
+                onboarding: true,
+            }),
         },
         {
             icon: (c) => <IosColor className={c} />,
             label: t(langKeys.channel_ios),
-            onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, whatsAppData),
+            onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, {
+                onboarding: true,
+            }),
         },
         {
             icon: (c) => <AndroidColor className={c} />,
             label: t(langKeys.channel_android),
-            onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, whatsAppData),
+            onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, {
+                onboarding: true,
+            }),
         },
         {
             icon: (c) => <WorkplaceColor className={c} />,
             label: t(langKeys.channel_workplacedm),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, {
+                    onboarding: true,
+                });
             },
         },
         {
             icon: (c) => <WorkplaceWallColor className={c} />,
             label: t(langKeys.channel_workplace),
             onClick: () => {
-                history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, whatsAppData);
+                history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, {
+                    onboarding: true,
+                });
             },
         },
     ];
@@ -337,18 +367,28 @@ const MetaChannels: FC = () => {
                             <div style={{ justifyContent: "center", display: "flex" }}>
                                 <ColorButton variant="contained" color="primary" onClick={() => {
                                     const callback = () => {
-                                        history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData);
+                                        history.push(paths.CHANNELS_ADD_WHATSAPP.path, {
+                                            row: null,
+                                            typeWhatsApp: "NONE",
+                                            onboarding: true,
+                                        });
                                     }
+
                                     const callbackcancel = () => {
-                                        history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData);
+                                        history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, {
+                                            row: null,
+                                            typeWhatsApp: "NONE",
+                                            onboarding: true,
+                                        });
                                     }
+
                                     dispatch(manageConfirmation({
-                                        visible: true,
-                                        question: t(langKeys.askwhatsapptype),
                                         callback,
-                                        textConfirm: t(langKeys.yes),
+                                        callbackcancel,
+                                        question: t(langKeys.askwhatsapptype),
                                         textCancel: "No",
-                                        callbackcancel
+                                        textConfirm: t(langKeys.yes),
+                                        visible: true,
                                     }))
                                 }}>
                                     {t(langKeys.connect) + " WhatsApp"}
@@ -364,7 +404,9 @@ const MetaChannels: FC = () => {
                             <div style={{ justifyContent: "center", display: "flex" }}>
                                 <ColorButton2 variant="contained" color="primary" onClick={(e) => {
                                     e.preventDefault();
-                                    history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData);
+                                    history.push(paths.CHANNELS_ADD_PHONE.path, {
+                                        onboarding: true,
+                                    });
                                 }}>
                                     {t(langKeys.configure) + " " + t(langKeys.channel)}
                                 </ColorButton2>
@@ -417,7 +459,9 @@ const MetaChannels: FC = () => {
                                             <h2 style={{ margin: 0 }}>{t(langKeys.createusrandpermits1)}</h2>
                                             <p style={{ margin: 0 }}>{t(langKeys.createusrandpermits2)}</p>
                                             <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-                                                history.push(paths.USERS, whatsAppData);
+                                                history.push(paths.USERS, {
+                                                    onboarding: true,
+                                                });
                                             }}>{t(langKeys.create)}</Button>
                                         </div>
                                     </div>
@@ -433,7 +477,9 @@ const MetaChannels: FC = () => {
                                             <h2 style={{ margin: 0 }}>{t(langKeys.importlist1)}</h2>
                                             <p style={{ margin: 0 }}>{t(langKeys.importlist2)}</p>
                                             <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-                                                history.push(paths.PERSON, whatsAppData);
+                                                history.push(paths.PERSON, {
+                                                    onboarding: true,
+                                                });
                                             }}>{t(langKeys.import)}</Button>
                                         </div>
                                     </div>
@@ -451,7 +497,9 @@ const MetaChannels: FC = () => {
                                             <h2 style={{ margin: 0 }}>{t(langKeys.recharge1)}</h2>
                                             <p style={{ margin: 0 }}>{t(langKeys.recharge2)}</p>
                                             <Button variant="outlined" style={{ width: 100, alignSelf: "flex-end", marginTop: 20 }} onClick={() => {
-                                                history.push(paths.INVOICE + "?recharge=true", whatsAppData);
+                                                history.push(paths.INVOICE + "?recharge=true", {
+                                                    onboarding: true,
+                                                });
                                             }}>{t(langKeys.messagetemplate_reload)}</Button>
                                         </div>
                                     </div>

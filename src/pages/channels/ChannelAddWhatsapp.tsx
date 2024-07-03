@@ -67,6 +67,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
@@ -98,7 +99,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const whatsAppData = location.state as WhatsAppData | null;
     const set360 = false;
     const setsmooch = false;
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const errors = {
         accesstoken: "",
@@ -116,12 +116,20 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const channel = whatsAppData?.row as IChannel | null;
 
     if (typeof location?.state === "undefined" || !location?.state) {
-        history.push(paths.CHANNELS);
+        if (whatsAppData?.onboarding) {
+            history.push(paths.METACHANNELS, whatsAppData);
+        } else {
+            history.push(paths.CHANNELS);
+        }
     }
 
     useEffect(() => {
         if (edit && !whatsAppData?.row) {
-            history.push(paths.CHANNELS);
+            if (whatsAppData?.onboarding) {
+                history.push(paths.METACHANNELS, whatsAppData);
+            } else {
+                history.push(paths.CHANNELS);
+            }
         }
     }, [history]);
 
@@ -405,7 +413,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 );
             } else {
                 dispatch(showSnackbar({ show: true, severity: "success", message: "Success" }));
-                history.push(paths.CHANNELS);
+
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                } else {
+                    history.push(paths.CHANNELS);
+                }
             }
         }
     }, [executeActivationResult]);
@@ -638,9 +651,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setAppId(e.target.value);
                                         setDisablebutton3(
                                             !e.target.value ||
-                                                !fields.service.apikey ||
-                                                !fields.service.appname ||
-                                                !fields.service.appnumber
+                                            !fields.service.apikey ||
+                                            !fields.service.appname ||
+                                            !fields.service.appnumber
                                         );
                                     }}
                                 />
@@ -654,9 +667,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setAppName(e.target.value);
                                         setDisablebutton3(
                                             !e.target.value ||
-                                                !fields.service.apikey ||
-                                                !fields.service.appid ||
-                                                !fields.service.appnumber
+                                            !fields.service.apikey ||
+                                            !fields.service.appid ||
+                                            !fields.service.appnumber
                                         );
                                     }}
                                 />
@@ -670,9 +683,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setApiKey(e.target.value);
                                         setDisablebutton3(
                                             !e.target.value ||
-                                                !fields.service.appid ||
-                                                !fields.service.appname ||
-                                                !fields.service.appnumber
+                                            !fields.service.appid ||
+                                            !fields.service.appname ||
+                                            !fields.service.appnumber
                                         );
                                     }}
                                 />
@@ -687,9 +700,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setAppNumber(e.target.value);
                                         setDisablebutton3(
                                             !e.target.value ||
-                                                !fields.service.apikey ||
-                                                !fields.service.appid ||
-                                                !fields.service.appname
+                                            !fields.service.apikey ||
+                                            !fields.service.appid ||
+                                            !fields.service.appname
                                         );
                                     }}
                                 />
@@ -782,9 +795,10 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 key={"mainview"}
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    if(newChannels){
-                                        history.push(paths.METACHANNELS, whatsAppData)
-                                    }else{
+
+                                    if (whatsAppData?.onboarding) {
+                                        history.push(paths.METACHANNELS, whatsAppData);
+                                    } else {
                                         channel?.status === "INACTIVO"
                                             ? history.push(paths.CHANNELS, whatsAppData)
                                             : history.push(paths.CHANNELS_ADD, whatsAppData);
@@ -893,9 +907,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             key={"mainview"}
                             onClick={(e) => {
                                 e.preventDefault();
-                                channel?.status === "INACTIVO"
-                                    ? history.push(paths.CHANNELS, whatsAppData)
-                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+
+                                if (whatsAppData?.onboarding) {
+                                    history.push(paths.METACHANNELS, whatsAppData);
+                                } else {
+                                    channel?.status === "INACTIVO"
+                                        ? history.push(paths.CHANNELS, whatsAppData)
+                                        : history.push(paths.CHANNELS_ADD, whatsAppData);
+                                }
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -965,9 +984,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             key={"mainview"}
                             onClick={(e) => {
                                 e.preventDefault();
-                                channel?.status === "INACTIVO"
-                                    ? history.push(paths.CHANNELS, whatsAppData)
-                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+
+                                if (whatsAppData?.onboarding) {
+                                    history.push(paths.METACHANNELS, whatsAppData);
+                                } else {
+                                    channel?.status === "INACTIVO"
+                                        ? history.push(paths.CHANNELS, whatsAppData)
+                                        : history.push(paths.CHANNELS_ADD, whatsAppData);
+                                }
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -1055,9 +1079,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             key={"mainview"}
                             onClick={(e) => {
                                 e.preventDefault();
-                                channel?.status === "INACTIVO"
-                                    ? history.push(paths.CHANNELS, whatsAppData)
-                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+
+                                if (whatsAppData?.onboarding) {
+                                    history.push(paths.METACHANNELS, whatsAppData);
+                                } else {
+                                    channel?.status === "INACTIVO"
+                                        ? history.push(paths.CHANNELS, whatsAppData)
+                                        : history.push(paths.CHANNELS_ADD, whatsAppData);
+                                }
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -1166,14 +1195,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setFields(partialf);
                                         setDisablebutton(
                                             !e.target.value ||
-                                                !fields.service.brandname ||
-                                                !fields.service.brandaddress ||
-                                                !fields.service.lastname ||
-                                                !fields.service.email ||
-                                                !fields.service.phone ||
-                                                !fields.service.customerfacebookid ||
-                                                !fields.service.phonenumberwhatsappbusiness ||
-                                                !fields.service.nameassociatednumber
+                                            !fields.service.brandname ||
+                                            !fields.service.brandaddress ||
+                                            !fields.service.lastname ||
+                                            !fields.service.email ||
+                                            !fields.service.phone ||
+                                            !fields.service.customerfacebookid ||
+                                            !fields.service.phonenumberwhatsappbusiness ||
+                                            !fields.service.nameassociatednumber
                                         );
                                     }}
                                 />
@@ -1196,14 +1225,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setFields(partialf);
                                         setDisablebutton(
                                             !e.target.value ||
-                                                !fields.service.brandname ||
-                                                !fields.service.brandaddress ||
-                                                !fields.service.firstname ||
-                                                !fields.service.email ||
-                                                !fields.service.phone ||
-                                                !fields.service.customerfacebookid ||
-                                                !fields.service.phonenumberwhatsappbusiness ||
-                                                !fields.service.nameassociatednumber
+                                            !fields.service.brandname ||
+                                            !fields.service.brandaddress ||
+                                            !fields.service.firstname ||
+                                            !fields.service.email ||
+                                            !fields.service.phone ||
+                                            !fields.service.customerfacebookid ||
+                                            !fields.service.phonenumberwhatsappbusiness ||
+                                            !fields.service.nameassociatednumber
                                         );
                                     }}
                                 />
@@ -1237,14 +1266,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setFields(partialf);
                                         setDisablebutton(
                                             !e.target.value ||
-                                                !fields.service.brandname ||
-                                                !fields.service.brandaddress ||
-                                                !fields.service.firstname ||
-                                                !fields.service.lastname ||
-                                                !fields.service.phone ||
-                                                !fields.service.customerfacebookid ||
-                                                !fields.service.phonenumberwhatsappbusiness ||
-                                                !fields.service.nameassociatednumber
+                                            !fields.service.brandname ||
+                                            !fields.service.brandaddress ||
+                                            !fields.service.firstname ||
+                                            !fields.service.lastname ||
+                                            !fields.service.phone ||
+                                            !fields.service.customerfacebookid ||
+                                            !fields.service.phonenumberwhatsappbusiness ||
+                                            !fields.service.nameassociatednumber
                                         );
                                     }}
                                 />
@@ -1269,14 +1298,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setFields(partialf);
                                         setDisablebutton(
                                             !e ||
-                                                !fields.service.brandname ||
-                                                !fields.service.brandaddress ||
-                                                !fields.service.firstname ||
-                                                !fields.service.lastname ||
-                                                !fields.service.email ||
-                                                !fields.service.customerfacebookid ||
-                                                !fields.service.phonenumberwhatsappbusiness ||
-                                                !fields.service.nameassociatednumber
+                                            !fields.service.brandname ||
+                                            !fields.service.brandaddress ||
+                                            !fields.service.firstname ||
+                                            !fields.service.lastname ||
+                                            !fields.service.email ||
+                                            !fields.service.customerfacebookid ||
+                                            !fields.service.phonenumberwhatsappbusiness ||
+                                            !fields.service.nameassociatednumber
                                         );
                                     }}
                                 />
@@ -1332,14 +1361,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setFields(partialf);
                                         setDisablebutton(
                                             !e.target.value ||
-                                                !fields.service.brandname ||
-                                                !fields.service.brandaddress ||
-                                                !fields.service.firstname ||
-                                                !fields.service.lastname ||
-                                                !fields.service.email ||
-                                                !fields.service.phone ||
-                                                !fields.service.customerfacebookid ||
-                                                !fields.service.nameassociatednumber
+                                            !fields.service.brandname ||
+                                            !fields.service.brandaddress ||
+                                            !fields.service.firstname ||
+                                            !fields.service.lastname ||
+                                            !fields.service.email ||
+                                            !fields.service.phone ||
+                                            !fields.service.customerfacebookid ||
+                                            !fields.service.nameassociatednumber
                                         );
                                     }}
                                 />
@@ -1387,14 +1416,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         setFields(partialf);
                                         setDisablebutton(
                                             !e.target.value ||
-                                                !fields.service.brandname ||
-                                                !fields.service.brandaddress ||
-                                                !fields.service.firstname ||
-                                                !fields.service.lastname ||
-                                                !fields.service.email ||
-                                                !fields.service.phone ||
-                                                !fields.service.customerfacebookid ||
-                                                !fields.service.phonenumberwhatsappbusiness
+                                            !fields.service.brandname ||
+                                            !fields.service.brandaddress ||
+                                            !fields.service.firstname ||
+                                            !fields.service.lastname ||
+                                            !fields.service.email ||
+                                            !fields.service.phone ||
+                                            !fields.service.customerfacebookid ||
+                                            !fields.service.phonenumberwhatsappbusiness
                                         );
                                     }}
                                 />

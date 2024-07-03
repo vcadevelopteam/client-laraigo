@@ -30,6 +30,7 @@ const useChannelAddStyles = makeStyles(() => ({
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 interface CallbackData {
@@ -50,7 +51,6 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
     const [showLastStep, setShowLastStep] = useState(false);
     const [waitList, setWaitList] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
@@ -239,9 +239,9 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
             }
         }
     };
-    if(viewSelected==="enable-virtual-assistant"){
+    if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     }
     if (edit && !channel) {
@@ -257,9 +257,10 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
                     key={"mainview"}
                     onClick={(e) => {
                         e.preventDefault();
-                        if(newChannels){
-                            history.push(paths.METACHANNELS, whatsAppData)
-                        }else{
+
+                        if (whatsAppData?.onboarding) {
+                            history.push(paths.METACHANNELS, whatsAppData);
+                        } else {
                             channel?.status === "INACTIVO"
                                 ? history.push(paths.CHANNELS, whatsAppData)
                                 : history.push(paths.CHANNELS_ADD, whatsAppData);

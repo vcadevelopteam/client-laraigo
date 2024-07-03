@@ -18,6 +18,7 @@ import React, { FC, useEffect, useState } from "react";
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -47,7 +48,6 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation<WhatsAppData>();
     const mainResult = useSelector((state) => state.channel.channelList);
     const whatsAppData = location.state as WhatsAppData | null;
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const channel = whatsAppData?.row as IChannel | null;
 
@@ -133,9 +133,10 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            if(newChannels){
-                                history.push(paths.METACHANNELS, whatsAppData)
-                            }else{
+
+                            if (whatsAppData?.onboarding) {
+                                history.push(paths.METACHANNELS, whatsAppData);
+                            } else {
                                 channel?.status === "INACTIVO"
                                     ? history.push(paths.CHANNELS, whatsAppData)
                                     : history.push(paths.CHANNELS_ADD, whatsAppData);
@@ -166,10 +167,10 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => {
                                 setNextbutton(
                                     value === "" ||
-                                        fields.service.clientsecret === "" ||
-                                        fields.service.accesstoken === "" ||
-                                        fields.service.refreshtoken === "" ||
-                                        fields.service.organizationid === ""
+                                    fields.service.clientsecret === "" ||
+                                    fields.service.accesstoken === "" ||
+                                    fields.service.refreshtoken === "" ||
+                                    fields.service.organizationid === ""
                                 );
                                 const partialf = fields;
                                 partialf.service.clientid = value;
@@ -186,10 +187,10 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => {
                                 setNextbutton(
                                     fields.service.clientid === "" ||
-                                        value === "" ||
-                                        fields.service.accesstoken === "" ||
-                                        fields.service.refreshtoken === "" ||
-                                        fields.service.organizationid === ""
+                                    value === "" ||
+                                    fields.service.accesstoken === "" ||
+                                    fields.service.refreshtoken === "" ||
+                                    fields.service.organizationid === ""
                                 );
                                 const partialf = fields;
                                 partialf.service.clientsecret = value;
@@ -206,10 +207,10 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => {
                                 setNextbutton(
                                     fields.service.clientid === "" ||
-                                        fields.service.clientsecret === "" ||
-                                        value === "" ||
-                                        fields.service.refreshtoken === "" ||
-                                        fields.service.organizationid === ""
+                                    fields.service.clientsecret === "" ||
+                                    value === "" ||
+                                    fields.service.refreshtoken === "" ||
+                                    fields.service.organizationid === ""
                                 );
                                 const partialf = fields;
                                 partialf.service.accesstoken = value;
@@ -226,10 +227,10 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => {
                                 setNextbutton(
                                     fields.service.clientid === "" ||
-                                        fields.service.clientsecret === "" ||
-                                        fields.service.accesstoken === "" ||
-                                        value === "" ||
-                                        fields.service.organizationid === ""
+                                    fields.service.clientsecret === "" ||
+                                    fields.service.accesstoken === "" ||
+                                    value === "" ||
+                                    fields.service.organizationid === ""
                                 );
                                 const partialf = fields;
                                 partialf.service.refreshtoken = value;
@@ -246,10 +247,10 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => {
                                 setNextbutton(
                                     fields.service.clientid === "" ||
-                                        fields.service.clientsecret === "" ||
-                                        fields.service.accesstoken === "" ||
-                                        fields.service.refreshtoken === "" ||
-                                        value === ""
+                                    fields.service.clientsecret === "" ||
+                                    fields.service.accesstoken === "" ||
+                                    fields.service.refreshtoken === "" ||
+                                    value === ""
                                 );
                                 const partialf = fields;
                                 partialf.service.organizationid = value;
@@ -276,9 +277,9 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             </div>
         )
-    } else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (

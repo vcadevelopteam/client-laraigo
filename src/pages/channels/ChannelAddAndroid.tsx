@@ -670,6 +670,7 @@ const isEmpty = (str?: string) => {
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 type ImageData = File | string | null;
@@ -2746,7 +2747,6 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const whatsAppData = location.state as WhatsAppData | null;
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
     const [viewSelected, setViewSelected] = useState("main-view");
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     useEffect(() => {
         dispatch(getMultiCollection([getInputValidationSel(0)]));
@@ -2798,9 +2798,14 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                         severity: "success",
                     })
                 );
-                history.push(paths.CHANNELS);
+
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                } else {
+                    history.push(paths.CHANNELS);
+                }
             }
-            
+
         }
     }, [dispatch, editChannel]);
 
@@ -2895,9 +2900,9 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const handleend = () => {
         setViewSelected("enable-virtual-assistant")
     }
-    if(viewSelected==="enable-virtual-assistant"){
+    if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={insertChannel?.value?.result?.ufn_communicationchannel_ins||null}
+            communicationchannelid={insertChannel?.value?.result?.ufn_communicationchannel_ins || null}
         />
     }
 
@@ -2913,9 +2918,10 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        if(newChannels){
-                            history.push(paths.METACHANNELS, whatsAppData)
-                        }else{
+
+                        if (whatsAppData?.onboarding) {
+                            history.push(paths.METACHANNELS, whatsAppData);
+                        } else {
                             channel?.status === "INACTIVO"
                                 ? history.push(paths.CHANNELS, whatsAppData)
                                 : history.push(paths.CHANNELS_ADD, whatsAppData);
@@ -2993,7 +2999,13 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                             </code>
                         </pre>
                         <div style={{ height: 20 }} />
-                        <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                        <Button variant="contained" color="primary" onClick={() => {
+                            if (whatsAppData?.onboarding) {
+                                history.push(paths.METACHANNELS, whatsAppData);
+                            } else {
+                                history.push(paths.CHANNELS);
+                            }
+                        }}>
                             {t(langKeys.close)}
                         </Button>
                     </div>

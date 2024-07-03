@@ -1026,6 +1026,7 @@ const useStyles = makeStyles((theme) => ({
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
@@ -1042,7 +1043,6 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation();
     const service = useRef<IFormWebAdd | null>(null);
     const whatsAppData = location.state as WhatsAppData | null;
-    const newChannels = useSelector(state => state.login.validateToken.user?.newChannels);
 
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
 
@@ -1054,7 +1054,11 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
     useEffect(() => {
         if (edit && !channel) {
-            history.push(paths.CHANNELS);
+            if (whatsAppData?.onboarding) {
+                history.push(paths.METACHANNELS, whatsAppData);
+            } else {
+                history.push(paths.CHANNELS);
+            }
         }
 
         return () => {
@@ -1102,7 +1106,12 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                     severity: "success",
                 })
             );
-            history.push(paths.CHANNELS);
+
+            if (whatsAppData?.onboarding) {
+                history.push(paths.METACHANNELS, whatsAppData);
+            } else {
+                history.push(paths.CHANNELS);
+            }
         }
     }, [dispatch, editChannel]);
 
@@ -1205,7 +1214,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
-        if (newChannels) {history.push(paths.METACHANNELS)}
+        if (whatsAppData?.onboarding) { history.push(paths.METACHANNELS) }
         else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
@@ -1310,6 +1319,8 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const auto = true;
     const [name, setName] = useState(channel?.communicationchanneldesc ?? "");
+    const location = useLocation();
+    const whatsAppData = location.state as WhatsAppData | null;
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -1398,7 +1409,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 <div style={{ display: integrationId ? "flex" : "none", flexDirection: "column", marginBottom: 20 }}>
                     *{t(langKeys.containeridExplained)}
                 </div>
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                <Button variant="contained" color="primary" onClick={() => {
+                    if (whatsAppData?.onboarding) {
+                        history.push(paths.METACHANNELS, whatsAppData);
+                    } else {
+                        history.push(paths.CHANNELS);
+                    }
+                }}>
                     {t(langKeys.close)}
                 </Button>
             </div>
