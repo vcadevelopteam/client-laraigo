@@ -12,7 +12,7 @@ const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = 
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
-    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
+    return (!hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
