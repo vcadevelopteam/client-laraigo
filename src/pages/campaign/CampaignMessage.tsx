@@ -123,6 +123,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const [variablesHeaderView, setVariablesHeaderView] = useState<Dictionary[]>([]);
     const [selectedFields, setSelectedFields] = useState<{ [key: string]: { column: string, value: any, type: string, index: string, carouselIndex: number | null } }>({});
+    
 
 
     if (availableData.length === 0) {
@@ -170,6 +171,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setSelectedAuthVariable(JSON.stringify(bodyVariableValues));
             setVariablesHeaderView(headerVariable);
             setVariablesCardImageView(cardImageVariables); 
+
             
             bodyVariables.forEach((variable, index) => {
                 const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
@@ -290,7 +292,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setAdditionalVariableValues(newAdditionalVariableValues);
             setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
             setSelectedAuthVariable(processedData.selectedAuthVariable);
-    
+
             if (combinedData.fields && combinedData.fields.primarykey) {
                 setSelectedHeader(combinedData.fields.primarykey);
             }
@@ -313,23 +315,23 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             updateTemplate(); 
         }
     }, [multiData]);
-    
-    
-    useEffect(() => {
-        if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
-            const newAdditionalVariableValues = {};
-            const personData = multiData[5].data[0];
 
-            variablesAdditionalView.forEach(variable => {
-                const fieldIndex = parseInt(variable.replace('field', ''), 10);
-                if (personData[`field${fieldIndex}`]) {
-                    newAdditionalVariableValues[variable] = personData[`field${fieldIndex}`];
-                }
-            });
+    
+    // useEffect(() => {
+    //     if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
+    //         const newAdditionalVariableValues = {};
+    //         const personData = multiData[5].data[0];
 
-            setAdditionalVariableValues(newAdditionalVariableValues);
-        }
-    }, [variablesAdditionalView, multiData[5]]);
+    //         variablesAdditionalView.forEach(variable => {
+    //             const fieldIndex = parseInt(variable.replace('field', ''), 10);
+    //             if (personData[`field${fieldIndex}`]) {
+    //                 newAdditionalVariableValues[variable] = personData[`field${fieldIndex}`];
+    //             }
+    //         });
+
+    //         setAdditionalVariableValues(newAdditionalVariableValues);
+    //     }
+    // }, [variablesAdditionalView, multiData[5]]);
 
     const getAdditionalVariableIndex = () => {
         const additionalIndexes = Object.keys(selectedFields)
@@ -1140,7 +1142,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         optionDesc="value"
                                         optionValue="key"
                                         valueDefault={selectedHeader ? selectedHeader : ''}
-                                        onChange={(selectedOption) => handleVariableChange('1', selectedOption, 'receiver')}
+                                        //onChange={(selectedOption) => handleVariableChange('1', selectedOption, 'receiver')}
+                                        onChange={handleHeaderChange}
                                         getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                     />
                                 </div>
@@ -1574,24 +1577,26 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <div className={classes.subtitle}> {'Previsualiza un ejemplo de las variables adicionales elegidas en el apartado de Variables Adicionales'} </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                             {row ? (
-                                variablesAdditionalView.map((variable, index) => {
-                                    const fieldNumber = parseInt(variable.replace("field", ""), 10) - 2;
-                                    const columnName = templateData.fields.columns[fieldNumber];
-                                    return (
-                                        <div style={{ flex: '1 1 calc(25% - 20px)', boxSizing: 'border-box' }} key={`body-${index + 1}`}>
-                                            <p>{`Variable ${index + 1}`}</p>
-                                            <div style={{ flex: 1 }}>
-                                                <FieldEdit
-                                                    variant="outlined"
-                                                    uset={true}
-                                                    className="col-12"
-                                                    valueDefault={additionalVariableValues[variable] || columnName}
-                                                    disabled
-                                                />
-                                            </div>
+                              variablesAdditionalView.map((variable, index) => {
+                                const cleanVariable = variable.replace(/"/g, '');
+                                const fieldNumber = parseInt(cleanVariable.replace("field", ""), 10) - 2;
+                                const columnName = templateData.fields.columns[fieldNumber];
+                                const valueDefault = additionalVariableValues[cleanVariable] || columnName;                           
+                                return (
+                                    <div style={{ flex: '1 1 calc(25% - 20px)', boxSizing: 'border-box' }} key={`additional-${index + 1}`}>
+                                        <p>{`Variable Adicional {{${index + 1}}}`}</p>
+                                        <div style={{ flex: 1 }}>
+                                            <FieldEdit
+                                                variant="outlined"
+                                                uset={true}
+                                                className="col-12"
+                                                valueDefault={valueDefault}
+                                                disabled
+                                            />
                                         </div>
-                                    );
-                                })
+                                    </div>
+                                )
+                            })                                                                        
                             ) : (
                                 additionalVariables.map((variable, index) => (
                                     <div style={{ flex: '1 1 calc(25% - 20px)', boxSizing: 'border-box' }} key={index}>
@@ -1601,7 +1606,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 variant="outlined"
                                                 uset={true}
                                                 className="col-12"
-                                                valueDefault={additionalVariableValues[variable] || ''}
+                                                valueDefault={additionalVariableValues[variable] || 'ss'}
                                                 disabled
                                             />
                                         </div>

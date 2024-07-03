@@ -535,11 +535,12 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                         <ButtonList buttons={[]} authenticationButton={selectedTemplate.authenticationdata.buttontext} />
                                     )}
                                 </div>
-                            ) : selectedTemplate?.type === "MAIL" ? (
-                                <div>
-                                    <p style={{fontSize:'1.2rem', fontWeight:'bold'}}>{selectedTemplate.header}</p>                                
-
-                                    <div dangerouslySetInnerHTML={{ __html: replacedBodyMail }} />                              
+                            ) : (selectedTemplate?.type === "MAIL") || (selectedTemplate?.type === "HTML") ? (
+                                <div style={{width:'40vw', padding:'1rem 1rem 3rem 1rem'}}>
+                                    <p style={{fontSize:'1.2rem'}}>{selectedTemplate.header}</p>                               
+                                    <div dangerouslySetInnerHTML={{ __html: replacedBodyMail }} />       
+                                    
+                       
                                 </div>
                             ) : (
                                 <div>
