@@ -6387,7 +6387,7 @@ const translation: LangKeys = {
   advancedtemplatescampaigns: "Advanced Templates and Campaigns",
   advanced: "Advanced",
   templates: "Templates",
-  templatestext: "Manage your communication templates with the new features we offer: carousel templates, templates with redirection buttons, etc.",
+  templatestext: "Manage your communication templates, with new functionalities such as: carousel templates, templates with call buttons and url, authentication templates, templates with images or videos, etc.",
   campaignstext: "Manage your contact campaigns with the new functionalities and design we offer for a better experience.",
   sentoblock: 'Sen to block',
 };

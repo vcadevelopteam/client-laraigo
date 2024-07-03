@@ -70,7 +70,7 @@ const AdvancedTemplatesCampaigns: React.FC = () => {
                         <Grid container spacing={3} >
                             {!user?.roledesc?.includes("GESTOR DE CAMPAÑAS") && (
                                 <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                    <Card style={{ position: 'relative', display:"flex" }}>
+                                    <Card style={{ position: 'relative', display:"flex", height: 300 }}>
                                         <div className={classes.containerInner}>
                                             <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
                                                 <div>
@@ -94,7 +94,7 @@ const AdvancedTemplatesCampaigns: React.FC = () => {
                                 </Grid>
                             )}
                             <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                <Card style={{ position: 'relative', display:"flex" }}>
+                                <Card style={{ position: 'relative', display:"flex", height: 300 }}>
                                     <div className={classes.containerInner}>
                                         <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
                                             <div>
