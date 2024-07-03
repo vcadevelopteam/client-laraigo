@@ -7,6 +7,7 @@ import { Card, Grid } from '@material-ui/core';
 import { TemplatesIcon, CampaignsIcon } from 'icons';
 import MessageTemplates from './messagetemplates/MessageTemplates';
 import Campaign from './campaign/Campaign';
+import { useSelector } from 'hooks';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AdvancedTemplatesCampaigns: React.FC = () => {
     const { t } = useTranslation();
+    const user = useSelector((state) => state.login.validateToken.user);
     const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
     const classes = useStyles();
     const arrayBread = [
@@ -66,31 +68,33 @@ const AdvancedTemplatesCampaigns: React.FC = () => {
                     <div className={classes.title}>{t(langKeys.advancedtemplatescampaigns)}</div>
                     <div>                        
                         <Grid container spacing={3} >
-                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                <Card style={{ position: 'relative', display:"flex" }}>
-                                    <div className={classes.containerInner}>
-                                        <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
-                                            <div>
-                                                <div className={classes.containerInnertittle2}>{t(langKeys.templates).toUpperCase()}</div>
-                                                <div className={classes.containerInnertittle3}>{t(langKeys.templatestext)}</div>
+                            {!user?.roledesc?.includes("GESTOR DE CAMPAÑAS") && (
+                                <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                    <Card style={{ position: 'relative', display:"flex", height: 300 }}>
+                                        <div className={classes.containerInner}>
+                                            <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                                <div>
+                                                    <div className={classes.containerInnertittle2}>{t(langKeys.templates).toUpperCase()}</div>
+                                                    <div className={classes.containerInnertittle3}>{t(langKeys.templatestext)}</div>
+                                                </div>
+                                                <Button
+                                                    className={classes.button}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                                    onClick={()=>setViewSelectedTraining("templates")}
+                                                >{t(langKeys.enter)}
+                                                </Button>
                                             </div>
-                                            <Button
-                                                className={classes.button}
-                                                variant="contained"
-                                                color="primary"
-                                                style={{ backgroundColor: "#55BD84", width: "fit-content" }}
-                                                onClick={()=>setViewSelectedTraining("templates")}
-                                            >{t(langKeys.enter)}
-                                            </Button>
+                                            <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                                <TemplatesIcon style={{ height: 220, width:"100%" }} />
+                                            </div>
                                         </div>
-                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <TemplatesIcon style={{ height: 220, width:"100%" }} />
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Grid>
+                                    </Card>
+                                </Grid>
+                            )}
                             <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                <Card style={{ position: 'relative', display:"flex" }}>
+                                <Card style={{ position: 'relative', display:"flex", height: 300 }}>
                                     <div className={classes.containerInner}>
                                         <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
                                             <div>

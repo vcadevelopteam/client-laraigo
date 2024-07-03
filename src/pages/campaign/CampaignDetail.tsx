@@ -188,15 +188,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
-
-        if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-            let splitMessage = message.split('{{');
-            messageVariables.forEach((v, i) => {
-                splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
-            });
-            message = splitMessage.join('{{');
-        }
-
+  
         let localtablevariable = [];
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
@@ -239,9 +231,13 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
         }
-
+    
+        console.log('formatMessage - Final:', { subject, header, message });
+    
         return { subject, header, message };
     };
+    
+    
 
 
     const formatMessageGeneric = (message: string) => {

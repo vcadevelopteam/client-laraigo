@@ -985,11 +985,11 @@ export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, sta
     }
 })
 
-export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelid }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",
     parameters: {
-        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, newversion: false
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, newversion: false, communicationchannelid
     }
 })
 
@@ -1023,20 +1023,27 @@ export const insMessageTemplate = (
         headertype,
         header,
         body,
-        bodyobject,
         footerenabled,
         footer,
         buttonsenabled,
-        buttons,
         priority,
         attachment,
-        fromprovider,
-        externalid,
-        externalstatus,
         communicationchannelid,
         communicationchanneltype,
-        exampleparameters,
-        operation
+        authenticationdata,
+        bodyvariables,
+        buttonsgeneric,
+        buttonsquickreply,
+        carouseldata,
+        headervariables,
+        provideraccountid,
+        providerexternalid,
+        providerid,
+        providermessagelimit,
+        providerpartnerid,
+        providerquality,
+        providerstatus,
+        operation,
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1054,20 +1061,27 @@ export const insMessageTemplate = (
             headertype,
             header,
             body,
-            bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer: footer || "",
+            footer,
             buttonsenabled,
-            buttons: JSON.stringify(buttons),
             priority,
             attachment,
-            fromprovider,
-            externalid,
-            externalstatus,
             communicationchannelid,
             communicationchanneltype,
-            exampleparameters,
-            operation
+            authenticationdata: JSON.stringify(authenticationdata),
+            bodyvariables: JSON.stringify(bodyvariables),
+            buttonsgeneric: JSON.stringify(buttonsgeneric),
+            buttonsquickreply: JSON.stringify(buttonsquickreply),
+            carouseldata: JSON.stringify(carouseldata),
+            headervariables: JSON.stringify(headervariables),
+            provideraccountid,
+            providerexternalid,
+            providerid,
+            providermessagelimit,
+            providerpartnerid,
+            providerquality,
+            providerstatus,
+            operation,
         }
     });
 

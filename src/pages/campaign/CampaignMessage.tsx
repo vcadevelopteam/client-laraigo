@@ -67,14 +67,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [selectedAdditionalHeaders, setSelectedAdditionalHeaders] = useState<{ [key: number]: string }>({});
     const messagetemplateid = multiData[4]?.data?.[0]?.messagetemplateid ?? null;
     const getTemplateById = (id: Dictionary, data: Dictionary) => {
-        return data?.data?.find(template => template.id === id) ?? null;
+        return (data as Dictionary)?.data?.find((template: Dictionary) => template.id === id) ?? null;
     };
     const matchingTemplate = getTemplateById(messagetemplateid, multiData[3]);
     const isEmptyData = (data: Dictionary) => {
         return Object.keys(data).length === 0 && data.constructor === Object;
     };    
     const templateToUse = isEmptyData(selectedTemplate) ? matchingTemplate : selectedTemplate;
-    const handleHeaderChange = (selectedOption: any) => {       
+    const handleHeaderChange = (selectedOption: Dictionary) => {       
         setSelectedHeader(selectedOption ? selectedOption.key : '');
         setSelectedHeaders(prev => ({ ...prev, main: selectedOption ? selectedOption.key : '' }));
     };
@@ -127,7 +127,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         availableData.push('No quedan más variables');
     }
 
-    const processMultiData = (data) => {
+    const processMultiData = (data: Dictionary) => {
         const processedData = {
             bodyVariableValues: {},
             headerVariableValues: {},
@@ -146,18 +146,18 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         if (campaignData) {
             const bodyVariables = detectVariablesField(campaignData.message);
             const variablesHiddenMultidata = campaignData.variableshidden || [];
-            const carouselBubbleVariables = campaignData.carouseljson ? campaignData.carouseljson.map(item => {
+            const carouselBubbleVariables = campaignData.carouseljson ? campaignData.carouseljson.map((item: Dictionary) => {
                 return detectVariablesField(item.body);
             }) : [];
-            const carouselUrlVariables = campaignData.carouseljson ? campaignData.carouseljson.flatMap(item => {
-                return item.buttons ? item.buttons.flatMap(button => detectVariablesField(button.btn.url)) : [];
+            const carouselUrlVariables = campaignData.carouseljson ? campaignData.carouseljson.flatMap((item: Dictionary) => {
+                return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
             }) : [];    
-            const templateButtonsUrlVariables = campaignData.messagetemplatebuttons ? campaignData.messagetemplatebuttons.flatMap(button => {
+            const templateButtonsUrlVariables = campaignData.messagetemplatebuttons ? campaignData.messagetemplatebuttons.flatMap((button: Dictionary) => {
                 return detectVariablesField(button.btn.url);
             }) : [];
             const allUrlVariables = [...carouselUrlVariables, ...templateButtonsUrlVariables];
             const headerVariable = campaignData.messagetemplateheader ? detectVariablesField(campaignData.messagetemplateheader.value) : [];
-            const cardImageVariables = campaignData.carouseljson ? campaignData.carouseljson.map(item => {
+            const cardImageVariables = campaignData.carouseljson ? campaignData.carouseljson.map((item: Dictionary) => {
                 return detectVariablesField(item.header);
             }) : [];
 
@@ -165,31 +165,31 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setVariablesAdditionalView(variablesHiddenMultidata);
             setVariablesCarouselBubbleView(carouselBubbleVariables);
             setVariablesUrlView(allUrlVariables);     
-            setSelectedAuthVariable(bodyVariableValues);    
+            setSelectedAuthVariable(JSON.stringify(bodyVariableValues));
             setVariablesHeaderView(headerVariable);
             setVariablesCardImageView(cardImageVariables); 
             
             bodyVariables.forEach((variable, index) => {
                 const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
-                processedData.bodyVariableValues[index + 1] = `field${fieldIndex}`;
+                (processedData.bodyVariableValues as { [key: number]: string })[index + 1] = `field${fieldIndex}`;
             });
     
             if (campaignData.headertype === 'TEXT') {
                 const headerVariables = detectVariablesField(campaignData.header);
                 headerVariables.forEach((variable, index) => {
                     const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
-                    processedData.headerVariableValues[index + 1] = `field${fieldIndex}`;
+                    (processedData.headerVariableValues as { [key: number]: string })[index + 1] = `field${fieldIndex}`;
                 });
             }    
 
             processedData.videoHeaderValue = campaignData.messagetemplateheader?.value || '';    
             if (campaignData.carouseljson) {
-                campaignData.carouseljson.forEach((item, carouselIndex) => {
-                    processedData.carouselVariableValues[carouselIndex] = {};
+                campaignData.carouseljson.forEach((item: Dictionary, carouselIndex: number) => {
+                    (processedData.carouselVariableValues as { [key: number]: { [key: number]: string } })[carouselIndex] = {};
                     if (item.bodyvariables) {
-                        item.bodyvariables.forEach((variable, index) => {
+                        item.bodyvariables.forEach((variable: Dictionary, index: number) => {
                             const fieldIndex = typeof variable.variable === 'string' ? parseInt(variable.variable.replace('field', ''), 10) : variable.variable;
-                            processedData.carouselVariableValues[carouselIndex][index + 1] = `field${fieldIndex}`;
+                            (processedData.carouselVariableValues[carouselIndex] as { [key: number]: string })[index + 1] = `field${fieldIndex}`;
                         });
                     }
                 });
@@ -207,13 +207,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
             setCampaignViewDetails(combinedData);
             const processedData = processMultiData(multiData[4].data);
-            const bodyVariables = detectVariablesField(combinedData.message);
+            const bodyVariables = combinedData.message ? detectVariablesField(combinedData.message) : [];
             const variablesHiddenMultidata = combinedData.variableshidden || [];           
             const carouselBubbleVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => {
                 return detectVariablesField(item.body);
             }) : [];
             const urlVariables = combinedData.carouseljson ? combinedData.carouseljson.flatMap(item => {
-                return item.buttons ? item.buttons.flatMap(button => detectVariablesField(button.btn.url)) : [];
+                return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
             }) : [];
             const templateButtonsUrlVariables = combinedData.messagetemplatebuttons ? combinedData.messagetemplatebuttons.flatMap(button => {
                 return detectVariablesField(button.btn.url);
@@ -225,7 +225,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }) : [];
     
             setVariablesBodyView(bodyVariables);
-            setVariablesAdditionalView(variablesHiddenMultidata);
+            setVariablesAdditionalView(variablesHiddenMultidata.map(variable => JSON.stringify(variable)));
             setVariablesCarouselBubbleView(carouselBubbleVariables);
             setVariablesUrlView(allUrlVariables);
             setVariablesHeaderView(headerVariable);
@@ -330,7 +330,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [variablesAdditionalView, multiData[5]]);
 
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional', carouselIndex?: number) => {
-        //console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption);
         const header = selectedOption ? selectedOption.key : '';
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
     
@@ -408,12 +407,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
     const getValueDefault = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         const key = generateKey(variableType, variableNumber, carouselIndex);
-        const header = selectedHeaders[key];    
-        if (variableType === 'video' && header === 'default') {
+        const header = selectedHeaders[key];
+        if ((variableType === 'video' || variableType === 'cardImage') && header === 'default') {
             return { key: 'default', value: 'Default ' };
-        }    
+        }
         return header ? { key: header, value: header } : undefined;
     };
+    
     
 
 
@@ -429,6 +429,19 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         return fields;
     };
+
+    const extractFieldKeysFromTemplateAdd = (templateString: string) => {
+        const regex = /{{field(\d+)}}/g;
+        let match;
+        const fieldKeys = [];
+    
+        while ((match = regex.exec(templateString)) !== null) {
+            fieldKeys.push(`field${match[1]}`);
+        }
+    
+        return fieldKeys;
+    };
+    
 
     const extractFieldKeysFromButtonsgeneric = (buttonsgeneric: Dictionary[], carouseldata?: Dictionary[]) => {
         const fields = [];
@@ -474,12 +487,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 } else if (type === 'header' && updatedTemplate.header) {
                     updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                }else if (type === 'cardImage' && updatedTemplate.carouseldata) {
                     const index = parseInt(number, 10) - 1;
                     if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
-                        updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
-                    }
-                } else if (type === 'dynamicUrl') {
+                        const selectedOption = variableSelections[key];
+                        if (selectedOption !== 'default') {
+                            updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
+                        } 
+                    } 
+                }
+                 else if (type === 'dynamicUrl') {
                     if (updatedTemplate.buttonsgeneric) {
                         updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {
                             const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
@@ -583,7 +600,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 header => `field${headers.indexOf(header) + 1}`
             );
         
-            console.log('final updatedTemplate:', updatedTemplate);        
+            //console.log('final updatedTemplate:', updatedTemplate);        
             setFilledTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
                 ...prev,
@@ -816,7 +833,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             }
 
-            console.log('final updatedTemplate:', updatedTemplate);
+            //console.log('final updatedTemplate:', updatedTemplate);
             setCurrentTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
                 ...prev,
@@ -1032,19 +1049,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [detaildata.message]);
 
 
-    console.log('templateToUse', templateToUse)
-    console.log('bodyVariableValues', bodyVariableValues)
-    console.log('headerVariableValues', headerVariableValues)
-    console.log('videoHeaderValue', videoHeaderValue)
-    console.log('cardImageValues', cardImageValues)
-    console.log('dynamicUrlValues', dynamicUrlValues)
-    console.log('bubbleVariableValues', bubbleVariableValues)
-    console.log('carouselVariableValues', carouselVariableValues)
-    console.log('selectedAuthVariable', selectedAuthVariable)
-
-
-    
-
+    // console.log('templateToUse', templateToUse)
+    // console.log('bodyVariableValues', bodyVariableValues)
+    // console.log('headerVariableValues', headerVariableValues)
+    // console.log('videoHeaderValue', videoHeaderValue)
+    // console.log('cardImageValues', cardImageValues)
+    // console.log('dynamicUrlValues', dynamicUrlValues)
+    // console.log('bubbleVariableValues', bubbleVariableValues)
+    // console.log('carouselVariableValues', carouselVariableValues)
+    // console.log('selectedAuthVariable', selectedAuthVariable)
 
     return (
         <React.Fragment>
@@ -1259,7 +1272,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     ) : (
                                         <div>
                                             <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
-                                            <FieldSelect
+                                            <FieldSelectDisabled
                                                 variant="outlined"
                                                 uset={true}
                                                 className="col-12"
@@ -1268,6 +1281,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 optionValue="key"
                                                 valueDefault={getValueDefault('video', 'videoHeader')}
                                                 onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
+                                                getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                             />
                                         </div>
                                     )
@@ -1366,9 +1380,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                 />
                                                             </div>
                                                         );
-                                                    })
-                                                    
-                                                    
+                                                    })                                                   
+
                                                 ) : (
                                                     <div>
                                                         <p style={{ marginBottom: '3px' }}>{`Card Imagen`}</p>
@@ -1376,7 +1389,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                 variant="outlined"
                                                                 uset={true}
                                                                 className="col-12"
-                                                                data={availableData.map(header => ({ key: header, value: header }))}
+                                                                data={[{ key: 'default', value: 'Default ' }, ...availableData.map(header => ({ key: header, value: header }))]}
                                                                 optionDesc="value"
                                                                 optionValue="key"
                                                                 valueDefault={getValueDefault('cardImage', (index + 1).toString())}
@@ -1417,33 +1430,45 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <div className={classes.containerStyle}>
                                 {row ? (
                                     <>
-                                        {variablesAdditionalView.map((variable, index) => {
-                                            const fieldNumber = parseInt(variable.replace("field", ""), 10) - 2;
-                                            const columnName = templateData.fields.columns[fieldNumber];                                    
-                                            return (
-                                                <div style={{ flex: 1 }} key={`body-${index + 1}`}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                        <p>{`Variable {{${index + 1}}}`}</p>
-                                                        <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <FieldSelect
-                                                            variant="outlined"
-                                                            uset={true}
-                                                            className="col-12"
-                                                            data={availableOptions.map(header => ({ key: header, value: header }))}
-                                                            optionDesc="value"
-                                                            optionValue="key"
-                                                            valueDefault={columnName}
-                                                            onChange={(selectedOption) => {
-                                                                handleVariableChange(index + 1, selectedOption, 'additional');
-                                                            }}
-                                                        />
-                                                    </div>
+                                    {variablesAdditionalView.map((variable, index) => {
+                                        
+                                        const fieldKey = variable.replace(/"/g, '');
+                                        const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                        const columnName = templateData.fields.columns[fieldIndex];                           
+                            
+                                        let valueDefault;
+                                        if (fieldKey) {
+                                            const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                            const valor = templateData.fields.columns[fieldIndex];                                       
+                                            valueDefault = valor ? valor : undefined;
+                                        } else {
+                                            valueDefault = undefined;
+                                        }
+                            
+                                        return (
+                                            <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                    <p>{`Variable Adicional {{${index + 1}}}`}</p>
+                                                    <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
                                                 </div>
-                                            );
-                                        })}
-                                    </>
+                                                <div style={{ flex: 1 }}>
+                                                    <FieldSelect
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={availableOptions.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valueDefault}
+                                                        onChange={(selectedOption) => {
+                                                            handleVariableChange(index + 1, selectedOption, 'additional');
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </>
                                 ) : (
                                     <>
                                         {additionalVariables.map((variable, index) => (
