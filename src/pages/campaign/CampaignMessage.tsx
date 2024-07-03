@@ -74,6 +74,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return Object.keys(data).length === 0 && data.constructor === Object;
     };    
     const templateToUse = isEmptyData(selectedTemplate) ? matchingTemplate : selectedTemplate;
+    
     const handleHeaderChange = (selectedOption: Dictionary) => {       
         setSelectedHeader(selectedOption ? selectedOption.key : '');
         setSelectedHeaders(prev => ({ ...prev, main: selectedOption ? selectedOption.key : '' }));
@@ -121,7 +122,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [variablesCardImageView, setVariablesCardImageView] = useState<Dictionary[]>([]);
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const [variablesHeaderView, setVariablesHeaderView] = useState<Dictionary[]>([]);
-   
+    const [selectedFields, setSelectedFields] = useState<{ [key: string]: { column: string, value: any, type: string, index: string, carouselIndex: number | null } }>({});
+
 
     if (availableData.length === 0) {
         availableData.push('No quedan más variables');
@@ -329,10 +331,21 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [variablesAdditionalView, multiData[5]]);
 
-    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional', carouselIndex?: number) => {
+    const getAdditionalVariableIndex = () => {
+        const additionalIndexes = Object.keys(selectedFields)
+            .filter(key => selectedFields[key].type === 'variablehidden')
+            .map(key => parseInt(selectedFields[key].index, 10));
+        return additionalIndexes.length > 0 ? Math.max(...additionalIndexes) + 1 : 1;
+    };
+
+    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'receiver', carouselIndex?: number) => {
+        console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
+
         const header = selectedOption ? selectedOption.key : '';
         const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
-    
+        const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
+
+
         if (variableType === 'video') {
             setVideoHeaderValue(value);
         } else if (variableType === 'body') {
@@ -374,7 +387,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 ...prevValues,
                 [variableNumber]: value
             }));
-        }
+        } else if (variableType === 'receiver') {
+            setBodyVariableValues(prevValues => ({
+                ...prevValues,
+                receiver: value
+            }));
+        } 
     
         const key = generateKey(variableType, variableNumber, carouselIndex);
         const newSelectedHeaders = {
@@ -388,6 +406,18 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             [key]: header
         };
         setVariableSelections(newVariableSelections);
+
+        const newSelectedFields = { ...selectedFields };
+
+        newSelectedFields[`field${index}`] = {
+            column: selectedOption,
+            value: value,
+            type: variableType === 'additional' ? 'variablehidden' : variableType,
+            index: index.toString(),
+            carouselIndex: carouselIndex !== undefined ? carouselIndex : null
+        };
+    
+        setSelectedFields(newSelectedFields);
     
         if (!header) {
             updateTemplate(true, variableNumber);
@@ -395,9 +425,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             updateTemplate();
         }
     };
-    
-    
-    
+        
     
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         return carouselIndex !== undefined ? `${variableType}-${carouselIndex}-${variableNumber}` : `${variableType}-${variableNumber}`;
@@ -446,7 +474,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const extractFieldKeysFromButtonsgeneric = (buttonsgeneric: Dictionary[], carouseldata?: Dictionary[]) => {
         const fields = [];
         buttonsgeneric?.forEach(button => {
-            const match = button.btn.url.match(/{{field(\d+)}}/);
+            const match = button.btn?.url?.match(/{{field(\d+)}}/);
             if (match) {
                 fields.push(`field${match[1]}`);
             }
@@ -464,6 +492,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const [unavailableVariables, setUnavailableVariables] = useState([]);
 
+    //console.log('fieldsss', multiData[4])
+
     
     const updateTemplate = useCallback((resetField = false, fieldToReset = null) => {
        
@@ -473,6 +503,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
                 updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
             }        
+
+            let newSelectedFields = { ...selectedFields };
+
          
             Object.keys(variableSelections).forEach(key => {
                 let type, number, carouselIndexStr;    
@@ -482,7 +515,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     [type, number, carouselIndexStr] = key.split('-');
                 }
                 const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
-        
+                const selectedOption = variableSelections[key];
+                const value = jsonPersons.length > 0 ? jsonPersons[0][selectedOption] : '';
+
+                let index = number;
+                if (type === 'dynamicUrl') {
+                    index = key;
+                }
+    
+                newSelectedFields[`field${fieldNumber}`] = {
+                    column: selectedOption,
+                    value: value,
+                    type: type,
+                    index: index,
+                    carouselIndex: carouselIndexStr !== undefined ? parseInt(carouselIndexStr, 10) : null
+                };
+                       
                 if (type === 'body' && updatedTemplate.body) {
                     updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 } else if (type === 'header' && updatedTemplate.header) {
@@ -600,7 +648,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 header => `field${headers.indexOf(header) + 1}`
             );
         
-            //console.log('final updatedTemplate:', updatedTemplate);        
+            newSelectedFields = Object.fromEntries(
+                Object.entries(newSelectedFields).filter(([key, { column }]) =>
+                    Object.values(variableSelections).includes(column)
+                )
+            );
+
+            console.log('Selected Fields:', newSelectedFields);
+
+            //console.log('final updatedTemplate:', updatedTemplate);
+            setSelectedFields(newSelectedFields);
             setFilledTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
                 ...prev,
@@ -610,6 +667,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     value: updatedTemplate.header
                 },
                 messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
+                fields: {
+                    ...prev.fields,
+                    campaignvariables: newSelectedFields
+                },
                 carouseljson: updatedTemplate.carouseldata,
                 variableshidden: updatedTemplate.variableshidden
             }));
@@ -1079,7 +1140,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         optionDesc="value"
                                         optionValue="key"
                                         valueDefault={selectedHeader ? selectedHeader : ''}
-                                        onChange={handleHeaderChange}
+                                        onChange={(selectedOption) => handleVariableChange('1', selectedOption, 'receiver')}
                                         getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                     />
                                 </div>
@@ -1432,10 +1493,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     <>
                                     {variablesAdditionalView.map((variable, index) => {
                                         
-                                        const fieldKey = variable.replace(/"/g, '');
-                                        const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
-                                        const columnName = templateData.fields.columns[fieldIndex];                           
-                            
+                                        const fieldKey = variable.replace(/"/g, '');                            
                                         let valueDefault;
                                         if (fieldKey) {
                                             const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
@@ -1452,7 +1510,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                     <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
                                                 </div>
                                                 <div style={{ flex: 1 }}>
-                                                    <FieldSelect
+                                                    <FieldSelectDisabled
                                                         variant="outlined"
                                                         uset={true}
                                                         className="col-12"
@@ -1460,9 +1518,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                         optionDesc="value"
                                                         optionValue="key"
                                                         valueDefault={valueDefault}
-                                                        onChange={(selectedOption) => {
-                                                            handleVariableChange(index + 1, selectedOption, 'additional');
-                                                        }}
+                                                        onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
+                                                        getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                     />
                                                 </div>
                                             </div>

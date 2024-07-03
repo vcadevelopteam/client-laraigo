@@ -638,6 +638,14 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     };
 
+    useEffect(() => {
+        const updatedFields = {
+            ...selectedColumns,
+            campaignvariables: detaildata.fields?.campaignvariables || {}
+        };
+        setSelectedColumns(updatedFields);
+    }, [detaildata.fields]);
+
     // External Data Logic //
     const changeStep = (step) => {
         switch (detaildata.source) {
