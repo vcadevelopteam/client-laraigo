@@ -6345,6 +6345,7 @@ export const langKeys = {
   selectcorrectvideo: "selectcorrectvideo",
   selectcorrectdocument: "selectcorrectdocument",
   tagshelper: 'tagshelper',
+  sendtoblock: 'sendtoblock',
 };
 
 export type LangKeys = typeof langKeys;
