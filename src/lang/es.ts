@@ -6347,6 +6347,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   selectcorrectimage: "Selecciona un archivo de imagen correcto",
   selectcorrectvideo: "Selecciona un archivo de video correcto",
   selectcorrectdocument: "Selecciona un archivo de documento correcto",
+  tagshelper: 'Muestra los tags de la conversación del más reciente al más antiguo.',
 };
 
 const esResource: ResourceLanguage = {

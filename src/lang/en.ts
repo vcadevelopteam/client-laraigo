@@ -6396,6 +6396,7 @@ const translation: LangKeys = {
   selectcorrectimage: "Select a correct image file",
   selectcorrectvideo: "Select a correct video file",
   selectcorrectdocument: "Select a correct document file",
+  tagshelper: 'Displays the conversation tags from most recent to oldest.',
 };
 
 const enResource: ResourceLanguage = {

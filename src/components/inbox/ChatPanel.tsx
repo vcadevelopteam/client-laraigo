@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon } from 'icons';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
@@ -20,7 +21,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Rating from '@material-ui/lab/Rating';
-import { Box, InputBase } from '@material-ui/core';
+import { Box, InputBase, makeStyles } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
@@ -37,6 +38,8 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ReplyPanel from './ReplyPanel';
 import InteractionsPanel from './InteractionsPanel';
 import { getLeadProductsDomain, resetGetLeadProductsDomain } from 'store/lead/actions';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -44,6 +47,43 @@ const dataPriority = [
     { option: 'MEDIUM' },
     { option: 'HIGH' },
 ]
+
+const useStyles = makeStyles((theme) => ({
+    container: {
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    tagsWrapper: {
+        display: 'flex',
+        whiteSpace: 'nowrap',
+        padding: theme.spacing(1),
+        overflowX: 'hidden',
+        transition: 'transform 0.3s ease-in-out',
+    },
+    tag: {
+        backgroundColor: '#e0e0e0',
+        borderRadius: '4px',
+        padding: theme.spacing(0.5, 1),
+        marginRight: theme.spacing(1),
+        display: 'inline-block',
+    },
+    iconHelpText: {
+        marginLeft: theme.spacing(1),
+    },
+    arrowButton: {
+        position: 'absolute',
+        top: '50%',
+        transform: 'translateY(-50%)',
+    },
+    arrowLeft: {
+        left: 0,
+    },
+    arrowRight: {
+        right: 0,
+    },
+}));
 
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
@@ -641,11 +681,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
+            const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL") || []
             let groups = user?.groups ? user?.groups.split(",") : [];
-            if(rules?.data && propertyGrupoDelegacion){
+            if (rules?.data && propertyGrupoDelegacion) {
                 let extragroups = rules.data.map(item => item.assignedgroup)
-                groups = extragroups.length?extragroups:groups
+                groups = extragroups.length ? extragroups : groups
             }
             setUsableGroups(groups)
             if (user.properties.limit_reassign_group) {
@@ -653,8 +693,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             } else {
                 setUserToReassign((multiData?.data?.[3]?.data || []))
             }
-            if(propertyAsesorReassign && !propertyGrupoDelegacion){
-                const usergroups = (user?.groups||"")?.split(',')
+            if (propertyAsesorReassign && !propertyGrupoDelegacion) {
+                const usergroups = (user?.groups || "")?.split(',')
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
                     return agentGroups.some(group => usergroups.includes(group.trim()));
@@ -665,14 +705,14 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         const group = getValues('newUserGroup')
-        if(propertyAsesorReassign){
-            if(!propertyGrupoDelegacion){
+        if (propertyAsesorReassign) {
+            if (!propertyGrupoDelegacion) {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => usableGroups.includes(group))));
-            }else{
+            } else {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (group ? (x.groups || "").split(",").includes(group) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true))))
             }
         }
-        else{
+        else {
             setAgentList([])
         }
     }, [propertyAsesorReassign, userToReassign, getValues('newUserGroup'), usableGroups])
@@ -1041,7 +1081,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
         setWaitTipify(true)
     });
-    
+
     return (
         <DialogZyx
             open={openModal}
@@ -1143,7 +1183,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     useEffect(() => {
         const dataasesorsuspende = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.data;
         const reassignAsesor = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.data;
-        setPropertyGrupoDelegacion(user?.roledesc?.includes("ASESOR")? multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEGRUPODELEGACION")?.data?.[0]?.propertyvalue === "1":true)
+        setPropertyGrupoDelegacion(user?.roledesc?.includes("ASESOR") ? multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEGRUPODELEGACION")?.data?.[0]?.propertyvalue === "1" : true)
         if (dataasesorsuspende && reassignAsesor && multiData) {
             if (user?.roledesc?.includes("ASESOR")) {
                 if (user?.groups) {
@@ -1172,8 +1212,8 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         }
     }, [mainAux2])
     useEffect(() => {
-        console.log(multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL"))
-        console.log(!!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)
+        console.log(multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL"))
+        console.log(!!multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)
     }, [multiDataAux])
 
     return (
@@ -1239,7 +1279,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 {(
                     ticketSelected?.status !== 'CERRADO' &&
                     ticketSelected?.communicationchanneltype !== "VOXI" &&
-                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && !!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)) 
+                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && !!multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length))
                 ) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
@@ -1293,8 +1333,8 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             <DialogReassignticket
                 openModal={openModalReassignticket}
                 setOpenModal={setOpenModalReassignticket}
-                propertyAsesorReassign={user?.roledesc?.includes("ASESOR")?propertyAsesorReassign:true}
-                propertyGrupoDelegacion={user?.roledesc?.includes("ASESOR")?((!propertyAsesorReassign && !propertyGrupoDelegacion)?true:propertyGrupoDelegacion):true}
+                propertyAsesorReassign={user?.roledesc?.includes("ASESOR") ? propertyAsesorReassign : true}
+                propertyGrupoDelegacion={user?.roledesc?.includes("ASESOR") ? ((!propertyAsesorReassign && !propertyGrupoDelegacion) ? true : propertyGrupoDelegacion) : true}
             />
             <DialogSendHSM
                 openModal={openModalHSM}
@@ -1309,6 +1349,80 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 setOpenModal={setOpenModalLead}
             />
         </>
+    )
+}
+
+const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes,tags }) => {
+    const { t } = useTranslation();
+    const classes2 = useStyles();
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const tagsWrapperRef = useRef(null);
+    const [atEnd, setAtEnd] = useState(false);
+    const [showArrows, setShowArrows] = useState(false);
+    const uniqueTags = !!tags.length?[...new Set(tags.split(","))]:[];
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (tagsWrapperRef.current) {
+                const isOverflowing = tagsWrapperRef?.current?.scrollWidth > tagsWrapperRef?.current?.clientWidth;
+                setShowArrows(isOverflowing);
+                if (!isOverflowing) {
+                    setScrollPosition(0);
+                    tagsWrapperRef.current.scrollLeft = 0;
+                } else {
+                    setAtEnd(tagsWrapperRef.current.scrollLeft + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+                }
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [uniqueTags]);
+
+    const handleScroll = (direction) => {
+        const scrollAmount = 100; // Ajusta esta cantidad según tus necesidades
+        const newPosition = direction === 'left'
+            ? scrollPosition - scrollAmount
+            : scrollPosition + scrollAmount;
+        setScrollPosition(newPosition);
+        tagsWrapperRef.current.scrollLeft = newPosition;
+
+        const atEndPosition = newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth;
+        setAtEnd(atEndPosition);
+    };
+
+    useEffect(() => {
+        if (tagsWrapperRef.current) {
+            setAtEnd(tagsWrapperRef.current.scrollLeft + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+        }
+    }, [scrollPosition]);
+    return (
+        <div style={{ zIndex: 999, width: "100%", height: "100%", padding: 5, borderRight: "lightgrey solid 1px", borderLeft: "lightgrey solid 1px" }}>
+            <div>
+                Tags
+                <Tooltip title={<div style={{ fontSize: 12, zIndex: 9999 }}>{t(langKeys.tagshelper)}</div>} arrow placement="top">
+                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                </Tooltip>
+            </div>
+            <div className={classes2.container}>
+                {showArrows && scrollPosition > 0 && (
+                    <IconButton className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')}>
+                        <ArrowBackIosIcon />
+                    </IconButton>
+                )}
+                <div className={classes2.tagsWrapper} ref={tagsWrapperRef}>
+                    {uniqueTags.map((tag, index) => (
+                        <span key={index} className={classes2.tag}>#{tag}</span>
+                    ))}
+                </div>
+                {showArrows && !atEnd && <IconButton className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')}>
+                    <ArrowForwardIosIcon />
+                </IconButton>}
+            </div>
+        </div>
     )
 }
 
@@ -1346,7 +1460,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 setIndexSearch(0);
                 setTriggerSearch(!triggerSearch);
             }
-        }else{
+        } else {
             setListFound([]);
         }
     }
@@ -1403,7 +1517,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 style={{ marginTop: 2, marginBottom: 2 }}
             />
             <div style={{ display: 'inline', color: '#8F92A1' }}>
-                {!!listFound.length?indexSearch + 1:0}/{listFound.length}
+                {!!listFound.length ? indexSearch + 1 : 0}/{listFound.length}
             </div>
             <IconButton size="small" onClick={() => handlerManageFilter('up')}>
                 <KeyboardArrowDownIcon style={{ color: '#8F92A1' }} />
@@ -1427,8 +1541,8 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
-            <div className={classes.headChat}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div className={classes.headChat + " row-zyx"} style={{justifyContent: "space-between"}}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} className='col-3'>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1447,10 +1561,15 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
+                <div  className='col-6'>
+                    <TicketTags classes={classes} tags={ticketSelected?.tags||""}/>
+                </div>
+                <div  className='col-3'>
+                    <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
+                </div>
             </div>
             {showSearcher &&
-                <div style={{  zIndex: 9999, right: 16, margin: 8 }}>
+                <div style={{ zIndex: 9999, right: 16, margin: 8 }}>
                     <SearchOnInteraction setShowSearcher={setShowSearcher} />
                 </div>
             }
