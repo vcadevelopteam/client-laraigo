@@ -329,7 +329,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [edit, register, multiData, groupObligatory]);
     
-    console.log(selectedTemplate)
+    //console.log(selectedTemplate)
 
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
@@ -383,30 +383,54 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('fields', { ...new SelectedColumns(), ...data.fields });
     }
     
+    const validateForm = () => {
+        const { title, description, startdate, enddate, communicationchannelid, status, source, type, usergroup, executiontype, batchjson } = detaildata;
+    
+        if (!title || !description || !startdate || !enddate || !communicationchannelid || !status || !source || !type) {
+            return false;
+        }
+    
+        if (groupObligatory && !usergroup) {
+            return false;
+        }
+    
+        if (executiontype === 'SCHEDULED') {
+            return true; 
+        }
+    
+        return true;
+    };
+    
 
     useEffect(() => {
         if (frameProps.checkPage) {
-            trigger().then((valid: any) => {
-                const data = getValues();
-                data.messagetemplateheader = data.messagetemplateheader || {};
-                data.messagetemplatebuttons = templateButtonsData || [];
-                data.batchjson = data.batchjson || [];
-                data.carouseljson = carouseljsonData || ['faileaste'];
-                data.fields = { ...new SelectedColumns(), ...data.fields };
-                setDetaildata({ ...detaildata, ...data });
-                setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: valid } });
-                if (frameProps.page === 2 && !frameProps.valid[1]) {
-                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected)}));
-                }
-                else if (valid) {
-                    setPageSelected(frameProps.page);
-                }
-                if (valid && frameProps.executeSave) {
-                    setSave('VALIDATION');
-                }
-            });
+            const isValid = validateForm();
+    
+            const data = {
+                ...detaildata,
+                fields: { ...new SelectedColumns(), ...detaildata.fields },
+            };
+    
+            setDetaildata(data);
+            setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: isValid } });
+    
+            if (frameProps.page === 2 && !frameProps.valid[1]) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected) }));
+            } else if (isValid) {
+                setPageSelected(frameProps.page);
+            } else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: 'Validación fallida, detalles de los errores:' }));
+                console.log('Detalles de la validación:', isValid);
+            }
+    
+            if (isValid && frameProps.executeSave) {
+                setSave('VALIDATION');
+            }
         }
-    }, [frameProps.checkPage])
+    }, [frameProps.checkPage]);
+    
+    
+    
 
     const validateDate = (value: string): any => {
         const currentDate = new Date();
@@ -722,7 +746,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         </FormControl>
                         {edit && getValues('executiontype') === 'SCHEDULED' &&
                             <>
-                               <FormControl className="col-3" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                <FormControl className="col-3" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                     <div>
                                         <div style={{ fontSize: '1rem', color: 'black' }}> {t(langKeys.date)} </div>
                                         <div className={classes.subtitle}> {t(langKeys.campaign_execution_date)} </div>
@@ -738,12 +762,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 batchjson.date = value;
                                                 setValue('batchjson', batchjson);
                                                 trigger('batchjson.date');
+                                                console.log('batchjson.date:', value); 
                                             }}
                                             error={errors?.batchjson?.date?.message}
                                         />
                                     </div>
                                 </FormControl>
-
 
                                 <FormControl className="col-3" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                     <div>
@@ -761,6 +785,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 batchjson.time = value;
                                                 setValue('batchjson', batchjson);
                                                 trigger('batchjson.time');
+                                                console.log('batchjson.time:', value);  
                                             }}
                                             error={errors?.batchjson?.time?.message}
                                         />
@@ -768,6 +793,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 </FormControl>
                             </>
                         }
+
                         {edit ?
                             <FormControl className={classNameCondition} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                 <div>

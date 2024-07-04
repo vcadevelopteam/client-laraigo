@@ -940,7 +940,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
 
 
-
     //logiquita para person y lead, previsualizacion de campaña ya creada
     const [unavailableValues, setUnavailableValues] = useState([]);
     const [availableOptions, setAvailableOptions] = useState([]);
@@ -994,25 +993,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 .map(value => {
                     return Object.entries(allVariables).find(([key, variable]) => variable.column === value);
                 })
-                .filter(Boolean) // To remove undefined values in case of no match
+                .filter(Boolean) 
                 .map(([key, variable]) => ({ field: key, ...variable }));
             return matchingValues;
         }
-        return []; // Return an empty array for other types
+        return []; 
     };
     
-    // Usa esta función para obtener los matches
     const matchingUnavailableValues = getMatchingUnavailableValues();
-    console.log('Matching Unavailable Values:', matchingUnavailableValues);
-    
-    
-   
-
- 
-
-
-
-
+    //console.log('Matching Unavailable Values:', matchingUnavailableValues);
 
     //console.log('a ver', multiData[4].data[0].fields.campaignvariables);
     
@@ -1187,14 +1176,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             );
         });
     };
-    
-    
-    
-    
-    
-    
-    
-    
      
     const campaignVariablesMulti = multiData[4].data[0].fields?.campaignvariables || {};
     const columnsInCampaignVariables = new Set(Object.values(campaignVariablesMulti).map(variable => variable.column));
