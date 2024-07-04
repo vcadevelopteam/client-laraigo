@@ -537,7 +537,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             }
                         } else {
                             const header = variableSelections[key];
-                            const allVariables = multiData[4].data[0].fields.allVariables;
+                            const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                             const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === header);
                             if (selectedField) {
                                 updatedTemplate.carouseldata[carouselIndex].header = `{{${selectedField}}}`;
@@ -611,7 +611,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     if (selectedHeader === 'default') {
                         updatedTemplate.header = templateToUse.header;
                     } else {
-                        const allVariables = multiData[4].data[0].fields.allVariables;
+                        const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                         const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedHeader);
                         if (matchingField) {
                             updatedTemplate.header = `{{${matchingField}}}`;
@@ -808,7 +808,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     if (placeholders.length >= number) {
                         const currentField = placeholders[number - 1][0];
                         const selectedOption = variableSelections[`body-${number}`];
-                        const allVariables = multiData[4].data[0].fields.allVariables;
+                        const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
             
                         let newField = currentField; 
                         if (selectedOption) {
@@ -846,7 +846,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 console.log(`No matching campaign found in multiData[3] for messagetemplatename: ${messageTemplateName}`);
                             }
                         } else {
-                            const allVariables = multiData[4].data[0].fields.allVariables;
+                            const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                             console.log('allVariables:', allVariables);
                             const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === header);
                             console.log('selectedField:', selectedField);
@@ -927,7 +927,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     const additionalIndex = parseInt(number, 10) - 1;
                     if (!isNaN(additionalIndex) && updatedTemplate.variableshidden) {
                         const selectedOption = variableSelections[`additional-${number}`];
-                        const allVariables = multiData[4].data[0].fields.allVariables;
+                        const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
             
                         if (selectedOption) {
                             const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
@@ -946,7 +946,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     if (selectedHeader === 'default') {
                         updatedTemplate.header = templateToUse.header;
                     } else {
-                        const allVariables = multiData[4].data[0].fields.allVariables;
+                        const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                         const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedHeader);
                         if (matchingField) {
                             updatedTemplate.header = `{{${matchingField}}}`;
@@ -1048,7 +1048,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };
 
     const getAvailableOptionsForPersonOrLead = () => {
-        const allVariables = multiData[4].data[0].fields.allVariables || {};
+        const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
         const allColumns = Object.values(allVariables).map(item => item.column);
         return allColumns.filter(option => option !== 'Destinatarios' && !unavailableValues.includes(option));
     };
@@ -1075,7 +1075,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const getMatchingUnavailableValues = () => {
         if (checkTypeInMultiData()) {
-            const allVariables = multiData[4].data[0].fields.allVariables || {};
+            const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
             const matchingValues = unavailableValues
                 .map(value => {
                     return Object.entries(allVariables).find(([key, variable]) => variable.column === value);
@@ -1470,7 +1470,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                     initialDefault = 'Default ';
                                                 }
                                                                                     
-                                                const allVariables = multiData[4].data[0].fields?.allVariables || {};
+                                                const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                                                 if (initialDefault && initialDefault !== 'Default ') {
                                                     const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === initialDefault);
                                                     if (selectedField) {
@@ -1542,7 +1542,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         const fieldKey = fieldsInBody[index];
                                         let valueDefault;
 
-                                        const allVariables = multiData[4].data[0].fields.allVariables;
+                                        const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                                         const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === fieldKey);
                                         if (selectedField) {
                                             valueDefault = allVariables[selectedField].column;
@@ -1738,7 +1738,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             valueDefault = matchingField.column ? matchingField.column : undefined;
                                                             console.log(`matchingField found, valueDefault: ${valueDefault}`);
                                                         } else {
-                                                            const allVariables = multiData[4].data[0].fields.allVariables;
+                                                            const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                                                             const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === fieldKey);
                                                             if (selectedField) {
                                                                 valueDefault = allVariables[selectedField].column;
@@ -1944,7 +1944,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     if (matchingField) {
                                         valueDefault = matchingField.value ? matchingField.value : undefined;
                                     } else {
-                                        const allVariables = multiData[4].data[0].fields?.allVariables || {};
+                                        const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
                                         const allVariablesField = allVariables[cleanVariable];
                                         if (allVariablesField) {
                                             valueDefault = allVariablesField.value ? allVariablesField.value : undefined;

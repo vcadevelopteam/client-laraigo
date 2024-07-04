@@ -387,6 +387,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         if (frameProps.checkPage) {
             trigger().then((valid: any) => {
+                console.log(valid)
                 const data = getValues();
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = templateButtonsData || [];

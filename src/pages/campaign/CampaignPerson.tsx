@@ -346,7 +346,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             case 'INTERNAL':
                 setHeaders([
                     { Header: t(langKeys.name), accessor: 'displayname' },
-                    { Header: 'PCC', accessor: 'personcommunicationchannelowner' },
+                    { Header: 'Destinatario', accessor: 'personcommunicationchannelowner' },
                     { Header: t(langKeys.type), accessor: 'type' },
                     { Header: t(langKeys.status), accessor: 'status' },
                     { Header: `${t(langKeys.field)} 1`, accessor: 'field1' },
