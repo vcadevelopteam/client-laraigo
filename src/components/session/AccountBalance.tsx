@@ -111,13 +111,10 @@ const AccountBalance: FC = () => {
                 setOpenModal={setOpenDialog}
             />
             {(user?.balance?.showBalance) && <>
-                {(user?.balance?.balanceNotificationEnabled && user?.balance?.balanceNotificationMessage && ((user?.balance?.balanceCurrent || 0) <= (user?.balance?.balanceNotificationMinimum || 0))) && <Paper elevation={0} className={classes.root}>
-                    <label style={{ color: "red", fontWeight: "bold" }} className={classes.connectionText}>{user?.balance?.balanceNotificationMessage}</label>
-                </Paper>}
                 <Paper elevation={0} className={classes.root}>
                     <label className={classes.connectionText}><Trans>{langKeys.recharge1}</Trans></label>
                     <div style={{ width: 6 }} />
-                    <div style={{ color: ((user?.balance?.balanceCurrent || 0) <= (user?.balance?.balanceNotificationMinimum || 0)) ? "red" : "black", border: "solid grey 1px", padding: "0 15px", marginLeft: 5, borderRadius: 10, paddingRight: 3 }}>${(user?.balance?.balanceCurrent || 0).toFixed(3)}
+                    <div style={{ color: (user?.balance?.balanceNotificationEnabled && ((user?.balance?.balanceCurrent || 0) <= (user?.balance?.balanceNotificationMinimum || 0))) ? "red" : "black", fontWeight: (user?.balance?.balanceNotificationEnabled && ((user?.balance?.balanceCurrent || 0) <= (user?.balance?.balanceNotificationMinimum || 0))) ? "bold" : "normal", border: "solid grey 1px", padding: "0 15px", marginLeft: 5, borderRadius: 10, paddingRight: 3 }}>${(user?.balance?.balanceCurrent || 0).toFixed(4)}
                         <IconButton
                             aria-label="recharge"
                             style={{
