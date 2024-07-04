@@ -1283,3 +1283,12 @@ export function hash256 (message: string) {
         return hashHex;
     });
 }
+
+export function updateMetachannels(newNumber:number) {
+    const numbers = JSON.parse(localStorage.getItem('metachannels') || '[]');
+    
+    if (!numbers.includes(newNumber)) {
+      numbers.push(newNumber);
+      localStorage.setItem('metachannels', JSON.stringify(numbers));
+    } 
+}

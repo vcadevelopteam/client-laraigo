@@ -60,6 +60,12 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
         if (metatype === "Instagram") return "INSTAGRAM"
         if (metatype === "Instagram Direct") return "INSTAMESSENGER"
     }
+    function getid() {
+        if (metatype === "Facebook") return 1
+        if (metatype === "Messenger") return 2
+        if (metatype === "Instagram") return 6
+        if (metatype === "Instagram Direct") return 7
+    }
     function getScope() {
         if (metatype === "Facebook") return "business_management,pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts"
         if (metatype === "Messenger") return "business_management,pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts"
