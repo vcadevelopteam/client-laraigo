@@ -319,7 +319,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         });
         register('batchjson.time', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required) });
-        register('batchjson.quantity', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value > 0)) || t(langKeys.field_required) });
+        // register('batchjson.quantity', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value > 0)) || t(langKeys.field_required) });
         register('communicationchannelid', { validate: (value: any) => (value && value > 0) || t(langKeys.field_required) });
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -388,6 +388,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         if (frameProps.checkPage) {
             trigger().then((valid: any) => {
                 console.log(valid)
+                console.log("errors", errors)
                 const data = getValues();
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = templateButtonsData || [];
