@@ -641,7 +641,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     useEffect(() => {
         const updatedFields = {
             ...selectedColumns,
-            campaignvariables: detaildata.fields?.campaignvariables || {}
+            campaignvariables: detaildata.fields?.campaignvariables || {},
+            allVariables: detaildata.fields?.allVariables || {} 
         };
         setSelectedColumns(updatedFields);
     }, [detaildata.fields]);
@@ -694,6 +695,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
+
+    console.log('personsToUse', personsToUse)
+    console.log('jsonData', jsonData)
+
+
     return (
             <div className={classes.containerDetail}>
                 {
@@ -823,11 +829,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             <TableZyx
                                 titlemodule=" "
                                 columns={columns}
-                                data={personsToUse}
+                                data={jsonData.some(item => item.type === "EXTERNAL") ? personsToUse : jsonData}
                                 download={false}
                                 loading={detaildata.source === 'INTERNAL' && auxResult.loading}
                                 filterGeneral={false}
-                                //ButtonsElement={AdditionalButtons}
                                 useSelection={true}
                                 selectionKey={selectionKey}
                                 initialSelectedRows={selectedRows}
