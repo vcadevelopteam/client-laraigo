@@ -122,6 +122,7 @@ interface CustomRichTextProps extends Omit<BoxProps, 'onChange'> {
     endinput?: React.ReactNode;
     positionEditable?: 'top' | 'bottom';
     refresh?: number;
+    emojiNoShow?: any;
     emojiFavorite?: any;
     emoji?: Boolean;
     quickReplies?: any[];
@@ -405,6 +406,7 @@ export const CustomRichText: FC<CustomRichTextProps> = ({
     children,
     onlyurl = false,
     endinput,
+    emojiNoShow,
     emojiFavorite,
     emoji = false,
     quickReplies = [],
@@ -450,6 +452,72 @@ export const CustomRichText: FC<CustomRichTextProps> = ({
                         />
                     </div>
                 )}
+                <Toolbar className={classes.toolbar}>
+                    <div>
+                        {quickReplies.length > 0 && (
+                            <QuickReply quickReplies={quickReplies} editor={editor} setFiles={setFiles}></QuickReply>
+                        )}
+                        {collapsed && (
+                            <>
+                                <IconButton onClick={handleClick}>
+                                    <FormatColorText />
+                                </IconButton>
+                                <Popper id={id} className={classes.paper} open={open} anchorEl={anchorEl} placement={'top-start'} transition>
+                                    {({ TransitionProps }) => (
+                                    <Fade {...TransitionProps} timeout={350}>
+                                        <div
+                                        style={{
+                                            padding: collapsed ? "8px 8px" : "0px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            boxShadow: '0px 4px 5px 0px rgba(0,0,0,.14),0px 1px 10px 0px rgba(0,0,0,.12),0px 2px 4px -1px rgba(0,0,0,.2)'
+                                        }}
+                                    >
+                                        <ToolBarOptions
+                                            value={value}
+                                            onChange={onChange}
+                                            emoji={emoji}
+                                            quickReplies={quickReplies}
+                                            editor={editor as BaseEditor & ReactEditor & HistoryEditor}
+                                            image={image}
+                                            onlyurl={onlyurl}
+                                            emojiNoShow={emojiNoShow}
+                                            emojiFavorite={emojiFavorite}
+                                            collapsed={collapsed}
+                                        />
+                                    </div>
+                                    </Fade>
+                                    )}
+                                </Popper>
+                            </>
+                        )}
+                        <div style={{ display: "inline-block" }}>{children}</div>
+                        {emoji && (
+                            <EmojiPickerZyx
+                                emojisIndexed={EMOJISINDEXED}
+                                onSelect={(e) => editor.insertText(e.native)}
+                                emojisNoShow={emojiNoShow}
+                                emojiFavorite={emojiFavorite}
+                            />
+                        )}
+
+                        {!collapsed && (
+                            <ToolBarOptions
+                                value={value}
+                                onChange={onChange}
+                                emoji={emoji}
+                                quickReplies={quickReplies}
+                                editor={editor as BaseEditor & ReactEditor & HistoryEditor}
+                                image={image}
+                                onlyurl={onlyurl}
+                                emojiNoShow={emojiNoShow}
+                                emojiFavorite={emojiFavorite}
+                                collapsed={collapsed}
+                            />
+                        )}
+                    </div>
+                    <div style={{ marginLeft: "auto", marginRight: 0 }}>{endinput}</div>
+                </Toolbar>
                 {positionEditable !== "top" && (
                     <Editable
                         placeholder={placeholder}

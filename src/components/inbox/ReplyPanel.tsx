@@ -1606,20 +1606,39 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                         <div className={classes.containerResponse}>
                             {(record || startRecording) && (
                                 <div
-                                    style={{
-                                        display: "flex",
-                                        gap: 8,
-                                        flexWrap: "wrap",
-                                        borderBottom: "1px solid #EBEAED",
-                                        paddingBottom: 8,
-                                    }}
-                                >
-                                    <RecordComponent
-                                        record={record}
-                                        setRecord={setRecord}
-                                        setStartRecording={setStartRecording}
-                                        startRecording={startRecording}
-                                    />
+                                style={{
+                                    display: "flex",
+                                }}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            width: "100%",
+                                            gap: 8,
+                                            flexWrap: "wrap",
+                                            borderBottom: "1px solid #EBEAED",
+                                            paddingBottom: 8,
+                                        }}
+                                    >
+                                        <RecordComponent
+                                            record={record}
+                                            setRecord={setRecord}
+                                            setStartRecording={setStartRecording}
+                                            startRecording={startRecording}
+                                        />
+                                    </div>
+                                    <div
+                                        className={clsx(classes.iconSend, {
+                                            [classes.iconSendDisabled]: !(
+                                                text ||
+                                                files.filter((x) => !!x.url).length > 0 ||
+                                                record
+                                            ),
+                                        })}
+                                        style={{marginTop: 12}}
+                                        onClick={triggerReplyMessage}
+                                    >
+                                        <SendIcon />
+                                    </div>
                                 </div>
                             )}
                             {files.length > 0 && (
@@ -1706,23 +1725,17 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                     </div>
                                 </ClickAwayListener>
                             )}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                                    {!record && !startRecording && (
+                            {!record && !startRecording && (
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                                         <QuickReplyIcon classes={classes} setText={setText} />
-                                    )}
-                                    {!record && !startRecording && (
                                         <TmpRichResponseIcon classes={classes} setText={setText} />
-                                    )}
-                                    {!record && !startRecording && (
                                         <UploaderIcon
                                             classes={classes}
                                             setFiles={setFiles}
                                             initfile={fileimage}
                                             setfileimage={setfileimage}
                                         />
-                                    )}
-                                    {!record && !startRecording && (
                                         <EmojiPickerZyx
                                             emojisIndexed={EMOJISINDEXED}
                                             onSelect={(e) => {
@@ -1738,8 +1751,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             emojisNoShow={emojiNoShow}
                                             emojiFavorite={emojiFavorite}
                                         />
-                                    )}
-                                    {!record && !startRecording && (
                                         <GifPickerZyx
                                             onSelect={(url: string) =>
                                                 setFiles((p) => [
@@ -1748,71 +1759,72 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 ])
                                             }
                                         />
-                                    )}
-                                    <CopilotLaraigoIcon
-                                        classes={classes}
-                                        enabled={propertyCopilotLaraigo}
-                                    />
-                                    <span>
-                                        <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
-                                            <IconButton onClick={() => {
-                                                formatText("*")
-                                            }} size='small'>
-                                                {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </span>
-                                    <span>
-                                        <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
-                                            <IconButton onClick={() => {
-                                                formatText("_")
-                                            }} size='small'>
-                                                {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </span>
-                                    {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
-                                        <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
-                                            <IconButton onClick={() => {
-                                                formatText("_")
-                                            }} size='small'>
-                                                {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </span>}
-                                    <span>
-                                        <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
-                                            <IconButton onClick={() => {
-                                                formatText("~")
-                                            }} size='small'>
-                                                {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </span>
-                                    <span>
-                                        <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
-                                            <IconButton onClick={() => {
-                                                formatText("```")
-                                            }} size='small'>
-                                                <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </span>
 
+                                        <CopilotLaraigoIcon
+                                            classes={classes}
+                                            enabled={propertyCopilotLaraigo}
+                                        />
+                                        <span>
+                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("*")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>
+                                        <span>
+                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("_")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>
+                                        {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
+                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("_")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>}
+                                        <span>
+                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("~")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>
+                                        <span>
+                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("```")
+                                                }} size='small'>
+                                                    <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>
+
+                                    </div>
+                                    <div
+                                        className={clsx(classes.iconSend, {
+                                            [classes.iconSendDisabled]: !(
+                                                text ||
+                                                files.filter((x) => !!x.url).length > 0 ||
+                                                record
+                                            ),
+                                        })}
+                                        onClick={triggerReplyMessage}
+                                    >
+                                        <SendIcon />
+                                    </div>
                                 </div>
-                                <div
-                                    className={clsx(classes.iconSend, {
-                                        [classes.iconSendDisabled]: !(
-                                            text ||
-                                            files.filter((x) => !!x.url).length > 0 ||
-                                            record
-                                        ),
-                                    })}
-                                    onClick={triggerReplyMessage}
-                                >
-                                    <SendIcon />
-                                </div>
-                            </div>
+                            )}
                             <BottomGoToUnder />
                         </div>
                     </DragDropFile>
