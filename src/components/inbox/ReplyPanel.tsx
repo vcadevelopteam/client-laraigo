@@ -878,7 +878,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
-                                        <div>{t(langKeys.sendtoblock)}</div>
+                                        <div>{t(langKeys.sentoblock)}</div>
                                         <IconButton size="small" onClick={() => setShowSearch(true)} edge="end">
                                             <SearchIcon />
                                         </IconButton>
