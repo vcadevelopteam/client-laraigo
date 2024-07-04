@@ -1148,7 +1148,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 dispatch(execute(insMessageTemplateOld({
                     ...data,
                     authenticationdata: {},
-                    bodyobject: bodyObject,
+                    bodyobject: getValues('type') === "MAIL" ? bodyObject : [],
                     bodyvariables: [],
                     buttonsgeneric: [],
                     buttonsquickreply: [],

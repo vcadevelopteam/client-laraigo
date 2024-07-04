@@ -191,7 +191,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'flex-start',
         flexDirection: 'column'
-    },
+    }    
 }));
 
 interface PdfAttachmentProps {
@@ -465,96 +465,119 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     
 
     const replacedBodyMail = replaceVariablesMail(selectedTemplate.body, bodyVariableValues);
-    
+
+const adjustHtmlStyles = (html: string) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const body = doc.body;
+
+    const images = doc.querySelectorAll('img');
+    images.forEach(img => {
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+    });
+
+    body.style.maxWidth = '50vw';
+    body.style.margin = '0 auto';
+
+    return body.innerHTML;
+};
+
+const containerStyle = {
+    maxWidth: '40rem',
+    borderRadius: '0.5rem',
+    backgroundColor: '#FDFDFD',
+    padding: '1rem 1rem 0rem 1rem',
+    ...(selectedTemplate?.type !== "HTML" && { boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' })
+};
+
+const adjustedBodyMail = adjustHtmlStyles(replacedBodyMail);
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
             <div className={classes.containerDetail} style={{ display: 'block', alignContent: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                    <div style={{ maxWidth: '40rem', borderRadius: '0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}>
-                        <div className='templatePreview'>
-                            {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
-                                <div>
-                                    {selectedTemplate?.headertype === "IMAGE" ? (
-                                        isValidImageUrl(videoUrl) ? (
-                                            <img
-                                                src={videoUrl}
-                                                alt="Carousel Header"
-                                                style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
-                                            />
+                    <div style={containerStyle}>                           
+                           <div className='templatePreview'>
+                                {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
+                                    <div>
+                                        {selectedTemplate?.headertype === "IMAGE" ? (
+                                            isValidImageUrl(videoUrl) ? (
+                                                <img
+                                                    src={videoUrl}
+                                                    alt="Carousel Header"
+                                                    style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
+                                                />
+                                            ) : (
+                                                <div>La variable seleccionada no es una imagen</div>
+                                            )
+                                        ) : selectedTemplate?.headertype === "TEXT" ? (
+                                            <div style={{ fontSize: '1.5rem' }}>{renderedHeader}</div>
+                                        ) : selectedTemplate?.headertype === "VIDEO" ? (
+                                            isValidVideoUrl(videoUrl) ? (
+                                                <video key={videoUrl} controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
+                                                    <source src={videoUrl} type="video/mp4" />
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            ) : (
+                                                <div>La variable seleccionada no es un video</div>
+                                            )
                                         ) : (
-                                            <div>La variable seleccionada no es una imagen</div>
-                                        )
-                                    ) : selectedTemplate?.headertype === "TEXT" ? (
-                                        <div style={{ fontSize: '1.5rem' }}>{renderedHeader}</div>
-                                    ) : selectedTemplate?.headertype === "VIDEO" ? (
-                                        isValidVideoUrl(videoUrl) ? (
-                                            <video key={videoUrl} controls style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}>
-                                                <source src={videoUrl} type="video/mp4" />
-                                                Your browser does not support the video tag.
-                                            </video>
-                                        ) : (
-                                            <div>La variable seleccionada no es un video</div>
-                                        )
-                                    ) : (
-                                        <div style={{ fontSize: '1.1rem' }}>{renderedHeader}</div>
-                                    )}
-
-                                    <p style={{ fontSize: '1.1rem' }} dangerouslySetInnerHTML={{ __html: renderedBody }}></p>
-
-                                    {selectedTemplate?.templatetype === "CAROUSEL" && renderedCarouselData.length > 0 && (
-                                        <CarouselPreview carouselData={renderedCarouselData} />
-                                    )}
-
-                                    <p style={{ color: 'grey', fontSize: '1rem' }}>{selectedTemplate.footer}</p>
-                                    <span className={classes.previewHour}> 11:12</span>
-
-                                    {selectedTemplate.buttonsenabled && combinedButtons.length > 0 && (
-                                        <ButtonList buttons={combinedButtons} />
-                                    )}
-
-
-                                </div>
-                            ) : selectedTemplate?.category === "AUTHENTICATION" ? (
-                                <div>
-                                    <p style={{ fontSize: '1.2rem' }}>
-                                        Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: authVariableValue || '{{1}}' }}></span>.
-                                        {selectedTemplate.authenticationdata.safetyrecommendation && (
-                                            <span> Por tu seguridad, no lo compartas</span>
+                                            <div style={{ fontSize: '1.1rem' }}>{renderedHeader}</div>
                                         )}
-                                    </p>
-                                    {selectedTemplate.authenticationdata.showexpirationdate && (
-                                        <div>
-                                            <p style={{ fontSize: '1rem' }}>
-                                                Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.
-                                            </p>
-                                        </div>
-                                    )}
-                                    <span className={classes.previewHour}> 11:12</span>
-                                    {selectedTemplate.authenticationdata.buttontext && (
-                                        <ButtonList buttons={[]} authenticationButton={selectedTemplate.authenticationdata.buttontext} />
-                                    )}
-                                </div>
-                            ) : selectedTemplate?.type === "MAIL" ? (
-                                <div>
-                                    <p style={{fontSize:'1.2rem', fontWeight:'bold'}}>{selectedTemplate.header}</p>                                
 
-                                    <div dangerouslySetInnerHTML={{ __html: replacedBodyMail }} />                              
-                                </div>
-                            ) : (
-                                <div>
-                                    <p>No se ha seleccionado una Plantilla</p>
-                                </div>
-                            )}                           
+                                        <p style={{ fontSize: '1.1rem' }} dangerouslySetInnerHTML={{ __html: renderedBody }}></p>
 
-                        </div>
-                    </div>
+                                        {selectedTemplate?.templatetype === "CAROUSEL" && renderedCarouselData.length > 0 && (
+                                            <CarouselPreview carouselData={renderedCarouselData} />
+                                        )}
+
+                                        <p style={{ color: 'grey', fontSize: '1rem' }}>{selectedTemplate.footer}</p>
+                                        <span className={classes.previewHour}> 11:12</span>
+
+                                        {selectedTemplate.buttonsenabled && combinedButtons.length > 0 && (
+                                            <ButtonList buttons={combinedButtons} />
+                                        )}
+
+
+                                    </div>
+                                ) : selectedTemplate?.category === "AUTHENTICATION" ? (
+                                    <div>
+                                        <p style={{ fontSize: '1.2rem' }}>
+                                            Tu código de verificación es <span dangerouslySetInnerHTML={{ __html: authVariableValue || '{{1}}' }}></span>.
+                                            {selectedTemplate.authenticationdata.safetyrecommendation && (
+                                                <span> Por tu seguridad, no lo compartas</span>
+                                            )}
+                                        </p>
+                                        {selectedTemplate.authenticationdata.showexpirationdate && (
+                                            <div>
+                                                <p style={{ fontSize: '1rem' }}>
+                                                    Este código caduca en {selectedTemplate.authenticationdata.codeexpirationminutes} minutos.
+                                                </p>
+                                            </div>
+                                        )}
+                                        <span className={classes.previewHour}> 11:12</span>
+                                        {selectedTemplate.authenticationdata.buttontext && (
+                                            <ButtonList buttons={[]} authenticationButton={selectedTemplate.authenticationdata.buttontext} />
+                                        )}
+                                    </div>
+                                ) : (selectedTemplate?.type === "MAIL") || (selectedTemplate?.type === "HTML") ? (
+                                    <div style={{ padding: '1rem 1rem 3rem 1rem', margin: '0 auto',  backgroundColor: '#FFFFFF' }}>
+                                        <p style={{ fontSize: '1.2rem' }}>{selectedTemplate.header}</p>
+                                        <div dangerouslySetInnerHTML={{ __html: adjustedBodyMail }} />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p>No se ha seleccionado una Plantilla</p>
+                                    </div>
+                                )}                           
+
+                            </div>           
+                    </div>                                      
                 </div>
             </div>
         </div>
     );
 };
-
-
 
 export default TemplatePreview;

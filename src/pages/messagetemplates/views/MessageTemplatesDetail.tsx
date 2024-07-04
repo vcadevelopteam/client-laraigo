@@ -898,7 +898,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({ ...dataAux })));
+                dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             };
@@ -922,7 +922,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [row, register]);
-
+    
     const onChangeMessageType = (data: Dictionary) => {
         if (getValues("type") === "MAIL" && (data?.value || "") !== "MAIL") {
             setValue("body", richTextToString(bodyObject));
@@ -1532,16 +1532,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('bodyvariables')
         trigger('body');
     }
-
+    
     const changeHeaderType = (type: string) => {
         if(getValues('headertype') === "TEXT") {
             setValue('header', '')
             trigger('header')
+            setValue('headervariables', [])
+            trigger('headervariables')
         }
         setValue('headertype', type)
         trigger('headertype')
-        setValue('headervariables', [])
-        trigger('headervariables')
     }
 
     const changeSafetyRecommendation = (e: ChangeEvent<HTMLInputElement>) => {
@@ -1844,7 +1844,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     const variableNumber = parseInt(match[1], 10);
                     variablesInBody.push(variableNumber);
                 }
-                console.log(variablesInBody)
+                
                 let updatedBodyVariables = getValues('bodyvariables');
                 if (variablesInBody.length !== updatedBodyVariables.length) {
                     // Step 2: Identify the repeated variable number
@@ -2028,7 +2028,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     const variableNumber = parseInt(match[1], 10);
                     variablesInBody.push(variableNumber);
                 }
-                console.log(variablesInBody)
+                
                 let updatedBodyVariables = getValues(`carouseldata.${index}.bodyvariables`);
                 if (variablesInBody.length !== updatedBodyVariables.length) {
                     // Step 2: Identify the repeated variable number
