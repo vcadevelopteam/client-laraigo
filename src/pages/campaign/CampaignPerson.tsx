@@ -641,7 +641,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     useEffect(() => {
         const updatedFields = {
             ...selectedColumns,
-            campaignvariables: detaildata.fields?.campaignvariables || {}
+            campaignvariables: detaildata.fields?.campaignvariables || {},
+            allVariables: detaildata.fields?.allVariables || {} 
         };
         setSelectedColumns(updatedFields);
     }, [detaildata.fields]);

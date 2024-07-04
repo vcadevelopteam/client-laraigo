@@ -7,6 +7,7 @@ export class SelectedColumns {
     firstname: string;
     lastname: string;
     campaignvariables: { [key: string]: { column: string, value: any, type: string, index: string, carouselIndex: number | null } };
+    allVariables: { [key: string]: { column: string, value: any } }; 
 
     constructor() {
         this.primarykey = '';
@@ -15,6 +16,7 @@ export class SelectedColumns {
         this.firstname = '';
         this.lastname = '';
         this.campaignvariables = {};
+		this.allVariables = {};
     }
 }
 
