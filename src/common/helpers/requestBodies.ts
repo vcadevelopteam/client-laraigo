@@ -1023,6 +1023,7 @@ export const insMessageTemplate = (
         headertype,
         header,
         body,
+        bodyobject,
         footerenabled,
         footer,
         buttonsenabled,
@@ -1061,6 +1062,7 @@ export const insMessageTemplate = (
             headertype,
             header,
             body,
+            bodyobject: JSON.stringify(bodyobject),
             footerenabled,
             footer,
             buttonsenabled,
@@ -1082,6 +1084,7 @@ export const insMessageTemplate = (
             providerquality,
             providerstatus,
             operation,
+            buttons: []
         }
     });
 
@@ -1100,6 +1103,7 @@ export const insMessageTemplateOld = (
         headertype,
         header,
         body,
+        bodyobject,
         footerenabled,
         footer,
         buttonsenabled,
@@ -1138,6 +1142,7 @@ export const insMessageTemplateOld = (
             headertype,
             header,
             body,
+            bodyobject: JSON.stringify(bodyobject),
             footerenabled,
             footer,
             buttonsenabled,
