@@ -1467,6 +1467,13 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
+
+  const handleKeyDown = (event) => {
+    if (event.altKey && event.key === 'Enter') {
+      event.preventDefault();
+      setText(text + '\n');
+    }
+  };
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
@@ -1668,6 +1675,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 onKeyPress={handleKeyPress}
                                                 rows={2}
                                                 multiline
+                                                onKeyDown={handleKeyDown}
                                                 inputProps={{ "aria-label": "naked" }}
                                                 onPaste={onPasteTextbar}
                                                 onSelect={handleSelectionChange}
