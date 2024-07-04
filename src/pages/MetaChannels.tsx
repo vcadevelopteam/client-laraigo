@@ -456,7 +456,7 @@ const MetaChannels: FC = () => {
                                                     flexWrap: "wrap",
                                                 }}
                                             >
-                                                {businessChannelOptions.map((e, i) => (
+                                                {businessChannelOptions.filter(channel => !doneChannels.includes(channel.id)).map((e, i) => (
                                                     <Option key={`business_channel_option_${i}`} option={e} />
                                                 ))}
                                             </div>

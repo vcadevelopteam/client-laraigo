@@ -14,6 +14,7 @@ import FacebookLogin from "react-facebook-login";
 import Link from "@material-ui/core/Link";
 import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./channels/ChannelEnableVirtualAssistant";
+import { updateMetachannels } from "common/helpers";
 
 const useChannelAddStyles = makeStyles(() => ({
     button: {
@@ -102,6 +103,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
     async function finishreg() {
         setSetins(true);
         dispatch(insertChannel(fields));
+        updateMetachannels(getid()||0)
         setWaitSave(true);
         setViewSelected("main");
     }
@@ -113,11 +115,11 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                 if (channelList.length) {
                     setViewSelected("view1")
                 } else {
-                    setView("view-1")
+                    window.location.reload();
                 }
             },
             callbackcancel: () => {
-                setView("view-1")
+                window.location.reload();
             }
         }
 
@@ -133,7 +135,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                 setWaitSave(false);
                 setmetachannelsDone([...metachannelsDone, metatype])
                 if (returnNow) {
-                    setView("view-1")
+                    window.location.reload();
                 } else {
                     if (channelList.length) {
                         setchannelList(channelList.shift());
@@ -201,7 +203,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             href="/"
                             onClick={(e) => {
                                 e.preventDefault()
-                                setView("view-1")
+                                window.location.reload();
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -214,7 +216,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             href="/"
                             onClick={(e) => {
                                 setchannelList(channelList.shift());
-                                setView("view-1")
+                                window.location.reload();
                             }}
                         >
                             {t(langKeys.skip)}
@@ -304,13 +306,10 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                                         }
                                     },
                                     callbackcancel: () => {
-                                        setView("view-1")
+                                        window.location.reload();
                                     },
                                     textCancel: t(langKeys.decline)
-
-                                }
-
-                                ))
+                                }))
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -323,7 +322,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             href="/"
                             onClick={(e) => {
                                 setchannelList(channelList.shift());
-                                setView("view-1")
+                                window.location.reload();
                             }}
                         >
                             {t(langKeys.skip)}

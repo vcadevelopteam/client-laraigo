@@ -2,7 +2,7 @@ import { ChannelAndroid } from "icons";
 import { Close, CloudUpload } from "@material-ui/icons";
 import { ColorChangeHandler } from "react-color";
 import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
-import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel } from "common/helpers";
+import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel, updateMetachannels } from "common/helpers";
 import { getMultiCollection } from "store/main/actions";
 import { IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
 import { insertChannel2, editChannel as getEditChannel } from "store/channel/actions";
@@ -2800,6 +2800,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                 );
 
                 if (whatsAppData?.onboarding) {
+                    updateMetachannels(22);
                     history.push(paths.METACHANNELS, whatsAppData);
                 } else {
                     history.push(paths.CHANNELS);
@@ -3001,6 +3002,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                         <div style={{ height: 20 }} />
                         <Button variant="contained" color="primary" onClick={() => {
                             if (whatsAppData?.onboarding) {
+                                updateMetachannels(22);
                                 history.push(paths.METACHANNELS, whatsAppData);
                             } else {
                                 history.push(paths.CHANNELS);
