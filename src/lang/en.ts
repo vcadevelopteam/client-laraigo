@@ -6238,6 +6238,7 @@ const translation: LangKeys = {
   sentoblock: 'Sen to block',
   strikethrough:'Strikethrough',
   monospaced:'Monospaced',
+  tagshelper: 'Displays the conversation tags from most recent to oldest.',
 };
 
 const enResource: ResourceLanguage = {

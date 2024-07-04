@@ -6184,6 +6184,7 @@ export const langKeys = {
   sentoblock: 'sentoblock',
   strikethrough:'strikethrough',
   monospaced:'monospaced',
+  tagshelper: 'tagshelper',
 };
 
 export type LangKeys = typeof langKeys;

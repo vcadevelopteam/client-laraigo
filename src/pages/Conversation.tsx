@@ -207,6 +207,11 @@ const useStyles = makeStyles((theme) => ({
     containerButtonsChat: {
         display: 'flex',
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    },
     buttonCloseticket: {
         background: '#F9F9FA',
         border: '1px solid #EBEAED',
