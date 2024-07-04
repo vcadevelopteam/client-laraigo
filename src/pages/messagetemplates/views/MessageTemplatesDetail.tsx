@@ -1210,6 +1210,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const handleFileChange = useCallback((files: FileList | null) => {
+        const fileInput = document.getElementById("fileInput") as HTMLInputElement;
         const file = files?.item(0);
 
         if (file) {
@@ -1232,6 +1233,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 else if (fileType === 'VIDEO') alert("Tipo de archivo inválido. Por favor subir un archivo de video adecuado.");
                 else alert("Tipo de archivo inválido. Por favor subir un archivo de documento adecuado.");
             }
+        }
+        // Reset the file input value to allow selecting the same file again
+        if (fileInput) {
+            fileInput.value = "";
         }
     }, [])
 
