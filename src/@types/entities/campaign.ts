@@ -1,18 +1,21 @@
 import { Dictionary } from "@types";
 
 export class SelectedColumns {
-	primarykey: string;
-	column: boolean[];
-	columns: string[];
-	firstname: string;
-	lastname: string;
-	constructor() {
-		this.primarykey = '';
-		this.column = [];
-		this.columns = [];
-		this.firstname = '';
-		this.lastname = '';
-	}
+    primarykey: string;
+    column: boolean[];
+    columns: string[];
+    firstname: string;
+    lastname: string;
+    campaignvariables: { [key: string]: { column: string, value: any, type: string, index: string, carouselIndex: number | null } };
+
+    constructor() {
+        this.primarykey = '';
+        this.column = [];
+        this.columns = [];
+        this.firstname = '';
+        this.lastname = '';
+        this.campaignvariables = {};
+    }
 }
 
 export interface ICampaign {

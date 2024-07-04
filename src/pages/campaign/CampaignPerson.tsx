@@ -478,11 +478,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 setPageCount(Math.ceil(paginatedAuxResult.count / fetchDataAux.pageSize));
                 setTotalRow(paginatedAuxResult.count);
                 setJsonData(paginatedAuxResult.data);
+                setJsonPersons(paginatedAuxResult.data)
                 setPaginatedWait(false);
             }
         }
     }, [paginatedAuxResult]);
-
 
     //console.log(jsonData)
     // External Data Logic //
@@ -637,6 +637,14 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             return headers;
         }
     };
+
+    useEffect(() => {
+        const updatedFields = {
+            ...selectedColumns,
+            campaignvariables: detaildata.fields?.campaignvariables || {}
+        };
+        setSelectedColumns(updatedFields);
+    }, [detaildata.fields]);
 
     // External Data Logic //
     const changeStep = (step) => {
@@ -827,12 +835,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                                 allRowsSelected={allRowsSelected}
                                 setAllRowsSelected={setAllRowsSelected}
                             />
-                        </>
-                    
-                      
+                        </>                  
                 }
 
-            </div>
-          
+            </div>          
     )
 }

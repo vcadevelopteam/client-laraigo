@@ -184,6 +184,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }, [mainResult, waitView]);
 
+
     const formatMessage = () => {
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
@@ -232,13 +233,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             });
         }
     
-        console.log('formatMessage - Final:', { subject, header, message });
     
         return { subject, header, message };
     };
-    
-    
-
 
     const formatMessageGeneric = (message: string) => {
         let modifiedMessage = message;
@@ -385,6 +382,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 subject: newmessages.subject,
                 messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
+                fields: detaildata.fields,
                 carouseljson: detaildata.carouseljson,
                 variableshidden: detaildata.variableshidden,
                 message: newmessages.message,
