@@ -1411,7 +1411,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
-            <div className={classes.headChat + " row-zyx"} style={{justifyContent: "space-between"}}>
+            <div className={classes.headChat + " row-zyx"} style={{justifyContent: "space-between", zIndex: 1}}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} className='col-3'>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
@@ -1431,7 +1431,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <div  className='col-6'>
+                <div  className='col-6' style={{zIndex: 99}}>
                     <TicketTags classes={classes} tags={ticketSelected?.tags||""}/>
                 </div>
                 <div  className='col-3'>
