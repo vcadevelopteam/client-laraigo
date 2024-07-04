@@ -191,7 +191,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'flex-start',
         flexDirection: 'column'
-    },
+    }    
 }));
 
 interface PdfAttachmentProps {
@@ -483,15 +483,22 @@ const adjustHtmlStyles = (html: string) => {
     return body.innerHTML;
 };
 
+const containerStyle = {
+    maxWidth: '40rem',
+    borderRadius: '0.5rem',
+    backgroundColor: '#FDFDFD',
+    padding: '1rem 1rem 0rem 1rem',
+    ...(selectedTemplate?.type !== "HTML" && { boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' })
+};
+
 const adjustedBodyMail = adjustHtmlStyles(replacedBodyMail);
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
             <div className={classes.containerDetail} style={{ display: 'block', alignContent: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                    <div style={{ maxWidth: '40rem', borderRadius: '0.5rem', backgroundColor: '#FDFDFD', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', padding: '1rem 1rem 0rem 1rem' }}>
-                       {(selectedTemplate?.type !== "MAIL") || (selectedTemplate?.type !== "HTML")  ? ( 
-                            <div className='templatePreview'>
+                    <div style={containerStyle}>                           
+                           <div className='templatePreview'>
                                 {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
                                     <div>
                                         {selectedTemplate?.headertype === "IMAGE" ? (
@@ -555,7 +562,7 @@ const adjustedBodyMail = adjustHtmlStyles(replacedBodyMail);
                                         )}
                                     </div>
                                 ) : (selectedTemplate?.type === "MAIL") || (selectedTemplate?.type === "HTML") ? (
-                                    <div style={{ padding: '1rem 1rem 3rem 1rem', margin: '0 auto', borderRadius: '0.5rem', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: '#FFFFFF' }}>
+                                    <div style={{ padding: '1rem 1rem 3rem 1rem', margin: '0 auto',  backgroundColor: '#FFFFFF' }}>
                                         <p style={{ fontSize: '1.2rem' }}>{selectedTemplate.header}</p>
                                         <div dangerouslySetInnerHTML={{ __html: adjustedBodyMail }} />
                                     </div>
@@ -565,11 +572,8 @@ const adjustedBodyMail = adjustHtmlStyles(replacedBodyMail);
                                     </div>
                                 )}                           
 
-                            </div>
-                        ): null }                       
-                    </div>
-                   
-                 
+                            </div>           
+                    </div>                                      
                 </div>
             </div>
         </div>
