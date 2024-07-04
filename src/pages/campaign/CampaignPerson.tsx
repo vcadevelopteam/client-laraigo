@@ -696,8 +696,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         return true;
     }
 
-    console.log('personsToUse', personsToUse)
-    console.log('jsonData', jsonData)
+    //console.log('personsToUse', personsToUse)
+    //console.log('jsonData', jsonData)
+
+
+    // console.log('multidata 3', multiData[3])
+    // console.log('multidata 4', multiData[4])
 
 
     return (

@@ -515,7 +515,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
             let groups = user?.groups ? user?.groups.split(",") : [];
             if(rules?.data && propertyGrupoDelegacion){
-                debugger
+                
                 let extragroups = rules.data.map(item => item.assignedgroup)
                 groups = extragroups.length?extragroups:groups
             }
