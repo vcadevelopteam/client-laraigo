@@ -178,7 +178,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
             }) : [];    
             const templateButtonsUrlVariables = campaignData.messagetemplatebuttons ? campaignData.messagetemplatebuttons.flatMap((button: Dictionary) => {
-                return detectVariablesField(button.btn.url);
+                return button && button.btn && button.btn.url ? detectVariablesField(button.btn.url) : [];
             }) : [];
             const allUrlVariables = [...carouselUrlVariables, ...templateButtonsUrlVariables];
             const headerVariable = campaignData.messagetemplateheader ? detectVariablesField(campaignData.messagetemplateheader.value) : [];
@@ -242,7 +242,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
             }) : [];
             const templateButtonsUrlVariables = combinedData.messagetemplatebuttons ? combinedData.messagetemplatebuttons.flatMap(button => {
-                return detectVariablesField(button.btn.url);
+                return button && button.btn && button.btn.url ? detectVariablesField(button.btn.url) : [];
             }) : [];    
             const allUrlVariables = [...urlVariables, ...templateButtonsUrlVariables];
             const headerVariable = combinedData.messagetemplateheader ? detectVariablesField(combinedData.messagetemplateheader.value) : [];
@@ -353,12 +353,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
     
         if (variableType === 'video') {
-            setVideoHeaderValue(value);
+            setVideoHeaderValue(header);
         } else if (variableType === 'body') {
             setBodyVariableValues(prevValues => {
                 const newBodyVariableValues = {
                     ...prevValues,
-                    [variableNumber]: value
+                    [variableNumber]: header
                 };
                 setSelectedAuthVariable(newBodyVariableValues['authentication'] || '');
                 return newBodyVariableValues;
@@ -366,32 +366,32 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         } else if (variableType === 'header') {
             setHeaderVariableValues(prevValues => ({
                 ...prevValues,
-                [variableNumber]: value
+                [variableNumber]: header
             }));
         } else if (variableType === 'cardImage') {
             setCardImageValues(prevValues => ({
                 ...prevValues,
-                [variableNumber]: value
+                [variableNumber]: header
             }));
         } else if (variableType === 'dynamicUrl') {
             setDynamicUrlValues(prevValues => ({
                 ...prevValues,
-                [variableNumber]: value
+                [variableNumber]: header
             }));
         } else if (variableType === 'carousel' && carouselIndex !== undefined) {
             setCarouselVariableValues(prevValues => ({
                 ...prevValues,
                 [carouselIndex]: {
                     ...prevValues[carouselIndex],
-                    [variableNumber]: value
+                    [variableNumber]: header
                 }
             }));
         } else if (variableType === 'authentication') {
-            setSelectedAuthVariable(value);
+            setSelectedAuthVariable(header);
         } else if (variableType === 'additional') {
             setAdditionalVariableValues(prevValues => ({
                 ...prevValues,
-                [variableNumber]: value
+                [variableNumber]: header
             }));
         } else if (variableType === 'receiver') {
             setSelectedHeader(header);
@@ -427,11 +427,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         } else {
             updateTemplate();
         }
-    };    
+    };
     
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         return carouselIndex !== undefined ? `${variableType}-${carouselIndex}-${variableNumber}` : `${variableType}-${variableNumber}`;
-    };   
+    };
     
     const getValueDefault = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         const key = generateKey(variableType, variableNumber, carouselIndex);
@@ -515,8 +515,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                        
                 if (type === 'body' && updatedTemplate.body) {
                     updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                } else if (type === 'header' && updatedTemplate.header) {
-                    updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                }else if (type === 'header' && updatedTemplate.header) {
+                    const placeholders = [...updatedTemplate.header.matchAll(/{{field(\d+)}}/g)];
+                    if (placeholders.length >= number) {
+                        const currentField = placeholders[number - 1][0];
+                        const newField = `{{field${fieldNumber}}}`;
+                        updatedTemplate.header = updatedTemplate.header.replace(currentField, newField);
+                    }
                 } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
                     const carouselIndex = parseInt(number, 10);
                     if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
@@ -606,12 +611,19 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     if (selectedHeader === 'default') {
                         updatedTemplate.header = templateToUse.header;
                     } else {
-                        const fieldNumber = headers.indexOf(selectedHeader) + 1;
-                        if (!isNaN(fieldNumber)) {
-                            updatedTemplate.header = `{{field${fieldNumber}}}`;
+                        const allVariables = multiData[4].data[0].fields.allVariables;
+                        const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedHeader);
+                        if (matchingField) {
+                            updatedTemplate.header = `{{${matchingField}}}`;
+                        } else {
+                            const fieldNumber = columns.indexOf(selectedHeader) + 2;
+                            if (!isNaN(fieldNumber)) {
+                                updatedTemplate.header = `{{field${fieldNumber}}}`;
+                            }
                         }
                     }
                 }
+                
             });
         
             if (updatedTemplate.category === "AUTHENTICATION" && selectedHeaders['body-authentication']) {
@@ -789,15 +801,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
                 const header = variableSelections[key];
                 const columns = templateData.fields?.columns || [];
-                const fieldNumber = columns.indexOf(header) + 2;            
-    
+                const fieldNumber = columns.indexOf(header) + 2;
+            
                 if (type === 'body' && updatedTemplate.body) {
                     const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
                     if (placeholders.length >= number) {
                         const currentField = placeholders[number - 1][0];
                         const selectedOption = variableSelections[`body-${number}`];
                         const allVariables = multiData[4].data[0].fields.allVariables;
-                
+            
                         let newField = currentField; 
                         if (selectedOption) {
                             const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
@@ -809,10 +821,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             const fieldNumber = columns.indexOf(selectedOption) + 2;
                             newField = `{{field${fieldNumber}}}`;
                         }
-                        
+            
                         updatedTemplate.body = updatedTemplate.body.replace(currentField, newField);
                     }
-                }                 else if (type === 'header' && updatedTemplate.header) {
+                } else if (type === 'header' && updatedTemplate.header) {
                     const placeholders = [...updatedTemplate.header.matchAll(/{{field(\d+)}}/g)];
                     if (placeholders.length >= number) {
                         const currentField = placeholders[number - 1][0];
@@ -853,7 +865,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             }
                         }
                     }
-                
+            
                 } else if (type === 'dynamicUrl') {
                     if (updatedTemplate.buttonsgeneric) {
                         updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
@@ -895,7 +907,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             });
                         });
                     }
-                    
+            
                 } else if (type === 'carousel' && updatedTemplate.carouseldata) {
                     const carouselIndex = parseInt(carouselIndexStr, 10);
                     if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
@@ -916,7 +928,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     if (!isNaN(additionalIndex) && updatedTemplate.variableshidden) {
                         const selectedOption = variableSelections[`additional-${number}`];
                         const allVariables = multiData[4].data[0].fields.allVariables;
-                
+            
                         if (selectedOption) {
                             const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
                             if (matchingField) {
@@ -934,9 +946,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     if (selectedHeader === 'default') {
                         updatedTemplate.header = templateToUse.header;
                     } else {
-                        const fieldNumber = columns.indexOf(selectedHeader) + 2;
-                        if (!isNaN(fieldNumber)) {
-                            updatedTemplate.header = `{{field${fieldNumber}}}`;
+                        const allVariables = multiData[4].data[0].fields.allVariables;
+                        const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedHeader);
+                        if (matchingField) {
+                            updatedTemplate.header = `{{${matchingField}}}`;
+                        } else {
+                            const columns = templateData.fields?.columns || [];
+                            const fieldNumber = columns.indexOf(selectedHeader) + 2;
+                            if (!isNaN(fieldNumber)) {
+                                updatedTemplate.header = `{{field${fieldNumber}}}`;
+                            }
                         }
                     }
                 }
@@ -1434,24 +1453,45 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         (() => {
                                             const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
                                             const headerField = Object.values(campaignVariables).find(field => field.type === 'video' || field.type === 'image');
-                                            let valueDefault;
-
-                                            if (headerField) {
-                                                if (headerField.column) {
-                                                    valueDefault = headerField.column === 'default' ? 'Default ' : headerField.column;
-                                                } else if (headerField.value) {
-                                                    valueDefault = headerField.value;
+                                            const [valueDefault, setValueDefault] = useState('Default ');
+                                    
+                                            useEffect(() => {
+                                                let initialDefault;
+                                    
+                                                if (headerField) {
+                                                    if (headerField.column) {
+                                                        initialDefault = headerField.column === 'default' ? 'Default ' : headerField.column;
+                                                    } else if (headerField.value) {
+                                                        initialDefault = headerField.value;
+                                                    } else {
+                                                        initialDefault = 'Default ';
+                                                    }
                                                 } else {
-                                                    valueDefault = 'Default ';
+                                                    initialDefault = 'Default ';
                                                 }
-                                            } else {
-                                                valueDefault = 'Default ';
-                                            }
-
+                                                                                    
+                                                const allVariables = multiData[4].data[0].fields?.allVariables || {};
+                                                if (initialDefault && initialDefault !== 'Default ') {
+                                                    const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === initialDefault);
+                                                    if (selectedField) {
+                                                        initialDefault = allVariables[selectedField].column;
+                                                    }
+                                                }
+                                    
+                                                setValueDefault(initialDefault);
+                                                console.log('Initial valueDefault:', initialDefault);
+                                            }, [headerField, multiData]);
+                                    
                                             const allOptions = [
                                                 'Default ',
                                                 ...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])
                                             ];
+                                    
+                                            const handleVariableChangeWithUpdate = (variableNumber, selectedOption, variableType) => {
+                                                console.log('FieldSelectDisabled onChange selectedOption:', selectedOption);
+                                                setValueDefault(selectedOption.key); // Actualizar el valor predeterminado
+                                                handleVariableChange(variableNumber, selectedOption, variableType);
+                                            };
                                     
                                             return (
                                                 <div key={`header`}>
@@ -1464,12 +1504,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                         optionDesc="value"
                                                         optionValue="key"
                                                         valueDefault={valueDefault}
-                                                        onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
+                                                        onChange={(selectedOption) => handleVariableChangeWithUpdate('videoHeader', selectedOption, 'video')}
                                                         getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                     />
                                                 </div>
                                             );
                                         })()
+                         
+                            
+                          
+                                                     
+                                
                                     ) : (
                                         <div>
                                             <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
