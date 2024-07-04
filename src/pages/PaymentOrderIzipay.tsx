@@ -229,6 +229,27 @@ export const PaymentOrderIzipay: FC = () => {
 
         const script = document.createElement("script");
 
+        let payMethod = "";
+
+        if (authCredentials.showCard) {
+            payMethod = `${payMethod}CARD,`;
+        }
+
+        if (authCredentials.showQr) {
+            payMethod = `${payMethod}QR,`;
+        }
+
+        if (authCredentials.showYape) {
+            payMethod = `${payMethod}YAPE_CODE,`;
+        }
+
+        if (payMethod) {
+            payMethod = payMethod.slice(0, -1);
+        }
+        else {
+            payMethod = "CARD,QR,YAPE_CODE";
+        }
+
         script.setAttribute("type", "module");
 
         script.async = true;
@@ -246,6 +267,7 @@ export const PaymentOrderIzipay: FC = () => {
                         processType: 'AT',
                         merchantBuyerId: '${data.personid}',
                         dateTimeTransaction: '${Math.floor(Date.now()) * 1000}',
+                        payMethod: '${payMethod}',
                     },
                     card: {
                         brand: '',
