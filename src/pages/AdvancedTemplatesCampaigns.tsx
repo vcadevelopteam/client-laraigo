@@ -22,7 +22,9 @@ const useStyles = makeStyles((theme) => ({
     },
     containerInner:{
         display:"flex",
-        padding:15
+        padding: 15,
+        flexDirection: 'column',
+        flexGrow: 1,
     },
     containerInnertittle2:{
         width: "100%",
@@ -42,6 +44,23 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial',
         marginTop: 5
     },
+    card: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        position: 'relative'
+    },
+    cardContent: {
+        display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'row'
+    },
+    cardInnerColumn: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        width: '50%'
+    }
 }));
 
 const AdvancedTemplatesCampaigns: React.FC = () => {
@@ -70,48 +89,52 @@ const AdvancedTemplatesCampaigns: React.FC = () => {
                         <Grid container spacing={3} >
                             {!user?.roledesc?.includes("GESTOR DE CAMPAÑAS") && (
                                 <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                    <Card style={{ position: 'relative', display:"flex", minHeight: 310 }}>
+                                    <Card className={classes.card}>
                                         <div className={classes.containerInner}>
-                                            <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
-                                                <div>
-                                                    <div className={classes.containerInnertittle2}>{t(langKeys.templates).toUpperCase()}</div>
-                                                    <div className={classes.containerInnertittle3}>{t(langKeys.templatestext)}</div>
+                                            <div className={classes.cardContent}>
+                                                <div className={classes.cardInnerColumn}>
+                                                    <div>
+                                                        <div className={classes.containerInnertittle2}>{t(langKeys.templates).toUpperCase()}</div>
+                                                        <div className={classes.containerInnertittle3}>{t(langKeys.templatestext)}</div>
+                                                    </div>
+                                                    <Button
+                                                        className={classes.button}
+                                                        variant="contained"
+                                                        color="primary"
+                                                        style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                                        onClick={()=>setViewSelectedTraining("templates")}
+                                                    >{t(langKeys.enter)}
+                                                    </Button>
                                                 </div>
-                                                <Button
-                                                    className={classes.button}
-                                                    variant="contained"
-                                                    color="primary"
-                                                    style={{ backgroundColor: "#55BD84", width: "fit-content" }}
-                                                    onClick={()=>setViewSelectedTraining("templates")}
-                                                >{t(langKeys.enter)}
-                                                </Button>
-                                            </div>
-                                            <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                                <TemplatesIcon style={{ height: 220, width:"100%" }} />
+                                                <div className={classes.cardInnerColumn} style={{ justifyContent: 'center' }}>
+                                                    <TemplatesIcon style={{ height: 220, width:"100%" }} />
+                                                </div>
                                             </div>
                                         </div>
                                     </Card>
                                 </Grid>
                             )}
                             <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                <Card style={{ position: 'relative', display:"flex", minHeight: 310 }}>
+                                <Card className={classes.card}>
                                     <div className={classes.containerInner}>
-                                        <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
-                                            <div>
-                                                <div className={classes.containerInnertittle2}>{t(langKeys.app_campaign).toUpperCase()}</div>
-                                                <div className={classes.containerInnertittle3}>{t(langKeys.campaignstext)}</div>
+                                        <div className={classes.cardContent}>
+                                            <div className={classes.cardInnerColumn}>
+                                                <div>
+                                                    <div className={classes.containerInnertittle2}>{t(langKeys.app_campaign).toUpperCase()}</div>
+                                                    <div className={classes.containerInnertittle3}>{t(langKeys.campaignstext)}</div>
+                                                </div>
+                                                <Button
+                                                    className={classes.button}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                                    onClick={()=>setViewSelectedTraining("campaigns")}
+                                                >{t(langKeys.enter)}
+                                                </Button>
                                             </div>
-                                            <Button
-                                                className={classes.button}
-                                                variant="contained"
-                                                color="primary"
-                                                style={{ backgroundColor: "#55BD84", width: "fit-content" }}
-                                                onClick={()=>setViewSelectedTraining("campaigns")}
-                                            >{t(langKeys.enter)}
-                                            </Button>
-                                        </div>
-                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <CampaignsIcon style={{ height: 220, width:"100%" }} />
+                                            <div className={classes.cardInnerColumn} style={{ justifyContent: 'center' }}>
+                                                <CampaignsIcon style={{ height: 220, width:"100%" }} />
+                                            </div>
                                         </div>
                                     </div>
                                 </Card>
