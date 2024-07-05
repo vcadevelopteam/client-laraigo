@@ -27,6 +27,7 @@ interface DetailProps {
     setMessageVariables: (value: Dictionary[]) => void;
     templateAux: Dictionary;
     jsonPersons: Dictionary;
+    detectionChangeSource: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, templateAux, jsonPersons}) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, templateAux, jsonPersons, detectionChangeSource}) => {
     const classes = useStyles();
     const { t } = useTranslation();  
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
@@ -99,6 +100,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         return matches;
     };
+
+    console.log('detectionChangeSource:', detectionChangeSource);
+    if (detectionChangeSource) {
+        console.log('ya no es internal');
+    }
      
     const bodyVariables = detectVariables(templateToUse.body);
     const headerVariables = templateToUse.headertype === 'TEXT' ? detectVariables(templateToUse.header) : [];    
@@ -225,6 +231,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };
 
     //useffect seteador de values enviadas a template preview
+    //(3) ['"field9"', '"field5"', '"field4"']
     useEffect(() => {
         if(row){
             if (multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
@@ -232,9 +239,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     ...multiData[4].data[0],
                     operation: 'UPDATE',
                 };
-        
-                console.log('Combined Data:', combinedData);
-        
+            
                 setCampaignViewDetails(combinedData);
                 const processedData = processMultiData(multiData[4].data);
                 const bodyVariables = combinedData.message ? detectVariablesField(combinedData.message) : [];
@@ -244,7 +249,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
                 }) : [];
                 const templateButtonsUrlVariables = combinedData.messagetemplatebuttons ? combinedData.messagetemplatebuttons.flatMap(button => {
-                    return detectVariablesField(button.btn.url);
+                    return detectVariablesField(button.btn?.url);
                 }) : [];
                 const allUrlVariables = [...urlVariables, ...templateButtonsUrlVariables];
                 const headerVariable = combinedData.messagetemplateheader ? detectVariablesField(combinedData.messagetemplateheader.value) : [];
@@ -291,12 +296,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     newDynamicUrlValues[index + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                 });
         
-                console.log('Before setting headerVariableValues:', newHeaderValue);
                 headerVariable.forEach((variable, index) => {
                     const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
                     newHeaderValue[index + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                 });
-                console.log('After setting headerVariableValues:', newHeaderValue);
         
                 cardImageVariables.forEach((variables, carouselIndex) => {
                     if (variables.length > 0 && variables[0].variable) {
@@ -304,9 +307,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         newCardImageValue[carouselIndex + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                     }
                 });
-        
-                console.log('Final Card Image Values:', newCardImageValue);
-        
+                
                 setBodyVariableValues(newBodyVariableValues);
                 setHeaderVariableValues(newHeaderValue);
                 setVideoHeaderValue(processedData.videoHeaderValue);
@@ -335,9 +336,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     const header = combinedData.fields.columns[fieldIndex - 2]; 
                     newSelectedHeaders[`body-${index + 1}`] = header;
                 });
-        
-                console.log('New Selected Headers:', newSelectedHeaders);
-        
+                
                 setSelectedHeaders(newSelectedHeaders);
                 updateTemplate(); 
             }
@@ -450,7 +449,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }      
     }, [multiData]);
         
-    
+    //console.log('viendo add', variablesAdditionalView)
+
+
     // funcion que updatea los value que le mandamos a templarepreview si el usuario selecciona otra cosa en el updatecampaign
     const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
         if(row){
@@ -470,10 +471,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     [variableNumber]: value
                 }));
             } else if (variableType === 'video') {
-                console.log('Updating video header value to:', value);
                 setVideoHeaderValue(value);
                 setHeaderVariableValues({ [variableNumber]: value });
-                console.log('Setting headerVariableValues for video:', { [variableNumber]: value });
             } else if (variableType === 'cardImage') {
                 setCardImageValues(prevValues => ({
                     ...prevValues,
@@ -616,8 +615,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 const value = selectedFieldKey ? allVariables[selectedFieldKey].value : '';
                 setVideoHeaderValue(value);
                 setHeaderVariableValues({ [variableNumber]: value });
-                console.log('Setting videoHeaderValue:', value);
-                console.log('Setting headerVariableValues for video:', { [variableNumber]: value });
             }
     
             updateTemplate();
@@ -625,9 +622,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
      
         else if (!row) {
             updateValues(variableNumber, selectedOption, variableType, carouselIndex);
-
             console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
-
             const header = selectedOption ? selectedOption.key : '';
             const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
 
@@ -1013,7 +1008,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
                             if (matchingField) {
                                 newField = `{{${matchingField}}}`;
-                                console.log(`Updated body variable ${number} to ${newField}`);
                             }
                         } else {
                             const fieldNumber = columns.indexOf(selectedOption) + 2;
@@ -1031,26 +1025,18 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
                     const carouselIndex = parseInt(number, 10);
-                    console.log(`Processing cardImage for carouselIndex: ${carouselIndex}`);
                     if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
                         if (header === 'Default ') {
                             const messageTemplateName = multiData[4].data[0].messagetemplatename;
-                            console.log('messageTemplateName:', messageTemplateName);
                             const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
                             if (campaign && campaign.carouseldata[carouselIndex]) {
                                 updatedTemplate.carouseldata[carouselIndex].header = campaign.carouseldata[carouselIndex].header;
-                                console.log(`Updated updatedTemplate.carouseldata[${carouselIndex}].header to: ${campaign.carouseldata[carouselIndex].header}`);
-                            } else {
-                                console.log(`No matching campaign found in multiData[3] for messagetemplatename: ${messageTemplateName}`);
                             }
                         } else {
                             const allVariables = multiData[4].data[0].fields.allVariables;
-                            console.log('allVariables:', allVariables);
                             const selectedField = allVariables ? Object.keys(allVariables)?.find(key => allVariables?.[key]?.column === header) : undefined;
-                            console.log('selectedField:', selectedField);
                             if (selectedField) {
                                 updatedTemplate.carouseldata[carouselIndex].header = `{{${selectedField}}}`;
-                                console.log(`Updated updatedTemplate.carouseldata[${carouselIndex}].header to: {{${selectedField}}}`);
                             } else {
                                 console.log(`No matching field found in allVariables for header: ${header}`);
                                 const placeholders = [...updatedTemplate.carouseldata[carouselIndex].header.matchAll(/{{field(\d+)}}/g)];
@@ -1058,7 +1044,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     const currentField = placeholders[0][0];
                                     const newField = `{{field${fieldNumber}}}`;
                                     updatedTemplate.carouseldata[carouselIndex].header = updatedTemplate.carouseldata[carouselIndex].header.replace(currentField, newField);
-                                    console.log(`Fallback: Updated updatedTemplate.carouseldata[${carouselIndex}].header to: ${updatedTemplate.carouseldata[carouselIndex].header}`);
                                 }
                             }
                         }
@@ -1131,7 +1116,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
                             if (matchingField) {
                                 updatedTemplate.variableshidden[additionalIndex] = matchingField;
-                                console.log(`Updated additional variable ${number} to ${matchingField}`);
                             }
                         } else {
                             if (updatedTemplate.variableshidden[additionalIndex]) {
@@ -1146,9 +1130,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
                         if (campaign && campaign.header) {
                             updatedTemplate.header = campaign.header;
-                            console.log(`Updated video header to default value: ${campaign.header}`);
-                        } else {
-                            console.log(`No matching campaign found in multiData[3] for messagetemplatename: ${messageTemplateName}`);
                         }
                     } else {
                         const fieldNumber = columns.indexOf(selectedHeader) + 2;
@@ -1172,7 +1153,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     updatedTemplate.body = updatedTemplate.body.replace(currentField, `{{${fieldToReset}}}`);
                 }
             }
-
             console.log('final updatedTemplate:', updatedTemplate);
             setCurrentTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
@@ -1288,8 +1268,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
     const matchingUnavailableValues = getMatchingUnavailableValues();
     //console.log('Matching Unavailable Values:', matchingUnavailableValues);
-
-    //console.log('a ver', multiData[4].data[0].fields.campaignvariables);
     
     useEffect(() => {
         updateTemplate();
@@ -1869,7 +1847,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                     optionValue="key"
                                                                     valueDefault={valueDefault}
                                                                     onChange={(selectedOption) => {
-                                                                        console.log(`Updating valueDefault for cardImage-${index + 1} with`, selectedOption);
                                                                         handleVariableChange((index + 1).toString(), selectedOption, 'cardImage', index);
                                                                         setVariableSelections(prev => ({
                                                                             ...prev,
@@ -1916,13 +1893,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
                                                             if (matchingField) {
                                                                 valueDefault = matchingField.column ? matchingField.column : undefined;
-                                                                console.log(`matchingField found, valueDefault: ${valueDefault}`);
                                                             } else {
                                                                 const allVariables = multiData[4].data[0].fields.allVariables;
                                                                 const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === fieldKey);
                                                                 if (selectedField) {
                                                                     valueDefault = allVariables[selectedField].column;
-                                                                    console.log(`Updated valueDefault for carousel-${index}-bubble-${variableIndex + 1} with: ${valueDefault}`);
                                                                 } else {
                                                                     const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
                                                                     const valor = templateData.fields.columns[fieldIndex];
@@ -1946,7 +1921,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                                 optionValue="key"
                                                                 valueDefault={valueDefault}
                                                                 onChange={(selectedOption) => {
-                                                                    console.log(`Updating valueDefault for carousel-${index}-bubble-${variableIndex + 1} with`, selectedOption);
                                                                     handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index);
                                                                     setVariableSelections(prev => ({
                                                                         ...prev,
@@ -2015,20 +1989,19 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             {row ? (
                                 <>
                                     {variablesAdditionalView.map((variable, index) => {
-                                        const fieldKey = variable.replace(/"/g, '');
+                                        const cleanVariable = variable.replace(/"/g, '');                                        
                                         let valueDefault;
-
-                                        if (fieldKey) {
-                                            const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
+                                        if (cleanVariable) {
+                                            const matchingField = matchingUnavailableValues.find(item => item.field === cleanVariable);
                                             if (matchingField) {
                                                 valueDefault = matchingField.column ? matchingField.column : undefined;
                                             } else {
                                                 const allVariables = multiData[4].data[0].fields?.allVariables || {};
-                                                const allVariablesField = allVariables[fieldKey];
+                                                const allVariablesField = allVariables[cleanVariable];
                                                 if (allVariablesField) {
                                                     valueDefault = allVariablesField.column ? allVariablesField.column : undefined;
                                                 } else {
-                                                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                    const fieldIndex = parseInt(cleanVariable.replace('field', ''), 10) - 2;
                                                     const valor = templateData.fields.columns[fieldIndex];
                                                     valueDefault = valor ? valor : undefined;
                                                 }
@@ -2036,9 +2009,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         } else {
                                             valueDefault = undefined;
                                         }
-
                                         const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-
                                         return (
                                             <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -2057,7 +2028,18 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                         optionDesc="value"
                                                         optionValue="key"
                                                         valueDefault={valueDefault}
-                                                        onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'additional')}
+                                                        onChange={(selectedOption) => {
+                                                            console.log(`Selected option for additional-${index + 1}:`, selectedOption);
+                                                            handleVariableChange((index + 1).toString(), selectedOption, 'additional');
+                                                            setVariableSelections(prev => {
+                                                                const newSelections = {
+                                                                    ...prev,
+                                                                    [`additional-${index + 1}`]: selectedOption.key
+                                                                };
+                                                                console.log(`Updated variableSelections for additional-${index + 1}:`, newSelections);
+                                                                return newSelections;
+                                                            });
+                                                        }}
                                                         getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                     />
                                                 </div>
@@ -2066,7 +2048,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     })}
                                 </>
                             ) : (
-
                                     <>
                                         {additionalVariables.map((variable, index) => (
                                             <div style={{ flex: 1 }} key={index}>
@@ -2095,7 +2076,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         </FormControl>
                     </div>
                 </div>
-
                 <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             
                     <div style={{fontSize:'1.2rem'}}>{t('Previsualización del mensaje')}</div> 
                     <TemplatePreview
