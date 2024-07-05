@@ -478,8 +478,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('sourcechanged', true);
         setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 1: false } });
         dispatch(resetCollectionPaginatedAux())
-    }
 
+        if (previousSource === 'INTERNAL' && data?.key !== 'INTERNAL') {
+            setDetectionChangeSource(true);
+            console.log('ya no es internal')
+        } else {
+            setDetectionChangeSource(false);
+        }
+    }
 
     const filterDataCampaignType = () => {
         const communicationChannelType = getValues('communicationchanneltype');
@@ -578,16 +584,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     //console.log(selectedTemplate)
     //console.log("Campaign General Data:", detaildata);
     //console.log('campaña completa ya creada', multiData[4].data)
-    
-    useEffect(() => {
-        const currentSource = getValues('source');
-        if (previousSource === 'INTERNAL' && currentSource !== 'INTERNAL') {
-            setDetectionChangeSource(true);
-        } else {
-            setDetectionChangeSource(false);
-        }
-    }, [getValues, previousSource, setDetectionChangeSource]);
-
+  
     return (
         <React.Fragment>
             <div style={{display:'flex', gap: '1rem', width:'100%'}}>
