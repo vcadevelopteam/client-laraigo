@@ -3251,11 +3251,13 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
     return (        
         <CustomTableZyxEditable
             columns={columns}
-            data={tableData}
             download={false}
             loading={domains.loading||domainsCustomTable.loading}
             register={false}
-            dataDomains={domainsCustomTable?.data}
+            data={(tableData).map(x => ({
+                ...x,
+                domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
+            }))}
             filterGeneral={false}
             updateCell={updateCell}
             skipAutoReset={skipAutoReset}

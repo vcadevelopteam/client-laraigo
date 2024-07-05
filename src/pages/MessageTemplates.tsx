@@ -2033,9 +2033,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 <div className={classes.containerDetail}>                    
                     <CustomTableZyxEditable
                         columns={columns}
-                        data={tableDataVariables}
                         download={false}
-                        dataDomains={domainsCustomTable?.data||[]}
+                        data={(tableDataVariables).map(x => ({
+                            ...x,
+                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
+                        }))}
                         //loading={multiData.loading}
                         register={false}
                         filterGeneral={false}
