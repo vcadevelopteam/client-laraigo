@@ -5,7 +5,7 @@ import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import { FormControl } from '@material-ui/core';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
@@ -27,6 +27,7 @@ interface DetailProps {
     setSave: (value: any) => void;
     setIdAux: (value: number) => void;
     setTemplateAux: (value: Dictionary) => void;
+    setDetectionChangeSource: (value: boolean) => void;
 }
 
 type Button = {
@@ -202,7 +203,7 @@ type FormFields = {
     buttonsphone: { text: string }[];   
 }
 
-export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, setIdAux, setTemplateAux }) => {
+export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, setIdAux, setTemplateAux, setDetectionChangeSource }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -213,7 +214,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
     const [openModal, setOpenModal] = useState(false);
-
+    const [previousSource, ] = useState('INTERNAL');
     const initialBatchjson = { date: '', time: '', quantity: 1 };
 
     const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
@@ -319,7 +320,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         });
         register('batchjson.time', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required) });
-        // register('batchjson.quantity', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value > 0)) || t(langKeys.field_required) });
         register('communicationchannelid', { validate: (value: any) => (value && value > 0) || t(langKeys.field_required) });
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -329,7 +329,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [edit, register, multiData, groupObligatory]);
     
-    //console.log(selectedTemplate)
+
 
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
@@ -577,6 +577,16 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     //console.log(selectedTemplate)
     //console.log("Campaign General Data:", detaildata);
+    //console.log('campaña completa ya creada', multiData[4].data)
+    
+    useEffect(() => {
+        const currentSource = getValues('source');
+        if (previousSource === 'INTERNAL' && currentSource !== 'INTERNAL') {
+            setDetectionChangeSource(true);
+        } else {
+            setDetectionChangeSource(false);
+        }
+    }, [getValues, previousSource, setDetectionChangeSource]);
 
     return (
         <React.Fragment>

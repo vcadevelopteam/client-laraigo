@@ -99,6 +99,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [idAux, setIdAux] = useState(0)
     const [templateAux, setTemplateAux] = useState<Dictionary>({})
     const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
+    const [detectionChangeSource, setDetectionChangeSource] = useState<boolean>(false);
 
     useEffect(() => {
         if (row !== null) {
@@ -807,6 +808,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setSave={setSave}
                     setIdAux={setIdAux}
                     setTemplateAux={setTemplateAux}
+                    setDetectionChangeSource={setDetectionChangeSource}
                 />
             </AntTabPanel>
             {catchPersonTab && (
@@ -849,6 +851,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setDataButtons={setDataButtons}
                     templateAux={templateAux}
                     jsonPersons={jsonPersons}
+                    detectionChangeSource={detectionChangeSource}
                 />
             </AntTabPanel>
         </div>
