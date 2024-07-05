@@ -6265,7 +6265,7 @@ export const langKeys = {
   subscription_total: "subscription_total",
   propertyshowstartscreen: "propertyshowstartscreen",
   propertyhabilitarnotificacion_recarga: "propertyhabilitarnotificacion_recarga",
-  propertysaldonotificación_recarga: "propertysaldonotificación_recarga",
+  propertysaldonotificacion_recarga: "propertysaldonotificacion_recarga",
   propertymensajenotificacion_recarga: "propertymensajenotificacion_recarga",
   messaging_channel: "messaging_channel",
   messaging_minimumfree: "messaging_minimumfree",
