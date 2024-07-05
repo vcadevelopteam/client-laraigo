@@ -384,6 +384,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     [variableNumber]: value
                 }
             }));
+            setBubbleVariableValues(prevValues => {
+                const newBubbleValues = { ...prevValues };
+                if (!newBubbleValues[carouselIndex]) {
+                    newBubbleValues[carouselIndex] = {};
+                }
+                newBubbleValues[carouselIndex][variableNumber] = value;
+                return newBubbleValues;
+            });
         } else if (variableType === 'authentication') {
             setSelectedAuthVariable(value);
         } else if (variableType === 'additional') {
@@ -395,6 +403,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setSelectedHeader(key);
         }
     };
+    
     
 
     const getAdditionalVariableIndex = () => {
@@ -412,28 +421,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
     
         if (row) {
-            const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
-            const selectedFieldKey = Object.keys(allVariables).find(key => allVariables[key]?.column === header);
-            const value = selectedFieldKey ? allVariables[selectedFieldKey].value : '';
-    
-            if (variableType === 'carousel' && carouselIndex !== undefined) {
-                setBubbleVariableValues(prevValues => {
-                    const newBubbleValues = { ...prevValues };
-                    if (!newBubbleValues[carouselIndex]) {
-                        newBubbleValues[carouselIndex] = {};
-                    }
-                    newBubbleValues[carouselIndex][variableNumber] = value;
-                    return newBubbleValues;
-                });
-            } else {
-                // Existing logic for other variable types
-            }
+            updateValues(variableNumber, selectedOption, variableType, carouselIndex);
     
             // Update selected fields
             const newSelectedFields = { ...selectedFields };
             newSelectedFields[`field${index}`] = {
                 column: selectedOption,
-                value: value,
+                value: selectedOption.key,
                 type: variableType === 'additional' ? 'variablehidden' : variableType,
                 index: index.toString(),
                 carouselIndex: carouselIndex !== undefined ? carouselIndex : null
@@ -459,6 +453,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             // Existing logic for non-row cases
         }
     };
+    
     
     
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
