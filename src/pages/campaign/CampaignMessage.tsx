@@ -251,7 +251,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }) : [];
     
             setVariablesBodyView(bodyVariables);
-            setVariablesAdditionalView(variablesHiddenMultidata.map(variable => JSON.stringify(variable)));
+            setVariablesAdditionalView(variablesHiddenMultidata.map(variable => variable));
             setVariablesCarouselBubbleView(carouselBubbleVariables);
             setVariablesUrlView(allUrlVariables);
             setVariablesHeaderView(headerVariable);
@@ -334,6 +334,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             });
     
             setSelectedHeaders(newSelectedHeaders);
+            console.log("111")
             updateTemplate(); 
         }
     }, [multiData]);
@@ -699,8 +700,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 variableshidden: updatedTemplate.variableshidden
             }));
         }
-
-    
 
        if (row) {
             const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
