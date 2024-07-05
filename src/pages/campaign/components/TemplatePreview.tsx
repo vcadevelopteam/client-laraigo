@@ -429,8 +429,9 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const [maxCardHeight, setMaxCardHeight] = useState(0);
     const cardRefs = useRef<HTMLDivElement[]>([]);
     const videoUrl = (headerVariableValues && headerVariableValues[1]) ? headerVariableValues[1] : videoHeaderValue || selectedTemplate.header;
-    //console.log('bodyVariableValues llegando', bodyVariableValues)
-    
+    console.log('bubbleVariableValues llegando', bubbleVariableValues)
+    console.log('bodyVariableValues llegando', bodyVariableValues)
+
     useEffect(() => {
         if (cardRefs.current.length > 0) {
             const heights = cardRefs.current.map(ref => ref?.offsetHeight || 0);
@@ -501,7 +502,14 @@ const adjustedBodyMail = adjustHtmlStyles(replacedBodyMail);
                            <div className='templatePreview'>
                                 {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
                                     <div>
-                                        {selectedTemplate?.headertype === "IMAGE" ? (
+                                        {selectedTemplate?.headertype === "DOCUMENT" ? (
+                                            <PdfAttachment url={selectedTemplate.header} />
+                                        ) : selectedTemplate?.headertype === "MULTIMEDIA" ? (
+                                            <iframe
+                                                src={selectedTemplate.header || "https://d36ai2hkxl16us.cloudfront.net/thoughtindustries/image/upload/a_exif,c_fill,w_750/v1/course-uploads/7a95ec5e-b843-4247-bc86-c6e2676404fd/15ax1uzck54z-NuxeoGeneric.png"}
+                                                style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
+                                            />
+                                        ) : selectedTemplate?.headertype === "IMAGE" ? (
                                             isValidImageUrl(videoUrl) ? (
                                                 <img
                                                     src={videoUrl}
