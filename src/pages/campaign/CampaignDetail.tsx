@@ -13,19 +13,15 @@ import { Button, Tabs } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { AntTab, AntTabPanel, AntTabPanelAux, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
-import { error } from 'console';
-
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
-
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData: () => void
 }
-
 export interface FrameProps {
     page: number,
     checkPage: boolean,
@@ -186,12 +182,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }, [mainResult, waitView]);
 
-
     const formatMessage = () => {
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
-        let message = detaildata.message || '';
-  
+        let message = detaildata.message || '';  
         let localtablevariable = [];
         if (['PERSON', 'LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
@@ -233,9 +227,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
-        }
-    
-    
+        }   
         return { subject, header, message };
     };
 
@@ -285,7 +277,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 modifiedMessage = modifiedMessage.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
         }
-
         return modifiedMessage;
     }
 
@@ -311,11 +302,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             const localsubject = newmessages.subject || '';
             const localheader = newmessages.header || '';
             const localmessage = newmessages.message || '';
-
             let elemVariables: string[] = [];
             let errorIndex = null;
-
             const auxbuttons = detaildata;
+
             if (auxbuttons?.messagetemplatebuttons) {
                 auxbuttons.messagetemplatebuttons.forEach((button: any) => {
                     if (button.payload) {
@@ -376,9 +366,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
                 }
             }
-
-            console.log("detaildata.variableshidden", detaildata.variableshidden)
-
+            
             setDetaildata({
                 ...detaildata,
                 variablereplace: elemVariables,
@@ -391,7 +379,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 // variableshidden: detaildata.variableshidden,
                 message: newmessages.message,
             });
-
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
         }
     }
@@ -666,7 +653,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }, [save, executeRes]);
 
-
     useEffect(() => {
         if (pageSelected === 2) {
             switch (detaildata.source) {
@@ -828,6 +814,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         idAux={idAux}
                         templateAux={templateAux}
                         setJsonPersons={setJsonPersons}
+                        detectionChangeSource={detectionChangeSource}
                     />
                 </AntTabPanelAux>
             )}

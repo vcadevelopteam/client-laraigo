@@ -18,7 +18,6 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import DeleteIcon from '@material-ui/icons/Delete';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
@@ -34,6 +33,7 @@ interface DetailProps {
     idAux: number;
     templateAux: Dictionary;
     setJsonPersons:  (value: Dictionary) => void;
+    detectionChangeSource: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -53,11 +53,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux, setJsonPersons }) => {
+export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux, setJsonPersons, detectionChangeSource }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const auxResult = useSelector(state => state.main.mainAux);
     const [openModal, setOpenModal] = useState<boolean | null>(null);
     const [columnList, setColumnList] = useState<string[]>([]);
@@ -71,14 +70,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             : (detaildata.fields?.primarykey || '') !== ''
                 ? { ...detaildata.fields } as SelectedColumns
                 : new SelectedColumns());
-    const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
     const [selectionKey, setSelectionKey] = useState<string | any>('')
     const [selectedRows, setSelectedRows] = useState<any>(detaildata.sourcechanged ? {} : detaildata.selectedRows || {});
     const [allRowsSelected, setAllRowsSelected] = useState<boolean>(false);
-
     const fetchCampaignInternalData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
     const [fileKey, setFileKey] = useState(Date.now());
-
     const paginatedAuxResult = useSelector(state => state.main.mainPaginatedAux);
     const [paginatedWait, setPaginatedWait] = useState(false);
     const [fetchDataAux, setfetchDataAux] = useState<any>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
@@ -86,8 +82,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [totalrow, setTotalRow] = useState(0);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openCleanDialog, setOpenCleanDialog] = useState(false);
-
-
     const messagetemplateName = multiData?.[4]?.data?.[0]?.messagetemplatename;
     const matchedTemplate = multiData[3].data.find(item => item.name === messagetemplateName); 
     const [currentTemplateAux, setCurrentTemplateAux] = useState<Dictionary>({});
@@ -98,9 +92,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
       } else {
         setCurrentTemplateAux(templateAux);
       }
-    }, [templateAux, matchedTemplate]);  
-    //console.log('Current TemplateAux:', currentTemplateAux);
-    //console.log('jsonData', jsonData)
+    }, [templateAux, matchedTemplate]);     
 
     const handleDeleteSelectedRows = () => {
         const updatedJsonData = jsonData.filter((item, index) => !selectedRows[index]) || [];
@@ -164,8 +156,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const getDownloadLink = () => {
         if (currentTemplateAux.headertype === "TEXT" && !currentTemplateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
             return "/templates/Template Cabecera Texto y 3 variables.xlsx";
-        }
-    
+        }    
         if (currentTemplateAux.headertype === "TEXT" && currentTemplateAux.buttonsgeneric?.some((button: { type: string }) => button.type === "URL")) {
             return "/templates/Template Cabecera Texto, 3 variables y 1 variable URL dinámica.xlsx";
         }
@@ -178,8 +169,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             currentTemplateAux.buttonsgeneric.some((button: { type: string }) => button.type === "URL")
         ) {
             return "/templates/Template Carrusel, 2 variables y 1 variable URL dinámica.xlsx";
-        }
-    
+        }    
         if (
             currentTemplateAux.templatetype === "MULTIMEDIA" &&
             (currentTemplateAux.headertype === "VIDEO" || currentTemplateAux.headertype === "DOCUMENT") &&
@@ -210,16 +200,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             const response = await fetch(url);
             const arrayBuffer = await response.arrayBuffer();
             const data = new Uint8Array(arrayBuffer);
-            const workbook = XLSX.read(data, { type: 'array' });
-    
+            const workbook = XLSX.read(data, { type: 'array' });    
             const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-    
+            const worksheet = workbook.Sheets[firstSheetName];    
             const sheetData = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
-            const columnNames: string[] = sheetData[1];
-    
-            let variableCounter = 1;
-    
+            const columnNames: string[] = sheetData[1];    
+            let variableCounter = 1;    
             const bodyVariables = currentTemplateAux.body ? currentTemplateAux.body.match(/{{\d+}}/g) || [] : [];
             const requiredVariableColumns = bodyVariables.map((_, index) => `Variable ${index + 1}`);
             variableCounter += bodyVariables.length;
@@ -261,10 +247,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 newColumnNames.push("Variable 1");
             }
             
-            newColumnNames = newColumnNames.concat("Variable Adicional 1");
-                    
-            const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];
-    
+            newColumnNames = newColumnNames.concat("Variable Adicional 1");                    
+            const newSheetData = [[], newColumnNames, ...sheetData.slice(2)];    
             newColumnNames.forEach((columnName, index) => {
                 let descriptionKey = columnName;
                 if (descriptionKey.startsWith("Variable Adicional")) {
@@ -309,8 +293,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return buf;
     };
-    
-    
     
     useEffect(() => {
         if (frameProps.checkPage) {
@@ -486,12 +468,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     }, [paginatedAuxResult]);
 
-    //console.log(jsonData)
     // External Data Logic //
     const handleUpload = async (files: any) => {
-        console.log("files", files)
         const file = files[0];
-        // fileInputRef.current.value = null;
         setFileKey(Date.now());
 
         const data = await uploadExcelCampaign(file, dispatch, showSnackbar);
@@ -517,16 +496,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_incompatbile_with_previous_one) }));
                 return null;
             }
-        }
-    
-        // setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
+        }    
     
         const localColumnList = actualHeaders ? actualHeaders : newHeaders;
-        setColumnList(localColumnList);
-    
+        setColumnList(localColumnList);    
         const primarykey = localColumnList[0];
-        const columns = localColumnList.slice(1);
-    
+        const columns = localColumnList.slice(1);    
         const localSelectedColumns = {
             primarykey,
             column: columns.map(() => true),
@@ -551,9 +526,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             jsonData: data,
             selectedColumns: localSelectedColumns,
         });
-    };
-    
-    
+    };   
 
     const transformData = (data: Dictionary, headers: Dictionary): Dictionary[] => {
         return data.map(item => {
@@ -587,14 +560,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     const transformedData = transformData(jsonData, headers);
     const columns = React.useMemo(() => transformHeadersToColumns(headers), [headers]);
-
     const isEmptyData = (data: any[]) => {
         return data.every(item => Object.values(item).every(value => value === ''));
     };
-
     const personsToUse = isEmptyData(transformedData) ? jsonData : transformedData;
-
-
     const cleanData = () => {
         setJsonData([]);
         setHeaders([]);
@@ -650,7 +619,14 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }, [detaildata.fields]);
 
     // External Data Logic //
-    const changeStep = (step) => {
+    const changeStep = (step: number) => {    
+        
+        if (jsonData.length === 0 || (Object.keys(selectedRows).length === 0 && (detaildata.source === 'LEAD' || detaildata.source === 'PERSON' ) ) ) {
+            if (step === 2) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: 'Debe seleccionar Personas' }));
+            }
+            return false;
+        }   
         switch (detaildata.source) {
             case 'INTERNAL':                
                 setDetaildata({
@@ -697,14 +673,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         return true;
     }
-
-    //console.log('personsToUse', personsToUse)
-    //console.log('jsonData', jsonData)
-
-
-    // console.log('multidata 3', multiData[3])
-    // console.log('multidata 4', multiData[4])
-
 
     return (
             <div className={classes.containerDetail}>
@@ -846,9 +814,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                                 allRowsSelected={allRowsSelected}
                                 setAllRowsSelected={setAllRowsSelected}
                             />
-                        </>                  
+                        </>                 
                 }
-
             </div>          
     )
 }

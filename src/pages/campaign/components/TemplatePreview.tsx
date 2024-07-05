@@ -437,7 +437,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         }
     }, [cardImageValues, bodyVariableValues]);
 
-    const authVariableValue = selectedAuthVariable || (bodyVariableValues && bodyVariableValues[1]) || '{{1}}';
+    const authVariableValue = selectedAuthVariable || (bodyVariableValues && (bodyVariableValues.authentication || bodyVariableValues[1])) || '{{1}}';
 
     const renderedCarouselData = selectedTemplate.carouseldata?.map((item: Dictionary, index: number) => ({
         ...item,
