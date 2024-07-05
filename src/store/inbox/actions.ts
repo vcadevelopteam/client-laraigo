@@ -338,3 +338,5 @@ export const getQuickreplies = (): IActionCall => ({
 export const resetQuickreplies = (): IActionCall => ({ type: actionTypes.GET_QUICKREPLIES_RESET });
 
 export const setSearchTerm = (payload: any): IActionCall => ({ type: actionTypes.SET_SEARCHTERM, payload });
+
+export const setPinnedComments = (payload: any): IActionCall => ({ type: actionTypes.SET_PINNEDCOMMENTS, payload });

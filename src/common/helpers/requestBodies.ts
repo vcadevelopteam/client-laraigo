@@ -5353,3 +5353,8 @@ export const getUserMessageOutbound = ({startdate, enddate, communicationchannel
         communicationchannelid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });
+export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
+    method: "UPDATE_PINNED_MESSAGE",
+    key: "UPDATE_PINNED_MESSAGE",
+    parameters: { conversationid, interactionid, interactiontext, operation },
+});

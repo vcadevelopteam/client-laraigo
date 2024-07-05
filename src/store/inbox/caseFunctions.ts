@@ -653,6 +653,13 @@ export const setSearchTerm = (state: IState, action: IAction): IState => {
     };
 };
 
+export const setPinnedComment = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        pinnedmessages: action.payload||[],
+    };
+};
+
 
 export const resetShowModal = (state: IState, action: IAction): IState => ({
     ...state,
@@ -824,6 +831,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
                 loading: false,
                 error: false,
             },
+            pinnedmessages: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0].pinnedmessages : [],
         }
     } else {
         return state;

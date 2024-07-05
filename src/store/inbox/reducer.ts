@@ -69,6 +69,7 @@ export interface IState {
     }
     quickreplies: IListState<Dictionary>;
     searchTerm: string;
+    pinnedmessages: any;
 }
 
 export const initialState: IState = {
@@ -116,7 +117,8 @@ export const initialState: IState = {
     userGroup: "",
     alertTMO: {},
     quickreplies: initialListState,
-    searchTerm: ""
+    searchTerm: "",
+    pinnedmessages: []
 };
 
 export default createReducer<IState>(initialState, {
@@ -267,6 +269,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SET_HIDE_LOGS_ON_TICKET]: caseFunctions.setHideLogsOnTicket,
     [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
     [actionTypes.SET_SEARCHTERM]: caseFunctions.setSearchTerm,
+    [actionTypes.SET_PINNEDCOMMENTS]: caseFunctions.setPinnedComment,
     [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
     [actionTypes.SET_DATA_USER]: caseFunctions.setDataUser,
     [actionTypes.UPDATE_CLASSIFICATION_PERSON]: caseFunctions.updatePersonClassification,

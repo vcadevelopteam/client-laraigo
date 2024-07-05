@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -13,7 +13,7 @@ import { langKeys } from 'lang/keys';
 import { useSelector } from 'hooks';
 import { manageLightBox } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, validateIsUrl } from 'common/helpers';
+import { convertLocalDate, modifyPinnedMessage, validateIsUrl } from 'common/helpers';
 import Dialog from '@material-ui/core/Dialog';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -21,8 +21,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MapLeaflet from 'components/fields/MapLeaflet';
+import { execute } from 'store/main/actions';
+import { setPinnedComments } from 'store/inbox/actions';
 
-const useStylesInteraction = makeStyles(() => ({
+const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
         width: 230,
         backgroundColor: '#f0f2f5',
@@ -95,6 +97,21 @@ const useStylesInteraction = makeStyles(() => ({
         borderRadius: 4,
         marginRight: 4,
         gap: 4
+    },
+    tackIcon: {
+      width: '15px',
+      height: '15px',
+      position: 'absolute',
+      color: "grey",
+    },
+    tackIconTopRight: {
+      top: theme.spacing(1),
+      right: theme.spacing(1),
+      cursor: "pointer"
+    },
+    tackIconBottomRight: {
+      bottom: theme.spacing(1),
+      right: theme.spacing(1),
     }
 }));
 
@@ -458,16 +475,35 @@ const HighlightedTextSimple = ({ interactiontext, searchTerm }) => {
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy, reply }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
+    const classes2 = useStylesInteraction();
     const searchTerm = useSelector(state => state.inbox.searchTerm);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
     const [height, setHeight] = React.useState("0px");
-
+    const [isHovered, setIsHovered] = useState(false);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
+    
+    function fixComment(interactiontext:string){
+        if(pinnedmessagesSelected.length <20){
+            dispatch(execute(modifyPinnedMessage({
+                interactionid,
+                conversationid: ticketSelected?.conversationid||0,
+                interactiontext,
+                operation: "INSERT"
+            })))
+            dispatch(setPinnedComments([...pinnedmessagesSelected,
+                {
+                  interactionid,
+                  interactiontext
+                } ]))
+        }
+        
+    }
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
-
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text") {
@@ -478,7 +514,11 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client'
                 })}
                 style={{ marginLeft: reply ? 24 : 0 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
+                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isHovered ? 'visible' : 'hidden' }} onClick={()=>fixComment(interactiontext)}/>}
+                <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
                 <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
                 {!showfulltext && (
                     <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>

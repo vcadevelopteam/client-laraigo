@@ -1360,7 +1360,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes,tags }) 
     const tagsWrapperRef = useRef(null);
     const [atEnd, setAtEnd] = useState(false);
     const [showArrows, setShowArrows] = useState(false);
-    const uniqueTags = !!tags.length?[...new Set(tags.split(","))]:[];
+    const uniqueTags = !!tags.length?tags.split(",").filter((word, index, array) => word !== array[index - 1]):[];
 
     useEffect(() => {
         const handleResize = () => {
@@ -1410,16 +1410,16 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes,tags }) 
             </div>
             <div className={classes2.container}>
                 {showArrows && scrollPosition > 0 && (
-                    <IconButton className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')}>
+                    <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')}>
                         <ArrowBackIosIcon />
                     </IconButton>
                 )}
                 <div className={classes2.tagsWrapper} ref={tagsWrapperRef}>
                     {uniqueTags.map((tag, index) => (
-                        <span key={index} className={classes2.tag}>#{tag}</span>
+                        <span key={index} className={classes2.tag}>{tag}</span>
                     ))}
                 </div>
-                {showArrows && !atEnd && <IconButton className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')}>
+                {showArrows && !atEnd && <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')}>
                     <ArrowForwardIosIcon />
                 </IconButton>}
             </div>
@@ -1543,7 +1543,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{justifyContent: "space-between", zIndex: 1}}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} className='col-3'>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} className='col-6'>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1562,7 +1562,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <div  className='col-6' style={{zIndex: 99}}>
+                <div  className='col-3' style={{zIndex: 99, margin: 0}}>
                     <TicketTags classes={classes} tags={ticketSelected?.tags||""}/>
                 </div>
                 <div  className='col-3'>
