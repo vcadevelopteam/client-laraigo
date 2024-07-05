@@ -2043,19 +2043,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     )}
                 </div>}
                 {pageSelected === 1 &&
-                    <div className={classes.containerDetail}>
-                        <CustomTableZyxEditable
-                            columns={columns}
-                            data={tableDataVariables}
-                            download={false}
-                            dataDomains={domainsCustomTable?.data || []}
-                            //loading={multiData.loading}
-                            register={false}
-                            filterGeneral={false}
-                            updateCell={updateCell}
-                            skipAutoReset={skipAutoReset}
-                        />
-                    </div>}
+                <div className={classes.containerDetail}>                    
+                    <CustomTableZyxEditable
+                        columns={columns}
+                        download={false}
+                        data={(tableDataVariables).map(x => ({
+                            ...x,
+                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
+                        }))}
+                        //loading={multiData.loading}
+                        register={false}
+                        filterGeneral={false}
+                        updateCell={updateCell}
+                        skipAutoReset={skipAutoReset}
+                    />
+                </div>}
             </form>
         </div>
     );

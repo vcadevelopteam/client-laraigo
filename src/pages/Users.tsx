@@ -1616,9 +1616,11 @@ const DetailUsers: React.FC<DetailProps> = ({
                 <div className={classes.containerDetail}>                    
                     <CustomTableZyxEditable
                         columns={columns}
-                        data={tableDataVariables}
+                        data={(tableDataVariables).map(x => ({
+                            ...x,
+                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
+                        }))}
                         download={false}
-                        dataDomains={domainsCustomTable?.data||[]}
                         //loading={multiData.loading}
                         register={false}
                         filterGeneral={false}

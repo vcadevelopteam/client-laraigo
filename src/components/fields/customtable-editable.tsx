@@ -140,7 +140,6 @@ const CustomTableZyxEditable = React.memo(({
     loading = false,
     updateCell,
     updateColumn,
-    dataDomains = [],
     skipAutoReset = false,
 }: TableConfig) => {
     const classes = useStyles();
@@ -392,7 +391,7 @@ const CustomTableZyxEditable = React.memo(({
                         return <FieldSelect
                             valueDefault={value}
                             onChange={onChangeFieldSelect}
-                            data={dataDomains?.filter(x=>x.domainname===row?.original?.domainname)}
+                            data={row?.original?.domainvalues||[]}
                             onBlur={onBlurSelect}
                             inputProps={{ style: {fontSize: '14px'} }}
                             optionDesc="domaindesc"
