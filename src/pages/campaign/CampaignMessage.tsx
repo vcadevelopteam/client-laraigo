@@ -102,9 +102,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };
 
     console.log('detectionChangeSource:', detectionChangeSource);
-    if (detectionChangeSource) {
-        console.log('ya no es internal');
-    }
+   
      
     const bodyVariables = detectVariables(templateToUse.body);
     const headerVariables = templateToUse.headertype === 'TEXT' ? detectVariables(templateToUse.header) : [];    
@@ -233,7 +231,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     //useffect seteador de values enviadas a template preview
     //(3) ['"field9"', '"field5"', '"field4"']
     useEffect(() => {
-        if(row){
+        if(row && !detectionChangeSource){
             if (multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
                 const combinedData: ICampaign = {
                     ...multiData[4].data[0],
@@ -342,8 +340,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
     
-        else if (!row){
-            if (!row && multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
+        else{
+            if (multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
                 const combinedData: ICampaign = {
                     ...multiData[4].data[0],
                     operation: 'UPDATE',
@@ -454,7 +452,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     // funcion que updatea los value que le mandamos a templarepreview si el usuario selecciona otra cosa en el updatecampaign
     const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
-        if(row){
+        if(row && !detectionChangeSource){
             const key = selectedOption.key;
             const allVariables = multiData[4].data[0].fields.allVariables || {};
             const field = Object.values(allVariables).find(item => item.column === key);
@@ -510,7 +508,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 setSelectedHeader(key);
             }
         }
-        else if (!row){
+        else {
             const header = selectedOption.key;
             const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
         
@@ -567,7 +565,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     //manejo de cambio de variables en field selects, cambia los keys e index idedntificadores
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'receiver', carouselIndex?: number) => {
-        if (row) {
+        if (row && !detectionChangeSource) {
             console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
     
             const header = selectedOption ? selectedOption.key : '';
@@ -620,7 +618,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             updateTemplate();
         } 
      
-        else if (!row) {
+        else {
             updateValues(variableNumber, selectedOption, variableType, carouselIndex);
             console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
             const header = selectedOption ? selectedOption.key : '';
@@ -640,7 +638,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setVariableSelections(newVariableSelections);
 
             const newSelectedFields = { ...selectedFields };
-            const value = !row ? jsonPersons.length > 0 ? jsonPersons[0][header] : '' : selectedOption.key;
+            const value = row && !detectionChangeSource ? selectedOption.key : jsonPersons.length > 0 ? jsonPersons[0][header] : '';
 
             newSelectedFields[`field${index}`] = {
                 column: selectedOption,
@@ -711,191 +709,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     console.log('campaña completa ya creada', multiData[4].data)
     // console.log('personas de la campaña ya creada', multiData[5])
     
+
+
+
     const updateTemplate = useCallback((resetField = false, fieldToReset = null) => {
        
-        if (!row) {
-            const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
-    
-            if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
-                updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
-            }
-    
-            let newSelectedFields = { ...selectedFields };
-    
-            Object.keys(variableSelections).forEach(key => {
-                let type, number, carouselIndexStr;
-                if (key.startsWith('carousel')) {
-                    [type, carouselIndexStr, number] = key.split('-');
-                } else {
-                    [type, number, carouselIndexStr] = key.split('-');
-                }
-                const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
-                const selectedOption = variableSelections[key];
-                const value = jsonPersons.length > 0 ? jsonPersons[0][selectedOption] : '';
-    
-                let index = number;
-                if (type === 'dynamicUrl') {
-                    index = key;
-                }
-    
-                newSelectedFields[`field${fieldNumber}`] = {
-                    column: selectedOption,
-                    value: value,
-                    type: type,
-                    index: index,
-                    carouselIndex: carouselIndexStr !== undefined ? parseInt(carouselIndexStr, 10) : null
-                };
-    
-                if (type === 'body' && updatedTemplate.body) {
-                    updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                } else if (type === 'header' && updatedTemplate.header) {
-                    updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
-                    const carouselIndex = parseInt(number, 10) - 1;
-                    if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
-                        if (selectedOption === 'default') {
-                            updatedTemplate.carouseldata[carouselIndex].header = templateToUse.carouseldata[carouselIndex].header;
-                        } else {
-                            updatedTemplate.carouseldata[carouselIndex].header = `{{field${fieldNumber}}}`;
-                        }
-                    }
-                } else if (type === 'dynamicUrl') {
-                    if (updatedTemplate.buttonsgeneric) {
-                        updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
-                            const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
-                            const variableSelectionsValue = variableSelections[buttonKey];
-                            if (variableSelectionsValue) {
-                                const variableKey = headers.indexOf(variableSelectionsValue);
-                                if (variableKey !== -1) {
-                                    if (button.btn.type === 'dynamic' && button.btn.url) {
-                                        if (!button.btn.url.includes('{{')) {
-                                            button.btn.url += '/{{1}}';
-                                        }
-                                        const regex = /{{\d+}}/g;
-                                        button.btn.url = button.btn.url.replace(regex, `{{field${variableKey + 1}}}`);
-                                    }
-                                }
-                            }
-                        });
-                    }
-                    if (updatedTemplate.carouseldata) {
-                        updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
-                            item.buttons.forEach((button, btnIndex) => {
-                                if (button.btn.type === 'dynamic') {
-                                    const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
-                                    const variableSelectionsValue = variableSelections[buttonKey];
-                                    if (variableSelectionsValue) {
-                                        const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
-                                        if (!isNaN(fieldNumber)) {
-                                            if (!button.btn.url.includes('{{')) {
-                                                button.btn.url += '/{{1}}';
-                                            }
-                                            const regex = /{{\d+}}/g;
-                                            button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
-                                        }
-                                    }
-                                }
-                            });
-                        });
-                    }
-                } else if (type === 'carousel' && updatedTemplate.carouseldata) {
-                    const index = parseInt(carouselIndexStr, 10);
-                    if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
-                        updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                    }
-                } else if (type === 'bubble' && updatedTemplate.carouseldata) {
-                    const index = parseInt(carouselIndexStr, 10);
-                    if (!isNaN(index)) {
-                        updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                    }
-                } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
-                    const selectedHeader = variableSelections['video-videoHeader'];
-                    if (selectedHeader === 'default') {
-                        updatedTemplate.header = templateToUse.header;
-                    } else {
-                        const fieldNumber = headers.indexOf(selectedHeader) + 1;
-                        if (!isNaN(fieldNumber)) {
-                            updatedTemplate.header = `{{field${fieldNumber}}}`;
-                        }
-                    }
-                }
-            });
-    
-            if (updatedTemplate.category === "AUTHENTICATION" && selectedHeaders['body-authentication']) {
-                const fieldNumber = headers.indexOf(selectedHeaders['body-authentication']) + 1;
-                if (!isNaN(fieldNumber)) {
-                    updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
-                }
-            }
-    
-            if (updatedTemplate.messagetemplatetype === "CAROUSEL" && updatedTemplate.carouseljson) {
-                const carouselData = JSON.parse(updatedTemplate.carouseljson);
-                carouselData.forEach((item, index) => {
-                    const key = `cardImage-cardImage-${index + 1}`;
-                    const variableSelectionKey = variableSelections[key];
-                    if (variableSelectionKey) {
-                        const fieldNumber = headers.indexOf(variableSelectionKey) + 1;
-                        if (!isNaN(fieldNumber)) {
-                            item.header = `{{field${fieldNumber}}}`;
-                        }
-                    }
-                    item.buttons.forEach((button, btnIndex) => {
-                        if (button.btn.type === 'dynamic') {
-                            const buttonKey = `dynamicUrl-dynamicUrl-${index}-${btnIndex}`;
-                            const variableSelectionsValue = variableSelections[buttonKey];
-                            if (variableSelectionsValue) {
-                                const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
-                                if (!isNaN(fieldNumber)) {
-                                    if (!button.btn.url.includes('{{')) {
-                                        button.btn.url += '/{{1}}';
-                                    }
-                                    const regex = /{{\d+}}/g;
-                                    button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
-                                }
-                            }
-                        }
-                    });
-                });
-                updatedTemplate.carouseljson = JSON.stringify(carouselData);
-            }
-    
-            updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
-                header => `field${headers.indexOf(header) + 1}`
-            );
-    
-            newSelectedFields = Object.fromEntries(
-                Object.entries(newSelectedFields).filter(([key, { column }]) =>
-                    Object.values(variableSelections).includes(column)
-                )
-            );
-    
-            const newAllVariables = buildAllVariables(jsonPersons);
-            console.log('final updatedTemplate:', updatedTemplate);
-    
-            setSelectedFields(newSelectedFields);
-            setAllVariables(newAllVariables);
-            setFilledTemplate(updatedTemplate);
-            setDetaildata((prev: any) => ({
-                ...prev,
-                message: updatedTemplate.body,
-                messagetemplateheader: {
-                    ...prev.messagetemplateheader,
-                    value: updatedTemplate.header
-                },
-                messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
-                fields: {
-                    ...prev.fields,
-                    campaignvariables: newSelectedFields,
-                    allVariables: newAllVariables
-                },
-                carouseljson: updatedTemplate.carouseldata,
-                variableshidden: updatedTemplate.variableshidden
-            }));
-        }
-
-    
-
-       if (row) {
+        if (row && !detectionChangeSource) {
             const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
 
             if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
@@ -1139,12 +958,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 }
             });
-           
-            if (!row) {
+
+            if(row && !detectionChangeSource ){
+                console.log("")
+            }
+            else {
                 updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
                     header => `field${columns.indexOf(header) + 2}`
                 );
-            }
+            }          
+          
 
             if (resetField && fieldToReset !== null) {
                 const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
@@ -1153,7 +976,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     updatedTemplate.body = updatedTemplate.body.replace(currentField, `{{${fieldToReset}}}`);
                 }
             }
-            console.log('final updatedTemplate:', updatedTemplate);
+            console.log('editing final updatedTemplate:', updatedTemplate);
             setCurrentTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
                 ...prev,
@@ -1204,7 +1027,194 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setUnavailableVariables([...usedVariables]);   
         }
 
+        else {
+            const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
+    
+            if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
+                updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
+            }
+    
+            let newSelectedFields = { ...selectedFields };
+    
+            Object.keys(variableSelections).forEach(key => {
+                let type, number, carouselIndexStr;
+                if (key.startsWith('carousel')) {
+                    [type, carouselIndexStr, number] = key.split('-');
+                } else {
+                    [type, number, carouselIndexStr] = key.split('-');
+                }
+                const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
+                const selectedOption = variableSelections[key];
+                const value = jsonPersons.length > 0 ? jsonPersons[0][selectedOption] : '';
+    
+                console.log('headers', headers)
+                console.log('jsonPersons', jsonPersons)
+
+                let index = number;
+                if (type === 'dynamicUrl') {
+                    index = key;
+                }
+    
+                newSelectedFields[`field${fieldNumber}`] = {
+                    column: selectedOption,
+                    value: value,
+                    type: type,
+                    index: index,
+                    carouselIndex: carouselIndexStr !== undefined ? parseInt(carouselIndexStr, 10) : null
+                };
+    
+                if (type === 'body' && updatedTemplate.body) {
+                    updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                } else if (type === 'header' && updatedTemplate.header) {
+                    updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                    const carouselIndex = parseInt(number, 10) - 1;
+                    if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
+                        if (selectedOption === 'default') {
+                            updatedTemplate.carouseldata[carouselIndex].header = templateToUse.carouseldata[carouselIndex].header;
+                        } else {
+                            updatedTemplate.carouseldata[carouselIndex].header = `{{field${fieldNumber}}}`;
+                        }
+                    }
+                } else if (type === 'dynamicUrl') {
+                    if (updatedTemplate.buttonsgeneric) {
+                        updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
+                            const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
+                            const variableSelectionsValue = variableSelections[buttonKey];
+                            if (variableSelectionsValue) {
+                                const variableKey = headers.indexOf(variableSelectionsValue);
+                                if (variableKey !== -1) {
+                                    if (button.btn.type === 'dynamic' && button.btn.url) {
+                                        if (!button.btn.url.includes('{{')) {
+                                            button.btn.url += '/{{1}}';
+                                        }
+                                        const regex = /{{\d+}}/g;
+                                        button.btn.url = button.btn.url.replace(regex, `{{field${variableKey + 1}}}`);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    if (updatedTemplate.carouseldata) {
+                        updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
+                            item.buttons.forEach((button, btnIndex) => {
+                                if (button.btn.type === 'dynamic') {
+                                    const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
+                                    const variableSelectionsValue = variableSelections[buttonKey];
+                                    if (variableSelectionsValue) {
+                                        const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
+                                        if (!isNaN(fieldNumber)) {
+                                            if (!button.btn.url.includes('{{')) {
+                                                button.btn.url += '/{{1}}';
+                                            }
+                                            const regex = /{{\d+}}/g;
+                                            button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else if (type === 'carousel' && updatedTemplate.carouseldata) {
+                    const index = parseInt(carouselIndexStr, 10);
+                    if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
+                        updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                    }
+                } else if (type === 'bubble' && updatedTemplate.carouseldata) {
+                    const index = parseInt(carouselIndexStr, 10);
+                    if (!isNaN(index)) {
+                        updatedTemplate.carouseldata[index].body = updatedTemplate.carouseldata[index].body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
+                    }
+                } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
+                    const selectedHeader = variableSelections['video-videoHeader'];
+                    if (selectedHeader === 'default') {
+                        updatedTemplate.header = templateToUse.header;
+                    } else {
+                        const fieldNumber = headers.indexOf(selectedHeader) + 1;
+                        if (!isNaN(fieldNumber)) {
+                            updatedTemplate.header = `{{field${fieldNumber}}}`;
+                        }
+                    }
+                }
+            });
+    
+            if (updatedTemplate.category === "AUTHENTICATION" && selectedHeaders['body-authentication']) {
+                const fieldNumber = headers.indexOf(selectedHeaders['body-authentication']) + 1;
+                if (!isNaN(fieldNumber)) {
+                    updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
+                }
+            }
+    
+            if (updatedTemplate.messagetemplatetype === "CAROUSEL" && updatedTemplate.carouseljson) {
+                const carouselData = JSON.parse(updatedTemplate.carouseljson);
+                carouselData.forEach((item, index) => {
+                    const key = `cardImage-cardImage-${index + 1}`;
+                    const variableSelectionKey = variableSelections[key];
+                    if (variableSelectionKey) {
+                        const fieldNumber = headers.indexOf(variableSelectionKey) + 1;
+                        if (!isNaN(fieldNumber)) {
+                            item.header = `{{field${fieldNumber}}}`;
+                        }
+                    }
+                    item.buttons.forEach((button, btnIndex) => {
+                        if (button.btn.type === 'dynamic') {
+                            const buttonKey = `dynamicUrl-dynamicUrl-${index}-${btnIndex}`;
+                            const variableSelectionsValue = variableSelections[buttonKey];
+                            if (variableSelectionsValue) {
+                                const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
+                                if (!isNaN(fieldNumber)) {
+                                    if (!button.btn.url.includes('{{')) {
+                                        button.btn.url += '/{{1}}';
+                                    }
+                                    const regex = /{{\d+}}/g;
+                                    button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
+                                }
+                            }
+                        }
+                    });
+                });
+                updatedTemplate.carouseljson = JSON.stringify(carouselData);
+            }
+    
+            updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
+                header => `field${headers.indexOf(header) + 1}`
+            );
+    
+            newSelectedFields = Object.fromEntries(
+                Object.entries(newSelectedFields).filter(([key, { column }]) =>
+                    Object.values(variableSelections).includes(column)
+                )
+            );
+    
+            const newAllVariables = buildAllVariables(jsonPersons);
+            console.log('calato final updatedTemplate:', updatedTemplate);
+    
+            setSelectedFields(newSelectedFields);
+            setAllVariables(newAllVariables);
+            setFilledTemplate(updatedTemplate);
+            setDetaildata((prev: any) => ({
+                ...prev,
+                message: updatedTemplate.body,
+                messagetemplateheader: {
+                    ...prev.messagetemplateheader,
+                    value: updatedTemplate.header
+                },
+                messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
+                fields: {
+                    ...prev.fields,
+                    campaignvariables: newSelectedFields,
+                    allVariables: newAllVariables
+                },
+                carouseljson: updatedTemplate.carouseldata,
+                variableshidden: updatedTemplate.variableshidden
+            }));
+        }
     }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons, variablesBodyView, variablesAdditionalView, variablesCarouselBubbleView, variablesUrlView, variablesHeaderView, variablesCardImageView]);
+
+
+
+
+
 
     //logica para person y lead, previsualizacion de campaña ya creada
     const [unavailableValues, setUnavailableValues] = useState([]);
@@ -1381,7 +1391,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
     
             if (!valueDefault) {
-                if (row) {
+                if (row && !detectionChangeSource ) {
                     const fieldsInButtons = extractFieldKeysFromButtonsgeneric(currentTemplate.buttonsgeneric, currentTemplate.carouseldata);
                     const fieldKey = fieldsInButtons[index];
                     if (fieldKey) {
@@ -1455,7 +1465,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     <div className="row-zyx">
 
                     <FormControl className="col-12">
-                        {row ? (                           
+                        {row && !detectionChangeSource  ? (                           
                             <>
                                 <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
                                 <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>
@@ -1509,7 +1519,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         <FieldSelectDisabled
                                             variant="outlined"
                                             uset={true}
-                                            disabled={row ? true : false}
                                             label='Campos archivo'
                                             className="col-12"
                                             data={dataToUse.map(header => ({ key: header, value: header }))}
@@ -1545,7 +1554,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <div className="subtitle"> {'Selecciona los campos que ocuparán la posición de cada variable para el envío de la campaña'} </div>
                            
                             <div className={classes.containerStyle}>                             
-                            {row ? (
+                            {row && !detectionChangeSource  ? (
                                 (
                                     (() => {
                                         const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
@@ -1631,7 +1640,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
                             <div className={classes.containerStyle}>                               
                                 {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
-                                  row ? (
+                                  row && !detectionChangeSource  ? (
                                     (() => {
                                         const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
                                         const headerFields = Object.values(campaignVariables).filter(field => field.type === 'video' || field.type === 'image');                                        
@@ -1696,7 +1705,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
                            
                             <div className={classes.containerStyle}>
-                                {row ? (
+                                {row && !detectionChangeSource  ? (
                                     <>
                                       {variablesBodyView.map((variable, index) => {
                                         const fieldsInBody = extractFieldKeysFromTemplate(currentTemplate.body);
@@ -1704,7 +1713,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         let valueDefault;
 
                                         const allVariables = multiData[4].data[0].fields.allVariables;
-                                        const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === fieldKey);
+                                        const selectedField = Object.keys(allVariables || {}).find(key => allVariables[key].column === fieldKey);
                                         if (selectedField) {
                                             valueDefault = allVariables[selectedField].column;
                                         } else {
@@ -1815,7 +1824,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         
                                         <div className={classes.containerStyle}>                                       
                                             {item.header && (
-                                                row ? (
+                                                row && !detectionChangeSource  ? (
                                                     (() => {
                                                         const cardImageFields = multiData[4].data[0].fields?.campaignvariables || {};
                                                         const cardImageField = Object.values(cardImageFields).find(field => field.type === 'cardImage' && parseInt(field.index, 10) === index + 1);
@@ -1880,7 +1889,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
 
                                         <div className={classes.containerStyle}>                                       
-                                            {row ? (
+                                            {row && !detectionChangeSource  ? (
                                                 variablesCarouselBubbleView[index]?.map((variable, variableIndex) => {
                                                     const fieldsInBody = extractFieldKeysFromTemplate(currentTemplate.carouseldata[index].body);
                                                     const fieldKey = fieldsInBody[variableIndex];
@@ -1986,7 +1995,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 <AddIcon /> Añadir variable adicional
                             </div>
                             <div className={classes.containerStyle}>
-                            {row ? (
+                            {row && !detectionChangeSource  ? (
                                 <>
                                     {variablesAdditionalView.map((variable, index) => {
                                         const cleanVariable = variable.replace(/"/g, '');                                        
@@ -2093,7 +2102,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                         <div className={classes.subtitle}> {'Previsualiza un ejemplo de las variables adicionales elegidas en el apartado de Variables Adicionales'} </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-                        {row ? (
+                        {row && !detectionChangeSource ? (
                             variablesAdditionalView.map((variable, index) => {
                                 const cleanVariable = variable.replace(/"/g, '');
                                 const fieldNumber = parseInt(cleanVariable.replace("field", ""), 10) - 2;
