@@ -2,10 +2,10 @@ import { ChannelChat01 } from "icons";
 import { Close, CloudUpload } from "@material-ui/icons";
 import { ColorChangeHandler } from "react-color";
 import { ColorInput, FieldEdit, IOSSwitch } from "components";
-import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
+import { getEditChatWebChannel, getInsertChatwebChannel, updateMetachannels } from "common/helpers";
 import { IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
 import { langKeys } from "lang/keys";
-import { showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import { TabPanel } from "pages/crm/components";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -1795,6 +1795,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (edit && !channel) {
             if (whatsAppData?.onboarding) {
+                updateMetachannels(11)
                 history.push(paths.METACHANNELS, whatsAppData);
             } else {
                 history.push(paths.CHANNELS);
@@ -1849,6 +1850,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 }));
 
                 if (whatsAppData?.onboarding) {
+                    updateMetachannels(11)
                     history.push(paths.METACHANNELS, whatsAppData);
                 } else {
                     history.push(paths.CHANNELS);
@@ -1952,8 +1954,18 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
         e.preventDefault();
 
         if (whatsAppData?.onboarding) {
-            history.push(paths.METACHANNELS)
-        }
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.channelconfigsave),
+                callback: () => {
+                    handleSubmit("DEFAULT", false, "#7721ad");
+                },
+                callbackcancel: () => {
+                    history.push(paths.METACHANNELS)
+                },
+                textCancel: t(langKeys.decline)
+            }))
+        } 
         else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
@@ -2039,6 +2051,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                     onSubmit={handleSubmit}
                     onClose={() => setShowFinalStep(false)}
                     channel={channel}
+                    whatsAppData={whatsAppData}
                 />
             </div>
         </div>
@@ -2072,9 +2085,10 @@ interface ChannelAddEndProps {
     onClose?: () => void;
     channel: IChannel | null;
     insertChannel: any;
+    whatsAppData?: any;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel, insertChannel }) => {
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel, insertChannel, whatsAppData }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
@@ -2083,10 +2097,25 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const [coloricon, setColoricon] = useState("#7721ad");
     const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
+    const dispatch = useDispatch();
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
-        if (!integrationId) onClose?.();
+        if (whatsAppData?.onboarding) {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.channelconfigsave),
+                callback: () => {
+                    onSubmit(name||"DEFAULT", false, hexIconColor);
+                },
+                callbackcancel: () => {
+                    window.location.reload();
+                },
+                textCancel: t(langKeys.decline)
+            }))
+        } else {
+            if (!integrationId) onClose?.();
+        }
     };
 
     const handleSave = () => {

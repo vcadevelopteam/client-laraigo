@@ -8,7 +8,7 @@ import { IChannel } from "@types";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { listYouTube } from "store/google/actions";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
@@ -18,6 +18,7 @@ import GoogleLogInFrame from "./GoogleLogInFrame";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
+import { updateMetachannels } from "common/helpers";
 
 interface WhatsAppData {
     row?: unknown;
@@ -204,8 +205,13 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setSetins(false);
-                setWaitSave(false);
-                setViewSelected("enable-virtual-assistant")
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                    updateMetachannels(10)
+                } else {
+                    setWaitSave(false);
+                    setViewSelected("enable-virtual-assistant");
+                }
             } else if (!executeResult) {
                 dispatch(
                     showSnackbar({
@@ -315,7 +321,25 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                         key={"mainview"}
                         onClick={(e) => {
                             e.preventDefault();
-                            setViewSelected("view1");
+                            if (whatsAppData?.onboarding) {
+                                dispatch(manageConfirmation({
+                                    visible: true,
+                                    question: t(langKeys.channelconfigsave),
+                                    callback: () => {
+                                        if (channelreg || mainResult.loading || nextbutton) {
+                                            dispatch(showSnackbar({ show: true, severity: "error", message: "Debe poner un nombre al canal" }))
+                                        } else {
+                                            finishreg()
+                                        }
+                                    },
+                                    callbackcancel: () => {
+                                        history.push(paths.METACHANNELS)
+                                    },
+                                    textCancel: t(langKeys.decline)
+                                }))
+                            } else {
+                                setViewSelected("view1");
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}

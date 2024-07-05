@@ -10,8 +10,8 @@ import { useDispatch } from "react-redux";
 import { apiUrls } from "common/constants";
 import { TabPanel } from "pages/crm/components";
 import { useSelector } from "hooks";
-import { showSnackbar } from "store/popus/actions";
-import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
+import { manageConfirmation, showSnackbar } from "store/popus/actions";
+import { getEditChatWebChannel, getInsertChatwebChannel, updateMetachannels } from "common/helpers";
 
 import {
     editChannel as getEditChannel,
@@ -1055,6 +1055,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (edit && !channel) {
             if (whatsAppData?.onboarding) {
+                updateMetachannels(14)
                 history.push(paths.METACHANNELS, whatsAppData);
             } else {
                 history.push(paths.CHANNELS);
@@ -1108,6 +1109,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
             );
 
             if (whatsAppData?.onboarding) {
+                updateMetachannels(14)
                 history.push(paths.METACHANNELS, whatsAppData);
             } else {
                 history.push(paths.CHANNELS);
@@ -1214,7 +1216,20 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
-        if (whatsAppData?.onboarding) { history.push(paths.METACHANNELS) }
+        
+        if (whatsAppData?.onboarding) {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.channelconfigsave),
+                callback: () => {
+                    handleSubmit("DEFAULT", false);
+                },
+                callbackcancel: () => {
+                    history.push(paths.METACHANNELS)
+                },
+                textCancel: t(langKeys.decline)
+            }))
+        } 
         else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
@@ -1320,11 +1335,26 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const auto = true;
     const [name, setName] = useState(channel?.communicationchanneldesc ?? "");
     const location = useLocation();
+    const dispatch = useDispatch();
     const whatsAppData = location.state as WhatsAppData | null;
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
-        if (!integrationId) onClose?.();
+        if (whatsAppData?.onboarding) {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.channelconfigsave),
+                callback: () => {
+                    onSubmit(name||"DEFAULT", false);
+                },
+                callbackcancel: () => {
+                    window.location.reload();
+                },
+                textCancel: t(langKeys.decline)
+            }))
+        } else {
+            if (!integrationId) onClose?.();
+        }
     };
 
     const handleSave = () => {

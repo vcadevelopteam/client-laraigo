@@ -14,6 +14,7 @@ import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 import React, { FC, useEffect, useState } from "react";
+import { updateMetachannels } from "common/helpers";
 
 interface WhatsAppData {
     row?: unknown;
@@ -96,6 +97,10 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
                 setShowClose(true);
                 setShowScript(true);
                 setIntegrationId(mainResult.data[0].integrationId);
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                    updateMetachannels(21)
+                }
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),

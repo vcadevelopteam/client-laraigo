@@ -157,13 +157,6 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
         }
     }, [mainResult]);
 
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult]);
-
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsList(r.accessToken, `${metatype.includes("Instagram") ? apiUrls.INSTAGRAMAPP : apiUrls.FACEBOOKAPP}`));

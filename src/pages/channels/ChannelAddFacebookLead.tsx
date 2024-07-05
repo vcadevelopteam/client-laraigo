@@ -5,7 +5,7 @@ import { Facebook as FacebookIcon } from "@material-ui/icons";
 import { getChannelsList, insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
@@ -17,6 +17,7 @@ import FacebookLogin from "react-facebook-login";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import React, { FC, useEffect, useState } from "react";
+import { updateMetachannels } from "common/helpers";
 
 interface WhatsAppData {
     row?: unknown;
@@ -97,8 +98,13 @@ export const ChannelAddFacebookLead: FC<{ edit: boolean }> = ({ edit }) => {
                 setSetins(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
-                setViewSelected("enable-virtual-assistant")
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                    updateMetachannels(17)
+                } else {
+                    setWaitSave(false);
+                    setViewSelected("enable-virtual-assistant");
+                }
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
@@ -239,7 +245,25 @@ export const ChannelAddFacebookLead: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            setViewSelected("view1");
+                            if (whatsAppData?.onboarding) {
+                                dispatch(manageConfirmation({
+                                    visible: true,
+                                    question: t(langKeys.channelconfigsave),
+                                    callback: () => {
+                                        if (channelreg || mainResult.loading || nextbutton) {
+                                            dispatch(showSnackbar({ show: true, severity: "error", message: "Debe poner un nombre al canal" }))
+                                        } else {
+                                            finishreg()
+                                        }
+                                    },
+                                    callbackcancel: () => {
+                                        history.push(paths.METACHANNELS)
+                                    },
+                                    textCancel: t(langKeys.decline)
+                                }))
+                            } else {
+                                setViewSelected("view1");
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}
