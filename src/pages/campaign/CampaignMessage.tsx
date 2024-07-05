@@ -999,8 +999,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
                 const header = variableSelections[key];
                 const columns = templateData.fields?.columns || [];
-                const fieldNumber = columns.indexOf(header) + 2;            
-    
+                const fieldNumber = columns.indexOf(header) + 2;         
+                
                 if (type === 'body' && updatedTemplate.body) {
                     const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
                     if (placeholders.length >= number) {
@@ -1141,8 +1141,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
                     const selectedHeader = variableSelections['video-videoHeader'];
-                    if (selectedHeader === 'default') {
-                        updatedTemplate.header = templateToUse.header;
+                    if (selectedHeader === 'Default ') {
+                        const messageTemplateName = multiData[4].data[0].messagetemplatename;
+                        const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
+                        if (campaign && campaign.header) {
+                            updatedTemplate.header = campaign.header;
+                            console.log(`Updated video header to default value: ${campaign.header}`);
+                        } else {
+                            console.log(`No matching campaign found in multiData[3] for messagetemplatename: ${messageTemplateName}`);
+                        }
                     } else {
                         const fieldNumber = columns.indexOf(selectedHeader) + 2;
                         if (!isNaN(fieldNumber)) {
