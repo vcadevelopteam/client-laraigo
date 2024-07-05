@@ -619,7 +619,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     };
 
     useEffect(() => {
-        console.log("[save, executeRes]", detaildata.variableshidden)
         if (save === 'VALIDATION') {
             checkValidation();
             setSave('PREPARING');
