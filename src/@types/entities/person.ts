@@ -64,6 +64,7 @@ export interface IPerson {
     address?: string;
     healthprofessional?: string;
     referralchannel?: string;
+    pinnedmessages?: any;
 }
 
 export interface IPersonCommunicationChannel {

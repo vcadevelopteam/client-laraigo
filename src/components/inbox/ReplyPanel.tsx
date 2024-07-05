@@ -1006,6 +1006,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([]);
     const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
+    const [numRows, setNumRows] = useState(2);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([
         { type: "paragraph", align: "left", children: [{ text: "" }] },
     ]);
@@ -1017,6 +1018,14 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
     const inputRef = useRef(null);
+
+    const handleInputChange = (e:any) => {
+        const lines = e.target.value.split('\n').length;
+        if (lines <= 6) {
+            setNumRows(lines);
+            setText(e.target.value);
+        }
+    };
 
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
@@ -1117,6 +1126,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     const triggerReplyMessage = () => {
         if (copyEmails.error) return;
+        setNumRows(2);
         const callback = () => {
             let wasSend = false;
             if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
@@ -1468,12 +1478,12 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     }
 
-  const handleKeyDown = (event) => {
-    if (event.altKey && event.key === 'Enter') {
-      event.preventDefault();
-      setText(text + '\n');
-    }
-  };
+    const handleKeyDown = (event) => {
+        if (event.altKey && event.key === 'Enter') {
+            event.preventDefault();
+            setText(text + '\n');
+        }
+    };
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
@@ -1613,9 +1623,9 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                         <div className={classes.containerResponse}>
                             {(record || startRecording) && (
                                 <div
-                                style={{
-                                    display: "flex",
-                                }}>
+                                    style={{
+                                        display: "flex",
+                                    }}>
                                     <div
                                         style={{
                                             display: "flex",
@@ -1641,7 +1651,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 record
                                             ),
                                         })}
-                                        style={{marginTop: 12}}
+                                        style={{ marginTop: 12 }}
                                         onClick={triggerReplyMessage}
                                     >
                                         <SendIcon />
@@ -1670,10 +1680,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             <InputBase
                                                 fullWidth
                                                 value={text}
-                                                onChange={(e) => setText(e.target.value)}
+                                                onChange={handleInputChange}
                                                 placeholder="Send your message..."
                                                 onKeyPress={handleKeyPress}
-                                                rows={2}
+                                                rows={numRows}
                                                 multiline
                                                 onKeyDown={handleKeyDown}
                                                 inputProps={{ "aria-label": "naked" }}

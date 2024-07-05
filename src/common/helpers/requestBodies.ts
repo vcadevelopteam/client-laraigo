@@ -5108,3 +5108,8 @@ export const integrationManagerCodePersonDel = ({integrationmanagerid, type, ids
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     parameters: { integrationmanagerid, type, ids },
 });
+export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
+    method: "UPDATE_PINNED_MESSAGE",
+    key: "UPDATE_PINNED_MESSAGE",
+    parameters: { conversationid, interactionid, interactiontext, operation },
+});
