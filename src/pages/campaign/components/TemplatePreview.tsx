@@ -429,8 +429,6 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const [maxCardHeight, setMaxCardHeight] = useState(0);
     const cardRefs = useRef<HTMLDivElement[]>([]);
     const videoUrl = (headerVariableValues && headerVariableValues[1]) ? headerVariableValues[1] : videoHeaderValue || selectedTemplate.header;
-    console.log('bubbleVariableValues llegando', bubbleVariableValues)
-    console.log('bodyVariableValues llegando', bodyVariableValues)
 
     useEffect(() => {
         if (cardRefs.current.length > 0) {
