@@ -178,7 +178,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
             }) : [];    
             const templateButtonsUrlVariables = campaignData.messagetemplatebuttons ? campaignData.messagetemplatebuttons.flatMap((button: Dictionary) => {
-                return detectVariablesField(button.btn.url);
+                return detectVariablesField(button.btn?.url);
             }) : [];
             const allUrlVariables = [...carouselUrlVariables, ...templateButtonsUrlVariables];
             const headerVariable = campaignData.messagetemplateheader ? detectVariablesField(campaignData.messagetemplateheader.value) : [];

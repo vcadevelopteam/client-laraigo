@@ -445,8 +445,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     // Internal data
     useEffect(() => {
+        
         if (!auxResult.loading && !auxResult.error && auxResult.data.length > 0) {
             if (detaildata.source === 'INTERNAL') {
+                
                 setJsonData(auxResult.data);
                 let selectedRowsTemp = {};
                 if (detaildata.selectedRows) {
@@ -650,14 +652,14 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     // External Data Logic //
     const changeStep = (step) => {
         switch (detaildata.source) {
-            case 'INTERNAL':
+            case 'INTERNAL':                
                 setDetaildata({
                     ...detaildata,
                     headers: setHeaderTableData(selectedColumns),
                     jsonData,
                     selectedColumns,
                     selectedRows,
-                    person: jsonData.map(j => Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' })
+                    person: jsonData.map(j => Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : j)
                 });
                 break;
             case 'EXTERNAL':
