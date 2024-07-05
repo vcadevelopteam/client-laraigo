@@ -190,7 +190,7 @@ type FormFields = {
     quantity: number,
     batchjson: BatchJson,
     carouseljson: Dictionary[],
-    variableshidden: Dictionary[],
+    variableshidden: string[],
     fields: SelectedColumns,
     operation: string,
     sourcechanged: boolean,
@@ -245,7 +245,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatelanguage: '',
             messagetemplatepriority: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
-            batchjson: detaildata?.batchjson?.[0] || initialBatchjson,
+            batchjson: JSON.stringify(detaildata?.batchjson) === "[]" ? initialBatchjson : (detaildata?.batchjson?.[0] || initialBatchjson),
             carouseljson: [],
             variableshidden: [],
             fields: new SelectedColumns(),
@@ -319,7 +319,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         });
         register('batchjson.time', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value.length)) || t(langKeys.field_required) });
-        register('batchjson.quantity', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value > 0)) || t(langKeys.field_required) });
+        // register('batchjson.quantity', { validate: (value: any) => (getValues('executiontype') !== 'SCHEDULED' || (value && value > 0)) || t(langKeys.field_required) });
         register('communicationchannelid', { validate: (value: any) => (value && value > 0) || t(langKeys.field_required) });
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -329,7 +329,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [edit, register, multiData, groupObligatory]);
     
-    console.log(selectedTemplate)
+    //console.log(selectedTemplate)
 
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
@@ -378,7 +378,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatelanguage', data.messagetemplatelanguage || '');
         setValue('messagetemplatepriority', data.messagetemplatepriority || '');
         setValue('executiontype', data.executiontype);
-        setValue('batchjson', data.batchjson || []);
+        const batchjson = JSON.stringify(detaildata?.batchjson) === "[]" ? initialBatchjson : (Array.isArray(detaildata?.batchjson) ? (detaildata.batchjson || []) : detaildata.batchjson)
+    
+        setValue('batchjson', batchjson);
         setValue('carouseljson', carouseljsonData || ['faileaste']);
         setValue('fields', { ...new SelectedColumns(), ...data.fields });
     }
@@ -387,12 +389,18 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         if (frameProps.checkPage) {
             trigger().then((valid: any) => {
+                console.log(valid)
+                console.log("errors", errors)
                 const data = getValues();
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = templateButtonsData || [];
                 data.batchjson = data.batchjson || [];
                 data.carouseljson = carouseljsonData || ['faileaste'];
                 data.fields = { ...new SelectedColumns(), ...data.fields };
+                
+
+                data.variableshidden = detaildata.variableshidden || [];
+
                 setDetaildata({ ...detaildata, ...data });
                 setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: valid } });
                 if (frameProps.page === 2 && !frameProps.valid[1]) {
@@ -566,6 +574,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const classNameCondition = edit && getValues('executiontype') === 'SCHEDULED' ? 'col-12' : 'col-6'
+
     //console.log(selectedTemplate)
     //console.log("Campaign General Data:", detaildata);
 

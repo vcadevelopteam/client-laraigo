@@ -13,6 +13,7 @@ import { Button, Tabs } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { AntTab, AntTabPanel, AntTabPanelAux, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
+import { error } from 'console';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -369,11 +370,13 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
             if (detaildata.executiontype === 'SCHEDULED') {
                 const { date, time, quantity } = detaildata.batchjson || {};
-                if (!date || !time || !quantity) {
+                if (!date || !time) {
                     valid = false;
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
                 }
             }
+
+            console.log("detaildata.variableshidden", detaildata.variableshidden)
 
             setDetaildata({
                 ...detaildata,
@@ -384,7 +387,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
                 fields: detaildata.fields,
                 carouseljson: detaildata.carouseljson,
-                variableshidden: detaildata.variableshidden,
+                // variableshidden: detaildata.variableshidden,
                 message: newmessages.message,
             });
 

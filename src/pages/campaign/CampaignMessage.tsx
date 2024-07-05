@@ -178,7 +178,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
             }) : [];    
             const templateButtonsUrlVariables = campaignData.messagetemplatebuttons ? campaignData.messagetemplatebuttons.flatMap((button: Dictionary) => {
-                return detectVariablesField(button.btn.url);
+                return detectVariablesField(button.btn?.url);
             }) : [];
             const allUrlVariables = [...carouselUrlVariables, ...templateButtonsUrlVariables];
             const headerVariable = campaignData.messagetemplateheader ? detectVariablesField(campaignData.messagetemplateheader.value) : [];
@@ -187,7 +187,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }) : [];
 
             setVariablesBodyView(bodyVariables);
-            setVariablesAdditionalView(variablesHiddenMultidata);
+            setVariablesAdditionalView(variablesHiddenMultidata.map(variable => variable));
             setVariablesCarouselBubbleView(carouselBubbleVariables);
             setVariablesUrlView(allUrlVariables);     
             setSelectedAuthVariable(JSON.stringify(bodyVariableValues));
@@ -224,119 +224,340 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return processedData;
     };
 
+    //useffect seteador de values enviadas a template preview
     useEffect(() => {
-        if (multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
-            const combinedData: ICampaign = {
-                ...multiData[4].data[0],
-                operation: 'UPDATE',
-            };
-    
-            setCampaignViewDetails(combinedData);
-            const processedData = processMultiData(multiData[4].data);
-            const bodyVariables = combinedData.message ? detectVariablesField(combinedData.message) : [];
-            const variablesHiddenMultidata = combinedData.variableshidden || [];           
-            const carouselBubbleVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => {
-                return detectVariablesField(item.body);
-            }) : [];
-            const urlVariables = combinedData.carouseljson ? combinedData.carouseljson.flatMap(item => {
-                return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
-            }) : [];
-            const templateButtonsUrlVariables = combinedData.messagetemplatebuttons ? combinedData.messagetemplatebuttons.flatMap(button => {
-                return detectVariablesField(button.btn.url);
-            }) : [];    
-            const allUrlVariables = [...urlVariables, ...templateButtonsUrlVariables];
-            const headerVariable = combinedData.messagetemplateheader ? detectVariablesField(combinedData.messagetemplateheader.value) : [];
-            const cardImageVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => {
-                return detectVariablesField(item.header);
-            }) : [];
-    
-            setVariablesBodyView(bodyVariables);
-            setVariablesAdditionalView(variablesHiddenMultidata.map(variable => JSON.stringify(variable)));
-            setVariablesCarouselBubbleView(carouselBubbleVariables);
-            setVariablesUrlView(allUrlVariables);
-            setVariablesHeaderView(headerVariable);
-            setVariablesCardImageView(cardImageVariables);
-    
-            const newBodyVariableValues = {};
-            const newAdditionalVariableValues = {};
-            const newCarouselBubbleVariableValues = {};
-            const newDynamicUrlValues = {};
-            const newHeaderValue = {};
-            const newCardImageValue = {};
-    
-            if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
-                const personData = multiData[5].data[0];
-    
-                Object.entries(processedData.bodyVariableValues).forEach(([key, fieldKey], index) => {
-                    newBodyVariableValues[index + 1] = personData[fieldKey];
+        if(row){
+            if (multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
+                const combinedData: ICampaign = {
+                    ...multiData[4].data[0],
+                    operation: 'UPDATE',
+                };
+        
+                console.log('Combined Data:', combinedData);
+        
+                setCampaignViewDetails(combinedData);
+                const processedData = processMultiData(multiData[4].data);
+                const bodyVariables = combinedData.message ? detectVariablesField(combinedData.message) : [];
+                const variablesHiddenMultidata = combinedData.variableshidden || [];           
+                const carouselBubbleVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => detectVariablesField(item.body)) : [];
+                const urlVariables = combinedData.carouseljson ? combinedData.carouseljson.flatMap(item => {
+                    return item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : [];
+                }) : [];
+                const templateButtonsUrlVariables = combinedData.messagetemplatebuttons ? combinedData.messagetemplatebuttons.flatMap(button => {
+                    return detectVariablesField(button.btn.url);
+                }) : [];
+                const allUrlVariables = [...urlVariables, ...templateButtonsUrlVariables];
+                const headerVariable = combinedData.messagetemplateheader ? detectVariablesField(combinedData.messagetemplateheader.value) : [];
+                const cardImageVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => {
+                    return detectVariablesField(item.header);
+                }) : [];
+        
+                setVariablesBodyView(bodyVariables);
+                setVariablesAdditionalView(variablesHiddenMultidata.map(variable => JSON.stringify(variable)));
+                setVariablesCarouselBubbleView(carouselBubbleVariables);
+                setVariablesUrlView(allUrlVariables);
+                setVariablesHeaderView(headerVariable);
+                setVariablesCardImageView(cardImageVariables);
+        
+                const newBodyVariableValues = {};
+                const newAdditionalVariableValues = {};
+                const newCarouselBubbleVariableValues = {};
+                const newDynamicUrlValues = {};
+                const newHeaderValue = {};
+                const newCardImageValue = {};
+        
+                const allVariables = combinedData?.fields?.allVariables || {};
+        
+                bodyVariables.forEach((variable, index) => {
+                    const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                    newBodyVariableValues[index + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                 });
-    
+                
                 variablesHiddenMultidata.forEach(variable => {
                     const fieldIndex = parseInt(variable.replace('field', ''), 10);
-                    if (personData[`field${fieldIndex}`]) {
-                        newAdditionalVariableValues[variable] = personData[`field${fieldIndex}`];
-                    }
+                    newAdditionalVariableValues[variable] = allVariables[`field${fieldIndex}`]?.value || '';
                 });
-    
+        
                 carouselBubbleVariables.forEach((variables, carouselIndex) => {
                     newCarouselBubbleVariableValues[carouselIndex] = {};
                     variables.forEach((variable, index) => {
                         const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
-                        newCarouselBubbleVariableValues[carouselIndex][index + 1] = personData[`field${fieldIndex}`];
+                        newCarouselBubbleVariableValues[carouselIndex][index + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                     });
                 });
-    
+        
                 allUrlVariables.forEach((variable, index) => {
                     const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
-                    newDynamicUrlValues[index + 1] = personData[`field${fieldIndex}`];
+                    newDynamicUrlValues[index + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                 });
-    
+        
+                console.log('Before setting headerVariableValues:', newHeaderValue);
                 headerVariable.forEach((variable, index) => {
                     const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
-                    newHeaderValue[index + 1] = personData[`field${fieldIndex}`];
+                    newHeaderValue[index + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                 });
-    
+                console.log('After setting headerVariableValues:', newHeaderValue);
+        
                 cardImageVariables.forEach((variables, carouselIndex) => {
                     if (variables.length > 0 && variables[0].variable) {
                         const fieldIndex = parseInt(variables[0].variable.replace('field', ''), 10);
-                        newCardImageValue[carouselIndex + 1] = personData[`field${fieldIndex}`];
+                        newCardImageValue[carouselIndex + 1] = allVariables[`field${fieldIndex}`]?.value || '';
                     }
                 });
-            }
-    
-            setBodyVariableValues(newBodyVariableValues);
-            setHeaderVariableValues(newHeaderValue);
-            setVideoHeaderValue(processedData.videoHeaderValue);
-            setCardImageValues(newCardImageValue);
-            setDynamicUrlValues(newDynamicUrlValues);
-            setBubbleVariableValues(newCarouselBubbleVariableValues);
-            setCarouselVariableValues(processedData.carouselVariableValues);
-            setAdditionalVariableValues(newAdditionalVariableValues);
-            setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
-            setSelectedAuthVariable(processedData.selectedAuthVariable);
-
-            if (combinedData.fields && combinedData.fields.primarykey) {
-                setSelectedHeader(combinedData.fields.primarykey);
-            }
-    
-            const bodyVars = detectVariablesField(combinedData.message);
-            const newSelectedHeaders = { ...selectedHeaders };
-    
-            bodyVars.forEach((variable, index) => {
-                let fieldIndex;
-                if (typeof variable.variable === 'string' && variable.variable.startsWith('field')) {
-                    fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
-                } else {
-                    fieldIndex = parseInt(variable.variable, 10);
+        
+                console.log('Final Card Image Values:', newCardImageValue);
+        
+                setBodyVariableValues(newBodyVariableValues);
+                setHeaderVariableValues(newHeaderValue);
+                setVideoHeaderValue(processedData.videoHeaderValue);
+                setCardImageValues(newCardImageValue);
+                setDynamicUrlValues(newDynamicUrlValues);
+                setBubbleVariableValues(newCarouselBubbleVariableValues);
+                setCarouselVariableValues(processedData.carouselVariableValues);
+                setAdditionalVariableValues(newAdditionalVariableValues);
+                setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
+                setSelectedAuthVariable(processedData.selectedAuthVariable);
+        
+                if (combinedData.fields && combinedData.fields.primarykey) {
+                    setSelectedHeader(combinedData.fields.primarykey);
                 }
-                const header = combinedData.fields.columns[fieldIndex - 2]; 
-                newSelectedHeaders[`body-${index + 1}`] = header;
-            });
-    
-            setSelectedHeaders(newSelectedHeaders);
-            updateTemplate(); 
+        
+                const bodyVars = detectVariablesField(combinedData.message);
+                const newSelectedHeaders = { ...selectedHeaders };
+        
+                bodyVars.forEach((variable, index) => {
+                    let fieldIndex;
+                    if (typeof variable.variable === 'string' && variable.variable.startsWith('field')) {
+                        fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                    } else {
+                        fieldIndex = parseInt(variable.variable, 10);
+                    }
+                    const header = combinedData.fields.columns[fieldIndex - 2]; 
+                    newSelectedHeaders[`body-${index + 1}`] = header;
+                });
+        
+                console.log('New Selected Headers:', newSelectedHeaders);
+        
+                setSelectedHeaders(newSelectedHeaders);
+                updateTemplate(); 
+            }
         }
+    
+        else if (!row){
+            if (!row && multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
+                const combinedData: ICampaign = {
+                    ...multiData[4].data[0],
+                    operation: 'UPDATE',
+                };
+        
+                setCampaignViewDetails(combinedData);
+                const processedData = processMultiData(multiData[4].data);
+                const bodyVariables = combinedData.message ? detectVariablesField(combinedData.message) : [];
+                const variablesHiddenMultidata = combinedData.variableshidden || [];
+                const carouselBubbleVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => detectVariablesField(item.body)) : [];
+                const urlVariables = combinedData.carouseljson ? combinedData.carouseljson.flatMap(item => item.buttons ? item.buttons.flatMap((button: Dictionary) => detectVariablesField(button.btn.url)) : []) : [];
+                const templateButtonsUrlVariables = combinedData.messagetemplatebuttons ? combinedData.messagetemplatebuttons.flatMap(button => button && button.btn && button.btn.url ? detectVariablesField(button.btn.url) : []) : [];
+                const allUrlVariables = [...urlVariables, ...templateButtonsUrlVariables];
+                const headerVariable = combinedData.messagetemplateheader ? detectVariablesField(combinedData.messagetemplateheader.value) : [];
+                const cardImageVariables = combinedData.carouseljson ? combinedData.carouseljson.map(item => detectVariablesField(item.header)) : [];
+        
+                setVariablesBodyView(bodyVariables);
+                setVariablesAdditionalView(variablesHiddenMultidata.map(variable => JSON.stringify(variable)));
+                setVariablesCarouselBubbleView(carouselBubbleVariables);
+                setVariablesUrlView(allUrlVariables);
+                setVariablesHeaderView(headerVariable);
+                setVariablesCardImageView(cardImageVariables);
+        
+                const newBodyVariableValues = {};
+                const newAdditionalVariableValues = {};
+                const newCarouselBubbleVariableValues = {};
+                const newDynamicUrlValues = {};
+                const newHeaderValue = {};
+                const newCardImageValue = {};
+        
+                if (multiData[5] && multiData[5].data && multiData[5].data.length > 0) {
+                    const personData = multiData[5].data[0];
+        
+                    Object.entries(processedData.bodyVariableValues).forEach(([key, fieldKey], index) => {
+                        newBodyVariableValues[index + 1] = personData[fieldKey];
+                    });
+        
+                    variablesHiddenMultidata.forEach(variable => {
+                        const fieldIndex = parseInt(variable.replace('field', ''), 10);
+                        if (personData[`field${fieldIndex}`]) {
+                            newAdditionalVariableValues[variable] = personData[`field${fieldIndex}`];
+                        }
+                    });
+        
+                    carouselBubbleVariables.forEach((variables, carouselIndex) => {
+                        newCarouselBubbleVariableValues[carouselIndex] = {};
+                        variables.forEach((variable, index) => {
+                            const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                            newCarouselBubbleVariableValues[carouselIndex][index + 1] = personData[`field${fieldIndex}`];
+                        });
+                    });
+        
+                    allUrlVariables.forEach((variable, index) => {
+                        const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                        newDynamicUrlValues[index + 1] = personData[`field${fieldIndex}`];
+                    });
+        
+                    headerVariable.forEach((variable, index) => {
+                        const fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                        newHeaderValue[index + 1] = personData[`field${fieldIndex}`];
+                    });
+        
+                    cardImageVariables.forEach((variables, carouselIndex) => {
+                        if (variables.length > 0 && variables[0].variable) {
+                            const fieldIndex = parseInt(variables[0].variable.replace('field', ''), 10);
+                            newCardImageValue[carouselIndex + 1] = personData[`field${fieldIndex}`];
+                        }
+                    });
+                }
+        
+                setBodyVariableValues(newBodyVariableValues);
+                setHeaderVariableValues(newHeaderValue);
+                setVideoHeaderValue(processedData.videoHeaderValue);
+                setCardImageValues(newCardImageValue);
+                setDynamicUrlValues(newDynamicUrlValues);
+                setBubbleVariableValues(newCarouselBubbleVariableValues);
+                setCarouselVariableValues(processedData.carouselVariableValues);
+                setAdditionalVariableValues(newAdditionalVariableValues);
+                setSelectedAdditionalHeaders(processedData.selectedAdditionalHeaders);
+                setSelectedAuthVariable(processedData.selectedAuthVariable);
+        
+                if (combinedData.fields && combinedData.fields.primarykey) {
+                    setSelectedHeader(combinedData.fields.primarykey);
+                }
+        
+                const bodyVars = detectVariablesField(combinedData.message);
+                const newSelectedHeaders = { ...selectedHeaders };
+        
+                bodyVars.forEach((variable, index) => {
+                    let fieldIndex;
+                    if (typeof variable.variable === 'string' && variable.variable.startsWith('field')) {
+                        fieldIndex = parseInt(variable.variable.replace('field', ''), 10);
+                    } else {
+                        fieldIndex = parseInt(variable.variable, 10);
+                    }
+                    const header = combinedData.fields.columns[fieldIndex - 2]; 
+                    newSelectedHeaders[`body-${index + 1}`] = header;
+                });
+        
+                setSelectedHeaders(newSelectedHeaders);
+                updateTemplate();
+            }
+        }      
     }, [multiData]);
+        
+    
+    // funcion que updatea los value que le mandamos a templarepreview si el usuario selecciona otra cosa en el updatecampaign
+    const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
+        if(row){
+            const key = selectedOption.key;
+            const allVariables = multiData[4].data[0].fields.allVariables || {};
+            const field = Object.values(allVariables).find(item => item.column === key);
+            const value = field ? field.value : '';
+        
+            if (variableType === 'body') {
+                setBodyVariableValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'header') {
+                setHeaderVariableValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'video') {
+                console.log('Updating video header value to:', value);
+                setVideoHeaderValue(value);
+                setHeaderVariableValues({ [variableNumber]: value });
+                console.log('Setting headerVariableValues for video:', { [variableNumber]: value });
+            } else if (variableType === 'cardImage') {
+                setCardImageValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'dynamicUrl') {
+                setDynamicUrlValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'carousel' && carouselIndex !== undefined) {
+                setCarouselVariableValues(prevValues => ({
+                    ...prevValues,
+                    [carouselIndex]: {
+                        ...prevValues[carouselIndex],
+                        [variableNumber]: value
+                    }
+                }));
+                setBubbleVariableValues(prevValues => {
+                    const newBubbleValues = { ...prevValues };
+                    if (!newBubbleValues[carouselIndex]) {
+                        newBubbleValues[carouselIndex] = {};
+                    }
+                    newBubbleValues[carouselIndex][variableNumber] = value;
+                    return newBubbleValues;
+                });
+            } else if (variableType === 'authentication') {
+                setSelectedAuthVariable(value);
+            } else if (variableType === 'additional') {
+                setAdditionalVariableValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'receiver') {
+                setSelectedHeader(key);
+            }
+        }
+        else if (!row){
+            const header = selectedOption.key;
+            const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
+        
+            if (variableType === 'body') {
+                setBodyVariableValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'header') {
+                setHeaderVariableValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'video') {
+                setVideoHeaderValue(value);
+            } else if (variableType === 'cardImage') {
+                setCardImageValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'dynamicUrl') {
+                setDynamicUrlValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'carousel' && carouselIndex !== undefined) {
+                setCarouselVariableValues(prevValues => ({
+                    ...prevValues,
+                    [carouselIndex]: {
+                        ...prevValues[carouselIndex],
+                        [variableNumber]: value
+                    }
+                }));
+            } else if (variableType === 'authentication') {
+                setSelectedAuthVariable(value);
+            } else if (variableType === 'additional') {
+                setAdditionalVariableValues(prevValues => ({
+                    ...prevValues,
+                    [variableNumber]: value
+                }));
+            } else if (variableType === 'receiver') {
+                setSelectedHeader(header);
+            }
+        }
+    };
+    
 
     const getAdditionalVariableIndex = () => {
         const additionalIndexes = Object.keys(selectedFields)
@@ -345,90 +566,106 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return additionalIndexes.length > 0 ? Math.max(...additionalIndexes) + 1 : 1;
     };
 
+    //manejo de cambio de variables en field selects, cambia los keys e index idedntificadores
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'receiver', carouselIndex?: number) => {
-        console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
-
-        const header = selectedOption ? selectedOption.key : '';
-        const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
-        const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
-
-
-        if (variableType === 'video') {
-            setVideoHeaderValue(value);
-        } else if (variableType === 'body') {
-            setBodyVariableValues(prevValues => {
-                const newBodyVariableValues = {
+        if (row) {
+            console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
+    
+            const header = selectedOption ? selectedOption.key : '';
+            const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
+            updateValues(variableNumber, selectedOption, variableType, carouselIndex);
+    
+            // Update selected fields
+            const newSelectedFields = { ...selectedFields };
+            newSelectedFields[`field${index}`] = {
+                column: selectedOption,
+                value: selectedOption.key,
+                type: variableType === 'additional' ? 'variablehidden' : variableType,
+                index: index.toString(),
+                carouselIndex: carouselIndex !== undefined ? carouselIndex : null
+            };
+    
+            setSelectedFields(newSelectedFields);
+    
+            const key = generateKey(variableType, variableNumber, carouselIndex);
+            const newSelectedHeaders = {
+                ...selectedHeaders,
+                [key]: header
+            };
+            setSelectedHeaders(newSelectedHeaders);
+    
+            const newVariableSelections = {
+                ...variableSelections,
+                [key]: header
+            };
+            setVariableSelections(newVariableSelections);
+    
+            if (variableType === 'header') {
+                const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
+                const selectedFieldKey = Object.keys(allVariables).find(key => allVariables[key]?.column === header);
+                const value = selectedFieldKey ? allVariables[selectedFieldKey].value : '';
+                setHeaderVariableValues(prevValues => ({
                     ...prevValues,
                     [variableNumber]: value
-                };
-                setSelectedAuthVariable(newBodyVariableValues['authentication'] || '');
-                return newBodyVariableValues;
-            });
-        } else if (variableType === 'header') {
-            setHeaderVariableValues(prevValues => ({
-                ...prevValues,
-                [variableNumber]: value
-            }));
-        } else if (variableType === 'cardImage') {
-            setCardImageValues(prevValues => ({
-                ...prevValues,
-                [variableNumber]: value
-            }));
-        } else if (variableType === 'dynamicUrl') {
-            setDynamicUrlValues(prevValues => ({
-                ...prevValues,
-                [variableNumber]: value
-            }));
-        } else if (variableType === 'carousel' && carouselIndex !== undefined) {
-            setCarouselVariableValues(prevValues => ({
-                ...prevValues,
-                [carouselIndex]: {
-                    ...prevValues[carouselIndex],
-                    [variableNumber]: value
-                }
-            }));
-        } else if (variableType === 'authentication') {
-            setSelectedAuthVariable(value);
-        } else if (variableType === 'additional') {
-            setAdditionalVariableValues(prevValues => ({
-                ...prevValues,
-                [variableNumber]: value
-            }));
-        } else if (variableType === 'receiver') {
-            setSelectedHeader(header);
-        } 
+                }));
+            }
     
-        const key = generateKey(variableType, variableNumber, carouselIndex);
-        const newSelectedHeaders = {
-            ...selectedHeaders,
-            [key]: header
-        };
-        setSelectedHeaders(newSelectedHeaders);
+            if (variableType === 'video') {
+                const allVariables = multiData[4]?.data[0]?.fields?.allVariables || {};
+                const selectedFieldKey = Object.keys(allVariables).find(key => allVariables[key]?.column === header);
+                const value = selectedFieldKey ? allVariables[selectedFieldKey].value : '';
+                setVideoHeaderValue(value);
+                setHeaderVariableValues({ [variableNumber]: value });
+                console.log('Setting videoHeaderValue:', value);
+                console.log('Setting headerVariableValues for video:', { [variableNumber]: value });
+            }
     
-        const newVariableSelections = {
-            ...variableSelections,
-            [key]: header
-        };
-        setVariableSelections(newVariableSelections);
-
-        const newSelectedFields = { ...selectedFields };
-
-        newSelectedFields[`field${index}`] = {
-            column: selectedOption,
-            value: value,
-            type: variableType === 'additional' ? 'variablehidden' : variableType,
-            index: index.toString(),
-            carouselIndex: carouselIndex !== undefined ? carouselIndex : null
-        };
-
-        setSelectedFields(newSelectedFields);
-    
-        if (!header) {
-            updateTemplate(true, variableNumber);
-        } else {
             updateTemplate();
+        } 
+     
+        else if (!row) {
+            updateValues(variableNumber, selectedOption, variableType, carouselIndex);
+
+            console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
+
+            const header = selectedOption ? selectedOption.key : '';
+            const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
+
+            const key = generateKey(variableType, variableNumber, carouselIndex);
+            const newSelectedHeaders = {
+                ...selectedHeaders,
+                [key]: header
+            };
+            setSelectedHeaders(newSelectedHeaders);
+
+            const newVariableSelections = {
+                ...variableSelections,
+                [key]: header
+            };
+            setVariableSelections(newVariableSelections);
+
+            const newSelectedFields = { ...selectedFields };
+            const value = !row ? jsonPersons.length > 0 ? jsonPersons[0][header] : '' : selectedOption.key;
+
+            newSelectedFields[`field${index}`] = {
+                column: selectedOption,
+                value: value,
+                type: variableType === 'additional' ? 'variablehidden' : variableType,
+                index: index.toString(),
+                carouselIndex: carouselIndex !== undefined ? carouselIndex : null
+            };
+
+            setSelectedFields(newSelectedFields);
+
+            if (!header) {
+                updateTemplate(true, variableNumber);
+            } else {
+                updateTemplate();
+            }
         }
     };
+    
+    
     
     const generateKey = (variableType: string, variableNumber: string, carouselIndex?: number) => {
         return carouselIndex !== undefined ? `${variableType}-${carouselIndex}-${variableNumber}` : `${variableType}-${variableNumber}`;
@@ -476,22 +713,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const [unavailableVariables, setUnavailableVariables] = useState([]);
 
-    console.log('nuestro filds completito', multiData[4])
-    //console.log('el 5', multiData[5])
+    console.log('campaña completa ya creada', multiData[4].data)
+    // console.log('personas de la campaña ya creada', multiData[5])
     
     const updateTemplate = useCallback((resetField = false, fieldToReset = null) => {
        
-        if(!row) {
+        if (!row) {
             const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
     
             if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
                 updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
-            }        
-
+            }
+    
             let newSelectedFields = { ...selectedFields };
-         
+    
             Object.keys(variableSelections).forEach(key => {
-                let type, number, carouselIndexStr;    
+                let type, number, carouselIndexStr;
                 if (key.startsWith('carousel')) {
                     [type, carouselIndexStr, number] = key.split('-');
                 } else {
@@ -500,7 +737,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 const fieldNumber = headers.indexOf(variableSelections[key]) + 1;
                 const selectedOption = variableSelections[key];
                 const value = jsonPersons.length > 0 ? jsonPersons[0][selectedOption] : '';
-
+    
                 let index = number;
                 if (type === 'dynamicUrl') {
                     index = key;
@@ -512,24 +749,24 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     type: type,
                     index: index,
                     carouselIndex: carouselIndexStr !== undefined ? parseInt(carouselIndexStr, 10) : null
-                };              
-                       
+                };
+    
                 if (type === 'body' && updatedTemplate.body) {
                     updatedTemplate.body = updatedTemplate.body.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
                 } else if (type === 'header' && updatedTemplate.header) {
                     updatedTemplate.header = updatedTemplate.header.replace(`{{${number}}}`, `{{field${fieldNumber}}}`);
-                }else if (type === 'cardImage' && updatedTemplate.carouseldata) {
-                    const index = parseInt(number, 10) - 1;
-                    if (!isNaN(index) && updatedTemplate.carouseldata[index]) {
-                        const selectedOption = variableSelections[key];
-                        if (selectedOption !== 'default') {
-                            updatedTemplate.carouseldata[index].header = `{{field${fieldNumber}}}`;
-                        } 
-                    } 
-                }
-                 else if (type === 'dynamicUrl') {
+                } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                    const carouselIndex = parseInt(number, 10) - 1;
+                    if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
+                        if (selectedOption === 'default') {
+                            updatedTemplate.carouseldata[carouselIndex].header = templateToUse.carouseldata[carouselIndex].header;
+                        } else {
+                            updatedTemplate.carouseldata[carouselIndex].header = `{{field${fieldNumber}}}`;
+                        }
+                    }
+                } else if (type === 'dynamicUrl') {
                     if (updatedTemplate.buttonsgeneric) {
-                        updatedTemplate.buttonsgeneric.forEach((button: Dictionary, btnIndex: number) => {
+                        updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
                             const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
                             const variableSelectionsValue = variableSelections[buttonKey];
                             if (variableSelectionsValue) {
@@ -543,17 +780,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         button.btn.url = button.btn.url.replace(regex, `{{field${variableKey + 1}}}`);
                                     }
                                 }
-                            } 
+                            }
                         });
                     }
                     if (updatedTemplate.carouseldata) {
-                        updatedTemplate.carouseldata.forEach((item: Dictionary, carouselIndex: number) => {
-                            item.buttons.forEach((button: Dictionary, btnIndex: number) => {
+                        updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
+                            item.buttons.forEach((button, btnIndex) => {
                                 if (button.btn.type === 'dynamic') {
                                     const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
-                                    const variableSelectionsValue = variableSelections[buttonKey];                                
+                                    const variableSelectionsValue = variableSelections[buttonKey];
                                     if (variableSelectionsValue) {
-                                        const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;                                  
+                                        const fieldNumber = headers.indexOf(variableSelectionsValue) + 1;
                                         if (!isNaN(fieldNumber)) {
                                             if (!button.btn.url.includes('{{')) {
                                                 button.btn.url += '/{{1}}';
@@ -588,26 +825,26 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 }
             });
-        
+    
             if (updatedTemplate.category === "AUTHENTICATION" && selectedHeaders['body-authentication']) {
                 const fieldNumber = headers.indexOf(selectedHeaders['body-authentication']) + 1;
                 if (!isNaN(fieldNumber)) {
                     updatedTemplate.body = updatedTemplate.body.replace('{{1}}', `{{field${fieldNumber}}}`);
                 }
             }
-        
+    
             if (updatedTemplate.messagetemplatetype === "CAROUSEL" && updatedTemplate.carouseljson) {
                 const carouselData = JSON.parse(updatedTemplate.carouseljson);
-                carouselData.forEach((item: Dictionary, index: number) => {
+                carouselData.forEach((item, index) => {
                     const key = `cardImage-cardImage-${index + 1}`;
                     const variableSelectionKey = variableSelections[key];
                     if (variableSelectionKey) {
                         const fieldNumber = headers.indexOf(variableSelectionKey) + 1;
                         if (!isNaN(fieldNumber)) {
                             item.header = `{{field${fieldNumber}}}`;
-                        } 
+                        }
                     }
-                    item.buttons.forEach((button: Dictionary, btnIndex: number) => {
+                    item.buttons.forEach((button, btnIndex) => {
                         if (button.btn.type === 'dynamic') {
                             const buttonKey = `dynamicUrl-dynamicUrl-${index}-${btnIndex}`;
                             const variableSelectionsValue = variableSelections[buttonKey];
@@ -620,32 +857,28 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     const regex = /{{\d+}}/g;
                                     button.btn.url = button.btn.url.replace(regex, `{{field${fieldNumber}}}`);
                                 }
-                            } 
+                            }
                         }
                     });
                 });
                 updatedTemplate.carouseljson = JSON.stringify(carouselData);
             }
-        
+    
             updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
                 header => `field${headers.indexOf(header) + 1}`
             );
-        
+    
             newSelectedFields = Object.fromEntries(
                 Object.entries(newSelectedFields).filter(([key, { column }]) =>
                     Object.values(variableSelections).includes(column)
                 )
             );
-
+    
             const newAllVariables = buildAllVariables(jsonPersons);
-
-
-            console.log('Selected Fields:', newSelectedFields);
-            console.log('All Variables:', newAllVariables);
             console.log('final updatedTemplate:', updatedTemplate);
-
+    
             setSelectedFields(newSelectedFields);
-            setAllVariables(newAllVariables);            
+            setAllVariables(newAllVariables);
             setFilledTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
                 ...prev,
@@ -766,16 +999,30 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
                 const header = variableSelections[key];
                 const columns = templateData.fields?.columns || [];
-                const fieldNumber = columns.indexOf(header) + 2;            
-
+                const fieldNumber = columns.indexOf(header) + 2;         
+                
                 if (type === 'body' && updatedTemplate.body) {
                     const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
                     if (placeholders.length >= number) {
                         const currentField = placeholders[number - 1][0];
-                        const newField = `{{field${fieldNumber}}}`;
-                        updatedTemplate.body = updatedTemplate.body.replace(currentField, newField);                       
+                        const selectedOption = variableSelections[`body-${number}`];
+                        const allVariables = multiData[4].data[0].fields.allVariables;
+                
+                        let newField = currentField; 
+                        if (selectedOption) {
+                            const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
+                            if (matchingField) {
+                                newField = `{{${matchingField}}}`;
+                                console.log(`Updated body variable ${number} to ${newField}`);
+                            }
+                        } else {
+                            const fieldNumber = columns.indexOf(selectedOption) + 2;
+                            newField = `{{field${fieldNumber}}}`;
+                        }
+                        
+                        updatedTemplate.body = updatedTemplate.body.replace(currentField, newField);
                     }
-                } else if (type === 'header' && updatedTemplate.header) {
+                }                 else if (type === 'header' && updatedTemplate.header) {
                     const placeholders = [...updatedTemplate.header.matchAll(/{{field(\d+)}}/g)];
                     if (placeholders.length >= number) {
                         const currentField = placeholders[number - 1][0];
@@ -784,17 +1031,40 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
                     const carouselIndex = parseInt(number, 10);
-                    const index = parseInt(number, 10) - 1;
+                    console.log(`Processing cardImage for carouselIndex: ${carouselIndex}`);
                     if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
-                        const placeholders = [...updatedTemplate.carouseldata[carouselIndex].header.matchAll(/{{field(\d+)}}/g)];
-                        if (placeholders.length >= 1) {
-                            const currentField = placeholders[0][0];
-                            const newField = `{{field${fieldNumber}}}`;
-                            updatedTemplate.carouseldata[carouselIndex].header = updatedTemplate.carouseldata[carouselIndex].header.replace(currentField, newField);
-                        } 
-                    } 
-                }                
-                else if (type === 'dynamicUrl') {
+                        if (header === 'Default ') {
+                            const messageTemplateName = multiData[4].data[0].messagetemplatename;
+                            console.log('messageTemplateName:', messageTemplateName);
+                            const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
+                            if (campaign && campaign.carouseldata[carouselIndex]) {
+                                updatedTemplate.carouseldata[carouselIndex].header = campaign.carouseldata[carouselIndex].header;
+                                console.log(`Updated updatedTemplate.carouseldata[${carouselIndex}].header to: ${campaign.carouseldata[carouselIndex].header}`);
+                            } else {
+                                console.log(`No matching campaign found in multiData[3] for messagetemplatename: ${messageTemplateName}`);
+                            }
+                        } else {
+                            const allVariables = multiData[4].data[0].fields.allVariables;
+                            console.log('allVariables:', allVariables);
+                            const selectedField = allVariables ? Object.keys(allVariables)?.find(key => allVariables?.[key]?.column === header) : undefined;
+                            console.log('selectedField:', selectedField);
+                            if (selectedField) {
+                                updatedTemplate.carouseldata[carouselIndex].header = `{{${selectedField}}}`;
+                                console.log(`Updated updatedTemplate.carouseldata[${carouselIndex}].header to: {{${selectedField}}}`);
+                            } else {
+                                console.log(`No matching field found in allVariables for header: ${header}`);
+                                const placeholders = [...updatedTemplate.carouseldata[carouselIndex].header.matchAll(/{{field(\d+)}}/g)];
+                                if (placeholders.length >= 1) {
+                                    const currentField = placeholders[0][0];
+                                    const newField = `{{field${fieldNumber}}}`;
+                                    updatedTemplate.carouseldata[carouselIndex].header = updatedTemplate.carouseldata[carouselIndex].header.replace(currentField, newField);
+                                    console.log(`Fallback: Updated updatedTemplate.carouseldata[${carouselIndex}].header to: ${updatedTemplate.carouseldata[carouselIndex].header}`);
+                                }
+                            }
+                        }
+                    }
+                
+                } else if (type === 'dynamicUrl') {
                     if (updatedTemplate.buttonsgeneric) {
                         updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
                             const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
@@ -813,7 +1083,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             }
                         });
                     }         
-
+            
                     if (updatedTemplate.carouseldata) {
                         updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
                             item.buttons.forEach((button, btnIndex) => {
@@ -821,16 +1091,15 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
                                     const variableSelectionsValue = variableSelections[buttonKey];
                                     if (variableSelectionsValue) {
-                                        const variableKey = columns.indexOf(variableSelectionsValue) + 2;
-                                        if (variableKey !== -1) {
-                                            if (button.btn.type === 'dynamic' && button.btn.url) {
-                                                if (!button.btn.url.includes('{{')) {
-                                                    button.btn.url += '/{{1}}';
-                                                }
-                                                const regex = /{{field(\d+)}}/g;
-                                                button.btn.url = button.btn.url.replace(regex, `{{field${variableKey}}}`);
+                                        const field = Object.keys(multiData[4].data[0].fields.allVariables).find(key => multiData[4].data[0].fields.allVariables[key].column === variableSelectionsValue);
+                                        const fieldKey = field ? field.replace('field', '') : null;
+                                        if (fieldKey) {
+                                            if (!button.btn.url.includes('{{')) {
+                                                button.btn.url += '/{{1}}';
                                             }
-                                        } 
+                                            const regex = /{{field(\d+)}}/g;
+                                            button.btn.url = button.btn.url.replace(regex, `{{field${fieldKey}}}`);
+                                        }
                                     }
                                 }
                             });
@@ -840,28 +1109,47 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 } else if (type === 'carousel' && updatedTemplate.carouseldata) {
                     const carouselIndex = parseInt(carouselIndexStr, 10);
                     if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
-                        const placeholders = [...updatedTemplate.carouseldata[carouselIndex].body.matchAll(/{{field(\d+)}}/g)];
-                        if (placeholders.length >= number) {
-                            const currentField = placeholders[number - 1][0];
-                            const newField = `{{field${fieldNumber}}}`;
-                            updatedTemplate.carouseldata[carouselIndex].body = updatedTemplate.carouseldata[carouselIndex].body.replace(currentField, newField);
-                        } 
+                        const selectedField = variableSelections[key];
+                        const field = Object.keys(multiData[4].data[0].fields.allVariables).find(key => multiData[4].data[0].fields.allVariables[key].column === selectedField);
+                        const fieldKey = field ? field.replace('field', '') : null;
+                        if (fieldKey) {
+                            const placeholders = [...updatedTemplate.carouseldata[carouselIndex].body.matchAll(/{{field(\d+)}}/g)];
+                            if (placeholders.length >= number) {
+                                const currentField = placeholders[number - 1][0];
+                                const newField = `{{field${fieldKey}}}`;
+                                updatedTemplate.carouseldata[carouselIndex].body = updatedTemplate.carouseldata[carouselIndex].body.replace(currentField, newField);
+                            }
+                        }
                     }
-                }                
-
-                else if (type === 'additional') {
+                } else if (type === 'additional') {
                     const additionalIndex = parseInt(number, 10) - 1;
                     if (!isNaN(additionalIndex) && updatedTemplate.variableshidden) {
-                        if (updatedTemplate.variableshidden[additionalIndex]) {
-                            updatedTemplate.variableshidden[additionalIndex] = `field${fieldNumber}`;
-                        } 
-                    }
-                }   
+                        const selectedOption = variableSelections[`additional-${number}`];
+                        const allVariables = multiData[4].data[0].fields.allVariables;
                 
-                else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
+                        if (selectedOption) {
+                            const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
+                            if (matchingField) {
+                                updatedTemplate.variableshidden[additionalIndex] = matchingField;
+                                console.log(`Updated additional variable ${number} to ${matchingField}`);
+                            }
+                        } else {
+                            if (updatedTemplate.variableshidden[additionalIndex]) {
+                                updatedTemplate.variableshidden[additionalIndex] = `field${fieldNumber}`;
+                            }
+                        }
+                    }
+                } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
                     const selectedHeader = variableSelections['video-videoHeader'];
-                    if (selectedHeader === 'default') {
-                        updatedTemplate.header = templateToUse.header;
+                    if (selectedHeader === 'Default ') {
+                        const messageTemplateName = multiData[4].data[0].messagetemplatename;
+                        const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
+                        if (campaign && campaign.header) {
+                            updatedTemplate.header = campaign.header;
+                            console.log(`Updated video header to default value: ${campaign.header}`);
+                        } else {
+                            console.log(`No matching campaign found in multiData[3] for messagetemplatename: ${messageTemplateName}`);
+                        }
                     } else {
                         const fieldNumber = columns.indexOf(selectedHeader) + 2;
                         if (!isNaN(fieldNumber)) {
@@ -885,7 +1173,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
             }
 
-            //console.log('final updatedTemplate:', updatedTemplate);
+            console.log('final updatedTemplate:', updatedTemplate);
             setCurrentTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
                 ...prev,
@@ -935,12 +1223,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             const usedVariables = getUsedVariables(updatedTemplate);
             setUnavailableVariables([...usedVariables]);   
         }
+
     }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons, variablesBodyView, variablesAdditionalView, variablesCarouselBubbleView, variablesUrlView, variablesHeaderView, variablesCardImageView]);
 
-
-
-
-    //logiquita para person y lead, previsualizacion de campaña ya creada
+    //logica para person y lead, previsualizacion de campaña ya creada
     const [unavailableValues, setUnavailableValues] = useState([]);
     const [availableOptions, setAvailableOptions] = useState([]);
 
@@ -1079,6 +1365,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [detaildata.message]);
 
+
     const renderDynamicUrlFields = (carouselIndex, row, buttons) => {
         const dynamicButtons = templateToUse.buttonsgeneric?.filter((button) => button.btn.type === 'dynamic') || [];
         const carouselDynamicButtons = templateToUse.carouseldata?.flatMap((item, index) =>
@@ -1181,7 +1468,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const columnsInCampaignVariables = new Set(Object.values(campaignVariablesMulti).map(variable => variable.column));
     const availableColumnsMulti = availableData.filter(column => !columnsInCampaignVariables.has(column));
     //console.log('availableColumnsMulti:', availableColumnsMulti);
-console.log('templateData', templateData)
+    //console.log('templateData', templateData)
     
     return (
         <React.Fragment>
@@ -1281,61 +1568,66 @@ console.log('templateData', templateData)
                            
                             <div className={classes.containerStyle}>                             
                             {row ? (
-                                     (
-                                        (() => {
-                                            const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
-                                            const headerFields = Object.values(campaignVariables).filter(field => field.type === 'header');
+                                (
+                                    (() => {
+                                        const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
+                                        const headerFields = Object.values(campaignVariables).filter(field => field.type === 'header');
+                                        const maxIndex = Math.max(...headerFields.map(field => parseInt(field.index, 10)), 0);
 
+                                        return Array.from({ length: maxIndex }, (_, index) => {
+                                            const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
+                                            let valueDefault;
 
-                                            const maxIndex = Math.max(...headerFields.map(field => parseInt(field.index, 10)), 0);
-
-                                            return Array.from({ length: maxIndex }, (_, index) => {
-                                                const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
-                                                let valueDefault;
-
-
-                                                if (field) {
-                                                    valueDefault = field.column ? (field.column === 'default' ? 'Default ' : field.column) : 'Default ';
-                                                } else {
-                                                    const fieldsInHeader = extractFieldKeysFromTemplate(currentTemplate.header);
-                                                    const fieldKey = fieldsInHeader[index];
-                                                    if (fieldKey) {
-                                                        const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
-                                                        if (matchingField) {
-                                                            valueDefault = matchingField.column ? matchingField.column : undefined;
-                                                        } else {
-                                                            const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
-                                                            const valor = templateData.fields.columns[fieldIndex];
-                                                            valueDefault = valor ? valor : undefined;
-                                                        }
+                                            const key = `header-${index + 1}`;
+                                            const selectedHeader = selectedHeaders[key];
+                                            if (selectedHeader) {
+                                                valueDefault = selectedHeader;
+                                            } else if (field) {
+                                                valueDefault = field.column ? (field.column === 'default' ? 'Default ' : field.column) : 'Default ';
+                                            } else {
+                                                const fieldsInHeader = extractFieldKeysFromTemplate(currentTemplate.header);
+                                                const fieldKey = fieldsInHeader[index];
+                                                if (fieldKey) {
+                                                    const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
+                                                    if (matchingField) {
+                                                        valueDefault = matchingField.column ? matchingField.column : undefined;
                                                     } else {
-                                                        valueDefault = undefined;
+                                                        const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                        const valor = templateData.fields.columns[fieldIndex];
+                                                        valueDefault = valor ? valor : undefined;
                                                     }
+                                                } else {
+                                                    valueDefault = undefined;
                                                 }
+                                            }
 
-                                                const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column), 'Default '])];
-                                             
+                                            const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
+                                            const headerType = multiData[4].data[0].messagetemplateheader?.type;
 
-                                                return (
-                                                    <div key={`header-${index + 1}`}>
-                                                        <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${index + 1}}}`}</p>
-                                                        <FieldSelectDisabled
-                                                            variant="outlined"
-                                                            uset={true}
-                                                            className="col-12"
-                                                            data={[{ key: 'default', value: 'Default ' }, ...allOptions.map(header => ({ key: header, value: header }))]}
-                                                            optionDesc="value"
-                                                            optionValue="key"
-                                                            valueDefault={valueDefault}
-                                                            onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'header')}
-                                                            getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                        />
-                                                    </div>
-                                                );
-                                            });
-                                        })()
-                                    ) 
-                                ) : (
+                                            if (headerType !== "TEXT") {
+                                                allOptions.push("Default ");
+                                            }
+
+                                            return (
+                                                <div key={key}>
+                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cabecera {{${index + 1}}}`}</p>
+                                                    <FieldSelectDisabled
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={allOptions.map(header => ({ key: header, value: header }))}
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valueDefault}
+                                                        onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'header')}
+                                                        getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                                    />
+                                                </div>
+                                            );
+                                        });
+                                    })()
+                                ) 
+                            ) : (
                                 <>
                                     {headerVariables.map((variable: Dictionary) => (
                                         <div key={variable.variable}>
@@ -1361,46 +1653,51 @@ console.log('templateData', templateData)
 
                             <div className={classes.containerStyle}>                               
                                 {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
-                                    row ? (
-                                        (() => {
-                                            const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
-                                            const headerField = Object.values(campaignVariables).find(field => field.type === 'video' || field.type === 'image');
-                                            let valueDefault;
-
-                                            if (headerField) {
-                                                if (headerField.column) {
-                                                    valueDefault = headerField.column === 'default' ? 'Default ' : headerField.column;
-                                                } else if (headerField.value) {
-                                                    valueDefault = headerField.value;
-                                                } else {
-                                                    valueDefault = 'Default ';
-                                                }
+                                  row ? (
+                                    (() => {
+                                        const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
+                                        const headerFields = Object.values(campaignVariables).filter(field => field.type === 'video' || field.type === 'image');                                        
+                                        const selectedHeader = selectedHeaders['videoHeader'];
+                                        let valueDefault;
+                                        if (selectedHeader) {
+                                            valueDefault = selectedHeader;
+                                        } else if (headerFields.length > 0) {
+                                            const field = headerFields[0];
+                                            if (field.column) {
+                                                valueDefault = field.column === 'default' ? 'Default ' : field.column;
+                                            } else if (field.value) {
+                                                valueDefault = field.value;
                                             } else {
                                                 valueDefault = 'Default ';
                                             }
-
-                                            const allOptions = [
-                                                'Default ',
-                                                ...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])
-                                            ];
-                                    
-                                            return (
-                                                <div key={`header`}>
-                                                    <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
-                                                    <FieldSelectDisabled
-                                                        variant="outlined"
-                                                        uset={true}
-                                                        className="col-12"
-                                                        data={allOptions.map(header => ({ key: header, value: header }))}
-                                                        optionDesc="value"
-                                                        optionValue="key"
-                                                        valueDefault={valueDefault}
-                                                        onChange={(selectedOption) => handleVariableChange('videoHeader', selectedOption, 'video')}
-                                                        getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                    />
-                                                </div>
-                                            );
-                                        })()
+                                        } else {
+                                            valueDefault = 'Default ';
+                                        }
+                                        const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column), 'Default '])];
+                                                    
+                                        return (
+                                            <div key={`header`}>
+                                                <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
+                                                <FieldSelectDisabled
+                                                    variant="outlined"
+                                                    uset={true}
+                                                    className="col-12"
+                                                    data={allOptions.map(header => ({ key: header, value: header }))}
+                                                    optionDesc="value"
+                                                    optionValue="key"
+                                                    valueDefault={valueDefault}
+                                                    onChange={(selectedOption) => {
+                                                        handleVariableChange('videoHeader', selectedOption, 'video');
+                                                        setSelectedHeaders(prevHeaders => ({
+                                                            ...prevHeaders,
+                                                            'videoHeader': selectedOption.key
+                                                        }));
+                                                    }}
+                                                    getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                                />
+                                            </div>
+                                        );
+                                    })()
                                     ) : (
                                         <div>
                                             <p style={{ marginBottom: '3px' }}>{`Cabecera Multimedia`}</p>
@@ -1423,42 +1720,58 @@ console.log('templateData', templateData)
                             <div className={classes.containerStyle}>
                                 {row ? (
                                     <>
-                                        {variablesBodyView.map((variable, index) => {
-                                            const fieldsInBody = extractFieldKeysFromTemplate(currentTemplate.body);
-                                            const fieldKey = fieldsInBody[index];
-                                            let valueDefault;
-                                    
-                                            if (fieldKey) {
-                                                const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
-                                                if (matchingField) {
-                                                    valueDefault = matchingField.column ? matchingField.column : undefined;
-                                                } else {
-                                                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
-                                                    const valor = templateData.fields.columns[fieldIndex];
-                                                    valueDefault = valor ? valor : undefined;
-                                                }
+                                      {variablesBodyView.map((variable, index) => {
+                                        const fieldsInBody = extractFieldKeysFromTemplate(currentTemplate.body);
+                                        const fieldKey = fieldsInBody[index];
+                                        let valueDefault;
+
+                                        const allVariables = multiData[4].data[0].fields.allVariables;
+                                        const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === fieldKey);
+                                        if (selectedField) {
+                                            valueDefault = allVariables[selectedField].column;
+                                        } else {
+                                            const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
+                                            if (matchingField) {
+                                                valueDefault = matchingField.column ? matchingField.column : undefined;
                                             } else {
-                                                valueDefault = undefined;
-                                            }                                    
-                                                                        
-                                            const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-                                    
-                                            return (
-                                                <div key={`body-${index + 1}`}>
-                                                    <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${index + 1}}}`}</p>
-                                                    <FieldSelectDisabled
-                                                        variant="outlined"
-                                                        uset={true}
-                                                        className="col-12"
-                                                        data={allOptions.map(header => ({ key: header, value: header }))}
-                                                        optionDesc="value"
-                                                        optionValue="key"
-                                                        valueDefault={valueDefault}
-                                                        onChange={(selectedOption) => handleVariableChange(index + 1, selectedOption, 'body')}
-                                                    />
-                                                </div>
-                                            );
-                                        })}
+                                                const fieldIndex = fieldKey ? parseInt(fieldKey.replace('field', ''), 10) - 2 : -1;
+                                                const valor = templateData.fields.columns[fieldIndex];
+                                                valueDefault = valor ? valor : undefined;
+                                            }
+                                        }
+
+                                        const selectedValue = variableSelections[`body-${index + 1}`];
+                                        if (selectedValue) {
+                                            valueDefault = selectedValue;
+                                        }
+
+                                        const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
+
+                                        return (
+                                            <div key={`body-${index + 1}`}>
+                                                <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${index + 1}}}`}</p>
+                                                <FieldSelectDisabled
+                                                    variant="outlined"
+                                                    uset={true}
+                                                    className="col-12"
+                                                    data={allOptions.map(header => ({ key: header, value: header }))}
+                                                    optionDesc="value"
+                                                    optionValue="key"
+                                                    valueDefault={valueDefault}
+                                                    onChange={(selectedOption) => {
+                                                        handleVariableChange(index + 1, selectedOption, 'body');
+                                                        setVariableSelections(prev => ({
+                                                            ...prev,
+                                                            [`body-${index + 1}`]: selectedOption.key
+                                                        }));
+                                                    }}
+                                                />
+                                            </div>
+                                        );
+                                    })}
+
+
+
                                     </>
                                                     
                                 ) : (
@@ -1467,9 +1780,6 @@ console.log('templateData', templateData)
                                             const valueDefault = selectedHeaders[`body-${index + 1}`]
                                                 ? { key: selectedHeaders[`body-${index + 1}`], value: selectedHeaders[`body-${index + 1}`] }
                                                 : undefined;
-
-                                                console.log(`Value Default creacion:`, valueDefault);
-
                                             return (
                                                 <div key={`body-${index + 1}`}>
                                                     <p style={{ marginBottom: '3px' }}>{`Variable Cuerpo {{${variable.variable}}}`}</p>
@@ -1531,18 +1841,22 @@ console.log('templateData', templateData)
                                                     (() => {
                                                         const cardImageFields = multiData[4].data[0].fields?.campaignvariables || {};
                                                         const cardImageField = Object.values(cardImageFields).find(field => field.type === 'cardImage' && parseInt(field.index, 10) === index + 1);
-                                                
                                                         let valueDefault;
                                                         if (cardImageField) {
                                                             valueDefault = cardImageField.column ? (cardImageField.column === 'default' ? 'Default ' : cardImageField.column) : 'Default ';
                                                         } else {
                                                             valueDefault = 'Default ';
-                                                        }
-                                                
+                                                        }                                                    
+                                                        const recentSelection = variableSelections[`cardImage-${index + 1}`];
+                                                        if (recentSelection) {
+                                                            valueDefault = recentSelection;
+                                                        } else {
+                                                            const selectedKey = Object.keys(allVariables).find(key => allVariables[key].column === valueDefault);
+                                                            if (selectedKey) {
+                                                                valueDefault = allVariables[selectedKey].column;
+                                                            }
+                                                        }                                                  
                                                         const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column), 'Default '])];
-                                                
-                                                        console.log(`Card Image Field for Card ${index + 1} - Value Defaultff:`, valueDefault);
-                                                
                                                         return (
                                                             <div key={`cardImage-${index}`}>
                                                                 <p style={{ marginBottom: '3px' }}>{`Card Imagen`}</p>
@@ -1554,12 +1868,19 @@ console.log('templateData', templateData)
                                                                     optionDesc="value"
                                                                     optionValue="key"
                                                                     valueDefault={valueDefault}
-                                                                    onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage', index)}
+                                                                    onChange={(selectedOption) => {
+                                                                        console.log(`Updating valueDefault for cardImage-${index + 1} with`, selectedOption);
+                                                                        handleVariableChange((index + 1).toString(), selectedOption, 'cardImage', index);
+                                                                        setVariableSelections(prev => ({
+                                                                            ...prev,
+                                                                            [`cardImage-${index + 1}`]: selectedOption.key
+                                                                        }));
+                                                                    }}
                                                                     getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                                 />
                                                             </div>
                                                         );
-                                                    })()
+                                                    })()                                                    
                                                 ) : (
                                                     <div>
                                                         <p style={{ marginBottom: '3px' }}>{`Card Imagen`}</p>
@@ -1587,21 +1908,32 @@ console.log('templateData', templateData)
                                                     const fieldsInBody = extractFieldKeysFromTemplate(currentTemplate.carouseldata[index].body);
                                                     const fieldKey = fieldsInBody[variableIndex];
                                                     let valueDefault;
-                                                    
-                                                    if (fieldKey) {
-                                                        const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
-                                                        if (matchingField) {
-                                                            valueDefault = matchingField.column ? matchingField.column : undefined;
-                                                        } else {
-                                                            const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
-                                                            const valor = templateData.fields.columns[fieldIndex];
-                                                            valueDefault = valor ? valor : undefined;
-                                                        }
+                                                    const selectedOption = variableSelections[`carousel-${index}-bubble-${variableIndex + 1}`];
+                                                    if (selectedOption) {
+                                                        valueDefault = selectedOption;
                                                     } else {
-                                                        valueDefault = undefined;
+                                                        if (fieldKey) {
+                                                            const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
+                                                            if (matchingField) {
+                                                                valueDefault = matchingField.column ? matchingField.column : undefined;
+                                                                console.log(`matchingField found, valueDefault: ${valueDefault}`);
+                                                            } else {
+                                                                const allVariables = multiData[4].data[0].fields.allVariables;
+                                                                const selectedField = Object.keys(allVariables).find(key => allVariables[key].column === fieldKey);
+                                                                if (selectedField) {
+                                                                    valueDefault = allVariables[selectedField].column;
+                                                                    console.log(`Updated valueDefault for carousel-${index}-bubble-${variableIndex + 1} with: ${valueDefault}`);
+                                                                } else {
+                                                                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                                    const valor = templateData.fields.columns[fieldIndex];
+                                                                    valueDefault = valor ? valor : undefined;
+                                                                }
+                                                            }
+                                                        } else {
+                                                            valueDefault = undefined;
+                                                        }
                                                     }
                                                     const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-                                                    
                                                     return (
                                                         <div key={`carousel-${index}-bubble-${variableIndex}`}>
                                                             <p style={{ marginBottom: '3px' }}>{`Variable Burbuja {{${variableIndex + 1}}}`}</p>
@@ -1613,13 +1945,23 @@ console.log('templateData', templateData)
                                                                 optionDesc="value"
                                                                 optionValue="key"
                                                                 valueDefault={valueDefault}
-                                                                onChange={(selectedOption) => handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index)}
+                                                                onChange={(selectedOption) => {
+                                                                    console.log(`Updating valueDefault for carousel-${index}-bubble-${variableIndex + 1} with`, selectedOption);
+                                                                    handleVariableChange((variableIndex + 1).toString(), selectedOption, 'carousel', index);
+                                                                    setVariableSelections(prev => ({
+                                                                        ...prev,
+                                                                        [`carousel-${index}-bubble-${variableIndex + 1}`]: selectedOption.key
+                                                                    }));
+                                                                }}
                                                                 getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                             />
                                                         </div>
                                                     );
                                                 })
-                                            
+
+
+
+
                                             ) : (
                                                 item.body && item.body.match(/{{\d+}}/g)?.map((match, variableIndex) => (
                                                     <div key={`carousel-${index}-bubble-${variableIndex}`}>
@@ -1670,64 +2012,61 @@ console.log('templateData', templateData)
                                 <AddIcon /> Añadir variable adicional
                             </div>
                             <div className={classes.containerStyle}>
-                                {row ? (
-                                    <>
-                                        {variablesAdditionalView.map((variable, index) => {
-                                            const fieldKey = variable.replace(/"/g, '');
-                                            let valueDefault;
-                                    
-                                            if (fieldKey) {
-                                                const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
-                                                if (matchingField) {
-                                                    valueDefault = matchingField.column ? matchingField.column : undefined;
-                                                } else {
-                                                    const allVariables = multiData[4].data[0].fields?.allVariables || {};
-                                                    const allVariablesField = allVariables[fieldKey];
-                                                    if (allVariablesField) {
-                                                        valueDefault = allVariablesField.column ? allVariablesField.column : undefined;
-                                                    } else {
-                                                        const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
-                                                        console.log(`Field Index for ${fieldKey}: ${fieldIndex}`);
-                                                        const valor = templateData.fields.columns[fieldIndex];
-                                                        console.log(`Value from templateData.fields.columns for fieldIndex ${fieldIndex}: ${valor}`);
-                                                        valueDefault = valor ? valor : undefined;
-                                                    }
-                                                }
+                            {row ? (
+                                <>
+                                    {variablesAdditionalView.map((variable, index) => {
+                                        const fieldKey = variable.replace(/"/g, '');
+                                        let valueDefault;
+
+                                        if (fieldKey) {
+                                            const matchingField = matchingUnavailableValues.find(item => item.field === fieldKey);
+                                            if (matchingField) {
+                                                valueDefault = matchingField.column ? matchingField.column : undefined;
                                             } else {
-                                                valueDefault = undefined;
+                                                const allVariables = multiData[4].data[0].fields?.allVariables || {};
+                                                const allVariablesField = allVariables[fieldKey];
+                                                if (allVariablesField) {
+                                                    valueDefault = allVariablesField.column ? allVariablesField.column : undefined;
+                                                } else {
+                                                    const fieldIndex = parseInt(fieldKey.replace('field', ''), 10) - 2;
+                                                    const valor = templateData.fields.columns[fieldIndex];
+                                                    valueDefault = valor ? valor : undefined;
+                                                }
                                             }
-                                    
-                                            const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-                                                                    
-                                            return (
-                                                <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                        <p>{`Variable Adicional {{${index + 1}}}`}</p>
-                                                        <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <FieldSelectDisabled
-                                                            variant="outlined"
-                                                            uset={true}
-                                                            className="col-12"
-                                                            data={checkTypeInMultiData()
-                                                                ? allOptions.map(header => ({ key: header, value: header }))
-                                                                : dataToUse.map(header => ({ key: header, value: header }))
-                                                            }
-                                                            optionDesc="value"
-                                                            optionValue="key"
-                                                            valueDefault={valueDefault}
-                                                            onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'cardImage')}
-                                                            getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                        />
-                                                    </div>
+                                        } else {
+                                            valueDefault = undefined;
+                                        }
+
+                                        const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
+
+                                        return (
+                                            <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                    <p>{`Variable Adicional {{${index + 1}}}`}</p>
+                                                    <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
                                                 </div>
-                                            );
-                                        })}
-                                    </>
-                             
-                               
-                                ) : (
+                                                <div style={{ flex: 1 }}>
+                                                    <FieldSelectDisabled
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={checkTypeInMultiData()
+                                                            ? allOptions.map(header => ({ key: header, value: header }))
+                                                            : dataToUse.map(header => ({ key: header, value: header }))
+                                                        }
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valueDefault}
+                                                        onChange={(selectedOption) => handleVariableChange((index + 1).toString(), selectedOption, 'additional')}
+                                                        getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                                    />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </>
+                            ) : (
+
                                     <>
                                         {additionalVariables.map((variable, index) => (
                                             <div style={{ flex: 1 }} key={index}>
