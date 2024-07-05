@@ -14,6 +14,7 @@ import FacebookLogin from "react-facebook-login";
 import Link from "@material-ui/core/Link";
 import React, { FC, useEffect, useState } from "react";
 import ChannelEnableVirtualAssistant from "./channels/ChannelEnableVirtualAssistant";
+import { updateMetachannels } from "common/helpers";
 
 const useChannelAddStyles = makeStyles(() => ({
     button: {
@@ -60,6 +61,12 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
         if (metatype === "Instagram") return "INSTAGRAM"
         if (metatype === "Instagram Direct") return "INSTAMESSENGER"
     }
+    function getid() {
+        if (metatype === "Facebook") return 1
+        if (metatype === "Messenger") return 2
+        if (metatype === "Instagram") return 6
+        if (metatype === "Instagram Direct") return 7
+    }
     function getScope() {
         if (metatype === "Facebook") return "business_management,pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts"
         if (metatype === "Messenger") return "business_management,pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts"
@@ -96,6 +103,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
     async function finishreg() {
         setSetins(true);
         dispatch(insertChannel(fields));
+        updateMetachannels(getid()||0)
         setWaitSave(true);
         setViewSelected("main");
     }
@@ -107,11 +115,11 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                 if (channelList.length) {
                     setViewSelected("view1")
                 } else {
-                    setView("view-1")
+                    window.location.reload();
                 }
             },
             callbackcancel: () => {
-                setView("view-1")
+                window.location.reload();
             }
         }
 
@@ -127,7 +135,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                 setWaitSave(false);
                 setmetachannelsDone([...metachannelsDone, metatype])
                 if (returnNow) {
-                    setView("view-1")
+                    window.location.reload();
                 } else {
                     if (channelList.length) {
                         setchannelList(channelList.shift());
@@ -146,13 +154,6 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
-        }
-    }, [mainResult]);
-
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
         }
     }, [mainResult]);
 
@@ -195,7 +196,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             href="/"
                             onClick={(e) => {
                                 e.preventDefault()
-                                setView("view-1")
+                                window.location.reload();
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -208,7 +209,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             href="/"
                             onClick={(e) => {
                                 setchannelList(channelList.shift());
-                                setView("view-1")
+                                window.location.reload();
                             }}
                         >
                             {t(langKeys.skip)}
@@ -298,13 +299,10 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                                         }
                                     },
                                     callbackcancel: () => {
-                                        setView("view-1")
+                                        window.location.reload();
                                     },
                                     textCancel: t(langKeys.decline)
-
-                                }
-
-                                ))
+                                }))
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -317,7 +315,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                             href="/"
                             onClick={(e) => {
                                 setchannelList(channelList.shift());
-                                setView("view-1")
+                                window.location.reload();
                             }}
                         >
                             {t(langKeys.skip)}

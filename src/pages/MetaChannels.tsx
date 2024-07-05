@@ -69,6 +69,7 @@ interface ChannelOption {
     onClick: () => void;
     tooltip?: string;
     clear?: string;
+    id: number;
 }
 
 const ColorButton = withStyles(() => ({
@@ -101,11 +102,14 @@ const MetaChannels: FC = () => {
     const [metatype, setMetaType] = useState("");
     const [channelList, setchannelList] = useState(["Facebook", "Messenger", "Instagram", "Instagram Direct"]);
     const [metachannelsDone, setmetachannelsDone] = useState<any>([]);
+    const doneChannels = localStorage.getItem('metachannels') || [];
+    console.log(doneChannels)
 
     const socialMediaOptions: ChannelOption[] = [
         {
             icon: (c) => <FacebookColor className={c} />,
             label: t(langKeys.channel_facebook),
+            id: 1,
             clear: "Facebook",
             onClick: () => {
                 setView("view-2")
@@ -118,6 +122,7 @@ const MetaChannels: FC = () => {
             icon: (c) => <FacebookMessengerColor className={c} />,
             label: t(langKeys.channel_messenger),
             clear: "Messenger",
+            id: 2,
             onClick: () => {
                 setView("view-2")
                 setMetaType("Messenger")
@@ -128,6 +133,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <TwitterColor className={c} />,
             label: t(langKeys.channel_twitter),
+            id: 3,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_TWITTER.path, {
                     onboarding: true,
@@ -137,6 +143,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <TwitterColor className={c} />,
             label: t(langKeys.channel_twitterdm),
+            id: 4,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_TWITTERDM.path, {
                     onboarding: true,
@@ -146,6 +153,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <TikTokColor className={c} />,
             label: t(langKeys.channel_tiktok),
+            id: 5,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_TIKTOK.path, {
                     onboarding: true,
@@ -156,6 +164,7 @@ const MetaChannels: FC = () => {
             icon: (c) => <InstagramColor className={c} />,
             label: t(langKeys.channel_instagram),
             clear: "Instagram",
+            id: 6,
             onClick: () => {
                 setView("view-2")
                 setMetaType("Instagram")
@@ -167,6 +176,7 @@ const MetaChannels: FC = () => {
             icon: (c) => <InstagramColor className={c} />,
             label: t(langKeys.channel_instagramdm),
             clear: "Instagram Direct",
+            id: 7,
             onClick: () => {
                 setView("view-2")
                 setMetaType("Instagram Direct")
@@ -177,6 +187,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <LinkedInColor className={c} />,
             label: t(langKeys.channel_linkedin),
+            id: 8,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_LINKEDIN.path, {
                     onboarding: true,
@@ -186,6 +197,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <TelegramColor className={c} />,
             label: t(langKeys.channel_telegram),
+            id: 9,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_TELEGRAM.path, {
                     onboarding: true,
@@ -195,6 +207,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <YouTubeColor className={c} />,
             label: t(langKeys.channel_youtube),
+            id: 10,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_YOUTUBE.path, {
                     onboarding: true,
@@ -207,10 +220,12 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <ChatWebColor className={c} />,
             label: t(langKeys.channel_chatweb),
+            id: 11,
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.path),
         },
         {
             icon: (c) => <SmsColor className={c} />,
+            id: 12,
             label: t(langKeys.channel_sms),
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_SMS.path, {
@@ -221,6 +236,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <MailColor className={c} />,
             label: t(langKeys.channel_email),
+            id: 13,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_EMAIL.path, {
                     onboarding: true,
@@ -229,12 +245,14 @@ const MetaChannels: FC = () => {
         },
         {
             icon: (c) => <FormColor className={c} />,
+            id: 14,
             label: t(langKeys.web_form),
             onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM.path),
         },
         {
             icon: (c) => <BloggerColor className={c} />,
             label: t(langKeys.channel_blogger),
+            id: 15,
             onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, {
                 onboarding: true,
             }),
@@ -242,6 +260,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <MyBusinessColor className={c} />,
             label: t(langKeys.channel_business),
+            id: 16,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_BUSINESS.path, {
                     onboarding: true,
@@ -251,6 +270,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <MetaColor className={c} />,
             label: t(langKeys.channel_metalead),
+            id: 17,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_FACEBOOK_LEAD.path, {
                     onboarding: true,
@@ -260,6 +280,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <TeamsColor className={c} />,
             label: t(langKeys.channel_teams),
+            id: 18,
             onClick: () => history.push(paths.CHANNELS_ADD_TEAMS.path, {
                 onboarding: true,
             }),
@@ -267,6 +288,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <PlayStoreColor className={c} />,
             label: t(langKeys.channel_playstore),
+            id: 19,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_PLAYSTORE.path, {
                     onboarding: true,
@@ -276,6 +298,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <AppStoreColor className={c} />,
             label: t(langKeys.channel_appstore),
+            id: 20,
             onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, {
                 onboarding: true,
             }),
@@ -283,6 +306,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <IosColor className={c} />,
             label: t(langKeys.channel_ios),
+            id: 21,
             onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, {
                 onboarding: true,
             }),
@@ -290,6 +314,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <AndroidColor className={c} />,
             label: t(langKeys.channel_android),
+            id: 22,
             onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, {
                 onboarding: true,
             }),
@@ -297,6 +322,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <WorkplaceColor className={c} />,
             label: t(langKeys.channel_workplacedm),
+            id: 23,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, {
                     onboarding: true,
@@ -306,6 +332,7 @@ const MetaChannels: FC = () => {
         {
             icon: (c) => <WorkplaceWallColor className={c} />,
             label: t(langKeys.channel_workplace),
+            id: 24,
             onClick: () => {
                 history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, {
                     onboarding: true,
@@ -415,7 +442,7 @@ const MetaChannels: FC = () => {
                                                     gap: 8,
                                                 }}
                                             >
-                                                {socialMediaOptions.filter(channel => !metachannelsDone.includes(channel.clear)).map((e, i) => (
+                                                {socialMediaOptions.filter(channel => !doneChannels.includes(channel.id)).map((e, i) => (
                                                     <Option key={`social_media_option_${i}`} option={e} />
                                                 ))}
                                             </div>
@@ -429,7 +456,7 @@ const MetaChannels: FC = () => {
                                                     flexWrap: "wrap",
                                                 }}
                                             >
-                                                {businessChannelOptions.map((e, i) => (
+                                                {businessChannelOptions.filter(channel => !doneChannels.includes(channel.id)).map((e, i) => (
                                                     <Option key={`business_channel_option_${i}`} option={e} />
                                                 ))}
                                             </div>
