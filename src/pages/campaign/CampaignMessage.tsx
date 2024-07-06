@@ -1522,7 +1522,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         return Array.from({ length: maxIndex }, (_, index) => {
                                             const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
                                             let valueDefault;
-                                            Merge branch 'feature/RLA511' into testing
                                                 const key = `header-${index + 1}`;
                                                 const selectedHeader = selectedHeaders[key];
                                                 if (selectedHeader) {
