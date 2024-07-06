@@ -495,7 +495,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }
         else {
-            const header = selectedOption.key;
+            const header = selectedOption?.key;
             const value = jsonPersons.length > 0 ? jsonPersons[0][header] : '';
         
             if (variableType === 'body') {
@@ -1389,7 +1389,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 return null;
             }
     
-            const allOptions = row
+            const allOptions = row //
                 ? [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])]
                 : availableData;
         
@@ -1446,7 +1446,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                         uset={true}
                                                         label='Campos archivo'
                                                         className="col-12"
-                                                        disabled={true}
                                                         data={checkTypeInMultiData() ? allOptions.map(header => ({ key: header, value: header })) : dataToUse.map(header => ({ key: header, value: header }))}
                                                         optionDesc="value"
                                                         optionValue="key"
