@@ -3,15 +3,15 @@ import 'emoji-mart/css/emoji-mart.css'
 import { ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon } from 'icons';
+import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon, TackIcon } from 'icons';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson, setSearchTerm } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson, setSearchTerm, setPinnedComments } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson, updateGroupOnHSM } from 'common/helpers';
+import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson, modifyPinnedMessage, updateGroupOnHSM } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
 import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized, PhoneFieldEdit } from 'components'
 import { langKeys } from 'lang/keys';
@@ -40,6 +40,8 @@ import InteractionsPanel from './InteractionsPanel';
 import { getLeadProductsDomain, resetGetLeadProductsDomain } from 'store/lead/actions';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import ReplyIcon from '@material-ui/icons/Reply';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -1081,10 +1083,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             }
         }
     }, [mainAux2])
-    useEffect(() => {
-        console.log(multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL"))
-        console.log(!!multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)
-    }, [multiDataAux])
 
     return (
         <>
@@ -1222,14 +1220,14 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     )
 }
 
-const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes,tags }) => {
+const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags }) => {
     const { t } = useTranslation();
     const classes2 = useStyles();
     const [scrollPosition, setScrollPosition] = useState(0);
     const tagsWrapperRef = useRef(null);
     const [atEnd, setAtEnd] = useState(false);
     const [showArrows, setShowArrows] = useState(false);
-    const uniqueTags = !!tags.length?tags.split(",").filter((word, index, array) => word !== array[index - 1]):[];
+    const uniqueTags = !!tags.length ? tags.split(",").filter((word, index, array) => word !== array[index - 1]) : [];
 
     useEffect(() => {
         const handleResize = () => {
@@ -1400,6 +1398,91 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
     )
 }
 
+const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const [selectedComment, setSelectedComment] = useState(0);
+    const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
+
+    const handlerManagePinnedComment = (type: string) => {
+        if (type === "down") {
+            setSelectedComment(selectedComment - 1);
+        } else {
+            setSelectedComment(selectedComment + 1);
+        }
+    }
+    function deleteTack() {
+        let meesage = pinnedmessagesSelected[selectedComment]
+        dispatch(execute(modifyPinnedMessage({
+            interactionid: meesage.interactionid,
+            conversationid: ticketSelected?.conversationid || 0,
+            interactiontext: meesage.interactiontext,
+            operation: "DELETE"
+        })))
+        dispatch(setPinnedComments([...pinnedmessagesSelected.slice(0, selectedComment), ...pinnedmessagesSelected.slice(selectedComment + 1)]))
+    }
+
+    function gotomessage() {
+        const inthtml = document.getElementById(`interaction-${pinnedmessagesSelected[selectedComment].interactionid}`)
+        if (inthtml) {
+            inthtml.scrollIntoView({ block: "center" });
+            inthtml.classList.add('item-result-searcher');
+            setTimeout(() => {
+                inthtml.classList.remove('item-result-searcher');
+            }, 500);
+        }
+    }
+
+    return (<div style={{ margin: 5, backgroundColor: "white", display: "flex", alignItems: "center", position: "relative" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.increase)} arrow placement="top">
+                <IconButton size="small" onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
+                    <KeyboardArrowUpIcon style={{ color: '#8F92A1' }} />
+                </IconButton>
+            </Tooltip>
+            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.decrease)} arrow placement="top">
+                <IconButton size="small" onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
+                    <KeyboardArrowDownIcon style={{ color: '#8F92A1' }} />
+                </IconButton>
+            </Tooltip>
+        </div>
+        <div style={{
+            backgroundColor: 'lightgray',
+            borderRadius: '8px',
+            padding: '5px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: '5px' // Espacio izquierdo para separar botones e ícono
+        }}>
+            <TackIcon style={{ height: 30, width: 30 }} />
+        </div>
+        <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px', display: 'flex', alignItems: 'center' }}>
+            {pinnedmessagesSelected[selectedComment].interactiontext}
+        </div>
+
+        <div style={{
+            borderLeft: "1px lightgrey solid",
+            display: "flex",
+            alignItems: "center",
+            paddingLeft: '10px',
+            paddingRight: '10px',
+        }}>
+
+            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.delete)} arrow placement="top">
+                <IconButton size="small" onClick={deleteTack}>
+                    <DeleteForeverIcon style={{ color: '#8F92A1', height: 40, width: 40, padding: "auto" }} />
+                </IconButton>
+            </Tooltip>
+            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.gotomessage)} arrow placement="top">
+                <IconButton size="small" onClick={gotomessage}>
+                    <ReplyIcon style={{ color: '#8F92A1', height: 40, width: 40 }} />
+                </IconButton>
+            </Tooltip>
+        </div>
+    </div>)
+}
 const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -1407,11 +1490,12 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
     const { t } = useTranslation();
+    const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
 
     return (
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
-            <div className={classes.headChat + " row-zyx"} style={{justifyContent: "space-between", zIndex: 1}}>
+            <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0 }}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} className='col-6'>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
@@ -1431,10 +1515,10 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <div  className='col-3' style={{zIndex: 99, margin: 0}}>
-                    <TicketTags classes={classes} tags={ticketSelected?.tags||""}/>
+                <div className='col-3' style={{ zIndex: 99, margin: 0 }}>
+                    <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
                 </div>
-                <div  className='col-3'>
+                <div className='col-3'>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
@@ -1443,6 +1527,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                     <SearchOnInteraction setShowSearcher={setShowSearcher} />
                 </div>
             }
+            {!!pinnedmessagesSelected.length && <PinnedMessageMenu classes={classes} />}
         </div>
     )
 }

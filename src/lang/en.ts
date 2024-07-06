@@ -6239,6 +6239,9 @@ const translation: LangKeys = {
   strikethrough:'Strikethrough',
   monospaced:'Monospaced',
   tagshelper: 'Displays the conversation tags from most recent to oldest.',
+  gotomessage:'Go to message',
+  increase: 'Increase',
+  decrease: 'Decrease',
 };
 
 const enResource: ResourceLanguage = {

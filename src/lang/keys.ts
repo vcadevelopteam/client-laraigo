@@ -6185,6 +6185,9 @@ export const langKeys = {
   strikethrough:'strikethrough',
   monospaced:'monospaced',
   tagshelper: 'tagshelper',
+  gotomessage:'gotomessage',
+  increase: 'increase',
+  decrease: 'decrease',
 };
 
 export type LangKeys = typeof langKeys;
