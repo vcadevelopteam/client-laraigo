@@ -6345,6 +6345,9 @@ export const langKeys = {
   selectcorrectvideo: "selectcorrectvideo",
   selectcorrectdocument: "selectcorrectdocument",
   tagshelper: 'tagshelper',
+  gotomessage:'gotomessage',
+  increase: 'increase',
+  decrease: 'decrease',
 };
 
 export type LangKeys = typeof langKeys;
