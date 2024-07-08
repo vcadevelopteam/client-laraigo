@@ -346,11 +346,11 @@ interface InputProps {
     width?: number | "string";
     helperText?: "string";
     placeholder?: string;
-    onInput?: any;
     resize?: string;
-    inputRef?: React.Ref<HTMLInputElement>;
+    onInput?: any;
     onPaste?: any;
     id?: string;
+    inputRef?: React.Ref<HTMLInputElement>;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -965,6 +965,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
+                getOptionSelected={(option, value) => option[optionValue] === value[optionValue]}
                 onBlur={onBlur}
                 getOptionLabel={option => option ? (uset && Object.keys(langKeys).includes(prefixTranslation + option[optionDesc]?.toLowerCase()) ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={dataG}
@@ -1063,7 +1064,7 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
                 options={dataG}
                 loading={loading}
                 size={size}
-                getOptionDisabled={getOptionDisabled} // Asegúrate de pasar la función para deshabilitar opciones
+                getOptionDisabled={getOptionDisabled}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -1088,7 +1089,6 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
         </div>
     );
 }
-
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
