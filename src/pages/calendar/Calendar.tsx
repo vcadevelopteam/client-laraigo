@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanel, AntTabPanelAux } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, AntTab, AntTabPanelAux } from 'components';
 import { getValuesFromDomain, insCalendar, selCalendar, getMessageTemplateLst, getCommChannelLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
@@ -132,7 +132,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     // Handle Submit
     const [waitSave, setWaitSave] = useState(false);
     const [showError, setShowError] = useState(false);
-    const [showTemplateError, setShowTemplateError] = useState(false);
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.descriptionobject || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dateinterval, setdateinterval] = useState(row?.daterange || 'DAYS');
@@ -305,11 +304,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     })
 
     const onSubmit = handleSubmit((data) => {
-        if (data.sendeventtype.type === 'LINKBUTTON' && !data.sendeventtype.eventsendtemplateid) {
-            setShowTemplateError(true);
-            return
-        }
-
         if (data.sendeventtype.type === 'TEXT') {
             data.sendeventtype.eventsendtemplateid = undefined
         }
@@ -476,10 +470,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     generalstate={generalstate}
                     setgeneralstate={setgeneralstate}
                     showError={showError}
-                    showTemplateError={showTemplateError}
                     bodyobject={bodyobject}
                     setBodyobject={setBodyobject}
-                    dataTemplates={dataTemplates}
                 />
             </AntTabPanelAux>
             <AntTabPanelAux index={1} currentIndex={tabIndex}>
