@@ -346,8 +346,11 @@ interface InputProps {
     width?: number | "string";
     helperText?: "string";
     placeholder?: string;
+    onInput?: any;
     resize?: string;
     inputRef?: React.Ref<HTMLInputElement>;
+    onPaste?: any;
+    id?: string;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -652,6 +655,141 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
     )
 }
 
+export const FieldEditAdvancedAux: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false, onInput = {}, onPaste = {}, id }) => {
+    const [value, setvalue] = useState("");
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        setvalue(valueDefault || "");
+    }, [valueDefault])
+
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            {(emoji || hashtag) && <div style={{ display: 'flex', width: '100%', alignItems: 'right', alignContent: 'right', justifyContent: 'flex-end', marginLeft: '6px' }}>
+                {emoji && <QuickReactions
+                    reactionsArray={[
+                        {
+                            id: "laughing",
+                            name: "Laughing",
+                            content: "😂",
+                        },
+                        {
+                            id: "crying",
+                            name: "Crying",
+                            content: "😢",
+                        },
+                        {
+                            id: "thinking",
+                            name: "Thinking",
+                            content: "🤔",
+                        },
+                        {
+                            id: "screaming",
+                            name: "Screaming",
+                            content: "😱",
+                        },
+                    ]}
+                    isVisible={isVisible}
+                    onClose={() => setIsVisible(false)}
+                    onClickReaction={(reaction) => {
+                        if (maxLength === 0 || `${value}${reaction.content}`.length <= maxLength) {
+                            setvalue(`${value}${reaction.content}`);
+                            onChange && onChange(`${value}${reaction.content}`);
+                        }
+                    }}
+                    trigger={
+                        <button
+                            type='button'
+                            onClick={() => {
+                                setIsVisible(!isVisible);
+                            }}
+                            style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d710976d-8894-4f37-935b-f4dc102bc294/Emoji.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                        >
+                        </button>
+                    }
+                    placement={'left'}
+                    header={'Emojis'}
+                />}
+                {hashtag && <button
+                    type='button'
+                    onClick={() => {
+                        if (maxLength === 0 || `${value}#`.length <= maxLength) {
+                            setvalue(`${value}#`);
+                            onChange && onChange(`${value}#`);
+                        }
+                    }}
+                    style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/ccbdbce8-db2e-4437-b28f-53fa371334a7/Hashtag.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                >
+                </button>}
+            </div>}
+            <TextField
+                {...fregister}
+                id={id}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type={type}
+                error={!!error}
+                value={value}
+                multiline
+                minRows={rows}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                onInput={onInput}
+                onPaste={onPaste}
+                style={style}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}> {value.length}/{maxLength}</FormHelperText>}
+        </div>
+    )
+}
+
+export const SingleLineInput: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, maxLength = 0, fregister = {}, inputProps = {}, style = {}, onInput = {}, onPaste = {} }) => {
+    const [value, setValue] = useState(valueDefault || "");
+
+    useEffect(() => {
+        setValue(valueDefault || "");
+    }, [valueDefault]);
+
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type="text"
+                error={!!error}
+                value={value}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={{...inputProps, maxLength }}
+                onInput={onInput}
+                onPaste={onPaste}
+                style={style}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}> {value.length}/{maxLength}</FormHelperText>}
+        </div>
+    );
+};
+
 interface IconProps extends React.SVGProps<SVGSVGElement> {
     channelType: string
 }
@@ -750,7 +888,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", onBlur }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -818,7 +956,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                 getOptionLabel={option => option ? (uset && Object.keys(langKeys).includes(prefixTranslation + option[optionDesc]?.toLowerCase()) ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={dataG}
                 loading={loading}
-                size="small"
+                size={size}
                 renderInput={(params) => (
                     <TextField
 
@@ -848,7 +986,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1 }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small' }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
@@ -890,7 +1028,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     setOptionsSelected(values);
                     onChange && onChange(values, { action, option });
                 }}
-                size="small"
+                size={size}
                 getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={data}
                 renderInput={(params) => (

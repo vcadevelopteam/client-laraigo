@@ -6182,6 +6182,20 @@ export const langKeys = {
   dynamicbuttontext: 'dynamicbuttontext',
   validtyperiodtitlehelptext: 'validtyperiodtitlehelptext',
   button: 'button',
+  TEMPLATE2_APPROVED: "TEMPLATE2_APPROVED",
+  TEMPLATE2_REJECTED: "TEMPLATE2_REJECTED",
+  TEMPLATE2_PENDING: "TEMPLATE2_PENDING",
+  TEMPLATE2_CREATED: "TEMPLATE2_CREATED",
+  TEMPLATE2_SUBMITTED: "TEMPLATE2_SUBMITTED",
+  TEMPLATE2_UTILITY: "TEMPLATE2_UTILITY",
+  TEMPLATE2_AUTHENTICATION: "TEMPLATE2_AUTHENTICATION",
+  TEMPLATE2_MARKETING: "TEMPLATE2_MARKETING",
+  TEMPLATE2_UNREGISTERED: "TEMPLATE2_UNREGISTERED",
+  TEMPLATE2_MULTIMEDIA: "TEMPLATE2_MULTIMEDIA",
+  TEMPLATE2_CAROUSEL: "TEMPLATE2_CAROUSEL",
+  templateidentifier: "templateidentifier",
+  templatequalitytext: "templatequalitytext",
+  messageslimittext: "messageslimittext",
 };
 
 export type LangKeys = typeof langKeys;

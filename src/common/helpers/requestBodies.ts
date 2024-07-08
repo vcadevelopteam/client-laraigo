@@ -977,11 +977,11 @@ export const getParentSel = (): IRequestBody => ({
     }
 });
 
-export const getPaginatedMessageTemplate = ({ communicationchannelid, enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS",
     parameters: {
-        communicationchannelid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take,
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take,
     }
 })
 
@@ -1007,21 +1007,27 @@ export const insMessageTemplate = (
         headertype,
         header,
         body,
-        bodyobject,
         footerenabled,
         footer,
         buttonsenabled,
-        buttons,
         priority,
         attachment,
-        fromprovider,
-        externalid,
-        externalstatus,
         communicationchannelid,
         communicationchanneltype,
-        exampleparameters,
+        authenticationdata,
+        bodyvariables,
+        buttonsgeneric,
+        buttonsquickreply,
+        carouseldata,
+        headervariables,
+        provideraccountid,
+        providerexternalid,
+        providerid,
+        providermessagelimit,
+        providerpartnerid,
+        providerquality,
+        providerstatus,
         operation,
-        variablecontext
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1039,21 +1045,27 @@ export const insMessageTemplate = (
             headertype,
             header,
             body,
-            bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer: footer || "",
+            footer,
             buttonsenabled,
-            buttons: JSON.stringify(buttons),
             priority,
             attachment,
-            fromprovider,
-            externalid,
-            externalstatus,
             communicationchannelid,
             communicationchanneltype,
-            exampleparameters,
+            authenticationdata: JSON.stringify(authenticationdata),
+            bodyvariables: JSON.stringify(bodyvariables),
+            buttonsgeneric: JSON.stringify(buttonsgeneric),
+            buttonsquickreply: JSON.stringify(buttonsquickreply),
+            carouseldata: JSON.stringify(carouseldata),
+            headervariables: JSON.stringify(headervariables),
+            provideraccountid,
+            providerexternalid,
+            providerid,
+            providermessagelimit,
+            providerpartnerid,
+            providerquality,
+            providerstatus,
             operation,
-            variablecontext
         }
     });
 
@@ -4034,14 +4046,14 @@ export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody 
     }
 });
 
-export const getMessageTemplateExport = ({ filters, sorts, communicationchannelid }: Dictionary): IRequestBody => ({
+export const getMessageTemplateExport = ({ filters, sorts, translation }: Dictionary): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_EXPORT",
     key: "UFN_MESSAGETEMPLATE_EXPORT",
     parameters: {
         origin: "messagetemplate",
-        communicationchannelid,
         filters,
         sorts,
+        translation,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });

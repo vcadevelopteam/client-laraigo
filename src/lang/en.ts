@@ -6236,6 +6236,20 @@ const translation: LangKeys = {
   dynamicbuttontext: 'Adding a variable creates a custom link for the customer to query your information. You can only add a variable at the end of the URL.',
   validtyperiodtitlehelptext: 'The validity period of the message is different from the code expiration time. The code expiration date is content that you can add to your messages to let customers know when the OTP access code expires.',
   button: 'button',
+  TEMPLATE2_APPROVED: "APPROVED",
+  TEMPLATE2_REJECTED: "REJECTED",
+  TEMPLATE2_PENDING: "IN REVIEW",
+  TEMPLATE2_CREATED: "CREATED",
+  TEMPLATE2_SUBMITTED: "SUBMITTED",
+  TEMPLATE2_UTILITY: "UTILITY",
+  TEMPLATE2_AUTHENTICATION: "AUTHENTICATION",
+  TEMPLATE2_MARKETING: "MARKETING",
+  TEMPLATE2_UNREGISTERED: "UNREGISTERED",
+  TEMPLATE2_MULTIMEDIA: "MULTIMEDIA",
+  TEMPLATE2_CAROUSEL: "CAROUSEL",
+  templateidentifier: "Template identifier.",
+  templatequalitytext: "Quality of the registered template, for use.",
+  messageslimittext: "Limit of business shipments, within 24 hours.",
 };
 
 const enResource: ResourceLanguage = {
