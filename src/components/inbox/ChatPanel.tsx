@@ -64,13 +64,23 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             hsmtemplateid: 0,
             hsmtemplatename: '',
             observation: '',
-            variables: []
+            variables: [],
+            buttons: [],
+            headervariables:[]
         }
     });
 
     const { fields } = useFieldArray({
         control,
         name: 'variables',
+    });
+    const { fields:buttons } = useFieldArray({
+        control,
+        name: 'buttons',
+    });
+    const { fields: fieldsheader } = useFieldArray({
+        control,
+        name: 'headervariables',
     });
 
     useEffect(() => {
@@ -91,7 +101,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error) {
-            setTemplatesList((multiData?.data?.[5]?.data || []).filter(x => x.type === "HSM"))
+            setTemplatesList((multiData?.data?.[5]?.data || []).filter(x => (x.type === "HSM" && x.templatetype !== "CAROUSEL")))
             setchannelsList((multiData?.data?.[13]?.data || []).filter(e => e.type.includes("WHA")) || [])
         }
     }, [multiData])
@@ -102,7 +112,9 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             reset({
                 hsmtemplateid: 0,
                 hsmtemplatename: '',
-                variables: []
+                variables: [],
+                buttons: [],
+                headervariables:[]
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
@@ -127,12 +139,36 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
             setValue('hsmtemplatename', value ? value.name : '');
-            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const variablesList = value?.body?.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+            if(value?.header){
+                const variablesListHeader = value?.header?.match(/({{)(.*?)(}})/g) || [];
+                const varaiblesCleanedHeader = variablesListHeader.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header||"" })));
+            }else{
+                setValue('headervariables',[])
+            }
+            if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some(element => element.btn.type === "dynamic")) {
+                const buttonsaux = value?.buttonsgeneric
+                let buttonsFiltered = []
+                buttonsaux.forEach((x,i)=>{
+                    const variablesListbtn  = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
+                    const varaiblesCleanedbtn = variablesListbtn.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+                    if(varaiblesCleanedbtn.length){
+                        const btns= varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url||"" }))||[]
+                        buttonsFiltered=[...buttonsFiltered, ...btns]
+                    }
+                })
+                setValue('buttons', buttonsFiltered);
+            } else {
+                setValue('buttons', []);
+            }
         } else {
             setValue('hsmtemplatename', '');
             setValue('variables', []);
+            setValue('buttons', []);
+            setValue('headervariables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
         }
@@ -152,8 +188,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 phone: person.data?.phone!! + "",
                 firstname: person.data?.firstname + "",
                 lastname: person.data?.lastname + "",
-                parameters: data.variables.map((v: any) => ({
-                    type: "text",
+                parameters: [...data.variables, ...data.buttons, ...data.headervariables].map((v: any) => ({
+                    type: v?.type||"text",
                     text: v.variable !== 'custom' ? (person.data as Dictionary)[v.variable] : v.text,
                     name: v.name
                 }))
@@ -205,7 +241,53 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                     optionDesc="name"
                     optionValue="id"
                 />
+            </div>            
+            {Boolean(fieldsheader.length) &&             
+                <FieldView
+                    label={t(langKeys.header)}
+                    value={fieldsheader?.[0]?.header||""}
+                />
+            }
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, marginBottom: 16 }}>
+                {fieldsheader.map((item: Dictionary, i) => (
+                    <div key={item.id}>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`headervariables.${i}.variable`, {
+                                    validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`headervariables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`headervariables.${i}.variable`, value?.key)
+                                trigger(`headervariables.${i}.variable`)
+                            }}
+                            error={errors?.headervariables?.[i]?.text?.message}
+                            data={variables}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`headervariables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`headervariables.${i}.text`, {
+                                        validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.headervariables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`headervariables.${i}.text`, "" + value)}
+                            />
+                        }
+                    </div>
+                ))}
             </div>
+
             <FieldView
                 label={t(langKeys.message)}
                 value={bodyMessage}
@@ -246,6 +328,53 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                                 onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
                             />
                         }
+                    </div>
+                ))}
+
+                {Boolean(buttons.length) && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    {t(langKeys.buttons)}
+                </Box>}
+                {buttons.map((item: Dictionary, i) => (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                        <div key={item.id}>
+                            <FieldView
+                                label={t(langKeys.button) + ` ${i+1}`}
+                                value={item?.url||""}
+                            />
+                            <FieldSelect
+                                key={"var_" + item.id}
+                                fregister={{
+                                    ...register(`buttons.${i}.variable`, {
+                                        validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                label={item.name}
+                                valueDefault={getValues(`buttons.${i}.variable`)}
+                                onChange={(value) => {
+                                    setValue(`buttons.${i}.variable`, value?.key)
+                                    trigger(`buttons.${i}.variable`)
+                                }}
+                                error={errors?.buttons?.[i]?.text?.message}
+                                data={variables}
+                                uset={true}
+                                prefixTranslation=""
+                                optionDesc="key"
+                                optionValue="key"
+                            />
+                            {getValues(`buttons.${i}.variable`) === 'custom' &&
+                                <FieldEditArray
+                                    key={"custom_" + item.id}
+                                    fregister={{
+                                        ...register(`buttons.${i}.text`, {
+                                            validate: (value: any) => (value?.length) || t(langKeys.field_required)
+                                        })
+                                    }}
+                                    valueDefault={item.value}
+                                    error={errors?.buttons?.[i]?.text?.message}
+                                    onChange={(value) => setValue(`buttons.${i}.text`, "" + value)}
+                                />
+                            }
+                        </div>
                     </div>
                 ))}
             </div>
@@ -515,7 +644,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
             let groups = user?.groups ? user?.groups.split(",") : [];
             if(rules?.data && propertyGrupoDelegacion){
-                debugger
                 let extragroups = rules.data.map(item => item.assignedgroup)
                 groups = extragroups.length?extragroups:groups
             }
