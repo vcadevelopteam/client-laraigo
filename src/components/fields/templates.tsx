@@ -378,32 +378,6 @@ interface TemplateAutocompletePropsDisabled extends InputProps {
     getOptionDisabled?: Dictionary;
 }
 
-interface TemplateAutocompletePropsDisabled extends InputProps {
-    data: Dictionary[],
-    optionValue: string;
-    optionDesc: string;
-    loading?: boolean;
-    triggerOnChangeOnFirst?: boolean;
-    readOnly?: boolean;
-    limitTags?: number;
-    multiline?: boolean;
-    orderbylabel?: boolean;
-    getOptionDisabled?: Dictionary;
-}
-
-interface TemplateAutocompletePropsDisabled extends InputProps {
-    data: Dictionary[],
-    optionValue: string;
-    optionDesc: string;
-    loading?: boolean;
-    triggerOnChangeOnFirst?: boolean;
-    readOnly?: boolean;
-    limitTags?: number;
-    multiline?: boolean;
-    orderbylabel?: boolean;
-    getOptionDisabled?: Dictionary;
-}
-
 export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
     const [value, setvalue] = useState("");
 
