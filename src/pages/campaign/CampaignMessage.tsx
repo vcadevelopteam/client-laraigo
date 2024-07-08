@@ -694,15 +694,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return fields;
     };
 
-    const [unavailableVariables, setUnavailableVariables] = useState([]);       
+    const [unavailableVariables, setUnavailableVariables] = useState([]);   
+        
     const updateTemplate = useCallback((resetField = false, fieldToReset = null) => {       
         if (row && !detectionChangeSource) {
             const updatedTemplate = JSON.parse(JSON.stringify(templateToUse));
-
+    
             if (updatedTemplate.category === "AUTHENTICATION" && !updatedTemplate.body) {
                 updatedTemplate.body = "Tu código de verificación es {{1}}. Por tu seguridad, no lo compartas.";
             }
-
+    
             if (variablesBodyView.length > 0 && updatedTemplate.body) {
                 let bodyIndex = 1;
                 variablesBodyView.forEach(variable => {
@@ -713,7 +714,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     bodyIndex++;
                 });
             }
-
+    
             if (variablesCarouselBubbleView.length > 0 && updatedTemplate.carouseldata) {
                 variablesCarouselBubbleView.forEach((variables, carouselIndex) => {
                     if (updatedTemplate.carouseldata[carouselIndex]) {
@@ -728,11 +729,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 });
             }
-
-             if (variablesAdditionalView.length > 0) {
+    
+            if (variablesAdditionalView.length > 0) {
                 updatedTemplate.variableshidden = variablesAdditionalView;
             }
-
+    
             if (variablesUrlView.length > 0) {
                 if (updatedTemplate.buttonsgeneric) {
                     updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
@@ -765,7 +766,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     });
                 }
             }
-
+    
             if (variablesCardImageView.length > 0 && updatedTemplate.carouseldata) {
                 variablesCardImageView.forEach((variables, carouselIndex) => {
                     if (variables.length > 0 && variables[0].variable) {
@@ -773,7 +774,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 });
             }
-
+    
             if (variablesHeaderView.length > 0 && updatedTemplate.header) {
                 variablesHeaderView.forEach((variable, index) => {
                     const placeholder = `{{${index + 1}}}`;
@@ -784,7 +785,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 });
             }
-
+    
             Object.keys(variableSelections).forEach(key => {
                 let type, number, carouselIndexStr;
                 if (key.startsWith('carousel')) {
@@ -794,16 +795,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 }
                 const header = variableSelections[key];
                 const columns = templateData.fields?.columns || [];
-                const fieldNumber = columns.indexOf(header) + 2;         
-                
+                const fieldNumber = columns.indexOf(header) + 2;
+    
                 if (type === 'body' && updatedTemplate.body) {
                     const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
                     if (placeholders.length >= number) {
                         const currentField = placeholders[number - 1][0];
                         const selectedOption = variableSelections[`body-${number}`];
                         const allVariables = multiData[4].data[0].fields.allVariables;
-                
-                        let newField = currentField; 
+    
+                        let newField = currentField;
                         if (selectedOption) {
                             const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
                             if (matchingField) {
@@ -812,10 +813,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         } else {
                             const fieldNumber = columns.indexOf(selectedOption) + 2;
                             newField = `{{field${fieldNumber}}}`;
-                        }                        
+                        }
                         updatedTemplate.body = updatedTemplate.body.replace(currentField, newField);
                     }
-                }                 else if (type === 'header' && updatedTemplate.header) {
+                } else if (type === 'header' && updatedTemplate.header) {
                     const placeholders = [...updatedTemplate.header.matchAll(/{{field(\d+)}}/g)];
                     if (placeholders.length >= number) {
                         const currentField = placeholders[number - 1][0];
@@ -846,14 +847,14 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             }
                         }
                     }
-                
+    
                 } else if (type === 'dynamicUrl') {
                     if (updatedTemplate.buttonsgeneric) {
                         updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
                             const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
                             const variableSelectionsValue = variableSelections[buttonKey];
                             if (variableSelectionsValue) {
-                                const variableKey = columns.indexOf(variableSelectionsValue) + 2;                                
+                                const variableKey = columns.indexOf(variableSelectionsValue) + 2;
                                 if (variableKey !== -1) {
                                     if (button.btn.type === 'dynamic' && button.btn.url) {
                                         if (!button.btn.url.includes('{{')) {
@@ -862,11 +863,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                         const regex = /{{field(\d+)}}/g;
                                         button.btn.url = button.btn.url.replace(regex, `{{field${variableKey}}}`);
                                     }
-                                } 
+                                }
                             }
                         });
-                    }         
-            
+                    }
+    
                     if (updatedTemplate.carouseldata) {
                         updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
                             item.buttons.forEach((button, btnIndex) => {
@@ -888,7 +889,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             });
                         });
                     }
-                    
+    
                 } else if (type === 'carousel' && updatedTemplate.carouseldata) {
                     const carouselIndex = parseInt(carouselIndexStr, 10);
                     if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
@@ -909,7 +910,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     if (!isNaN(additionalIndex) && updatedTemplate.variableshidden) {
                         const selectedOption = variableSelections[`additional-${number}`];
                         const allVariables = multiData[4].data[0].fields.allVariables;
-                
+    
                         if (selectedOption) {
                             const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
                             if (matchingField) {
@@ -937,14 +938,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     }
                 }
             });
-
-            if(row && !detectionChangeSource ){ // 
-            } else {
-                updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
-                    header => `field${columns.indexOf(header) + 2}`
-                );
-            }        
-
+    
+            updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
+                header => `field${columns.indexOf(header) + 2}`
+            );
+    
             if (resetField && fieldToReset !== null) {
                 const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
                 if (placeholders.length >= fieldToReset) {
@@ -952,6 +950,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     updatedTemplate.body = updatedTemplate.body.replace(currentField, `{{${fieldToReset}}}`);
                 }
             }
+    
             //console.log('editing final updatedTemplate:', updatedTemplate);
             setCurrentTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
@@ -962,11 +961,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     value: updatedTemplate.header
                 },
                 messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
+                fields: {
+                    ...prev.fields,
+                    campaignvariables: newSelectedFields,
+                    allVariables: newAllVariables
+                },
                 carouseljson: updatedTemplate.carouseldata,
                 variableshidden: updatedTemplate.variableshidden
             }));
-
-             const getUsedVariables = (template) => {
+    
+            const getUsedVariables = (template) => {
                 const regex = /{{field(\d+)}}/g;
                 const usedVariables = new Set();
                 const extractVariables = (str) => {
@@ -998,9 +1002,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     });
                 }
                 return usedVariables;
-            };            
+            };
             const usedVariables = getUsedVariables(updatedTemplate);
-            setUnavailableVariables([...usedVariables]);   
+            setUnavailableVariables([...usedVariables]);
         }
 
         else {
@@ -1188,28 +1192,32 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [unavailableValues, setUnavailableValues] = useState([]);
     const [availableOptions, setAvailableOptions] = useState([]);
 
+  // Logica para verificar si el tipo es PERSON o LEAD en multiData
     const checkTypeInMultiData = () => {
         return multiData[5]?.data?.some(item => item.type === "PERSON" || item.type === "LEAD");
     };
 
+    // Obtener valores no disponibles
     const getUnavailableVariableValues = () => {
-        const unavailableValues = unavailableVariables.map(variable => {
+        return unavailableVariables.map(variable => {
             const fieldIndex = parseInt(variable.replace('field', ''), 10) - 2;
             return templateData.fields.columns[fieldIndex];
         });
-        return unavailableValues;
     };
 
+    // Obtener opciones disponibles excluyendo las seleccionadas
     const getAvailableOptions = (dataToUse, unavailableValues) => {
-        return dataToUse.filter(option => option !== 'Destinatarios' && !unavailableValues.includes(option));
+        return dataToUse.filter(option => !unavailableValues.includes(option));
     };
 
+    // Obtener opciones disponibles para PERSON o LEAD excluyendo las seleccionadas
     const getAvailableOptionsForPersonOrLead = () => {
         const allVariables = multiData[4].data[0].fields.allVariables || {};
         const allColumns = Object.values(allVariables).map(item => item.column);
-        return allColumns.filter(option => option !== 'Destinatarios' && !unavailableValues.includes(option));
+        return allColumns.filter(option => !unavailableValues.includes(option));
     };
 
+   // Efecto para actualizar las opciones disponibles y no disponibles
     useEffect(() => {
         if (checkTypeInMultiData()) {
             const campaignVariables = multiData[4].data[0].fields.campaignvariables || {};
@@ -1225,6 +1233,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [unavailableVariables, templateData.fields?.columns, multiData]);
 
+    // Obtener valores no disponibles coincidentes
     const getMatchingUnavailableValues = () => {
         if (checkTypeInMultiData()) {
             const allVariables = multiData[4].data[0].fields.allVariables || {};
@@ -1239,10 +1248,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return []; 
     };
     
-    const matchingUnavailableValues = getMatchingUnavailableValues();    
-    useEffect(() => {
-        updateTemplate();
-    }, [variableSelections, selectedAdditionalHeaders]);
+    const matchingUnavailableValues = getMatchingUnavailableValues();
+
 
     const handleAddVariable = () => {
         setAdditionalVariables(prev => {
@@ -1418,89 +1425,90 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 <div style={{ width: '50%' }}>
                     <div className="row-zyx">
 
-                        <FormControl className="col-12">
-                            {row && !detectionChangeSource ? (
-                                <>
-                                    <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
-                                    <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                        <div style={{ flex: 1 }}>
-                                            {(() => {
-                                                let valueDefault;
-                                                const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
-                                                for (const field in campaignVariables) {
-                                                    if (campaignVariables[field].type === 'receiver') {
-                                                        valueDefault = campaignVariables[field].column;
-                                                    }
-                                                }
+                    <FormControl className="col-12">
+                    {row && !detectionChangeSource ? (
+                        <>
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
+                            <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <div style={{ flex: 1 }}>
+                                    {(() => {
+                                        let valueDefault;
+                                        const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
+                                        for (const field in campaignVariables) {
+                                            if (campaignVariables[field].type === 'receiver') {
+                                                valueDefault = campaignVariables[field].column;
+                                            }
+                                        }
 
-                                                const selectedHeader = selectedHeaders['receiver-1'];
-                                                if (selectedHeader) {
-                                                    valueDefault = selectedHeader;
-                                                }
+                                        const selectedHeader = selectedHeaders['receiver-1'];
+                                        if (selectedHeader) {
+                                            valueDefault = selectedHeader;
+                                        }
 
-                                                const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-                                                return (
-                                                    <FieldSelectDisabled
-                                                        variant="outlined"
-                                                        uset={true}
-                                                        label='Campos archivo'
-                                                        className="col-12"
-                                                        data={checkTypeInMultiData() ? allOptions.map(header => ({ key: header, value: header })) : dataToUse.map(header => ({ key: header, value: header }))}
-                                                        optionDesc="value"
-                                                        optionValue="key"
-                                                        valueDefault={valueDefault}
-                                                        onChange={(selectedOption) => {
-                                                            handleVariableChange('1', selectedOption, 'receiver');
-                                                            setSelectedHeaders(prevHeaders => ({
-                                                                ...prevHeaders,
-                                                                'receiver-1': selectedOption.key
-                                                            }));
-                                                        }}
-                                                        getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                    />
-                                                );
-                                            })()}
-                                        </div>
-                                        <Tooltip
-                                            title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
-                                            arrow
-                                            placement="top"
-                                        >
-                                            <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                        </Tooltip>
+                                        const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
+                                        return (
+                                            <FieldSelectDisabled
+                                                variant="outlined"
+                                                uset={true}
+                                                label='Campos archivo'
+                                                className="col-12"
+                                                data={checkTypeInMultiData() ? allOptions.map(header => ({ key: header, value: header })) : dataToUse.map(header => ({ key: header, value: header }))}
+                                                optionDesc="value"
+                                                optionValue="key"
+                                                valueDefault={valueDefault}
+                                                onChange={(selectedOption) => {
+                                                    handleVariableChange('1', selectedOption, 'receiver');
+                                                    setSelectedHeaders(prevHeaders => ({
+                                                        ...prevHeaders,
+                                                        'receiver-1': selectedOption.key
+                                                    }));
+                                                }}
+                                                getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                            />
+                                        );
+                                    })()}
+                                </div>
+                                <Tooltip
+                                    title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
+                                    arrow
+                                    placement="top"
+                                >
+                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                </Tooltip>
+                            </div>
+                        </>
+                    ) : (
+                            <>                                                        
+                            <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
+                                <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                    <div style={{ flex: 1 }}>
+                                        <FieldSelectDisabled
+                                            variant="outlined"
+                                            uset={true}
+                                            label='Campos archivo'
+                                            className="col-12"
+                                            data={dataToUse.map(header => ({ key: header, value: header }))}
+                                            optionDesc="value"
+                                            optionValue="key"
+                                            valueDefault={selectedHeader ? { key: selectedHeader, value: selectedHeader } : ''}
+                                            onChange={(selectedOption) => handleVariableChange('1', selectedOption, 'receiver')}
+                                            getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                        />
                                     </div>
-                                </>
-                            ) : (
-                                    <>                                                        
-                                    <div style={{ fontSize: '1rem', color: 'black' }}> {'Destinatarios'} </div>
-                                        <div className={classes.subtitle}> {'Selecciona la columna que contiene los destinatarios para el envio del mensaje'} </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                            <div style={{ flex: 1 }}>
-                                                <FieldSelectDisabled
-                                                    variant="outlined"
-                                                    uset={true}
-                                                    label='Campos archivo'
-                                                    className="col-12"
-                                                    data={dataToUse.map(header => ({ key: header, value: header }))}
-                                                    optionDesc="value"
-                                                    optionValue="key"
-                                                    valueDefault={selectedHeader ? { key: selectedHeader, value: selectedHeader } : ''}
-                                                    onChange={(selectedOption) => handleVariableChange('1', selectedOption, 'receiver')}
-                                                    getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                />
-                                            </div>
-                                            <Tooltip
-                                                title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
-                                                arrow
-                                                placement="top"
-                                            >
-                                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                            </Tooltip>
-                                        </div>                            
-                                    </>                                
-                            )}
-                        </FormControl>
+                                    <Tooltip
+                                        title={'Selecciona el campo de columna que contiene los destinatarios para el envío del mensaje.'}
+                                        arrow
+                                        placement="top"
+                                    >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                </div>                            
+                            </>                                
+                        )}
+                    </FormControl>
+
 
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Requeridas'} </div>
