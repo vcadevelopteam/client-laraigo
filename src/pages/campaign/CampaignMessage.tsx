@@ -219,7 +219,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return processedData;
     };
 
-    //useffect seteador de values enviadas a template preview
     useEffect(() => {
         if(row && !detectionChangeSource){
             if (multiData[4] && multiData[4].data && multiData[4].data.length > 0) {
@@ -436,7 +435,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }      
     }, [multiData]);
         
-    // funcion que updatea los value que le mandamos a templarepreview si el usuario selecciona otra cosa en el updatecampaign
     const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
         if(row && !detectionChangeSource){
             const key = selectedOption.key;
@@ -548,7 +546,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return additionalIndexes.length > 0 ? Math.max(...additionalIndexes) + 1 : 1;
     };
 
-    //manejo de cambio de variables en field selects, cambia los keys e index idedntificadores
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'receiver', carouselIndex?: number) => {
         if (row && !detectionChangeSource) {
             console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
@@ -617,7 +614,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }      
         else {
             updateValues(variableNumber, selectedOption, variableType, carouselIndex);
-            //console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
             const header = selectedOption ? selectedOption.key : '';
             const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
             const key = generateKey(variableType, variableNumber, carouselIndex);
@@ -1162,7 +1158,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             );
     
             const newAllVariables = buildAllVariables(jsonPersons);
-            //console.log('vacio final updatedTemplate:', updatedTemplate);
     
             setSelectedFields(newSelectedFields);
             setAllVariables(newAllVariables);
@@ -1186,12 +1181,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons, variablesBodyView, variablesAdditionalView, variablesCarouselBubbleView, variablesUrlView, variablesHeaderView, variablesCardImageView]);
 
-
-
-
-
-
-    //logica para person y lead, previsualizacion de campaña ya creada
     const [unavailableValues, setUnavailableValues] = useState([]);
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedReceiver, setSelectedReceiver] = useState(() => {
@@ -1873,9 +1862,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                             valueDefault = undefined;
                                                         }
                                                     }
-                                                    const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-                                                   //console.log('all optiones de variabel burbuja', allOptions)
-                                                   
+                                                    const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];                                                  
                                                    
                                                     return (
                                                         <div key={`carousel-${index}-bubble-${variableIndex}`}>
@@ -1938,9 +1925,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                             <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>
-                            <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
-                                <AddIcon /> Añadir variable adicional
-                            </div>
+                            
+                          
+                         
+
+
                             <div className={classes.containerStyle}>
                            {row && !detectionChangeSource  ? (
                                 <>
@@ -2001,6 +1990,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 </>
                             ) : ( 
                                     <>
+                                       <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
+                                <AddIcon /> Añadir variable adicional
+                            </div>
                                         {additionalVariables.map((variable, index) => (
                                             <div style={{ flex: 1 }} key={index}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
