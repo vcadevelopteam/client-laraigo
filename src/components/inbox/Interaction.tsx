@@ -107,7 +107,6 @@ const useStylesInteraction = makeStyles((theme) => ({
     tackIconTopRight: {
       top: theme.spacing(1),
       right: theme.spacing(1),
-      cursor: "pointer"
     },
     tackIconBottomRight: {
       bottom: theme.spacing(1),
@@ -517,8 +516,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isHovered ? 'visible' : 'hidden' }} onClick={()=>fixComment(interactiontext)}/>}
-                <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
+                <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
+                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden' }} onClick={()=>fixComment(interactiontext)}/>}
+
                 <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
                 {!showfulltext && (
                     <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>

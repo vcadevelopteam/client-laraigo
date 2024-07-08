@@ -42,6 +42,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ReplyIcon from '@material-ui/icons/Reply';
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -60,7 +61,8 @@ const useStyles = makeStyles((theme) => ({
     tagsWrapper: {
         display: 'flex',
         whiteSpace: 'nowrap',
-        padding: theme.spacing(1),
+        // padding: theme.spacing(1),
+        paddingBottom: 0,
         overflowX: 'hidden',
         transition: 'transform 0.3s ease-in-out',
     },
@@ -1399,7 +1401,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
         }
     }, [scrollPosition]);
     return (
-        <div style={{ zIndex: 999, width: "100%", height: "100%", padding: 5, borderRight: "lightgrey solid 1px", borderLeft: "lightgrey solid 1px" }}>
+        <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px",  borderRight: "lightgrey solid 1px", borderLeft: "lightgrey solid 1px" }}>
             <div>
                 Tags
                 <Tooltip title={<div style={{ fontSize: 12, zIndex: 9999 }}>{t(langKeys.tagshelper)}</div>} arrow placement="top">
@@ -1408,8 +1410,8 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
             </div>
             <div className={classes2.container}>
                 {showArrows && scrollPosition > 0 && (
-                    <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')}>
-                        <ArrowBackIosIcon />
+                    <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
+                        <KeyboardArrowLeft fontSize='small' />
                     </IconButton>
                 )}
                 <div className={classes2.tagsWrapper} ref={tagsWrapperRef}>
@@ -1417,8 +1419,8 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
                         <span key={index} className={classes2.tag}>{tag}</span>
                     ))}
                 </div>
-                {showArrows && !atEnd && <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')}>
-                    <ArrowForwardIosIcon />
+                {showArrows && !atEnd && <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
+                    <KeyboardArrowRight />
                 </IconButton>}
             </div>
         </div>
@@ -1567,27 +1569,25 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
 
     return (<div style={{ margin: 5, backgroundColor: "white", display: "flex", alignItems: "center", position: "relative" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
-            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.increase)} arrow placement="top">
-                <IconButton size="small" onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
-                    <KeyboardArrowUpIcon style={{ color: '#8F92A1' }} />
+            <Tooltip title={t(langKeys.increase)} arrow placement="top">
+                <IconButton size="small" style={{ padding: 0 }} onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
+                    <KeyboardArrowUpIcon />
                 </IconButton>
             </Tooltip>
-            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.decrease)} arrow placement="top">
-                <IconButton size="small" onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
-                    <KeyboardArrowDownIcon style={{ color: '#8F92A1' }} />
+            <Tooltip title={t(langKeys.decrease)} arrow placement="top">
+                <IconButton size="small"  style={{ padding: 0 }} onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
+                    <KeyboardArrowDownIcon />
                 </IconButton>
             </Tooltip>
         </div>
         <div style={{
-            backgroundColor: 'lightgray',
-            borderRadius: '8px',
-            padding: '5px',
+
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginLeft: '5px' // Espacio izquierdo para separar botones e ícono
         }}>
-            <TackIcon style={{ height: 30, width: 30 }} />
+            <TackIcon style={{ color: "#757575" }} />
         </div>
         <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px', display: 'flex', alignItems: 'center' }}>
             {pinnedmessagesSelected[selectedComment].interactiontext}
@@ -1597,18 +1597,19 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
             borderLeft: "1px lightgrey solid",
             display: "flex",
             alignItems: "center",
+            gap: 6,
             paddingLeft: '10px',
             paddingRight: '10px',
         }}>
 
-            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.delete)} arrow placement="top">
+            <Tooltip title={t(langKeys.delete)} arrow placement="top">
                 <IconButton size="small" onClick={deleteTack}>
-                    <DeleteForeverIcon style={{ color: '#8F92A1', height: 40, width: 40, padding: "auto" }} />
+                    <DeleteForeverIcon />
                 </IconButton>
             </Tooltip>
-            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.gotomessage)} arrow placement="top">
+            <Tooltip title={t(langKeys.gotomessage)} arrow placement="top">
                 <IconButton size="small" onClick={gotomessage}>
-                    <ReplyIcon style={{ color: '#8F92A1', height: 40, width: 40 }} />
+                    <ReplyIcon />
                 </IconButton>
             </Tooltip>
         </div>
@@ -1627,7 +1628,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }} className='col-6'>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0 }} className='col-6'>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1646,10 +1647,10 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <div className='col-3' style={{ zIndex: 99, margin: 0 }}>
+                <div className='col-3' style={{ zIndex: 99, margin: 0, marginBottom: 0 }}>
                     <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
                 </div>
-                <div className='col-3'>
+                <div className='col-3' style={{marginBottom: 0}}>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
