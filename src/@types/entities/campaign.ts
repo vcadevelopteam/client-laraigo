@@ -1,18 +1,23 @@
 import { Dictionary } from "@types";
 
 export class SelectedColumns {
-	primarykey: string;
-	column: boolean[];
-	columns: string[];
-	firstname: string;
-	lastname: string;
-	constructor() {
-		this.primarykey = '';
-		this.column = [];
-		this.columns = [];
-		this.firstname = '';
-		this.lastname = '';
-	}
+    primarykey: string;
+    column: boolean[];
+    columns: string[];
+    firstname: string;
+    lastname: string;
+    campaignvariables: { [key: string]: { column: string, value: any, type: string, index: string, carouselIndex: number | null } };
+    allVariables: { [key: string]: { column: string, value: any } }; 
+
+    constructor() {
+        this.primarykey = '';
+        this.column = [];
+        this.columns = [];
+        this.firstname = '';
+        this.lastname = '';
+        this.campaignvariables = {};
+		this.allVariables = {};
+    }
 }
 
 export interface ICampaign {
@@ -41,11 +46,11 @@ export interface ICampaign {
 	messagetemplatelanguage?: string,
 	messagetemplatepriority?: string,
 	executiontype?: string,
-	batchjson?: Dictionary[],
+	batchjson?: Dictionary[] | Dictionary,
 	fields?: Dictionary,
 	operation?: string,
 	carouseljson?: Dictionary[],
-	variableshidden?: Dictionary[],
+	variableshidden?: string[],
 	headers?: any[],
 	jsonData?: any[],
 	selectedColumns?: SelectedColumns,

@@ -30,6 +30,8 @@ import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as A
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import BlockIcon from '@material-ui/icons/Block';
 import { getDateCleaned } from 'common/helpers';
+import CommentIcon from '@material-ui/icons/Comment';
+import { DownloadIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -595,6 +597,16 @@ const Campaign: React.FC<CampaignProps> = ({
         }
     };
 
+    const gotoReport = () => {
+        if (viewSelected === "report") {
+            return (
+                <CampaignReport
+                    setViewSelected={setViewSelected}
+                />
+            )
+        }
+    };
+
 
     const modifiedData = useMemo(() => {
         return mainResult.mainData.data.map((item: any) => ({
@@ -674,6 +686,17 @@ const Campaign: React.FC<CampaignProps> = ({
                                         <Trans i18nKey={langKeys.register} />
                                     </Button>
 
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        color="primary"  
+                                        disabled={mainResult.mainData.loading}                            
+                                        startIcon={<DownloadIcon />}
+                                        onClick={handleDownload}                                       
+                                    >
+                                        <Trans i18nKey={langKeys.download} />
+                                    </Button>
+
                                     <IconButton
                                         aria-label="more"
                                         id="long-button"
@@ -708,19 +731,19 @@ const Campaign: React.FC<CampaignProps> = ({
                                         </MenuItem>
 
                                         <Divider />
-
-                                        <a style={{ textDecoration: 'none', color: 'inherit' }} onClick={handleDownload}>
+                                       
+                                        <Divider />
+                                        <a style={{ textDecoration: 'none', color: 'inherit' }}  onClick={() => setViewSelected("report")}>
                                             <MenuItem
                                                 disabled={mainResult.mainData.loading}
                                                 style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
                                             >
                                                 <ListItemIcon>
-                                                    <CloudDownloadIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
+                                                    <CommentIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                 </ListItemIcon>
-                                                <Typography variant="inherit">Descargar</Typography>
+                                                <Typography variant="inherit">Reporte</Typography>
                                             </MenuItem>
                                         </a>
-
                                     </Menu>
                                 </div>
                             </div>

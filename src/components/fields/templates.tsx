@@ -999,7 +999,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
 export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', getOptionDisabled }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
-    const [dataG, setDataG] = useState<Dictionary[]>([]);
+    const [dataG, setDataG] = useState<Dictionary[]>([]);   
 
     useEffect(() => {
         if (orderbylabel) {
