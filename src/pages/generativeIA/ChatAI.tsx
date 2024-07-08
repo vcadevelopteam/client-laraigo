@@ -24,6 +24,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
 import { deleteThreadLlama, query } from "store/llama/actions";
+import { deleteThreadLlama3, query3 } from "store/llama3/actions";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -170,6 +171,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const executeResult = useSelector((state) => state.main.execute);
     const executeThreads = useSelector((state) => state.gpt.gptResult);
     const llamaResult = useSelector((state) => state.llama.llamaResult);
+    const llm3Result = useSelector(state => state.llama3.llama3Result);
     const [selectedChatForEdit, setSelectedChatForEdit] = useState<number | null>(null);
     const [selectedChat, setSelectedChat] = useState<Dictionary | null>(null);
     const dataThreads = useSelector(state => state.main.mainAux);
@@ -183,7 +185,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [date, setDate] = useState('');
     const endOfMessagesRef = useRef(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
-
+    const textFieldRef = useRef(null);
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
@@ -299,51 +301,95 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
 
     useEffect(() => {
         if (waitSaveThreadDeleteLlama) {
-            if (!llamaResult.loading && !llamaResult.error) {
-                setWaitSaveThreadDeleteLlama(false);
-                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
-                setWaitSaveCreateThread(true);
-                setCardDelete(null);
-            } else if (llamaResult.error) {
-                setWaitSaveThreadDeleteLlama(false);
-                dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
-                setWaitSaveCreateThread(true);
-                setCardDelete(null);
+            if(row?.basemodel.startsWith('llama')) {
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                } else if (llm3Result.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                }
+            } else {
+                if (!llamaResult.loading && !llamaResult.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                } else if (llamaResult.error) {
+                    setWaitSaveThreadDeleteLlama(false);
+                    dispatch(execute(insThread({ ...cardDelete, id: cardDelete?.threadid, operation: "DELETE", status: "ELIMINADO", type: "NINGUNO" })));
+                    setWaitSaveCreateThread(true);
+                    setCardDelete(null);
+                }
             }
         }
-    }, [llamaResult, waitSaveThreadDeleteLlama]);
+    }, [llamaResult, llm3Result, waitSaveThreadDeleteLlama]);
 
     useEffect(() => {
         if (waitSaveMessageLlama) {
-            if (!llamaResult.loading && !llamaResult.error) {
-                setWaitSaveMessageLlama(false);
-                if (llamaResult.data && llamaResult.data.result) {
-                    dispatch(execute(insMessageAi({
-                        assistantaiid: row?.assistantaiid,
-                        threadid: activeThreadId,
-                        assistantaidocumentid: 0,
-                        id: 0,
-                        messagetext: llamaResult.data.result,
-                        infosource: '',
-                        type: 'BOT',
-                        status: 'ACTIVO',
-                        operation: 'INSERT',
-                    })));
-                    setWaitSaveMessageLlamaAux(true);
-                } else {
-                    dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
+            if(row?.basemodel.startsWith('llama')) {
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveMessageLlama(false);
+                    if (llm3Result.data && llm3Result.data.result) {
+                        dispatch(execute(insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: activeThreadId,
+                            assistantaidocumentid: 0,
+                            id: 0,
+                            messagetext: llm3Result.data.result,
+                            infosource: '',
+                            type: 'BOT',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                        })));
+                        setWaitSaveMessageLlamaAux(true);
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
+                        setIsLoading(false);
+                    }
+                } else if (llm3Result.error) {
+                    const errormessage = t(llm3Result.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                     setIsLoading(false);
+                    setWaitSaveMessageLlama(false);
                 }
-            } else if (llamaResult.error) {
-                const errormessage = t(llamaResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setIsLoading(false);
-                setWaitSaveMessageLlama(false);
+            } else {
+                if (!llamaResult.loading && !llamaResult.error) {
+                    setWaitSaveMessageLlama(false);
+                    if (llamaResult.data && llamaResult.data.result) {
+                        dispatch(execute(insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: activeThreadId,
+                            assistantaidocumentid: 0,
+                            id: 0,
+                            messagetext: llamaResult.data.result,
+                            infosource: '',
+                            type: 'BOT',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                        })));
+                        setWaitSaveMessageLlamaAux(true);
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
+                        setIsLoading(false);
+                    }
+                } else if (llamaResult.error) {
+                    const errormessage = t(llamaResult.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    setIsLoading(false);
+                    setWaitSaveMessageLlama(false);
+                }
             }
         }
-    }, [llamaResult, waitSaveMessageLlama]);
+    }, [llamaResult, llm3Result, waitSaveMessageLlama]);
     
 
     useEffect(() => {
@@ -496,6 +542,41 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         }
     }, [executeResult, waitSaveMessage3]);
 
+    const handleSendMessageLLM3 = async () => {
+        setIsLoading(true);
+        const currentThreadLlamaId = selectedChat?.threadid;
+        dispatch(
+            execute(
+                insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: currentThreadLlamaId,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: messageText,
+                    infosource: '',
+                    type: 'USER',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                })
+            )
+        );
+        const message = messageText
+        setMessageText('');
+        fetchThreadMessages(selectedChat?.threadid);
+        dispatch(query3({
+            assistant_name: row?.name,
+            query: message,
+            system_prompt: row?.generalprompt,
+            model: row?.basemodel,
+            thread_id: selectedChat?.code,
+            max_new_tokens: row?.max_tokens,
+            temperature: parseFloat(row?.temperature),
+            top_p: parseFloat(row?.top_p),
+        }))
+        setWaitSaveMessageLlama(true)
+        setActiveThreadId(currentThreadLlamaId);
+    }
+
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
@@ -526,6 +607,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             max_new_tokens: row?.max_tokens,
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
+            decoding_method: row?.decoding_method ? row.decoding_method : "sample",
         }))
         setWaitSaveMessageLlama(true)
         setActiveThreadId(currentThreadLlamaId);
@@ -536,6 +618,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 if(row?.basemodel.startsWith('gpt')) handleSendMessage();
+                else if(row?.basemodel.startsWith('llama')) handleSendMessageLLM3();
                 else handleSendMessageLlama();
             }
         };
@@ -547,7 +630,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         return () => {
             document.removeEventListener('keyup', handleKeyUp);
         };
-    }, [handleSendMessage, handleSendMessageLlama]);
+    }, [handleSendMessage, handleSendMessageLlama, handleSendMessageLLM3]);
 
     const handleDeleteChat = (chat: Dictionary) => {
         const callback = async () => {
@@ -567,12 +650,20 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             setCardDelete(chat)
             setWaitSaveThreadDeleteLlama(true);
         };
+        const callbackLlm3 = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(deleteThreadLlama3({
+                threadid: selectedChat?.threadid
+            }))
+            setCardDelete(chat)
+            setWaitSaveThreadDeleteLlama(true);
+        };
       
         dispatch(
             manageConfirmation({
               visible: true,
               question: t(langKeys.confirmation_delete),
-              callback: row?.basemodel.startsWith('gpt') ? callback : callbackMeta,
+              callback: row?.basemodel.startsWith('gpt') ? callback : row?.basemodel.startsWith('llama') ? callbackLlm3 : callbackMeta,
             })
         );
     };
@@ -605,6 +696,16 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleChatClick = (chat: Dictionary) => {
         setSelectedChat(chat);
         fetchThreadMessages(chat?.threadid)
+    };
+
+    const handleSendMessageGeneral = () => {
+        if (row?.basemodel.startsWith('gpt')) handleSendMessage();
+        else if (row?.basemodel.startsWith('llama')) handleSendMessageLLM3();
+        else handleSendMessageLlama();
+    
+        if (textFieldRef.current) {
+          textFieldRef.current.focus();
+        }
     };
 
     return (
@@ -733,7 +834,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             variant="outlined"
                             onChange={(value) => setMessageText(value)}
                             valueDefault={messageText}
-                            disabled={!selectedChat || isLoading}
+                            disabled={!selectedChat}
                             InputProps={{
                                 multiline: true,
                                 maxRows: 7,
@@ -741,10 +842,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                     <InputAdornment position="end">
                                         <IconButton                                           
                                             className={classes.sendicon}
-                                            onClick={() => {
-                                                if(row?.basemodel.startsWith('gpt')) handleSendMessage()
-                                                else handleSendMessageLlama()
-                                            }}
+                                            onClick={handleSendMessageGeneral}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
                                           <SendMesageIcon color="secondary" />
@@ -752,9 +850,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                     </InputAdornment>
                                 ),
                             }}
+                            inputRef={textFieldRef}
                         />
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
     );

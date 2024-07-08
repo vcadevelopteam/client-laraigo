@@ -20,6 +20,7 @@ import { Dictionary } from "@types";
 import { CellProps } from "react-table";
 import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
 import { deleteCollection, massiveDeleteCollection } from "store/llama/actions";
+import { massiveDeleteCollection3 } from "store/llama3/actions";
 
 interface RowSelected {
     row: Dictionary | null;
@@ -91,6 +92,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const [waitSave, setWaitSave] = useState(false);
     const executeAssistants = useSelector((state) => state.gpt.gptResult);
     const llamaResult = useSelector((state) => state.llama.llamaResult);
+    const llm3Result = useSelector(state => state.llama3.llama3Result);
     const [waitSaveAssistantsDelete, setWaitSaveAssistantDelete] = useState(false);
     const [assistantDelete, setAssistantDelete] = useState<Dictionary | null>(null);
     const [waitSaveAssistantDeleteLlama, setWaitSaveAssistantDeleteLlama] = useState(false)
@@ -234,6 +236,37 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         );
     };
 
+    const handleDeleteSelection3 = async (dataSelected: Dictionary[]) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));  
+            const collections = dataSelected.map(obj=> obj.name)
+            dispatch(massiveDeleteCollection3({
+                names: collections,
+            }))
+
+            dataSelected.map(async (row) => {
+                dispatch(
+                    execute(insAssistantAi({
+                        ...row,
+                        id: row.assistantaiid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                        type: "NINGUNO" 
+                    }))
+                );
+            });
+            setWaitSave(true);
+        }
+
+        dispatch(
+            manageConfirmation({
+              visible: true,
+              question: t(langKeys.confirmation_delete_all),
+              callback,
+            })
+        );
+    }
+
     const handleDeleteSelection2 = async (dataSelected: Dictionary[]) => {
         const callback = async () => {
             dispatch(showBackdrop(true));  
@@ -265,19 +298,23 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         );
     };
 
-    const handleDeleteBothSelection = (gptObjects: Dictionary[], nonGptObjects: Dictionary[]) => {
+    const handleDeleteBothSelection = (gptObjects: Dictionary[], watsonObjetcs: Dictionary[], llama3Objects: Dictionary[]) => {
         const callback = async () => {
             dispatch(showBackdrop(true));  
-            const collections = nonGptObjects.map(obj=> obj.name)
+            const collections = watsonObjetcs.map(obj=> obj.name)
             dispatch(massiveDeleteCollection({
                 names: collections,
+            }))
+            const collections3 = llama3Objects.map(obj=> obj.name)
+            dispatch(massiveDeleteCollection3({
+                names: collections3,
             }))
             const codes = gptObjects.map(obj=> obj.code)
             dispatch(deleteMassiveAssistant({
                 ids: codes,
                 apikey: gptObjects[0].apikey,            
             }))
-            const dataSelected = gptObjects.concat(nonGptObjects)
+            const dataSelected = gptObjects.concat(watsonObjetcs, llama3Objects)
             dataSelected.map(async (row) => {
                 dispatch(
                     execute(insAssistantAi({
@@ -423,12 +460,15 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const handleMassiveDelete = () => {
         if (rowWithDataSelected.every(obj => obj.basemodel.startsWith('gpt'))) {
             handleDeleteSelection(rowWithDataSelected);
-        } else if (rowWithDataSelected.every(obj => !obj.basemodel.startsWith('gpt'))) {
+        } else if (rowWithDataSelected.every(obj => obj.basemodel.startsWith('llama'))) {
+            handleDeleteSelection3(rowWithDataSelected);
+        } else if (rowWithDataSelected.every(obj => !obj.basemodel.startsWith('gpt') && !obj.basemodel.startsWith('llama'))) {
             handleDeleteSelection2(rowWithDataSelected);
         } else {
             const gptObjects = rowWithDataSelected.filter(obj => obj.basemodel.startsWith('gpt'));
-            const nonGptObjects = rowWithDataSelected.filter(obj => !obj.basemodel.startsWith('gpt'));
-            handleDeleteBothSelection(gptObjects, nonGptObjects)
+            const llama3Objects = rowWithDataSelected.filter(obj => obj.basemodel.startsWith('llama'));
+            const watsonObjetcs = rowWithDataSelected.filter(obj => !obj.basemodel.startsWith('gpt'));
+            handleDeleteBothSelection(gptObjects, watsonObjetcs, llama3Objects)
         }
     }
 
