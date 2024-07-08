@@ -1663,7 +1663,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleInput = (e) => {
-        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        let val = e.target.value.replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]/g, "");
         if (val.length > 60) {
             val = val.substring(0, 60);
         }
@@ -1673,7 +1673,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const handleQuickReply = (e, index: number) => {
-        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        let val = e.target.value.replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]/g, "");
         if (val.length > 25) {
             val = val.substring(0, 25);
         }
@@ -1684,7 +1684,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleActionButtonText = (e, index: number) => {
-        let val = e.target.value.replace(/[^a-zA-Z0-9 ]/g, "");
+        let val = e.target.value.replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]/g, "");
         if (val.length > 25) {
             val = val.substring(0, 25);
         }
@@ -1694,7 +1694,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }
 
     const handleActionButtonUrl = (e, index: number) => {
-        let val = e.target.value.replace(/[^a-zA-Z0-9 /.:-]/g, "");
+        let val = e.target.value.replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ /.:-]/g, "");
         if (val.length > 2000) {
             val = val.substring(0, 2000);
         }
