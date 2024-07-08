@@ -37,7 +37,6 @@ export interface TableConfig {
   ButtonsElement?: (() => JSX.Element) | ReactElement;
   FiltersElement?: ReactElement;
   pageSizeDefault?: number;
-  dataDomains?: Dictionary[];
 
   groupedBy?: boolean;  
   showHideColumns?: boolean;
