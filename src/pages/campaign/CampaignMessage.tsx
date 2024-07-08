@@ -549,7 +549,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };
 
     //manejo de cambio de variables en field selects, cambia los keys e index idedntificadores
-    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'receiver', carouselIndex?: number) => {
+    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'additional-dynamic' | 'receiver', carouselIndex?: number) => {
         if (row && !detectionChangeSource) {
             console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
     
@@ -561,7 +561,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             newSelectedFields[`field${index}`] = {
                 column: selectedOption,
                 value: selectedOption.key,
-                type: variableType === 'additional' ? 'variablehidden' : variableType,
+                type: variableType === 'additional' || variableType === 'additional-dynamic' ? 'variablehidden' : variableType,
                 index: index.toString(),
                 carouselIndex: carouselIndex !== undefined ? carouselIndex : null
             };
