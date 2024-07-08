@@ -1950,6 +1950,29 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+export const getHSMShipping= ({ startdate, enddate, communicationchannelid, userSid }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
+    key: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
+    parameters: {
+        startdate,
+        enddate,
+        communicationchannelid,
+        userSid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid, messagetemplateid,usersid }: Dictionary): IRequestBody => ({
+    method: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
+    key: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
+    parameters: {
+        startdate,
+        enddate,
+        communicationchannelid,
+        messagetemplateid,
+        usersid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
 
 export const getCampaignReportPaginated = ({ startdate, enddate, channeltype, filters, sorts, take, skip, distinct }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_CAMPAIGNREPORT_SEL",
@@ -5320,4 +5343,13 @@ export const integrationManagerCodePersonDel = ({integrationmanagerid, type, ids
     method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     parameters: { integrationmanagerid, type, ids },
+});
+export const getUserMessageOutbound = ({startdate, enddate, communicationchannelid}:Dictionary) => ({
+    method: "UFN_USER_MESSAGE_OUTBOUND",
+    key: "UFN_USER_MESSAGE_OUTBOUND",
+    parameters: { 
+        startdate,
+        enddate,
+        communicationchannelid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });

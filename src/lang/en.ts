@@ -6392,6 +6392,17 @@ const translation: LangKeys = {
   selectcorrectimage: "Select a correct image file",
   selectcorrectvideo: "Select a correct video file",
   selectcorrectdocument: "Select a correct document file",
+  templatecategory: 'Template Category',
+  failed_plural:'Failed',
+  successful_plural: 'Successful',
+  read: 'Read',
+  read_singular: 'Read',
+  contested: 'Contested',
+  shippingdateandtime: 'Shipping date and time',
+  recipient:'Recipient',
+  shipment:'Shipment',
+  contestedagain:'Contested',
+  origin_helpText: 'Displays the HSM shipping source module.',
 };
 
 const enResource: ResourceLanguage = {

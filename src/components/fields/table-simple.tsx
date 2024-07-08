@@ -143,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'grid',
         gridAutoFlow: 'column',
         alignItems: 'center',
+        alignSelf: "flex-start"
     },
     containerHeader: {
         display: 'block',
@@ -978,10 +979,11 @@ const TableZyx = React.memo(({
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
+                                    paddingRight: cell.column.type === "number"?54:24,
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
                             })}                            
-                            onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
+                            onClick={() => cell.column.id !== "selection" ? (onClickRow && onClickRow(row.original, cell?.column?.id)) : null}
                         >
                             {cell.render('Cell')}
                            
@@ -1395,11 +1397,20 @@ const TableZyx = React.memo(({
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
                                                         whiteSpace: 'nowrap',
+                                                        paddingRight: cell.column.type === "number"?54:24,
                                                         ...(toolsFooter ? {} : { padding: '0px' }),
                                                         textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                     },
                                                 })}
-                                                onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
+                                                onClick={() => {
+                                                    if(cell.column.id !== "selection"){
+                                                        if(row?.subRows?.length){
+                                                            row.toggleRowExpanded();
+                                                        }else{
+                                                            onClickRow && onClickRow(row.original, cell?.column?.id)
+                                                        }
+                                                    }}
+                                                }
                                             >
                                                {cell.isGrouped ? (
                                                     <>

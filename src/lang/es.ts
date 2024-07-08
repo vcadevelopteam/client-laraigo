@@ -6343,6 +6343,17 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   selectcorrectimage: "Selecciona un archivo de imagen correcto",
   selectcorrectvideo: "Selecciona un archivo de video correcto",
   selectcorrectdocument: "Selecciona un archivo de documento correcto",
+  templatecategory: 'Categoría de la plantilla',
+  failed_plural:'Fallidos',
+  successful_plural: 'Exitosos',
+  read: 'Leídos',
+  read_singular: 'Leído',
+  contested: 'Contestados',
+  shippingdateandtime: 'Fecha y hora de envío',
+  recipient:'Destinatario',
+  shipment:'Envío',
+  contestedagain:'Respondido',
+  origin_helpText: 'Muestra el módulo de origen del envío del HSM.',
 };
 
 const esResource: ResourceLanguage = {

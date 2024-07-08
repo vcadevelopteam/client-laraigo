@@ -6340,6 +6340,17 @@ export const langKeys = {
   selectcorrectimage: "selectcorrectimage",
   selectcorrectvideo: "selectcorrectvideo",
   selectcorrectdocument: "selectcorrectdocument",
+  templatecategory: 'templatecategory',
+  failed_plural:'failed_plural',
+  successful_plural: 'successful_plural',
+  read: 'read',
+  read_singular: 'read_singular',
+  contested: 'contested',
+  shippingdateandtime: 'shippingdateandtime',
+  recipient:'recipient',
+  shipment:'shipment',
+  contestedagain:'contestedagain',
+  origin_helpText: 'origin_helpText',
 };
 
 export type LangKeys = typeof langKeys;
