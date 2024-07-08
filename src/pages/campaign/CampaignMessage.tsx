@@ -1186,6 +1186,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [headers, selectedHeaders, templateToUse, variableSelections, jsonPersons, variablesBodyView, variablesAdditionalView, variablesCarouselBubbleView, variablesUrlView, variablesHeaderView, variablesCardImageView]);
 
+
+
+
+
+
     //logica para person y lead, previsualizacion de campaña ya creada
     const [unavailableValues, setUnavailableValues] = useState([]);
     const [availableOptions, setAvailableOptions] = useState([]);
@@ -1257,27 +1262,21 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [variableSelections, selectedAdditionalHeaders]);
     
 
-    const [dynamicAdditionalVariables, setDynamicAdditionalVariables] = useState([]);
-
     const handleAddVariable = () => {
-        setDynamicAdditionalVariables(prev => {
-            if (prev.length + additionalVariables.length < 10) {
-                return [...prev, prev.length + additionalVariables.length + 1];
+        setAdditionalVariables(prev => {
+            if (prev.length < 10) {
+                return [...prev, prev.length + 1];
             }
             return prev;
         });
-    };
-    
-    const handleRemoveVariable = (indexToRemove: number) => {
-        setDynamicAdditionalVariables(prev => {
-            const newVariables = prev.filter((_, index) => index !== indexToRemove);
-            return newVariables;
-        });
+    }
+
+    const handleRemoveVariable = (indexToRemove: number) => {   
         setAdditionalVariables(prev => {
             const newVariables = prev.filter((_, index) => index !== indexToRemove);
             return newVariables.map((_, index) => index + 1);
         });
-    };
+    }
 
     const handleAdditionalVariableChange = (variableNumber: number, selectedOption: Dictionary) => {
         const header = selectedOption ? selectedOption.key : '';    
@@ -1287,7 +1286,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             const newValues = { ...prevValues, [variableNumber]: value };
             return newValues;
         });
-    
+
         setSelectedAdditionalHeaders(prev => {
             const newHeaders = { ...prev, [variableNumber]: header };
             return newHeaders;
@@ -1543,10 +1542,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             const headerFields = Object.values(campaignVariables).filter(field => field.type === 'header');
                                             const maxIndex = Math.max(...headerFields.map(field => parseInt(field.index, 10)), 0);
 
-                                            return Array.from({ length: maxIndex }, (_, index) => {
-                                                const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
-                                                let valueDefault;
-
+                                        return Array.from({ length: maxIndex }, (_, index) => {
+                                            const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
+                                            let valueDefault;
                                                 const key = `header-${index + 1}`;
                                                 const selectedHeader = selectedHeaders[key];
                                                 if (selectedHeader) {
@@ -1944,88 +1942,64 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 <AddIcon /> Añadir variable adicional
                             </div>
                             <div className={classes.containerStyle}>
-                                {row && !detectionChangeSource ? (
-                                    <>
-                                        {variablesAdditionalView.map((variable, index) => {
-                                            const cleanVariable = variable.replace(/"/g, '');                                        
-                                            let valueDefault;
-                                            if (cleanVariable) {
-                                                const matchingField = matchingUnavailableValues.find(item => item.field === cleanVariable);
-                                                if (matchingField) {
-                                                    valueDefault = matchingField.column ? matchingField.column : undefined;
-                                                } else {
-                                                    const allVariables = multiData[4].data[0].fields?.allVariables || {};
-                                                    const allVariablesField = allVariables[cleanVariable];
-                                                    if (allVariablesField) {
-                                                        valueDefault = allVariablesField.column ? allVariablesField.column : undefined;
-                                                    } else {
-                                                        const fieldIndex = parseInt(cleanVariable.replace('field', ''), 10) - 2;
-                                                        const valor = templateData.fields.columns[fieldIndex];
-                                                        valueDefault = valor ? valor : undefined;
-                                                    }
-                                                }
+                           {row && !detectionChangeSource  ? (
+                                <>
+                                    {variablesAdditionalView.map((variable, index) => {
+                                        const cleanVariable = variable.replace(/"/g, '');                                        
+                                        let valueDefault;
+                                        if (cleanVariable) {
+                                            const matchingField = matchingUnavailableValues.find(item => item.field === cleanVariable);
+                                            if (matchingField) {
+                                                valueDefault = matchingField.column ? matchingField.column : undefined;
                                             } else {
-                                                valueDefault = undefined;
+                                                const allVariables = multiData[4].data[0].fields?.allVariables || {};
+                                                const allVariablesField = allVariables[cleanVariable];
+                                                if (allVariablesField) {
+                                                    valueDefault = allVariablesField.column ? allVariablesField.column : undefined;
+                                                } else {
+                                                    const fieldIndex = parseInt(cleanVariable.replace('field', ''), 10) - 2;
+                                                    const valor = templateData.fields.columns[fieldIndex];
+                                                    valueDefault = valor ? valor : undefined;
+                                                }
                                             }
-                                            const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-                                            return (
-                                                <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                        <p>{`Variable Adicional {{${index + 1}}}`}</p>
-                                                        <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <FieldSelectDisabled
-                                                            variant="outlined"
-                                                            uset={true}
-                                                            className="col-12"
-                                                            data={allOptions.map(header => ({ key: header, value: header }))}
-                                                            optionDesc="value"
-                                                            optionValue="key"
-                                                            valueDefault={valueDefault}
-                                                            onChange={(selectedOption) => {
-                                                                handleVariableChange((index + 1).toString(), selectedOption, 'additional');
-                                                                setVariableSelections(prev => {
-                                                                    const newSelections = {
-                                                                        ...prev,
-                                                                        [`additional-${index + 1}`]: selectedOption.key
-                                                                    };
-                                                                    return newSelections;
-                                                                });
-                                                            }}
-                                                            getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                        />
-                                                    </div>
+                                        } else {
+                                            valueDefault = undefined;
+                                        }
+                                        const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
+                                        return (
+                                            <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                    <p>{`Variable Adicional {{${index + 1}}}`}</p>
+                                                    <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
                                                 </div>
-                                            );
-                                        })}
-                                        {dynamicAdditionalVariables.map((variable, index) => {
-                                            const dynamicIndex = index + variablesAdditionalView.length + 1;
-                                            const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
-                                            return (
-                                                <div style={{ flex: 1 }} key={`additional-dynamic-${dynamicIndex}`}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                        <p>{`Variable Adicional {{${dynamicIndex}}}`}</p>
-                                                        <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(dynamicIndex - 1)} />
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <FieldSelectDisabled
-                                                            variant="outlined"
-                                                            uset={true}
-                                                            className="col-12"
-                                                            data={allOptions.map(header => ({ key: header, value: header }))}
-                                                            optionDesc="value"
-                                                            optionValue="key"
-                                                            valueDefault={selectedAdditionalHeaders[dynamicIndex] ? { key: selectedAdditionalHeaders[dynamicIndex], value: selectedAdditionalHeaders[dynamicIndex] } : undefined}
-                                                            onChange={(selectedOption) => handleAdditionalVariableChange(dynamicIndex, selectedOption)}
-                                                            getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
-                                                        />
-                                                    </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <FieldSelectDisabled
+                                                        variant="outlined"
+                                                        uset={true}
+                                                        className="col-12"
+                                                        data={allOptions.map(header => ({ key: header, value: header }))}
+
+                                                        optionDesc="value"
+                                                        optionValue="key"
+                                                        valueDefault={valueDefault}
+                                                        onChange={(selectedOption) => {
+                                                            handleVariableChange((index + 1).toString(), selectedOption, 'additional');
+                                                            setVariableSelections(prev => {
+                                                                const newSelections = {
+                                                                    ...prev,
+                                                                    [`additional-${index + 1}`]: selectedOption.key
+                                                                };
+                                                                return newSelections;
+                                                            });
+                                                        }}
+                                                        getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                                    />
                                                 </div>
-                                            );
-                                        })}
-                                    </>
-                                ) : (
+                                            </div>
+                                        );
+                                    })}
+                                </>
+                            ) : ( 
                                     <>
                                         {additionalVariables.map((variable, index) => (
                                             <div style={{ flex: 1 }} key={index}>
@@ -2052,8 +2026,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 )}
                             </div>
                         </FormControl>
-
-
                     </div>
                 </div>
                 <div className={classes.containerDetail} style={{marginLeft:'1rem', width:'50%'}}>             

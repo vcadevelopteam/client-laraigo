@@ -5,7 +5,7 @@ import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm, useFormContext } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { FormControl } from '@material-ui/core';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
@@ -388,7 +388,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     useEffect(() => {
         if (frameProps.checkPage) {
-            trigger().then((valid: any) => {
+            trigger().then((valid: any) => {            
                 const data = getValues();
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = templateButtonsData || [];
@@ -479,7 +479,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
         if (previousSource === 'INTERNAL' && data?.key !== 'INTERNAL') {
             setDetectionChangeSource(true);
-            console.log('ya no es internal')
         } else {
             setDetectionChangeSource(false);
         }
@@ -577,12 +576,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
 
-    const classNameCondition = edit && getValues('executiontype') === 'SCHEDULED' ? 'col-12' : 'col-6'
-
-    //console.log(selectedTemplate)
-    //console.log("Campaign General Data:", detaildata);
-    //console.log('campaña completa ya creada', multiData[4].data)
-  
+    const classNameCondition = edit && getValues('executiontype') === 'SCHEDULED' ? 'col-12' : 'col-6'  
     return (
         <React.Fragment>
             <div style={{display:'flex', gap: '1rem', width:'100%'}}>
@@ -810,12 +804,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             />
                         }
                     </div>
-
-
-
-
-
-
                        </>
                         :
                         <FieldView
@@ -824,14 +812,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-6"
                         />
                     }
-
-                   
-                    
-                   
                 </div>
-
-
-                
                 <div className="row-zyx">
                     {edit ?
                         <FormControl className="col-12" >                      
@@ -915,8 +896,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-6"
                         />
                     }
-                </div>
- 
+                </div> 
 
                 {['HSM'].includes(getValues('type')) ?
                     <div className="row-zyx">
@@ -981,20 +961,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         }
                     </div>
                     : null}
-
-            
-
-
                 </div>
                 
                 <div style={{width:'50%'}}>
                     <div style={{fontSize:'1.2rem', marginTop:'2.1rem'}}>{t('Previsualización de la Plantilla')}</div> 
                     <TemplatePreview selectedTemplate={selectedTemplate} variableValues={[]}/>
 
-                </div>             
-
-            </div>
-           
+                </div>           
+            </div>           
         </React.Fragment>
     )
 }
