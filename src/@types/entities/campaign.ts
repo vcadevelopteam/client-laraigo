@@ -44,17 +44,16 @@ export interface ICampaign {
 	batchjson?: Dictionary[],
 	fields?: Dictionary,
 	operation?: string,
-
+	carouseljson?: Dictionary[],
+	variableshidden?: Dictionary[],
 	headers?: any[],
 	jsonData?: any[],
 	selectedColumns?: SelectedColumns,
 	selectedRows?: any,
 	person?: any[],
-
 	subject?: string,
 	message?: string,
 	variablereplace?: string[],
-
 	sourcechanged?: boolean,
 }
 

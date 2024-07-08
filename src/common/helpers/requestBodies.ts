@@ -985,10 +985,26 @@ export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, sta
     }
 })
 
+export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelid }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",
+    parameters: {
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, newversion: false, communicationchannelid
+    }
+})
+
 export const getMessageTemplateLst = (type: string): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_LST",
     parameters: {
         type: type,
+    }
+});
+
+export const getMessageTemplateLstOld = (type: string): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_LST_OLD",
+    parameters: {
+        type: type,
+        newversion: false,
     }
 });
 
@@ -1007,6 +1023,7 @@ export const insMessageTemplate = (
         headertype,
         header,
         body,
+        bodyobject,
         footerenabled,
         footer,
         buttonsenabled,
@@ -1045,6 +1062,7 @@ export const insMessageTemplate = (
             headertype,
             header,
             body,
+            bodyobject: JSON.stringify(bodyobject),
             footerenabled,
             footer,
             buttonsenabled,
@@ -1066,6 +1084,88 @@ export const insMessageTemplate = (
             providerquality,
             providerstatus,
             operation,
+            buttons: []
+        }
+    });
+
+export const insMessageTemplateOld = (
+    {
+        id,
+        description,
+        type,
+        status,
+        name,
+        namespace,
+        category,
+        language,
+        templatetype,
+        headerenabled,
+        headertype,
+        header,
+        body,
+        bodyobject,
+        footerenabled,
+        footer,
+        buttonsenabled,
+        priority,
+        attachment,
+        communicationchannelid,
+        communicationchanneltype,
+        authenticationdata,
+        bodyvariables,
+        buttonsgeneric,
+        buttonsquickreply,
+        carouseldata,
+        headervariables,
+        provideraccountid,
+        providerexternalid,
+        providerid,
+        providermessagelimit,
+        providerpartnerid,
+        providerquality,
+        providerstatus,
+        operation,
+    }: Dictionary): IRequestBody => ({
+
+        method: "UFN_MESSAGETEMPLATE_INS_OLD",
+        parameters: {
+            id,
+            description,
+            type,
+            status,
+            name,
+            namespace,
+            category,
+            language,
+            templatetype,
+            headerenabled,
+            headertype,
+            header,
+            body,
+            bodyobject: JSON.stringify(bodyobject),
+            footerenabled,
+            footer,
+            buttonsenabled,
+            priority,
+            attachment,
+            communicationchannelid,
+            communicationchanneltype,
+            authenticationdata: JSON.stringify(authenticationdata),
+            bodyvariables: JSON.stringify(bodyvariables),
+            buttonsgeneric: JSON.stringify(buttonsgeneric),
+            buttonsquickreply: JSON.stringify(buttonsquickreply),
+            carouseldata: JSON.stringify(carouseldata),
+            headervariables: JSON.stringify(headervariables),
+            provideraccountid,
+            providerexternalid,
+            providerid,
+            providermessagelimit,
+            providerpartnerid,
+            providerquality,
+            providerstatus,
+            operation,
+            newversion: false,
+            buttons: []
         }
     });
 
@@ -1426,10 +1526,25 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
     service,
 });
 
-export const getCampaignLst = (): IRequestBody => ({
+export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
-    parameters: {}
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getCampaignOldLst = (startdate: any, enddate: any): IRequestBody => ({
+    method: "UFN_CAMPAIGN_LST_OLD",
+    key: "UFN_CAMPAIGN_LST_OLD",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        newversion: false
+    }
 });
 
 export const getCampaignSel = (id: number): IRequestBody => ({
@@ -1468,8 +1583,10 @@ export const insCampaign = ({
     batchjson,
     fields,
     operation,
+    carouseljson,
+    variableshidden, 
     selectedColumns
-}: Dictionary): IRequestBody => ({
+}: Dictionary, membercount: number = 0): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
     parameters: {
         id,
@@ -1499,7 +1616,82 @@ export const insCampaign = ({
         executiontype,
         batchjson: JSON.stringify(batchjson),
         fields: JSON.stringify(selectedColumns || fields),
-        operation
+        operation,
+        carouseljson: JSON.stringify(carouseljson),
+        variableshidden: JSON.stringify(variableshidden),
+        membercount,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const insCampaignOld = ({
+    id,
+    communicationchannelid,
+    usergroup,
+    type,
+    status,
+    title,
+    description,
+    subject,
+    message,
+    startdate,
+    enddate,
+    repeatable,
+    frecuency,
+    messagetemplateid,
+    messagetemplatename,
+    messagetemplatenamespace,
+    messagetemplateheader,
+    messagetemplatebuttons,
+    messagetemplatefooter,
+    messagetemplatetype,
+    messagetemplateattachment,
+    source,
+    messagetemplatelanguage,
+    messagetemplatepriority,
+    executiontype,
+    batchjson,
+    fields,
+    operation,
+    carouseljson,
+    variableshidden, 
+    selectedColumns
+}: Dictionary, membercount: number = 0): IRequestBody => ({
+    method: "UFN_CAMPAIGN_INS_OLD",
+    parameters: {
+        id,
+        communicationchannelid,
+        usergroup,
+        type,
+        status,
+        title,
+        description,
+        subject,
+        message,
+        startdate,
+        enddate,
+        repeatable,
+        frecuency,
+        messagetemplateid,
+        messagetemplatename,
+        messagetemplatenamespace,
+        messagetemplateheader: JSON.stringify(messagetemplateheader),
+        messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
+        messagetemplatefooter: messagetemplatefooter || null,
+        messagetemplatetype: messagetemplatetype || null,
+        messagetemplateattachment: messagetemplateattachment || null,
+        source: source || null,
+        messagetemplatelanguage: messagetemplatelanguage || null,
+        messagetemplatepriority: messagetemplatepriority || null,
+        executiontype,
+        batchjson: JSON.stringify(batchjson),
+        fields: JSON.stringify(selectedColumns || fields),
+        operation,
+        carouseljson: carouseljson,
+        variableshidden: variableshidden,
+        membercount,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        newversion: false,
     }
 });
 
@@ -1804,10 +1996,19 @@ export const getCampaignStart = (id: number): IRequestBody => ({
     },
 });
 
-export const getCampaignStatus = (id: number): IRequestBody => ({
+export const getCampaignStatus = (id: number): IRequestBody => ({ // query: "SELECT * FROM ufn_campaign_status($corpid, $orgid, $id)",
     method: "UFN_CAMPAIGN_STATUS",
     parameters: {
         id,
+    },
+});
+
+export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: number, status: string): IRequestBody => ({ // query: "SELECT * FROM ufn_campaignmember_status( $campaignid, $campaignmemberid, $status )",
+    method: "UFN_CAMPAIGNMEMBER_STATUS",
+    parameters: {
+        campaignid,
+        campaignmemberid, 
+        status
     },
 });
 

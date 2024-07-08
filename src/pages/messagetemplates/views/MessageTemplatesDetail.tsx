@@ -542,7 +542,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             providerquality: row?.providerquality || null,
             providerstatus: row?.providerstatus || null,
             status: row?.status || "ACTIVO",
-            templatetype: row?.templatetype || "",
+            templatetype: row?.templatetype === "STANDARD" ? "MULTIMEDIA" : (row?.templatetype || ""),
             type: row?.type || "",
         },
     });
@@ -898,7 +898,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({ ...dataAux })));
+                dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             };
@@ -922,7 +922,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [row, register]);
-
+    
     const onChangeMessageType = (data: Dictionary) => {
         if (getValues("type") === "MAIL" && (data?.value || "") !== "MAIL") {
             setValue("body", richTextToString(bodyObject));
@@ -1210,6 +1210,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const handleFileChange = useCallback((files: FileList | null) => {
+        const fileInput = document.getElementById("fileInput") as HTMLInputElement;
         const file = files?.item(0);
 
         if (file) {
@@ -1232,6 +1233,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 else if (fileType === 'VIDEO') alert("Tipo de archivo inválido. Por favor subir un archivo de video adecuado.");
                 else alert("Tipo de archivo inválido. Por favor subir un archivo de documento adecuado.");
             }
+        }
+        // Reset the file input value to allow selecting the same file again
+        if (fileInput) {
+            fileInput.value = "";
         }
     }, [])
 
@@ -1532,14 +1537,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger('bodyvariables')
         trigger('body');
     }
-
+    
     const changeHeaderType = (type: string) => {
+        if(getValues('headertype') === "TEXT") {
+            setValue('header', '')
+            trigger('header')
+            setValue('headervariables', [])
+            trigger('headervariables')
+        }
         setValue('headertype', type)
         trigger('headertype')
-        setValue('header', '')
-        setValue('headervariables', [])
-        trigger('headervariables')
-        trigger('header')
     }
 
     const changeSafetyRecommendation = (e: ChangeEvent<HTMLInputElement>) => {
@@ -1842,7 +1849,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     const variableNumber = parseInt(match[1], 10);
                     variablesInBody.push(variableNumber);
                 }
-                console.log(variablesInBody)
+                
                 let updatedBodyVariables = getValues('bodyvariables');
                 if (variablesInBody.length !== updatedBodyVariables.length) {
                     // Step 2: Identify the repeated variable number
@@ -2026,7 +2033,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     const variableNumber = parseInt(match[1], 10);
                     variablesInBody.push(variableNumber);
                 }
-                console.log(variablesInBody)
+                
                 let updatedBodyVariables = getValues(`carouseldata.${index}.bodyvariables`);
                 if (variablesInBody.length !== updatedBodyVariables.length) {
                     // Step 2: Identify the repeated variable number
