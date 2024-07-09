@@ -1113,6 +1113,7 @@ export const insMessageTemplateOld = (
         communicationchanneltype,
         authenticationdata,
         bodyvariables,
+        buttons,
         buttonsgeneric,
         buttonsquickreply,
         carouseldata,
@@ -1165,7 +1166,7 @@ export const insMessageTemplateOld = (
             providerstatus,
             operation,
             newversion: false,
-            buttons: []
+            buttons: JSON.stringify(buttons || [])
         }
     });
 
