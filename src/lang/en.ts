@@ -6385,7 +6385,6 @@ const translation: LangKeys = {
   messaging_youtube: "YouTube",
   subscription_businessaddress: "Business Address",
   origin_helpText: 'Displays the HSM shipping source module.',
-  subscription_businessaddress: "Business Address",
   advancedtemplatescampaigns: "Advanced Templates and Campaigns",
   advanced: "Advanced",
   templates: "Templates",
