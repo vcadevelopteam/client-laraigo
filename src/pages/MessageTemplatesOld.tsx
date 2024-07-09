@@ -527,6 +527,8 @@ const MessageTemplatesOld: FC = () => {
         setWaitSaveExport(true);
     };
     
+    
+
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
@@ -816,7 +818,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             fromprovider: row?.fromprovider || false,
             header: row?.header || "",
             headerenabled: ![null, undefined].includes(row?.headerenabled) ? row?.headerenabled : false,
-            headertype: row?.headertype || "text",
+            headertype: (row?.headertype || "text").toLowerCase(),
             id: row ? row.id : 0,
             integrationid: row?.communicationchannelintegrationid || "",
             language: row?.language || "",
@@ -1177,6 +1179,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             );
         }
     });
+
+    console.log('getValues("buttons")', getValues("buttons"))
 
     useEffect(() => {
         if (row) {
