@@ -337,6 +337,7 @@ const paths = {
         path: '/person/:id',
         resolve: (personId: string | number) => `/person/${personId}`,
     },
+    ADVANCEDTEMPLATESCAMPAIGNS: '/advancedtemplatescampaigns',
     MESSAGETEMPLATE: '/extras/messagetemplate',
     TIPIFICATIONS: '/extras/tipifications',
     INPUTVALIDATION: '/extras/inputvalidation',

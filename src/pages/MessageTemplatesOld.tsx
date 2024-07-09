@@ -40,9 +40,9 @@ import {
     getCustomVariableSelByTableName,
     getDomainByDomainNameList,
     getMessageTemplateExport,
-    getPaginatedMessageTemplate,
+    getPaginatedMessageTemplateOld,
     getValuesFromDomain,
-    insMessageTemplate,
+    insMessageTemplateOld,
     richTextToString,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
@@ -134,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const MessageTemplates: FC = () => {
+const MessageTemplatesOld: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -214,7 +214,7 @@ const MessageTemplates: FC = () => {
                         Cell: (props: CellProps<Dictionary>) => {
                             const { row } = props.cell;
                             return showId ? <div>{row.id}</div> : null;
-                        }                        
+                        }
                     },
                 ]
                 : []),
@@ -236,10 +236,10 @@ const MessageTemplates: FC = () => {
                     if (category && type) {
                         return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
                     } else {
-                        return ''; 
+                        return '';
                     }
                 }
-                          
+
             },
             {
                 accessor: "language",
@@ -256,11 +256,11 @@ const MessageTemplates: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const body = row?.original?.body;
-                    
-                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || ''; 
+
+                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body || '';
                 }
-                
-                           
+
+
             },
         ],
         [showId]
@@ -286,7 +286,7 @@ const MessageTemplates: FC = () => {
     }, []);
 
     useEffect(() => {
-        if(!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[3]){
+        if (!mainResult.multiData.loading && !mainResult.multiData.error && mainResult.multiData.data?.[3]) {
             dispatch(getCollectionAux2(getDomainByDomainNameList(mainResult.multiData?.data?.[3]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
         }
     }, [mainResult.multiData]);
@@ -295,7 +295,7 @@ const MessageTemplates: FC = () => {
         setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
         dispatch(
             getCollectionPaginated(
-                getPaginatedMessageTemplate({
+                getPaginatedMessageTemplateOld({
                     communicationchannelid: communicationChannel?.communicationchannelid || 0,
                     enddate: daterange?.endDate!,
                     filters: filters,
@@ -526,7 +526,7 @@ const MessageTemplates: FC = () => {
         dispatch(showBackdrop(true));
         setWaitSaveExport(true);
     };
-
+    
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
@@ -570,21 +570,6 @@ const MessageTemplates: FC = () => {
                                 setCommunicationChannel(value);
                             }}
                         />
-                        <Button
-                            color="primary"
-                            startIcon={<RefreshIcon style={{ color: "white" }} />}
-                            style={{ width: 140, backgroundColor: "#55BD84" }}
-                            variant="contained"
-                            disabled={
-                                mainPaginated.loading ||
-                                (!communicationChannel && Object.keys(selectedRows).length === 0)
-                            }
-                            onClick={() => {
-                                handleSynchronize(communicationChannel, rowWithDataSelected);
-                            }}
-                        >
-                            {t(langKeys.messagetemplate_synchronize)}
-                        </Button>
                     </div>
                 )}
                 autotrigger={true}
@@ -670,8 +655,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [pageSelected, setPageSelected] = useState(0);
     useEffect(() => {
         if (multiData[3]) {
-            const variableDataList = multiData[3].data ||[]
-            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+            const variableDataList = multiData[3].data || []
+            setTableDataVariables(variableDataList.map(x => ({ ...x, value: row?.variablecontext?.[x.variablename] || "" })))
         }
     }, [multiData]);
 
@@ -1114,8 +1099,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         return;
                     }
                 }
-
-                dispatch(addTemplate({ ...data, bodyobject: bodyObject }));
+                const { buttons, ...dataAux } = data;
+                dispatch(addTemplate({
+                    ...dataAux,
+                    bodyobject: bodyObject,
+                    buttons: buttons,
+                    provideraccountid: null,
+                    providerexternalid: null,
+                    providerid: null,
+                    providermessagelimit: null,
+                    providerpartnerid: null,
+                    providerquality: null,
+                    providerstatus: null,
+                    oldversion: true,
+                }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
             };
@@ -1148,8 +1145,24 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject,
-                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                dispatch(execute(insMessageTemplateOld({
+                    ...data,
+                    authenticationdata: {},
+                    bodyobject: getValues('type') === "MAIL" ? bodyObject : [],
+                    bodyvariables: [],
+                    buttonsgeneric: [],
+                    buttonsquickreply: [],
+                    carouseldata: [],
+                    headervariables: [],
+                    provideraccountid: null,
+                    providerexternalid: null,
+                    providerid: null,
+                    providermessagelimit: null,
+                    providerpartnerid: null,
+                    providerquality: null,
+                    providerstatus: null,
+                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},
+                    )
                 })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
@@ -1442,7 +1455,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 sortType: 'string',
                 prefixTranslation: 'datatype_',
                 Cell: (props: any) => {
-                    const { variabletype } = props.cell.row.original || {}; 
+                    const { variabletype } = props.cell.row.original || {};
                     return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -1518,7 +1531,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                 </Tooltip>
                             </div>
-                        )}/>
+                        )} />
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     {row?.showid && (
@@ -2033,9 +2046,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 <div className={classes.containerDetail}>                    
                     <CustomTableZyxEditable
                         columns={columns}
-                        data={tableDataVariables}
                         download={false}
-                        dataDomains={domainsCustomTable?.data||[]}
+                        data={(tableDataVariables).map(x => ({
+                            ...x,
+                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
+                        }))}
                         //loading={multiData.loading}
                         register={false}
                         filterGeneral={false}
@@ -2146,4 +2161,4 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     );
 };
 
-export default MessageTemplates;
+export default MessageTemplatesOld;

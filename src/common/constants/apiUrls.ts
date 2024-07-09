@@ -467,14 +467,28 @@ export const apiUrls = {
     LLAMA_MASSIVE_DELETE_COLLECTION: `${BASE_URL}/llama/massive_delete`,
     LLAMA_EDIT_COLLECTION: `${BASE_URL}/llama/edit_collection`,
     LLAMA_ADD_FILE: `${BASE_URL}/llama/add_file`,
-    LLAMA_ADD_FILES: `${BASE_URL}/llama/add_files`,
     LLAMA_DELETE_FILE: `${BASE_URL}/llama/delete_file`,
     LLAMA_QUERY: `${BASE_URL}/llama/query`,
     LLAMA_DELETE_THREAD: `${BASE_URL}/llama/delete_thread`,
+    LLAMA_ADD_FILES: `${BASE_URL}/llama/add_files`,
+
+    LLAMA_UPLOAD_FILES: `${BASE_URL}/llama/upload`,
+    LLAMA_MESSAGE: `${BASE_URL}/llama/message`,
 
     CORP_URL: `${BASE_URL}/corp`,
     DELIVERY_ROUTING: `${BASE_URL}/delivery/routing`,
-
     PROCESSZIPINTEGRATION: `${BASE_URL}/integrationmanager/file_upload`,
     SAML_LOGIN: `${BASE_URL}/auth/idps/saml20/sso/login`,
+
+    LLAMA3_CREATE_COLLECTION: `${BASE_URL}/llama3/create_collection`,
+    LLAMA3_CREATE_COLLECTION_DOCUMENT: `${BASE_URL}/llama3/create_collection_document`,
+    LLAMA3_CREATE_COLLECTION_DOCUMENTS: `${BASE_URL}/llama3/create_collection_documents`,
+    LLAMA3_DELETE_COLLECTION: `${BASE_URL}/llama3/delete_collection`,
+    LLAMA3_MASSIVE_DELETE_COLLECTION: `${BASE_URL}/llama3/massive_delete`,
+    LLAMA3_EDIT_COLLECTION: `${BASE_URL}/llama3/edit_collection`,
+    LLAMA3_ADD_FILE: `${BASE_URL}/llama3/add_file`,
+    LLAMA3_ADD_FILES: `${BASE_URL}/llama3/add_files`,
+    LLAMA3_DELETE_FILE: `${BASE_URL}/llama3/delete_file`,
+    LLAMA3_QUERY: `${BASE_URL}/llama3/llama3_query`,
+    LLAMA3_DELETE_THREAD: `${BASE_URL}/llama3/delete_thread`,
 };

@@ -25,7 +25,7 @@ import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-
+import useColumnWidths from "./componentes/useColumnWidths";
 
 interface dataBackend {
     columnid: number,
@@ -198,15 +198,10 @@ interface IModalProps {
 }
 
 interface IBoardFilter {
-    /**ID de la campaña */
     campaign: number;
-    /**filtro por nombre completo */
     customer: string;
-    /**separado por comas */
     products: string;
-    /**separados por coma */
     tags: string;
-    /**id del asesor */
     asesorid: number;
     persontype: string;
 }
@@ -325,7 +320,7 @@ const CRM: FC = () => {
     const mainMulti = useSelector(state => state.main.multiData);
     const { t } = useTranslation();
     const classes = useStyles();
-
+    const { newWidth, qualifiedWidth, propositionWidth, wonWidth } = useColumnWidths(dataColumn);
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, {
         ignore: [
@@ -424,13 +419,8 @@ const CRM: FC = () => {
         }
     }, [mainMulti]);
 
-    useEffect(() => {
-      console.log(dataColumn)
-    }, [dataColumn]);
-
     const [isModalOpenBOARD, setModalOpenBOARD] = useState(false);
     const [isModalOpenGRID, setModalOpenGRID] = useState(false);
-
 
     const fetchBoardLeadsWithFilter = useCallback(async () => {
         try {
@@ -569,7 +559,7 @@ const CRM: FC = () => {
 
     const handleInsert = (infa: Dictionary, columns: dataBackend[], setDataColumn: any) => {
         const newIndex = columns.length
-        const uuid = uuidv4() // from common/helpers
+        const uuid = uuidv4()
 
         const data = {
         id: uuid,
@@ -980,10 +970,10 @@ const CRM: FC = () => {
             key: x.accessor,
             alias: x.Header,
         })),
-        { key: 'notedescription', alias: t(langKeys.notedescription) }, // parte de la columna comments
-        { key: 'activitydescription', alias: t(langKeys.activitydescription) }, // parte de la columna comments
-        { key: 'estimatedimplementationdate', alias: t(langKeys.estimatedimplementationdate) }, // parte de la columna comments
-        { key: 'estimatedbillingdate', alias: t(langKeys.estimatedbillingdate) }, // parte de la columna comments
+        { key: 'notedescription', alias: t(langKeys.notedescription) }, 
+        { key: 'activitydescription', alias: t(langKeys.activitydescription) }, 
+        { key: 'estimatedimplementationdate', alias: t(langKeys.estimatedimplementationdate) }, 
+        { key: 'estimatedbillingdate', alias: t(langKeys.estimatedbillingdate) },
         ];
         dispatch(exportData(getLeadExport(
         {
@@ -1064,6 +1054,7 @@ const CRM: FC = () => {
     setOpenSeButtons(false);
     };
       
+    console.log('dataColumn', dataColumn)
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -1220,40 +1211,42 @@ const CRM: FC = () => {
                     }
 
                     <div style= {{borderRadius:'2rem'}}>                  
-                        <div className={classes.columnsTitles}>   
-                            <div className={classes.newTitle} style={{ minWidth: 310, maxWidth: 400 }}>
+                        <div className={classes.columnsTitles}>
+                            <div className={classes.newTitle} style={{ minWidth: newWidth, maxWidth: newWidth }}>
                                 <div className={classes.greyPart}>
-
-                                    <div style={{ display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                                        <div style={{paddingTop:'4px'}}>
+                                    <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'center' }}>
+                                        <div style={{ paddingTop: '4px' }}>
                                             {t(langKeys.new)}
-                                        </div>                           
-                                    </div>                                 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                </div>                       
-                            </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "QUALIFIED").length - 1), }}>
+                            <div className={classes.otherTitles} style={{ minWidth: qualifiedWidth, maxWidth: qualifiedWidth }}>
                                 <div className={classes.otherGreyPart}>
-                                    <div style={{ display:'flex', alignContent:'center', justifyContent: 'center' }}>
-                                        <div style={{paddingTop:'4px'}}> {t(langKeys.qualified)} </div>                          
-                                    </div>   
-                                </div>                        
-                            </div>                    
-                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "PROPOSITION").length - 1), }}>
-                                <div className={classes.otherGreyPart}>
-                                    <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                                        <div style={{paddingTop:'4px'}}> {t(langKeys.proposition)} </div>                           
-                                    </div> 
-                                </div>                       
+                                    <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'center' }}>
+                                        <div style={{ paddingTop: '4px' }}> {t(langKeys.qualified)} </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className={classes.otherTitles} style={{ minWidth: 310, width: 310 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1), maxWidth: 400 * dataColumn.filter((x: Dictionary) => x.type === "WON").length + 21 * (dataColumn.filter((x: Dictionary) => x.type === "WON").length - 1) }}>
+
+                            <div className={classes.otherTitles} style={{ minWidth: propositionWidth, maxWidth: propositionWidth }}>
                                 <div className={classes.otherGreyPart}>
-                                    <div style={{display:'flex', alignContent:'center', justifyContent: 'center'}}>
-                                        <div style={{paddingTop:'4px'}}> {t(langKeys.won)} </div>                         
-                                    </div>  
-                                </div>                        
+                                    <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'center' }}>
+                                        <div style={{ paddingTop: '4px' }}> {t(langKeys.proposition)} </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>                   
+
+                            <div className={classes.otherTitles} style={{ minWidth: wonWidth, maxWidth: wonWidth }}>
+                                <div className={classes.otherGreyPart}>
+                                    <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'center' }}>
+                                        <div style={{ paddingTop: '4px' }}> {t(langKeys.won)} </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                                        
                         <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>               
                             <Droppable droppableId="all-columns" direction="horizontal" type="column" >                    
                                 {(provided) => (
@@ -1277,6 +1270,8 @@ const CRM: FC = () => {
                                 )}
                             </Droppable>           
                         </DragDropContext>
+
+
                     </div>
 
                     <DialogZyx3Opt

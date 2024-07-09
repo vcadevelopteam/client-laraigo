@@ -450,6 +450,12 @@ const InfoTab: React.FC = () => {
                         <div>{person?.lastname}</div>
                     </div>
                 </div>}
+                {person?.name && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{"NickName"}</div>
+                        <div>{person?.name}</div>
+                    </div>
+                </div>}
                 {person?.persontype && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.personType)}</div>

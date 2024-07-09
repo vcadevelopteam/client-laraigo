@@ -143,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'grid',
         gridAutoFlow: 'column',
         alignItems: 'center',
+        alignSelf: "flex-start"
     },
     containerHeader: {
         display: 'block',
@@ -293,8 +294,12 @@ export const DateOptionsMenuComponent = ({value, handleDate}:any) => {
                 value={value2}
                 onChange={(e: any) => {
                     const date = new Date(e);
-                    if(!isNaN(date.getTime())){
-                        handleDate(e);
+                    if(!e) {
+                        handleDate(e)
+                        setvalue2(e)
+                    } else if(!isNaN(date.getTime())){
+                        date.setHours(10)
+                        handleDate(date);
                         setvalue2(e)
                     }
                 }}
@@ -854,25 +859,25 @@ const TableZyx = React.memo(({
                     width: 80,
                     disableGroupBy: true,
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
-                        <div>
+                        <div style={{ textAlign: 'right' }}>
                             <Checkbox
                                 color="primary"
-                                style={{ padding: '0 24px 0 16px' }}
+                                style={{ padding: 0 }}
                                 {...getToggleAllPageRowsSelectedProps()}
                             />
                         </div>
                     ),
                     Cell: ({ row }: CellProps<Dictionary>) => (
-                        <div>
+                        <div style={{ textAlign: 'right' }}>
                             {checkHistoryCenter === true ? <Checkbox
                                 color="primary"
-                                style={{ padding: '0 24px 0 16px', height: 68 }}
+                                style={{ padding: 0 }}
                                 checked={row.isSelected}
                                 onChange={(e) => row.toggleRowSelected()}
                             /> :
                                 <Checkbox
                                     color="primary"
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    style={{ padding: 0 }}
                                     checked={row.isSelected}
                                     onChange={(e) => row.toggleRowSelected()}
                                 />}
@@ -974,10 +979,11 @@ const TableZyx = React.memo(({
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
+                                    paddingRight: cell.column.type === "number"?54:24,
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
                             })}                            
-                            onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
+                            onClick={() => cell.column.id !== "selection" ? (onClickRow && onClickRow(row.original, cell?.column?.id)) : null}
                         >
                             {cell.render('Cell')}
                            
@@ -1366,7 +1372,7 @@ const TableZyx = React.memo(({
                                     style={{ overflowX: 'hidden' }}
                                     direction="vertical"
                                     width="auto"
-                                    height={page.length*43}
+                                    height={page.length * heightWithCheck}
                                     itemCount={page.length}
                                     itemSize={heightWithCheck}
                                 >
@@ -1391,11 +1397,20 @@ const TableZyx = React.memo(({
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
                                                         whiteSpace: 'nowrap',
+                                                        paddingRight: cell.column.type === "number"?54:24,
                                                         ...(toolsFooter ? {} : { padding: '0px' }),
                                                         textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                     },
                                                 })}
-                                                onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
+                                                onClick={() => {
+                                                    if(cell.column.id !== "selection"){
+                                                        if(row?.subRows?.length){
+                                                            row.toggleRowExpanded();
+                                                        }else{
+                                                            onClickRow && onClickRow(row.original, cell?.column?.id)
+                                                        }
+                                                    }}
+                                                }
                                             >
                                                {cell.isGrouped ? (
                                                     <>

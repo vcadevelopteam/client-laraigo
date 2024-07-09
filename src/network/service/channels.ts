@@ -62,8 +62,8 @@ export function vrfplan(accessToken: string) {
     return APIManager.post(apiUrls.VERIFY_CHANNEL, { data }, true);
 }
 
-export function synchronizeTemplate(request: unknown) {
-    return APIManager.post(apiUrls.SYNCHRONIZE_TEMPLATE, { data: request }, true);
+export function synchronizeTemplate() {
+    return APIManager.post(apiUrls.SYNCHRONIZE_TEMPLATE, {}, true);
 }
 
 export function addTemplate(request: unknown) {

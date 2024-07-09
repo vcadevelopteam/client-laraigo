@@ -347,6 +347,10 @@ interface InputProps {
     helperText?: "string";
     placeholder?: string;
     resize?: string;
+    onInput?: any;
+    onPaste?: any;
+    id?: string;
+    inputRef?: React.Ref<HTMLInputElement>;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -361,7 +365,20 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "" }) => {
+interface TemplateAutocompletePropsDisabled extends InputProps {
+    data: Dictionary[],
+    optionValue: string;
+    optionDesc: string;
+    loading?: boolean;
+    triggerOnChangeOnFirst?: boolean;
+    readOnly?: boolean;
+    limitTags?: number;
+    multiline?: boolean;
+    orderbylabel?: boolean;
+    getOptionDisabled?: Dictionary;
+}
+
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -408,6 +425,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 }}
                 inputProps={inputProps}
                 InputProps={InputProps}
+                inputRef={inputRef}
             />
         </div>
     )
@@ -650,6 +668,141 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
     )
 }
 
+export const FieldEditAdvancedAux: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false, onInput = {}, onPaste = {}, id }) => {
+    const [value, setvalue] = useState("");
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        setvalue(valueDefault || "");
+    }, [valueDefault])
+
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            {(emoji || hashtag) && <div style={{ display: 'flex', width: '100%', alignItems: 'right', alignContent: 'right', justifyContent: 'flex-end', marginLeft: '6px' }}>
+                {emoji && <QuickReactions
+                    reactionsArray={[
+                        {
+                            id: "laughing",
+                            name: "Laughing",
+                            content: "😂",
+                        },
+                        {
+                            id: "crying",
+                            name: "Crying",
+                            content: "😢",
+                        },
+                        {
+                            id: "thinking",
+                            name: "Thinking",
+                            content: "🤔",
+                        },
+                        {
+                            id: "screaming",
+                            name: "Screaming",
+                            content: "😱",
+                        },
+                    ]}
+                    isVisible={isVisible}
+                    onClose={() => setIsVisible(false)}
+                    onClickReaction={(reaction) => {
+                        if (maxLength === 0 || `${value}${reaction.content}`.length <= maxLength) {
+                            setvalue(`${value}${reaction.content}`);
+                            onChange && onChange(`${value}${reaction.content}`);
+                        }
+                    }}
+                    trigger={
+                        <button
+                            type='button'
+                            onClick={() => {
+                                setIsVisible(!isVisible);
+                            }}
+                            style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d710976d-8894-4f37-935b-f4dc102bc294/Emoji.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                        >
+                        </button>
+                    }
+                    placement={'left'}
+                    header={'Emojis'}
+                />}
+                {hashtag && <button
+                    type='button'
+                    onClick={() => {
+                        if (maxLength === 0 || `${value}#`.length <= maxLength) {
+                            setvalue(`${value}#`);
+                            onChange && onChange(`${value}#`);
+                        }
+                    }}
+                    style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/ccbdbce8-db2e-4437-b28f-53fa371334a7/Hashtag.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                >
+                </button>}
+            </div>}
+            <TextField
+                {...fregister}
+                id={id}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type={type}
+                error={!!error}
+                value={value}
+                multiline
+                minRows={rows}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                onInput={onInput}
+                onPaste={onPaste}
+                style={style}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}> {value.length}/{maxLength}</FormHelperText>}
+        </div>
+    )
+}
+
+export const SingleLineInput: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, maxLength = 0, fregister = {}, inputProps = {}, style = {}, onInput = {}, onPaste = {} }) => {
+    const [value, setValue] = useState(valueDefault || "");
+
+    useEffect(() => {
+        setValue(valueDefault || "");
+    }, [valueDefault]);
+
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type="text"
+                error={!!error}
+                value={value}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={{...inputProps, maxLength }}
+                onInput={onInput}
+                onPaste={onPaste}
+                style={style}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}> {value.length}/{maxLength}</FormHelperText>}
+        </div>
+    );
+};
+
 interface IconProps extends React.SVGProps<SVGSVGElement> {
     channelType: string
 }
@@ -748,7 +901,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", onBlur }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -812,11 +965,12 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
+                getOptionSelected={(option, value) => option[optionValue] === value[optionValue]}
                 onBlur={onBlur}
                 getOptionLabel={option => option ? (uset && Object.keys(langKeys).includes(prefixTranslation + option[optionDesc]?.toLowerCase()) ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={dataG}
                 loading={loading}
-                size="small"
+                size={size}
                 renderInput={(params) => (
                     <TextField
 
@@ -843,10 +997,103 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
     )
 }
 
+export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', getOptionDisabled }) => {
+    const { t } = useTranslation();
+    const [value, setValue] = useState<Dictionary | null>(null);
+    const [dataG, setDataG] = useState<Dictionary[]>([]);   
+
+    useEffect(() => {
+        if (orderbylabel) {
+            if (data.length > 0) {
+                if (uset) {
+                    const datatmp = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                    setDataG(datatmp);
+                    return;
+                }
+                else {
+                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    setDataG(datatmp);
+                    return;
+                }
+            }
+        }
+        setDataG(data);
+    }, [data]);
+
+    useEffect(() => {
+        if (valueDefault && data.length > 0) {
+            const optionfound = data.find((o: Dictionary) => o[optionValue] === valueDefault);
+            if (optionfound) {
+                setValue(optionfound);
+                if (triggerOnChangeOnFirst)
+                    onChange && onChange(optionfound);
+            }
+        } else {
+            setValue(null);
+        }
+    }, [data, valueDefault]);
+
+    return (
+        <div className={className}>
+            {(variant === "standard" && !!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
+            }
+            <Autocomplete
+                filterSelectedOptions
+                style={style}
+                fullWidth
+                {...fregister}
+                disabled={disabled}
+                value={data?.length > 0 ? value : null}
+                onChange={(_, newValue) => {
+                    if (readOnly) return;
+                    setValue(newValue);
+                    onChange && onChange(newValue);
+                }}
+                getOptionSelected={(option, value) => option[optionValue] === value[optionValue]}
+                getOptionLabel={option => option ? (uset && Object.keys(langKeys).includes(prefixTranslation + option[optionDesc]?.toLowerCase()) ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
+                options={dataG}
+                loading={loading}
+                size={size}
+                getOptionDisabled={getOptionDisabled}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
+                        multiline={multiline}
+                        helperText={error || null}
+                        error={!!error}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                            readOnly,
+                        }}
+                    />
+                )}
+            />
+        </div>
+    );
+}
+
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1 }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small' }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
@@ -888,7 +1135,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     setOptionsSelected(values);
                     onChange && onChange(values, { action, option });
                 }}
-                size="small"
+                size={size}
                 getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={data}
                 renderInput={(params) => (

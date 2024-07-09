@@ -144,6 +144,10 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
             domaindesc: 'Mistral',
             domainvalue: 'Mistral',
         },
+        {
+            domaindesc: 'LaraigoLLM',
+            domainvalue: 'LaraigoLLM',
+        },
     ]
 
     return (

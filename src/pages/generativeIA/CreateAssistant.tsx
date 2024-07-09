@@ -20,6 +20,7 @@ import { assistantAiDocumentSel, decrypt, encrypt, insAssistantAi, insAssistantA
 import PUBLICKEYPEM from "./key.js";
 import { addFile, assignFile, createAssistant, updateAssistant } from "store/gpt/actions";
 import { createCollection, createCollectionDocuments, editCollection } from "store/llama/actions";
+import { createCollection3, createCollectionDocuments3, editCollection3 } from "store/llama3/actions";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -94,6 +95,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     const [waitSaveCreateAssistantAssignFile, setWaitSaveCreateAssistantAssignFile] = useState(false)
     const executeAssistant = useSelector(state => state.gpt.gptResult);
     const metaResult = useSelector(state => state.llama.llamaResult);
+    const llm3Result = useSelector(state => state.llama3.llama3Result);
     const [waitSaveCreateAssistant2, setWaitSaveCreateAssistant2] = useState(false)
     const [waitSaveUpdateAssistant, setWaitSaveUpdateAssistant] = useState(false)
     const [waitSaveCreateMeta, setWaitSaveCreateMeta] = useState(false)
@@ -157,6 +159,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             codeinterpreter: row?.codeinterpreter || false,
             type: row?.type || '',
             status: row?.status || 'ACTIVO',
+            decoding_method: row?.decoding_method || "sample",
             operation: edit ? 'UPDATE' : 'INSERT',
         }
     });
@@ -440,7 +443,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             setTabIndex(newIndex);
         }
     };
-
+   
     const onMainSubmitMeta = handleSubmit(async (data) => {
         let generalprompt;
 
@@ -469,17 +472,30 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
         const callback = async () => {
             dispatch(showBackdrop(true));
-            dispatch(createCollection({
-                collection: data.name,
-            }))
+            if(provider === "LaraigoLLM") {
+                dispatch(createCollection3({
+                    collection: data.name,
+                }))
+            } else {
+                dispatch(createCollection({
+                    collection: data.name,
+                }))
+            }
             setWaitSaveCreateMeta(true)
         };
         const callbackEdit = async () => {
             dispatch(showBackdrop(true));
-            dispatch(editCollection({
-                name: row?.name,
-                new_name: data.name
-            }))
+            if(provider === "LaraigoLLM") {
+                dispatch(editCollection3({
+                    name: row?.name,
+                    new_name: data.name
+                }))
+            } else {
+                dispatch(editCollection({
+                    name: row?.name,
+                    new_name: data.name
+                }))
+            }
             setWaitSaveCreateMeta(true)
         };
 
@@ -529,11 +545,19 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
             setGeneralPrompt(generalprompt)
 
-            dispatch(createCollectionDocuments({
-                urls: cosFile.map((item: Dictionary) => item.file_url),
-                collection: data.name
-            }))
-            setWaitSaveCreateCollection(true)
+            if(provider === "LaraigoLLM") {
+                dispatch(createCollectionDocuments3({
+                    urls: cosFile.map((item: Dictionary) => item.file_url),
+                    collection: data.name
+                }))
+                setWaitSaveCreateCollection(true)
+            } else {
+                dispatch(createCollectionDocuments({
+                    urls: cosFile.map((item: Dictionary) => item.file_url),
+                    collection: data.name
+                }))
+                setWaitSaveCreateCollection(true)
+            }
         };
         dispatch(
             manageConfirmation({
@@ -546,37 +570,67 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     useEffect(() => {
         if (waitSaveCreateMeta) {
-            if (!metaResult.loading && !metaResult.error) {
-                setWaitSaveCreateMeta(false);
-                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
-                setWaitSave(true);
-            } else if (metaResult.error) {
-                const errormessage = t(metaResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveCreateMeta(false);
+            if(provider === "LaraigoLLM"){
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveCreateMeta(false);
+                    dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                    setWaitSave(true);
+                } else if (llm3Result.error) {
+                    const errormessage = t(llm3Result.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveCreateMeta(false);
+                }
+            } else {
+                if (!metaResult.loading && !metaResult.error) {
+                    setWaitSaveCreateMeta(false);
+                    dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                    setWaitSave(true);
+                } else if (metaResult.error) {
+                    const errormessage = t(metaResult.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveCreateMeta(false);
+                }
             }
         }
-    }, [metaResult, waitSaveCreateMeta]);
+    }, [metaResult, llm3Result, waitSaveCreateMeta]);
 
     useEffect(() => {
         if (waitSaveCreateCollection) {
-            if (!metaResult.loading && !metaResult.error) {
-                setWaitSaveCreateCollection(false);
-                dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
-                setWaitSaveCreateCollectionDoc(true);
-            } else if (metaResult.error) {
-                const errormessage = t(metaResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSaveCreateCollection(false);
+            if(provider === "LaraigoLLM") {
+                if (!llm3Result.loading && !llm3Result.error) {
+                    setWaitSaveCreateCollection(false);
+                    dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                    setWaitSaveCreateCollectionDoc(true);
+                } else if (llm3Result.error) {
+                    const errormessage = t(llm3Result.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveCreateCollection(false);
+                }
+            } else {
+                if (!metaResult.loading && !metaResult.error) {
+                    setWaitSaveCreateCollection(false);
+                    dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
+                    setWaitSaveCreateCollectionDoc(true);
+                } else if (metaResult.error) {
+                    const errormessage = t(metaResult.code || "error_unexpected_error", {
+                        module: t(langKeys.domain).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    dispatch(showBackdrop(false));
+                    setWaitSaveCreateCollection(false);
+                }
             }
         }
-    }, [metaResult, waitSaveCreateCollection]);
+    }, [metaResult, llm3Result, waitSaveCreateCollection]);
 
     useEffect(() => {
         if (waitSaveCreateCollectionDoc) {

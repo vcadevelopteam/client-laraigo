@@ -977,11 +977,19 @@ export const getParentSel = (): IRequestBody => ({
     }
 });
 
-export const getPaginatedMessageTemplate = ({ communicationchannelid, enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS",
     parameters: {
-        communicationchannelid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take,
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take,
+    }
+})
+
+export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelid }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",
+    parameters: {
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, newversion: false, communicationchannelid
     }
 })
 
@@ -989,6 +997,14 @@ export const getMessageTemplateLst = (type: string): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_LST",
     parameters: {
         type: type,
+    }
+});
+
+export const getMessageTemplateLstOld = (type: string): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_LST_OLD",
+    parameters: {
+        type: type,
+        newversion: false,
     }
 });
 
@@ -1011,17 +1027,24 @@ export const insMessageTemplate = (
         footerenabled,
         footer,
         buttonsenabled,
-        buttons,
         priority,
         attachment,
-        fromprovider,
-        externalid,
-        externalstatus,
         communicationchannelid,
         communicationchanneltype,
-        exampleparameters,
+        authenticationdata,
+        bodyvariables,
+        buttonsgeneric,
+        buttonsquickreply,
+        carouseldata,
+        headervariables,
+        provideraccountid,
+        providerexternalid,
+        providerid,
+        providermessagelimit,
+        providerpartnerid,
+        providerquality,
+        providerstatus,
         operation,
-        variablecontext
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1041,19 +1064,108 @@ export const insMessageTemplate = (
             body,
             bodyobject: JSON.stringify(bodyobject),
             footerenabled,
-            footer: footer || "",
+            footer,
             buttonsenabled,
-            buttons: JSON.stringify(buttons),
             priority,
             attachment,
-            fromprovider,
-            externalid,
-            externalstatus,
             communicationchannelid,
             communicationchanneltype,
-            exampleparameters,
+            authenticationdata: JSON.stringify(authenticationdata),
+            bodyvariables: JSON.stringify(bodyvariables),
+            buttonsgeneric: JSON.stringify(buttonsgeneric),
+            buttonsquickreply: JSON.stringify(buttonsquickreply),
+            carouseldata: JSON.stringify(carouseldata),
+            headervariables: JSON.stringify(headervariables),
+            provideraccountid,
+            providerexternalid,
+            providerid,
+            providermessagelimit,
+            providerpartnerid,
+            providerquality,
+            providerstatus,
             operation,
-            variablecontext
+            buttons: []
+        }
+    });
+
+export const insMessageTemplateOld = (
+    {
+        id,
+        description,
+        type,
+        status,
+        name,
+        namespace,
+        category,
+        language,
+        templatetype,
+        headerenabled,
+        headertype,
+        header,
+        body,
+        bodyobject,
+        footerenabled,
+        footer,
+        buttonsenabled,
+        priority,
+        attachment,
+        communicationchannelid,
+        communicationchanneltype,
+        authenticationdata,
+        bodyvariables,
+        buttonsgeneric,
+        buttonsquickreply,
+        carouseldata,
+        headervariables,
+        provideraccountid,
+        providerexternalid,
+        providerid,
+        providermessagelimit,
+        providerpartnerid,
+        providerquality,
+        providerstatus,
+        operation,
+    }: Dictionary): IRequestBody => ({
+
+        method: "UFN_MESSAGETEMPLATE_INS_OLD",
+        parameters: {
+            id,
+            description,
+            type,
+            status,
+            name,
+            namespace,
+            category,
+            language,
+            templatetype,
+            headerenabled,
+            headertype,
+            header,
+            body,
+            bodyobject: JSON.stringify(bodyobject),
+            footerenabled,
+            footer,
+            buttonsenabled,
+            priority,
+            attachment,
+            communicationchannelid,
+            communicationchanneltype,
+            authenticationdata: JSON.stringify(authenticationdata),
+            bodyvariables: JSON.stringify(bodyvariables),
+            buttonsgeneric: JSON.stringify(buttonsgeneric),
+            buttonsquickreply: JSON.stringify(buttonsquickreply),
+            carouseldata: JSON.stringify(carouseldata),
+            headervariables: JSON.stringify(headervariables),
+            provideraccountid,
+            providerexternalid,
+            providerid,
+            providermessagelimit,
+            providerpartnerid,
+            providerquality,
+            providerstatus,
+            operation,
+            newversion: false,
+            buttons: []
         }
     });
 
@@ -1414,10 +1526,25 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
     service,
 });
 
-export const getCampaignLst = (): IRequestBody => ({
+export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
-    parameters: {}
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getCampaignOldLst = (startdate: any, enddate: any): IRequestBody => ({
+    method: "UFN_CAMPAIGN_LST_OLD",
+    key: "UFN_CAMPAIGN_LST_OLD",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        newversion: false
+    }
 });
 
 export const getCampaignSel = (id: number): IRequestBody => ({
@@ -1456,8 +1583,10 @@ export const insCampaign = ({
     batchjson,
     fields,
     operation,
+    carouseljson,
+    variableshidden, 
     selectedColumns
-}: Dictionary): IRequestBody => ({
+}: Dictionary, membercount: number = 0): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
     parameters: {
         id,
@@ -1487,7 +1616,82 @@ export const insCampaign = ({
         executiontype,
         batchjson: JSON.stringify(batchjson),
         fields: JSON.stringify(selectedColumns || fields),
-        operation
+        operation,
+        carouseljson: JSON.stringify(carouseljson),
+        variableshidden: JSON.stringify(variableshidden),
+        membercount,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const insCampaignOld = ({
+    id,
+    communicationchannelid,
+    usergroup,
+    type,
+    status,
+    title,
+    description,
+    subject,
+    message,
+    startdate,
+    enddate,
+    repeatable,
+    frecuency,
+    messagetemplateid,
+    messagetemplatename,
+    messagetemplatenamespace,
+    messagetemplateheader,
+    messagetemplatebuttons,
+    messagetemplatefooter,
+    messagetemplatetype,
+    messagetemplateattachment,
+    source,
+    messagetemplatelanguage,
+    messagetemplatepriority,
+    executiontype,
+    batchjson,
+    fields,
+    operation,
+    carouseljson,
+    variableshidden, 
+    selectedColumns
+}: Dictionary, membercount: number = 0): IRequestBody => ({
+    method: "UFN_CAMPAIGN_INS_OLD",
+    parameters: {
+        id,
+        communicationchannelid,
+        usergroup,
+        type,
+        status,
+        title,
+        description,
+        subject,
+        message,
+        startdate,
+        enddate,
+        repeatable,
+        frecuency,
+        messagetemplateid,
+        messagetemplatename,
+        messagetemplatenamespace,
+        messagetemplateheader: JSON.stringify(messagetemplateheader),
+        messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
+        messagetemplatefooter: messagetemplatefooter || null,
+        messagetemplatetype: messagetemplatetype || null,
+        messagetemplateattachment: messagetemplateattachment || null,
+        source: source || null,
+        messagetemplatelanguage: messagetemplatelanguage || null,
+        messagetemplatepriority: messagetemplatepriority || null,
+        executiontype,
+        batchjson: JSON.stringify(batchjson),
+        fields: JSON.stringify(selectedColumns || fields),
+        operation,
+        carouseljson: carouseljson,
+        variableshidden: variableshidden,
+        membercount,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        newversion: false,
     }
 });
 
@@ -1746,6 +1950,29 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+export const getHSMShipping= ({ startdate, enddate, communicationchannelid, userSid }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
+    key: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
+    parameters: {
+        startdate,
+        enddate,
+        communicationchannelid,
+        userSid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid, messagetemplateid,usersid }: Dictionary): IRequestBody => ({
+    method: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
+    key: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
+    parameters: {
+        startdate,
+        enddate,
+        communicationchannelid,
+        messagetemplateid,
+        usersid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
 
 export const getCampaignReportPaginated = ({ startdate, enddate, channeltype, filters, sorts, take, skip, distinct }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_CAMPAIGNREPORT_SEL",
@@ -1792,10 +2019,19 @@ export const getCampaignStart = (id: number): IRequestBody => ({
     },
 });
 
-export const getCampaignStatus = (id: number): IRequestBody => ({
+export const getCampaignStatus = (id: number): IRequestBody => ({ // query: "SELECT * FROM ufn_campaign_status($corpid, $orgid, $id)",
     method: "UFN_CAMPAIGN_STATUS",
     parameters: {
         id,
+    },
+});
+
+export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: number, status: string): IRequestBody => ({ // query: "SELECT * FROM ufn_campaignmember_status( $campaignid, $campaignmemberid, $status )",
+    method: "UFN_CAMPAIGNMEMBER_STATUS",
+    parameters: {
+        campaignid,
+        campaignmemberid, 
+        status
     },
 });
 
@@ -4034,14 +4270,14 @@ export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody 
     }
 });
 
-export const getMessageTemplateExport = ({ filters, sorts, communicationchannelid }: Dictionary): IRequestBody => ({
+export const getMessageTemplateExport = ({ filters, sorts, translation }: Dictionary): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_EXPORT",
     key: "UFN_MESSAGETEMPLATE_EXPORT",
     parameters: {
         origin: "messagetemplate",
-        communicationchannelid,
         filters,
         sorts,
+        translation,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
@@ -4874,10 +5110,10 @@ export const assistantAiSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation }: Dictionary) => ({
+export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation }: Dictionary) => ({
     method: "UFN_ASSISTANTAI_INS",
     key: "UFN_ASSISTANTAI_INS",
-    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, operation },
+    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation },
 });
 
 export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({
@@ -5107,4 +5343,13 @@ export const integrationManagerCodePersonDel = ({ integrationmanagerid, type, id
     method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     parameters: { integrationmanagerid, type, ids },
+});
+export const getUserMessageOutbound = ({startdate, enddate, communicationchannelid}:Dictionary) => ({
+    method: "UFN_USER_MESSAGE_OUTBOUND",
+    key: "UFN_USER_MESSAGE_OUTBOUND",
+    parameters: { 
+        startdate,
+        enddate,
+        communicationchannelid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });
