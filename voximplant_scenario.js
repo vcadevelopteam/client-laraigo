@@ -327,7 +327,7 @@ function sendInteraction(type, text) {
 }
 // Handle inbound call
 function handleInboundCall(e) {
-    if (e.headers["VI-Client-Type"] === "pstn") {
+    if (e.headers["VI-Client-Type"] === "pstn" || e.headers["VI-Client-Type"] === "other") {
         //si la llamada viene de un número de la red pública es atendido por la cola acd.
         origin = origin || "INBOUND";
         originalCall = e.call; // Call del cliente
