@@ -9,7 +9,6 @@ const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
 const URL_APILARAIGO = "https://apix.laraigo.com/api/";
 const URL_APIVOXIMPLANT = "https://api.voximplant.com/platform_api/";
 const VOICE_ES = VoiceList.Microsoft.Neural.es_MX_LarissaNeural;
-//const VOICE_ES = {"language": VoiceList.Microsoft.Neural.es_PE_CamilaNeural, "ttsOptions": {"rate":"x-fast"}};
 
 let flow = {};
 let variables = {};
@@ -44,6 +43,7 @@ var call,
     userQueueLimit = 10,
     userQueueLength,
     userQueueData = [],
+    detectvoicemail = false,
     communicationchannelid = 0,
     welcomeTone = "http://cdn.voximplant.com/toto.mp3",
     holdTone = "http://cdn.voximplant.com/yodl.mp3",
@@ -53,11 +53,10 @@ var call,
         recordingquality: "",
     },
     onlybot = false,
-    delivered = false;
-configSIP = null
+    delivered = false,
+    configSIP = null;
 
 function createTicket2(callback) {
-
     const body = {
         "communicationchanneltype": "VOXI",
         "personcommunicationchannel": `${phone_number}_VOXI`,
@@ -92,6 +91,7 @@ function createTicket2(callback) {
             configSIP = result.Result.configsip;
             welcomeTone = result.Result.welcometone;
             holdTone = result.Result.holdTone;
+            detectvoicemail = result.Result.detectvoicemail || false;
 
             if (flow || result.Result?.flow) {
                 flow = !flow ? JSON.parse(result.Result.flow) : flow;
@@ -277,12 +277,6 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     Logger.write(`Calling ${list_id} with  ${task_id} on ${phone_number}`);
 
     createTicket2(() => {
-        //detect voice mail
-        const amdParameters = {
-            model: AMD.Model.PE,
-        };
-        const amd = AMD.create(amdParameters);
-
         if (configSIP?.SIP) {
             call = VoxEngine.callSIP(`${configSIP.prefix}${phone_number.replace("51", "")}@${configSIP.peer_address}`, {
                 callerid: `agent${lastagentid}@${configSIP.domain}`,
@@ -293,20 +287,28 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
             call = VoxEngine.callPSTN(phone_number, caller_id);
         }
 
-        amd.addEventListener(AMD.Events.DetectionComplete, (result) => {
-            Logger.write(`VOICEMAIL: Machine answer detection is complete.`);
-            if (result.resultClass === AMD.ResultClass.VOICEMAIL) {
-                Logger.write(`VOICEMAIL: detected with a ${result.confidence}% confidence.`);
-                voicemailDetected(call, result.confidence);
-            } else {
-                Logger.write('VOICEMAIL: not detected.');
-            }
-        });
-
-        amd.addEventListener(AMD.Events.DetectionError, (error) => {
-            Logger.write(`Detection failed with an error:`);
-            Logger.write(error);
-        });
+        //detect voice mail
+        if (detectvoicemail) {
+            const amdParameters = {
+                model: AMD.Model.PE,
+            };
+            const amd = AMD.create(amdParameters);
+    
+            amd.addEventListener(AMD.Events.DetectionComplete, (result) => {
+                Logger.write(`VOICEMAIL: Machine answer detection is complete.`);
+                if (result.resultClass === AMD.ResultClass.VOICEMAIL) {
+                    Logger.write(`VOICEMAIL: detected with a ${result.confidence}% confidence.`);
+                    voicemailDetected(call, result.confidence);
+                } else {
+                    Logger.write('VOICEMAIL: not detected.');
+                }
+            });
+    
+            amd.addEventListener(AMD.Events.DetectionError, (error) => {
+                Logger.write(`Detection failed with an error:`);
+                Logger.write(error);
+            });
+        }
 
         if (red.recording) {
             Logger.write("Recording... ");
@@ -670,6 +672,18 @@ const cardMessage = async (variables, { message }) => (
     })
 );
 
+const cardAudio = async (variables, { url }) => (
+    new Promise(async (resolve, reject) => {
+        url = replaceTextWithVariables(url, variables);
+        
+        call.startPlayback(url);
+        
+        call.addEventListener(CallEvents.PlaybackFinished, function (e) {
+            resolve("ok")
+        });
+    })
+);
+
 async function cardHttpRequest(variables, { url, method = 'GET', postData, headers = {} }) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -753,6 +767,8 @@ const loopInteractions = async (call, variables, flow, blockid = "genesis") => {
             await cardIVR(call, variables, config)
         } else if (id === "text") {
             await cardMessage(variables, config);
+        } else if (id === "audio") {
+            await cardAudio(variables, config);
         } else if (id === "httprequest") {
             await cardHttpRequest(variables, config);
         } else if (id === "gotoblock") {

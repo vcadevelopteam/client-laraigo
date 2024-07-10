@@ -8,7 +8,7 @@ require(Modules.Conference);
 const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
 const URL_APILARAIGO = "https://apiprd.laraigo.com/api/";
 const URL_APIVOXIMPLANT = "https://api.voximplant.com/platform_api/";
-
+const SITE_MASK = '15302905499';
 let conf;
 
 var request,
@@ -332,7 +332,7 @@ function handleInboundCall(e) {
         origin = origin || "INBOUND";
         originalCall = e.call; // Call del cliente
         callerid = e.callerid;
-        site = e.destination;
+        site = SITE_MASK || e.destination;
         // Add event listeners
         e.call.addEventListener(CallEvents.Connected, handleCallConnected);
         e.call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);
@@ -632,9 +632,9 @@ function handleACDQueue() {
     // No operators are available
     request.addEventListener(ACDEvents.Offline, function (acdevent) {
         Logger.write("ACDEvents-Offline: " + JSON.stringify(acdevent));
-        closeTicket("NO HAY ASESORES");
         originalCall.say(messageBusy, VoiceList.Amazon.es_MX_Mia);
         originalCall.addEventListener(CallEvents.PlaybackFinished, function (e) {
+            closeTicket("NO HAY ASESORES");
             VoxEngine.terminate();
         });
     });
