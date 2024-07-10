@@ -115,11 +115,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [variablesAdditionalView, setVariablesAdditionalView] = useState<string[]>([]);
     const [variablesCarouselBubbleView, setVariablesCarouselBubbleView] = useState<Dictionary[][]>([]);
     const [variablesUrlView, setVariablesUrlView] = useState<Dictionary[]>([]);
+    const [dynamicAdditionalVariables, setDynamicAdditionalVariables] = useState([]);
     const [variablesCardImageView, setVariablesCardImageView] = useState<Dictionary[]>([]);
     const [selectedAuthVariable, setSelectedAuthVariable] = useState<string>('');
     const [variablesHeaderView, setVariablesHeaderView] = useState<Dictionary[]>([]);
     const [selectedFields, setSelectedFields] = useState<{ [key: string]: { column: string, value: any, type: string, index: string, carouselIndex: number | null } }>({});
     const [allVariables, setAllVariables] = useState<{ [key: string]: { column: string, value: any } }>({});
+
+
+    //console.log('availableData', availableData)
+
 
     const buildAllVariables = (jsonPersons: Dictionary) => {
         const allVars = {};
@@ -144,9 +149,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setAllVariables(allVars);
     }, [jsonPersons]);
 
-    if (availableData.length === 0) {
-        availableData.push('No quedan más variables');
-    }
+   
+
 
     const processMultiData = (data: Dictionary) => {
         const processedData = {
@@ -546,19 +550,25 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         return additionalIndexes.length > 0 ? Math.max(...additionalIndexes) + 1 : 1;
     };
 
-    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'receiver', carouselIndex?: number) => {
+
+    const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'additional-dynamic' | 'receiver', carouselIndex?: number) => {
         if (row && !detectionChangeSource) {
             console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
     
+            if (selectedOption === null) {
+                updateTemplate(true, variableNumber);              
+                return;
+            }
+    
             const header = selectedOption ? selectedOption.key : '';
-            const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
+            const index = variableType === 'additional' || variableType === 'additional-dynamic' ? getAdditionalVariableIndex() : variableNumber;
             updateValues(variableNumber, selectedOption, variableType, carouselIndex);
     
             const newSelectedFields = { ...selectedFields };
             newSelectedFields[`field${index}`] = {
                 column: selectedOption,
                 value: selectedOption.key,
-                type: variableType === 'additional' ? 'variablehidden' : variableType,
+                type: variableType === 'additional' || variableType === 'additional-dynamic' ? 'variablehidden' : variableType,
                 index: index.toString(),
                 carouselIndex: carouselIndex !== undefined ? carouselIndex : null
             };
@@ -609,11 +619,13 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         carouselIndex: null
                     }
                 }));
-            }    
+            }
             updateTemplate();
-        }      
+        }     
         else {
             updateValues(variableNumber, selectedOption, variableType, carouselIndex);
+            console.log(`nuevo Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
+
             const header = selectedOption ? selectedOption.key : '';
             const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
             const key = generateKey(variableType, variableNumber, carouselIndex);
@@ -692,6 +704,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };
 
     const [unavailableVariables, setUnavailableVariables] = useState([]);   
+ 
+    console.log('unavailableVariables', unavailableVariables)
+
         
     const updateTemplate = useCallback((resetField = false, fieldToReset = null) => {       
         if (row && !detectionChangeSource) {
@@ -729,6 +744,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
             if (variablesAdditionalView.length > 0) {
                 updatedTemplate.variableshidden = variablesAdditionalView;
+            }
+    
+            const selectedDynamicOptions = Object.values(selectedAdditionalHeaders).filter(Boolean);
+            const additionalDynamicFields = selectedDynamicOptions.map(option => {
+                const matchingField = Object.keys(multiData[4].data[0].fields.allVariables).find(key => multiData[4].data[0].fields.allVariables[key].column === option);
+                return matchingField;
+            }).filter(Boolean);
+    
+            if (updatedTemplate.variableshidden) {
+                additionalDynamicFields.forEach(field => {
+                    if (!updatedTemplate.variableshidden.includes(field)) {
+                        updatedTemplate.variableshidden.push(field);
+                    }
+                });
+            } else {
+                updatedTemplate.variableshidden = additionalDynamicFields;
             }
     
             if (variablesUrlView.length > 0) {
@@ -791,157 +822,171 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     [type, number, carouselIndexStr] = key.split('-');
                 }
                 const header = variableSelections[key];
-                const columns = templateData.fields?.columns || [];
-                const fieldNumber = columns.indexOf(header) + 2;         
-                
-                if (type === 'body' && updatedTemplate.body) {
-                    const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
-                    if (placeholders.length >= number) {
-                        const currentField = placeholders[number - 1][0];
-                        const selectedOption = variableSelections[`body-${number}`];
-                        const allVariables = multiData[4].data[0].fields.allVariables;
-                
-                        let newField = currentField; 
-                        if (selectedOption) {
-                            const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
-                            if (matchingField) {
-                                newField = `{{${matchingField}}}`;
-                            }
-                        } else {
-                            const fieldNumber = columns.indexOf(selectedOption) + 2;
-                            newField = `{{field${fieldNumber}}}`;
-                        }                        
-                        updatedTemplate.body = updatedTemplate.body.replace(currentField, newField);
-                    }
-                } else if (type === 'header' && updatedTemplate.header) {
-                    const placeholders = [...updatedTemplate.header.matchAll(/{{field(\d+)}}/g)];
-                    if (placeholders.length >= number) {
-                        const currentField = placeholders[number - 1][0];
-                        const newField = `{{field${fieldNumber}}}`;
-                        updatedTemplate.header = updatedTemplate.header.replace(currentField, newField);
-                    }
-                } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
-                    const carouselIndex = parseInt(number, 10);
-                    if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
-                        if (header === 'Default ') {
-                            const messageTemplateName = multiData[4].data[0].messagetemplatename;
-                            const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
-                            if (campaign && campaign.carouseldata[carouselIndex]) {
-                                updatedTemplate.carouseldata[carouselIndex].header = campaign.carouseldata[carouselIndex].header;
-                            }
-                        } else {
+    
+                if (header !== null && header !== undefined) {
+                    const columns = templateData.fields?.columns || [];
+                    const fieldNumber = columns.indexOf(header) + 2;
+    
+                    console.log('header es', header);
+                    console.log(`Handling key: ${key}, type: ${type}, number: ${number}, fieldNumber: ${fieldNumber}`);
+    
+                    if (type === 'body' && updatedTemplate.body) {
+                        const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
+                        if (placeholders.length >= number) {
+                            const currentField = placeholders[number - 1][0];
+                            const selectedOption = variableSelections[`body-${number}`];
                             const allVariables = multiData[4].data[0].fields.allVariables;
-                            const selectedField = allVariables ? Object.keys(allVariables)?.find(key => allVariables?.[key]?.column === header) : undefined;
-                            if (selectedField) {
-                                updatedTemplate.carouseldata[carouselIndex].header = `{{${selectedField}}}`;
+    
+                            let newField = currentField; 
+                            if (selectedOption) {
+                                const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
+                                if (matchingField) {
+                                    newField = `{{${matchingField}}}`;
+                                }
                             } else {
-                                const placeholders = [...updatedTemplate.carouseldata[carouselIndex].header.matchAll(/{{field(\d+)}}/g)];
-                                if (placeholders.length >= 1) {
-                                    const currentField = placeholders[0][0];
-                                    const newField = `{{field${fieldNumber}}}`;
-                                    updatedTemplate.carouseldata[carouselIndex].header = updatedTemplate.carouseldata[carouselIndex].header.replace(currentField, newField);
+                                const selectedOptionIndex = columns.indexOf(selectedOption);
+                                if (selectedOptionIndex !== -1) {
+                                    newField = `{{field${selectedOptionIndex + 2}}}`;
+                                }
+                            }                        
+                            updatedTemplate.body = updatedTemplate.body.replace(currentField, newField);
+                        }
+                    } else if (type === 'header' && updatedTemplate.header) {
+                        const placeholders = [...updatedTemplate.header.matchAll(/{{field(\d+)}}/g)];
+                        if (placeholders.length >= number) {
+                            const currentField = placeholders[number - 1][0];
+                            const newField = `{{field${fieldNumber}}}`;
+                            updatedTemplate.header = updatedTemplate.header.replace(currentField, newField);
+                        }
+                    } else if (type === 'cardImage' && updatedTemplate.carouseldata) {
+                        const carouselIndex = parseInt(number, 10);
+                        if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
+                            if (header === 'Default ') {
+                                const messageTemplateName = multiData[4].data[0].messagetemplatename;
+                                const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
+                                if (campaign && campaign.carouseldata[carouselIndex]) {
+                                    updatedTemplate.carouseldata[carouselIndex].header = campaign.carouseldata[carouselIndex].header;
+                                }
+                            } else {
+                                const allVariables = multiData[4].data[0].fields.allVariables;
+                                const selectedField = allVariables ? Object.keys(allVariables)?.find(key => allVariables?.[key]?.column === header) : undefined;
+                                if (selectedField) {
+                                    updatedTemplate.carouseldata[carouselIndex].header = `{{${selectedField}}}`;
+                                } else {
+                                    const placeholders = [...updatedTemplate.carouseldata[carouselIndex].header.matchAll(/{{field(\d+)}}/g)];
+                                    if (placeholders.length >= 1) {
+                                        const currentField = placeholders[0][0];
+                                        const newField = `{{field${fieldNumber}}}`;
+                                        updatedTemplate.carouseldata[carouselIndex].header = updatedTemplate.carouseldata[carouselIndex].header.replace(currentField, newField);
+                                    }
                                 }
                             }
                         }
-                    }
-                
-                } else if (type === 'dynamicUrl') {
-                    if (updatedTemplate.buttonsgeneric) {
-                        updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
-                            const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
-                            const variableSelectionsValue = variableSelections[buttonKey];
-                            if (variableSelectionsValue) {
-                                const variableKey = columns.indexOf(variableSelectionsValue) + 2;                                
-                                if (variableKey !== -1) {
-                                    if (button.btn.type === 'dynamic' && button.btn.url) {
-                                        if (!button.btn.url.includes('{{')) {
-                                            button.btn.url += '/{{1}}';
-                                        }
-                                        const regex = /{{field(\d+)}}/g;
-                                        button.btn.url = button.btn.url.replace(regex, `{{field${variableKey}}}`);
-                                    }
-                                } 
-                            }
-                        });
-                    }         
-            
-                    if (updatedTemplate.carouseldata) {
-                        updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
-                            item.buttons.forEach((button, btnIndex) => {
-                                if (button.btn.type === 'dynamic') {
-                                    const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
-                                    const variableSelectionsValue = variableSelections[buttonKey];
-                                    if (variableSelectionsValue) {
-                                        const field = Object.keys(multiData[4].data[0].fields.allVariables).find(key => multiData[4].data[0].fields.allVariables[key].column === variableSelectionsValue);
-                                        const fieldKey = field ? field.replace('field', '') : null;
-                                        if (fieldKey) {
+    
+                    } else if (type === 'dynamicUrl') {
+                        if (updatedTemplate.buttonsgeneric) {
+                            updatedTemplate.buttonsgeneric.forEach((button, btnIndex) => {
+                                const buttonKey = `dynamicUrl-dynamicUrl-${btnIndex + 1}`;
+                                const variableSelectionsValue = variableSelections[buttonKey];
+                                if (variableSelectionsValue) {
+                                    const variableKey = columns.indexOf(variableSelectionsValue) + 2;                                
+                                    if (variableKey !== -1) {
+                                        if (button.btn.type === 'dynamic' && button.btn.url) {
                                             if (!button.btn.url.includes('{{')) {
                                                 button.btn.url += '/{{1}}';
                                             }
                                             const regex = /{{field(\d+)}}/g;
-                                            button.btn.url = button.btn.url.replace(regex, `{{field${fieldKey}}}`);
+                                            button.btn.url = button.btn.url.replace(regex, `{{field${variableKey}}}`);
                                         }
-                                    }
+                                    } 
                                 }
                             });
-                        });
-                    }
-                    
-                } else if (type === 'carousel' && updatedTemplate.carouseldata) {
-                    const carouselIndex = parseInt(carouselIndexStr, 10);
-                    if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
-                        const selectedField = variableSelections[key];
-                        const field = Object.keys(multiData[4].data[0].fields.allVariables).find(key => multiData[4].data[0].fields.allVariables[key].column === selectedField);
-                        const fieldKey = field ? field.replace('field', '') : null;
-                        if (fieldKey) {
-                            const placeholders = [...updatedTemplate.carouseldata[carouselIndex].body.matchAll(/{{field(\d+)}}/g)];
-                            if (placeholders.length >= number) {
-                                const currentField = placeholders[number - 1][0];
-                                const newField = `{{field${fieldKey}}}`;
-                                updatedTemplate.carouseldata[carouselIndex].body = updatedTemplate.carouseldata[carouselIndex].body.replace(currentField, newField);
+                        }         
+    
+                        if (updatedTemplate.carouseldata) {
+                            updatedTemplate.carouseldata.forEach((item, carouselIndex) => {
+                                item.buttons.forEach((button, btnIndex) => {
+                                    if (button.btn.type === 'dynamic') {
+                                        const buttonKey = `dynamicUrl-dynamicUrl-${carouselIndex}-${btnIndex}`;
+                                        const variableSelectionsValue = variableSelections[buttonKey];
+                                        if (variableSelectionsValue) {
+                                            const field = Object.keys(multiData[4].data[0].fields.allVariables).find(key => multiData[4].data[0].fields.allVariables[key].column === variableSelectionsValue);
+                                            const fieldKey = field ? field.replace('field', '') : null;
+                                            if (fieldKey) {
+                                                if (!button.btn.url.includes('{{')) {
+                                                    button.btn.url += '/{{1}}';
+                                                }
+                                                const regex = /{{field(\d+)}}/g;
+                                                button.btn.url = button.btn.url.replace(regex, `{{field${fieldKey}}}`);
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        }
+                    } else if (type === 'carousel' && updatedTemplate.carouseldata) {
+                        const carouselIndex = parseInt(carouselIndexStr, 10);
+                        if (!isNaN(carouselIndex) && updatedTemplate.carouseldata[carouselIndex]) {
+                            const selectedField = variableSelections[key];
+                            const field = Object.keys(multiData[4].data[0].fields.allVariables).find(key => multiData[4].data[0].fields.allVariables[key].column === selectedField);
+                            const fieldKey = field ? field.replace('field', '') : null;
+                            if (fieldKey) {
+                                const placeholders = [...updatedTemplate.carouseldata[carouselIndex].body.matchAll(/{{field(\d+)}}/g)];
+                                if (placeholders.length >= number) {
+                                    const currentField = placeholders[number - 1][0];
+                                    const newField = `{{field${fieldKey}}}`;
+                                    updatedTemplate.carouseldata[carouselIndex].body = updatedTemplate.carouseldata[carouselIndex].body.replace(currentField, newField);
+                                }
                             }
                         }
-                    }
-                } else if (type === 'additional') {
-                    const additionalIndex = parseInt(number, 10) - 1;
-                    if (!isNaN(additionalIndex) && updatedTemplate.variableshidden) {
-                        const selectedOption = variableSelections[`additional-${number}`];
-                        const allVariables = multiData[4].data[0].fields.allVariables;
-                
-                        if (selectedOption) {
-                            const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
-                            if (matchingField) {
-                                updatedTemplate.variableshidden[additionalIndex] = matchingField;
+                    } else if (type === 'additional') {
+                        const additionalIndex = parseInt(number, 10) - 1;
+                        if (!isNaN(additionalIndex) && updatedTemplate.variableshidden) {
+                            const selectedOption = variableSelections[`additional-${number}`];
+                            const allVariables = multiData[4].data[0].fields.allVariables;
+    
+                            if (selectedOption) {
+                                const matchingField = Object.keys(allVariables).find(key => allVariables[key].column === selectedOption);
+                                if (matchingField) {
+                                    updatedTemplate.variableshidden[additionalIndex] = matchingField;
+                                }
+                            } else {
+                                if (updatedTemplate.variableshidden[additionalIndex]) {
+                                    updatedTemplate.variableshidden[additionalIndex] = `field${fieldNumber}`;
+                                }
+                            }
+                        }
+                    } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
+                        const selectedHeader = variableSelections['video-videoHeader'];
+                        if (selectedHeader === 'Default ') {
+                            const messageTemplateName = multiData[4].data[0].messagetemplatename;
+                            const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
+                            if (campaign && campaign.header) {
+                                updatedTemplate.header = campaign.header;
                             }
                         } else {
-                            if (updatedTemplate.variableshidden[additionalIndex]) {
-                                updatedTemplate.variableshidden[additionalIndex] = `field${fieldNumber}`;
+                            const fieldNumber = columns.indexOf(selectedHeader) + 2;
+                            if (!isNaN(fieldNumber)) {
+                                updatedTemplate.header = `{{field${fieldNumber}}}`;
                             }
                         }
                     }
-                } else if (['VIDEO', 'DOCUMENT', 'IMAGE'].includes(updatedTemplate.headertype) && variableSelections['video-videoHeader']) {
-                    const selectedHeader = variableSelections['video-videoHeader'];
-                    if (selectedHeader === 'Default ') {
-                        const messageTemplateName = multiData[4].data[0].messagetemplatename;
-                        const campaign = multiData[3].data.find(campaign => campaign.name === messageTemplateName);
-                        if (campaign && campaign.header) {
-                            updatedTemplate.header = campaign.header;
-                        }
-                    } else {
-                        const fieldNumber = columns.indexOf(selectedHeader) + 2;
-                        if (!isNaN(fieldNumber)) {
-                            updatedTemplate.header = `{{field${fieldNumber}}}`;
-                        }
-                    }
+                } else {
+                    console.log(`Skipping key: ${key} because header is null or undefined.`);
                 }
             });
     
-            if(row && !detectionChangeSource ){ // 
+            if (row && !detectionChangeSource) {
+                if (updatedTemplate.variableshidden) {
+                    updatedTemplate.variableshidden = [...updatedTemplate.variableshidden, ...additionalDynamicFields];
+                } else {
+                    updatedTemplate.variableshidden = additionalDynamicFields;
+                }
             } else {
                 updatedTemplate.variableshidden = Object.values(selectedAdditionalHeaders).map(
                     header => `field${columns.indexOf(header) + 2}`
                 );
-            }        
+            }
     
             if (resetField && fieldToReset !== null) {
                 const placeholders = [...updatedTemplate.body.matchAll(/{{field(\d+)}}/g)];
@@ -950,6 +995,16 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     updatedTemplate.body = updatedTemplate.body.replace(currentField, `{{${fieldToReset}}}`);
                 }
             }
+    
+            const cleanVariables = (variables) => {
+                return variables.map(variable => {
+                    return variable.replace(/\\+/g, '').replace(/"+/g, '');
+                });
+            };
+    
+            updatedTemplate.variableshidden = [...new Set(updatedTemplate.variableshidden)];
+            updatedTemplate.variableshidden = cleanVariables(updatedTemplate.variableshidden);
+    
             console.log('editing final updatedTemplate:', updatedTemplate);
             setCurrentTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
@@ -1158,7 +1213,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             );
     
             const newAllVariables = buildAllVariables(jsonPersons);
-    
+            console.log('new final updatedTemplate:', updatedTemplate);
             setSelectedFields(newSelectedFields);
             setAllVariables(newAllVariables);
             setFilledTemplate(updatedTemplate);
@@ -1193,6 +1248,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         return initialReceiver;
     });
+
+    if (availableData.length === 0 || availableOptions.length === 0) {
+        const message = 'No quedan más variables';
+        if (availableData.length === 0) availableData.push(message);
+        if (availableOptions.length === 0) availableOptions.push(message);
+    }    
     
     const checkTypeInMultiData = () => {
         return multiData[5]?.data?.some(item => item.type === "PERSON" || item.type === "LEAD");
@@ -1251,14 +1312,43 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [variableSelections, selectedAdditionalHeaders]);
     
 
-    const handleAddVariable = () => {
-        setAdditionalVariables(prev => {
-            if (prev.length < 10) {
-                return [...prev, prev.length + 1];
-            }
-            return prev;
-        });
+   const selectedDynamicOptions = Object.values(selectedAdditionalHeaders).filter(Boolean);
+
+   const filteredOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])].filter(
+       option => !selectedDynamicOptions.includes(option)
+   );
+
+   //console.log(`Current dynamic selections: ${selectedDynamicOptions.join(', ')}`);
+
+   const additionalDynamicFields = selectedDynamicOptions.map(option => {
+    const matchingField = Object.keys(multiData[4]?.data?.[0]?.fields?.allVariables ?? {}).find(key => multiData[4]?.data?.[0]?.fields?.allVariables?.[key]?.column === option);
+    return matchingField;
+   }).filter(Boolean); 
+
+   //console.log(`Additional dynamic fields: ${additionalDynamicFields.join(', ')}`);
+
+
+    const handleAddVariable = () => { 
+        if(row && !detectionChangeSource){
+      
+            setDynamicAdditionalVariables(prev => {
+                if (prev.length + additionalVariables.length < 10) {
+                    return [...prev, prev.length + additionalVariables.length + 1];
+                }
+                return prev;
+            });           
+        } else {
+           
+            setAdditionalVariables(prev => {
+                if (prev.length < 10) {
+                    return [...prev, prev.length + 1];
+                }
+                return prev;
+            });
+           
+        }
     }
+
 
     const handleRemoveVariable = (indexToRemove: number) => {   
         setAdditionalVariables(prev => {
@@ -1424,6 +1514,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             );
         });
     };
+
+    //console.log('availableOptions', availableOptions)
      
     return (
         <React.Fragment>
@@ -1713,7 +1805,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                         handleVariableChange(index + 1, selectedOption, 'body');
                                                         setVariableSelections(prev => ({
                                                             ...prev,
-                                                            [`body-${index + 1}`]: selectedOption.key
+                                                            [`body-${index + 1}`]: selectedOption ? selectedOption.key : null
                                                         }));
                                                     }}
                                                 />
@@ -1927,73 +2019,97 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                             <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>
                             
-                          
+                            <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
+                                <AddIcon /> Añadir variable adicional
+                            </div>
                          
 
 
                             <div className={classes.containerStyle}>
-                           {row && !detectionChangeSource  ? (
-                                <>
-                                    {variablesAdditionalView.map((variable, index) => {
-                                        const cleanVariable = variable.replace(/"/g, '');                                        
-                                        let valueDefault;
-                                        if (cleanVariable) {
-                                            const matchingField = matchingUnavailableValues.find(item => item.field === cleanVariable);
-                                            if (matchingField) {
-                                                valueDefault = matchingField.column ? matchingField.column : undefined;
-                                            } else {
-                                                const allVariables = multiData[4].data[0].fields?.allVariables || {};
-                                                const allVariablesField = allVariables[cleanVariable];
-                                                if (allVariablesField) {
-                                                    valueDefault = allVariablesField.column ? allVariablesField.column : undefined;
+                                {row && !detectionChangeSource ? (
+                                    <>
+                                        {variablesAdditionalView.map((variable, index) => {
+                                            const cleanVariable = typeof variable === 'string' ? variable.replace(/["\\]/g, '') : '';
+                                            let valueDefault;
+                                            if (cleanVariable) {
+                                                const matchingField = matchingUnavailableValues.find(item => item.field === cleanVariable);
+                                                if (matchingField) {
+                                                    valueDefault = matchingField.column ? matchingField.column : undefined;
                                                 } else {
-                                                    const fieldIndex = parseInt(cleanVariable.replace('field', ''), 10) - 2;
-                                                    const valor = templateData.fields.columns[fieldIndex];
-                                                    valueDefault = valor ? valor : undefined;
+                                                    const allVariables = multiData[4].data[0].fields?.allVariables || {};
+                                                    const allVariablesField = allVariables[cleanVariable];
+                                                    if (allVariablesField) {
+                                                        valueDefault = allVariablesField.column ? allVariablesField.column : undefined;
+                                                    } else {
+                                                        const fieldIndex = parseInt(cleanVariable.replace('field', ''), 10) - 2;
+                                                        const valor = templateData.fields.columns[fieldIndex];
+                                                        valueDefault = valor ? valor : undefined;
+                                                    }
                                                 }
+                                            } else {
+                                                valueDefault = undefined;
                                             }
-                                        } else {
-                                            valueDefault = undefined;
-                                        }
-                                        const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
+                                            const allOptions = [...new Set([...availableOptions, ...matchingUnavailableValues.map(item => item.column)])];
+                                            return (
+                                                <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                        <p>{`Variable Adicional {{${index + 1}}}`}</p>
+                                                        <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <FieldSelectDisabled
+                                                            variant="outlined"
+                                                            uset={true}
+                                                            className="col-12"
+                                                            data={allOptions.map(header => ({ key: header, value: header }))}
+                                                            optionDesc="value"
+                                                            optionValue="key"
+                                                            valueDefault={valueDefault}
+                                                            onChange={(selectedOption) => {
+                                                                handleVariableChange((index + 1).toString(), selectedOption, 'additional');
+                                                                setVariableSelections(prev => {
+                                                                    const newSelections = {
+                                                                        ...prev,
+                                                                        [`additional-${index + 1}`]: selectedOption?.key ?? null
+                                                                    };
+                                                                    return newSelections;
+                                                                });
+                                                            }}
+                                                            getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {dynamicAdditionalVariables.map((variable, index) => {
+                                        const dynamicIndex = index + variablesAdditionalView.length + 1;
+
                                         return (
-                                            <div style={{ flex: 1 }} key={`additional-${index + 1}`}>
+                                            <div style={{ flex: 1 }} key={`additional-dynamic-${dynamicIndex}`}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                    <p>{`Variable Adicional {{${index + 1}}}`}</p>
-                                                    <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(index)} />
+                                                    <p>{`Variable Adicional {{${dynamicIndex}}}`}</p>
+                                                    <DeleteIcon style={{ cursor: 'pointer', color: 'grey' }} onClick={() => handleRemoveVariable(dynamicIndex - 1)} />
                                                 </div>
                                                 <div style={{ flex: 1 }}>
                                                     <FieldSelectDisabled
                                                         variant="outlined"
                                                         uset={true}
                                                         className="col-12"
-                                                        data={allOptions.map(header => ({ key: header, value: header }))}
-
+                                                        data={filteredOptions.map(header => ({ key: header, value: header }))}
                                                         optionDesc="value"
                                                         optionValue="key"
-                                                        valueDefault={valueDefault}
-                                                        onChange={(selectedOption) => {
-                                                            handleVariableChange((index + 1).toString(), selectedOption, 'additional');
-                                                            setVariableSelections(prev => {
-                                                                const newSelections = {
-                                                                    ...prev,
-                                                                    [`additional-${index + 1}`]: selectedOption.key
-                                                                };
-                                                                return newSelections;
-                                                            });
-                                                        }}
+                                                        valueDefault={selectedAdditionalHeaders[dynamicIndex] ? { key: selectedAdditionalHeaders[dynamicIndex], value: selectedAdditionalHeaders[dynamicIndex] } : undefined}
+                                                        onChange={(selectedOption) => handleAdditionalVariableChange(dynamicIndex, selectedOption)}
                                                         getOptionDisabled={(option: Dictionary) => option.key === 'No quedan más variables'}
                                                     />
                                                 </div>
                                             </div>
                                         );
                                     })}
-                                </>
-                            ) : ( 
+                                    </>
+                                ) : ( 
                                     <>
-                                       <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
-                                <AddIcon /> Añadir variable adicional
-                            </div>
+                                      
                                         {additionalVariables.map((variable, index) => (
                                             <div style={{ flex: 1 }} key={index}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
