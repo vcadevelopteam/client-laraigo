@@ -1,14 +1,15 @@
-/* eslint-disable no-undef */
-// Enable ACD module
 require(Modules.ACD);
 require(Modules.Player);
-require(Modules.ASR);
 require(Modules.Conference);
+require(Modules.ASR);
+require(Modules.AI);
+require(Modules.IVR);
 
-const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
-const URL_APILARAIGO = "https://apiprd.laraigo.com/api/";
+const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxmetest/services/api/";
+const URL_APILARAIGO = "https://testapix.laraigo.com/api/";
 const URL_APIVOXIMPLANT = "https://api.voximplant.com/platform_api/";
-const SITE_MASK = '15302905499';
+const SITE_MASK = '';
+const VOICE_ES = VoiceList.Microsoft.Neural.es_PE_CamilaNeural;
 let conf;
 
 var request,
@@ -181,7 +182,7 @@ function createTicket(content, callback) {
 }
 
 function createTicket2(origin, callback) {
-    const splitIdentifier = identifier.split("-");
+    const splitIdentifier = (identifier || "0-0-0").split("-");
 
     const body = {
         communicationchanneltype: "VOXI",
@@ -221,11 +222,11 @@ function createTicket2(origin, callback) {
                 welcomeTone = result.Result.welcometone || welcomeTone;
                 holdTone = result.Result.holdTone || holdTone;
 
-                messageWelcome = result.Result.Properties?.MessageWelcome || messageWelcome;
-                messageBusy = result.Result.Properties?.MessageBusy || messageBusy;
-                callMethod = result.Result.Properties?.CallMethod || callMethod;
-                afterHour = result.Result.Properties?.AfterHours || afterHour;
-                messageAfterHour = result.Result.Properties?.MessageAfterHours || messageAfterHour;
+                messageWelcome = result.Result.propertiesZyx?.MessageWelcome || messageWelcome;
+                messageBusy = result.Result.propertiesZyx?.MessageBusy || messageBusy;
+                callMethod = result.Result.propertiesZyx?.CallMethod || callMethod;
+                afterHour = result.Result.propertiesZyx?.AfterHours || afterHour;
+                messageAfterHour = result.Result.propertiesZyx?.MessageAfterHours || messageAfterHour;
 
                 flow = result.Result?.flow ? JSON.parse(result.Result.flow, afterHour) : null;
                 
@@ -345,11 +346,11 @@ function sendInteraction(type, text) {
 function handleInboundCall(e) {
     if (e.headers["VI-Client-Type"] === "pstn" || e.headers["VI-Client-Type"] === "other") {
         //si la llamada viene de un número de la red pública es atendido por la cola acd.
-        origin = origin || "INBOUND";
+        origin = "INBOUND";
         call = e.call; // Call del cliente
         callerid = e.callerid;
         site = SITE_MASK || e.destination;
-        variables = { ...(data.variables || {}), origin: "INBOUND" };
+        variables = { ...(variables || {}), origin: "INBOUND" };
         // Add event listeners
         e.call.addEventListener(CallEvents.Connected, handleCallConnected);
         // e.call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);
@@ -607,7 +608,7 @@ function handleACDQueue() {
         //ordinal_suffix_of(acdevent.position)
         //const speech = `Tú eres el número ${acdevent.position} en la cola. El asesor le responderá en ${(acdevent.ewt + 1)} ${minutesWord}`;
         //const speech = `Tú eres el número ${acdevent.position} en la cola.`;
-        call.say(messageWelcome, VoiceList.Amazon.es_MX_Mia);
+        call.say(messageWelcome, VOICE_ES);
     });
     // Connect caller with operator
     request.addEventListener(ACDEvents.OperatorReached, function (acdevent) {
@@ -646,7 +647,7 @@ function handleACDQueue() {
     // No operators are available
     request.addEventListener(ACDEvents.Offline, function (acdevent) {
         Logger.write("ACDEvents-Offline: " + JSON.stringify(acdevent));
-        call.say(messageBusy, VoiceList.Amazon.es_MX_Mia);
+        call.say(messageBusy, VOICE_ES);
         call.addEventListener(CallEvents.PlaybackFinished, function (e) {
             closeTicket("NO HAY ASESORES");
             VoxEngine.terminate();
@@ -661,20 +662,20 @@ async function handleCallConnected(e) {
     if (afterHour) {
         Logger.write("voximplant: afterhour!!");
 
-        call.say(messageAfterHour, VoiceList.Amazon.es_MX_Mia);
+        call.say(messageAfterHour, VOICE_ES);
         call.addEventListener(CallEvents.PlaybackFinished, function (e) {
             closeTicket("FUERA DE HORARIO");
             VoxEngine.terminate();
         });
     } else {
-        if (flow) {
+        if (flow?.genesis) {
             const next = await loopInteractions(call, variables, flow);
             if (next !== "agenttransfer") {
                 closeTicket("finish");
                 VoxEngine.terminate();
             }
         } else {
-            await cardMessage({}, { message: welcomeTone });
+            await cardMessage({}, { message: messageWelcome });
             
             if (callMethod === "SIMULTANEO") {
                 handleSimultaneousCall();
@@ -701,14 +702,17 @@ function handleSimultaneousCall() {
                         Logger.write("handleCallConnected-GetUsers: " + res2.text);
                         const voxi_res = JSON.parse(res2.text).result;
                         if (voxi_res.length === 0) {
-                            closeTicket("NO HAY ASESORES");
-                            VoxEngine.terminate();
+                            call.say(messageBusy, VOICE_ES);
+                            call.addEventListener(CallEvents.PlaybackFinished, function (e) {
+                                closeTicket("NO HAY ASESORES");
+                                VoxEngine.terminate();
+                            });
                         } else {
                             userQueueData = voxi_res.filter((user) =>
                                 user.acd_queues.map((aq) => aq.acd_queue_name.split(".")?.[1]).includes("laraigo")
                             );
                             userQueueLength = Math.ceil(userQueueData.length / userQueueLimit);
-                            call.say(messageWelcome, VoiceList.Amazon.es_MX_Mia);
+                            call.say(messageWelcome, VOICE_ES);
                             handleSpreadCall();
                         }
                     },

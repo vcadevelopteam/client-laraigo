@@ -5,10 +5,11 @@ require(Modules.AI);
 require(Modules.ASR);
 require(Modules.IVR); // enable IVR module
 
-const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
-const URL_APILARAIGO = "https://apix.laraigo.com/api/";
+const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxmetest/services/api/";
+const URL_APILARAIGO = "https://testapix.laraigo.com/api/";
 const URL_APIVOXIMPLANT = "https://api.voximplant.com/platform_api/";
-const VOICE_ES = VoiceList.Microsoft.Neural.es_MX_LarissaNeural;
+const VOICE_ES = VoiceList.Microsoft.Neural.es_PE_CamilaNeural;
+//const VOICE_ES = {"language": VoiceList.Microsoft.Neural.es_PE_CamilaNeural, "ttsOptions": {"rate":"x-fast"}};
 
 let flow = {};
 let variables = {};
@@ -276,7 +277,11 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     };
     Logger.write(`Calling ${list_id} with  ${task_id} on ${phone_number}`);
 
-    createTicket2(() => {
+    createTicket2((identifier) => {
+        if (!identifier) {
+            call.hangup();
+            return;
+        }
         const amd = detectvoicemail ? AMD.create({ model: AMD.Model.PE }) : undefined;
 
         if (configSIP?.SIP) {
