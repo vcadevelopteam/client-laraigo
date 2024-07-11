@@ -341,128 +341,6 @@ function voicemailDetected(call, confidence) {
     }
 }
 
-const setVariable = (variables, variable, value) => {
-    variables[variable] = value;
-    return variables;
-}
-
-const replaceTextWithVariables = (input, variables) => {
-    let newinput = `${input}`;
-    const variablesFound = newinput.match(/({{)(.*?)(}})/g) || [];
-    variablesFound.forEach(varr => {
-        const value = variables[varr.replace("{{", "").replace("}}", "")] || "";
-        newinput = newinput.replaceAll(varr, value);
-    })
-    return newinput
-}
-
-const cardInput = async (variables, { question, output, timeout = 5000 }) => (
-    new Promise(async (resolve, reject) => {
-        question = replaceTextWithVariables(question, variables);
-        let full_result = "";
-        let ts = null;
-        let tsMuteTotal = null;
-        let tsStopOnTime = null;
-        // sendInteraction("text", question);
-        //call.say(question, {"language": VOICE_ES});
-        call.say(question, VOICE_ES);
-        call.addEventListener(CallEvents.PlaybackFinished, () => {
-            Logger.write("ASR-REC: start");
-            call.removeEventListener(CallEvents.PlaybackFinished);
-            call.sendMediaTo(asr);
-            tsMuteTotal = setTimeout(() => {
-                Logger.write("ASR-REC: tsMuteTotal: " + full_result);
-                asr.stop();
-                clearTimeout(ts);
-                clearTimeout(tsStopOnTime);
-                setVariable(variables, output, full_result);
-                resolve(full_result)
-            }, timeout);
-
-            tsStopOnTime = setTimeout(() => {
-                Logger.write("ASR-REC: tsStopOnTime: " + full_result);
-                asr.stop();
-                clearTimeout(ts);
-                clearTimeout(tsMuteTotal);
-                setVariable(variables, output, full_result);
-                resolve(full_result)
-            }, timeout);
-        });
-
-        // const asr = VoxEngine.createASR({
-        //     profile: ASRProfileList.Google.es_PE,
-        //     model: ASRModelList.Google,
-        //     singleUtterance: true,
-        //     interimResults: true,
-        // });
-        const asr = VoxEngine.createASR({
-            profile: ASRProfileList.Microsoft.es_PE,
-            model: ASRModelList.Microsoft,
-            singleUtterance: true,
-            interimResults: true,
-        });
-
-        asr.addEventListener(ASREvents.Result, e => {
-            Logger.write("ASR-REC: Result: " + e.text);
-            clearTimeout(tsMuteTotal);
-            // Recognition results arrive here
-            full_result += ((e.text || "") + " ");
-            // sendInteraction("text", full_result, true);
-            // If CaptureStarted wo not be triggered in 2 seconds then stop recognition
-            clearTimeout(tsStopOnTime)
-            asr.stop();
-            setVariable(variables, output, full_result);
-            resolve(full_result);
-            // ts = setTimeout(() => {
-            // }, 1000);
-        });
-
-        asr.addEventListener(ASREvents.SpeechCaptured, () => {
-            // After speech has been captured - do not stop sending media to ASR
-            Logger.write("ASR-REC: SpeechCaptured");
-            clearTimeout(tsMuteTotal);
-            // call.stopMediaTo(asr);
-        });
-        asr.addEventListener(ASREvents.CaptureStarted, () => {
-            Logger.write("ASR-REC: CaptureStarted");
-            // Clear timeout if CaptureStarted has been triggered
-            clearTimeout(ts);
-        });
-    })
-)
-//type = inputunknown | inputfixed
-//if type is inputunknown, should have terminateOn, and else if type is inputfixed, should have inputLength
-const cardIVR = async (call, variables, { output, id, type, inputLength, terminateOn, question, attempts }) => (
-    new Promise(async (resolve, reject) => {
-        const attempt = 0;
-        question = replaceTextWithVariables(question, variables);
-        // sendInteraction("text", question);
-        const extState = new IVRState(id, {
-            type,
-            inputLength,
-            terminateOn,
-            prompt: {
-                say: question,
-                lang: VOICE_ES
-            }
-        }, (data) => {
-            // Extension has been entered
-            const response = type === "inputunknown" ? data.replace(terminateOn, "") : data
-            // sendInteraction("text", response, true);
-            setVariable(variables, output, response);
-            resolve({ number: response, success: true });
-        }, (_data) => {
-            // Timeout
-            attempt++
-            if (attempt < attempts) {
-                extState.enter(Call);
-            } else {
-                resolve({ message: "attempts were exceeded", success: false });
-            }
-        }).enter(call);
-    })
-)
-
 function handleSpreadCall() {
     userQueueData
         .slice(userQueueIndex * userQueueLimit, userQueueIndex * userQueueLimit + userQueueLimit)
@@ -580,15 +458,6 @@ function handleSimultaneousCall() {
     );
 }
 
-const cardReassignAgent = (variables, { messageBusy: messageBusy1, retrytime = 3000, type }) => {
-    const messageBusy2 = messageBusy1 ? replaceTextWithVariables(messageBusy1, variables) : messageBusy;
-    Logger.write("derivar simultaneous: " + type);
-    if (type === "simultaneous") {
-        handleSimultaneousCall()
-    } else {
-        handleACDQueue({ messageBusy2, retrytime })
-    }
-}
 
 const handleACDQueue = ({ messageBusy2, retrytime }) => {
     request = VoxEngine.enqueueACDRequest(`${site}.laraigo`, phone_number, {
@@ -657,6 +526,227 @@ const handleACDQueue = ({ messageBusy2, retrytime }) => {
     // Get current call status in a queue every 30 seconds
     statusInterval = setInterval(request.getStatus, retrytime);
 }
+
+// Call connected successfully
+async function handleCallConnected(e) {
+    if (onlybot) {
+        sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA");
+        const next = await loopInteractions(call, variables, flow);
+        if (next !== "agenttransfer") {
+            closeTicket("finish");
+            VoxEngine.terminate();
+        }
+    } else {
+        const type = callmethod !== "COLA" ? "simultaneous" : "queue";
+        await cardMessage({}, { message });
+        call.startPlayback(welcomeTone);
+        cardReassignAgent(null, { type });
+    }
+}
+
+// Play music after TTS finish
+function handlePlaybackFinished(e) {
+    e.call.startPlayback(welcomeTone);
+}
+
+function holdCall(a, b) {
+    a.addEventListener(CallEvents.OnHold, function (e) {
+        holdplayer = VoxEngine.createURLPlayer(holdTone, true, true);
+        Logger.write("incoming leg on hold");
+        holdplayer.resume();
+        holdplayer.sendMediaTo(b);
+        holdplayer.sendMediaTo(a);
+    });
+    a.addEventListener(CallEvents.OffHold, function (e) {
+        Logger.write("incoming leg off hold");
+        holdplayer.stop();
+        VoxEngine.sendMediaBetween(a, b);
+    });
+}
+
+function handleCallDisconnected(e) {
+    // Tell CallList processor about successful call result
+    if (!delivered) {
+        deliveryCall(false, "The customer hung up the call before being answered");
+    }
+    closeTicket("DESCONECTADO POR CLIENTE");
+    CallList.reportResult(
+        {
+            result: true,
+            duration: e.duration,
+        },
+        VoxEngine.terminate
+    );
+}
+
+function handleCallFailed(e) {
+    // depending on the request options it either try to launch the scenario again after some time
+    // or write the result (failed call) into result_data column of the CSV file with results
+    Logger.write("event-handleCallFailed: " + JSON.stringify(e));
+    deliveryCall(false, e.reason);
+    closeTicket("LLAMADA FALLIDA");
+    CallList.reportError(
+        {
+            result: false,
+            msg: "Failed",
+            code: e.code,
+        },
+        VoxEngine.terminate
+    );
+}
+
+//****************HELPERS***************//
+function evaluateExpression(expr) {
+    expr = expr.replace(/\s+/g, '');
+
+    function evalSimpleExpression(simpleExpr) {
+        let tokens = simpleExpr.match(/\d+|[+/*-]/g).map(token => {
+            return isNaN(token) ? token : Number(token);
+        });
+
+        let stack = [tokens[0]];
+        for (let i = 1; i < tokens.length; i += 2) {
+            let operator = tokens[i];
+            let nextNumber = tokens[i + 1];
+            switch (operator) {
+                case '+':
+                    stack.push(nextNumber);
+                    break;
+                case '-':
+                    stack.push(-nextNumber);
+                    break;
+                case '*':
+                    stack[stack.length - 1] *= nextNumber;
+                    break;
+                case '/':
+                    stack[stack.length - 1] /= nextNumber;
+                    break;
+            }
+        }
+        return stack.reduce((acc, curr) => acc + curr, 0);
+    }
+    function evalRecursive(expr) {
+        while (expr.includes('(')) {
+            expr = expr.replace(/\(([^()]+)\)/g, (match, subExpr) => evalRecursive(subExpr));
+        }
+        return evalSimpleExpression(expr);
+    }
+    return evalRecursive(expr);
+}
+
+//****************VOICE*BOT***************//
+const setVariable = (variables, variable, value) => {
+    variables[variable] = value;
+    return variables;
+}
+
+const replaceTextWithVariables = (input, variables) => {
+    let newinput = `${input}`;
+    const variablesFound = newinput.match(/({{)(.*?)(}})/g) || [];
+    variablesFound.forEach(varr => {
+        const value = variables[varr.replace("{{", "").replace("}}", "")] || "";
+        newinput = newinput.replaceAll(varr, value);
+    })
+    return newinput
+}
+
+const cardInput = async (variables, { question, output, timeout = 5000 }) => (
+    new Promise(async (resolve, reject) => {
+        question = replaceTextWithVariables(question, variables);
+        let full_result = "";
+        let ts = null;
+        let tsMuteTotal = null;
+        let tsStopOnTime = null;
+        call.say(question, VOICE_ES);
+        call.addEventListener(CallEvents.PlaybackFinished, () => {
+            Logger.write("ASR-REC: start");
+            call.removeEventListener(CallEvents.PlaybackFinished);
+            call.sendMediaTo(asr);
+            tsMuteTotal = setTimeout(() => {
+                Logger.write("ASR-REC: tsMuteTotal: " + full_result);
+                asr.stop();
+                clearTimeout(ts);
+                clearTimeout(tsStopOnTime);
+                setVariable(variables, output, full_result);
+                resolve(full_result)
+            }, timeout);
+
+            tsStopOnTime = setTimeout(() => {
+                Logger.write("ASR-REC: tsStopOnTime: " + full_result);
+                asr.stop();
+                clearTimeout(ts);
+                clearTimeout(tsMuteTotal);
+                setVariable(variables, output, full_result);
+                resolve(full_result)
+            }, timeout);
+        });
+        const asr = VoxEngine.createASR({
+            profile: ASRProfileList.Microsoft.es_PE,
+            model: ASRModelList.Microsoft,
+            singleUtterance: true,
+            interimResults: true,
+        });
+
+        asr.addEventListener(ASREvents.Result, e => {
+            Logger.write("ASR-REC: Result: " + e.text);
+            clearTimeout(tsMuteTotal);
+            // Recognition results arrive here
+            full_result += ((e.text || "") + " ");
+            // sendInteraction("text", full_result, true);
+            // If CaptureStarted wo not be triggered in 2 seconds then stop recognition
+            clearTimeout(tsStopOnTime)
+            asr.stop();
+            setVariable(variables, output, full_result);
+            resolve(full_result);
+            // ts = setTimeout(() => {
+            // }, 1000);
+        });
+
+        asr.addEventListener(ASREvents.SpeechCaptured, () => {
+            // After speech has been captured - do not stop sending media to ASR
+            Logger.write("ASR-REC: SpeechCaptured");
+            clearTimeout(tsMuteTotal);
+            // call.stopMediaTo(asr);
+        });
+        asr.addEventListener(ASREvents.CaptureStarted, () => {
+            Logger.write("ASR-REC: CaptureStarted");
+            // Clear timeout if CaptureStarted has been triggered
+            clearTimeout(ts);
+        });
+    })
+)
+//type = inputunknown | inputfixed
+//if type is inputunknown, should have terminateOn, and else if type is inputfixed, should have inputLength
+const cardIVR = async (call, variables, { output, id, type, inputLength, terminateOn, question, attempts }) => (
+    new Promise(async (resolve, reject) => {
+        const attempt = 0;
+        question = replaceTextWithVariables(question, variables);
+        // sendInteraction("text", question);
+        const extState = new IVRState(id, {
+            type,
+            inputLength,
+            terminateOn,
+            prompt: {
+                say: question,
+                lang: VOICE_ES
+            }
+        }, (data) => {
+            // Extension has been entered
+            const response = type === "inputunknown" ? data.replace(terminateOn, "") : data
+            // sendInteraction("text", response, true);
+            setVariable(variables, output, response);
+            resolve({ number: response, success: true });
+        }, (_data) => {
+            // Timeout
+            attempt++
+            if (attempt < attempts) {
+                extState.enter(Call);
+            } else {
+                resolve({ message: "attempts were exceeded", success: false });
+            }
+        }).enter(call);
+    })
+)
 
 const cardMessage = async (variables, { message }) => (
     new Promise(async (resolve, reject) => {
@@ -786,110 +876,12 @@ const loopInteractions = async (call, variables, flow, blockid = "genesis") => {
     return next;
 }
 
-// Call connected successfully
-async function handleCallConnected(e) {
-    if (onlybot) {
-        sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA");
-        const next = await loopInteractions(call, variables, flow);
-        if (next !== "agenttransfer") {
-            closeTicket("finish");
-            VoxEngine.terminate();
-        }
+const cardReassignAgent = (variables, { messageBusy: messageBusy1, retrytime = 3000, type }) => {
+    const messageBusy2 = messageBusy1 ? replaceTextWithVariables(messageBusy1, variables) : messageBusy;
+    Logger.write("derivar simultaneous: " + type);
+    if (type === "simultaneous") {
+        handleSimultaneousCall()
     } else {
-        const type = callmethod !== "COLA" ? "simultaneous" : "queue";
-        await cardMessage({}, { message });
-        call.startPlayback(welcomeTone);
-        cardReassignAgent(null, { type });
+        handleACDQueue({ messageBusy2, retrytime })
     }
-}
-
-// Play music after TTS finish
-function handlePlaybackFinished(e) {
-    e.call.startPlayback(welcomeTone);
-}
-
-function holdCall(a, b) {
-    a.addEventListener(CallEvents.OnHold, function (e) {
-        holdplayer = VoxEngine.createURLPlayer(holdTone, true, true);
-        Logger.write("incoming leg on hold");
-        holdplayer.resume();
-        holdplayer.sendMediaTo(b);
-        holdplayer.sendMediaTo(a);
-    });
-    a.addEventListener(CallEvents.OffHold, function (e) {
-        Logger.write("incoming leg off hold");
-        holdplayer.stop();
-        VoxEngine.sendMediaBetween(a, b);
-    });
-}
-
-function handleCallDisconnected(e) {
-    // Tell CallList processor about successful call result
-    if (!delivered) {
-        deliveryCall(false, "The customer hung up the call before being answered");
-    }
-    closeTicket("DESCONECTADO POR CLIENTE");
-    CallList.reportResult(
-        {
-            result: true,
-            duration: e.duration,
-        },
-        VoxEngine.terminate
-    );
-}
-
-function handleCallFailed(e) {
-    // depending on the request options it either try to launch the scenario again after some time
-    // or write the result (failed call) into result_data column of the CSV file with results
-    Logger.write("event-handleCallFailed: " + JSON.stringify(e));
-    deliveryCall(false, e.reason);
-    closeTicket("LLAMADA FALLIDA");
-    CallList.reportError(
-        {
-            result: false,
-            msg: "Failed",
-            code: e.code,
-        },
-        VoxEngine.terminate
-    );
-}
-
-
-//*********HELPERS***************//
-function evaluateExpression(expr) {
-    expr = expr.replace(/\s+/g, '');
-
-    function evalSimpleExpression(simpleExpr) {
-        let tokens = simpleExpr.match(/\d+|[+/*-]/g).map(token => {
-            return isNaN(token) ? token : Number(token);
-        });
-
-        let stack = [tokens[0]];
-        for (let i = 1; i < tokens.length; i += 2) {
-            let operator = tokens[i];
-            let nextNumber = tokens[i + 1];
-            switch (operator) {
-                case '+':
-                    stack.push(nextNumber);
-                    break;
-                case '-':
-                    stack.push(-nextNumber);
-                    break;
-                case '*':
-                    stack[stack.length - 1] *= nextNumber;
-                    break;
-                case '/':
-                    stack[stack.length - 1] /= nextNumber;
-                    break;
-            }
-        }
-        return stack.reduce((acc, curr) => acc + curr, 0);
-    }
-    function evalRecursive(expr) {
-        while (expr.includes('(')) {
-            expr = expr.replace(/\(([^()]+)\)/g, (match, subExpr) => evalRecursive(subExpr));
-        }
-        return evalSimpleExpression(expr);
-    }
-    return evalRecursive(expr);
 }
