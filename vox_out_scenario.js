@@ -264,7 +264,7 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     site = data.caller_id;
     message = data.message;
     flow = data.flow;
-    variables = data.variables || {};
+    variables = { ...(data.variables || {}), origin: "OUTBOUND" };
     variables.phone = phone_number;
 
     dataCampaign = {
@@ -277,6 +277,8 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
     Logger.write(`Calling ${list_id} with  ${task_id} on ${phone_number}`);
 
     createTicket2(() => {
+        const amd = detectvoicemail ? AMD.create({ model: AMD.Model.PE }) : undefined;
+
         if (configSIP?.SIP) {
             call = VoxEngine.callSIP(`${configSIP.prefix}${phone_number.replace("51", "")}@${configSIP.peer_address}`, {
                 callerid: `agent${lastagentid}@${configSIP.domain}`,
@@ -289,11 +291,6 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
 
         //detect voice mail
         if (detectvoicemail) {
-            const amdParameters = {
-                model: AMD.Model.PE,
-            };
-            const amd = AMD.create(amdParameters);
-    
             amd.addEventListener(AMD.Events.DetectionComplete, (result) => {
                 Logger.write(`VOICEMAIL: Machine answer detection is complete.`);
                 if (result.resultClass === AMD.ResultClass.VOICEMAIL) {
@@ -303,7 +300,7 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
                     Logger.write('VOICEMAIL: not detected.');
                 }
             });
-    
+
             amd.addEventListener(AMD.Events.DetectionError, (error) => {
                 Logger.write(`Detection failed with an error:`);
                 Logger.write(error);
@@ -675,9 +672,9 @@ const cardMessage = async (variables, { message }) => (
 const cardAudio = async (variables, { url }) => (
     new Promise(async (resolve, reject) => {
         url = replaceTextWithVariables(url, variables);
-        
+
         call.startPlayback(url);
-        
+
         call.addEventListener(CallEvents.PlaybackFinished, function (e) {
             resolve("ok")
         });

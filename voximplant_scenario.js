@@ -48,7 +48,10 @@ var request,
     userQueueData = [],
     retryClose = 0,
     afterHour = false,
-    messageAfterHour = "";
+    messageAfterHour = "",
+    configSIP = null,
+    flow,
+    variables = {};
 
 VoxEngine.addEventListener(AppEvents.Started, (ev) => {
     accountID = ev.accountId;
@@ -167,7 +170,7 @@ function createTicket(content, callback) {
             afterHour = result.Properties?.AfterHours || afterHour;
             messageAfterHour = result.Properties?.MessageAfterHours || messageAfterHour;
 
-            callback(result.NewConversation, afterHour, messageAfterHour);
+            callback(result.NewConversation, afterHour);
         },
         {
             method: "POST",
@@ -177,7 +180,7 @@ function createTicket(content, callback) {
     );
 }
 
-function createTicket2(callback) {
+function createTicket2(origin, callback) {
     const splitIdentifier = identifier.split("-");
 
     const body = {
@@ -193,13 +196,13 @@ function createTicket2(callback) {
         personid: 0,
         typeinteraction: "NINGUNO",
         typemessage: "text",
-        lastmessage: "LLAMADA SALIENTE",
+        lastmessage: origin === "OUTBOUND" ? "LLAMADA SALIENTE" : "LLAMADA ENTRANTE",
         postexternalid: sessionID,
         commentexternalid: accessURL,
         newConversation: true,
         status: "ASIGNADO",
         callrecording: red.recording,
-        origin: "OUTBOUND",
+        origin
     };
     //externalid es el pccowner
     Net.httpRequest(
@@ -211,10 +214,20 @@ function createTicket2(callback) {
             if (result.Success !== true) {
                 callback(null);
             } else {
-                identifier = result.Result.identifier || result.Result.split("#")[0];
-                personName = result.Result.personname || result.Result.split("#")[1];
-
                 conversationid = identifier?.split("-")[3];
+                identifier = result.Result.identifier;
+                personName = result.Result.personname;
+                configSIP = result.Result.configsip;
+                welcomeTone = result.Result.welcometone || welcomeTone;
+                holdTone = result.Result.holdTone || holdTone;
+
+                messageWelcome = result.Result.Properties?.MessageWelcome || messageWelcome;
+                messageBusy = result.Result.Properties?.MessageBusy || messageBusy;
+                callMethod = result.Result.Properties?.CallMethod || callMethod;
+                afterHour = result.Result.Properties?.AfterHours || afterHour;
+                messageAfterHour = result.Result.Properties?.MessageAfterHours || messageAfterHour;
+
+                flow = result.Result?.flow ? JSON.parse(result.Result.flow, afterHour) : null;
 
                 callback(identifier);
             }
@@ -333,6 +346,7 @@ function handleInboundCall(e) {
         originalCall = e.call; // Call del cliente
         callerid = e.callerid;
         site = SITE_MASK || e.destination;
+        variables = { ...(data.variables || {}), origin: "INBOUND" };
         // Add event listeners
         e.call.addEventListener(CallEvents.Connected, handleCallConnected);
         e.call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);
@@ -341,7 +355,7 @@ function handleInboundCall(e) {
         );
         e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
         // Answer call
-        createTicket("LLAMADA ENTRANTE", (newConversation, afterHour, messageAfterHour) => {
+        createTicket("LLAMADA ENTRANTE", (newConversation, afterHour) => {
             if (!newConversation) {
                 //Existe una llamada en curso
                 originalCall.hangup();
@@ -371,7 +385,7 @@ function handleInboundCall(e) {
             }
         });
     } else {
-        origin = origin || "OUTBOUND";
+        origin = "OUTBOUND";
         if (!e.customData) {
             Logger.write("voximplant: Error, not have customdata with number from to call");
             return;
@@ -394,13 +408,21 @@ function handleInboundCall(e) {
         } catch (e) {}
 
         //outbound call
-        createTicket2((identiff) => {
+        createTicket2(origin, (identiff) => {
             if (!identiff) {
                 Logger.write("voximplant: cant create ticket on outbound");
+                originalCall.hangup();
                 return;
             }
             if (/^\d+$/.test(e.destination.replace("+", ""))) {
-                originalCall = VoxEngine.callPSTN(e.destination, site);
+                if (configSIP?.SIP) {
+                    originalCall = VoxEngine.callSIP(`${configSIP.prefix}${e.destination.replace("51", "")}@${configSIP.peer_address}`, {
+                        callerid: `agent${lastagentid}@${configSIP.domain}`,
+                        displayName: "Laraigo",
+                    });
+                } else {
+                    originalCall = VoxEngine.callPSTN(e.destination, site);
+                }
             } else {
                 // es una llamada interna (entre asesores o anexos)
                 originalCall = VoxEngine.callUser(e.destination, e.callerid);
