@@ -1925,10 +1925,12 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FormControl className="col-12">
                             <div style={{ fontSize: '1rem', color: 'black' }}> {'Variables Adicionales'} </div>
                             <div className={classes.subtitle}> {'Selecciona los campos adicionales que deseas que viajen en conjunto con la campaña, se utiliza para dar trazabilidad al cliente. También para poder utilizarlo en reportes personalizados y en flujos'} </div>
-                            
-                          
-                         
-
+                                                      
+                            {!(row && !detectionChangeSource) && (
+                                <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
+                                    <AddIcon /> Añadir variable adicional
+                                </div>
+                            )}
 
                             <div className={classes.containerStyle}>
                            {row && !detectionChangeSource  ? (
@@ -1989,10 +1991,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                     })}
                                 </>
                             ) : ( 
-                                    <>
-                                       <div style={{ width: '50%', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }} onClick={handleAddVariable}>
-                                <AddIcon /> Añadir variable adicional
-                            </div>
+                                    <>                                      
                                         {additionalVariables.map((variable, index) => (
                                             <div style={{ flex: 1 }} key={index}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
