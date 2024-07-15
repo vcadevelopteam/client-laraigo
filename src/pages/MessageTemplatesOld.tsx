@@ -244,6 +244,15 @@ const MessageTemplatesOld: FC = () => {
             {
                 accessor: "language",
                 Header: t(langKeys.language),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const { language } = row?.original || {};
+                    if (language.startsWith('es')) {
+                        return 'ES';
+                    } else {
+                        return language.toUpperCase();
+                    }
+                }
             },
             {
                 accessor: "templatetype",
@@ -1630,7 +1639,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                                 uset={true}
-                                valueDefault={getValues("language")}
+                                valueDefault={getValues("language").startsWith('es') ? 'ES' : getValues("language").toUpperCase()}
                             />
                         )}
                     </div>

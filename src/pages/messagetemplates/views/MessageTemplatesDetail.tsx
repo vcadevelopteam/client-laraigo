@@ -2488,6 +2488,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 {getValues("type") === "HSM" && (
                                     <>
                                         {(!isNew) ? (
+                                           
                                             <FieldMultiSelect
                                                 className="col-6"
                                                 data={dataChannel}
@@ -2501,7 +2502,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 size="normal"
                                             />
                                         ) : (
-                                            <FieldSelect
+                                            <FieldSelect //acá
                                                 className="col-6"
                                                 data={dataChannel}
                                                 disabled={!isNew || disableInput}

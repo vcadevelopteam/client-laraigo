@@ -115,11 +115,6 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
                         <Trans i18nKey={langKeys.schedulesth} />
                     </MenuItem>
                 )}
-                {prepare && (
-                    <MenuItem onClick={handleMenuItemPrepare}>
-                        <Trans i18nKey={langKeys.prepare} />
-                    </MenuItem>
-                )}
                 {dispatch && (
                     <MenuItem onClick={handleMenuItemDispatch}>
                         <Trans i18nKey={langKeys.dispatch} />

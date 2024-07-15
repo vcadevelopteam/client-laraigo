@@ -5359,3 +5359,8 @@ export const modifyPinnedMessage = ({conversationid, interactionid, interactiont
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },
 });
+export const prepareAttentionOrder = (orderids: string) => ({
+    method: "UFN_ORDER_PREPARE",
+    key: "UFN_ORDER_PREPARE",
+    parameters: { orderids },
+})

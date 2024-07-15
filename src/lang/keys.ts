@@ -6349,6 +6349,10 @@ export const langKeys = {
   increase: 'increase',
   decrease: 'decrease',
   pinmessagehelper: 'pinmessagehelper',
+  immediateorderserror: 'immediateorderserror',
+  prepareorderserror: "prepareorderserror",
+  message_templates_channel_help: 'message_templates_channel_help',
+  send_your_message: 'send_your_message',
 };
 
 export type LangKeys = typeof langKeys;
