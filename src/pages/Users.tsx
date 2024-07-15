@@ -185,9 +185,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
-    const [isStore, setIsStore] = useState(false)
-    const [isWarehouse, setIsWarehouse] = useState(false)
-
+    const [isStore, setIsStore] = useState(row?.storeid ? true : false)
+    const [isWarehouse, setIsWarehouse] = useState(row?.warehouseid ? true : false)
+    
     const {
         register,
         handleSubmit,
@@ -676,7 +676,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                     onChange={(value) => {
                                         if(value) {
                                             setValue('warehouseid', value.warehouseid)
-                                            trigger('warehousei')
+                                            trigger('warehouseid')
                                         } else {
                                             setValue('warehouseid', 0)
                                             trigger('warehouseid')

@@ -6352,6 +6352,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   increase: 'Subir',
   decrease: 'Bajar',
   pinmessagehelper: 'Fijar mensaje',
+  immediateorderserror: 'Los pedidos con tipo de agendamiento inmediato no se pueden agendar',
+  prepareorderserror: "Uno o más pedidos de los seleccionados ya fueron preparados", 
 };
 
 const esResource: ResourceLanguage = {

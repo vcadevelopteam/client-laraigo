@@ -6401,6 +6401,8 @@ const translation: LangKeys = {
   increase: 'Increase',
   decrease: 'Decrease',
   pinmessagehelper: 'Pin message',
+  immediateorderserror: 'Orders with immediate scheduling type cannot be scheduled.',
+  prepareorderserror: "One or more of the selected orders have already been prepared",
 };
 
 const enResource: ResourceLanguage = {
