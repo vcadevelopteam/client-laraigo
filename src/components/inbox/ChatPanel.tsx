@@ -1401,7 +1401,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     if (uniqueTags.length) {
 
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "30%", borderLeft: "1px solid lightgrey", flex: 3 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "44.4%", borderLeft: "1px solid lightgrey", flex: 4 }}>
                 <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 8px", width: "100%" }}>
                     <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
                         <div>
@@ -1430,7 +1430,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
             </div>
         );
     } else {
-        return <div style={{flex: 3}}></div>
+        return <div style={{flex: 4}}></div>
     }
 }
 
@@ -1636,7 +1636,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0,  padding: "0 8px", width: '100%', flex: 4 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0,  padding: "0 8px", width: '100%', flex: 3 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1656,7 +1656,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                     </div>
                 </div>
                 <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
-                <div style={{ marginBottom: 0, borderLeft: "1px solid lightgrey", padding:"0 8px", flex: 3, alignItems: "center", justifyContent: "center" }}>
+                <div style={{ marginBottom: 0, borderLeft: "1px solid lightgrey", padding:"0 8px", flex: 2, alignItems: "center", justifyContent: "center" }}>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
