@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     },
     enablebutton: {
         cursor: "pointer"
-    }, 
+    },
     disablebutton: {
         cursor: "not-allowed"
     }
@@ -1217,7 +1217,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
 
     return (
         <>
-            <div className={classes.containerButtonsChat} style={{ justifyContent: "center", display: "flex", alignItems: "center"}}>
+            <div className={classes.containerButtonsChat} style={{ justifyContent: "center", display: "flex", alignItems: "center" }}>
                 {(!voxiConnection.error && userConnected && ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call)} arrow placement="top">
                         <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
@@ -1256,7 +1256,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size='small' style={{height: 30}}>
+                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size='small' style={{ height: 30 }}>
                     <MoreVertIcon />
                 </IconButton>
             </div>
@@ -1357,14 +1357,12 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     const [scrollPosition, setScrollPosition] = useState(0);
     const tagsWrapperRef = useRef(null);
     const [atEnd, setAtEnd] = useState(false);
-    const [showArrows, setShowArrows] = useState(false);
     const uniqueTags = !!tags.length ? tags.split(",").filter((word, index, array) => word !== array[index - 1]) : [];
 
     useEffect(() => {
         const handleResize = () => {
             if (tagsWrapperRef.current) {
                 const isOverflowing = tagsWrapperRef?.current?.scrollWidth > tagsWrapperRef?.current?.clientWidth;
-                setShowArrows(isOverflowing);
                 if (!isOverflowing) {
                     setScrollPosition(0);
                     tagsWrapperRef.current.scrollLeft = 0;
@@ -1400,7 +1398,6 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     }, [scrollPosition]);
 
     if (uniqueTags.length) {
-//scrollPosition > 0
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "44.4%", borderLeft: "1px solid lightgrey", flex: 4 }}>
                 <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 8px", width: "100%" }}>
@@ -1411,7 +1408,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
                                 <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                             </Tooltip>
                         </div>
-                        <div className={classes2.container} style={{width: "100%"}}>
+                        <div className={classes2.container} style={{ width: "100%" }}>
                             <IconButton size='small' disabled={!(scrollPosition > 0)} className={`${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
                                 <KeyboardArrowLeft fontSize='small' />
                             </IconButton>
@@ -1429,7 +1426,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
             </div>
         );
     } else {
-        return <div style={{flex: 4}}></div>
+        return <div style={{ flex: 0 }}></div>
     }
 }
 
@@ -1560,7 +1557,11 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
             interactiontext: meesage.interactiontext,
             operation: "DELETE"
         })))
-        dispatch(setPinnedComments([...pinnedmessagesSelected.slice(0, selectedComment), ...pinnedmessagesSelected.slice(selectedComment + 1)]))
+        const pinncomment = [...pinnedmessagesSelected.slice(0, selectedComment), ...pinnedmessagesSelected.slice(selectedComment + 1)]
+        if (selectedComment === pinncomment.length) {
+            setSelectedComment(selectedComment - 1)
+        }
+        dispatch(setPinnedComments(pinncomment))
     }
 
     function gotomessage() {
@@ -1574,8 +1575,8 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
         }
     }
 
-    return (<div style={{ margin: 5, backgroundColor: "white", display: "flex", alignItems: "center", position: "relative" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+    return (<div style={{ backgroundColor: "white", display: "grid", alignItems: "center", position: "relative", gridTemplateColumns: "1fr 1fr 16fr 1fr" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: 5 }}>
             <Tooltip title={t(langKeys.increase)} arrow placement="top">
                 <IconButton size="small" style={{ padding: 0 }} onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
                     <KeyboardArrowUpIcon />
@@ -1592,16 +1593,20 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginLeft: '5px' // Espacio izquierdo para separar botones e ícono
+            marginLeft: '5px',
+            
         }}>
-            <TackIcon style={{ color: "#757575" }} />
-        </div>
-        <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px', display: 'flex', alignItems: 'center' }}>
-            {pinnedmessagesSelected[selectedComment].interactiontext}
+            <TackIcon style={{ color: "#69757f", width: 40, height: 40, padding: 4, backgroundColor: "#f1f4f7", borderRadius: "20%" }} />
+        </div><div style={{
+            flex: 1, marginLeft: '10px', marginRight: '10px', height: "100%", display: "flex", alignItems: "center",
+            borderRight: "1px lightgrey solid"
+        }}>
+            <div style={{ width: "100%" }}>
+                {pinnedmessagesSelected[selectedComment].interactiontext}
+            </div>
         </div>
 
         <div style={{
-            borderLeft: "1px lightgrey solid",
             display: "flex",
             alignItems: "center",
             gap: 6,
@@ -1611,12 +1616,12 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
 
             <Tooltip title={t(langKeys.delete)} arrow placement="top">
                 <IconButton size="small" onClick={deleteTack}>
-                    <DeleteForeverIcon />
+                    <DeleteForeverIcon style={{width: 36, height: 36,color: "#dadada"}}/>
                 </IconButton>
             </Tooltip>
             <Tooltip title={t(langKeys.gotomessage)} arrow placement="top">
-                <IconButton size="small" onClick={gotomessage}>
-                    <ReplyIcon />
+                <IconButton size="small" onClick={gotomessage} >
+                    <ReplyIcon  style={{width: 36, height: 36,color: "#dadada"}}/>
                 </IconButton>
             </Tooltip>
         </div>
@@ -1635,7 +1640,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0,  padding: "0 8px", width: '100%', flex: 3 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: ticketSelected?.tags?.length?3:10 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1655,7 +1660,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                     </div>
                 </div>
                 <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
-                <div style={{ marginBottom: 0, borderLeft: "1px solid lightgrey", padding:"0 8px", flex: 2, alignItems: "center", justifyContent: "center" }}>
+                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length?"1px solid lightgrey":  0, padding: "0 8px", flex: 2, alignItems: "center", justifyContent: "center" }}>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
