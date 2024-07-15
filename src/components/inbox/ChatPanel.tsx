@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
         transition: 'transform 0.3s ease-in-out',
     },
     tag: {
-        backgroundColor: '#e0e0e0',
+        backgroundColor: '#efefef',
         borderRadius: '4px',
         padding: theme.spacing(0.5, 1),
         marginRight: theme.spacing(1),
@@ -1270,7 +1270,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
         }
     }, [scrollPosition]);
     return (
-        <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px",  borderRight: "lightgrey solid 1px", borderLeft: "lightgrey solid 1px" }}>
+        <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", borderRight: "lightgrey solid 1px", borderLeft: "lightgrey solid 1px" }}>
             <div>
                 Tags
                 <Tooltip title={<div style={{ fontSize: 12, zIndex: 9999 }}>{t(langKeys.tagshelper)}</div>} arrow placement="top">
@@ -1444,7 +1444,7 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
                 </IconButton>
             </Tooltip>
             <Tooltip title={t(langKeys.decrease)} arrow placement="top">
-                <IconButton size="small"  style={{ padding: 0 }} onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
+                <IconButton size="small" style={{ padding: 0 }} onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
                     <KeyboardArrowDownIcon />
                 </IconButton>
             </Tooltip>
@@ -1516,11 +1516,13 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <div className='col-3' style={{ zIndex: 99, margin: 0, marginBottom: 0 }}>
-                    <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
-                </div>
-                <div className='col-3' style={{marginBottom: 0}}>
-                    <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
+                <div className='col-6' style={{ display: 'flex' }}>
+                    <div style={{ zIndex: 99, margin: 0, marginBottom: 0, maxWidth: 200 }}>
+                        <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
+                    </div>
+                    <div style={{ marginBottom: 0 }}>
+                        <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
+                    </div>
                 </div>
             </div>
             {showSearcher &&

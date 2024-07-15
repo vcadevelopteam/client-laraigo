@@ -15,6 +15,7 @@ export interface ITicket {
     communicationchannelsite: string;
     communicationchanneltype: string;
     imageurldef: string;
+    tags?: string;
     countnewmessages: number;
     postexternalid?: string | null;
     commentexternalid?: string | null;
