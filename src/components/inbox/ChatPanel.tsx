@@ -38,8 +38,6 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ReplyPanel from './ReplyPanel';
 import InteractionsPanel from './InteractionsPanel';
 import { getLeadProductsDomain, resetGetLeadProductsDomain } from 'store/lead/actions';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ReplyIcon from '@material-ui/icons/Reply';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
@@ -61,7 +59,6 @@ const useStyles = makeStyles((theme) => ({
     tagsWrapper: {
         display: 'flex',
         whiteSpace: 'nowrap',
-        // padding: theme.spacing(1),
         paddingBottom: 0,
         overflowX: 'hidden',
         transition: 'transform 0.3s ease-in-out',
@@ -69,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     tag: {
         backgroundColor: '#efefef',
         borderRadius: '4px',
-        padding: theme.spacing(0.5, 1),
+        padding: theme.spacing(0.38, 1),
         marginRight: theme.spacing(1),
         display: 'inline-block',
     },
@@ -1088,7 +1085,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
 
     return (
         <>
-            <div className={classes.containerButtonsChat}>
+            <div className={classes.containerButtonsChat} style={{ justifyContent: "center", display: "flex", alignItems: "center"}}>
                 {(!voxiConnection.error && userConnected && ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call)} arrow placement="top">
                         <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
@@ -1127,7 +1124,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size='small' style={{height: 30}}>
                     <MoreVertIcon />
                 </IconButton>
             </div>
@@ -1269,32 +1266,43 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
             setAtEnd(tagsWrapperRef.current.scrollLeft + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
         }
     }, [scrollPosition]);
-    return (
-        <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", borderRight: "lightgrey solid 1px", borderLeft: "lightgrey solid 1px" }}>
-            <div>
-                Tags
-                <Tooltip title={<div style={{ fontSize: 12, zIndex: 9999 }}>{t(langKeys.tagshelper)}</div>} arrow placement="top">
-                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                </Tooltip>
-            </div>
-            <div className={classes2.container}>
-                {showArrows && scrollPosition > 0 && (
-                    <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
-                        <KeyboardArrowLeft fontSize='small' />
-                    </IconButton>
-                )}
-                <div className={classes2.tagsWrapper} ref={tagsWrapperRef}>
-                    {uniqueTags.map((tag, index) => (
-                        <span key={index} className={classes2.tag}>{tag}</span>
-                    ))}
+
+    if (uniqueTags.length) {
+
+        return (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "25%", borderLeft: "1px solid lightgrey", flex: 3 }}>
+                <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 8px", width: "100%" }}>
+                    <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
+                        <div>
+                            Tags
+                            <Tooltip title={<div style={{ fontSize: 12, zIndex: 9999, }}>{t(langKeys.tagshelper)}</div>} arrow placement="top">
+                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                            </Tooltip>
+                        </div>
+                        <div className={classes2.container} style={{width: "100%"}}>
+                            {showArrows && scrollPosition > 0 && (
+                                <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
+                                    <KeyboardArrowLeft fontSize='small' />
+                                </IconButton>
+                            )}
+                            <div className={classes2.tagsWrapper} ref={tagsWrapperRef} style={{ width: "100%" }}>
+                                {uniqueTags.map((tag, index) => (
+                                    <span key={index} className={classes2.tag}>{tag}</span>
+                                ))}
+                            </div>
+                            {showArrows && !atEnd && <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
+                                <KeyboardArrowRight />
+                            </IconButton>}
+                        </div>
+                    </div>
                 </div>
-                {showArrows && !atEnd && <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
-                    <KeyboardArrowRight />
-                </IconButton>}
             </div>
-        </div>
-    )
+        );
+    } else {
+        return <div style={{flex: 3}}></div>
+    }
 }
+
 
 const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "email"]
 
@@ -1496,8 +1504,8 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
-            <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0 }} className='col-6'>
+            <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0,  padding: "0 8px", width: '100%', flex: 6 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1516,17 +1524,13 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <div className='col-6' style={{ display: 'flex' }}>
-                    <div style={{ zIndex: 99, margin: 0, marginBottom: 0, maxWidth: 200 }}>
-                        <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
-                    </div>
-                    <div style={{ marginBottom: 0 }}>
-                        <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
-                    </div>
+                <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
+                <div style={{ marginBottom: 0, borderLeft: "1px solid lightgrey", padding:"0 8px", flex: 3, alignItems: "center", justifyContent: "center" }}>
+                    <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
             {showSearcher &&
-                <div style={{ zIndex: 9999, right: 16, margin: 8 }}>
+                <div style={{ zIndex: 9999, right: 16, padding: 8 }}>
                     <SearchOnInteraction setShowSearcher={setShowSearcher} />
                 </div>
             }
