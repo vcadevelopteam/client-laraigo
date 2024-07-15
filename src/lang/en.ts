@@ -6400,6 +6400,8 @@ const translation: LangKeys = {
   gotomessage:'Go to message',
   increase: 'Increase',
   decrease: 'Decrease',
+  message_templates_channel_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the WABA templates assigned.',
+  send_your_message: 'Send your message...',
 };
 
 const enResource: ResourceLanguage = {

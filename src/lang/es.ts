@@ -6351,6 +6351,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   gotomessage:'Ir al mensaje',
   increase: 'Subir',
   decrease: 'Bajar',
+  message_templates_channel_help: 'Muestra el o los canales asignados a la plantilla de comunicación. Para os canales Whatsapp de manera automática mostrará las plantillas del WABA asignado.',
+  send_your_message: 'Envía un mensaje...',
 };
 
 const esResource: ResourceLanguage = {

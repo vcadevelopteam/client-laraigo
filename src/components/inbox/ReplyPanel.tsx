@@ -47,6 +47,7 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
+import GamesIcon from '@material-ui/icons/Games';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -1381,10 +1382,18 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     };
 
     const handleKeyPress = (event: any) => {
-        if (event.ctrlKey || event.shiftKey) return;
-        if (event.charCode === 13) {
+        if (event.ctrlKey) {
+          if (event.key === 'Enter') {
+            setText((prevText) => prevText + '\n');
             event.preventDefault();
-            if (text.trim() || files.length > 0) return triggerReplyMessage();
+          }
+        } else if (event.shiftKey) {
+          return;
+        } else if (event.charCode === 13) {
+          event.preventDefault();
+          if (text.trim() || files.length > 0) {
+            triggerReplyMessage();
+          }
         }
     };
 
@@ -1434,7 +1443,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         onKeyPress={handleKeyPress}
                                         quickReplies={quickReplies.data}
                                         refresh={refresh}
-                                        placeholder="Send your message..."
+                                        placeholder={t(langKeys.send_your_message)}
                                         emojiNoShow={emojiNoShow}
                                         emoji={true}
                                         emojiFavorite={emojiFavorite}
@@ -1574,58 +1583,65 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <InputBase
-                                            fullWidth
-                                            value={text}
-                                            onChange={(e) => setText(e.target.value)}
-                                            placeholder="Send your message..."
-                                            onKeyPress={handleKeyPress}
-                                            rows={2}
-                                            multiline
-                                            inputProps={{ "aria-label": "naked" }}
-                                            onPaste={onPasteTextbar}
-                                            onSelect={handleSelectionChange}
-                                        />
-                                        {openDialogHotKey && (
-                                            <div
-                                                style={{
-                                                    position: "absolute",
-                                                    bottom: 100,
-                                                    left: 15,
-                                                    zIndex: 1201,
-                                                }}
-                                            >
+                                    <InputBase
+                                        fullWidth
+                                        value={text}
+                                        onChange={(e) => setText(e.target.value)}
+                                        placeholder={t(langKeys.send_your_message)}
+                                        onKeyPress={handleKeyPress}
+                                        multiline
+                                        minRows={1}
+                                        maxRows={6}
+                                        inputProps={{
+                                        'aria-label': 'naked',
+                                        style: {
+                                            maxHeight: '144px', 
+                                            overflow: 'auto',
+                                        },
+                                        }}
+                                        onPaste={onPasteTextbar}
+                                        onSelect={handleSelectionChange}
+                                    />
+                                    {openDialogHotKey && (
+                                        <div
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 100,
+                                            left: 15,
+                                            zIndex: 1201,
+                                        }}
+                                        >
+                                        <div
+                                            className="scroll-style-go"
+                                            style={{
+                                            maxHeight: 200,
+                                            display: 'flex',
+                                            gap: 4,
+                                            flexDirection: 'column',
+                                            }}
+                                        >
+                                            {typeHotKey === 'quickreply'
+                                            ? quickRepliesToShow.map((item) => (
                                                 <div
-                                                    className="scroll-style-go"
-                                                    style={{
-                                                        maxHeight: 200,
-                                                        display: "flex",
-                                                        gap: 4,
-                                                        flexDirection: "column",
-                                                    }}
+                                                    key={item.quickreplyid}
+                                                    className={classes.hotKeyQuickReply}
+                                                    onClick={() => selectQuickReply(item.quickreply)}
                                                 >
-                                                    {typeHotKey === "quickreply"
-                                                        ? quickRepliesToShow.map((item) => (
-                                                              <div
-                                                                  key={item.quickreplyid}
-                                                                  className={classes.hotKeyQuickReply}
-                                                                  onClick={() => selectQuickReply(item.quickreply)}
-                                                              >
-                                                                  {item.description}
-                                                              </div>
-                                                          ))
-                                                        : richResponseToShow.map((item) => (
-                                                              <div
-                                                                  key={item.id}
-                                                                  className={classes.hotKeyQuickReply}
-                                                                  onClick={() => selectRichResponse(item)}
-                                                              >
-                                                                  {item.title}
-                                                              </div>
-                                                          ))}
+                                                    {item.description}
                                                 </div>
-                                            </div>
-                                        )}
+                                                ))
+                                            : richResponseToShow.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className={classes.hotKeyQuickReply}
+                                                    onClick={() => selectRichResponse(item)}
+                                                >
+                                                    {item.title}
+                                                </div>
+                                                ))}
+                                        </div>
+                                        </div>
+                                    )}
                                     </div>
                                 </ClickAwayListener>
                             )}
@@ -1672,6 +1688,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             emojiFavorite={emojiFavorite}
                                         />
                                     )}
+                                       {!record && !startRecording && (
+                                        <GamesIcon/>
+                                    )}
+
                                     {!files.length && !text && allowRecording && (
                                         <RecordAudioIcon
                                             classes={classes}
