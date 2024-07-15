@@ -5557,6 +5557,7 @@ export const langKeys = {
   app_order_list: 'app_order_list',
   app_orders_in_store: 'app_orders_in_store',
   immediateorderserror: 'immediateorderserror',
+  prepareorderserror: "prepareorderserror",
 };
 
 export type LangKeys = typeof langKeys;

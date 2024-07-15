@@ -4223,3 +4223,9 @@ export const ordersByConfigRoutingLogic = (listorderid: string) => ({
     key: "UFN_ORDERS_BY_CONFIGURATION_SEL",
     parameters: { listorderid },
 });
+
+export const prepareAttentionOrder = (orderids: string) => ({
+    method: "UFN_ORDER_PREPARE",
+    key: "UFN_ORDER_PREPARE",
+    parameters: { orderids },
+})

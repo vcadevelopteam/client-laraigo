@@ -5565,6 +5565,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   app_order_list: 'Lista de pedidos',
   app_orders_in_store: 'Pedidos en tienda',
   immediateorderserror: 'Los pedidos con tipo de agendamiento inmediato no se pueden agendar',
+  prepareorderserror: "Uno o más pedidos de los seleccionados ya fueron preparados", 
 };
 
 const esResource: ResourceLanguage = {
