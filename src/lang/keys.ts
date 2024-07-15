@@ -6353,6 +6353,7 @@ export const langKeys = {
   prepareorderserror: "prepareorderserror",
   message_templates_channel_help: 'message_templates_channel_help',
   send_your_message: 'send_your_message',
+  routinglogicerror2: "routinglogicerror2",
 };
 
 export type LangKeys = typeof langKeys;

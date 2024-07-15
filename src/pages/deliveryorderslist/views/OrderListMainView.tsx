@@ -423,7 +423,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     const applyRoutingLogic = () => {
         const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');
-        if (allPrepared && Object.keys(selectedRows).length !== 0) {
+        const allWithoutCode = rowWithDataSelected.every(row => row.code === null);
+        if (allPrepared && allWithoutCode && Object.keys(selectedRows).length !== 0) {
             dispatch(showBackdrop(true));
             dispatch(deliveryRouting({
                 listorderid: rowWithDataSelected.map(row => row.orderid).join(',')
@@ -431,13 +432,23 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             setWaitSave(true);
         } else {
             if(Object.keys(selectedRows).length !== 0) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.routinglogicstatuserror),
-                    })
-                );
+                if(allPrepared) {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.routinglogicerror2),
+                        })
+                    );
+                } else {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.routinglogicstatuserror),
+                        })
+                    );
+                }
             } else {
                 dispatch(
                     showSnackbar({

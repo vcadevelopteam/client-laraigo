@@ -6356,6 +6356,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   prepareorderserror: "Uno o más pedidos de los seleccionados ya fueron preparados", 
   message_templates_channel_help: 'Muestra el o los canales asignados a la plantilla de comunicación. Para os canales Whatsapp de manera automática mostrará las plantillas del WABA asignado.',
   send_your_message: 'Envía un mensaje...',
+  routinglogicerror2: "A uno o más pedidos de los seleccionados ya se le aplicó la lógica de ruteo",
 };
 
 const esResource: ResourceLanguage = {

@@ -6405,6 +6405,7 @@ const translation: LangKeys = {
   prepareorderserror: "One or more of the selected orders have already been prepared",
   message_templates_channel_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the WABA templates assigned.',
   send_your_message: 'Send your message...',
+  routinglogicerror2: "Routing logic has already been applied to one or more of the selected orders",
 };
 
 const enResource: ResourceLanguage = {
