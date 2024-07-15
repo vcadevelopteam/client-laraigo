@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IARouteIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon } from "icons";
+import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -47,10 +47,7 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
-import FormatBoldIcon from '@material-ui/icons/FormatBold';
-import FormatItalicIcon from '@material-ui/icons/FormatItalic';
-import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
-import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
+import GamesIcon from '@material-ui/icons/Games';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -151,7 +148,7 @@ const DialogSearchLibrary: React.FC<{
             button2Type="submit"
         >
             <div>
-                <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ display: "flex", gap: 16 }}>
                     <div style={{ width: 200 }}>
                         <FieldSelect
                             label={t(langKeys.category)}
@@ -764,24 +761,6 @@ const RecordAudioIcon: React.FC<{
     );
 };
 
-const CopilotLaraigoIcon: React.FC<{
-    classes: ClassNameMap;
-    enabled: boolean
-}> = ({ classes, enabled }) => {
-    const { t } = useTranslation();
-
-    return (
-        <div style={{ display: "flex" }}>
-            <Tooltip title={t(langKeys.record_audio)} arrow placement="top">
-                <IARouteIcon
-                    className={enabled ? classes.iconResponse : ""}
-                    style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
-                />
-            </Tooltip>
-        </div>
-    );
-};
-
 const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: string) => void }> = ({
     classes,
     setText,
@@ -878,7 +857,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
-                                        <div>{t(langKeys.sentoblock)}</div>
+                                        <div>User Rich Response</div>
                                         <IconButton size="small" onClick={() => setShowSearch(true)} edge="end">
                                             <SearchIcon />
                                         </IconButton>
@@ -978,11 +957,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
     const listAllowRecords = ["FBDM", "FBMS", "WHA", "INDM", "INMS"];
     const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
-
+    
     const resReplyTicket = useSelector((state) => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
     const [lastSelection, setLastSelection] = useState(0);
-
+    
     const variablecontext = useSelector((state) => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector((state) => state.inbox.agentSelected);
     const user = useSelector((state) => state.login.validateToken.user);
@@ -998,7 +977,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [typeHotKey, setTypeHotKey] = useState("");
     const quickReplies = useSelector((state) => state.inbox.quickreplies);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([]);
-    const [propertyCopilotLaraigo, setPropertyCopilotLaraigo] = useState(false);
     const [emojiFavorite, setemojiFavorite] = useState<string[]>([]);
     const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([]);
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
@@ -1006,7 +984,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([]);
     const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
-    const [numRows, setNumRows] = useState(2);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([
         { type: "paragraph", align: "left", children: [{ text: "" }] },
     ]);
@@ -1017,15 +994,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [flagredo, setflagredo] = useState(false);
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
-    const inputRef = useRef(null);
-
-    const handleInputChange = (e:any) => {
-        const lines = e.target.value.split('\n').length;
-        if (lines <= 6) {
-            setNumRows(lines);
-            setText(e.target.value);
-        }
-    };
 
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
@@ -1126,7 +1094,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     const triggerReplyMessage = () => {
         if (copyEmails.error) return;
-        setNumRows(2);
         const callback = () => {
             let wasSend = false;
             if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
@@ -1300,7 +1267,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setemojiNoShow(multiData?.data?.[10]?.data.filter((x) => x.restricted).map((x) => x.emojihex) || []);
             setemojiFavorite(multiData?.data?.[10]?.data.filter((x) => x.favorite).map((x) => x.emojihex) || []);
-            setPropertyCopilotLaraigo(multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMECOPILOTLARAIGO")?.data?.[0]?.propertyvalue === "1")
             setinnappropiatewordsList(multiData?.data?.[11]?.data || []);
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
@@ -1416,10 +1382,18 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     };
 
     const handleKeyPress = (event: any) => {
-        if (event.ctrlKey || event.shiftKey) return;
-        if (event.charCode === 13) {
+        if (event.ctrlKey) {
+          if (event.key === 'Enter') {
+            setText((prevText) => prevText + '\n');
             event.preventDefault();
-            if (text.trim() || files.length > 0) return triggerReplyMessage();
+          }
+        } else if (event.shiftKey) {
+          return;
+        } else if (event.charCode === 13) {
+          event.preventDefault();
+          if (text.trim() || files.length > 0) {
+            triggerReplyMessage();
+          }
         }
     };
 
@@ -1436,54 +1410,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-    const formatText = (c: string) => {
-        const input = inputRef.current.querySelector('textarea');
-        const { value, selectionStart, selectionEnd } = input;
-
-        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
-            if (selectionStart !== selectionEnd) {
-                // Hay texto seleccionado
-                const selectedText = value.slice(selectionStart, selectionEnd);
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionEnd);
-                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
-                    input.focus();
-                }, 0);
-            } else {
-                // No hay texto seleccionado
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionStart);
-                const newValue = `${beforeText}${c}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                    input.focus();
-                }, 0);
-            }
-        } else {
-            if (selectionStart !== selectionEnd) {
-                if (c === "*") {
-
-                    const beforeSelection = text.slice(0, selectionStart);
-                    const selectedText = text.slice(selectionStart, selectionEnd);
-                    const afterSelection = text.slice(selectionEnd);
-
-                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
-                    setText(newText);
-                }
-            }
-        }
-    }
-
-    const handleKeyDown = (event) => {
-        if (event.altKey && event.key === 'Enter') {
-            event.preventDefault();
-            setText(text + '\n');
-        }
-    };
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
@@ -1517,7 +1443,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         onKeyPress={handleKeyPress}
                                         quickReplies={quickReplies.data}
                                         refresh={refresh}
-                                        placeholder="Send your message..."
+                                        placeholder={t(langKeys.send_your_message)}
                                         emojiNoShow={emojiNoShow}
                                         emoji={true}
                                         emojiFavorite={emojiFavorite}
@@ -1530,7 +1456,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     className={clsx(classes.iconSend, {
                                                         [classes.iconSendDisabled]: !(
                                                             renderToString(toElement(bodyobject)) !==
-                                                            `<div data-reactroot=""><p><span></span></p></div>` ||
+                                                                `<div data-reactroot=""><p><span></span></p></div>` ||
                                                             files.filter((x) => x.url).length > 0
                                                         ),
                                                     })}
@@ -1576,23 +1502,23 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             >
                                                 {typeHotKey === "quickreply"
                                                     ? quickRepliesToShow.map((item) => (
-                                                        <div
-                                                            key={item.quickreplyid}
-                                                            className={classes.hotKeyQuickReply}
-                                                            onClick={() => selectQuickReply(item.quickreply)}
-                                                        >
-                                                            {item.description}
-                                                        </div>
-                                                    ))
+                                                          <div
+                                                              key={item.quickreplyid}
+                                                              className={classes.hotKeyQuickReply}
+                                                              onClick={() => selectQuickReply(item.quickreply)}
+                                                          >
+                                                              {item.description}
+                                                          </div>
+                                                      ))
                                                     : richResponseToShow.map((item) => (
-                                                        <div
-                                                            key={item.id}
-                                                            className={classes.hotKeyQuickReply}
-                                                            onClick={() => selectRichResponse(item)}
-                                                        >
-                                                            {item.title}
-                                                        </div>
-                                                    ))}
+                                                          <div
+                                                              key={item.id}
+                                                              className={classes.hotKeyQuickReply}
+                                                              onClick={() => selectRichResponse(item)}
+                                                          >
+                                                              {item.title}
+                                                          </div>
+                                                      ))}
                                             </div>
                                         </div>
                                     )}
@@ -1625,37 +1551,18 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 <div
                                     style={{
                                         display: "flex",
-                                    }}>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            width: "100%",
-                                            gap: 8,
-                                            flexWrap: "wrap",
-                                            borderBottom: "1px solid #EBEAED",
-                                            paddingBottom: 8,
-                                        }}
-                                    >
-                                        <RecordComponent
-                                            record={record}
-                                            setRecord={setRecord}
-                                            setStartRecording={setStartRecording}
-                                            startRecording={startRecording}
-                                        />
-                                    </div>
-                                    <div
-                                        className={clsx(classes.iconSend, {
-                                            [classes.iconSendDisabled]: !(
-                                                text ||
-                                                files.filter((x) => !!x.url).length > 0 ||
-                                                record
-                                            ),
-                                        })}
-                                        style={{ marginTop: 12 }}
-                                        onClick={triggerReplyMessage}
-                                    >
-                                        <SendIcon />
-                                    </div>
+                                        gap: 8,
+                                        flexWrap: "wrap",
+                                        borderBottom: "1px solid #EBEAED",
+                                        paddingBottom: 8,
+                                    }}
+                                >
+                                    <RecordComponent
+                                        record={record}
+                                        setRecord={setRecord}
+                                        setStartRecording={setStartRecording}
+                                        startRecording={startRecording}
+                                    />
                                 </div>
                             )}
                             {files.length > 0 && (
@@ -1676,99 +1583,85 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <div style={{ display: "flex" }}>
-                                            <InputBase
-                                                fullWidth
-                                                value={text}
-                                                onChange={handleInputChange}
-                                                placeholder="Send your message..."
-                                                onKeyPress={handleKeyPress}
-                                                rows={numRows}
-                                                multiline
-                                                onKeyDown={handleKeyDown}
-                                                inputProps={{ "aria-label": "naked" }}
-                                                onPaste={onPasteTextbar}
-                                                onSelect={handleSelectionChange}
-                                                ref={inputRef}
-                                            />
-                                            {!files.length && !text && allowRecording && (
-                                                <RecordAudioIcon
-                                                    classes={classes}
-                                                    setRecord={setRecord}
-                                                    setStartRecording={setStartRecording}
-                                                    startRecording={startRecording}
-                                                />
-                                            )}
-                                        </div>
-                                        {openDialogHotKey && (
-                                            <div
-                                                style={{
-                                                    position: "absolute",
-                                                    bottom: 100,
-                                                    left: 15,
-                                                    zIndex: 1201,
-                                                }}
-                                            >
+                                    <InputBase
+                                        fullWidth
+                                        value={text}
+                                        onChange={(e) => setText(e.target.value)}
+                                        placeholder={t(langKeys.send_your_message)}
+                                        onKeyPress={handleKeyPress}
+                                        multiline
+                                        minRows={1}
+                                        maxRows={6}
+                                        inputProps={{
+                                        'aria-label': 'naked',
+                                        style: {
+                                            maxHeight: '144px', 
+                                            overflow: 'auto',
+                                        },
+                                        }}
+                                        onPaste={onPasteTextbar}
+                                        onSelect={handleSelectionChange}
+                                    />
+                                    {openDialogHotKey && (
+                                        <div
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 100,
+                                            left: 15,
+                                            zIndex: 1201,
+                                        }}
+                                        >
+                                        <div
+                                            className="scroll-style-go"
+                                            style={{
+                                            maxHeight: 200,
+                                            display: 'flex',
+                                            gap: 4,
+                                            flexDirection: 'column',
+                                            }}
+                                        >
+                                            {typeHotKey === 'quickreply'
+                                            ? quickRepliesToShow.map((item) => (
                                                 <div
-                                                    className="scroll-style-go"
-                                                    style={{
-                                                        maxHeight: 200,
-                                                        display: "flex",
-                                                        gap: 4,
-                                                        flexDirection: "column",
-                                                    }}
+                                                    key={item.quickreplyid}
+                                                    className={classes.hotKeyQuickReply}
+                                                    onClick={() => selectQuickReply(item.quickreply)}
                                                 >
-                                                    {typeHotKey === "quickreply"
-                                                        ? quickRepliesToShow.map((item) => (
-                                                            <div
-                                                                key={item.quickreplyid}
-                                                                className={classes.hotKeyQuickReply}
-                                                                onClick={() => selectQuickReply(item.quickreply)}
-                                                            >
-                                                                {item.description}
-                                                            </div>
-                                                        ))
-                                                        : richResponseToShow.map((item) => (
-                                                            <div
-                                                                key={item.id}
-                                                                className={classes.hotKeyQuickReply}
-                                                                onClick={() => selectRichResponse(item)}
-                                                            >
-                                                                {item.title}
-                                                            </div>
-                                                        ))}
+                                                    {item.description}
                                                 </div>
-                                            </div>
-                                        )}
+                                                ))
+                                            : richResponseToShow.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className={classes.hotKeyQuickReply}
+                                                    onClick={() => selectRichResponse(item)}
+                                                >
+                                                    {item.title}
+                                                </div>
+                                                ))}
+                                        </div>
+                                        </div>
+                                    )}
                                     </div>
                                 </ClickAwayListener>
                             )}
-                            {!record && !startRecording && (
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                                    {!record && !startRecording && (
                                         <QuickReplyIcon classes={classes} setText={setText} />
+                                    )}
+                                    {!record && !startRecording && (
                                         <TmpRichResponseIcon classes={classes} setText={setText} />
+                                    )}
+                                    {!record && !startRecording && (
                                         <UploaderIcon
                                             classes={classes}
                                             setFiles={setFiles}
                                             initfile={fileimage}
                                             setfileimage={setfileimage}
                                         />
-                                        <EmojiPickerZyx
-                                            emojisIndexed={EMOJISINDEXED}
-                                            onSelect={(e) => {
-                                                lastSelection < (text || "").length - 1
-                                                    ? setText(
-                                                        (p) =>
-                                                            p.substring(0, lastSelection) +
-                                                            e.native +
-                                                            p.substring(lastSelection)
-                                                    )
-                                                    : setText((p) => p + e.native);
-                                            }}
-                                            emojisNoShow={emojiNoShow}
-                                            emojiFavorite={emojiFavorite}
-                                        />
+                                    )}
+                                    {!record && !startRecording && (
                                         <GifPickerZyx
                                             onSelect={(url: string) =>
                                                 setFiles((p) => [
@@ -1777,72 +1670,50 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 ])
                                             }
                                         />
-
-                                        <CopilotLaraigoIcon
-                                            classes={classes}
-                                            enabled={propertyCopilotLaraigo}
+                                    )}
+                                    {!record && !startRecording && (
+                                        <EmojiPickerZyx
+                                            emojisIndexed={EMOJISINDEXED}
+                                            onSelect={(e) => {
+                                                lastSelection < (text || "").length - 1
+                                                    ? setText(
+                                                          (p) =>
+                                                              p.substring(0, lastSelection) +
+                                                              e.native +
+                                                              p.substring(lastSelection)
+                                                      )
+                                                    : setText((p) => p + e.native);
+                                            }}
+                                            emojisNoShow={emojiNoShow}
+                                            emojiFavorite={emojiFavorite}
                                         />
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("*")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
-                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>}
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("~")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("```")
-                                                }} size='small'>
-                                                    <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
+                                    )}
+                                       {!record && !startRecording && (
+                                        <GamesIcon/>
+                                    )}
 
-                                    </div>
-                                    <div
-                                        className={clsx(classes.iconSend, {
-                                            [classes.iconSendDisabled]: !(
-                                                text ||
-                                                files.filter((x) => !!x.url).length > 0 ||
-                                                record
-                                            ),
-                                        })}
-                                        onClick={triggerReplyMessage}
-                                    >
-                                        <SendIcon />
-                                    </div>
+                                    {!files.length && !text && allowRecording && (
+                                        <RecordAudioIcon
+                                            classes={classes}
+                                            setRecord={setRecord}
+                                            setStartRecording={setStartRecording}
+                                            startRecording={startRecording}
+                                        />
+                                    )}
                                 </div>
-                            )}
+                                <div
+                                    className={clsx(classes.iconSend, {
+                                        [classes.iconSendDisabled]: !(
+                                            text ||
+                                            files.filter((x) => !!x.url).length > 0 ||
+                                            record
+                                        ),
+                                    })}
+                                    onClick={triggerReplyMessage}
+                                >
+                                    <SendIcon />
+                                </div>
+                            </div>
                             <BottomGoToUnder />
                         </div>
                     </DragDropFile>

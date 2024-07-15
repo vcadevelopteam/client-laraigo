@@ -154,6 +154,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
             {
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
+                helpText: t(langKeys.message_templates_channel_help),             
             },
             {
                 accessor: "name",

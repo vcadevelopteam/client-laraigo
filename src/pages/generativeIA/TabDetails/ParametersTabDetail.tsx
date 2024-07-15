@@ -806,7 +806,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     <FieldEditMultiAux
                                         variant="outlined"
                                         inputProps={{
-                                            rows: 7,
+                                            rows: 1,
                                             maxRows: 40
                                         }}
                                         valueDefault={selectedCardData?.prompt}

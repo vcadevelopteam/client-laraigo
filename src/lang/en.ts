@@ -6403,6 +6403,8 @@ const translation: LangKeys = {
   pinmessagehelper: 'Pin message',
   immediateorderserror: 'Orders with immediate scheduling type cannot be scheduled.',
   prepareorderserror: "One or more of the selected orders have already been prepared",
+  message_templates_channel_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the WABA templates assigned.',
+  send_your_message: 'Send your message...',
 };
 
 const enResource: ResourceLanguage = {

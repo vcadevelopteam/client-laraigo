@@ -6351,6 +6351,8 @@ export const langKeys = {
   pinmessagehelper: 'pinmessagehelper',
   immediateorderserror: 'immediateorderserror',
   prepareorderserror: "prepareorderserror",
+  message_templates_channel_help: 'message_templates_channel_help',
+  send_your_message: 'send_your_message',
 };
 
 export type LangKeys = typeof langKeys;
