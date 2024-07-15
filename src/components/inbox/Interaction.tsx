@@ -23,6 +23,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MapLeaflet from 'components/fields/MapLeaflet';
 import { execute } from 'store/main/actions';
 import { setPinnedComments } from 'store/inbox/actions';
+import { IconButton } from '@material-ui/core';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -99,18 +100,18 @@ const useStylesInteraction = makeStyles((theme) => ({
         gap: 4
     },
     tackIcon: {
-      width: '15px',
-      height: '15px',
-      position: 'absolute',
-      color: "grey",
+        width: '15px',
+        height: '15px',
+        position: 'absolute',
+        color: "grey",
     },
     tackIconTopRight: {
-      top: theme.spacing(1),
-      right: theme.spacing(1),
+        top: theme.spacing(1),
+        right: theme.spacing(1),
     },
     tackIconBottomRight: {
-      bottom: theme.spacing(1),
-      right: theme.spacing(1),
+        bottom: theme.spacing(1),
+        right: theme.spacing(1),
     }
 }));
 
@@ -453,7 +454,7 @@ const checkUrl = (url: string) => {
     const hasExtension = url.replace(/^.*[\\/]/, '').includes('.');
     return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
-const highlightWords = (text:any, searchTerm:any) => {
+const highlightWords = (text: any, searchTerm: any) => {
     if (!searchTerm) return text;
     const regex = new RegExp(`(${searchTerm})`, 'gi');
     return text.replace(regex, '<span style="background-color: yellow;">$1</span>');
@@ -483,22 +484,22 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const [isHovered, setIsHovered] = useState(false);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
-    
-    function fixComment(interactiontext:string){
-        if(pinnedmessagesSelected.length <20){
+
+    function fixComment(interactiontext: string) {
+        if (pinnedmessagesSelected.length < 20) {
             dispatch(execute(modifyPinnedMessage({
                 interactionid,
-                conversationid: ticketSelected?.conversationid||0,
+                conversationid: ticketSelected?.conversationid || 0,
                 interactiontext,
                 operation: "INSERT"
             })))
             dispatch(setPinnedComments([...pinnedmessagesSelected,
-                {
-                  interactionid,
-                  interactiontext
-                } ]))
+            {
+                interactionid,
+                interactiontext
+            }]))
         }
-        
+
     }
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
@@ -516,8 +517,18 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
-                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon title={t(langKeys.pinmessagehelper)} className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden', zIndex: 9999 }} onClick={()=>fixComment(interactiontext)}/>}
+                <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
+                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) &&
+                    <IconButton size="small"
+                        title={t(langKeys.pinmessagehelper)}
+                        className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
+                        onClick={() => fixComment(interactiontext)}>
+                        <TackIcon
+                            className={clsx(classes2.tackIcon)}
+                            style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden', zIndex: 9999 }}
+                        />
+                    </IconButton>}
+
 
                 <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
                 {!showfulltext && (
@@ -673,8 +684,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             return (
                 <div className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
-                })} style={{ display: 'inline-block' }}>                    
-                    <HighlightedTextSimple interactiontext={text} searchTerm={searchTerm}/>
+                })} style={{ display: 'inline-block' }}>
+                    <HighlightedTextSimple interactiontext={text} searchTerm={searchTerm} />
                     <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex" }}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
@@ -798,7 +809,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
-                <HighlightedTextSimple interactiontext = {textres} searchTerm={searchTerm}/>
+                <HighlightedTextSimple interactiontext={textres} searchTerm={searchTerm} />
                 {textres}
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
@@ -914,7 +925,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             [classes.interactionTextAgent]: userType !== 'client',
         })} style={{ marginTop: interactiontype === "comment-text" ? 16 : 0 }}>
             <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
-            {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden' }} onClick={()=>fixComment(interactiontext)}/>}
+            {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden' }} onClick={() => fixComment(interactiontext)} />}
             <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
             {!showfulltext && (
                 <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
