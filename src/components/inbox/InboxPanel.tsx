@@ -495,7 +495,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         >
                             <AntTab label={`${t(langKeys.assigned)}${counterTickets.assigned < 0 ? '' : "(" + counterTickets.assigned + ")"}`} />
                             <AntTab label={`${t(langKeys.paused)}${counterTickets.paused < 0 ? '' : "(" + counterTickets.paused + ")"}`} />
-                            <AntTab label={`${t(langKeys.all)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
+                            <AntTab label={`${t(langKeys.today)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
                         </Tabs>
                         <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
                             <IconButton size="small" onClick={() => setShowSearch(true)}>
