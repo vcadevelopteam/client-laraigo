@@ -6188,6 +6188,7 @@ export const langKeys = {
   gotomessage:'gotomessage',
   increase: 'increase',
   decrease: 'decrease',
+  pinmessagehelper: 'pinmessagehelper',
 };
 
 export type LangKeys = typeof langKeys;

@@ -6242,6 +6242,7 @@ const translation: LangKeys = {
   gotomessage:'Go to message',
   increase: 'Increase',
   decrease: 'Decrease',
+  pinmessagehelper: 'Pin message',
 };
 
 const enResource: ResourceLanguage = {
