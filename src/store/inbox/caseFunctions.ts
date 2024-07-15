@@ -447,7 +447,7 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-    if (state.role === "SUPERVISOR" && data.newConversation) {
+    if (state.role.split(",").includes("SUPERVISOR") && data.newConversation) {
         const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
         if (property === "GRUPO") {
             if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
@@ -661,6 +661,20 @@ export const resetShowModal = (state: IState, action: IAction): IState => ({
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
+
+    if (state.role.split(",").includes("SUPERVISOR")) {
+        const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
+        if (property === "GRUPO") {
+            if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
+                return state;
+            }
+        } else if (property === "CANAL") {
+            if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
+                return state;
+            }
+        }
+    }
+    
     if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && !!state.userGroup) {
         if (!state.userGroup.split(",").includes(data.usergroup || "")) {
             return state;
