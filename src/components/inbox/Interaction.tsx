@@ -517,7 +517,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onMouseLeave={() => setIsHovered(false)}
             >
                 <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
-                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden' }} onClick={()=>fixComment(interactiontext)}/>}
+                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon title={t(langKeys.pinmessagehelper)} className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden', zIndex: 9999 }} onClick={()=>fixComment(interactiontext)}/>}
 
                 <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
                 {!showfulltext && (
@@ -913,7 +913,12 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         <div className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
         })} style={{ marginTop: interactiontype === "comment-text" ? 16 : 0 }}>
-            {interactiontext}
+            <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
+            {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden' }} onClick={()=>fixComment(interactiontext)}/>}
+            <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
+            {!showfulltext && (
+                <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+            )}
             <PickerInteraction userType={userType} fill={userType === "client" ? "#FFF" : "#eeffde"} />
             <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
         </div>

@@ -6351,6 +6351,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   gotomessage:'Ir al mensaje',
   increase: 'Subir',
   decrease: 'Bajar',
+  pinmessagehelper: 'Fijar mensaje',
 };
 
 const esResource: ResourceLanguage = {

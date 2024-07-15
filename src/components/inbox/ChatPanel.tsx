@@ -73,17 +73,18 @@ const useStyles = makeStyles((theme) => ({
     iconHelpText: {
         marginLeft: theme.spacing(1),
     },
-    arrowButton: {
-        position: 'absolute',
-        top: '50%',
-        transform: 'translateY(-50%)',
-    },
     arrowLeft: {
         left: 0,
     },
     arrowRight: {
         right: 0,
     },
+    enablebutton: {
+        cursor: "pointer"
+    }, 
+    disablebutton: {
+        cursor: "not-allowed"
+    }
 }));
 
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
@@ -1399,7 +1400,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     }, [scrollPosition]);
 
     if (uniqueTags.length) {
-
+//scrollPosition > 0
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "44.4%", borderLeft: "1px solid lightgrey", flex: 4 }}>
                 <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 8px", width: "100%" }}>
@@ -1411,19 +1412,17 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
                             </Tooltip>
                         </div>
                         <div className={classes2.container} style={{width: "100%"}}>
-                            {showArrows && scrollPosition > 0 && (
-                                <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
-                                    <KeyboardArrowLeft fontSize='small' />
-                                </IconButton>
-                            )}
+                            <IconButton size='small' disabled={!(scrollPosition > 0)} className={`${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
+                                <KeyboardArrowLeft fontSize='small' />
+                            </IconButton>
                             <div className={classes2.tagsWrapper} ref={tagsWrapperRef} style={{ width: "100%" }}>
                                 {uniqueTags.map((tag, index) => (
                                     <span key={index} className={classes2.tag}>{tag}</span>
                                 ))}
                             </div>
-                            {showArrows && !atEnd && <IconButton size='small' className={`${classes2.arrowButton} ${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
+                            <IconButton disabled={atEnd} size='small' className={`${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
                                 <KeyboardArrowRight />
-                            </IconButton>}
+                            </IconButton>
                         </div>
                     </div>
                 </div>
