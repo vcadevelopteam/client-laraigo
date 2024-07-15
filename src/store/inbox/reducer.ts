@@ -48,8 +48,10 @@ export interface IState {
     triggerImportTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
-    holdingBySupervisor: "CANAL" | "GRUPO";
+    holdingBySupervisor: "CANAL" | "GRUPO" | "TODO";
+    botBySupervisor: "CANAL" | "GRUPO" | "TODO";
     userGroup: string;
+    channels: string;
     role: string;
     hideLogsOnTicket: boolean;
     wsConnected: boolean;
@@ -95,6 +97,7 @@ export const initialState: IState = {
     triggerReassignTicket: initialTransaction,
     triggerBlock: initialTransaction,
     triggerImportTicket: initialTransaction,
+    channels: "",
     ticketSelected: null,
     ticketToClose: null,
     agentSelected: null,
@@ -112,7 +115,8 @@ export const initialState: IState = {
     outboundData: initialObjectState,
     forceddisconnect: initialObjectState,
     showModalClose: 0,
-    holdingBySupervisor: "CANAL",
+    holdingBySupervisor: "TODO",
+    botBySupervisor: "TODO",
     role: "",
     userGroup: "",
     alertTMO: {},

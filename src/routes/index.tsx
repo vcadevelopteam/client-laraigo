@@ -199,10 +199,13 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ component: Component, ...rest }) 
 			if (fromChangeOrganization) {
 				localStorage.removeItem("changeorganization")
 			}
+			
 			dispatch(setDataUser({
-				holdingBySupervisor: resValidateToken.user?.properties.holding_by_supervisor || "CANAL",
+				holdingBySupervisor: resValidateToken.user?.properties.holding_by_supervisor || "TODO",
+				botBySupervisor: resValidateToken.user?.properties.bot_by_supervisor || "TODO",
 				userGroup: resValidateToken.user?.groups || "",
 				role: resValidateToken.user?.roledesc || "",
+				channels: resValidateToken.user?.channels || ""
 			}))
 
 			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
