@@ -5637,6 +5637,7 @@ const translation: LangKeys = {
   app_orders_in_store: 'Orders in store',
   immediateorderserror: 'Orders with immediate scheduling type cannot be scheduled.',
   prepareorderserror: "One or more of the selected orders have already been prepared",
+  routinglogicerror2: "Routing logic has already been applied to one or more of the selected orders",
 };
 
 const enResource: ResourceLanguage = {

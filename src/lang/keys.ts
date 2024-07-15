@@ -5558,6 +5558,7 @@ export const langKeys = {
   app_orders_in_store: 'app_orders_in_store',
   immediateorderserror: 'immediateorderserror',
   prepareorderserror: "prepareorderserror",
+  routinglogicerror2: "routinglogicerror2",
 };
 
 export type LangKeys = typeof langKeys;
