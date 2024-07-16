@@ -1412,6 +1412,12 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [selectedComment, setSelectedComment] = useState(0);
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
+    const [showFullText, setShowFullText] = useState(false);
+    const interactionText = pinnedmessagesSelected[selectedComment].interactiontext;
+
+    const handleTextClick = () => {
+        setShowFullText(!showFullText);
+    };
 
     const handlerManagePinnedComment = (type: string) => {
         if (type === "down") {
@@ -1447,14 +1453,14 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
     }
 
     return (<div style={{ backgroundColor: "white", display: "grid", alignItems: "center", position: "relative", gridTemplateColumns: "1fr 1fr 16fr 1fr" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: 5 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 5px" }}>
             <Tooltip title={t(langKeys.increase)} arrow placement="top">
-                <IconButton size="small" style={{ padding: 0 }} onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
+                <IconButton size="small" style={{ padding: 0, marginTop: 0 }} onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
                     <KeyboardArrowUpIcon />
                 </IconButton>
             </Tooltip>
             <Tooltip title={t(langKeys.decrease)} arrow placement="top">
-                <IconButton size="small" style={{ padding: 0 }} onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
+                <IconButton size="small" style={{ padding: 0, marginBottom: 0 }} onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
                     <KeyboardArrowDownIcon />
                 </IconButton>
             </Tooltip>
@@ -1465,15 +1471,20 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
             alignItems: 'center',
             justifyContent: 'center',
             marginLeft: '5px',
-            
+
         }}>
-            <TackIcon style={{ color: "#69757f", width: 40, height: 40, padding: 4, backgroundColor: "#f1f4f7", borderRadius: "20%" }} />
-        </div><div style={{
-            flex: 1, marginLeft: '10px', marginRight: '10px', height: "100%", display: "flex", alignItems: "center",
-            borderRight: "1px lightgrey solid"
-        }}>
+            <TackIcon style={{ color: "#69757f" }} />
+        </div>
+        <div
+            style={{
+                flex: 1, marginLeft: '10px', marginRight: '10px', height: "100%", display: "flex", alignItems: "center",
+                borderRight: "1px lightgrey solid", cursor: 'pointer', whiteSpace: showFullText ? 'normal' : 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+            }}
+            onClick={handleTextClick}
+            title={showFullText ? '' : (interactionText.length > 75 ? interactionText : '')}
+        >
             <div style={{ width: "100%" }}>
-                {pinnedmessagesSelected[selectedComment].interactiontext}
+                {interactionText.length > 75 && !showFullText ? interactionText.substring(0, 75) + '...' : interactionText}
             </div>
         </div>
 
@@ -1487,12 +1498,12 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
 
             <Tooltip title={t(langKeys.delete)} arrow placement="top">
                 <IconButton size="small" onClick={deleteTack}>
-                    <DeleteForeverIcon style={{width: 36, height: 36,color: "#dadada"}}/>
+                    <DeleteForeverIcon style={{ color: "#dadada" }} />
                 </IconButton>
             </Tooltip>
             <Tooltip title={t(langKeys.gotomessage)} arrow placement="top">
                 <IconButton size="small" onClick={gotomessage} >
-                    <ReplyIcon  style={{width: 36, height: 36,color: "#dadada"}}/>
+                    <ReplyIcon style={{ color: "#dadada" }} />
                 </IconButton>
             </Tooltip>
         </div>
@@ -1511,7 +1522,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: ticketSelected?.tags?.length?4:10 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: ticketSelected?.tags?.length ? 4 : 10 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1531,7 +1542,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                     </div>
                 </div>
                 <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
-                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length?"1px solid lightgrey":  0, padding: "0 8px", flex: 2, alignItems: "center", justifyContent: "center", display: "flex" }}>
+                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 8px", flex: 2, alignItems: "center", justifyContent: "center", display: "flex" }}>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
