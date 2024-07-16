@@ -1356,7 +1356,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     const { t } = useTranslation();
     const classes2 = useStyles();
     const [scrollPosition, setScrollPosition] = useState(0);
-    const tagsWrapperRef = useRef(null);
+    const tagsWrapperRef = useRef<{ scrollWidth: number; scrollLeft: number; clientWidth: number }>(null);
     const [atEnd, setAtEnd] = useState(false);
     const uniqueTags = !!tags.length ? tags.split(",").filter((word, index, array) => word !== array[index - 1]) : [];
 
@@ -1380,7 +1380,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
         };
     }, [uniqueTags]);
 
-    const handleScroll = (direction) => {
+    const handleScroll = (direction: string) => {
         const scrollAmount = 100; // Ajusta esta cantidad según tus necesidades
         const newPosition = direction === 'left'
             ? scrollPosition - scrollAmount
@@ -1389,31 +1389,33 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
         tagsWrapperRef.current.scrollLeft = newPosition;
 
         const atEndPosition = newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth;
+
         setAtEnd(atEndPosition);
     };
 
     useEffect(() => {
         if (tagsWrapperRef.current) {
-            setAtEnd(tagsWrapperRef.current.scrollLeft + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
         }
     }, [scrollPosition]);
 
+    console.log("atEnd", atEnd)
     if (uniqueTags.length) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "44.4%", borderLeft: "1px solid lightgrey", flex: 4 }}>
-                <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 8px", width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "33%", borderLeft: "1px solid lightgrey", flex: 2 }}>
+                <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 0px", width: "100%" }}>
                     <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
-                        <div>
+                        <div style={{ paddingLeft: 4 }}>
                             Tags
                             <Tooltip title={<div style={{ fontSize: 12, zIndex: 9999, }}>{t(langKeys.tagshelper)}</div>} arrow placement="top">
                                 <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                             </Tooltip>
                         </div>
-                        <div className={classes2.container} style={{ width: "100%" }}>
+                        <div className={classes2.container} >
                             <IconButton size='small' disabled={!(scrollPosition > 0)} className={`${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
                                 <KeyboardArrowLeft fontSize='small' />
                             </IconButton>
-                            <div className={classes2.tagsWrapper} ref={tagsWrapperRef} style={{ width: "100%" }}>
+                            <div className={classes2.tagsWrapper} ref={tagsWrapperRef} >
                                 {uniqueTags.map((tag, index) => (
                                     <span key={index} className={classes2.tag}>{tag}</span>
                                 ))}
@@ -1595,7 +1597,7 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
             alignItems: 'center',
             justifyContent: 'center',
             marginLeft: '5px',
-
+            
         }}>
             <TackIcon style={{ color: "#69757f", width: 40, height: 40, padding: 4, backgroundColor: "#f1f4f7", borderRadius: "20%" }} />
         </div><div style={{
@@ -1617,12 +1619,12 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
 
             <Tooltip title={t(langKeys.delete)} arrow placement="top">
                 <IconButton size="small" onClick={deleteTack}>
-                    <DeleteForeverIcon style={{ width: 36, height: 36, color: "#dadada" }} />
+                    <DeleteForeverIcon style={{width: 36, height: 36,color: "#dadada"}}/>
                 </IconButton>
             </Tooltip>
             <Tooltip title={t(langKeys.gotomessage)} arrow placement="top">
                 <IconButton size="small" onClick={gotomessage} >
-                    <ReplyIcon style={{ width: 36, height: 36, color: "#dadada" }} />
+                    <ReplyIcon  style={{width: 36, height: 36,color: "#dadada"}}/>
                 </IconButton>
             </Tooltip>
         </div>
@@ -1641,7 +1643,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: ticketSelected?.tags?.length ? 3 : 10 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: ticketSelected?.tags?.length?4:10 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1661,7 +1663,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                     </div>
                 </div>
                 <TicketTags classes={classes} tags={ticketSelected?.tags || ""} />
-                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 8px", flex: 2, alignItems: "center", justifyContent: "center" }}>
+                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length?"1px solid lightgrey":  0, padding: "0 8px", flex: 2, alignItems: "center", justifyContent: "center", display: "flex" }}>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
