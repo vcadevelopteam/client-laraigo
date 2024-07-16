@@ -10,6 +10,11 @@ export interface IBaseState {
     message?: string;
 }
 
+export interface IReplyState extends IBaseState {
+    interactionid?: number; 
+    uuid?: string
+}
+
 export interface IPesonState extends IBaseState {
     data?: IPerson | null;
 }
@@ -42,7 +47,7 @@ export interface IState {
     triggerCloseTicket: IBaseState;
     triggerSendHSM: IBaseState;
     triggerMassiveCloseTicket: IBaseState;
-    triggerReplyTicket: IBaseState;
+    triggerReplyTicket: IReplyState;
     triggerReassignTicket: IBaseState;
     triggerBlock: IBaseState;
     triggerImportTicket: IBaseState;
@@ -279,4 +284,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.UPDATE_CLASSIFICATION_PERSON]: caseFunctions.updatePersonClassification,
     
     [actionTypes.SET_LIBRARY]: caseFunctions.setLibraryByUser,
+    [actionTypes.UPDATE_INTERACTION_UUID]: caseFunctions.updateInteractionByUUID,
 });

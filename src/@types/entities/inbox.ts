@@ -55,7 +55,8 @@ export interface IReplyTicketParams extends ITicket {
     emailcopy?: string;
     interactiontext: string;
     validateUserOnTicket: boolean;
-    ticketWasAnswered?: boolean
+    ticketWasAnswered?: boolean;
+    uuid?: string;
 }
 
 export interface IReassignicketParams extends ITicket {
@@ -71,6 +72,7 @@ export interface INewMessageParams extends ITicket {
     typemessage: string;
     typeinteraction?: string;
     interactionid: number;
+    uuid?: string;
     newConversation: boolean;
     userid: number;
     usertype: string;

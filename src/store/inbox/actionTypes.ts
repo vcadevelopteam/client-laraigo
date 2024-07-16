@@ -150,6 +150,7 @@ const actionType = {
     SET_LIBRARY: 'inbox/SET_LIBRARY',
     SET_SEARCHTERM: 'inbox/SET_SEARCHTERM',
     SET_PINNEDCOMMENTS: 'inbox/SET_PINNEDCOMMENTS',
+    UPDATE_INTERACTION_UUID: 'inbox/UPDATE_INTERACTION_UUID',
 };
 
 export default actionType;
