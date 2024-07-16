@@ -6353,6 +6353,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   decrease: 'Bajar',
   message_templates_channel_help: 'Muestra el o los canales asignados a la plantilla de comunicación. Para os canales Whatsapp de manera automática mostrará las plantillas del WABA asignado.',
   send_your_message: 'Envía un mensaje...',
+  read_singular_help: 'Para aquellos usuarios que tengan desactivado el visto azul o de confirmación de lectura, no se podrá obtener dicho estado, por temas de privacidad.',
+
 };
 
 const esResource: ResourceLanguage = {
