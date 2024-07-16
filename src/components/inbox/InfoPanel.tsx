@@ -159,20 +159,19 @@ const InfoClient: React.FC = () => {
                         </Button>
                     </div>
                     <div className={classes.containerName}>
-                        <EMailInboxIcon className={classes.propIcon} />
-                        <div style={{ flex: 1 }}>
-                            <div className={classes.label}>{t(langKeys.email)}</div>
-                            <div>{person?.email}</div>
-                        </div>
-                    </div>
-                    <div className={classes.containerName}>
                         <PhoneIcon className={classes.propIcon} />
                         <div style={{ flex: 1 }}>
                             <div className={classes.label}>{t(langKeys.phone)}</div>
                             <div>{person?.phone}</div>
                         </div>
                     </div>
-
+                    <div className={classes.containerName}>
+                        <EMailInboxIcon className={classes.propIcon} />
+                        <div style={{ flex: 1 }}>
+                            <div className={classes.label}>{t(langKeys.email)}</div>
+                            <div>{person?.email}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <DialogLinkPerson
@@ -226,7 +225,7 @@ const InfoTab: React.FC = () => {
             getValuesFromDomain("NIVELEDUCATIVO"),
             getPropertySelByName("OCUPACION"),
             getValuesFromDomain("TIPOPERSONA"),
-            getAssignmentRulesByGroup(ticketSelected?.usergroup||"", user?.groups||"")
+            getAssignmentRulesByGroup(ticketSelected?.usergroup || "", user?.groups || "")
         ]));
         return () => {
             dispatch(resetMultiMainAux());
@@ -278,7 +277,7 @@ const InfoTab: React.FC = () => {
                             maxLength={50}
                         />
                         <FieldSelect
-                            onChange={(value) => setValue('persontype', value?.domainvalue||"")}
+                            onChange={(value) => setValue('persontype', value?.domainvalue || "")}
                             label={t(langKeys.personType)}
                             loading={multiData.loading}
                             data={multiData.data[6]?.data || []}
@@ -450,34 +449,10 @@ const InfoTab: React.FC = () => {
                         <div>{person?.lastname}</div>
                     </div>
                 </div>}
-                {person?.persontype && <div className={classes.containerName}>
+                {person?.name && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.personType)}</div>
-                        <div>{person?.persontype}</div>
-                    </div>
-                </div>}
-                {person?.email && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.email)}</div>
-                        <div>{person?.email}</div>
-                    </div>
-                </div>}
-                {person?.phone && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.phone)}</div>
-                        <div>{person?.phone}</div>
-                    </div>
-                </div>}
-                {person?.firstcontact && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
-                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
-                    </div>
-                </div>}
-                {person?.lastcontact && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
-                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
+                        <div className={classes.label}>Nickname</div>
+                        <div>{person?.name}</div>
                     </div>
                 </div>}
                 {person?.documenttype && <div className={classes.containerName}>
@@ -492,7 +467,12 @@ const InfoTab: React.FC = () => {
                         <div>{person?.documentnumber}</div>
                     </div>
                 </div>}
-
+                {person?.persontype && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.personType)}</div>
+                        <div>{person?.persontype}</div>
+                    </div>
+                </div>}
                 {person?.alternativephone && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
@@ -503,30 +483,6 @@ const InfoTab: React.FC = () => {
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativeEmail)}</div>
                         <div>{person?.alternativeemail}</div>
-                    </div>
-                </div>}
-                {person?.address && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.address)}</div>
-                        <div>{person?.address}</div>
-                    </div>
-                </div>}
-                {person?.healthprofessional && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.healthprofessional)}</div>
-                        <div>{person?.healthprofessional}</div>
-                    </div>
-                </div>}
-                {person?.referralchannel && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.referralchannel)}</div>
-                        <div>{person?.referralchannel}</div>
-                    </div>
-                </div>}
-                {person?.addressreference && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.addressReference)}</div>
-                        <div>{person?.addressreference}</div>
                     </div>
                 </div>}
                 {person?.birthday && <div className={classes.containerName}>
@@ -541,10 +497,10 @@ const InfoTab: React.FC = () => {
                         <div>{person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-                {person?.occupation && <div className={classes.containerName}>
+                {person?.educationleveldesc && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.occupation)}</div>
-                        <div>{person?.occupation && t(person?.occupation)}</div>
+                        <div className={classes.label}>{t(langKeys.educationLevel)}</div>
+                        <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
                 {person?.civilstatusdesc && <div className={classes.containerName}>
@@ -553,13 +509,48 @@ const InfoTab: React.FC = () => {
                         <div>{person?.civilstatus && t("type_civilstatus_" + person?.civilstatus.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-                {person?.educationleveldesc && <div className={classes.containerName}>
+                {person?.occupation && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.educationLevel)}</div>
-                        <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
+                        <div className={classes.label}>{t(langKeys.occupation)}</div>
+                        <div>{person?.occupation && t(person?.occupation)}</div>
                     </div>
                 </div>}
-
+                {person?.usergroup && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.group_plural)}</div>
+                        <div>{person?.usergroup}</div>
+                    </div>
+                </div>}
+                {person?.address && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.address)}</div>
+                        <div>{person?.address}</div>
+                    </div>
+                </div>}
+                {person?.district && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.district)}</div>
+                        <div>{person?.district}</div>
+                    </div>
+                </div>}
+                {person?.addressreference && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.addressReference)}</div>
+                        <div>{person?.addressreference}</div>
+                    </div>
+                </div>}
+                {person?.firstcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
+                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
+                    </div>
+                </div>}
+                {person?.lastcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
+                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
+                    </div>
+                </div>}
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
@@ -839,7 +830,7 @@ const Attachments: React.FC = () => {
                     {(extension === "zip" || extension === "rar") && <ZipIcon width="30" height="30" />}
                     {(extension === "text" || extension === "txt") && <TxtIcon width="30" height="30" />}
                     {!["pdf", "doc", "docx", "xls", "xlsx", "csv", "ppt", "pptx", "zip", "rar", "text", "txt",].includes(extension) && <FileIcon width="30" height="30" />}
-                    <div style={{width: "100%"}}>
+                    <div style={{ width: "100%" }}>
                         <div className={classes.label} style={{ textAlign: "right" }}>{user}</div>
                         <div>{filename}</div>
                         <div className={classes.label}>{date}</div>
@@ -891,12 +882,12 @@ const Leads: React.FC = () => {
                     key={leadid}
                     className={classes.containerAttachment}
                 >
-                    <div style={{width: "100%"}}>
+                    <div style={{ width: "100%" }}>
                         <div className={classes.label} style={{ textAlign: "right" }}>{priority}</div>
                         <div>{lead}</div>
                         {products && <div>{products}</div>}
                         <div>{t(column?.toLowerCase())}</div>
-                        <div style={{fontWeight: "bold"}}>{parseFloat(expected_revenue).toFixed(2)}</div>
+                        <div style={{ fontWeight: "bold" }}>{parseFloat(expected_revenue).toFixed(2)}</div>
                     </div>
                 </div>
             ))}
@@ -934,18 +925,20 @@ const InfoPanel: React.FC = () => {
                 onChange={(_, value) => setPageSelected(value)}
             >
                 <AntTab label={t(langKeys.information)} />
+                <AntTab label="Variables" />
                 <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
                 <AntTab icon={<AttachFileIcon />} />
-                <AntTab label="Variables" />
                 <AntTab label={t(langKeys.classification_plural)} />
                 <AntTab label={t(langKeys.lead_plural)} />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
-            {pageSelected === 1 && <PreviewTickets order={order} />}
-            {pageSelected === 2 && <Attachments />}
-            {pageSelected === 3 && <Variables />}
+            {pageSelected === 1 && <Variables />}
+            {pageSelected === 2 && <PreviewTickets order={order} />}
+            {pageSelected === 3 && <Attachments />}
             {pageSelected === 4 && <Classifications />}
+            {/* Pedidos */}
             {pageSelected === 5 && <Leads />}
+            {/* S. Servicio */}
         </div>
     );
 }
