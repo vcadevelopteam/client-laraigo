@@ -64,6 +64,7 @@ export interface IPerson {
     address?: string;
     healthprofessional?: string;
     referralchannel?: string;
+    usergroup?: string;
     pinnedmessages?: any;
 }
 
