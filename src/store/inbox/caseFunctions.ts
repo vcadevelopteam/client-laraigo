@@ -919,7 +919,7 @@ export const getInteractionsExtra = (state: IState): IState => ({
 export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     interactionExtraList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), false, true),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), true, true),
         count: action.payload.count,
         loading: false,
         error: false,
