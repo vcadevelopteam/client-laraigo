@@ -521,6 +521,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 interactionid: data.interactionid,
                 interactiontype: data.typemessage,
                 interactiontext: data.lastmessage,
+                uuid: data.uuid,
                 createdate: new Date().toISOString(),
                 userid: data.usertype === "agent" ? data.userid : 0,
                 usertype: data?.usertype === "agent" && data.userid === 2 ? "BOT" : data?.usertype,
@@ -863,6 +864,18 @@ export const setHideLogsOnTicket = (state: IState, action: IAction): IState => {
 };
 
 
+export const updateInteractionByUUID = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        interactionList: {
+            ...state.interactionList,
+            data: state.interactionList.data.map(group => ({
+                ...group,
+                interactions: group.interactions.map(interaction => interaction.uuid === action.payload.uuid ? { ...interaction, interactionid: action.payload.interactionid } : interaction)
+            }))
+        }
+    }
+};
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -1055,6 +1068,8 @@ export const replyTicketSuccess = (state: IState, action: IAction): IState => ({
     triggerReplyTicket: {
         loading: false,
         error: false,
+        interactionid: action.payload.Result.interactionid,
+        uuid: action.payload.Result.uuid,
     },
 });
 

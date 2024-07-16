@@ -6,7 +6,7 @@ import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
 import { useDispatch } from "react-redux";
-import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock } from "store/inbox/actions";
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock, updateInteractionByUUID } from "store/inbox/actions";
 import { uploadFile, resetUploadFile } from "store/main/actions";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import InputBase from "@material-ui/core/InputBase";
@@ -29,7 +29,7 @@ import ListItem from "@material-ui/core/ListItem";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import TextField from "@material-ui/core/TextField";
-import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from "common/helpers/functions";
+import { convertLocalDate, getSecondsUntelNow, uuidv4 } from "common/helpers/functions";
 import { Descendant } from "slate";
 import { RichText, renderToString, toElement } from "components/fields/RichText";
 import { emojis } from "common/constants/emojis";
@@ -769,7 +769,7 @@ const CopilotLaraigoIcon: React.FC<{
     enabled: boolean
 }> = ({ classes, enabled }) => {
     const { t } = useTranslation();
-    console.log(t(langKeys.currentlanguage))
+    
     //{t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
     return (
         <div style={{ display: "flex" }}>
@@ -1074,12 +1074,16 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     useEffect(() => {
         if (triggerReply) {
-            if (!resReplyTicket.loading && resReplyTicket.error) {
-                const errormessage = t(resReplyTicket.code || "error_unexpected_error", {
-                    module: t(langKeys.user).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                settriggerReply(false);
+            if (!resReplyTicket.loading) {
+                if (resReplyTicket.error) {
+                    const errormessage = t(resReplyTicket.code || "error_unexpected_error", {
+                        module: t(langKeys.user).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    settriggerReply(false);
+                } else {
+                    dispatch(updateInteractionByUUID({ uuid: resReplyTicket.uuid || "", interactionid: resReplyTicket.interactionid || 0 }))
+                }
             }
         }
     }, [resReplyTicket, triggerReply]);
@@ -1242,12 +1246,14 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
                 if (textCleaned) {
                     if (!errormessage) {
+                        const uuid = uuidv4();
                         wasSend = true;
                         const newInteractionSocket = {
                             ...ticketSelected!!,
                             interactionid: 0,
                             typemessage: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             typeinteraction: null,
+                            uuid,
                             lastmessage: textCleaned,
                             createdate: new Date().toISOString(),
                             userid: 0,
@@ -1269,6 +1275,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 ...ticketSelected!!,
                                 interactiontype: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                                 interactiontext: textCleaned,
+                                uuid,
                                 validateUserOnTicket: userType === "AGENT",
                                 isAnswered: !ticketSelected!!.isAnswered,
                                 emailcocopy: copyEmails.cco || "",
@@ -1359,67 +1366,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         });
 
         setText(myquickreply);
-    };
-
-    const selectRichResponse = (block: Dictionary) => {
-        const callback = () => {
-            const listInteractions = cleanedRichResponse(block.cards, variablecontext);
-
-            if (listInteractions.length === 0) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: "No hay cards" }));
-                return;
-            }
-            settriggerReply(true);
-            dispatch(
-                replyTicket(
-                    listInteractions.map((x) => ({
-                        ...ticketSelected!!,
-                        interactiontype: x.type,
-                        interactiontext: x.content,
-                        validateUserOnTicket: userType === "AGENT",
-                    })),
-                    true
-                )
-            );
-
-            listInteractions.forEach((x: Dictionary, i: number) => {
-                const newInteractionSocket = {
-                    ...ticketSelected!!,
-                    interactionid: 0,
-                    typemessage: x.type,
-                    typeinteraction: null,
-                    lastmessage: x.content,
-                    createdate: new Date().toISOString(),
-                    userid: 0,
-                    usertype: "agent",
-                    ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
-                };
-                if (userType === "AGENT") {
-                    dispatch(
-                        emitEvent({
-                            event: "newMessageFromAgent",
-                            data: newInteractionSocket,
-                        })
-                    );
-                }
-            });
-
-            if (userType === "SUPERVISOR") reasignTicket();
-
-            setText("");
-        };
-
-        if (userType === "SUPERVISOR") {
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_reasign_with_reply),
-                    callback,
-                })
-            );
-        } else {
-            callback();
-        }
     };
 
     const handleKeyPress = (event: any) => {
@@ -1582,22 +1528,13 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 }}
                                             >
                                                 {typeHotKey === "quickreply"
-                                                    ? quickRepliesToShow.map((item) => (
+                                                    && quickRepliesToShow.map((item) => (
                                                         <div
                                                             key={item.quickreplyid}
                                                             className={classes.hotKeyQuickReply}
                                                             onClick={() => selectQuickReply(item.quickreply)}
                                                         >
                                                             {item.description}
-                                                        </div>
-                                                    ))
-                                                    : richResponseToShow.map((item) => (
-                                                        <div
-                                                            key={item.id}
-                                                            className={classes.hotKeyQuickReply}
-                                                            onClick={() => selectRichResponse(item)}
-                                                        >
-                                                            {item.title}
                                                         </div>
                                                     ))}
                                             </div>
@@ -1726,22 +1663,13 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     }}
                                                 >
                                                     {typeHotKey === "quickreply"
-                                                        ? quickRepliesToShow.map((item) => (
+                                                        && quickRepliesToShow.map((item) => (
                                                             <div
                                                                 key={item.quickreplyid}
                                                                 className={classes.hotKeyQuickReply}
                                                                 onClick={() => selectQuickReply(item.quickreply)}
                                                             >
                                                                 {item.description}
-                                                            </div>
-                                                        ))
-                                                        : richResponseToShow.map((item) => (
-                                                            <div
-                                                                key={item.id}
-                                                                className={classes.hotKeyQuickReply}
-                                                                onClick={() => selectRichResponse(item)}
-                                                            >
-                                                                {item.title}
                                                             </div>
                                                         ))}
                                                 </div>
