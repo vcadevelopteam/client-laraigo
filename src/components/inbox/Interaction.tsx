@@ -486,7 +486,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
     const isselected = pinnedmessagesSelected.map((item:any) => item.interactionid).includes(interactionid)
     const disableTack = ((pinnedmessagesSelected.length >= 20 || !interactionid))
-
+    console.log(interactionid)
     function fixComment(interactiontext: string) {
         dispatch(execute(modifyPinnedMessage({
             interactionid,

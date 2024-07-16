@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IARouteIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -769,14 +769,21 @@ const CopilotLaraigoIcon: React.FC<{
     enabled: boolean
 }> = ({ classes, enabled }) => {
     const { t } = useTranslation();
-
+    console.log(t(langKeys.currentlanguage))
+    //{t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
     return (
         <div style={{ display: "flex" }}>
             <Tooltip title={t(langKeys.record_audio)} arrow placement="top">
-                <IARouteIcon
-                    className={enabled ? classes.iconResponse : ""}
-                    style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
-                />
+                {t(langKeys.currentlanguage) === "en" ?
+                    <CopilotIconEng
+                        className={enabled ? classes.iconResponse : ""}
+                        style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
+                    /> :
+                    <CopilotIconEsp
+                        className={enabled ? classes.iconResponse : ""}
+                        style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
+                    />
+                }
             </Tooltip>
         </div>
     );
@@ -860,7 +867,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: "flex" }}>
                 <Tooltip title={t(langKeys.send_enrich_response)} arrow placement="top">
-                    <RichResponseIcon
+                    <SendToBlockIcon
                         className={classes.iconResponse}
                         onClick={handleClick}
                         style={{ width: 22, height: 22 }}
@@ -1019,7 +1026,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [redotext, setredotext] = useState<any>([]);
     const inputRef = useRef(null);
 
-    const handleInputChange = (e:any) => {
+    const handleInputChange = (e: any) => {
         const lines = e.target.value.split('\n').length;
         if (lines <= 6) {
             setNumRows(lines);

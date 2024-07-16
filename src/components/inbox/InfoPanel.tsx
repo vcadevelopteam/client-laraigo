@@ -200,11 +200,12 @@ const InfoTab: React.FC = () => {
     useEffect(() => {
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname');
+        register('name');
+        register('documenttype');
         register('persontype');
         register('email');
         register('observation');
         register('phone');
-        register('documenttype');
         register('documentnumber');
         register('alternativeemail');
         register('alternativephone');
@@ -217,6 +218,8 @@ const InfoTab: React.FC = () => {
         register('healthprofessional');
         register('referralchannel');
         register('district');
+        register('usergroup');
+        register('addressreference');
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("TIPODOCUMENTO"),
             getValuesFromDomain("GENERO"),
@@ -225,7 +228,8 @@ const InfoTab: React.FC = () => {
             getValuesFromDomain("NIVELEDUCATIVO"),
             getPropertySelByName("OCUPACION"),
             getValuesFromDomain("TIPOPERSONA"),
-            getAssignmentRulesByGroup(ticketSelected?.usergroup || "", user?.groups || "")
+            getAssignmentRulesByGroup(ticketSelected?.usergroup || "", user?.groups || ""),
+            getValuesFromDomain("GRUPOPERSONA"),
         ]));
         return () => {
             dispatch(resetMultiMainAux());
@@ -276,17 +280,12 @@ const InfoTab: React.FC = () => {
                             error={errors?.lastname?.message}
                             maxLength={50}
                         />
-                        <FieldSelect
-                            onChange={(value) => setValue('persontype', value?.domainvalue || "")}
-                            label={t(langKeys.personType)}
-                            loading={multiData.loading}
-                            data={multiData.data[6]?.data || []}
-                            valueDefault={getValues('persontype')}
-                            error={errors?.persontype?.message}
-                            uset={true}
-                            prefixTranslation="type_persontype_"
-                            optionValue="domainvalue"
-                            optionDesc="domainvalue"
+                        <FieldEdit
+                            label={"Nickname"}
+                            onChange={(value) => setValue('name', value)}
+                            valueDefault={getValues('name')}
+                            error={errors?.name?.message}
+                            maxLength={50}
                         />
                         <FieldSelect
                             onChange={(value) => setValue('documenttype', value?.domainvalue)}
@@ -308,18 +307,23 @@ const InfoTab: React.FC = () => {
                             error={errors?.documentnumber?.message}
                             maxLength={50}
                         />
-                        <FieldEdit
-                            label={t(langKeys.email)}
-                            onChange={(value) => setValue('email', value)}
-                            valueDefault={getValues('email')}
-                            error={errors?.email?.message}
-                            maxLength={50}
+                        <FieldSelect
+                            onChange={(value) => setValue('persontype', value?.domainvalue || "")}
+                            label={t(langKeys.personType)}
+                            loading={multiData.loading}
+                            data={multiData.data[6]?.data || []}
+                            valueDefault={getValues('persontype')}
+                            error={errors?.persontype?.message}
+                            uset={true}
+                            prefixTranslation="type_persontype_"
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
                         />
                         <FieldEdit
-                            label={t(langKeys.phone)}
-                            onChange={(value) => setValue('phone', value)}
-                            valueDefault={getValues('phone')}
-                            error={errors?.phone?.message}
+                            label={t(langKeys.alternativePhone)}
+                            onChange={(value) => setValue('alternativephone', value)}
+                            valueDefault={getValues('alternativephone')}
+                            error={errors?.alternativephone?.message}
                             maxLength={20}
                         />
                         <FieldEdit
@@ -328,13 +332,6 @@ const InfoTab: React.FC = () => {
                             valueDefault={getValues('alternativeemail')}
                             error={errors?.alternativeemail?.message}
                             maxLength={50}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.alternativePhone)}
-                            onChange={(value) => setValue('alternativephone', value)}
-                            valueDefault={getValues('alternativephone')}
-                            error={errors?.alternativephone?.message}
-                            maxLength={20}
                         />
                         <FieldEdit
                             label={t(langKeys.birthday)}
@@ -355,6 +352,30 @@ const InfoTab: React.FC = () => {
                             prefixTranslation="type_gender_"
                             error={errors?.gender?.message}
                         />
+                        <FieldSelect
+                            onChange={(value) => setValue('educationlevel', value?.domainvalue)}
+                            label={t(langKeys.educationLevel)}
+                            loading={multiData.loading}
+                            data={multiData.data[4]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                            valueDefault={getValues('educationlevel')}
+                            uset={true}
+                            prefixTranslation="type_educationlevel_"
+                            error={errors?.educationlevel?.message}
+                        />
+                        <FieldSelect
+                            onChange={(value) => setValue('civilstatus', value?.domainvalue)}
+                            label={t(langKeys.civilStatus)}
+                            loading={multiData.loading}
+                            data={multiData.data[3]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                            valueDefault={getValues('civilstatus')}
+                            uset={true}
+                            prefixTranslation="type_civilstatus_"
+                            error={errors?.civilstatus?.message}
+                        />
                         {multiData?.data?.[5]?.data?.[0].propertyvalue === "LIBRE" ?
                             <FieldEdit
                                 label={t(langKeys.occupation)}
@@ -373,30 +394,18 @@ const InfoTab: React.FC = () => {
                                 prefixTranslation="type_ocupation_"
                                 error={errors?.occupation?.message}
                             />}
-                        <FieldSelect
-                            onChange={(value) => setValue('civilstatus', value?.domainvalue)}
-                            label={t(langKeys.civilStatus)}
-                            loading={multiData.loading}
-                            data={multiData.data[3]?.data || []}
-                            optionValue="domainvalue"
-                            optionDesc="domainvalue"
-                            valueDefault={getValues('civilstatus')}
-                            uset={true}
-                            prefixTranslation="type_civilstatus_"
-                            error={errors?.civilstatus?.message}
-                        />
-                        <FieldSelect
-                            onChange={(value) => setValue('educationlevel', value?.domainvalue)}
-                            label={t(langKeys.educationLevel)}
-                            loading={multiData.loading}
-                            data={multiData.data[4]?.data || []}
-                            optionValue="domainvalue"
-                            optionDesc="domainvalue"
-                            valueDefault={getValues('educationlevel')}
-                            uset={true}
-                            prefixTranslation="type_educationlevel_"
-                            error={errors?.educationlevel?.message}
-                        />
+                            <FieldSelect
+                                valueDefault={getValues("usergroup")}
+                                onChange={(value) => {
+                                    setValue('usergroup', value?.domainvalue || "");
+                                }}
+                                label={t(langKeys.group)}
+                                loading={multiData.loading}
+                                data={multiData.data[8]?.data || []}
+                                optionValue="domainvalue"
+                                optionDesc="domaindesc"
+                            />
+                            {/* grupos */}
                         <FieldEdit
                             label={t(langKeys.address)}
                             onChange={(value) => setValue('address', value)}
@@ -404,10 +413,16 @@ const InfoTab: React.FC = () => {
                             error={errors?.address?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.healthprofessional)}
-                            onChange={(value) => setValue('healthprofessional', value)}
-                            valueDefault={getValues('healthprofessional')}
-                            error={errors?.healthprofessional?.message}
+                            label={t(langKeys.district)}
+                            onChange={(value) => setValue('district', value)}
+                            valueDefault={getValues('district')}
+                            error={errors?.district?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.addressReference)}
+                            onChange={(value) => setValue('addressreference', value)}
+                            valueDefault={getValues('addressreference')}
+                            error={errors?.addressreference?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.referralchannel)}
@@ -440,133 +455,133 @@ const InfoTab: React.FC = () => {
                 {person?.firstname && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.firstname)}</div>
-                        <div>{person?.firstname}</div>
+                        <div>{person?.firstname || "-"}</div>
                     </div>
                 </div>}
                 {person?.lastname && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastname)}</div>
-                        <div>{person?.lastname}</div>
+                        <div>{person?.lastname || "-"}</div>
                     </div>
                 </div>}
                 {person?.name && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>Nickname</div>
-                        <div>{person?.name}</div>
+                        <div>{person?.name || "-"}</div>
                     </div>
                 </div>}
                 {person?.documenttype && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.documenttype)}</div>
-                        <div>{person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())}</div>
+                        <div>{(person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
                 {person?.documentnumber && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.documentnumber)}</div>
-                        <div>{person?.documentnumber}</div>
+                        <div>{person?.documentnumber || "-"}</div>
                     </div>
                 </div>}
                 {person?.persontype && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.personType)}</div>
-                        <div>{person?.persontype}</div>
+                        <div>{person?.persontype || "-"}</div>
                     </div>
                 </div>}
                 {person?.alternativephone && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
-                        <div>{person?.alternativephone}</div>
+                        <div>{person?.alternativephone || "-"}</div>
                     </div>
                 </div>}
                 {person?.alternativeemail && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativeEmail)}</div>
-                        <div>{person?.alternativeemail}</div>
+                        <div>{person?.alternativeemail || "-"}</div>
                     </div>
                 </div>}
                 {person?.birthday && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.birthday)}</div>
-                        <div>{person?.birthday}</div>
+                        <div>{person?.birthday || "-"}</div>
                     </div>
                 </div>}
                 {person?.genderdesc && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.gender)}</div>
-                        <div>{person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())}</div>
+                        <div>{(person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
                 {person?.educationleveldesc && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.educationLevel)}</div>
-                        <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
+                        <div>{(person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
                 {person?.civilstatusdesc && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.civilStatus)}</div>
-                        <div>{person?.civilstatus && t("type_civilstatus_" + person?.civilstatus.toLocaleLowerCase())}</div>
+                        <div>{(person?.civilstatus && t("type_civilstatus_" + person?.civilstatus.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
                 {person?.occupation && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.occupation)}</div>
-                        <div>{person?.occupation && t(person?.occupation)}</div>
+                        <div>{(person?.occupation && t(person?.occupation)) || "-"}</div>
                     </div>
                 </div>}
                 {person?.usergroup && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.group_plural)}</div>
-                        <div>{person?.usergroup}</div>
+                        <div className={classes.label}>{t(langKeys.group)}</div>
+                        <div>{person?.usergroup || "-"}</div>
                     </div>
                 </div>}
                 {person?.address && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.address)}</div>
-                        <div>{person?.address}</div>
+                        <div>{person?.address || "-"}</div>
                     </div>
                 </div>}
                 {person?.district && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.district)}</div>
-                        <div>{person?.district}</div>
+                        <div>{person?.district || "-"}</div>
                     </div>
                 </div>}
                 {person?.addressreference && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.addressReference)}</div>
-                        <div>{person?.addressreference}</div>
+                        <div>{person?.addressreference || "-"}</div>
                     </div>
                 </div>}
                 {person?.firstcontact && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
-                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
+                        <div>{person?.firstcontact? new Date(person?.firstcontact).toLocaleString(): "-"}</div>
                     </div>
                 </div>}
                 {person?.lastcontact && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
-                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
+                        <div>{person?.lastcontact? new Date(person?.lastcontact).toLocaleString(): "-"}</div>
                     </div>
                 </div>}
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
-                        <div>{person?.lastcommunicationchannel}</div>
+                        <div>{person?.lastcommunicationchannel || "-"}</div>
                     </div>
                 </div>}
                 {person?.totaltickets && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.totalconversations)}</div>
-                        <div>{person?.totaltickets}</div>
+                        <div>{person?.totaltickets || "-"}</div>
                     </div>
                 </div>}
                 {person?.observation && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.observation)}</div>
-                        <div style={{ whiteSpace: "pre-wrap" }}>{person?.observation}</div>
+                        <div style={{ whiteSpace: "pre-wrap" }}>{person?.observation || "-"}</div>
                     </div>
                 </div>}
             </div>
@@ -927,8 +942,9 @@ const InfoPanel: React.FC = () => {
                 <AntTab label={t(langKeys.information)} />
                 <AntTab label="Variables" />
                 <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
-                <AntTab icon={<AttachFileIcon />} />
+                <AntTab label={t(langKeys.messagetemplate_attachment)} />
                 <AntTab label={t(langKeys.classification_plural)} />
+                <AntTab label={t(langKeys.orders)} />
                 <AntTab label={t(langKeys.lead_plural)} />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
@@ -937,7 +953,7 @@ const InfoPanel: React.FC = () => {
             {pageSelected === 3 && <Attachments />}
             {pageSelected === 4 && <Classifications />}
             {/* Pedidos */}
-            {pageSelected === 5 && <Leads />}
+            {pageSelected === 6 && <Leads />}
             {/* S. Servicio */}
         </div>
     );
