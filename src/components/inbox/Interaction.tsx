@@ -484,22 +484,21 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const [isHovered, setIsHovered] = useState(false);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
+    const isselected = pinnedmessagesSelected.map((item:any) => item.interactionid).includes(interactionid)
+    const disableTack = ((pinnedmessagesSelected.length >= 20 || !interactionid))
 
     function fixComment(interactiontext: string) {
-        if (pinnedmessagesSelected.length < 20) {
-            dispatch(execute(modifyPinnedMessage({
-                interactionid,
-                conversationid: ticketSelected?.conversationid || 0,
-                interactiontext,
-                operation: "INSERT"
-            })))
-            dispatch(setPinnedComments([...pinnedmessagesSelected,
-            {
-                interactionid,
-                interactiontext
-            }]))
-        }
-
+        dispatch(execute(modifyPinnedMessage({
+            interactionid,
+            conversationid: ticketSelected?.conversationid || 0,
+            interactiontext,
+            operation: "INSERT"
+        })))
+        dispatch(setPinnedComments([...pinnedmessagesSelected,
+        {
+            interactionid,
+            interactiontext
+        }]))
     }
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
@@ -517,19 +516,18 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
-                {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) &&
+                {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
+                {!pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid) &&
                     <IconButton size="small"
                         title={t(langKeys.pinmessagehelper)}
+                        disabled={disableTack}
                         className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
+                        style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
                         onClick={() => fixComment(interactiontext)}>
                         <TackIcon
                             className={clsx(classes2.tackIcon)}
-                            style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden', zIndex: 9999 }}
                         />
                     </IconButton>}
-
-
                 <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
                 {!showfulltext && (
                     <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
@@ -664,7 +662,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     else if (interactiontype === "quickreply") {
         try {
             let text, json;
-
             if (interactiontext.substring(0, 1) === "{") {
                 const jj = JSON.parse(interactiontext);
                 return (
@@ -682,9 +679,24 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             }
             const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
             return (
-                <div className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
-                })} style={{ display: 'inline-block' }}>
+                <div
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })} style={{ display: 'inline-block' }}>
+                    {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />}
+                    {!pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid) &&
+                        <IconButton size="small"
+                            title={t(langKeys.pinmessagehelper)}
+                            disabled={disableTack}
+                            className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
+                            style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
+                            onClick={() => fixComment(interactiontext)}>
+                            <TackIcon
+                                className={clsx(classes2.tackIcon)}
+                            />
+                        </IconButton>}
                     <HighlightedTextSimple interactiontext={text} searchTerm={searchTerm} />
                     <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex" }}>
                         {listButtons.map((item: Dictionary, index: number) => {
@@ -924,8 +936,18 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         <div className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
         })} style={{ marginTop: interactiontype === "comment-text" ? 16 : 0 }}>
-            <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />
-            {!pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ cursor: "pointer", visibility: isHovered ? 'visible' : 'hidden' }} onClick={() => fixComment(interactiontext)} />}
+            {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />}
+            {((pinnedmessagesSelected.length < 20) && !pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid)) &&
+                <IconButton size="small"
+                    title={t(langKeys.pinmessagehelper)}
+                    disabled={disableTack}
+                    className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
+                    style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
+                    onClick={() => fixComment(interactiontext)}>
+                    <TackIcon
+                        className={clsx(classes2.tackIcon)}
+                    />
+                </IconButton>}
             <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
             {!showfulltext && (
                 <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
