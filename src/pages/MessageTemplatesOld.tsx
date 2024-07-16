@@ -247,11 +247,7 @@ const MessageTemplatesOld: FC = () => {
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const { language } = row?.original || {};
-                    if (language.startsWith('es')) {
-                        return 'ES';
-                    } else {
-                        return language.toUpperCase();
-                    }
+                    return language.toUpperCase();
                 }
             },
             {
@@ -1631,15 +1627,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         {!isProvider && (
                             <FieldSelect
                                 className="col-6"
-                                data={dataLanguage}
+                                data={dataExternalLanguage}
                                 disabled={disableInput}
                                 error={errors?.language?.message}
                                 label={t(langKeys.language)}
                                 onChange={(value) => setValue("language", value?.domainvalue)}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                optionDesc="description"
+                                optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("language").startsWith('es') ? 'ES' : getValues("language").toUpperCase()}
+                                valueDefault={getValues("language")?.toUpperCase()}
                             />
                         )}
                     </div>
