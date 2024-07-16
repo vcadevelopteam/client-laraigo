@@ -1630,12 +1630,12 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
 
             <Tooltip title={t(langKeys.delete)} arrow placement="top">
                 <IconButton size="small" onClick={deleteTack}>
-                    <DeleteForeverIcon style={{ color: "#dadada" }} />
+                    <DeleteForeverIcon />
                 </IconButton>
             </Tooltip>
             <Tooltip title={t(langKeys.gotomessage)} arrow placement="top">
                 <IconButton size="small" onClick={gotomessage} >
-                    <ReplyIcon style={{ color: "#dadada" }} />
+                    <ReplyIcon />
                 </IconButton>
             </Tooltip>
         </div>
