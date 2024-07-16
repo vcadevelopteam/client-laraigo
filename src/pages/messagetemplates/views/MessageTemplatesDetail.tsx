@@ -2261,6 +2261,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 </div>
                             </div>
                         )}
+                        {(isNew && getValues('type') === 'HSM') && (
+                            <div className="col-8" style={{ display: 'flex' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <CustomTitleHelper
+                                        title={t(langKeys.categorychange) + ' '}
+                                        helperText={t(langKeys.test)}
+                                        titlestyle={{ fontWeight: 'bold', fontSize: 20 }}
+                                    />
+                                    <span>{t(langKeys.categorychangetext)}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="row-zyx" style={{ display: 'flex', alignItems: 'center' }}>
                         <FieldSelect
@@ -2308,6 +2320,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 valueDefault={() => getLimitMessage(getValues('providermessagelimit'))}
                                 disabled
                                 size="small"
+                            />
+                        )}
+                        {(isNew && getValues('type') === 'HSM') && (
+                            <FieldSelect
+                                className="col-2"
+                                variant="outlined"
+                                data={[{value: "ACTIVADO"}, {value: "DESACTIVADO"}]}
+                                size="small"
+                                optionDesc="value"
+                                optionValue="value"
                             />
                         )}
                     </div>

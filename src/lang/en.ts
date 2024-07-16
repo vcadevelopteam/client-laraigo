@@ -6408,6 +6408,8 @@ const translation: LangKeys = {
   activated: 'Activated',
   desactivated: 'Desactivated',
   messagesendingmode: 'Message sending mode',
+  categorychange: 'Category Change',
+  categorychangetext: 'Enables automatic change of category after registration according to Goal',
 
 };
 

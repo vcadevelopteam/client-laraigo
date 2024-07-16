@@ -6359,6 +6359,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   activated: 'Activado',
   desactivated: 'Desactivado',
   messagesendingmode: 'Modo de envío de mensaje',
+  categorychange: 'Cambio de Categoría',
+  categorychangetext: 'Habilita el cambio automático de la categoría después de su registro según Meta',
 
 };
 

@@ -6356,6 +6356,8 @@ export const langKeys = {
   activated: 'activated',
   desactivated: 'desactivated',
   messagesendingmode: 'messagesendingmode',
+  categorychange: 'categorychange',
+  categorychangetext: 'categorychangetext',
 };
 
 export type LangKeys = typeof langKeys;
