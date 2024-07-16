@@ -413,7 +413,7 @@ const translation: LangKeys = {
   basicdesc1: "Diseñado para pequeños negocios",
   cancelsuscriptionconfirmation: "¿Desea cancelar su suscripción?",
   confirmchangeplan: "¿Desea cambiar de plan?",
-  detailchangeplan1: "Para mayor detalle de los planes, visita https://laraigo.com/ y haz clic en Pricing.",
+  detailchangeplan1: "Para mayor detalle de los planes, visita https://laraigo.com/planes-y-precios/",
   basicdesc2: "Incluye un agente, un canal y hasta 100 contactos",
   prodesc1: "Herramientas profesionales para conversaciones omnicanal",
   prodesc2: "Incluye 3 agentes, 3 canales y hasta 300 contactos",
@@ -6354,6 +6354,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   message_templates_channel_help: 'Muestra el o los canales asignados a la plantilla de comunicación. Para os canales Whatsapp de manera automática mostrará las plantillas del WABA asignado.',
   send_your_message: 'Envía un mensaje...',
   read_singular_help: 'Para aquellos usuarios que tengan desactivado el visto azul o de confirmación de lectura, no se podrá obtener dicho estado, por temas de privacidad.',
+  usagesettings: 'Configuraciones de Uso',
+  correctionandlanguages: 'Correción e Idiomas',
+  activated: 'Activado',
+  desactivated: 'Desactivado',
+  messagesendingmode: 'Modo de envío de mensaje',
 
 };
 

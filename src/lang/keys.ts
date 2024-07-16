@@ -6351,7 +6351,11 @@ export const langKeys = {
   message_templates_channel_help: 'message_templates_channel_help',
   send_your_message: 'send_your_message',
   read_singular_help: 'read_singular_help',
-
+  usagesettings: 'usagesettings',
+  correctionandlanguages: 'correctionandlanguages',
+  activated: 'activated',
+  desactivated: 'desactivated',
+  messagesendingmode: 'messagesendingmode',
 };
 
 export type LangKeys = typeof langKeys;

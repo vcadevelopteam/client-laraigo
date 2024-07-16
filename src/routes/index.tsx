@@ -61,7 +61,7 @@ const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
 const Tickets = lazy(() => import('pages/Tickets'));
-const UserSettings = lazy(() => import('pages/UserSettings'));
+const UserSettings = lazy(() => import('pages/accountconfiguration/UserSettings'));
 const Invoice = lazy(() => import('pages/Invoice'));
 const KPIManager = lazy(() => import('pages/KPIManager'));
 const GetLocations = lazy(() => import('pages/GetLocations'));

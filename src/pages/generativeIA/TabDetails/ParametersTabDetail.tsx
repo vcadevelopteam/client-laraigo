@@ -509,7 +509,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 <FieldSelect
                                                     data={filteredData}
                                                     onChange={(value) => {
-                                                        console.log('onChange value:', value);
                                                         handleSelectChange(value);
                                                         if (value?.domainvalue) {
                                                             setUnansweredQueries(value.domainvalue);
