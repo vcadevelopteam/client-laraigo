@@ -358,7 +358,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                             }
                     }
             }
-    })}, [reportColumns]);
+        })}, [reportColumns]);
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -1482,7 +1482,7 @@ const Reports: FC = () => {
                                                     title={report.description}
                                                 />
 
-                                                <CardContent style={{paddingBottom:0}}>
+                                                <CardContent>
                                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                                         {report.description}
                                                     </Typography>
@@ -1559,13 +1559,12 @@ const Reports: FC = () => {
                                 ))}
                                 {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                                        <Card>
+                                        <Card style={{ position: 'relative' }}>
                                             <CardActionArea
                                                 onClick={() => {
                                                     setViewSelected("view-4");
                                                     setRowReportSelected({ row: report, edit: true });
                                                 }}
-                                                className={classes.cardstyle}
                                             >
                                                 <CardMedia
                                                     component="img"
@@ -1575,7 +1574,7 @@ const Reports: FC = () => {
                                                     title={report.description}
                                                 />
 
-                                                <CardContent style={{paddingBottom:0}}>
+                                                <CardContent>
                                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                                         {report.description}
                                                     </Typography>

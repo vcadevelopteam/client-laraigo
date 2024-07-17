@@ -384,13 +384,6 @@ export const routes: RouteConfig[] = [
         icon: (className) => <OutboundIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
-        key: paths.ADVANCEDTEMPLATESCAMPAIGNS,
-        description: <Trans i18nKey={langKeys.advancedtemplatescampaigns} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.advancedtemplatescampaigns} count={2} />,
-        path: paths.ADVANCEDTEMPLATESCAMPAIGNS,
-        icon: (className) => <FlaskIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-    },
-    {
         key: paths.BOTDESIGNER,
         description: <Trans i18nKey={langKeys.botdesigner} />,
         tooltip: <Trans i18nKey={langKeys.botdesigner} />,
