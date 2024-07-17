@@ -1614,14 +1614,14 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
         </div>
         <div
             style={{
-                flex: 1, marginLeft: '10px', marginRight: '10px', height: "100%", display: "flex", alignItems: "center",
+                flex: 1,  marginRight: '10px', height: "100%", display: "flex", alignItems: "center",
                 borderRight: "1px lightgrey solid", cursor: 'pointer', whiteSpace: showFullText ? 'normal' : 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
             }}
             onClick={handleTextClick}
-            title={showFullText ? '' : (interactionText.length > 75 ? interactionText : '')}
+            title={showFullText ? '' : (interactionText.length > 100 ? interactionText : '')}
         >
             <div style={{ width: "100%" }}>
-                {interactionText.length > 75 && !showFullText ? interactionText.substring(0, 75) + '...' : interactionText}
+                {interactionText.length > 100 && !showFullText ? interactionText.substring(0, 100) + '...' : interactionText}
             </div>
         </div>
 
