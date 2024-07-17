@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, TackPinnedIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -516,7 +516,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
+                {Boolean(interactionid) && <TackIcon fill="#8F92A1" className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
                 {!pinnedmessagesSelected.some((item: any) => item.interactionid === interactionid) &&
                     <IconButton size="small"
                         title={t(langKeys.pinmessagehelper)}
@@ -524,7 +524,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
                         style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
                         onClick={() => fixComment(interactiontext)}>
-                        <TackIcon
+                        <TackPinnedIcon
+                            fill="#8F92A1"
                             className={clsx(classes2.tackIcon)}
                         />
                     </IconButton>}

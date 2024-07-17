@@ -40,7 +40,7 @@ import InteractionsPanel from './InteractionsPanel';
 import { getLeadProductsDomain, resetGetLeadProductsDomain } from 'store/lead/actions';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ReplyIcon from '@material-ui/icons/Reply';
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+import { ExpandLess, ExpandMore, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -1457,25 +1457,26 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
                 <Tooltip title={t(langKeys.increase)} arrow placement="top">
                     <IconButton size="small" style={{ padding: 0, marginTop: 0 }} onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
-                        <KeyboardArrowUpIcon />
+                        <ExpandLess />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={t(langKeys.decrease)} arrow placement="top">
                     <IconButton size="small" style={{ padding: 0, marginBottom: 0 }} onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
-                        <KeyboardArrowDownIcon />
+                        <ExpandMore />
                     </IconButton>
                 </Tooltip>
             </div>
             <div
                 style={{
                     flex: 1, height: "100%", display: "flex", alignItems: "center", gap: 8,
+                    fontSize: 16,
                     borderRight: "1px lightgrey solid", cursor: 'pointer', whiteSpace: showFullText ? 'normal' : 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                 }}
                 onClick={handleTextClick}
                 title={showFullText ? '' : (interactionText.length > 100 ? interactionText : '')}
             >
                 <div style={{  display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f5', padding: 4, borderRadius: 4 }}>
-                    <TackIcon fill="#8F92A1" width={16} height={16} />
+                    <TackIcon fill="#8F92A1" width={20} height={20} />
                 </div>
                 <div style={{ width: "100%" }}>
                     {interactionText.length > 100 && !showFullText ? interactionText.substring(0, 100) + '...' : interactionText}
