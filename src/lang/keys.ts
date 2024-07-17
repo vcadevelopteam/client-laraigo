@@ -6354,6 +6354,14 @@ export const langKeys = {
   message_templates_channel_help: 'message_templates_channel_help',
   send_your_message: 'send_your_message',
   routinglogicerror2: "routinglogicerror2",
+  read_singular_help: 'read_singular_help',
+  usagesettings: 'usagesettings',
+  correctionandlanguages: 'correctionandlanguages',
+  activated: 'activated',
+  desactivated: 'desactivated',
+  messagesendingmode: 'messagesendingmode',
+  categorychange: 'categorychange',
+  categorychangetext: 'categorychangetext',
 };
 
 export type LangKeys = typeof langKeys;

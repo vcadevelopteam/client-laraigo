@@ -6406,6 +6406,14 @@ const translation: LangKeys = {
   message_templates_channel_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the WABA templates assigned.',
   send_your_message: 'Send your message...',
   routinglogicerror2: "Routing logic has already been applied to one or more of the selected orders",
+  read_singular_help: 'For those users who have deactivated the blue tick or reading confirmation, it will not be possible to obtain this status, due to privacy issues.',
+  usagesettings: 'Usage Settings',
+  correctionandlanguages: 'Correction and Languages',
+  activated: 'Activated',
+  desactivated: 'Desactivated',
+  messagesendingmode: 'Message sending mode',
+  categorychange: 'Category Change',
+  categorychangetext: 'Enables automatic change of category after registration according to Goal',
 };
 
 const enResource: ResourceLanguage = {

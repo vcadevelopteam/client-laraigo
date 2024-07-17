@@ -381,12 +381,13 @@ export const AddButtonMenuCard: React.FC<TemplateIconsProps> = ({
 interface CustomTitleHelperProps {
     title: string;
     helperText?: string;
+    titlestyle?: React.CSSProperties;
 }
 
-export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText, titlestyle }) => {
     const classes = useStyles();
     return (
-        <span className={classes.subtittles}>
+        <span className={classes.subtittles} style={titlestyle}>
             {title}
             {helperText ? (
                 <Tooltip title={helperText} arrow placement="top" >

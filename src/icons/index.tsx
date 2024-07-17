@@ -368,3 +368,6 @@ export {ReactComponent as ItalicKIcon} from './italicKIcon.svg'
 export {ReactComponent as UnderlineSIcon} from './underlineSIcon.svg'
 export {ReactComponent as StrikethroughLineIcon} from './strikethroughLineIcon.svg'
 export {ReactComponent as TackIcon} from './tackIcon.svg'
+export {ReactComponent as IAIcon} from './IAIcon.svg'
+export { ReactComponent as AIIcon } from './AI.svg';
+export {ReactComponent as SendToBlockIcon2} from './sendtoblock.svg'

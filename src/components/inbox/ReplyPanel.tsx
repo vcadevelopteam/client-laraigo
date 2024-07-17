@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
+import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IAIcon, AIIcon, AIBussiness, SendToBlockIcon, IALaraigoLogo, DashboardIAIcon, AIModelsIcon, IAEntrenamientoIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -47,10 +47,12 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
+import GamesIcon from '@material-ui/icons/Games';
 import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
-import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
+import FormatStrikethroughIcon from '@material-ui/icons/FormatStrikethrough';
+import CodeIcon from '@material-ui/icons/Code';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -84,6 +86,13 @@ const useStylesInteraction = makeStyles(() => ({
             color: "#84818A",
         },
     },
+    classesicons: {
+        cursor: 'pointer',      
+        '&:hover': {
+            backgroundColor: 'gray',
+            
+        }
+    }
 }));
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
@@ -608,7 +617,7 @@ const RecordComponent: React.FC<{
                     type: "audio",
                     url: uploadResult?.url || "",
                 });
-                console.log(uploadResult?.url);
+                //console.log(uploadResult?.url);
                 setStartRecording(false);
             }
         }
@@ -756,7 +765,7 @@ const RecordAudioIcon: React.FC<{
                     <RecordIcon
                         className={classes.iconResponse}
                         onClick={handleClick}
-                        style={{ width: 22, height: 22 }}
+                        style={{ width: 28, height: 28 }}
                     />
                 )}
             </Tooltip>
@@ -810,7 +819,6 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
 
     useEffect(() => {
         setRichResponseToShow(richResponseList);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [richResponseList]);
 
     useEffect(() => {
@@ -819,7 +827,6 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
         } else {
             setRichResponseToShow(richResponseList.filter((x) => x.title.toLowerCase().includes(search.toLowerCase())));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     const reasignTicket = React.useCallback(() => {
@@ -885,7 +892,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
-                                        <div>{t(langKeys.sentoblock)}</div>
+                                        <div>Enviar a bloque</div>
                                         <IconButton size="small" onClick={() => setShowSearch(true)} edge="end">
                                             <SearchIcon />
                                         </IconButton>
@@ -1368,17 +1375,122 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         setText(myquickreply);
     };
 
-    const handleKeyPress = (event: any) => {
-        if (event.ctrlKey || event.shiftKey) return;
-        if (event.charCode === 13) {
-            event.preventDefault();
-            if (text.trim() || files.length > 0) return triggerReplyMessage();
+    const selectRichResponse = (block: Dictionary) => {
+        const callback = () => {
+            const listInteractions = cleanedRichResponse(block.cards, variablecontext);
+
+            if (listInteractions.length === 0) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: "No hay cards" }));
+                return;
+            }
+            settriggerReply(true);
+            dispatch(
+                replyTicket(
+                    listInteractions.map((x) => ({
+                        ...ticketSelected!!,
+                        interactiontype: x.type,
+                        interactiontext: x.content,
+                        validateUserOnTicket: userType === "AGENT",
+                    })),
+                    true
+                )
+            );
+
+            listInteractions.forEach((x: Dictionary, i: number) => {
+                const newInteractionSocket = {
+                    ...ticketSelected!!,
+                    interactionid: 0,
+                    typemessage: x.type,
+                    typeinteraction: null,
+                    lastmessage: x.content,
+                    createdate: new Date().toISOString(),
+                    userid: 0,
+                    usertype: "agent",
+                    ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+                };
+                if (userType === "AGENT") {
+                    dispatch(
+                        emitEvent({
+                            event: "newMessageFromAgent",
+                            data: newInteractionSocket,
+                        })
+                    );
+                }
+            });
+
+            if (userType === "SUPERVISOR") reasignTicket();
+
+            setText("");
+        };
+
+        if (userType === "SUPERVISOR") {
+            dispatch(
+                manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_reasign_with_reply),
+                    callback,
+                })
+            );
+        } else {
+            callback();
         }
     };
 
-    const handleSelectionChange = (event: any) => {
-        setLastSelection(event?.target?.selectionEnd ?? 0);
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {     
+        if (event.ctrlKey && event.code === 'Enter') {
+            console.log("Ctrl + Enter pressed");
+            setText((prevText) => prevText + '\n');
+            event.preventDefault();
+        } else if (event.shiftKey) {
+            console.log("Shift key pressed, allowing default behavior");
+            return;
+        } else if (event.key === 'Enter') {
+            console.log("Enter pressed");
+            event.preventDefault();
+            if (text.trim() || files.length > 0) {
+                console.log("Triggering reply message");
+                triggerReplyMessage();
+            }
+        }
+
+        setText(newText);
     };
+
+    const applyTextStyle = (style: string) => {
+        const input = document.getElementById('chat-input') as HTMLDivElement | null;
+        if (!input) return;
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        if (start === null || end === null) return;
+        const selectedText = text.substring(start, end);
+        const beforeText = text.substring(0, start);
+        const afterText = text.substring(end);
+
+        let newText = '';
+
+        switch (style) {
+            case 'bold':
+                newText = `${beforeText}*${selectedText}*${afterText}`;
+                break;
+            case 'italic':
+                newText = `${beforeText}_${selectedText}_${afterText}`;
+                break;
+            case 'underline':
+                newText = `${beforeText}z${selectedText}z${afterText}`;
+                break;
+            case 'strikethrough':
+                newText = `${beforeText}~${selectedText}~${afterText}`;
+                break;
+            case 'inline':
+                newText = `${beforeText}\\${selectedText}\\${afterText}`;
+                break;
+            default:
+                return;
+        }
+
+        setText(newText);
+    };
+
 
     function onPasteTextbar(e: any) {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
@@ -1389,59 +1501,12 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-    const formatText = (c: string) => {
-        const input = inputRef.current.querySelector('textarea');
-        const { value, selectionStart, selectionEnd } = input;
 
-        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
-            if (selectionStart !== selectionEnd) {
-                // Hay texto seleccionado
-                const selectedText = value.slice(selectionStart, selectionEnd);
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionEnd);
-                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
-                    input.focus();
-                }, 0);
-            } else {
-                // No hay texto seleccionado
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionStart);
-                const newValue = `${beforeText}${c}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                    input.focus();
-                }, 0);
-            }
-        } else {
-            if (selectionStart !== selectionEnd) {
-                if (c === "*") {
-
-                    const beforeSelection = text.slice(0, selectionStart);
-                    const selectedText = text.slice(selectionStart, selectionEnd);
-                    const afterSelection = text.slice(selectionEnd);
-
-                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
-                    setText(newText);
-                }
-            }
-        }
-    }
-
-    const handleKeyDown = (event) => {
-        if (event.altKey && event.key === 'Enter') {
-            event.preventDefault();
-            setText(text + '\n');
-        }
-    };
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
                 {showReply ? (
-                    <div>
+                    <div >
                         {files.length > 0 && (
                             <div
                                 style={{
@@ -1457,92 +1522,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 ))}
                             </div>
                         )}
-                        <div style={{ alignItems: "center" }}>
-                            <ClickAwayListener onClickAway={handleClickAway}>
-                                <div>
-                                    <MailRecipients setCopyEmails={setCopyEmails} />
-                                    <RichText
-                                        style={{ width: "100%" }}
-                                        value={bodyobject}
-                                        onChange={setBodyobject}
-                                        positionEditable="top"
-                                        spellCheck
-                                        onKeyPress={handleKeyPress}
-                                        quickReplies={quickReplies.data}
-                                        refresh={refresh}
-                                        placeholder="Send your message..."
-                                        emojiNoShow={emojiNoShow}
-                                        emoji={true}
-                                        emojiFavorite={emojiFavorite}
-                                        setFiles={setFiles}
-                                        collapsed={true}
-                                        endinput={
-                                            <div style={{ display: "block" }}>
-                                                <div
-                                                    style={{ marginLeft: "auto", marginRight: 0 }}
-                                                    className={clsx(classes.iconSend, {
-                                                        [classes.iconSendDisabled]: !(
-                                                            renderToString(toElement(bodyobject)) !==
-                                                            `<div data-reactroot=""><p><span></span></p></div>` ||
-                                                            files.filter((x) => x.url).length > 0
-                                                        ),
-                                                    })}
-                                                    onClick={triggerReplyMessage}
-                                                >
-                                                    <SendIcon />
-                                                </div>
-                                            </div>
-                                        }
-                                    >
-                                        <GifPickerZyx
-                                            onSelect={(url: string) =>
-                                                setFiles((p) => [
-                                                    ...p,
-                                                    { type: "image", url, id: new Date().toISOString() },
-                                                ])
-                                            }
-                                        />
-                                        <UploaderIcon
-                                            classes={classes}
-                                            setFiles={setFiles}
-                                            initfile={fileimage}
-                                            setfileimage={setfileimage}
-                                        />
-                                    </RichText>
-                                    {openDialogHotKey && (
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                bottom: 100,
-                                                left: 15,
-                                                zIndex: 1201,
-                                            }}
-                                        >
-                                            <div
-                                                className="scroll-style-go"
-                                                style={{
-                                                    maxHeight: 200,
-                                                    display: "flex",
-                                                    gap: 4,
-                                                    flexDirection: "column",
-                                                }}
-                                            >
-                                                {typeHotKey === "quickreply"
-                                                    && quickRepliesToShow.map((item) => (
-                                                        <div
-                                                            key={item.quickreplyid}
-                                                            className={classes.hotKeyQuickReply}
-                                                            onClick={() => selectQuickReply(item.quickreply)}
-                                                        >
-                                                            {item.description}
-                                                        </div>
-                                                    ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </ClickAwayListener>
-                        </div>
+                           
                     </div>
                 ) : (
                     <div
@@ -1563,224 +1543,206 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         return (
             <>
                 {showReply && (
-                    <DragDropFile setFiles={setFiles} disabled={lock_send_file_pc}>
-                        <div className={classes.containerResponse}>
-                            {(record || startRecording) && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                    }}>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            width: "100%",
-                                            gap: 8,
-                                            flexWrap: "wrap",
-                                            borderBottom: "1px solid #EBEAED",
-                                            paddingBottom: 8,
-                                        }}
-                                    >
-                                        <RecordComponent
-                                            record={record}
-                                            setRecord={setRecord}
-                                            setStartRecording={setStartRecording}
-                                            startRecording={startRecording}
-                                        />
-                                    </div>
-                                    <div
-                                        className={clsx(classes.iconSend, {
-                                            [classes.iconSendDisabled]: !(
-                                                text ||
-                                                files.filter((x) => !!x.url).length > 0 ||
-                                                record
-                                            ),
-                                        })}
-                                        style={{ marginTop: 12 }}
-                                        onClick={triggerReplyMessage}
-                                    >
-                                        <SendIcon />
-                                    </div>
-                                </div>
-                            )}
-                            {files.length > 0 && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        gap: 8,
-                                        flexWrap: "wrap",
-                                        borderBottom: "1px solid #EBEAED",
-                                        paddingBottom: 8,
-                                    }}
-                                >
-                                    {files.map((item: IFile) => (
-                                        <ItemFile key={item.id} item={item} setFiles={setFiles} />
-                                    ))}
-                                </div>
-                            )}
-                            {!record && !startRecording && (
-                                <ClickAwayListener onClickAway={handleClickAway}>
-                                    <div>
-                                        <div style={{ display: "flex" }}>
-                                            <InputBase
-                                                fullWidth
-                                                value={text}
-                                                onChange={handleInputChange}
-                                                placeholder="Send your message..."
-                                                onKeyPress={handleKeyPress}
-                                                rows={numRows}
-                                                multiline
-                                                onKeyDown={handleKeyDown}
-                                                inputProps={{ "aria-label": "naked" }}
-                                                onPaste={onPasteTextbar}
-                                                onSelect={handleSelectionChange}
-                                                ref={inputRef}
+                  
+                <DragDropFile setFiles={setFiles} disabled={lock_send_file_pc}>
+                    <div className={classes.containerResponse}>
+                        {(record || startRecording) && (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 8,
+                                    flexWrap: "wrap",
+                                    borderBottom: "1px solid #EBEAED",
+                                    paddingBottom: 8,
+                                }}
+                            >
+                                <RecordComponent
+                                    record={record}
+                                    setRecord={setRecord}
+                                    setStartRecording={setStartRecording}
+                                    startRecording={startRecording}
+                                />
+                            </div>
+                        )}
+                        {files.length > 0 && (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 8,
+                                    flexWrap: "wrap",
+                                    borderBottom: "1px solid #EBEAED",
+                                    paddingBottom: 8,
+                                }}
+                            >
+                                {files.map((item: IFile) => (
+                                    <ItemFile key={item.id} item={item} setFiles={setFiles} />
+                                ))}
+                            </div>
+                        )}
+                        {!record && !startRecording && (
+                            <ClickAwayListener onClickAway={handleClickAway}>
+                                <div>
+                                    <div style={{ display: 'flex'}}>
+
+                                        <InputBase
+                                            id="chat-input"
+                                            fullWidth
+                                            value={text}
+                                            onChange={(e) => setText(e.target.value)}
+                                            placeholder={t(langKeys.send_your_message)}
+                                            onKeyPress={handleKeyPress}
+                                            multiline
+                                            minRows={1}
+                                            maxRows={6}
+                                            inputProps={{
+                                                'aria-label': 'naked',
+                                                style: {
+                                                    maxHeight: '144px',
+                                                    overflow: 'auto',                                                 
+                                                },
+                                            }}
+                                            onPaste={onPasteTextbar}
+                                            onSelect={handleSelectionChange}                                            
+                                        />  
+
+
+
+                                        {!files.length && !text && allowRecording ? (
+                                            <RecordAudioIcon
+                                                classes={classes}
+                                                setRecord={setRecord}
+                                                setStartRecording={setStartRecording}
+                                                startRecording={startRecording}
                                             />
-                                            {!files.length && !text && allowRecording && (
-                                                <RecordAudioIcon
-                                                    classes={classes}
-                                                    setRecord={setRecord}
-                                                    setStartRecording={setStartRecording}
-                                                    startRecording={startRecording}
-                                                />
-                                            )}
-                                        </div>
-                                        {openDialogHotKey && (
+                                        ) : (
                                             <div
-                                                style={{
-                                                    position: "absolute",
-                                                    bottom: 100,
-                                                    left: 15,
-                                                    zIndex: 1201,
-                                                }}
+                                                className={clsx(classes.iconSend, {
+                                                    [classes.iconSendDisabled]: !(
+                                                        text ||
+                                                        files.filter((x) => !!x.url).length > 0 ||
+                                                        record
+                                                    ),
+                                                })}
+                                                onClick={triggerReplyMessage}
                                             >
-                                                <div
-                                                    className="scroll-style-go"
-                                                    style={{
-                                                        maxHeight: 200,
-                                                        display: "flex",
-                                                        gap: 4,
-                                                        flexDirection: "column",
-                                                    }}
-                                                >
-                                                    {typeHotKey === "quickreply"
-                                                        && quickRepliesToShow.map((item) => (
-                                                            <div
-                                                                key={item.quickreplyid}
-                                                                className={classes.hotKeyQuickReply}
-                                                                onClick={() => selectQuickReply(item.quickreply)}
-                                                            >
-                                                                {item.description}
-                                                            </div>
-                                                        ))}
-                                                </div>
+                                                <SendIcon />
                                             </div>
                                         )}
                                     </div>
-                                </ClickAwayListener>
-                            )}
-                            {!record && !startRecording && (
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                                        <QuickReplyIcon classes={classes} setText={setText} />
-                                        <TmpRichResponseIcon classes={classes} setText={setText} />
-                                        <UploaderIcon
-                                            classes={classes}
-                                            setFiles={setFiles}
-                                            initfile={fileimage}
-                                            setfileimage={setfileimage}
-                                        />
-                                        <EmojiPickerZyx
-                                            emojisIndexed={EMOJISINDEXED}
-                                            onSelect={(e) => {
-                                                lastSelection < (text || "").length - 1
-                                                    ? setText(
-                                                        (p) =>
-                                                            p.substring(0, lastSelection) +
-                                                            e.native +
-                                                            p.substring(lastSelection)
-                                                    )
-                                                    : setText((p) => p + e.native);
+        
+                                    {openDialogHotKey && (
+                                        <div
+                                            style={{
+                                                position: 'absolute',
+                                                bottom: 100,
+                                                left: 15,
+                                                zIndex: 1201,
                                             }}
-                                            emojisNoShow={emojiNoShow}
-                                            emojiFavorite={emojiFavorite}
-                                        />
-                                        <GifPickerZyx
-                                            onSelect={(url: string) =>
-                                                setFiles((p) => [
-                                                    ...p,
-                                                    { type: "image", url, id: new Date().toISOString() },
-                                                ])
-                                            }
-                                        />
-
-                                        <CopilotLaraigoIcon
-                                            classes={classes}
-                                            enabled={propertyCopilotLaraigo}
-                                        />
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("*")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
-                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>}
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("~")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("```")
-                                                }} size='small'>
-                                                    <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-
-                                    </div>
-                                    <div
-                                        className={clsx(classes.iconSend, {
-                                            [classes.iconSendDisabled]: !(
-                                                text ||
-                                                files.filter((x) => !!x.url).length > 0 ||
-                                                record
-                                            ),
-                                        })}
-                                        onClick={triggerReplyMessage}
-                                    >
-                                        <SendIcon />
-                                    </div>
+                                        >
+                                            <div
+                                                className="scroll-style-go"
+                                                style={{
+                                                    maxHeight: 200,
+                                                    display: 'flex',
+                                                    gap: 4,
+                                                    flexDirection: 'column',
+                                                }}
+                                            >
+                                                {typeHotKey === 'quickreply'
+                                                    ? quickRepliesToShow.map((item) => (
+                                                        <div
+                                                            key={item.quickreplyid}
+                                                            className={classes.hotKeyQuickReply}
+                                                            onClick={() => selectQuickReply(item.quickreply)}
+                                                        >
+                                                            {item.description}
+                                                        </div>
+                                                    ))
+                                                    : richResponseToShow.map((item) => (
+                                                        <div
+                                                            key={item.id}
+                                                            className={classes.hotKeyQuickReply}
+                                                            onClick={() => selectRichResponse(item)}
+                                                        >
+                                                            {item.title}
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                            <BottomGoToUnder />
+        
+                            </ClickAwayListener>
+        
+                        )}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                                {!record && !startRecording && (
+                                    <QuickReplyIcon classes={classes} setText={setText} />
+                                )}
+                                {!record && !startRecording && (
+                                    <TmpRichResponseIcon classes={classes} setText={setText} />
+                                )}
+                                {!record && !startRecording && (
+                                    <UploaderIcon
+                                        classes={classes}
+                                        setFiles={setFiles}
+                                        initfile={fileimage}
+                                        setfileimage={setfileimage}
+                                    />
+                                )}
+        
+                                {!record && !startRecording && (
+                                    <EmojiPickerZyx
+                                        emojisIndexed={EMOJISINDEXED}
+                                        onSelect={(e) => {
+                                            lastSelection < (text || "").length - 1
+                                                ? setText(
+                                                    (p) =>
+                                                        p.substring(0, lastSelection) +
+                                                        e.native +
+                                                        p.substring(lastSelection)
+                                                )
+                                                : setText((p) => p + e.native);
+                                        }}
+                                        emojisNoShow={emojiNoShow}
+                                        emojiFavorite={emojiFavorite}
+                                    />
+                                )}
+                                {!record && !startRecording && (
+                                    <GifPickerZyx
+                                        onSelect={(url: string) =>
+                                            setFiles((p) => [
+                                                ...p,
+                                                { type: "image", url, id: new Date().toISOString() },
+                                            ])
+                                        }
+                                    />
+                                )}
+                                {!record && !startRecording && (
+                                    <GamesIcon 
+                                        style={{
+                                            cursor:'pointer'                                           
+                                        }}
+                                    />
+                                )}
+                            </div>
+                            <div style={{ display: 'flex', gap: '1rem', color: '#463C3C' }}>
+                                <FormatBoldIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('bold')} />
+                                <FormatItalicIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('italic')} />
+                                <FormatUnderlinedIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('underline')} />
+                                <FormatStrikethroughIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('strikethrough')} />
+                                <CodeIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('inline')} />
+                            </div>
+                          
                         </div>
-                    </DragDropFile>
+                        <BottomGoToUnder />
+                    </div>
+                </DragDropFile>
+
+                      
+                
+                   
                 )}
                 {!showReply && (
                     <div className={classes.containerResponse}>
