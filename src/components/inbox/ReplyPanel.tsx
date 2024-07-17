@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon } from "icons";
+import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IAIcon, AIIcon, AIBussiness, SendToBlockIcon, IALaraigoLogo, DashboardIAIcon, AIModelsIcon, IAEntrenamientoIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -48,6 +48,11 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
 import GamesIcon from '@material-ui/icons/Games';
+import FormatBoldIcon from '@material-ui/icons/FormatBold';
+import FormatItalicIcon from '@material-ui/icons/FormatItalic';
+import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
+import FormatStrikethroughIcon from '@material-ui/icons/FormatStrikethrough';
+import CodeIcon from '@material-ui/icons/Code';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -81,6 +86,13 @@ const useStylesInteraction = makeStyles(() => ({
             color: "#84818A",
         },
     },
+    classesicons: {
+        cursor: 'pointer',      
+        '&:hover': {
+            backgroundColor: 'gray',
+            
+        }
+    }
 }));
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
@@ -605,7 +617,7 @@ const RecordComponent: React.FC<{
                     type: "audio",
                     url: uploadResult?.url || "",
                 });
-                console.log(uploadResult?.url);
+                //console.log(uploadResult?.url);
                 setStartRecording(false);
             }
         }
@@ -753,7 +765,7 @@ const RecordAudioIcon: React.FC<{
                     <RecordIcon
                         className={classes.iconResponse}
                         onClick={handleClick}
-                        style={{ width: 22, height: 22 }}
+                        style={{ width: 28, height: 28 }}
                     />
                 )}
             </Tooltip>
@@ -782,7 +794,6 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
 
     useEffect(() => {
         setRichResponseToShow(richResponseList);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [richResponseList]);
 
     useEffect(() => {
@@ -791,7 +802,6 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
         } else {
             setRichResponseToShow(richResponseList.filter((x) => x.title.toLowerCase().includes(search.toLowerCase())));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     const reasignTicket = React.useCallback(() => {
@@ -857,7 +867,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
-                                        <div>User Rich Response</div>
+                                        <div>Enviar a bloque</div>
                                         <IconButton size="small" onClick={() => setShowSearch(true)} edge="end">
                                             <SearchIcon />
                                         </IconButton>
@@ -1381,25 +1391,63 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     };
 
-    const handleKeyPress = (event: any) => {
-        if (event.ctrlKey) {
-          if (event.key === 'Enter') {
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {     
+        if (event.ctrlKey && event.code === 'Enter') {
+            console.log("Ctrl + Enter pressed");
             setText((prevText) => prevText + '\n');
             event.preventDefault();
-          }
         } else if (event.shiftKey) {
-          return;
-        } else if (event.charCode === 13) {
-          event.preventDefault();
-          if (text.trim() || files.length > 0) {
-            triggerReplyMessage();
-          }
+            console.log("Shift key pressed, allowing default behavior");
+            return;
+        } else if (event.key === 'Enter') {
+            console.log("Enter pressed");
+            event.preventDefault();
+            if (text.trim() || files.length > 0) {
+                console.log("Triggering reply message");
+                triggerReplyMessage();
+            }
         }
     };
 
     const handleSelectionChange = (event: any) => {
         setLastSelection(event?.target?.selectionEnd ?? 0);
     };
+
+    const applyTextStyle = (style: string) => {
+        const input = document.getElementById('chat-input') as HTMLDivElement | null;
+        if (!input) return;
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        if (start === null || end === null) return;
+        const selectedText = text.substring(start, end);
+        const beforeText = text.substring(0, start);
+        const afterText = text.substring(end);
+
+        let newText = '';
+
+        switch (style) {
+            case 'bold':
+                newText = `${beforeText}*${selectedText}*${afterText}`;
+                break;
+            case 'italic':
+                newText = `${beforeText}_${selectedText}_${afterText}`;
+                break;
+            case 'underline':
+                newText = `${beforeText}z${selectedText}z${afterText}`;
+                break;
+            case 'strikethrough':
+                newText = `${beforeText}~${selectedText}~${afterText}`;
+                break;
+            case 'inline':
+                newText = `${beforeText}\\${selectedText}\\${afterText}`;
+                break;
+            default:
+                return;
+        }
+
+        setText(newText);
+    };
+
 
     function onPasteTextbar(e: any) {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
@@ -1410,11 +1458,12 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
+
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
                 {showReply ? (
-                    <div>
+                    <div >
                         {files.length > 0 && (
                             <div
                                 style={{
@@ -1430,101 +1479,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 ))}
                             </div>
                         )}
-                        <div style={{ alignItems: "center" }}>
-                            <ClickAwayListener onClickAway={handleClickAway}>
-                                <div>
-                                    <MailRecipients setCopyEmails={setCopyEmails} />
-                                    <RichText
-                                        style={{ width: "100%" }}
-                                        value={bodyobject}
-                                        onChange={setBodyobject}
-                                        positionEditable="top"
-                                        spellCheck
-                                        onKeyPress={handleKeyPress}
-                                        quickReplies={quickReplies.data}
-                                        refresh={refresh}
-                                        placeholder={t(langKeys.send_your_message)}
-                                        emojiNoShow={emojiNoShow}
-                                        emoji={true}
-                                        emojiFavorite={emojiFavorite}
-                                        setFiles={setFiles}
-                                        collapsed={true}
-                                        endinput={
-                                            <div style={{ display: "block" }}>
-                                                <div
-                                                    style={{ marginLeft: "auto", marginRight: 0 }}
-                                                    className={clsx(classes.iconSend, {
-                                                        [classes.iconSendDisabled]: !(
-                                                            renderToString(toElement(bodyobject)) !==
-                                                                `<div data-reactroot=""><p><span></span></p></div>` ||
-                                                            files.filter((x) => x.url).length > 0
-                                                        ),
-                                                    })}
-                                                    onClick={triggerReplyMessage}
-                                                >
-                                                    <SendIcon />
-                                                </div>
-                                            </div>
-                                        }
-                                    >
-                                        <GifPickerZyx
-                                            onSelect={(url: string) =>
-                                                setFiles((p) => [
-                                                    ...p,
-                                                    { type: "image", url, id: new Date().toISOString() },
-                                                ])
-                                            }
-                                        />
-                                        <UploaderIcon
-                                            classes={classes}
-                                            setFiles={setFiles}
-                                            initfile={fileimage}
-                                            setfileimage={setfileimage}
-                                        />
-                                    </RichText>
-                                    {openDialogHotKey && (
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                bottom: 100,
-                                                left: 15,
-                                                zIndex: 1201,
-                                            }}
-                                        >
-                                            <div
-                                                className="scroll-style-go"
-                                                style={{
-                                                    maxHeight: 200,
-                                                    display: "flex",
-                                                    gap: 4,
-                                                    flexDirection: "column",
-                                                }}
-                                            >
-                                                {typeHotKey === "quickreply"
-                                                    ? quickRepliesToShow.map((item) => (
-                                                          <div
-                                                              key={item.quickreplyid}
-                                                              className={classes.hotKeyQuickReply}
-                                                              onClick={() => selectQuickReply(item.quickreply)}
-                                                          >
-                                                              {item.description}
-                                                          </div>
-                                                      ))
-                                                    : richResponseToShow.map((item) => (
-                                                          <div
-                                                              key={item.id}
-                                                              className={classes.hotKeyQuickReply}
-                                                              onClick={() => selectRichResponse(item)}
-                                                          >
-                                                              {item.title}
-                                                          </div>
-                                                      ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </ClickAwayListener>
-                        </div>
+                           
                     </div>
                 ) : (
                     <div
@@ -1545,178 +1500,206 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         return (
             <>
                 {showReply && (
-                    <DragDropFile setFiles={setFiles} disabled={lock_send_file_pc}>
-                        <div className={classes.containerResponse}>
-                            {(record || startRecording) && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        gap: 8,
-                                        flexWrap: "wrap",
-                                        borderBottom: "1px solid #EBEAED",
-                                        paddingBottom: 8,
-                                    }}
-                                >
-                                    <RecordComponent
-                                        record={record}
-                                        setRecord={setRecord}
-                                        setStartRecording={setStartRecording}
-                                        startRecording={startRecording}
-                                    />
-                                </div>
-                            )}
-                            {files.length > 0 && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        gap: 8,
-                                        flexWrap: "wrap",
-                                        borderBottom: "1px solid #EBEAED",
-                                        paddingBottom: 8,
-                                    }}
-                                >
-                                    {files.map((item: IFile) => (
-                                        <ItemFile key={item.id} item={item} setFiles={setFiles} />
-                                    ))}
-                                </div>
-                            )}
-                            {!record && !startRecording && (
-                                <ClickAwayListener onClickAway={handleClickAway}>
-                                    <div>
-                                    <InputBase
-                                        fullWidth
-                                        value={text}
-                                        onChange={(e) => setText(e.target.value)}
-                                        placeholder={t(langKeys.send_your_message)}
-                                        onKeyPress={handleKeyPress}
-                                        multiline
-                                        minRows={1}
-                                        maxRows={6}
-                                        inputProps={{
-                                        'aria-label': 'naked',
-                                        style: {
-                                            maxHeight: '144px', 
-                                            overflow: 'auto',
-                                        },
-                                        }}
-                                        onPaste={onPasteTextbar}
-                                        onSelect={handleSelectionChange}
-                                    />
+                  
+                <DragDropFile setFiles={setFiles} disabled={lock_send_file_pc}>
+                    <div className={classes.containerResponse}>
+                        {(record || startRecording) && (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 8,
+                                    flexWrap: "wrap",
+                                    borderBottom: "1px solid #EBEAED",
+                                    paddingBottom: 8,
+                                }}
+                            >
+                                <RecordComponent
+                                    record={record}
+                                    setRecord={setRecord}
+                                    setStartRecording={setStartRecording}
+                                    startRecording={startRecording}
+                                />
+                            </div>
+                        )}
+                        {files.length > 0 && (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 8,
+                                    flexWrap: "wrap",
+                                    borderBottom: "1px solid #EBEAED",
+                                    paddingBottom: 8,
+                                }}
+                            >
+                                {files.map((item: IFile) => (
+                                    <ItemFile key={item.id} item={item} setFiles={setFiles} />
+                                ))}
+                            </div>
+                        )}
+                        {!record && !startRecording && (
+                            <ClickAwayListener onClickAway={handleClickAway}>
+                                <div>
+                                    <div style={{ display: 'flex'}}>
+
+                                        <InputBase
+                                            id="chat-input"
+                                            fullWidth
+                                            value={text}
+                                            onChange={(e) => setText(e.target.value)}
+                                            placeholder={t(langKeys.send_your_message)}
+                                            onKeyPress={handleKeyPress}
+                                            multiline
+                                            minRows={1}
+                                            maxRows={6}
+                                            inputProps={{
+                                                'aria-label': 'naked',
+                                                style: {
+                                                    maxHeight: '144px',
+                                                    overflow: 'auto',                                                 
+                                                },
+                                            }}
+                                            onPaste={onPasteTextbar}
+                                            onSelect={handleSelectionChange}                                            
+                                        />  
+
+
+
+                                        {!files.length && !text && allowRecording ? (
+                                            <RecordAudioIcon
+                                                classes={classes}
+                                                setRecord={setRecord}
+                                                setStartRecording={setStartRecording}
+                                                startRecording={startRecording}
+                                            />
+                                        ) : (
+                                            <div
+                                                className={clsx(classes.iconSend, {
+                                                    [classes.iconSendDisabled]: !(
+                                                        text ||
+                                                        files.filter((x) => !!x.url).length > 0 ||
+                                                        record
+                                                    ),
+                                                })}
+                                                onClick={triggerReplyMessage}
+                                            >
+                                                <SendIcon />
+                                            </div>
+                                        )}
+                                    </div>
+        
                                     {openDialogHotKey && (
                                         <div
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: 100,
-                                            left: 15,
-                                            zIndex: 1201,
-                                        }}
-                                        >
-                                        <div
-                                            className="scroll-style-go"
                                             style={{
-                                            maxHeight: 200,
-                                            display: 'flex',
-                                            gap: 4,
-                                            flexDirection: 'column',
+                                                position: 'absolute',
+                                                bottom: 100,
+                                                left: 15,
+                                                zIndex: 1201,
                                             }}
                                         >
-                                            {typeHotKey === 'quickreply'
-                                            ? quickRepliesToShow.map((item) => (
-                                                <div
-                                                    key={item.quickreplyid}
-                                                    className={classes.hotKeyQuickReply}
-                                                    onClick={() => selectQuickReply(item.quickreply)}
-                                                >
-                                                    {item.description}
-                                                </div>
-                                                ))
-                                            : richResponseToShow.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className={classes.hotKeyQuickReply}
-                                                    onClick={() => selectRichResponse(item)}
-                                                >
-                                                    {item.title}
-                                                </div>
-                                                ))}
+                                            <div
+                                                className="scroll-style-go"
+                                                style={{
+                                                    maxHeight: 200,
+                                                    display: 'flex',
+                                                    gap: 4,
+                                                    flexDirection: 'column',
+                                                }}
+                                            >
+                                                {typeHotKey === 'quickreply'
+                                                    ? quickRepliesToShow.map((item) => (
+                                                        <div
+                                                            key={item.quickreplyid}
+                                                            className={classes.hotKeyQuickReply}
+                                                            onClick={() => selectQuickReply(item.quickreply)}
+                                                        >
+                                                            {item.description}
+                                                        </div>
+                                                    ))
+                                                    : richResponseToShow.map((item) => (
+                                                        <div
+                                                            key={item.id}
+                                                            className={classes.hotKeyQuickReply}
+                                                            onClick={() => selectRichResponse(item)}
+                                                        >
+                                                            {item.title}
+                                                        </div>
+                                                    ))}
+                                            </div>
                                         </div>
-                                        </div>
-                                    )}
-                                    </div>
-                                </ClickAwayListener>
-                            )}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                                    {!record && !startRecording && (
-                                        <QuickReplyIcon classes={classes} setText={setText} />
-                                    )}
-                                    {!record && !startRecording && (
-                                        <TmpRichResponseIcon classes={classes} setText={setText} />
-                                    )}
-                                    {!record && !startRecording && (
-                                        <UploaderIcon
-                                            classes={classes}
-                                            setFiles={setFiles}
-                                            initfile={fileimage}
-                                            setfileimage={setfileimage}
-                                        />
-                                    )}
-                                    {!record && !startRecording && (
-                                        <GifPickerZyx
-                                            onSelect={(url: string) =>
-                                                setFiles((p) => [
-                                                    ...p,
-                                                    { type: "image", url, id: new Date().toISOString() },
-                                                ])
-                                            }
-                                        />
-                                    )}
-                                    {!record && !startRecording && (
-                                        <EmojiPickerZyx
-                                            emojisIndexed={EMOJISINDEXED}
-                                            onSelect={(e) => {
-                                                lastSelection < (text || "").length - 1
-                                                    ? setText(
-                                                          (p) =>
-                                                              p.substring(0, lastSelection) +
-                                                              e.native +
-                                                              p.substring(lastSelection)
-                                                      )
-                                                    : setText((p) => p + e.native);
-                                            }}
-                                            emojisNoShow={emojiNoShow}
-                                            emojiFavorite={emojiFavorite}
-                                        />
-                                    )}
-                                       {!record && !startRecording && (
-                                        <GamesIcon/>
-                                    )}
-
-                                    {!files.length && !text && allowRecording && (
-                                        <RecordAudioIcon
-                                            classes={classes}
-                                            setRecord={setRecord}
-                                            setStartRecording={setStartRecording}
-                                            startRecording={startRecording}
-                                        />
                                     )}
                                 </div>
-                                <div
-                                    className={clsx(classes.iconSend, {
-                                        [classes.iconSendDisabled]: !(
-                                            text ||
-                                            files.filter((x) => !!x.url).length > 0 ||
-                                            record
-                                        ),
-                                    })}
-                                    onClick={triggerReplyMessage}
-                                >
-                                    <SendIcon />
-                                </div>
+        
+                            </ClickAwayListener>
+        
+                        )}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                                {!record && !startRecording && (
+                                    <QuickReplyIcon classes={classes} setText={setText} />
+                                )}
+                                {!record && !startRecording && (
+                                    <TmpRichResponseIcon classes={classes} setText={setText} />
+                                )}
+                                {!record && !startRecording && (
+                                    <UploaderIcon
+                                        classes={classes}
+                                        setFiles={setFiles}
+                                        initfile={fileimage}
+                                        setfileimage={setfileimage}
+                                    />
+                                )}
+        
+                                {!record && !startRecording && (
+                                    <EmojiPickerZyx
+                                        emojisIndexed={EMOJISINDEXED}
+                                        onSelect={(e) => {
+                                            lastSelection < (text || "").length - 1
+                                                ? setText(
+                                                    (p) =>
+                                                        p.substring(0, lastSelection) +
+                                                        e.native +
+                                                        p.substring(lastSelection)
+                                                )
+                                                : setText((p) => p + e.native);
+                                        }}
+                                        emojisNoShow={emojiNoShow}
+                                        emojiFavorite={emojiFavorite}
+                                    />
+                                )}
+                                {!record && !startRecording && (
+                                    <GifPickerZyx
+                                        onSelect={(url: string) =>
+                                            setFiles((p) => [
+                                                ...p,
+                                                { type: "image", url, id: new Date().toISOString() },
+                                            ])
+                                        }
+                                    />
+                                )}
+                                {!record && !startRecording && (
+                                    <GamesIcon 
+                                        style={{
+                                            cursor:'pointer'                                           
+                                        }}
+                                    />
+                                )}
                             </div>
-                            <BottomGoToUnder />
+                            <div style={{ display: 'flex', gap: '1rem', color: '#463C3C' }}>
+                                <FormatBoldIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('bold')} />
+                                <FormatItalicIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('italic')} />
+                                <FormatUnderlinedIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('underline')} />
+                                <FormatStrikethroughIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('strikethrough')} />
+                                <CodeIcon style={{cursor:'pointer'}} onClick={() => applyTextStyle('inline')} />
+                            </div>
+                          
                         </div>
-                    </DragDropFile>
+                        <BottomGoToUnder />
+                    </div>
+                </DragDropFile>
+
+                      
+                
+                   
                 )}
                 {!showReply && (
                     <div className={classes.containerResponse}>

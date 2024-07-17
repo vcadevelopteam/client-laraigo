@@ -443,7 +443,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
-    console.log("interactiontype, interactiontext", interactiontype, interactiontext, reply)
+    //console.log("interactiontype, interactiontext", interactiontype, interactiontext, reply)
     const [height, setHeight] = React.useState("0px");
 
     const onLoad = () => {

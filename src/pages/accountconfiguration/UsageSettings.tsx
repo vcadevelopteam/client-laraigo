@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import SaveIcon from '@material-ui/icons/Save';
 import { FieldSelect } from 'components';
-import { showSnackbar, manageConfirmation } from 'store/popus/actions';
-import { updateUserInformation } from 'store/login/actions';
+import {  manageConfirmation } from 'store/popus/actions';
 import { useForm } from 'react-hook-form';
 import { updateUserSettings } from 'store/setting/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -31,7 +30,17 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '18px',
         fontWeight: 'bold',
         paddingBottom: 10
-    }
+    },
+    rowZyx: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        margin: '1rem 0',
+    },
+    fieldContainer: {
+        flex: 1,
+        marginRight: '1rem',
+    },
 }));
 
 interface DetailProps {
@@ -42,21 +51,14 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
     const [waitsave, setwaitsave] = useState(false);
     const resSetting = useSelector(state => state.setting.setting);
-
     const { register, handleSubmit, getValues, setValue, formState: { errors }, trigger } = useForm({
-        defaultValues: {
-            oldpassword: '',
-            password: '',
-            confirmpassword: '',
-            image: user?.image || null,
-            lastname: user?.lastname,
-            firstname: user?.firstname,
-            operation: "SAVEINFORMATION",
-            
-            language: '',
+        defaultValues: {         
+            language: 'ES',
+            spellingcheck:'ACTIVED',
+            translatelanguage: 'ES',
+            messagesendingmode: 'Default',
         }
     });
 
@@ -147,28 +149,13 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     ];
 
     useEffect(() => {
-        register('firstname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('lastname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-    
         register('language', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-
-    
+        register('spellingcheck', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('translatelanguage', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('messagesendingmode', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });    
     }, [])
 
-    useEffect(() => {
-        if (waitsave) {
-            if (!resSetting.loading && !resSetting.error) {
-                setwaitsave(false)
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
-                dispatch(updateUserInformation(getValues('firstname') + "", getValues('lastname') + "", getValues('image') + ""));
-                setViewSelected("view-1")
-            } else if (resSetting.error) {
-                const errormessage = t(resSetting.code || "error_unexpected_error")
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                setwaitsave(false);
-            }
-        }
-    }, [resSetting])
+   
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             setwaitsave(true)
@@ -210,105 +197,111 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                 </div>
             </div>
 
-            <div className="row-zyx">     
-                <div className={classes.seccionTitle}>{t(langKeys.correctionandlanguages)}</div>          
-                <div className="row-zyx" style={{display:'flex', margin:0}}>
-                    <h3 style={{fontWeight:'normal'}}>{t(langKeys.language)}</h3> 
-                    <FieldSelect
-                        className="col-5"
-                        data={dataExternalLanguage}
-                        error={errors?.language?.message}
-                        onChange={(value) => {
-                            if (value) {
-                                setValue("language", value.value)
-                                trigger("language")
-                            } else {
-                                setValue("language", '')
-                                trigger("language")
-                            }
-                        }}
-                        optionDesc="description"
-                        optionValue="value"
-                        uset={true}
-                        valueDefault={getValues("language")}   
-                        variant={'outlined'}                    
-                    />
-
-                    <FieldSelect
-                        className="col-5"
-                        data={dataActivated}
-                        error={errors?.language?.message}
-                        onChange={(value) => {
-                            if (value) {
-                                setValue("language", value.value)
-                                trigger("language")
-                            } else {
-                                setValue("language", '')
-                                trigger("language")
-                            }
-                        }}
-                        optionDesc="description"
-                        optionValue="value"
-                        uset={true}
-                        valueDefault={getValues("language")}   
-                        variant={'outlined'}                    
-                    />                        
-                </div>             
+            <div style={{margin:'2rem 0'}}>     
+                <div className={classes.seccionTitle}>{t(langKeys.correctionandlanguages)}</div>    
+                    <div  style={{display:'flex', gap:'2rem', width:'100%'}}>
+                        <div style={{display:'flex', gap:'12rem', alignItems:'center'}}>
+                            <h3 style={{fontWeight:'normal'}}>{t(langKeys.language)}</h3> 
+                            <FieldSelect
+                                style={{width:'20rem'}}
+                                data={dataExternalLanguage}
+                                error={errors?.language?.message}
+                                onChange={(value) => {
+                                    if (value) {
+                                        setValue("language", value.value)
+                                        trigger("language")
+                                    } else {
+                                        setValue("language", '')
+                                        trigger("language")
+                                    }
+                                }}
+                                optionDesc="description"
+                                optionValue="value"
+                                uset={true}
+                                valueDefault={getValues("language")}   
+                                variant={'outlined'}                    
+                            />
+                        </div>     
+                        <div style={{display:'flex', gap:'2rem', alignItems:'center'}}>
+                            <h3 style={{fontWeight:'normal'}}>Revisión Ortográfica y Gramatical</h3> 
+                            <FieldSelect
+                                style={{width:'20rem'}}
+                                data={dataActivated}
+                                error={errors?.language?.message}
+                                onChange={(value) => {
+                                    if (value) {
+                                        setValue("spellingcheck", value.value)
+                                        trigger("spellingcheck")
+                                    } else {
+                                        setValue("spellingcheck", '')
+                                        trigger("spellingcheck")
+                                    }
+                                }}
+                                optionDesc="description"
+                                optionValue="value"
+                                uset={true}
+                                valueDefault={getValues("spellingcheck")}   
+                                variant={'outlined'}                    
+                            />     
+                        </div> 
+                    </div>                         
             </div>
 
-            <div className="row-zyx">     
+            <div style={{margin:'2rem 0'}}>     
                 <div className={classes.seccionTitle}>Transcripción y Traducción</div>         
-                <div className="row-zyx" style={{display:'flex', margin:0}}>
-                    <h3 style={{fontWeight:'normal'}}>{t(langKeys.language)}</h3> 
-                    <FieldSelect
-                        className="col-5"
-                        data={dataExternalLanguage}
-                        error={errors?.language?.message}
-                        onChange={(value) => {
-                            if (value) {
-                                setValue("language", value.value)
-                                trigger("language")
-                            } else {
-                                setValue("language", '')
-                                trigger("language")
-                            }
-                        }}
-                        optionDesc="description"
-                        optionValue="value"
-                        uset={true}
-                        valueDefault={getValues("language")}   
-                        variant={'outlined'}                    
-                    /> 
-                </div>                       
+                    <div  style={{display:'flex', gap:'2rem', width:'100%'}}>
+                        <div style={{display:'flex', gap:'12rem', alignItems:'center'}}>
+                        <h3 style={{fontWeight:'normal'}}>{t(langKeys.language)}</h3> 
+                            <FieldSelect
+                                style={{width:'20rem'}}
+                                data={dataExternalLanguage}
+                                error={errors?.language?.message}
+                                onChange={(value) => {
+                                    if (value) {
+                                        setValue("translatelanguage", value.value)
+                                        trigger("translatelanguage")
+                                    } else {
+                                        setValue("translatelanguage", '')
+                                        trigger("translatelanguage")
+                                    }
+                                }}
+                                optionDesc="description"
+                                optionValue="value"
+                                uset={true}
+                                valueDefault={getValues("translatelanguage")}   
+                                variant={'outlined'}                    
+                            /> 
+                        </div>    
+                    </div>                         
             </div>
 
-            <div className="row-zyx">     
+            <div style={{margin:'2rem 0'}}>     
                 <div className={classes.seccionTitle}>Chat de Conversaciones</div>         
-                <div className="row-zyx" style={{display:'flex', margin:0}}>
-                    <h3 style={{fontWeight:'normal'}}>Modo de envío de mensaje</h3> 
-                    <FieldSelect
-                        className="col-5"
-                        data={dataMessageSendingMode}
-                        error={errors?.language?.message}
-                        onChange={(value) => {
-                            if (value) {
-                                setValue("language", value.value)
-                                trigger("language")
-                            } else {
-                                setValue("language", '')
-                                trigger("language")
-                            }
-                        }}
-                        optionDesc="description"
-                        optionValue="value"
-                        uset={true}
-                        valueDefault={getValues("language")}   
-                        variant={'outlined'}                    
-                    /> 
-                </div>                       
-            </div>
-
-
+                    <div  style={{display:'flex', gap:'2rem', width:'100%'}}>
+                        <div style={{display:'flex', gap:'2.6rem', alignItems:'center'}}>
+                            <h3 style={{fontWeight:'normal'}}>Modo de envío de mensaje</h3> 
+                            <FieldSelect
+                                style={{width:'20rem'}}
+                                data={dataMessageSendingMode}
+                                error={errors?.language?.message}
+                                onChange={(value) => {
+                                    if (value) {
+                                        setValue("messagesendingmode", value.value)
+                                        trigger("messagesendingmode")
+                                    } else {
+                                        setValue("messagesendingmode", '')
+                                        trigger("messagesendingmode")
+                                    }
+                                }}
+                                optionDesc="description"
+                                optionValue="value"
+                                uset={true}
+                                valueDefault={getValues("messagesendingmode")}   
+                                variant={'outlined'}                    
+                            /> 
+                        </div>    
+                    </div>                         
+            </div>        
         </form>
     </div>
 }

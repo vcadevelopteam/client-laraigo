@@ -338,3 +338,7 @@ export {ReactComponent as AIGenerative} from './generativa 1.svg'
 export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
 export {ReactComponent as CampaignsIcon} from './campañas.svg'
 export {ReactComponent as FlaskIcon} from './flask_icon.svg'
+
+export {ReactComponent as IAIcon} from './IAIcon.svg'
+export { ReactComponent as AIIcon } from './AI.svg';
+export {ReactComponent as SendToBlockIcon} from './sendtoblock.svg'
