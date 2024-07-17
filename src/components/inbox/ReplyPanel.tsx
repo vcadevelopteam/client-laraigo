@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IAIcon, AIIcon, AIBussiness, SendToBlockIcon, IALaraigoLogo, DashboardIAIcon, AIModelsIcon, IAEntrenamientoIcon } from "icons";
+import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IAIcon, AIIcon, AIBussiness, SendToBlockIcon, IALaraigoLogo, DashboardIAIcon, AIModelsIcon, IAEntrenamientoIcon, CopilotIconEng, CopilotIconEsp } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -29,7 +29,7 @@ import ListItem from "@material-ui/core/ListItem";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import TextField from "@material-ui/core/TextField";
-import { convertLocalDate, getSecondsUntelNow, uuidv4 } from "common/helpers/functions";
+import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from "common/helpers/functions";
 import { Descendant } from "slate";
 import { RichText, renderToString, toElement } from "components/fields/RichText";
 import { emojis } from "common/constants/emojis";
@@ -160,7 +160,7 @@ const DialogSearchLibrary: React.FC<{
             button2Type="submit"
         >
             <div>
-                <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ display: "flex", gap: 16 }}>
                     <div style={{ width: 200 }}>
                         <FieldSelect
                             label={t(langKeys.category)}
@@ -992,11 +992,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
     const listAllowRecords = ["FBDM", "FBMS", "WHA", "INDM", "INMS"];
     const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
-
+    
     const resReplyTicket = useSelector((state) => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
     const [lastSelection, setLastSelection] = useState(0);
-
     const variablecontext = useSelector((state) => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector((state) => state.inbox.agentSelected);
     const user = useSelector((state) => state.login.validateToken.user);
@@ -1452,8 +1451,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 triggerReplyMessage();
             }
         }
+    };
 
-        setText(newText);
+    const handleSelectionChange = (event: any) => {
+        setLastSelection(event?.target?.selectionEnd ?? 0);
     };
 
     const applyTextStyle = (style: string) => {
@@ -1490,7 +1491,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
         setText(newText);
     };
-
 
     function onPasteTextbar(e: any) {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
