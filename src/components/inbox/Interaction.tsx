@@ -484,7 +484,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const [isHovered, setIsHovered] = useState(false);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
-    const isselected = pinnedmessagesSelected.map((item:any) => item.interactionid).includes(interactionid)
+    const isselected = pinnedmessagesSelected.some((item:any) => item.interactionid === interactionid)
     const disableTack = ((pinnedmessagesSelected.length >= 20 || !interactionid))
     
     function fixComment(interactiontext: string) {
@@ -516,8 +516,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
-                {!pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid) &&
+                {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
+                {!pinnedmessagesSelected.some((item: any) => item.interactionid === interactionid) &&
                     <IconButton size="small"
                         title={t(langKeys.pinmessagehelper)}
                         disabled={disableTack}
