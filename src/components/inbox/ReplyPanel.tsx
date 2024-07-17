@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IAIcon, AIIcon, AIBussiness, SendToBlockIcon, IALaraigoLogo, DashboardIAIcon, AIModelsIcon, IAEntrenamientoIcon } from "icons";
+import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, IAIcon, AIIcon, AIBussiness, SendToBlockIcon, IALaraigoLogo, DashboardIAIcon, AIModelsIcon, IAEntrenamientoIcon, CopilotIconEng, CopilotIconEsp } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
 import { useDispatch } from "react-redux";
-import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock } from "store/inbox/actions";
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock, updateInteractionByUUID } from "store/inbox/actions";
 import { uploadFile, resetUploadFile } from "store/main/actions";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import InputBase from "@material-ui/core/InputBase";
@@ -773,6 +773,31 @@ const RecordAudioIcon: React.FC<{
     );
 };
 
+const CopilotLaraigoIcon: React.FC<{
+    classes: ClassNameMap;
+    enabled: boolean
+}> = ({ classes, enabled }) => {
+    const { t } = useTranslation();
+    
+    //{t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+    return (
+        <div style={{ display: "flex" }}>
+            <Tooltip title={t(langKeys.record_audio)} arrow placement="top">
+                {t(langKeys.currentlanguage) === "en" ?
+                    <CopilotIconEng
+                        className={enabled ? classes.iconResponse : ""}
+                        style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
+                    /> :
+                    <CopilotIconEsp
+                        className={enabled ? classes.iconResponse : ""}
+                        style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
+                    />
+                }
+            </Tooltip>
+        </div>
+    );
+};
+
 const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: string) => void }> = ({
     classes,
     setText,
@@ -849,7 +874,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: "flex" }}>
                 <Tooltip title={t(langKeys.send_enrich_response)} arrow placement="top">
-                    <RichResponseIcon
+                    <SendToBlockIcon
                         className={classes.iconResponse}
                         onClick={handleClick}
                         style={{ width: 22, height: 22 }}
@@ -971,7 +996,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const resReplyTicket = useSelector((state) => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
     const [lastSelection, setLastSelection] = useState(0);
-    
     const variablecontext = useSelector((state) => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector((state) => state.inbox.agentSelected);
     const user = useSelector((state) => state.login.validateToken.user);
@@ -987,6 +1011,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [typeHotKey, setTypeHotKey] = useState("");
     const quickReplies = useSelector((state) => state.inbox.quickreplies);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([]);
+    const [propertyCopilotLaraigo, setPropertyCopilotLaraigo] = useState(false);
     const [emojiFavorite, setemojiFavorite] = useState<string[]>([]);
     const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([]);
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
@@ -994,6 +1019,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([]);
     const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
+    const [numRows, setNumRows] = useState(2);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([
         { type: "paragraph", align: "left", children: [{ text: "" }] },
     ]);
@@ -1004,6 +1030,15 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [flagredo, setflagredo] = useState(false);
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
+    const inputRef = useRef(null);
+
+    const handleInputChange = (e: any) => {
+        const lines = e.target.value.split('\n').length;
+        if (lines <= 6) {
+            setNumRows(lines);
+            setText(e.target.value);
+        }
+    };
 
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
@@ -1045,12 +1080,16 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     useEffect(() => {
         if (triggerReply) {
-            if (!resReplyTicket.loading && resReplyTicket.error) {
-                const errormessage = t(resReplyTicket.code || "error_unexpected_error", {
-                    module: t(langKeys.user).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                settriggerReply(false);
+            if (!resReplyTicket.loading) {
+                if (resReplyTicket.error) {
+                    const errormessage = t(resReplyTicket.code || "error_unexpected_error", {
+                        module: t(langKeys.user).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    settriggerReply(false);
+                } else {
+                    dispatch(updateInteractionByUUID({ uuid: resReplyTicket.uuid || "", interactionid: resReplyTicket.interactionid || 0 }))
+                }
             }
         }
     }, [resReplyTicket, triggerReply]);
@@ -1104,6 +1143,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     const triggerReplyMessage = () => {
         if (copyEmails.error) return;
+        setNumRows(2);
         const callback = () => {
             let wasSend = false;
             if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
@@ -1212,12 +1252,14 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
                 if (textCleaned) {
                     if (!errormessage) {
+                        const uuid = uuidv4();
                         wasSend = true;
                         const newInteractionSocket = {
                             ...ticketSelected!!,
                             interactionid: 0,
                             typemessage: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             typeinteraction: null,
+                            uuid,
                             lastmessage: textCleaned,
                             createdate: new Date().toISOString(),
                             userid: 0,
@@ -1239,6 +1281,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 ...ticketSelected!!,
                                 interactiontype: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                                 interactiontext: textCleaned,
+                                uuid,
                                 validateUserOnTicket: userType === "AGENT",
                                 isAnswered: !ticketSelected!!.isAnswered,
                                 emailcocopy: copyEmails.cco || "",
@@ -1277,6 +1320,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setemojiNoShow(multiData?.data?.[10]?.data.filter((x) => x.restricted).map((x) => x.emojihex) || []);
             setemojiFavorite(multiData?.data?.[10]?.data.filter((x) => x.favorite).map((x) => x.emojihex) || []);
+            setPropertyCopilotLaraigo(multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMECOPILOTLARAIGO")?.data?.[0]?.propertyvalue === "1")
             setinnappropiatewordsList(multiData?.data?.[11]?.data || []);
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
@@ -1447,7 +1491,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
         setText(newText);
     };
-
 
     function onPasteTextbar(e: any) {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
