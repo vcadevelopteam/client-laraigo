@@ -126,6 +126,8 @@ export const selectAgent = (ticket: IAgent | null): IActionCall => ({ type: acti
 
 export const addTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.ADD_TICKET, payload: ticket });
 
+export const updateInteractionByUUID = (data: { interactionid: number; uuid: string }): IActionCall => ({ type: actionTypes.UPDATE_INTERACTION_UUID, payload: data });
+
 export const modifyTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.MODIFY_TICKET, payload: ticket });
 
 export const changeStatusTicket = (conversationid: number, status: string): IActionCall => ({ type: actionTypes.CHANGE_STATUS_TICKET, payload: { conversationid, status } });
@@ -336,3 +338,7 @@ export const getQuickreplies = (): IActionCall => ({
 });
 
 export const resetQuickreplies = (): IActionCall => ({ type: actionTypes.GET_QUICKREPLIES_RESET });
+
+export const setSearchTerm = (payload: any): IActionCall => ({ type: actionTypes.SET_SEARCHTERM, payload });
+
+export const setPinnedComments = (payload: any): IActionCall => ({ type: actionTypes.SET_PINNEDCOMMENTS, payload });
