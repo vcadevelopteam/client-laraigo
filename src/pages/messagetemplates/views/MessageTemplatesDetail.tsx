@@ -329,7 +329,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [cardAux, setCardAux] = useState<number | null>(null)
     const [buttonsType, setButtonsType] = useState('none')
     const [cursorPositionAux, setCursorPositionAux] = useState(0);
-
+    const [categoryChange, setCategoryChange] = useState('DESACTIVADO');
+    const [buttonsGeneral, setButtonsGeneral] = useState<Dictionary[]>(
+        row?.firstbuttons === "quickreply" ? [
+            { id: 1, name: "quickreply",items: [] },
+            { id: 2, name: "generic", items: [] }
+        ] : [
+            { id: 2, name: "generic", items: [] },
+            { id: 1, name: "quickreply",items: [] }
+        ]
+    )
+    
     useEffect(() => {
         if (showEmojiPicker && emojiButtonRef.current) {
             const buttonRect = emojiButtonRef.current.getBoundingClientRect();
@@ -546,6 +556,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             type: row?.type || "",
         },
     });
+
+    useEffect(() => {
+        const quickReplyItems = getValues('buttonsquickreply');
+        const genericItems = getValues('buttonsgeneric');
+        setButtonsGeneral(prevButtons => prevButtons.map(button => {
+            if (button.name === 'quickreply') {
+                return { ...button, items: quickReplyItems };
+            } else if (button.name === 'generic') {
+                return { ...button, items: genericItems };
+            }
+            return button;
+        }));
+    }, [getValues('buttonsgeneric'), getValues('buttonsquickreply')]);
 
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
@@ -857,7 +880,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
                     buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
                     carouseldata: JSON.stringify(dataAux.carouseldata),
-                    headervariables: JSON.stringify(dataAux.headervariables)
+                    headervariables: JSON.stringify(dataAux.headervariables),
+                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0 )) ? buttonsGeneral?.[0]?.name : null
                 }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
@@ -1430,6 +1455,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [waitUploadFile3, uploadResult])
+    
+    const handleDragDropGeneral = (results: DropResult) => {
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
+            const reorderedItems = [...buttonsGeneral];
+            const sourceIndex = source.index;
+            const destinationIndex = destination.index;
+            const [removedStore] = reorderedItems.splice(sourceIndex, 1);
+            reorderedItems.splice(destinationIndex, 0, removedStore);
+
+            setButtonsGeneral(reorderedItems)
+        }
+    }
 
     const handleDragDrop = (results: DropResult) => {
         const { source, destination, type } = results;
@@ -2328,6 +2368,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 variant="outlined"
                                 data={[{value: "ACTIVADO"}, {value: "DESACTIVADO"}]}
                                 size="small"
+                                valueDefault={categoryChange}
+                                onChange={(value) => {
+                                    if(value) {
+                                        setCategoryChange(value.value)
+                                    } else {
+                                        setCategoryChange("DESACTIVADO")
+                                    }
+                                }}
                                 optionDesc="value"
                                 optionValue="value"
                             />
@@ -2853,286 +2901,315 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <EmojiObjectsIcon />
                                             <span style={{ marginLeft: 10 }}>Si añades más de tres botones, se mostrarán en una lista</span>
                                         </div>
-                                        <DragDropContext onDragEnd={handleDragDrop}>
-                                            {getValues('buttonsquickreply')?.length > 0 && (
-                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
-                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
-                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
-                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
-                                                    </div>
-                                                    <React.Fragment>
-                                                        <Droppable droppableId="root" type="group">
-                                                            {(provided) => (
-                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                                                    {getValues("buttonsquickreply")?.map((btn: any, i: number) => {
-                                                                        return (
-                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                                {(provided) => (
-                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                        <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
-                                                                                            <DragIndicatorIcon />
-                                                                                            <div style={{ flex: 1 }}>
-                                                                                                <FieldEditAdvancedAux
-                                                                                                    disabled={disableInput || !isNew}
-                                                                                                    label={t(langKeys.buttontext)}
-                                                                                                    error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
-                                                                                                    onInput={(e) => handleQuickReply(e, i)}
-                                                                                                    onChange={(e) => handleQuickReply(e, i)}
-                                                                                                    valueDefault={btn?.btn?.text || ""}
-                                                                                                    variant="outlined"
-                                                                                                    maxLength={25}
-                                                                                                    rows={1}
-                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
-                                                                                                    fregister={{
-                                                                                                        ...register(`buttonsquickreply.${i}.btn.text`, {
-                                                                                                            validate: (value) =>
-                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                        }),
-                                                                                                    }}
-                                                                                                />
-                                                                                            </div>
-                                                                                            <IconButton onClick={() => onClickRemoveButtonText(i)} disabled={!isNew}>
-                                                                                                <CloseIcon />
-                                                                                            </IconButton>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                )}
-                                                                            </Draggable>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                        </Droppable>
-                                                    </React.Fragment>
-                                                </div>
-                                            )}
-                                        </DragDropContext>
-                                        <DragDropContext onDragEnd={handleDragDropAux}>
-                                            {getValues('buttonsgeneric')?.length > 0 && (
-                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
-                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
-                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
-                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
-                                                    </div>
-                                                    <React.Fragment>
-                                                        <Droppable droppableId="root2" type="group">
-                                                            {(provided) => (
-                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                                                    {getValues("buttonsgeneric")?.map((btn: any, i: number) => {
-                                                                        return (
-                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                                {(provided) => (
-                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                        {btn.type === 'URL' ? (
-                                                                                            <>
-                                                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                                                                    <DragIndicatorIcon />
-                                                                                                    <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
-                                                                                                        <div className="row-zyx" style={{ width: '100%', marginBottom: 0, display: 'flex' }}>
-                                                                                                            <SingleLineInput
-                                                                                                                className='col-4'
-                                                                                                                label={t(langKeys.buttontext)}
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                                onInput={(e) => handleActionButtonText(e, i)}
-                                                                                                                onChange={(e) => handleActionButtonText(e, i)}
-                                                                                                                valueDefault={btn?.btn?.text || ""}
-                                                                                                                maxLength={25}
-                                                                                                                rows={1}
-                                                                                                                inputProps={{
-                                                                                                                    rows: 1,
-                                                                                                                    maxRows: 1
-                                                                                                                }}
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.text`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                            />
-                                                                                                            <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
-                                                                                                                <span>{t(langKeys.urltype)}</span>
-                                                                                                                <FieldSelect
-                                                                                                                    data={dataURLType}
-                                                                                                                    error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
-                                                                                                                    onChange={(value) => onChangeButton(i, "type", value?.value)}
-                                                                                                                    optionDesc="text"
-                                                                                                                    optionValue="value"
-                                                                                                                    valueDefault={btn?.btn?.type || ""}
-                                                                                                                    variant="outlined"
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`buttonsgeneric.${i}.btn.type`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    size="normal"
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            <SingleLineInput
-                                                                                                                className='col-4'
-                                                                                                                label={t(langKeys.urlwebsite)}
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
-                                                                                                                onInput={(e) => handleActionButtonUrl(e, i)}
-                                                                                                                onChange={(e) => handleActionButtonUrl(e, i)}
-                                                                                                                valueDefault={btn?.btn?.url || ""}
-                                                                                                                rows={1}
-                                                                                                                inputProps={{
-                                                                                                                    rows: 1,
-                                                                                                                    maxRows: 1
-                                                                                                                }}
-                                                                                                                maxLength={2000}
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.url`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                            />
-                                                                                                            {btn?.btn?.type === 'dynamic' && (
-                                                                                                                <div className="col-1" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                                                                                    <span>{'{{'}1{'}}'}</span>
-                                                                                                                    <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
-                                                                                                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                                                                                                    </Tooltip>
-                                                                                                                </div>
-                                                                                                            )}
-                                                                                                        </div>
+                                        <DragDropContext onDragEnd={handleDragDropGeneral}>
+                                            {(buttonsGeneral?.[0]?.items?.length > 0 || buttonsGeneral?.[1]?.items?.length > 0) && (
+                                                <Droppable droppableId="root3" type="group">
+                                                    {(provided) => (
+                                                        <div {...provided.droppableProps} ref={provided.innerRef}>
+                                                            {buttonsGeneral?.map((button: Dictionary, indexG: number) => {
+                                                                return (
+                                                                    <Draggable key={`button-${indexG}`} draggableId={`button-${indexG}`} index={indexG}>
+                                                                        {(provided) => (
+                                                                            <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                {button.name === "quickreply" ? (
+                                                                                    <DragDropContext onDragEnd={handleDragDrop}>
+                                                                                        {button?.items?.length > 0 && (
+                                                                                            <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                                                                <div>
+                                                                                                    <div style={{display: 'flex', justifyContent: 'center'}}><DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/></div>
+                                                                                                    <div style={{ display: 'flex', padding: '0px 0px 0px 20px' }}>
+                                                                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
                                                                                                     </div>
-                                                                                                    <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
-                                                                                                        <CloseIcon />
-                                                                                                    </IconButton>
                                                                                                 </div>
-                                                                                                {btn?.btn?.type === 'dynamic' && (
-                                                                                                    <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
-                                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                                                                                                            <span>{'{{'}1{'}}'}</span>
-                                                                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
-                                                                                                                <FieldEdit
-                                                                                                                    label={btn?.btn?.url !== '' ? `Introduce la URL completa de ${btn?.btn?.url}{{1}}` : ''}
-                                                                                                                    variant="outlined"
-                                                                                                                    size="small"
-                                                                                                                    onChange={(value) => {
-                                                                                                                        setValue(`buttonsgeneric.${i}.btn.variables[0]`, value)
-                                                                                                                        trigger('buttonsgeneric')
-                                                                                                                    }}
-                                                                                                                    valueDefault={btn?.btn?.variables[0] || ""}
-                                                                                                                    disabled={!isNew}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        {getValues(`buttonsgeneric.${i}.btn.variables[0]`) === "" && (
-                                                                                                            <div className={classes.warningContainer}>
-                                                                                                                <WarningIcon style={{ color: '#FF7575' }} />
-                                                                                                                {t(langKeys.addexampletext)}
+                                                                                                <React.Fragment>
+                                                                                                    <Droppable droppableId="root" type="group">
+                                                                                                        {(provided) => (
+                                                                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                                                                {button?.items?.map((btn: any, i: number) => {
+                                                                                                                    return (
+                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                                                            {(provided) => (
+                                                                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                                                                    <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
+                                                                                                                                        <DragIndicatorIcon />
+                                                                                                                                        <div style={{ flex: 1 }}>
+                                                                                                                                            <FieldEditAdvancedAux
+                                                                                                                                                disabled={disableInput || !isNew}
+                                                                                                                                                label={t(langKeys.buttontext)}
+                                                                                                                                                error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
+                                                                                                                                                onInput={(e) => handleQuickReply(e, i)}
+                                                                                                                                                onChange={(e) => handleQuickReply(e, i)}
+                                                                                                                                                valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                variant="outlined"
+                                                                                                                                                maxLength={25}
+                                                                                                                                                rows={1}
+                                                                                                                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                fregister={{
+                                                                                                                                                    ...register(`buttonsquickreply.${i}.btn.text`, {
+                                                                                                                                                        validate: (value) =>
+                                                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                    }),
+                                                                                                                                                }}
+                                                                                                                                            />
+                                                                                                                                        </div>
+                                                                                                                                        <IconButton onClick={() => onClickRemoveButtonText(i)} disabled={!isNew}>
+                                                                                                                                            <CloseIcon />
+                                                                                                                                        </IconButton>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            )}
+                                                                                                                        </Draggable>
+                                                                                                                    );
+                                                                                                                })}
                                                                                                             </div>
                                                                                                         )}
-                                                                                                    </div>
-                                                                                                )}
-                                                                                            </>
-                                                                                        ) : (
-                                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                                                                <DragIndicatorIcon />
-                                                                                                <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
-                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
-                                                                                                        <SingleLineInput
-                                                                                                            className='col-4'
-                                                                                                            label={t(langKeys.buttontext)}
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                            onInput={(e) => handleActionButtonText(e, i)}
-                                                                                                            onChange={(e) => handleActionButtonText(e, i)}
-                                                                                                            valueDefault={btn?.btn?.text || ""}
-                                                                                                            variant="outlined"
-                                                                                                            maxLength={25}
-                                                                                                            rows={1}
-                                                                                                            inputProps={{
-                                                                                                                rows: 1,
-                                                                                                                maxRows: 1
-                                                                                                            }}
-                                                                                                            fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.text`, {
-                                                                                                                    validate: (value) =>
-                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                }),
-                                                                                                            }}
-                                                                                                            size="small"
-                                                                                                            disabled={!isNew}
-                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                        />
-                                                                                                        <div className='col-4'>
-                                                                                                            <span>{t(langKeys.country)}</span>
-                                                                                                            <FieldSelect
-                                                                                                                data={dataCountryCodes}
-                                                                                                                onChange={(value) => {
-                                                                                                                    if (value) {
-                                                                                                                        setValue(`buttonsgeneric.${i}.btn.code`, value.value);
-                                                                                                                        trigger('buttonsgeneric')
-                                                                                                                    } else {
-                                                                                                                        setValue(`buttonsgeneric.${i}.btn.code`, null);
-                                                                                                                        trigger('buttonsgeneric')
-                                                                                                                    }
-                                                                                                                }}
-                                                                                                                optionDesc="text"
-                                                                                                                optionValue="value"
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
-                                                                                                                valueDefault={btn?.btn?.code || ""}
-                                                                                                                variant="outlined"
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.code`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value !== 0) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                size="normal"
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                        <div className='col-4'>
-                                                                                                            <span>{t(langKeys.telephonenumber)}</span>
-                                                                                                            <FieldEditAdvancedAux
-                                                                                                                type="number"
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
-                                                                                                                onInput={(e) => handleActionButtonPhone(e, i)}
-                                                                                                                onChange={(e) => handleActionButtonPhone(e, i)}
-                                                                                                                valueDefault={btn?.btn?.phone_number || ""}
-                                                                                                                variant="outlined"
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.phone_number`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                maxLength={20}
-                                                                                                                rows={1}
-                                                                                                                inputProps={{
-                                                                                                                    rows: 1,
-                                                                                                                    maxRows: 1
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
-                                                                                                    <CloseIcon />
-                                                                                                </IconButton>
+                                                                                                    </Droppable>
+                                                                                                </React.Fragment>
                                                                                             </div>
                                                                                         )}
-                                                                                    </div>
+                                                                                    </DragDropContext>
+                                                                                ) : (
+                                                                                    <DragDropContext onDragEnd={handleDragDropAux}>
+                                                                                        {button?.items?.length > 0 && (
+                                                                                            <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                                                                <div>
+                                                                                                    <div style={{display: 'flex', justifyContent: 'center'}}><DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/></div>
+                                                                                                    <div style={{ display: 'flex', padding: '0px 0px 0px 20px' }}>
+                                                                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <React.Fragment>
+                                                                                                    <Droppable droppableId="root2" type="group">
+                                                                                                        {(provided) => (
+                                                                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                                                                {button?.items?.map((btn: any, i: number) => {
+                                                                                                                    return (
+                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                                                            {(provided) => (
+                                                                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                                                                    {btn.type === 'URL' ? (
+                                                                                                                                        <>
+                                                                                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                                                                                                <DragIndicatorIcon />
+                                                                                                                                                <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0, display: 'flex' }}>
+                                                                                                                                                        <SingleLineInput
+                                                                                                                                                            className='col-4'
+                                                                                                                                                            label={t(langKeys.buttontext)}
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                                                            onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                            onChange={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                            valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                            maxLength={25}
+                                                                                                                                                            rows={1}
+                                                                                                                                                            inputProps={{
+                                                                                                                                                                rows: 1,
+                                                                                                                                                                maxRows: 1
+                                                                                                                                                            }}
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                        />
+                                                                                                                                                        <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
+                                                                                                                                                            <span>{t(langKeys.urltype)}</span>
+                                                                                                                                                            <FieldSelect
+                                                                                                                                                                data={dataURLType}
+                                                                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
+                                                                                                                                                                onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                                                                optionDesc="text"
+                                                                                                                                                                optionValue="value"
+                                                                                                                                                                valueDefault={btn?.btn?.type || ""}
+                                                                                                                                                                variant="outlined"
+                                                                                                                                                                fregister={{
+                                                                                                                                                                    ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                                                                        validate: (value) =>
+                                                                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                    }),
+                                                                                                                                                                }}
+                                                                                                                                                                disabled={!isNew}
+                                                                                                                                                                size="normal"
+                                                                                                                                                            />
+                                                                                                                                                        </div>
+                                                                                                                                                        <SingleLineInput
+                                                                                                                                                            className='col-4'
+                                                                                                                                                            label={t(langKeys.urlwebsite)}
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
+                                                                                                                                                            onInput={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                                                            onChange={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                                                            valueDefault={btn?.btn?.url || ""}
+                                                                                                                                                            rows={1}
+                                                                                                                                                            inputProps={{
+                                                                                                                                                                rows: 1,
+                                                                                                                                                                maxRows: 1
+                                                                                                                                                            }}
+                                                                                                                                                            maxLength={2000}
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.url`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                        />
+                                                                                                                                                        {btn?.btn?.type === 'dynamic' && (
+                                                                                                                                                            <div className="col-1" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                                                                                                                                <span>{'{{'}1{'}}'}</span>
+                                                                                                                                                                <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
+                                                                                                                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                                                                                                                </Tooltip>
+                                                                                                                                                            </div>
+                                                                                                                                                        )}
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                                <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
+                                                                                                                                                    <CloseIcon />
+                                                                                                                                                </IconButton>
+                                                                                                                                            </div>
+                                                                                                                                            {btn?.btn?.type === 'dynamic' && (
+                                                                                                                                                <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                                                                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                                                                                                                                        <span>{'{{'}1{'}}'}</span>
+                                                                                                                                                        <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                                                                                            <FieldEdit
+                                                                                                                                                                label={btn?.btn?.url !== '' ? `Introduce la URL completa de ${btn?.btn?.url}{{1}}` : ''}
+                                                                                                                                                                variant="outlined"
+                                                                                                                                                                size="small"
+                                                                                                                                                                onChange={(value) => {
+                                                                                                                                                                    setValue(`buttonsgeneric.${i}.btn.variables[0]`, value)
+                                                                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                                                                }}
+                                                                                                                                                                valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                                                                disabled={!isNew}
+                                                                                                                                                            />
+                                                                                                                                                        </div>
+                                                                                                                                                    </div>
+                                                                                                                                                    {getValues(`buttonsgeneric.${i}.btn.variables[0]`) === "" && (
+                                                                                                                                                        <div className={classes.warningContainer}>
+                                                                                                                                                            <WarningIcon style={{ color: '#FF7575' }} />
+                                                                                                                                                            {t(langKeys.addexampletext)}
+                                                                                                                                                        </div>
+                                                                                                                                                    )}
+                                                                                                                                                </div>
+                                                                                                                                            )}
+                                                                                                                                        </>
+                                                                                                                                    ) : (
+                                                                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                                                                                            <DragIndicatorIcon />
+                                                                                                                                            <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                                                                <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
+                                                                                                                                                    <SingleLineInput
+                                                                                                                                                        className='col-4'
+                                                                                                                                                        label={t(langKeys.buttontext)}
+                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                                                        onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                        onChange={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                        valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                        variant="outlined"
+                                                                                                                                                        maxLength={25}
+                                                                                                                                                        rows={1}
+                                                                                                                                                        inputProps={{
+                                                                                                                                                            rows: 1,
+                                                                                                                                                            maxRows: 1
+                                                                                                                                                        }}
+                                                                                                                                                        fregister={{
+                                                                                                                                                            ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                                                                validate: (value) =>
+                                                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                            }),
+                                                                                                                                                        }}
+                                                                                                                                                        size="small"
+                                                                                                                                                        disabled={!isNew}
+                                                                                                                                                        style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                    />
+                                                                                                                                                    <div className='col-4'>
+                                                                                                                                                        <span>{t(langKeys.country)}</span>
+                                                                                                                                                        <FieldSelect
+                                                                                                                                                            data={dataCountryCodes}
+                                                                                                                                                            onChange={(value) => {
+                                                                                                                                                                if (value) {
+                                                                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, value.value);
+                                                                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                                                                } else {
+                                                                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, null);
+                                                                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                                                                }
+                                                                                                                                                            }}
+                                                                                                                                                            optionDesc="text"
+                                                                                                                                                            optionValue="value"
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
+                                                                                                                                                            valueDefault={btn?.btn?.code || ""}
+                                                                                                                                                            variant="outlined"
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.code`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value !== 0) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            size="normal"
+                                                                                                                                                        />
+                                                                                                                                                    </div>
+                                                                                                                                                    <div className='col-4'>
+                                                                                                                                                        <span>{t(langKeys.telephonenumber)}</span>
+                                                                                                                                                        <FieldEditAdvancedAux
+                                                                                                                                                            type="number"
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
+                                                                                                                                                            onInput={(e) => handleActionButtonPhone(e, i)}
+                                                                                                                                                            onChange={(e) => handleActionButtonPhone(e, i)}
+                                                                                                                                                            valueDefault={btn?.btn?.phone_number || ""}
+                                                                                                                                                            variant="outlined"
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.phone_number`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            maxLength={20}
+                                                                                                                                                            rows={1}
+                                                                                                                                                            inputProps={{
+                                                                                                                                                                rows: 1,
+                                                                                                                                                                maxRows: 1
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                        />
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                            <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
+                                                                                                                                                <CloseIcon />
+                                                                                                                                            </IconButton>
+                                                                                                                                        </div>
+                                                                                                                                    )}
+                                                                                                                                </div>
+                                                                                                                            )}
+                                                                                                                        </Draggable>
+                                                                                                                    );
+                                                                                                                })}
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                    </Droppable>
+                                                                                                </React.Fragment>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </DragDropContext>
                                                                                 )}
-                                                                            </Draggable>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                        </Droppable>
-                                                    </React.Fragment>
-                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </Draggable>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </Droppable>
                                             )}
                                         </DragDropContext>
                                     </div>
@@ -3149,6 +3226,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 footer={getValues('footer')}
                                                 buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
                                                 buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
+                                                buttonsGeneral={buttonsGeneral}
                                             />
                                         </div>
                                     </div>

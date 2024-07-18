@@ -407,17 +407,21 @@ interface MessagePreviewMultimediaProps {
     footer: string;
     buttonstext: string[];
     buttonslink: Dictionary[];
+    buttonsGeneral: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink }) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink, buttonsGeneral }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [showAllButtons, setShowAllButtons] = useState(false)
-    const combinedButtons = [
+    const combinedButtons = buttonsGeneral?.[0]?.name === "quickreply" ? [
         ...buttonstext.map(text => ({ type: 'text', text: text })),
+        ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text }))
+    ] : [
         ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
+        ...buttonstext.map(text => ({ type: 'text', text: text }))
     ];
-
+    
     const parseFormattedText = (text: string) => {
         const monospace = /```(.*?)```/g;
         text = text.replace(monospace, '<code>$1</code>');
