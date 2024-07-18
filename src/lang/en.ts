@@ -6414,7 +6414,7 @@ const translation: LangKeys = {
   messagesendingmode: 'Message sending mode',
   categorychange: 'Category Change',
   categorychangetext: 'Enables automatic change of category after registration according to Goal',
-  propertybalancetime: 'Number of seconds to wait between automatic balancing runs',
+  propertybalancetime: 'Configures the balancing time (seconds) of the "BOT HOLDING"',
 };
 
 const enResource: ResourceLanguage = {

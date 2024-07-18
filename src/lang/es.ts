@@ -6365,7 +6365,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   messagesendingmode: 'Modo de envío de mensaje',
   categorychange: 'Cambio de Categoría',
   categorychangetext: 'Habilita el cambio automático de la categoría después de su registro según Meta',
-  propertybalancetime: 'Cantidad de segundos de espera entre ejecuciones del balanceo automático',
+  propertybalancetime: 'Configura el tiempo (segundos) de balanceo del "BOT HOLDING"',
 };
 
 const esResource: ResourceLanguage = {
