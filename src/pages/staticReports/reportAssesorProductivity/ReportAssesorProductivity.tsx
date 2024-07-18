@@ -139,7 +139,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
     const [view, setView] = useState("GRID");
 
     const [dataGrid, setdataGrid] = useState<any[]>([]);
-   
+
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
@@ -148,13 +148,13 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
         data: [],
     });
 
-    useEffect(() => {        
+    useEffect(() => {
         dispatch(setViewChange("report_userproductivity"));
         dispatch(getMultiCollection([
             getReportColumnSel("UFN_REPORT_USERPRODUCTIVITY_SEL"),
-            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","probando"),
-            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_GRUPOS","GRUPOS"),
-            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_ESTADOORGUSER","ESTADOORGUSER"),
+            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC", "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC", "probando"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES", "UFN_DOMAIN_LST_VALORES_GRUPOS", "GRUPOS"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES", "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER", "ESTADOORGUSER"),
         ]));
         return () => {
             dispatch(cleanViewChange());
@@ -170,25 +170,25 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             },
             {
                 Header: t(langKeys.report_userproductivity_fullname),
-                accessor: "fullname",         
-                showGroupedBy: true, 
+                accessor: "fullname",
+                showGroupedBy: true,
                 fixed: true,
             },
             ...(isday
                 ? [
-                      {
-                          Header: t(langKeys.report_userproductivity_hourfirstlogin),
-                          accessor: "hourfirstlogin",                       
-                      },
-                  ]
+                    {
+                        Header: t(langKeys.report_userproductivity_hourfirstlogin),
+                        accessor: "hourfirstlogin",
+                    },
+                ]
                 : []),
             {
                 Header: t(langKeys.report_userproductivity_totaltickets),
                 accessor: "totaltickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_totaltickets_help),             
-                showGroupedBy: true, 
+                helpText: t(langKeys.report_userproductivity_totaltickets_help),
+                showGroupedBy: true,
                 fixed: true,
             },
             {
@@ -196,8 +196,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "closedtickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_closedtickets_help),            
-                showGroupedBy: true, 
+                helpText: t(langKeys.report_userproductivity_closedtickets_help),
+                showGroupedBy: true,
                 fixed: true,
             },
             {
@@ -205,8 +205,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "asignedtickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_asignedtickets_help),              
-                showGroupedBy: true, 
+                helpText: t(langKeys.report_userproductivity_asignedtickets_help),
+                showGroupedBy: true,
                 fixed: true,
             },
             {
@@ -214,8 +214,8 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "suspendedtickets",
                 type: "number",
                 sortType: "number",
-                helpText: t(langKeys.report_userproductivity_suspendedtickets_help),               
-                showGroupedBy: true, 
+                helpText: t(langKeys.report_userproductivity_suspendedtickets_help),
+                showGroupedBy: true,
                 fixed: true,
             },
             {
@@ -248,14 +248,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "maxtotalduration",
                 helpText: t(langKeys.report_userproductivity_maxtotalduration_help),
                 showColumn: true,
-                showGroupedBy: true, 
+                showGroupedBy: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalduration),
                 accessor: "mintotalduration",
                 helpText: t(langKeys.report_userproductivity_mintotalduration_help),
                 showColumn: true,
-                showGroupedBy: true, 
+                showGroupedBy: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_avgtotalasesorduration),
@@ -268,14 +268,14 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 accessor: "maxtotalasesorduration",
                 helpText: t(langKeys.report_userproductivity_maxtotalasesorduration_help),
                 showColumn: true,
-                showGroupedBy: true, 
+                showGroupedBy: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalasesorduration),
                 accessor: "mintotalasesorduration",
                 helpText: t(langKeys.report_userproductivity_mintotalasesorduration_help),
                 showColumn: true,
-                showGroupedBy: true, 
+                showGroupedBy: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_tmravg),
@@ -295,12 +295,12 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 type: "number",
                 sortType: "number",
                 showColumn: true,
-                showGroupedBy: true, 
+                showGroupedBy: true,
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
-                accessor: "userstatus",              
-                showGroupedBy: true, 
+                accessor: "userstatus",
+                showGroupedBy: true,
                 fixed: true,
             },
             {
@@ -310,31 +310,31 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             },
             ...(mainAux.data.length > 0
                 ? [
-                      ...desconectedmotives.map((d: any) => ({
-                          Header: d,
-                          accessor: d,
-                          showColumn: true,
-                      })),
-                  ]
+                    ...desconectedmotives.map((d: any) => ({
+                        Header: d,
+                        accessor: d,
+                        showColumn: true,
+                    })),
+                ]
                 : []),
         ],
         [isday, mainAux, desconectedmotives]
     );
-    
+
     useEffect(() => {
         if (allFilters) {
-            if(!multiData.loading && !multiData.error && multiData.data.length){
+            if (!multiData.loading && !multiData.error && multiData.data.length) {
                 const groupitem = allFilters.find((e) => e.values[0].label === "group");
                 if (groupitem) {
                     const arraygroups =
                         multiData?.data[
-                            multiData?.data?.findIndex(
-                                (x) =>
-                                    x.key ===
-                                    (groupitem?.values[0].isListDomains
-                                        ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
-                                        : groupitem?.values[0].filter)
-                            )
+                        multiData?.data?.findIndex(
+                            (x) =>
+                                x.key ===
+                                (groupitem?.values[0].isListDomains
+                                    ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
+                                    : groupitem?.values[0].filter)
+                        )
                         ];
                     setgroupsdata(arraygroups.data);
                 }
@@ -422,11 +422,11 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10)
             : null;
         setisday(stardate === enddate);
-        
+
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getUserProductivitySel({
             ...allParameters,
-            
+
         })));
 
         if (view !== "GRID") {
@@ -483,7 +483,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [anchorElSeButtons, setOpenSeButtons]);
-    
+
     return (
         <>
             {view === "GRID" ? (
@@ -541,7 +541,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                         >
                                             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                                                 <FieldSelect
-                                                    
+
                                                     label={t("report_userproductivity_filter_channels")}
                                                     className={classes.filterComponent}
                                                     key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
@@ -551,7 +551,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                                                     }
                                                     variant="outlined"
                                                     data={
-                                                        multiData?.data?.find(x=>x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data||[]
+                                                        multiData?.data?.find(x => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC")?.data || []
                                                     }
                                                     loading={multiData.loading}
                                                     optionDesc={"type"}
@@ -715,7 +715,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                 buttonStyle1={{ marginBottom: "0.3rem" }}
                 buttonStyle2={{ marginRight: "1rem", marginBottom: "0.3rem" }}
             >
-                <div className="row-zyx" style={{marginBottom: 0, paddingBottom: 0}}>                    
+                <div className="row-zyx" style={{ marginBottom: 0, paddingBottom: 0 }}>
                     <FieldMultiSelect
                         limitTags={1}
                         label={t("report_userproductivity_filter_group")}
@@ -741,7 +741,7 @@ const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
                             setValue("userstatus", value ? value.map((o: Dictionary) => o["domainvalue"]).join() : "")
                         }
                         variant="outlined"
-                        data={multiData?.data?.find(x=>x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data||[]}
+                        data={multiData?.data?.find(x => x.key === "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER")?.data || []}
                         loading={multiData.loading}
                         optionDesc={"domaindesc"}
                         optionValue={"domainvalue"}
@@ -782,7 +782,7 @@ interface SummaryGraphicProps {
 const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
     openModal,
     setOpenModal,
-    setView,  
+    setView,
     filters,
     columns,
     setColumnGraphic,
@@ -835,14 +835,13 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
         "avgfirstreplytime",
         "maxfirstreplytime",
         "minfirstreplytime",
-        "avgtotalasesorduration",
         "groups",
     ];
 
     const filteredColumns = columns.filter((column) => !excludeUserProductivity.includes(column.key));
 
     return (
-        
+
         <DialogZyx
             open={openModal}
             title={t(langKeys.graphic_configuration)}
@@ -883,7 +882,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
                     optionValue="key"
                     uset={true}
                     prefixTranslation=""
-                />           
+                />
             </div>
         </DialogZyx>
     );

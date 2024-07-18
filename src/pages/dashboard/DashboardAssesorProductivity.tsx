@@ -14,7 +14,7 @@ import TableZyx from "components/fields/table-simple";
 import { exportExcel } from "common/helpers";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
-import {  Card, CardContent, Grid } from "@material-ui/core";
+import { Card, CardContent, Grid } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SubjectIcon from '@material-ui/icons/Subject';
@@ -24,7 +24,7 @@ import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import PersonIcon from '@material-ui/icons/Person';
-import TrendingDownIcon from '@material-ui/icons/TrendingDown';import { CellProps } from 'react-table';
+import TrendingDownIcon from '@material-ui/icons/TrendingDown'; import { CellProps } from 'react-table';
 import DialogInteractions from "components/inbox/DialogInteractions";
 import FileSaver from 'file-saver';
 import i18n from 'i18next';
@@ -33,7 +33,7 @@ interface Assessor {
     allFilters: Dictionary[];
 }
 
-const useStyles = makeStyles((theme) => ({      
+const useStyles = makeStyles((theme) => ({
     containerHeader: {
         display: "flex",
         flexWrap: "wrap",
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: "14px",
         textTransform: "initial",
-    },       
+    },
     containerHeaderItem: {
         backgroundColor: "#FFF",
         padding: 8,
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "row",
         flexWrap: "wrap",
         width: "inherit",
-        
+
     },
     labellink: {
         color: '#7721ad',
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 
 type PieChartData = {
     name: string;
-    value: number; 
+    value: number;
 };
 
 type ColumnTmp = {
@@ -109,7 +109,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
     const [isday, setisday] = useState(false);
-    const [columnGraphic, ] = useState("");
+    const [columnGraphic,] = useState("");
     const [, setmaxmin] = useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
@@ -122,11 +122,12 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     });
     const [desconectedmotives, setDesconectedmotives] = useState<Dictionary[]>([]);
     const [openModalTicket, setOpenModalTicket] = useState(false);
-    const [view, ] = useState("GRID");
-    const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);   
+    const [view,] = useState("GRID");
+    const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);
     //const [dataGridAgentAvg, setdataGridAgentAvg] = useState<Dictionary[]>([]);
 
-    const [gaugeArcs, ] = useState([100, 100]);     
+
+    const [gaugeArcs,] = useState([100, 100]);
     const formatTooltip = (value: number) => `${value}%`;
 
     const [detailCustomReport, setDetailCustomReport] = useState<{
@@ -143,13 +144,13 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     const dataForClosedTickets = dataGrid.map(item => ({
         name: item.fullname,
         value: parseInt(item.closedtickets)
-    })); 
+    }));
 
     const totalClosedTickets = dataGrid.reduce((total, item) => total + parseInt(item.closedtickets), 0);
     const [tabIndex, setTabIndex] = useState(0);
     const [tabTexts] = useState([
-        { label: 'TMO', title:  t(langKeys.tmoDescription) },
-        { label: 'TME', title: t(langKeys.tmeDescription)},
+        { label: 'TMO', title: t(langKeys.tmoDescription) },
+        { label: 'TME', title: t(langKeys.tmeDescription) },
         { label: 'TMR', title: t(langKeys.tmrDescription) }
     ]);
 
@@ -173,13 +174,13 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             break;
     }
 
-    useEffect(() => {        
+    useEffect(() => {
         dispatch(setViewChange("report_userproductivity"));
         dispatch(getMultiCollection([
             getReportColumnSel("UFN_REPORT_USERPRODUCTIVITY_SEL"),
-            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC","probando"),
-            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_GRUPOS","GRUPOS"),
-            getReportFilterSel("UFN_DOMAIN_LST_VALORES","UFN_DOMAIN_LST_VALORES_ESTADOORGUSER","ESTADOORGUSER"),
+            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC", "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC", "probando"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES", "UFN_DOMAIN_LST_VALORES_GRUPOS", "GRUPOS"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES", "UFN_DOMAIN_LST_VALORES_ESTADOORGUSER", "ESTADOORGUSER"),
         ]));
         return () => {
             dispatch(cleanViewChange());
@@ -187,15 +188,15 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     }, []);
 
     const convertMinutesToHHMMSS = (minutes: number) => {
-        const hours = Math.floor(minutes / 60);    
-        const remainingMinutes = minutes % 60;    
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
         const formattedHours = String(hours).padStart(2, '0');
         const formattedMinutes = String(remainingMinutes).padStart(2, '0');
-        const formattedSeconds = '00';     
+        const formattedSeconds = '00';
         return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-    };   
+    };
 
-    const columns = React.useMemo(        
+    const columns = React.useMemo(
         () => [
             {
                 Header: t(langKeys.report_userproductivity_user),
@@ -244,11 +245,11 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_minfirstreplytime),
                 accessor: 'minfirstreplytime',
-            },  
+            },
             {
                 Header: t(langKeys.report_userproductivity_avgtotalduration),
                 accessor: 'avgtotalduration',
-            },        
+            },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
@@ -277,20 +278,20 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
             {
                 Header: t(langKeys.maxTMR),
-                accessor: 'tmradvisermax',              
+                accessor: 'tmradvisermax',
             },
             {
                 Header: t(langKeys.minTMR),
-                accessor: 'tmradvisermin',                
+                accessor: 'tmradvisermin',
             },
-            
+
             {
                 Header: t(langKeys.report_userproductivity_tmradviseravg),
-                accessor: 'tmradviseravg',              
+                accessor: 'tmradviseravg',
             },
             {
-                Header: t(langKeys.timeconnected),                      
-                accessor: 'conectadotime',                    
+                Header: t(langKeys.timeconnected),
+                accessor: 'conectadotime',
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
@@ -299,13 +300,13 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_groups),
                 accessor: 'groups',
-            },           
+            },
         ],
         [isday, mainAux, desconectedmotives]
     );
 
     const columnsGaugeChart = React.useMemo(
-        
+
         () => [
             {
                 Header: t(langKeys.ticket_number),
@@ -318,22 +319,22 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             {
                 Header: t(langKeys.channel),
                 accessor: 'personcommunicationchannel',
-            },          
+            },
             {
                 Header: t(langKeys.closedby),
-                accessor: 'asesorfinal',               
+                accessor: 'asesorfinal',
             },
             {
                 Header: t(langKeys.tme),
-                accessor: 'tiempoprimerarespuesta',              
+                accessor: 'tiempoprimerarespuesta',
             },
             {
                 Header: t(langKeys.propertytmemaximo),
-                accessor: 'tiempoprimerarespuestaasesor',              
+                accessor: 'tiempoprimerarespuestaasesor',
             },
             {
                 Header: t(langKeys.propertytmeminimo),
-                accessor: 'tmoasesor',             
+                accessor: 'tmoasesor',
             },
             {
                 Header: t(langKeys.tmo),
@@ -346,7 +347,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             {
                 Header: t(langKeys.propertytmominimo),
                 accessor: 'supervisionduration',
-            },          
+            },
             {
                 Header: t(langKeys.tmr),
                 accessor: 'tiempopromediorespuesta',
@@ -358,7 +359,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             {
                 Header: t(langKeys.minTMR),
                 accessor: 'tiempopromediorespuestapersona',
-            },           
+            },
         ],
         []
     );
@@ -367,9 +368,9 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     const openDialogInteractions = useCallback((row: Dictionary) => {
         setOpenModalTicket(true);
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
-    }, [mainResult]);   
+    }, [mainResult]);
 
-  
+
 
     const getColumns = (tabIndex: number) => {
         switch (tabIndex) {
@@ -389,8 +390,8 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         accessor: 'mintotalduration',
                     },
                     {
-                        Header: t(langKeys.timeconnected),                      
-                        accessor: 'conectadotime',                    
+                        Header: t(langKeys.timeconnected),
+                        accessor: 'conectadotime',
                     },
                 ];
             case 1: // TME
@@ -409,8 +410,8 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         accessor: 'minfirstreplytime',
                     },
                     {
-                        Header: t(langKeys.timeconnected),                      
-                        accessor: 'conectadotime',                    
+                        Header: t(langKeys.timeconnected),
+                        accessor: 'conectadotime',
                     },
                 ];
             case 2: // TMR
@@ -427,10 +428,10 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                     {
                         Header: 'TMR mínimo',
                         accessor: 'tmradvisermin',
-                    },                   
+                    },
                     {
-                        Header: t(langKeys.timeconnected),                      
-                        accessor: 'conectadotime',                    
+                        Header: t(langKeys.timeconnected),
+                        accessor: 'conectadotime',
                     },
                 ];
             default:
@@ -442,12 +443,12 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
         switch (tabIndex) {
             case 0: // TMO
                 return [
-                    { 
+                    {
                         Header: t(langKeys.ticket_numeroticket),
                         accessor: "numeroticket",
                         NoFilter: true,
                         Cell: (props: CellProps<Dictionary>) => {
-                            const row = props.cell.row.original;                
+                            const row = props.cell.row.original;
                             if (row && row.numeroticket) {
                                 return (
                                     <label
@@ -461,22 +462,22 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                 return "";
                             }
                         },
-                        
+
                     },
                     {
                         Header: t(langKeys.tmo),
                         accessor: 'duraciontotal',
-                        NoFilter: true,                       
+                        NoFilter: true,
                     }
                 ];
             case 1: // TME
                 return [
-                    { 
+                    {
                         Header: t(langKeys.ticket_numeroticket),
                         accessor: "numeroticket",
                         NoFilter: true,
                         Cell: (props: CellProps<Dictionary>) => {
-                            const row = props.cell.row.original;                
+                            const row = props.cell.row.original;
                             if (row && row.numeroticket) {
                                 return (
                                     <label
@@ -489,23 +490,23 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                             } else {
                                 return "";
                             }
-                        },                        
+                        },
                     },
                     {
                         Header: t(langKeys.tme),
                         accessor: 'tiempopromediorespuesta',
                         NoFilter: true,
-                       
+
                     }
                 ];
             case 2: // TMR
                 return [
-                    { 
+                    {
                         Header: t(langKeys.ticket_numeroticket),
                         accessor: "numeroticket",
                         NoFilter: true,
                         Cell: (props: CellProps<Dictionary>) => {
-                            const row = props.cell.row.original;                
+                            const row = props.cell.row.original;
                             if (row && row.numeroticket) {
                                 return (
                                     <label
@@ -519,41 +520,41 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                 return "";
                             }
                         },
-                        
+
                     },
                     {
                         Header: t(langKeys.tmr),
                         accessor: 'tiempopromediorespuestapersona',
                         NoFilter: true,
-                       
+
                     }
                 ];
             default:
                 return [];
         }
     };
-    
+
     useEffect(() => {
         if (allFilters) {
-            if(!multiData.loading && !multiData.error && multiData.data.length){
+            if (!multiData.loading && !multiData.error && multiData.data.length) {
                 const groupitem = allFilters.find((e) => e.values[0].label === "group");
                 if (groupitem) {
                     const arraygroups =
                         multiData?.data[
-                            multiData?.data?.findIndex(
-                                (x) =>
-                                    x.key ===
-                                    (groupitem?.values[0].isListDomains
-                                        ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
-                                        : groupitem?.values[0].filter)
-                            )
+                        multiData?.data?.findIndex(
+                            (x) =>
+                                x.key ===
+                                (groupitem?.values[0].isListDomains
+                                    ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
+                                    : groupitem?.values[0].filter)
+                        )
                         ];
                     setgroupsdata(arraygroups.data);
                 }
             }
         }
     }, [multiData, allFilters]);
-    
+
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
@@ -635,11 +636,11 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10)
             : null;
         setisday(stardate === enddate);
-        
+
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getUserProductivitySel({
             ...allParameters,
-            
+
         })));
 
         dispatch(getCollectionPaginated(getPaginatedTicket({
@@ -647,7 +648,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             enddate: enddate,
             take: 10,
             skip: 0,
-            sorts: {duraciontotal : "desc"},
+            sorts: { duraciontotal: "desc" },
             filters: {},
             ...allParameters
         })))
@@ -656,7 +657,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             dispatch(
                 getMainGraphic(
                     getUserProductivityGraphic({
-                        ...allParameters,                      
+                        ...allParameters,
                         column: columnGraphic,
                         summarization: "COUNT",
                     })
@@ -675,10 +676,10 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
         setcheckedA(event.target.checked);
     };
 
-    const format = (date: Date) => date.toISOString().split("T")[0];    
+    const format = (date: Date) => date.toISOString().split("T")[0];
 
- 
-     
+
+
     function calculateAverageTime(data: { [key: string]: string }[], key: string) {
         const totalSeconds = data.reduce((totalSeconds, item) => {
             const timeValue = item[key];
@@ -688,42 +689,42 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             } else {
                 return totalSeconds;
             }
-        }, 0);    
+        }, 0);
         const avgSeconds = Math.round(totalSeconds / data.length);
         const avgHours = Math.floor(avgSeconds / 3600);
         const avgRemainingSeconds = avgSeconds % 3600;
         const avgMinutes = Math.floor(avgRemainingSeconds / 60);
-        const avgSecondsFinal = avgRemainingSeconds % 60;    
+        const avgSecondsFinal = avgRemainingSeconds % 60;
         return `${String(avgHours).padStart(2, '0')}:${String(avgMinutes).padStart(2, '0')}:${String(avgSecondsFinal).padStart(2, '0')}`;
-    }    
+    }
 
     const tmoValues = mainPaginated.data.map(item => ({ TMOAsesorPromedio: item.duraciontotal }));
     const tmeValues = mainPaginated.data.map(item => ({ TMEPromedio: item.tiempopromediorespuesta }));
     const tmrValues = mainPaginated.data.map(item => ({ TMRPromedio: item.tiempopromediorespuestapersona }));
-    
+
     const avgTMO = calculateAverageTime(tmoValues, 'TMOAsesorPromedio');
-    const avgTME = calculateAverageTime(tmeValues, 'TMEPromedio');   
+    const avgTME = calculateAverageTime(tmeValues, 'TMEPromedio');
     const avgTMR = calculateAverageTime(tmrValues, 'TMRPromedio');
 
     function convertHHMMSStoSeconds(hora: string): number {
         const partes = hora.split(":");
         const horas = parseInt(partes[0]);
         const minutos = parseInt(partes[1]);
-        const segundos = parseInt(partes[2]);        
-        const segundosTotales = horas * 3600 + minutos * 60 + segundos;        
+        const segundos = parseInt(partes[2]);
+        const segundosTotales = horas * 3600 + minutos * 60 + segundos;
         return segundosTotales;
     }
 
     function convertSecondsToHHMMSS(totalSeconds: number): string {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;    
+        const seconds = totalSeconds % 60;
         const paddedHours = hours.toString().padStart(2, '0');
         const paddedMinutes = minutes.toString().padStart(2, '0');
-        const paddedSeconds = seconds.toString().padStart(2, '0');    
+        const paddedSeconds = seconds.toString().padStart(2, '0');
         return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
-    }    
-    
+    }
+
     const [dataForAgentAvg, setDataForAgentAvg] = useState<{ name: string; value: number; }[]>([]);
 
     useEffect(() => {
@@ -740,7 +741,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 setDataForAgentAvg(
                     dataGrid.map(item => ({
                         name: item.fullname,
-                        value: convertHHMMSStoSeconds(item.avgfirstreplytime)                  
+                        value: convertHHMMSStoSeconds(item.avgfirstreplytime)
                     }))
                 );
                 break;
@@ -748,8 +749,8 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 setDataForAgentAvg(
                     dataGrid.map(item => ({
                         name: item.fullname,
-                        value: convertHHMMSStoSeconds(item.tmravg) 
-                       
+                        value: convertHHMMSStoSeconds(item.tmravg)
+
                     }))
                 );
                 break;
@@ -794,23 +795,23 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             return 0;
         }
         return 0;
-    });    
+    });
 
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
 
     const slicedData = sortedData.slice(
         currentPage * itemsPerPage,
-        (currentPage + 1) * itemsPerPage        
+        (currentPage + 1) * itemsPerPage
     );
 
     const [currentPageAsesor, setCurrentPageAsesor] = useState(0);
-    const itemsPerPageAsesor = 10;  
+    const itemsPerPageAsesor = 10;
 
     const slicedDataAsesor = sortedDataForAvgAgent.slice(
         currentPageAsesor * itemsPerPageAsesor,
-        (currentPageAsesor + 1) * itemsPerPageAsesor        
-    );  
+        (currentPageAsesor + 1) * itemsPerPageAsesor
+    );
 
     const [openExpectedValueModal, setOpenExpectedValueModal] = useState(false);
     const [errorText, setErrorText] = useState('');
@@ -841,7 +842,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 break;
         }
     }, [tabIndex, expectedTMOValue, expectedTMEValue, expectedTMRValue]);
-    
+
     useEffect(() => {
         localStorage.setItem('expectedTMOValue', expectedTMOValue);
     }, [expectedTMOValue]);
@@ -858,10 +859,10 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
         const hourInt = parseInt(h, 10);
         const minuteInt = parseInt(m, 10);
         const secondInt = parseInt(s, 10);
-    
+
         if (
-            isNaN(hourInt) || isNaN(minuteInt) || isNaN(secondInt) || 
-            hourInt < 0 || minuteInt < 0 || minuteInt > 59 || 
+            isNaN(hourInt) || isNaN(minuteInt) || isNaN(secondInt) ||
+            hourInt < 0 || minuteInt < 0 || minuteInt > 59 ||
             secondInt < 0 || secondInt > 59
         ) {
             setErrorText('Por favor, ingrese una hora válida.');
@@ -870,10 +871,10 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             setErrorText('');
             return true;
         }
-    };    
+    };
 
     const handleAccept = () => {
-        let accepted = false; 
+        let accepted = false;
         if (validateTime(hour, minute, second)) {
             const newValue = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
             switch (tabIndex) {
@@ -889,21 +890,21 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 default:
                     break;
             }
-            accepted = true; 
+            accepted = true;
         }
         return accepted;
-    };      
+    };
 
     const updateDataForPie = (tabIndex: number, data: { duraciontotal: string, TME: string, TMR: string }[]) => {
-        let expectedValue: number = 0; 
-        if (tabIndex === 0) { expectedValue = getSecondsFromTimeString(expectedTMOValue); } 
-        else if (tabIndex === 1) { expectedValue = getSecondsFromTimeString(expectedTMEValue); } 
+        let expectedValue: number = 0;
+        if (tabIndex === 0) { expectedValue = getSecondsFromTimeString(expectedTMOValue); }
+        else if (tabIndex === 1) { expectedValue = getSecondsFromTimeString(expectedTMEValue); }
         else if (tabIndex === 2) { expectedValue = getSecondsFromTimeString(expectedTMRValue); }
-    
-        const totalTickets = data.length;    
+
+        const totalTickets = data.length;
         const ticketsMeetingExpectation = [];
         const ticketsNotMeetingExpectation = [];
-    
+
         data.forEach(item => {
             let durationSeconds: number | undefined;
             if (tabIndex === 0) {
@@ -913,7 +914,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             } else if (tabIndex === 2) {
                 durationSeconds = getSecondsFromTimeString(item.TMR);
             }
-            
+
             if (durationSeconds !== undefined) {
                 const meetsExpectation = durationSeconds <= expectedValue;
                 if (meetsExpectation) {
@@ -923,31 +924,31 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 }
             }
         });
-    
+
         const percentageMeetingExpectation = (ticketsMeetingExpectation.length / totalTickets) * 100;
         const percentageNotMeetingExpectation = 100 - percentageMeetingExpectation;
-    
+
         setDataForPie([
             { name: 'Cumple', value: percentageMeetingExpectation },
             { name: 'No Cumple', value: percentageNotMeetingExpectation },
         ]);
-    }; 
-    
+    };
+
     useEffect(() => {
         const duracionesTotales = mainPaginated.data.map(item => ({
             duraciontotal: item.duraciontotal,
             TME: item.tiempopromediorespuesta,
             TMR: item.tiempopromediorespuestapersona
         }));
-    
+
         updateDataForPie(tabIndex, duracionesTotales);
-    }, [mainPaginated.data, tabIndex]);   
+    }, [mainPaginated.data, tabIndex]);
 
     const [openSeButtonsAgent, setOpenSeButtonsAgent] = useState(false);
-    const [anchorElSeButtonsAgent, setAnchorElSeButtonsAgent] = useState<null | HTMLElement>(null);    
+    const [anchorElSeButtonsAgent, setAnchorElSeButtonsAgent] = useState<null | HTMLElement>(null);
     const [openSeButtonsTickets, setOpenSeButtonsTickets] = useState(false);
     const [anchorElSeButtonsTickets, setAnchorElSeButtonsTickets] = useState<null | HTMLElement>(null);
-    
+
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>, type: string) => {
         if (type === 'agent') {
             setAnchorElSeButtonsAgent(anchorElSeButtonsAgent ? null : event.currentTarget);
@@ -962,7 +963,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
         const RADIAN = Math.PI / 180;
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);    
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);
         return (
             <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
                 {summary}
@@ -972,22 +973,22 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
     const isPromedioMenorEsperado = (avg: string, expected: string) => {
         const avgSeconds = getSecondsFromTimeString(avg);
-        const expectedSeconds = getSecondsFromTimeString(expected);    
-        const toleranceThreshold = 0.5;          
+        const expectedSeconds = getSecondsFromTimeString(expected);
+        const toleranceThreshold = 0.5;
         if (Math.abs(avgSeconds - expectedSeconds) <= toleranceThreshold) {
             return true;
-        }    
+        }
         return avgSeconds < expectedSeconds;
-    };    
+    };
 
     const getSecondsFromTimeString = (timeString: string) => {
         if (typeof timeString === 'string') {
             const [hours, minutes, seconds] = timeString.split(':').map(Number);
             return hours * 3600 + minutes * 60 + seconds;
-        } else {           
-            return 0; 
+        } else {
+            return 0;
         }
-    }; 
+    };
 
     useEffect(() => {
         const handleClickOutsideAgent = (event: MouseEvent) => {
@@ -1002,7 +1003,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
             document.removeEventListener("click", handleClickOutsideAgent);
         };
     }, [anchorElSeButtonsAgent, setOpenSeButtonsAgent]);
-    
+
     useEffect(() => {
         const handleClickOutsideTickets = (event: MouseEvent) => {
             const target = event.target as Node;
@@ -1019,7 +1020,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
     let avg: string;
     let tabExpectedValue: string;
-    
+
     switch (tabIndex) {
         case 0:
             avg = avgTMO;
@@ -1036,7 +1037,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
         default:
             avg = '';
             tabExpectedValue = '';
-    }      
+    }
 
     function formatTime(timeString: string) {
         const timeParts = timeString.split(':');
@@ -1048,7 +1049,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
     return (
         <>
-        {/* Inicio de la Cabezera 1 ----------------------------------------------------*/}
+            {/* Inicio de la Cabezera 1 ----------------------------------------------------*/}
             <div style={{ display: "flex", gap: 8, marginBottom: '1rem', marginTop: '0.5rem' }}>
                 <div style={{ display: "flex" }}>
                     <Box width={1}>
@@ -1080,7 +1081,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                     </Button>
                                 </DateRangePicker>
                             </div>
-                            
+
                         </Box>
                     </Box>
                 </div>
@@ -1144,14 +1145,14 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 indicatorColor="primary"
                 variant="fullWidth"
             >
-               {tabTexts.map((tab, index) => (
+                {tabTexts.map((tab, index) => (
                     <AntTab key={index} label={tab.label} />
                 ))}
             </Tabs>
 
             {/* Card Velocimetro TMO  ----------------------------------------------------*/}
-            <div style={{margin: '0.5rem 0'}}>
-                <Card style={{ margin: '0',  padding: 0}}>
+            <div style={{ margin: '0.5rem 0' }}>
+                <Card style={{ margin: '0', padding: 0 }}>
                     <CardContent>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div>
@@ -1173,15 +1174,15 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                 style={{ width: '450px' }}
                                 id="gauge-chart"
                                 arcsLength={gaugeArcs}
-                                colors={['#00B050', '#FF0000']} 
+                                colors={['#00B050', '#FF0000']}
                                 needleColor="#783BA5"
                                 needleBaseColor="#783BA5"
                                 textColor="#000000"
-                                animate={false}                               
+                                animate={false}
                                 percent={
-                                    isPromedioMenorEsperado(avg, tabExpectedValue) 
-                                    ? 4.3
-                                    : 8.8
+                                    isPromedioMenorEsperado(avg, tabExpectedValue)
+                                        ? 4.3
+                                        : 8.8
                                 }
                                 formatTextValue={() => ``}
                             />
@@ -1209,19 +1210,19 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                             onChange={(e) => {
                                 const value = e.target.value.replace(/\D/g, '').slice(0, 2);
                                 setHour(value);
-                                validateTime(value, minute, second); 
+                                validateTime(value, minute, second);
                             }}
                             fullWidth
                             inputProps={{ maxLength: 2 }}
                         />
-                       <TextField
+                        <TextField
                             label="MM"
                             variant="outlined"
                             value={minute}
                             onChange={(e) => {
                                 const value = e.target.value.replace(/\D/g, '').slice(0, 2);
                                 setMinute(value);
-                                validateTime(hour, value, second); 
+                                validateTime(hour, value, second);
                             }}
                             fullWidth
                             inputProps={{ maxLength: 2 }}
@@ -1233,7 +1234,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                             onChange={(e) => {
                                 const value = e.target.value.replace(/\D/g, '').slice(0, 2);
                                 setSecond(value);
-                                validateTime(hour, minute, value); 
+                                validateTime(hour, minute, value);
                             }}
                             fullWidth
                             inputProps={{ maxLength: 2 }}
@@ -1244,35 +1245,35 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                         <Button onClick={() => setOpenExpectedValueModal(false)} color="default">
                             {t(langKeys.cancel)}
                         </Button>
-                        <Button 
-                            onClick={() => {                                
+                        <Button
+                            onClick={() => {
                                 handleAccept()
                                 setOpenExpectedValueModal(false)
                                 fetchData()
                             }}
-                            
-                            color="primary" 
+
+                            color="primary"
                             disabled={Boolean(errorText)}>
                             {t(langKeys.accept)}
                         </Button>
                     </DialogActions>
                 </DialogZyx>
-            </div>                    
+            </div>
 
             <Grid container spacing={3} className={classes.containerDetails}>
                 {/* Card Asesor con TMO Promedio  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem', margin:0}}>
+                    <Card style={{ height: '30rem', margin: 0 }}>
                         <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> {t(langKeys.agentWith)} {' '}  {tabTexts[tabIndex].label} {' '} {t(langKeys.function_average)} </Typography>
                                 </div>
                                 <div style={{ display: 'flex', gap: 5 }}>
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'agent')} />                      
-                                   
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor: 'pointer' }} onClick={(event) => handleClickSeButtons(event, 'agent')} />
+
                                     <div style={{ display: 'flex', gap: 8 }}>
-                                        <Popper 
+                                        <Popper
                                             open={openSeButtonsAgent}
                                             anchorEl={anchorElSeButtonsAgent}
                                             placement="bottom"
@@ -1280,7 +1281,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                             style={{ marginRight: '1rem' }}
                                         >
                                             {({ TransitionProps }) => (
-                                                <Paper {...TransitionProps} elevation={5}>                                           
+                                                <Paper {...TransitionProps} elevation={5}>
                                                     <MenuItem
                                                         style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
                                                         onClick={() => {
@@ -1294,7 +1295,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                         </ListItemIcon>
                                                         <Typography variant="inherit">{t(langKeys.majorToMinor)}</Typography>
                                                     </MenuItem>
-                                                    <Divider />                                               
+                                                    <Divider />
                                                     <div>
                                                         <MenuItem
                                                             style={{ padding: '0.7rem 1rem', fontSize: '0.96rem' }}
@@ -1326,7 +1327,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                             <Typography variant="inherit">{t(langKeys.byAdvisorName)} </Typography>
                                                         </MenuItem>
                                                         <Divider />
-                                                    </div>                                    
+                                                    </div>
                                                 </Paper>
                                             )}
                                         </Popper>
@@ -1335,7 +1336,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), mainPaginated.data, columnsGaugeChart.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                 </div>
                             </div>
-                                                                                                     
+
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
                                     <Button
@@ -1355,21 +1356,21 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                     >
                                         <KeyboardArrowRightIcon />
                                     </Button>
-                                    </div>
+                                </div>
                                 <ResponsiveContainer width="100%" height={itemsPerPage * 50}>
                                     <BarChart
                                         data={slicedDataAsesor}
                                         layout="horizontal"
-                                        margin={{top: 20, right: 50, left: 50, bottom: 10}}
+                                        margin={{ top: 20, right: 50, left: 50, bottom: 10 }}
                                     >
                                         <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={330} dy={5} dx={-5} />
+                                        <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={330} dy={5} dx={-5} />
                                         <Tooltip
                                             labelFormatter={(name) => {
                                                 const email = dataGrid.find(item => item.fullname.toLowerCase() === name.toLowerCase())?.email;
                                                 return email ? email : name;
                                             }}
-                                            formatter={(value:number, name:string)=> [convertSecondsToHHMMSS(value) ,t(name)]}
+                                            formatter={(value: number, name: string) => [convertSecondsToHHMMSS(value), t(name)]}
                                         />
                                         <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
                                             <LabelList dataKey="summary" position="top" />
@@ -1377,7 +1378,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                                 dataForAgentAvg.map((entry: Dictionary, index: number) => (
                                                     <Cell key={`cell-${index}`} fill={"#7721AD"} />
                                                 ))
-                                            }    
+                                            }
                                         </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -1388,14 +1389,14 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
                 {/* Card Cumplimiento TMO por Ticket  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'30rem'}}>
+                    <Card style={{ height: '30rem' }}>
                         <CardContent style={{ paddingBottom: 10 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div>
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>{t(langKeys.compliance)} {' '} {tabTexts[tabIndex].label}{' '} {t(langKeys.byTicket)} </Typography>
-                                </div>                              
+                                </div>
                             </div>
-                            <div style={{ margin: '1rem 0',  display: 'flex' }}>
+                            <div style={{ margin: '1rem 0', display: 'flex' }}>
                                 <ResponsiveContainer height={300}>
                                     <PieChart>
                                         <Tooltip formatter={formatTooltip} />
@@ -1416,17 +1417,17 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                         </Pie>
                                     </PieChart>
                                 </ResponsiveContainer>
-                                <div style={{ overflowX: 'auto', width:'40vw', marginRight:'3rem' }}>
+                                <div style={{ overflowX: 'auto', width: '40vw', marginRight: '3rem' }}>
                                     <TableZyx
                                         columns={columnsFulfillmentByTicket(tabIndex)}
                                         filterGeneral={false}
                                         data={mainPaginated.data}
                                         download={false}
                                         loading={detailCustomReport.loading}
-                                        register={false}     
-                                        toolsFooter={false}   
-                                        pageSizeDefault={10}                                                                     
-                                    />                           
+                                        register={false}
+                                        toolsFooter={false}
+                                        pageSizeDefault={10}
+                                    />
                                 </div>
                             </div>
                         </CardContent>
@@ -1439,22 +1440,22 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                 </Grid>
             </Grid>
 
-            <Grid container spacing={3} className={classes.containerDetails}>                
+            <Grid container spacing={3} className={classes.containerDetails}>
                 {/* Card N° Tickets Cerrados  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'32rem'}}>
+                    <Card style={{ height: '32rem' }}>
                         <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{display:'flex', gap: 40}}>
+                                <div style={{ display: 'flex', gap: 40 }}>
                                     <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> {t(langKeys.closedTicketsNum)}</Typography>
-                                    <Typography style={{  fontSize: '1.3rem' }}>{totalClosedTickets}</Typography>
+                                    <Typography style={{ fontSize: '1.3rem' }}>{totalClosedTickets}</Typography>
                                 </div>
-                                <div style={{ display: 'flex', gap: 5 }}>                             
-                                    <SubjectIcon style={{ color: '#2E2C34', cursor:'pointer' }} onClick={(event) => handleClickSeButtons(event, 'tickets')} />
+                                <div style={{ display: 'flex', gap: 5 }}>
+                                    <SubjectIcon style={{ color: '#2E2C34', cursor: 'pointer' }} onClick={(event) => handleClickSeButtons(event, 'tickets')} />
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("closedTicketsReport" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
-                               
+
                                     <div style={{ display: 'flex', gap: 8 }}>
-                                        <Popper 
+                                        <Popper
                                             open={openSeButtonsTickets}
                                             anchorEl={anchorElSeButtonsTickets}
                                             placement="bottom"
@@ -1521,11 +1522,11 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
                                 </div>
                             </div>
-                            
-                            <div style={{ margin: '1rem 0' }}>                                                                                 
-                                <div>   
+
+                            <div style={{ margin: '1rem 0' }}>
+                                <div>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Button
+                                        <Button
                                             color="primary"
                                             onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))}
                                             disabled={currentPage === 0}
@@ -1542,27 +1543,27 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                         >
                                             <KeyboardArrowRightIcon />
                                         </Button>
-                                    </div>                                 
+                                    </div>
                                     <ResponsiveContainer height={350}>
                                         <BarChart
-                                            data={slicedData} 
-                                            margin={{top: 20, right: 50, left: 50, bottom: 40}}
+                                            data={slicedData}
+                                            margin={{ top: 20, right: 50, left: 50, bottom: 40 }}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end"  height={120} dy={5} dx={-5} />
-                                            
-                                            <ChartTooltip formatter={(value:number, name:string)=> [value,t(name)]} />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={120} dy={5} dx={-5} />
+
+                                            <ChartTooltip formatter={(value: number, name: string) => [value, t(name)]} />
                                             <Bar dataKey="value" fill="#7721AD" textAnchor="end" stackId="a" type="monotone" >
                                                 <LabelList position="top" />
                                                 {
                                                     dataForClosedTickets.map((entry: Dictionary, index: number) => (
                                                         <Cell key={`cell-${index}`} fill={"#7721AD"} />
                                                     ))
-                                                }    
+                                                }
                                             </Bar>
                                         </BarChart>
-                                    </ResponsiveContainer>   
-                                </div>                                  
+                                    </ResponsiveContainer>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -1570,17 +1571,17 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
 
                 {/* Card N° Asesores  ----------------------------------------------------*/}
                 <Grid item xs={12} md={6} lg={6}>
-                    <Card style={{height:'32rem'}}>
-                        <CardContent >                          
+                    <Card style={{ height: '32rem' }}>
+                        <CardContent >
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{display:'flex', gap: 40}}>
-                                <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> {t(langKeys.agentNumber)}</Typography>
-                                <Typography style={{  fontSize: '1.3rem' }}>{dataGrid.length}</Typography>
+                                <div style={{ display: 'flex', gap: 40 }}>
+                                    <Typography style={{ fontWeight: 'bold', fontSize: '1.3rem' }}> {t(langKeys.agentNumber)}</Typography>
+                                    <Typography style={{ fontSize: '1.3rem' }}>{dataGrid.length}</Typography>
                                 </div>
-                                <div style={{ display: 'flex', gap: 5 }}>                            
+                                <div style={{ display: 'flex', gap: 5 }}>
                                     <CloudDownloadIcon style={{ color: "#2E2C34", cursor: 'pointer' }} onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: Dictionary) => (!x.isComponent && !x.activeOnHover)))} />
                                 </div>
-                            </div>                           
+                            </div>
 
                             <TableZyx
                                 columns={getColumns(tabIndex)}
@@ -1589,12 +1590,12 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
                                 download={false}
                                 loading={detailCustomReport.loading}
                                 register={false}
-                                pageSizeDefault={10}                          
+                                pageSizeDefault={10}
                             />
                         </CardContent>
                     </Card>
                 </Grid>
-            </Grid>          
+            </Grid>
         </>
     );
 };
