@@ -60,6 +60,10 @@ interface ModalProps {
     index: number;
     setAllIndex: (index: any) => void;
     handleDelete: (row: Dictionary | null, index: number) => void;
+    isStore: boolean;
+    setIsStore: (isStore: boolean) => void;
+    isWarehouse: boolean;
+    setIsWarehouse: (isWarehouse: boolean) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -136,6 +140,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     triggerSave,
     setAllIndex,
     handleDelete,
+    isStore,
+    setIsStore,
+    isWarehouse,
+    setIsWarehouse,
 }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -178,8 +186,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
-    const [isStore, setIsStore] = useState(row?.storeid ? true : false)
-    const [isWarehouse, setIsWarehouse] = useState(row?.warehouseid ? true : false)
     
     const {
         register,
@@ -190,7 +196,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         formState: { errors },
         reset,
     } = useForm();
-
+    
     useEffect(() => {
         if (triggerSave) {
             (async () => {
@@ -210,6 +216,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             })();
         }
     }, [triggerSave]);
+
+    useEffect(() => {
+        if(row?.storeid !== undefined && row?.storeid !== 0) setIsStore(true)
+        if(row?.warehouseid !== undefined && row?.warehouseid !== 0) setIsWarehouse(true)
+    }, []);
 
     function updatefield(field: string, value: any) {
         updateRecords &&
@@ -1110,7 +1121,10 @@ const DetailUsers: React.FC<DetailProps> = ({
     const [allIndex, setAllIndex] = useState([]);
     const [getOrganizations, setGetOrganizations] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
-
+    
+    const [isStore, setIsStore] = useState((row?.storeid) ? true : false)
+    const [isWarehouse, setIsWarehouse] = useState((row?.warehouseid) ? true : false)
+    
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
     useEffect(() => {
@@ -1294,7 +1308,7 @@ const DetailUsers: React.FC<DetailProps> = ({
             );
         }
     }, [allIndex, triggerSave]);
-
+    
     const onSubmit = handleSubmit((data) => {
         if (!row && !data.password) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
@@ -1558,6 +1572,10 @@ const DetailUsers: React.FC<DetailProps> = ({
                                     triggerSave={triggerSave}
                                     handleDelete={handleDelete}
                                     setAllIndex={setAllIndex}
+                                    isStore={isStore}
+                                    setIsStore={setIsStore}
+                                    isWarehouse={isWarehouse}
+                                    setIsWarehouse={setIsWarehouse}
                                 />
                             ))
                         )}
