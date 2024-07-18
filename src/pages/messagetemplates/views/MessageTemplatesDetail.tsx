@@ -329,18 +329,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [cardAux, setCardAux] = useState<number | null>(null)
     const [buttonsType, setButtonsType] = useState('none')
     const [cursorPositionAux, setCursorPositionAux] = useState(0);
+    const [categoryChange, setCategoryChange] = useState('DESACTIVADO');
     const [buttonsGeneral, setButtonsGeneral] = useState<Dictionary[]>(
-        [
-            {
-                id: 1,
-                name: "quickreply",
-                items: []
-            },
-            {
-                id: 2,
-                name: "generic",
-                items: []
-            }
+        row?.firstbuttons === "quickreply" ? [
+            { id: 1, name: "quickreply",items: [] },
+            { id: 2, name: "generic", items: [] }
+        ] : [
+            { id: 2, name: "generic", items: [] },
+            { id: 1, name: "quickreply",items: [] }
         ]
     )
     
@@ -884,7 +880,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
                     buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
                     carouseldata: JSON.stringify(dataAux.carouseldata),
-                    headervariables: JSON.stringify(dataAux.headervariables)
+                    headervariables: JSON.stringify(dataAux.headervariables),
+                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0 )) ? buttonsGeneral?.[0]?.name : null
                 }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
@@ -2370,6 +2368,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 variant="outlined"
                                 data={[{value: "ACTIVADO"}, {value: "DESACTIVADO"}]}
                                 size="small"
+                                valueDefault={categoryChange}
+                                onChange={(value) => {
+                                    if(value) {
+                                        setCategoryChange(value.value)
+                                    } else {
+                                        setCategoryChange("DESACTIVADO")
+                                    }
+                                }}
                                 optionDesc="value"
                                 optionValue="value"
                             />
