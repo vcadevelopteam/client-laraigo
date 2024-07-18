@@ -1368,19 +1368,26 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         setText(myquickreply);
     };
 
-    const handleKeyPress = (event: any) => {
-        if (event.ctrlKey || event.shiftKey) return;
-        if (event.charCode === 13) {
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {     
+        if (event.ctrlKey && event.code === 'Enter') {
+            setText((prevText) => prevText + '\n');
             event.preventDefault();
-            if (text.trim() || files.length > 0) return triggerReplyMessage();
+        } else if (event.shiftKey) {
+            console.log("");
+            return;
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            if (text.trim() || files.length > 0) {
+                triggerReplyMessage();
+            }
         }
     };
 
-    const handleSelectionChange = (event: any) => {
+    const handleSelectionChange = (event: Dictionary) => {
         setLastSelection(event?.target?.selectionEnd ?? 0);
     };
 
-    function onPasteTextbar(e: any) {
+    function onPasteTextbar(e: Dictionary) {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
             e.preventDefault();
             if (e.clipboardData.files[0].type.includes("image")) {
@@ -1431,12 +1438,17 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     }
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: Dictionary) => {
         if (event.altKey && event.key === 'Enter') {
             event.preventDefault();
             setText(text + '\n');
         }
     };
+
+    const isTextEmptyOrWhitespace = (text: string) => {
+        return text.trim() === '';
+    };
+
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
@@ -1620,29 +1632,51 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <div style={{ display: "flex" }}>
+                                        <div style={{ display: "flex", alignItems: "flex-end" }}>    
                                             <InputBase
+                                                id="chat-input"
                                                 fullWidth
                                                 value={text}
                                                 onChange={handleInputChange}
-                                                placeholder="Send your message..."
+                                                placeholder={t(langKeys.send_your_message)}
                                                 onKeyPress={handleKeyPress}
                                                 rows={numRows}
                                                 multiline
                                                 onKeyDown={handleKeyDown}
-                                                inputProps={{ "aria-label": "naked" }}
+                                                minRows={1}
+                                                maxRows={5}
+                                                inputProps={{
+                                                    'aria-label': 'naked',
+                                                    style: {
+                                                        maxHeight: '144px',
+                                                        overflow: 'auto',                                                 
+                                                    },
+                                                }}                                                
                                                 onPaste={onPasteTextbar}
                                                 onSelect={handleSelectionChange}
                                                 ref={inputRef}
                                             />
-                                            {!files.length && !text && allowRecording && (
-                                                <RecordAudioIcon
-                                                    classes={classes}
-                                                    setRecord={setRecord}
-                                                    setStartRecording={setStartRecording}
-                                                    startRecording={startRecording}
-                                                />
-                                            )}
+                                            <div style={{marginLeft:'1rem', marginBottom:'0.5rem'}}>
+                                                {!files.length && !text && allowRecording ? (
+                                                    <RecordAudioIcon
+                                                        classes={classes}
+                                                        setRecord={setRecord}
+                                                        setStartRecording={setStartRecording}
+                                                        startRecording={startRecording}
+                                                    />
+                                                ) : (                                               
+                                                    <div
+                                                        className={clsx(classes.iconSend, {
+                                                            [classes.iconSendDisabled]: isTextEmptyOrWhitespace(text) && !(
+                                                                files.filter((x) => Boolean(x.url)).length > 0 || record
+                                                            ),
+                                                        })}
+                                                        onClick={triggerReplyMessage}
+                                                    >
+                                                        <SendIcon />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                         {openDialogHotKey && (
                                             <div
@@ -1716,7 +1750,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         <CopilotLaraigoIcon
                                             classes={classes}
                                             enabled={propertyCopilotLaraigo}
-                                        />
+                                        />                                       
+                                    </div>
+
+                                    <div style={{display:'flex', gap:'0.7rem'}}>
                                         <span>
                                             <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
                                                 <IconButton onClick={() => {
@@ -1762,20 +1799,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 </IconButton>
                                             </Tooltip>
                                         </span>
-
-                                    </div>
-                                    <div
-                                        className={clsx(classes.iconSend, {
-                                            [classes.iconSendDisabled]: !(
-                                                text ||
-                                                files.filter((x) => !!x.url).length > 0 ||
-                                                record
-                                            ),
-                                        })}
-                                        onClick={triggerReplyMessage}
-                                    >
-                                        <SendIcon />
-                                    </div>
+                                    </div>                                   
                                 </div>
                             )}
                             <BottomGoToUnder />

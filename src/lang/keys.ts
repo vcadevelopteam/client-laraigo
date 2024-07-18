@@ -6189,6 +6189,8 @@ export const langKeys = {
   increase: 'increase',
   decrease: 'decrease',
   pinmessagehelper: 'pinmessagehelper',
+
+  send_your_message: 'send_your_message',
 };
 
 export type LangKeys = typeof langKeys;
