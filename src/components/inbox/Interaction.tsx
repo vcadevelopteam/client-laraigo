@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, BusinessMessageIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, BusinessMessageIcon, LaraigoOnlyLogo } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -949,10 +949,17 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         <BusinessMessageIcon style={{color:"grey", height: 20, width: 20, paddingRight: 2}}/>
                         <span style={{fontStyle: "italic", color: "grey", fontWeight: "bold", fontSize: "0.8em"}}>{t(langKeys.message_business_origin)}</span>
                     </div>
+                    <LaraigoOnlyLogo style={{height: 20, width: 20}}/>
                 </div>
-                <div>
-                    imagen
-                </div>
+                <img
+                    className={classes.imageCard}
+                    src={dataText?.image?.url||""}
+                    style={{position:"static"}}
+                    alt=""
+                    onClick={() => {
+                        dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
+                    }}
+                />
                 <div style={{fontWeight: "bold"}}>{dataText.headline}</div>
                 <div>{dataText.body}</div>
                 <div>{dataText.payload}</div>
