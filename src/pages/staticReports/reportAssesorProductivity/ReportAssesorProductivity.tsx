@@ -100,6 +100,8 @@ const columnsTemp = [
     "userconnectedduration",
     "userstatus",
     "groups",
+    "tmravg",
+    "tmradviseravg",
 ];
 
 const AssesorProductivityReport: FC<Assessor> = ({ allFilters }) => {
