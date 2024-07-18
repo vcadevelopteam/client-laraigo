@@ -769,21 +769,24 @@ const CopilotLaraigoIcon: React.FC<{
     enabled: boolean
 }> = ({ classes, enabled }) => {
     const { t } = useTranslation();
-    
+
     //{t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
     return (
         <div style={{ display: "flex" }}>
             <Tooltip title={t(langKeys.record_audio)} arrow placement="top">
-                {t(langKeys.currentlanguage) === "en" ?
-                    <CopilotIconEng
-                        className={enabled ? classes.iconResponse : ""}
-                        style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
-                    /> :
-                    <CopilotIconEsp
-                        className={enabled ? classes.iconResponse : ""}
-                        style={{ width: 22, height: 22, fill: enabled ? "black" : "lightgray" }}
-                    />
-                }
+                <IconButton size="small" disabled={!enabled}
+                >
+                    {t(langKeys.currentlanguage) === "en" ?
+                        <CopilotIconEng
+                            className={enabled ? classes.iconResponse : ""}
+                            style={{ width: 22, height: 22}}
+                        /> :
+                        <CopilotIconEsp
+                            className={enabled ? classes.iconResponse : ""}
+                            style={{ width: 22, height: 22}}
+                        />
+                    }
+                </IconButton>
             </Tooltip>
         </div>
     );
@@ -1368,7 +1371,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         setText(myquickreply);
     };
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {     
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.ctrlKey && event.code === 'Enter') {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
@@ -1632,7 +1635,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <div style={{ display: "flex", alignItems: "flex-end" }}>    
+                                        <div style={{ display: "flex", alignItems: "flex-end" }}>
                                             <InputBase
                                                 id="chat-input"
                                                 fullWidth
@@ -1649,14 +1652,14 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     'aria-label': 'naked',
                                                     style: {
                                                         maxHeight: '144px',
-                                                        overflow: 'auto',                                                 
+                                                        overflow: 'auto',
                                                     },
-                                                }}                                                
+                                                }}
                                                 onPaste={onPasteTextbar}
                                                 onSelect={handleSelectionChange}
                                                 ref={inputRef}
                                             />
-                                            <div style={{marginLeft:'1rem', marginBottom:'0.5rem'}}>
+                                            <div style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>
                                                 {!files.length && !text && allowRecording ? (
                                                     <RecordAudioIcon
                                                         classes={classes}
@@ -1664,7 +1667,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                         setStartRecording={setStartRecording}
                                                         startRecording={startRecording}
                                                     />
-                                                ) : (                                               
+                                                ) : (
                                                     <div
                                                         className={clsx(classes.iconSend, {
                                                             [classes.iconSendDisabled]: isTextEmptyOrWhitespace(text) && !(
@@ -1750,10 +1753,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         <CopilotLaraigoIcon
                                             classes={classes}
                                             enabled={propertyCopilotLaraigo}
-                                        />                                       
+                                        />
                                     </div>
 
-                                    <div style={{display:'flex', gap:'0.7rem'}}>
+                                    <div style={{ display: 'flex', gap: '0.7rem' }}>
                                         <span>
                                             <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
                                                 <IconButton onClick={() => {
@@ -1799,7 +1802,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 </IconButton>
                                             </Tooltip>
                                         </span>
-                                    </div>                                   
+                                    </div>
                                 </div>
                             )}
                             <BottomGoToUnder />
