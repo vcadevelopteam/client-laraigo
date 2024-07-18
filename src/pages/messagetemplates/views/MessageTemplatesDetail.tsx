@@ -3227,6 +3227,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
                                                 buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
                                                 buttonsGeneral={buttonsGeneral}
+                                                isNew={isNew}
                                             />
                                         </div>
                                     </div>
