@@ -41,7 +41,7 @@ import SamlLogin from 'components/fields/SamlLogin';
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 // Declara la nueva propiedad en el objeto `window`
 const enableSaml = apiUrls.LOGIN_URL.includes("claroapi")
-let isClaroEnviroment = false
+let isClaroEnviroment = apiUrls.LOGIN_URL.includes("claroapi")
 const debugParam = new URLSearchParams(window.location.search).get('debug');
 if (debugParam === "true") isClaroEnviroment = !isClaroEnviroment
 
