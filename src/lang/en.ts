@@ -6400,6 +6400,8 @@ const translation: LangKeys = {
   gotomessage:'Go to message',
   increase: 'Increase',
   decrease: 'Decrease',
+
+  read_singular_help: 'For those users who have deactivated the blue tick or reading confirmation, it will not be possible to obtain this status, due to privacy issues.',
 };
 
 const enResource: ResourceLanguage = {

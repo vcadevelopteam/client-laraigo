@@ -6351,6 +6351,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   gotomessage:'Ir al mensaje',
   increase: 'Subir',
   decrease: 'Bajar',
+
+  read_singular_help: 'Para aquellos usuarios que tengan desactivado el visto azul o de confirmación de lectura, no se podrá obtener dicho estado, por temas de privacidad.',
 };
 
 const esResource: ResourceLanguage = {

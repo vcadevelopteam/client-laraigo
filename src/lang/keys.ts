@@ -6348,6 +6348,8 @@ export const langKeys = {
   gotomessage:'gotomessage',
   increase: 'increase',
   decrease: 'decrease',
+
+  read_singular_help: 'read_singular_help',
 };
 
 export type LangKeys = typeof langKeys;

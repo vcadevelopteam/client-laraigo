@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate, dateToLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail, getUserMessageOutbound } from 'common/helpers';
 import { Dictionary } from "@types";
-import { getCollectionAux, getCollectionAux2, getMultiCollection, getMultiCollectionAux3, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
+import { getCollectionAux, getMultiCollection, getMultiCollectionAux3, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,6 +21,7 @@ import AssessmentIcon from '@material-ui/icons/Assessment';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import Graphic from 'components/fields/Graphic';
 import SettingsIcon from '@material-ui/icons/Settings';
+import ClearIcon from "@material-ui/icons/Clear";
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
@@ -210,28 +211,24 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                         <div>{row && row.createdate ? dateToLocalDate(row.createdate) : ''}</div>
                     );
                 }
-                //Cell: cell
             },
             {
                 Header: t(langKeys.dashboard_operationalpush_hsmrank_senthour),
                 accessor: 'createhour',
                 showGroupedBy: true,
                 showColumn: true,
-                //Cell: cell
             },
             {
                 Header: `${t(langKeys.name)} ${t(langKeys.campaign).toLocaleLowerCase()}`,
                 accessor: 'campaignname',
                 showGroupedBy: true,
                 showColumn: true,
-                //Cell: cell
             },
             {
                 Header: t(langKeys.recipient),
                 accessor: 'contact',
                 showGroupedBy: true,
                 showColumn: true,
-                //Cell: cell
             },
             {
                 Header: t(langKeys.origin),
@@ -239,35 +236,31 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 showGroupedBy: true,
                 showColumn: true,
                 helpText: t(langKeys.origin_helpText)
-                //Cell: cell
             },
             {
                 Header: t(langKeys.shipment),
                 accessor: 'satisfactory',
                 showGroupedBy: true,
                 showColumn: true,
-                //Cell: cell
             },
             {
                 Header: t(langKeys.read_singular),
                 accessor: 'seen',
                 showGroupedBy: true,
                 showColumn: true,
-                //Cell: cell
+                helpText: t(langKeys.read_singular_help)
             },
             {
                 Header: t(langKeys.contestedagain),
                 accessor: 'answered',
                 showGroupedBy: true,
                 showColumn: true,
-                //Cell: cell
             },
             {
                 Header: "Log",
                 accessor: 'log',
                 showGroupedBy: true,
                 showColumn: true,
-                //Cell: cell
             },
         ],
         []
@@ -327,7 +320,17 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
             <TableZyx
                 columns={columns}
                 titlemodule={row.row.templatename}
-                ButtonsElement={() => (<div className={classes.itemFlex}>
+                ButtonsElement={() => (<div className={classes.itemFlex}>                   
+                    <Button
+                        color="primary"
+                        onClick={() => setViewSelected("view-2")}
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        type="button"
+                        variant="contained"
+                    >
+                        {t(langKeys.back)}
+                    </Button>
                     <Button
                         variant="contained"
                         color="primary"
