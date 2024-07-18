@@ -1383,11 +1383,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     };
 
-    const handleSelectionChange = (event: any) => {
+    const handleSelectionChange = (event: Dictionary) => {
         setLastSelection(event?.target?.selectionEnd ?? 0);
     };
 
-    function onPasteTextbar(e: any) {
+    function onPasteTextbar(e: Dictionary) {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
             e.preventDefault();
             if (e.clipboardData.files[0].type.includes("image")) {
@@ -1438,12 +1438,17 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     }
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: Dictionary) => {
         if (event.altKey && event.key === 'Enter') {
             event.preventDefault();
             setText(text + '\n');
         }
     };
+
+    const isTextEmptyOrWhitespace = (text: string) => {
+        return text.trim() === '';
+    };
+
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
@@ -1627,8 +1632,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <div style={{ display: "flex" }}>                                          
-                                             <InputBase
+                                    <div style={{ display: "flex", alignItems: "flex-end" }}>                                          
+                                        <InputBase
                                                 id="chat-input"
                                                 fullWidth
                                                 value={text}
@@ -1651,27 +1656,27 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 onSelect={handleSelectionChange}  
                                                 ref={inputRef}                                          
                                             />  
-                                            {!files.length && !text && allowRecording ? (
-                                                <RecordAudioIcon
-                                                    classes={classes}
-                                                    setRecord={setRecord}
-                                                    setStartRecording={setStartRecording}
-                                                    startRecording={startRecording}
-                                                />
-                                            ) : (
-                                                <div
-                                                    className={clsx(classes.iconSend, {
-                                                        [classes.iconSendDisabled]: !(
-                                                            text ||
-                                                            files.filter((x) => !!x.url).length > 0 ||
-                                                            record
-                                                        ),
-                                                    })}
-                                                    onClick={triggerReplyMessage}
-                                                >
-                                                    <SendIcon />
-                                                </div>
-                                            )}
+                                            <div style={{marginLeft:'1rem', marginBottom:'0.5rem'}}>
+                                                {!files.length && !text && allowRecording ? (
+                                                    <RecordAudioIcon
+                                                        classes={classes}
+                                                        setRecord={setRecord}
+                                                        setStartRecording={setStartRecording}
+                                                        startRecording={startRecording}
+                                                    />
+                                                ) : (                                               
+                                                    <div
+                                                        className={clsx(classes.iconSend, {
+                                                            [classes.iconSendDisabled]: isTextEmptyOrWhitespace(text) && !(
+                                                                files.filter((x) => Boolean(x.url)).length > 0 || record
+                                                            ),
+                                                        })}
+                                                        onClick={triggerReplyMessage}
+                                                    >
+                                                        <SendIcon />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                         {openDialogHotKey && (
                                             <div
@@ -1794,13 +1799,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             </Tooltip>
                                         </span>
                                     </div>
-
-
-                                  
-
-
-
-
                                 </div>
                             )}
                             <BottomGoToUnder />

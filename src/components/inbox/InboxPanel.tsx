@@ -193,7 +193,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     iconSend: {
-        background: "#5542F6",
+        background: "#7721AD",
         width: 32,
         height: 32,
         display: 'flex',
