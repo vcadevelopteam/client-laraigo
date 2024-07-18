@@ -6353,6 +6353,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   decrease: 'Bajar',
 
   read_singular_help: 'Para aquellos usuarios que tengan desactivado el visto azul o de confirmación de lectura, no se podrá obtener dicho estado, por temas de privacidad.',
+  channel_message_templates_help: 'Los números que pertenezcan a un mismo WABA podrán utilizar el mismo template registrado, basta con seleccionar cualquier número al momento de registrar la plantilla',
+  channel_column_mt_help: 'Muestra el o los canales asignados a la plantilla de comunicación. Para los canales Whatsapp de manera automática mostrará las plantillas del WABA asignado.',
+
 };
 
 const esResource: ResourceLanguage = {

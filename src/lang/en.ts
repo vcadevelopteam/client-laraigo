@@ -6402,6 +6402,9 @@ const translation: LangKeys = {
   decrease: 'Decrease',
 
   read_singular_help: 'For those users who have deactivated the blue tick or reading confirmation, it will not be possible to obtain this status, due to privacy issues.',
+  channel_message_templates_help: 'Numbers belonging to the same WABA can use the same registered template, just select any number when registering the template.',
+  channel_column_mt_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the templates of the assigned WABA.',
+
 };
 
 const enResource: ResourceLanguage = {

@@ -6350,6 +6350,8 @@ export const langKeys = {
   decrease: 'decrease',
 
   read_singular_help: 'read_singular_help',
+  channel_message_templates_help: 'channel_message_templates_help',
+  channel_column_mt_help: 'channel_column_help',
 };
 
 export type LangKeys = typeof langKeys;

@@ -184,7 +184,14 @@ export const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         marginTop: "1.8rem",
         marginBottom: "1.8rem",
-    }
+    },
+    chip: {
+        '& .MuiChip-deleteIcon': {
+            display: 'none',
+            marginRight: '1rem',
+            cursor:'pointer'
+        },
+    },
 }));
 
 const opentermsofservice = () => {
