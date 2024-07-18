@@ -6243,6 +6243,7 @@ const translation: LangKeys = {
   increase: 'Increase',
   decrease: 'Decrease',
   pinmessagehelper: 'Pin message',
+  message_business_origin: 'message_business_origin',
 };
 
 const enResource: ResourceLanguage = {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, BusinessMessageIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -932,7 +932,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </>
         )
     } if (interactiontype === "referral") {
-        console.log(interactiontext)
+        const dataText = JSON.parse(interactiontext)
+        console.log(dataText)
         return (
             <div
                 title={convertLocalDate(createdate).toLocaleString()}
@@ -943,6 +944,18 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <div style={{display:"flex"}}>
+                        <BusinessMessageIcon style={{color:"grey", height: 20, width: 20, paddingRight: 2}}/>
+                        <span style={{fontStyle: "italic", color: "grey", fontWeight: "bold", fontSize: "0.8em"}}>{t(langKeys.message_business_origin)}</span>
+                    </div>
+                </div>
+                <div>
+                    imagen
+                </div>
+                <div style={{fontWeight: "bold"}}>{dataText.headline}</div>
+                <div>{dataText.body}</div>
+                <div>{dataText.payload}</div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
