@@ -484,9 +484,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const [isHovered, setIsHovered] = useState(false);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
-    const isselected = pinnedmessagesSelected.map((item:any) => item.interactionid).includes(interactionid)
+    const isselected = pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid)
     const disableTack = ((pinnedmessagesSelected.length >= 20 || !interactionid))
-    
+
     function fixComment(interactiontext: string) {
         dispatch(execute(modifyPinnedMessage({
             interactionid,
@@ -931,6 +931,22 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 </div>
             </>
         )
+    } if (interactiontype === "referral") {
+        console.log(interactiontext)
+        return (
+            <div
+                title={convertLocalDate(createdate).toLocaleString()}
+                className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client'
+                })}
+                style={{ marginLeft: reply ? 24 : 0 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        );
     }
     return (
         <div className={clsx(classes.interactionText, {
