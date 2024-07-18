@@ -62,6 +62,10 @@ interface ModalProps {
     index: number;
     setAllIndex: (index: any) => void;
     handleDelete: (row: Dictionary | null, index: number) => void;
+    isStore: boolean;
+    setIsStore: (isStore: boolean) => void;
+    isWarehouse: boolean;
+    setIsWarehouse: (isWarehouse: boolean) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -143,6 +147,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     triggerSave,
     setAllIndex,
     handleDelete,
+    isStore,
+    setIsStore,
+    isWarehouse,
+    setIsWarehouse,
 }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -185,8 +193,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
-    const [isStore, setIsStore] = useState(row?.storeid ? true : false)
-    const [isWarehouse, setIsWarehouse] = useState(row?.warehouseid ? true : false)
     
     const {
         register,
@@ -197,7 +203,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         formState: { errors },
         reset,
     } = useForm();
-
+    
     useEffect(() => {
         if (triggerSave) {
             (async () => {
@@ -217,6 +223,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             })();
         }
     }, [triggerSave]);
+
+    useEffect(() => {
+        if(row?.storeid !== undefined && row?.storeid !== 0) setIsStore(true)
+        if(row?.warehouseid !== undefined && row?.warehouseid !== 0) setIsWarehouse(true)
+    }, []);
 
     function updatefield(field: string, value: any) {
         updateRecords &&
@@ -1140,6 +1151,9 @@ const DetailUsers: React.FC<DetailProps> = ({
         }
     }, [multiData]);
     
+    const [isStore, setIsStore] = useState((row?.storeid) ? true : false)
+    const [isWarehouse, setIsWarehouse] = useState((row?.warehouseid) ? true : false)
+    
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
     useEffect(() => {
@@ -1325,7 +1339,7 @@ const DetailUsers: React.FC<DetailProps> = ({
             );
         }
     }, [allIndex, triggerSave]);
-
+    
     const onSubmit = handleSubmit((data) => {
         if ((!row || !edit) && !data.password && user?.properties.environment === "CLARO") {
             data.password = '$2y$10$Pc4Aiy6e/gnatp.EowJAnuxe03pJpdavyG9q0K3o7GRKlmkPkEOEW'
@@ -1665,6 +1679,10 @@ const DetailUsers: React.FC<DetailProps> = ({
                                     triggerSave={triggerSave}
                                     handleDelete={handleDelete}
                                     setAllIndex={setAllIndex}
+                                    isStore={isStore}
+                                    setIsStore={setIsStore}
+                                    isWarehouse={isWarehouse}
+                                    setIsWarehouse={setIsWarehouse}
                                 />
                             ))
                         )}
