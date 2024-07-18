@@ -1113,8 +1113,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     providerpartnerid: null,
                     providerquality: null,
                     providerstatus: null,
-                    categorychange: false,
-                    firstbuttons: null,
                     oldversion: true,
                 }));
                 dispatch(showBackdrop(true));
