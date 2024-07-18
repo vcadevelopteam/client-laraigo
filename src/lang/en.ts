@@ -6400,7 +6400,7 @@ const translation: LangKeys = {
   gotomessage: 'Go to message',
   increase: 'Increase',
   decrease: 'Decrease',
-  propertybalancetime: 'Number of seconds to wait between automatic balancing runs',
+  propertybalancetime: 'Configures the balancing time (seconds) of the "BOT HOLDING"',
 };
 
 const enResource: ResourceLanguage = {

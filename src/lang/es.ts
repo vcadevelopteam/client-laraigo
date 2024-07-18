@@ -6351,7 +6351,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   gotomessage: 'Ir al mensaje',
   increase: 'Subir',
   decrease: 'Bajar',
-  propertybalancetime: 'Cantidad de segundos de espera entre ejecuciones del balanceo automático',
+  propertybalancetime: 'Configura el tiempo (segundos) de balanceo del "BOT HOLDING"',
 };
 
 const esResource: ResourceLanguage = {
