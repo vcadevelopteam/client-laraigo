@@ -348,10 +348,10 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
         return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 2 && searchName === "") {
-        return data
+        return data.filter(item => item.status === "CERRADO");
     }
     if (page === 2 && searchName !== "") {
-        return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => item.status === "CERRADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 1 && searchName === "") {
         return data.filter(item => item.status === "SUSPENDIDO");
@@ -404,6 +404,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [search, setSearch] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
+    const closedTicketList = useSelector(state => state.inbox.closedticketList);
     const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const isFiltering = useSelector(state => state.inbox.isFiltering);
@@ -448,11 +449,11 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     useEffect(() => {
         if (!ticketList.loading && !ticketList.error) {
-            setDataTickets(ticketList.data as ITicket[]);
+            setDataTickets([...ticketList.data,...closedTicketList.data] as ITicket[]);
             setCounterTickets({
                 assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
                 paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
-                all: ticketList.data.length
+                all: closedTicketList.data.length
             })
             const tickets = ticketList.data.filter((x) => x.countnewmessages > 0);
 
@@ -495,7 +496,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         >
                             <AntTab label={`${t(langKeys.assigned)}${counterTickets.assigned < 0 ? '' : "(" + counterTickets.assigned + ")"}`} />
                             <AntTab label={`${t(langKeys.paused)}${counterTickets.paused < 0 ? '' : "(" + counterTickets.paused + ")"}`} />
-                            <AntTab label={`${t(langKeys.today)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
+                            <AntTab label={`${t(langKeys.closedtoday)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
                         </Tabs>
                         <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
                             <IconButton size="small" onClick={() => setShowSearch(true)}>

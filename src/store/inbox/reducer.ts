@@ -28,6 +28,7 @@ const initialTransaction: IBaseState = {
 
 export interface IState {
     ticketList: IListStatePaginated<ITicket>;
+    closedticketList: IListStatePaginated<ITicket>;
     ticketFilteredList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
@@ -83,6 +84,7 @@ export const initialState: IState = {
     agentList: initialListPaginatedState,
     ticketFilteredList: initialListPaginatedState,
     ticketList: initialListPaginatedState,
+    closedticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionBaseList: [],
     libraryList: [],

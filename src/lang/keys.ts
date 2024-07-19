@@ -6364,6 +6364,8 @@ export const langKeys = {
   categorychange: 'categorychange',
   categorychangetext: 'categorychangetext',
   propertybalancetime: 'propertybalancetime',
+  message_business_origin: 'message_business_origin',
+  closedtoday: 'closedtoday',
 };
 
 export type LangKeys = typeof langKeys;

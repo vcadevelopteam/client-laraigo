@@ -366,3 +366,5 @@ export {ReactComponent as TackIcon} from './tackIcon.svg'
 export {ReactComponent as IAIcon} from './IAIcon.svg'
 export { ReactComponent as AIIcon } from './AI.svg';
 export {ReactComponent as TackPinnedIcon} from './tackIcon-pinned.svg'
+
+export {ReactComponent as BusinessMessageIcon} from './businessMessage.svg'

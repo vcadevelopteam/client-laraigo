@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary, ILibrary } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getInteractionsByConversationFree } from 'common/helpers';
+import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getInteractionsByConversationFree, getTicketsClosed } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -50,7 +50,10 @@ export const resetShowModal = (): IActionCall => ({ type: actionTypes.RESET_SHOW
 
 
 export const getTickets = (userid: number | null): IActionCall => ({
-    callAPI: () => CommonService.main(getTicketRequestBody(userid)),
+    callAPI: () => CommonService.multiMain([
+        getTicketRequestBody(userid),
+        getTicketsClosed(userid)
+    ]),
     types: {
         loading: actionTypes.GET_TICKETS,
         success: actionTypes.GET_TICKETS_SUCCESS,

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, TackPinnedIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, LaraigoOnlyLogo, TackPinnedIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -485,7 +485,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
     const isselected = pinnedmessagesSelected.some((item:any) => item.interactionid === interactionid)
     const disableTack = ((pinnedmessagesSelected.length >= 20 || !interactionid))
-    
+
     function fixComment(interactiontext: string) {
         dispatch(execute(modifyPinnedMessage({
             interactionid,
@@ -931,6 +931,42 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 </div>
             </>
         )
+    } if (interactiontype === "referral") {
+        const dataText = JSON.parse(interactiontext)
+        console.log(dataText)
+        return (
+            <div
+                title={convertLocalDate(createdate).toLocaleString()}
+                className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client'
+                })}
+                style={{ marginLeft: reply ? 24 : 0 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <div style={{display:"flex"}}>
+                        <BusinessMessageIcon style={{color:"grey", height: 20, width: 20, paddingRight: 2}}/>
+                        <span style={{fontStyle: "italic", color: "grey", fontWeight: "bold", fontSize: "0.8em"}}>{t(langKeys.message_business_origin)}</span>
+                    </div>
+                    <LaraigoOnlyLogo style={{height: 20, width: 20}}/>
+                </div>
+                <img
+                    className={classes.imageCard}
+                    src={dataText?.image?.url||""}
+                    style={{position:"static"}}
+                    alt=""
+                    onClick={() => {
+                        dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
+                    }}
+                />
+                <div style={{fontWeight: "bold"}}>{dataText.headline}</div>
+                <div>{dataText.body}</div>
+                <div>{dataText.payload}</div>
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        );
     }
     return (
         <div className={clsx(classes.interactionText, {

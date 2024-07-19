@@ -6415,6 +6415,8 @@ const translation: LangKeys = {
   categorychange: 'Category Change',
   categorychangetext: 'Enables automatic change of category after registration according to Goal',
   propertybalancetime: 'Configures the balancing time (seconds) of the "BOT HOLDING"',
+  message_business_origin: 'message_business_origin',
+  closedtoday: 'Closed today',
 };
 
 const enResource: ResourceLanguage = {
