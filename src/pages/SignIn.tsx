@@ -416,7 +416,7 @@ const SignIn = () => {
     }, [resLogin]);
 
     const onSamlLoginSuccess = async (data: ISamlAuthResponse) => {
-        if (data && data.code){
+        if (data && data.code) {
             setshowError(true);
             const token = await recaptchaRef?.current?.executeAsync();
             dispatch(login(null, null, null, null, token, data.code));
@@ -474,13 +474,13 @@ const SignIn = () => {
                                         onSubmit={onSubmitLogin}
                                         style={{ margin: 0, maxWidth: "21.125rem" }}
                                     >
+                                        <ReCAPTCHA
+                                            ref={recaptchaRef}
+                                            sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
+                                            size="invisible" // Set reCAPTCHA size to invisible
+                                        />
                                         {!isClaroEnviroment ? (
                                             <>
-                                                <ReCAPTCHA
-                                                    ref={recaptchaRef}
-                                                    sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
-                                                    size="invisible" // Set reCAPTCHA size to invisible
-                                                />
                                                 <TextField
                                                     variant="outlined"
                                                     margin="normal"
@@ -583,14 +583,14 @@ const SignIn = () => {
                                                     <CircularProgress className={classes.progress} />
                                                 }
                                             </>
-                                        ) : 
+                                        ) :
                                             <SamlLogin
                                                 buttonText={t(langKeys.login_with_isam)}
                                                 onFailure={onSamlLoginError}
                                                 onSuccess={onSamlLoginSuccess}
                                             />
                                         }
-                                        <Grid container style={{ padding: isClaroEnviroment ? '1rem 0' : ''}}>
+                                        <Grid container style={{ padding: isClaroEnviroment ? '1rem 0' : '' }}>
                                             <Grid item>
                                                 {!isClaroEnviroment && (
                                                     <>
