@@ -66,6 +66,7 @@ export interface IPerson {
     referralchannel?: string;
     usergroup?: string;
     pinnedmessages?: any;
+    tags?: string;
 }
 
 export interface IPersonCommunicationChannel {
