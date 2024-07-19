@@ -6192,6 +6192,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   decrease: 'Bajar',
   pinmessagehelper: 'Fijar mensaje',
   message_business_origin: 'Message from an advertisement',
+  closedtoday: 'Cerrados hoy',
 };
 
 const esResource: ResourceLanguage = {

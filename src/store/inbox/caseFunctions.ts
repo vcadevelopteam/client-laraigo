@@ -335,20 +335,27 @@ export const changeStatusTicket = (state: IState, action: IAction): IState => ({
 export const getTickets = (state: IState): IState => ({
     ...state,
     ticketList: { ...state.ticketList, loading: true, error: false },
+    closedticketList: { ...state.closedticketList, loading: true, error: false },
     ticketSelected: null
 });
 
 export const getTicketsSuccess = (state: IState, action: IAction): IState => {
-    if ((state.agentSelected?.userid + "") === action.payload.key.split("_")?.pop()) {
+    if ((state.agentSelected?.userid + "") === action.payload.data[0].key.split("_")?.pop()) {
         return {
             ...state,
             isOnBottom: null,
             ticketList: {
-                data: action.payload.data || [],
-                count: action.payload.count,
+                data: action.payload.data[0].data || [],
+                count: action.payload.data[0].count,
                 loading: false,
                 error: false,
             },
+            closedticketList:{
+                data: action.payload.data[1].data || [],
+                count: action.payload.data[1].count,
+                loading: false,
+                error: false,
+            }
         }
     } else {
         return state
@@ -364,11 +371,19 @@ export const getTicketsFailure = (state: IState, action: IAction): IState => ({
         code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
         message: action.payload.message || 'error_unexpected_error',
     },
+    closedticketList: {
+        ...state.closedticketList,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
 });
 
 export const getTicketsReset = (state: IState): IState => ({
     ...state,
     ticketList: initialState.ticketList,
+    closedticketList: initialState.closedticketList,
 });
 
 export const connectAgentWS = (state: IState, action: IAction): IState => {

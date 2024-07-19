@@ -6190,6 +6190,7 @@ export const langKeys = {
   decrease: 'decrease',
   pinmessagehelper: 'pinmessagehelper',
   message_business_origin: 'message_business_origin',
+  closedtoday: 'closedtoday',
 };
 
 export type LangKeys = typeof langKeys;
