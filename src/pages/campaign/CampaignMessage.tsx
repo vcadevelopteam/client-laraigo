@@ -1531,10 +1531,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             const headerFields = Object.values(campaignVariables).filter(field => field.type === 'header');
                                             const maxIndex = Math.max(...headerFields.map(field => parseInt(field.index, 10)), 0);
 
-                                            return Array.from({ length: maxIndex }, (_, index) => {
-                                                const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
-                                                let valueDefault;
-
+                                        return Array.from({ length: maxIndex }, (_, index) => {
+                                            const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
+                                            let valueDefault;
                                                 const key = `header-${index + 1}`;
                                                 const selectedHeader = selectedHeaders[key];
                                                 if (selectedHeader) {
