@@ -773,7 +773,7 @@ const CopilotLaraigoIcon: React.FC<{
     //{t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
     return (
         <div style={{ display: "flex" }}>
-            <Tooltip title={t(langKeys.record_audio)} arrow placement="top">
+            <Tooltip title={"Copilot Laraigo"} arrow placement="top">
                 <IconButton size="small" disabled={!enabled}
                 >
                     {t(langKeys.currentlanguage) === "en" ?
