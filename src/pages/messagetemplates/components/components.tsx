@@ -405,9 +405,10 @@ interface MessagePreviewMultimediaProps {
     footer: string;
     buttonstext: string[];
     buttonslink: Dictionary[];
+    isNew: boolean;
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink }) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink, isNew }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [showAllButtons, setShowAllButtons] = useState(false)
@@ -498,7 +499,7 @@ export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> =
                             <>
                                 {(header !== '' && headerType === 'IMAGE') ? (
                                     <>
-                                        {(header.endsWith(".jpg") || header.endsWith(".png")) ? (
+                                        {((isNew && (header.endsWith(".jpg") || header.endsWith(".png"))) || !isNew) ? (
                                             <div className={classes.cardMediaContainer}>
                                                 <img src={header} alt="Cabecera" className={classes.cardMedia} />
                                             </div>
