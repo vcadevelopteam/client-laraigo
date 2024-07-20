@@ -3126,6 +3126,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 footer={getValues('footer')}
                                                 buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
                                                 buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
+                                                isNew={isNew}
                                             />
                                         </div>
                                     </div>
