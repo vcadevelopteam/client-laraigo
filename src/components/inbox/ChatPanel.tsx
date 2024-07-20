@@ -1407,7 +1407,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     
     if (uniqueTags.length) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "33%", borderLeft: "1px solid lightgrey", flex: 2 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "33%", borderLeft: "1px solid lightgrey", flex: 10 }}>
                 <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 0px", width: "100%" }}>
                     <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
                         <div style={{ paddingLeft: 4 }}>
@@ -1641,18 +1641,18 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
 const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const person = useSelector(state => state.inbox.person.data);
+    const person = useSelector(state => state.inbox.person);
     const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
     const { t } = useTranslation();
     
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
-
+    
     return (
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: person?.tags?.length ? 4 : 10 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: 10 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1671,8 +1671,10 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <TicketTags classes={classes} tags={person?.tags || ""} />
-                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 8px", flex: 2, alignItems: "center", justifyContent: "center", display: "flex" }}>
+                {!person.loading && 
+                    <TicketTags classes={classes} tags={person?.data?.tags || ""} />
+                }
+                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 12px", flex: 1, alignItems: "center", justifyContent: "center", display: "flex" }}>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
