@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary, ILibrary } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getInteractionsByConversationFree, getTicketsClosed } from 'common/helpers';
+import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getInteractionsByConversationFree, getTicketsClosed as getTicketClosedRequestBody } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -50,10 +50,7 @@ export const resetShowModal = (): IActionCall => ({ type: actionTypes.RESET_SHOW
 
 
 export const getTickets = (userid: number | null): IActionCall => ({
-    callAPI: () => CommonService.multiMain([
-        getTicketRequestBody(userid),
-        getTicketsClosed(userid)
-    ]),
+    callAPI: () => CommonService.main(getTicketRequestBody(userid)),
     types: {
         loading: actionTypes.GET_TICKETS,
         success: actionTypes.GET_TICKETS_SUCCESS,
@@ -61,8 +58,19 @@ export const getTickets = (userid: number | null): IActionCall => ({
     },
     type: null,
 });
-
 export const resetGetTickets = (): IActionCall => ({ type: actionTypes.GET_TICKETS_RESET });
+
+export const getTicketsClosed = (userid: number | null): IActionCall => ({
+    callAPI: () => CommonService.main(getTicketClosedRequestBody(userid)),
+    types: {
+        loading: actionTypes.GET_TICKETS_CLOSED,
+        success: actionTypes.GET_TICKETS_CLOSED_SUCCESS,
+        failure: actionTypes.GET_TICKETS_CLOSED_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetTicketsClosed = (): IActionCall => ({ type: actionTypes.GET_TICKETS_CLOSED_RESET });
 
 
 export const getPerson = (personid: number, conversationid: number): IActionCall => ({
