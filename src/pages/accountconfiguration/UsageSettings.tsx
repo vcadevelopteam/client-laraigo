@@ -176,15 +176,6 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                 <div className={classes.seccionTitle}>{t(langKeys.usagesettings)}</div>
                 <div style={{ display: 'flex', gap: '10px'}}>
                     <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}>
-                        {t(langKeys.back)}
-                    </Button>
-                    <Button
                         className={classes.button}
                         variant="contained"
                         disabled={resSetting.loading}
