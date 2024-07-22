@@ -142,6 +142,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TICKETS_SUCCESS]: caseFunctions.getTicketsSuccess,
     [actionTypes.GET_TICKETS_FAILURE]: caseFunctions.getTicketsFailure,
     [actionTypes.GET_TICKETS_RESET]: caseFunctions.getTicketsReset,
+    
+    [actionTypes.GET_TICKETS_CLOSED]: caseFunctions.getTicketsClosed,
+    [actionTypes.GET_TICKETS_CLOSED_SUCCESS]: caseFunctions.getTicketsClosedSuccess,
+    [actionTypes.GET_TICKETS_CLOSED_FAILURE]: caseFunctions.getTicketsClosedFailure,
+    [actionTypes.GET_TICKETS_CLOSED_RESET]: caseFunctions.getTicketsClosedReset,
 
     [actionTypes.GET_AGENTS]: caseFunctions.getAgents,
     [actionTypes.GET_AGENTS_SUCCESS]: caseFunctions.getAgentsSuccess,
