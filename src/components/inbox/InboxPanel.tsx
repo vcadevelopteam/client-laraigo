@@ -13,7 +13,7 @@ import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
 import DrawerFilter from 'components/inbox/DrawerFilter'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, hideLogsOnTicket, resetQuickreplies, getQuickreplies } from 'store/inbox/actions';
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, hideLogsOnTicket, resetQuickreplies, getQuickreplies, getTicketsClosed, resetGetTicketsClosed } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
@@ -426,6 +426,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     useEffect(() => {
         if (agentSelected) {
             dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
+            dispatch(getTicketsClosed(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
             setPageSelected(0)
             setCounterTickets({
                 assigned: -0,
@@ -436,6 +437,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
         return () => {
             dispatch(resetGetTickets())
+            dispatch(resetGetTicketsClosed())
         }
     }, [agentSelected, dispatch])
 
@@ -466,11 +468,17 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         return () => {
             document.title = localStorage.title;
         };
-    }, [ticketList])
+    }, [ticketList, closedTicketList])
 
     const onChangeSearchTicket = (e: any) => {
         setSearch(e.target.value)
     }
+
+    useEffect(() => {
+        if(pageSelected === 2){
+            dispatch(getTicketsClosed(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
+        }
+    }, [pageSelected])
 
     useEffect(() => {
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
