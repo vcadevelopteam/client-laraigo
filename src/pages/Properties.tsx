@@ -769,6 +769,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             onChange={(value) => onChangeSelectValue(index, "propertyvalue", value ? value.domainvalue : "")}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                            orderbylabel={true}
                             valueDefault={row?.propertyvalue || ""}
                         />
                 }
@@ -917,7 +918,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </div >
                     }
                 }
                 else {
