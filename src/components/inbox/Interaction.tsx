@@ -23,7 +23,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MapLeaflet from 'components/fields/MapLeaflet';
 import { execute } from 'store/main/actions';
 import { setPinnedComments } from 'store/inbox/actions';
-import { IconButton } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -933,7 +933,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         )
     } if (interactiontype === "referral") {
         const dataText = JSON.parse(interactiontext)
-        console.log(dataText)
         return (
             <div
                 title={convertLocalDate(createdate).toLocaleString()}
@@ -962,7 +961,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 />
                 <div style={{fontWeight: "bold"}}>{dataText.headline}</div>
                 <div style={{ fontStyle: 'italic', color: "grey" }}>{dataText.body}</div>
-                <div>{dataText.payload}</div>
+                <Button variant="outlined" onClick={()=>{window.open(dataText?.source_url, '_blank')}} style={{margin:"11px 0"}}>{dataText.payload}</Button>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
@@ -997,23 +996,34 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, interactions } }) => {
 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
     return (
         <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {interactions.map((item: IInteraction, index: number) => (
-                        <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
-                            [classes.interactionAgent]: usertype !== "client",
-                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
-                            [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
-                        })}>
-                            {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
-                                <Avatar src={item.avatar + "" || undefined} />
-                            )}
-                            <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
-                        </div>
-                    ))}
+                    {interactions.map((item: IInteraction, index: number) => {
+                        return (
+                        <>
+                            <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
+                                [classes.interactionAgent]: usertype !== "client",
+                                [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                                [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
+                            })}>
+                                {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
+                                    <Avatar src={item.avatar + "" || undefined} />
+                                )}
+                                <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
+                            </div>
+                            {item.interactiontype==="referral" && <div key={`interaction-${item.interactionid + index}`} id={`interactionlog-${item.interactionid}`} className={clsx({
+                                [classes.interactionAgent]: usertype !== "client",
+                                [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                            })}>
+                                {ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
+                                    <Avatar src={item.avatar + "" || undefined} />
+                                )}
+                                <ItemInteraction interaction={({...item, interactiontype: "LOG"})} classes={classes} userType={usertype!!} />
+                            </div>}
+                        </>
+                    )})}
                 </div>
             </div>
             {usertype === "agent" ?
