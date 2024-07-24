@@ -154,8 +154,90 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
             {
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
-                helpText: t(langKeys.channel_column_mt_help),
+                style: {width: '250px'},
+                helpText: t(langKeys.message_templates_channel_help),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const {row} = props.cell;
+                    const data = row?.original?.communicationchanneldesc || '';
+                    const items = data.split(',').map(item => item.trim());
+
+                    const containerRef = React.useRef(null);
+
+                    const scrollLeft = () => {
+                        if (containerRef.current) {
+                            containerRef.current.scrollBy({left: -100, behavior: 'smooth'});
+                        }
+                    };
+
+                    const scrollRight = () => {
+                        if (containerRef.current) {
+                            containerRef.current.scrollBy({left: 100, behavior: 'smooth'});
+                        }
+                    };
+
+                    return (
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            {items.length > 1 && (
+                                <button
+                                    onClick={scrollLeft}
+                                    style={{
+                                        marginRight: '4px',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '16px',
+                                        padding: '4px'
+                                    }}>
+                                    {'<'}
+                                </button>
+                            )}
+                            <div
+                                ref={containerRef}
+                                style={{
+                                    display: 'flex',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    width: '200px',
+                                    overflowX: items.length > 1 ? 'auto' : 'hidden'
+                                }}
+                            >
+                                {items.length > 1 ? (
+                                    items.map((item, index) => (
+                                        <span key={index} style={{
+                                            backgroundColor: '#E0E0E0',
+                                            borderRadius: '8px',
+                                            padding: '2px 8px',
+                                            marginRight: '4px',
+                                            whiteSpace: 'nowrap'
+                                        }}>
+                                {item}
+                            </span>
+                                    ))
+                                ) : (
+                                    <span style={{whiteSpace: 'nowrap'}}>{data}</span>
+                                )}
+                            </div>
+                            {items.length > 1 && (
+                                <button
+                                    onClick={scrollRight}
+                                    style={{
+                                        marginLeft: '4px',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '16px',
+                                        padding: '4px'
+                                    }}>
+                                    {'>'}
+                                </button>
+                            )}
+                        </div>
+                    );
+                },
             },
+
+
             {
                 accessor: "name",
                 Header: t(langKeys.name),
