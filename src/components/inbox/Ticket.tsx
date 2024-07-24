@@ -299,7 +299,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             callback={validateTime}
                         />
                     }
-                    {dateToClose &&
+                    {(dateToClose && status !== "CERRADO") &&
                         <LabelGo
                             isTimer={true}
                             regressive={true}
