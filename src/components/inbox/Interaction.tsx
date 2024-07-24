@@ -961,7 +961,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     }}
                 />
                 <div style={{fontWeight: "bold"}}>{dataText.headline}</div>
-                <div>{dataText.body}</div>
+                <div style={{ fontStyle: 'italic', color: "grey" }}>{dataText.body}</div>
                 <div>{dataText.payload}</div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
