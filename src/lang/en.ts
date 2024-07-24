@@ -1898,6 +1898,7 @@ const translation: LangKeys = {
   error_cos_unexpected: "5005: There was an error, contact the administrator",
   error_zero_records: "5005: Nothing to export",
 
+
   error_parameter_too_long:
     "22001: There was an error, contact the administrator ",
   error_divison_by_zero:
@@ -1931,6 +1932,7 @@ const translation: LangKeys = {
   error_users_limit:
     "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
   error_limit_exceeded: "Limit exceeded",
+  error_supervisor_not_exists: 'One or more supervisors entered do not exist',
   error_ticket_open:
     "There are open tickets for the channel to unlink. Please close these tickets.",
   error_ticket_doesnt_belong_to_the_user: "The ticket belongs to another agent, por favor refrescar la página.",
