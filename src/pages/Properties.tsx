@@ -102,7 +102,7 @@ const Properties: FC = () => {
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description',               
+                accessor: 'description',
             },
             {
                 Header: t(langKeys.category),
@@ -256,7 +256,7 @@ interface DetailPropertyProps {
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected, arrayBread }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [extraData, setExtraData] = useState<{ loading:boolean, blockInfo: Dictionary[]}>({ loading: false, blockInfo: [] })
+    const [extraData, setExtraData] = useState<{ loading: boolean, blockInfo: Dictionary[] }>({ loading: false, blockInfo: [] })
     const [waitSave, setWaitSave] = useState(false);
     const [mainaux2loading, setmainaux2loading] = useState(false);
     const [multi2loading, setmulti2loading] = useState(false);
@@ -721,7 +721,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
             handleFilter(row?.config?.flowid)
         }
     }, [extraData]);
-    
+
     if (row?.config) {
         const { config } = watch(`table.${index}.config.enable`)
     }
@@ -732,7 +732,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
         const allBlocks = blocks.flatMap(group => group.blocks.map(block => ({ id: block.id, title: block.title })));
         setBlockFiltered(allBlocks)
     }
-    
+
 
     if (row) {
         switch (row?.inputtype) {
@@ -785,6 +785,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             onChange={(value) => onChangeSelectValue(index, 'propertyvalue', value ? value.domainvalue : '')}
                             optionDesc='domaindesc'
                             optionValue='domainvalue'
+                            orderbylabel={true}
                             valueDefault={row?.propertyvalue || ''}
                         />
                 }
@@ -848,7 +849,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                 onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                                 valueDefault={row ? (row.propertyvalue || '') : ''}
                             />
-                    } else if(row.config.type === 'redirect-flow-block') {
+                    } else if (row.config.type === 'redirect-flow-block') {
                         valueInput = <div>
                             <FieldEditMulti
                                 error={errors?.table?.[index]?.propertyvalue?.message}
@@ -865,7 +866,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                 valueDefault={row ? (row.propertyvalue || '') : ''}
                                 disabled={row?.config?.enable || false}
                             />
-                            <div style={{display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem'}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
                                 <div>
                                     <TemplateSwitchYesNo
                                         label={t(langKeys.activate_derivation_direction)}
@@ -877,7 +878,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                         }}
                                     />
                                 </div>
-                                
+
                                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
                                     <label htmlFor="">{t(langKeys.flow)}</label>
                                     <FieldSelect

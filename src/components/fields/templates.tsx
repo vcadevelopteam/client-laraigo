@@ -176,7 +176,7 @@ export const Title: React.FC = ({ children }) => {
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string|number, className?: any, styles?: CSSProperties, tooltip?: string, tooltipcontent?:string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick, tooltipcontent }) => (
+export const FieldView: React.FC<{ label: string, value?: string | number, className?: any, styles?: CSSProperties, tooltip?: string, tooltipcontent?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick, tooltipcontent }) => (
     <div className={className}>
         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
             {label}
@@ -184,11 +184,11 @@ export const FieldView: React.FC<{ label: string, value?: string|number, classNa
                 <InfoIcon style={{ padding: "5px 0 0 5px" }} />
             </Tooltip>}
         </Box>
-        {Boolean(tooltipcontent)?
+        {Boolean(tooltipcontent) ?
             <Tooltip title={tooltipcontent} placement="top-start">
                 <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
-            </Tooltip>:
-            <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>            
+            </Tooltip> :
+            <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
         }
     </div>
 )
@@ -484,93 +484,93 @@ export const FieldEditMultiAux: React.FC<InputProps> = ({
     fregister = {},
     inputProps = {},
     variant = "standard"
-  }) => {
+}) => {
     const [value, setValue] = useState("");
-    const [height, setHeight] = useState(100); 
+    const [height, setHeight] = useState(100);
     const resizerRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
     useEffect(() => {
-      setValue(valueDefault || "");
+        setValue(valueDefault || "");
     }, [valueDefault]);
-  
+
     useEffect(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = `${height}px`;
-      }
+        if (textareaRef.current) {
+            textareaRef.current.style.height = `${height}px`;
+        }
     }, [height]);
-  
+
     const handleMouseDown = (e: React.MouseEvent) => {
-      e.preventDefault();
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+        e.preventDefault();
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
     };
-  
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (textareaRef.current) {
-        const newHeight = e.clientY - textareaRef.current.getBoundingClientRect().top;
-        setHeight(newHeight);
-      }
+        if (textareaRef.current) {
+            const newHeight = e.clientY - textareaRef.current.getBoundingClientRect().top;
+            setHeight(newHeight);
+        }
     };
-  
+
     const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
     };
-  
+
     return (
-      <div className={className} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-        <TextField
-          {...fregister}
-          color="primary"
-          fullWidth
-          disabled={disabled}
-          variant={variant}
-          type={type}
-          error={!!error}
-          value={value}
-          multiline
-          minRows={rows}
-          helperText={error || null}
-          onChange={(e) => {
-            if (maxLength === 0 || e.target.value.length <= maxLength) {
-              setValue(e.target.value);
-              onChange && onChange(e.target.value);
-            }
-          }}
-          onBlur={(e) => {
-            onBlur && onBlur(e.target.value);
-          }}
-          inputProps={inputProps}
-          style={{ border: '1px solid #762AA9', resize: 'none' }}
-          inputRef={textareaRef}
-        />
-        {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
-        <div
-          ref={resizerRef}
-          onMouseDown={handleMouseDown}
-          style={{
-            position: 'absolute',
-            bottom: '0',
-            right: '0',
-            cursor: 'row-resize',
-            width: '15px',
-            height: '15px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#F9F9FA',
-            borderTopRightRadius: '4px',
-            borderBottomLeftRadius: '4px',
-            margin: 4
-          }}
-        >
-          <DragHandleIcon style={{ transform: 'rotate(135deg)', color:'#783BA5', height:'17px' }}/>
+        <div className={className} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                variant={variant}
+                type={type}
+                error={!!error}
+                value={value}
+                multiline
+                minRows={rows}
+                helperText={error || null}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                style={{ border: '1px solid #762AA9', resize: 'none' }}
+                inputRef={textareaRef}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
+            <div
+                ref={resizerRef}
+                onMouseDown={handleMouseDown}
+                style={{
+                    position: 'absolute',
+                    bottom: '0',
+                    right: '0',
+                    cursor: 'row-resize',
+                    width: '15px',
+                    height: '15px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#F9F9FA',
+                    borderTopRightRadius: '4px',
+                    borderBottomLeftRadius: '4px',
+                    margin: 4
+                }}
+            >
+                <DragHandleIcon style={{ transform: 'rotate(135deg)', color: '#783BA5', height: '17px' }} />
+            </div>
         </div>
-      </div>
     );
-  };
+};
 
 
 export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false }) => {
@@ -793,7 +793,7 @@ export const SingleLineInput: React.FC<InputProps> = ({ label, className, disabl
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
                 }}
-                inputProps={{...inputProps, maxLength }}
+                inputProps={{ ...inputProps, maxLength }}
                 onInput={onInput}
                 onPaste={onPaste}
                 style={style}
@@ -915,7 +915,23 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     return;
                 }
                 else {
-                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    let onlyNumbers = true;
+
+                    for (const element of data) {
+                        if (!(/^\d+$/.test(element[optionDesc]) || '')) {
+                            onlyNumbers = false;
+                        }
+                    }
+
+                    let datatmp = null;
+
+                    if (onlyNumbers) {
+                        datatmp = data.sort((a, b) => parseFloat(a[optionDesc] || '0') - parseFloat(b[optionDesc] || '0'));
+                    }
+                    else {
+                        datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    }
+
                     setDataG(datatmp);
                     return;
                 }
@@ -937,7 +953,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
         }
     }, [data, valueDefault]);
 
-  
+
     return (
         <div className={className}>
 
@@ -1000,7 +1016,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
 export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', getOptionDisabled }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
-    const [dataG, setDataG] = useState<Dictionary[]>([]);   
+    const [dataG, setDataG] = useState<Dictionary[]>([]);
 
     useEffect(() => {
         if (orderbylabel) {
@@ -1356,7 +1372,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                     onChange && onChange(values, { action, option });
                 }}
                 size="small"
-                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}     
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
                 options={data}
                 renderInput={(params) => (
                     <TextField
@@ -1484,7 +1500,7 @@ interface TemplateSwitchPropsYesNo extends InputProps {
     disabled?: boolean;
 }
 
-export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style, disabled=false }) => {
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style, disabled = false }) => {
     const [checkedaux, setChecked] = useState(false);
 
     useEffect(() => {
@@ -1610,7 +1626,7 @@ interface FieldCheckboxProps extends InputProps {
     label: string;
 }
 
-export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false, helperText="" }) => {
+export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false, helperText = "" }) => {
     const classes = useCheckboxStyles();
     const [checkedaux, setChecked] = useState(false);
 
@@ -1620,8 +1636,8 @@ export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChang
 
     return (
         <div className={className} style={{ paddingBottom: '3px' }}>
-            
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{display: "flex"}}>
+
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                 {label}
                 {!!helperText &&
                     <div style={{ display: 'flex', alignItems: 'center' }}>
