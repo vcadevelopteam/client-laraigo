@@ -502,7 +502,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         register("automaticpayment");
         register("automaticperiod");
         register("automaticinvoice");
-        register("partner");
+        register("partner", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("appsettingid", { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register("citybillingid");
         register("iconurl", {
@@ -621,6 +621,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     }, [countryList]);
 
     const docTypes = useMemo(() => {
+        if(getValues("sunatcountry")==="") return [];
         if (!dataDocType || dataDocType.length === 0) return [];
 
         const val = dataDocType as Dictionary[];
