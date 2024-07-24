@@ -1910,6 +1910,7 @@ const translation: LangKeys = {
   error_users_limit: "Se alcanzo el máximo número de usuarios({{limit}}), mejora tu plan para continuar",
   error_kpi_sql: 'Query error: {{error}}',
   error_limit_exceeded: "Límite excedido",
+  error_supervisor_not_exists: 'Uno o más supervisores ingresados no existen',
   error_ticket_open: "Existen tickets abiertos para el canal a desvincular. Por favor cierre estos tickets.",
   error_ticket_doesnt_belong_to_the_user: "El ticket le pertenece a otro agente, por favor refrescar la página.",
   dateRangeFilterTitle: 'Filtrar por rango de fechas',

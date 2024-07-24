@@ -1847,6 +1847,7 @@ const Users: FC = () => {
             {},
             {},
             {},
+            {},
             { true: "true", false: "false" },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
@@ -1868,6 +1869,7 @@ const Users: FC = () => {
             "image",
             "user",
             "password",
+            'supervisor',
             "pwdchangefirstlogin",
             "role",
             "channels",
@@ -2136,8 +2138,9 @@ const Users: FC = () => {
                                     const roleId = parseInt(role.trim(), 10);
                                     return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                                 })
-                        )
-                        || !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                        )||
+                        !(f.showbots === undefined || ["true", "false"].includes(String(f.showbots)))
+
                     );
                 })
                 .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, "");
@@ -2183,7 +2186,7 @@ const Users: FC = () => {
                                         type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
                                         showbots = d.showbots === "true"
                                     }
-                                }                                
+                                }
                                 return ({
                                     ...a,
                                     [`${d.user}_${d.docnum}`]: {
@@ -2217,7 +2220,7 @@ const Users: FC = () => {
                                             channels: d?.channels? String(d?.channels).replace(/\s+/g, ''): "",
                                             status: "DESCONECTADO",
                                             type: type,
-                                            supervisor: "",
+                                            supervisor: d.supervisor || "",
                                             operation: "INSERT",
                                             redirect: "/usersettings",
                                         },
