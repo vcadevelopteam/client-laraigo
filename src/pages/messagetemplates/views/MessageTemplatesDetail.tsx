@@ -334,6 +334,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [cardAux, setCardAux] = useState<number | null>(null)
     const [buttonsType, setButtonsType] = useState('none')
     const [cursorPositionAux, setCursorPositionAux] = useState(0);
+    const noop = () => {""};
     const [categoryChange, setCategoryChange] = useState('ACTIVADO');
     const [showError, setShowError] = useState(false);
     const [buttonsGeneral, setButtonsGeneral] = useState<Dictionary[]>(
@@ -2904,18 +2905,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <EmojiObjectsIcon />
                                             <span style={{ marginLeft: 10 }}>Si añades más de tres botones, se mostrarán en una lista</span>
                                         </div>
-                                        <DragDropContext onDragEnd={handleDragDropGeneral}>
+                                        <DragDropContext onDragEnd={isNew ? handleDragDropGeneral : noop}>
                                             {(buttonsGeneral?.[0]?.items?.length > 0 || buttonsGeneral?.[1]?.items?.length > 0) && (
-                                                <Droppable droppableId="root3" type="group">
+                                                <Droppable droppableId="root3" type="group" isDropDisabled={!isNew}>
                                                     {(provided) => (
                                                         <div {...provided.droppableProps} ref={provided.innerRef}>
                                                             {buttonsGeneral?.map((button: Dictionary, indexG: number) => {
                                                                 return (
-                                                                    <Draggable key={`button-${indexG}`} draggableId={`button-${indexG}`} index={indexG}>
+                                                                    <Draggable key={`button-${indexG}`} draggableId={`button-${indexG}`} index={indexG} isDragDisabled={!isNew}>
                                                                         {(provided) => (
                                                                             <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
                                                                                 {button.name === "quickreply" ? (
-                                                                                    <DragDropContext onDragEnd={handleDragDrop}>
+                                                                                    <DragDropContext onDragEnd={isNew ? handleDragDrop : noop}>
                                                                                         {button?.items?.length > 0 && (
                                                                                             <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
                                                                                                 <div>
@@ -2926,12 +2927,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <React.Fragment>
-                                                                                                    <Droppable droppableId="root" type="group">
+                                                                                                    <Droppable droppableId="root" type="group" isDropDisabled={!isNew}>
                                                                                                         {(provided) => (
                                                                                                             <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                                                                                                 {button?.items?.map((btn: any, i: number) => {
                                                                                                                     return (
-                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i} isDragDisabled={!isNew}>
                                                                                                                             {(provided) => (
                                                                                                                                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
                                                                                                                                     <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
@@ -2973,7 +2974,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                         )}
                                                                                     </DragDropContext>
                                                                                 ) : (
-                                                                                    <DragDropContext onDragEnd={handleDragDropAux}>
+                                                                                    <DragDropContext onDragEnd={isNew ? handleDragDropAux : noop}> 
                                                                                         {button?.items?.length > 0 && (
                                                                                             <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
                                                                                                 <div>
@@ -2984,12 +2985,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <React.Fragment>
-                                                                                                    <Droppable droppableId="root2" type="group">
+                                                                                                    <Droppable droppableId="root2" type="group" isDropDisabled={!isNew}>
                                                                                                         {(provided) => (
                                                                                                             <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                                                                                                 {button?.items?.map((btn: any, i: number) => {
                                                                                                                     return (
-                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
+                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i} isDragDisabled={!isNew}>
                                                                                                                             {(provided) => (
                                                                                                                                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
                                                                                                                                     {btn.type === 'URL' ? (
@@ -3633,7 +3634,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                             <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '90%' }}>
                                                                                 {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
                                                                                     return (
-                                                                                        <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
+                                                                                        <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni} isDragDisabled={!isNew}>
                                                                                             {(provided) => (
                                                                                                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
                                                                                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5 }}>
