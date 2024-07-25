@@ -817,117 +817,122 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, [waitUploadFile, uploadResult]);
 
     const onSubmit = handleSubmit((data) => {
-        if (data.type === "MAIL") {
-            data.body = renderToString(toElement(bodyObject));
-            if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
-                setBodyAlert(t(langKeys.field_required));
-                return;
+        if (showError) {
+            return;
+        }
+        else {
+            if (data.type === "MAIL") {
+                data.body = renderToString(toElement(bodyObject));
+                if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
+                    setBodyAlert(t(langKeys.field_required));
+                    return;
+                } else {
+                    setBodyAlert("");
+                }
+            }
+    
+            if (data.type === "HTML") {
+                if (data.body) {
+                    setBodyAlert("");
+                } else {
+                    setBodyAlert(t(langKeys.field_required));
+                    return;
+                }
+            }
+    
+            if (isNew && data.type === 'HSM') {
+                const dataAux = {
+                    ...data,
+                    headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
+                    footerenabled: data.footer !== '' ? true : false,
+                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
+                    headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
+                }
+    
+                const callback = () => {
+                    if (data.type === "MAIL") {
+                        data.body = renderToString(toElement(bodyObject));
+                        if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        } else {
+                            setBodyAlert("");
+                        }
+                    }
+    
+                    if (data.type === "HTML") {
+                        if (data.body) {
+                            setBodyAlert("");
+                        } else {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        }
+                    }
+    
+                    dispatch(addTemplate({
+                        ...dataAux,
+                        authenticationdata: JSON.stringify(dataAux.authenticationdata),
+                        bodyvariables: JSON.stringify(dataAux.bodyvariables),
+                        buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
+                        buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
+                        carouseldata: JSON.stringify(dataAux.carouseldata),
+                        headervariables: JSON.stringify(dataAux.headervariables),
+                        categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                        firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0 )) ? buttonsGeneral?.[0]?.name : null
+                    }));
+                    dispatch(showBackdrop(true));
+                    setWaitAdd(true);
+                };
+    
+                dispatch(
+                    manageConfirmation({
+                        visible: true,
+                        question: t(langKeys.confirmation_save),
+                        callback,
+                    })
+                );
             } else {
-                setBodyAlert("");
-            }
-        }
-
-        if (data.type === "HTML") {
-            if (data.body) {
-                setBodyAlert("");
-            } else {
-                setBodyAlert(t(langKeys.field_required));
-                return;
-            }
-        }
-
-        if (isNew && data.type === 'HSM') {
-            const dataAux = {
-                ...data,
-                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
-                footerenabled: data.footer !== '' ? true : false,
-                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
-                headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
-            }
-
-            const callback = () => {
-                if (data.type === "MAIL") {
-                    data.body = renderToString(toElement(bodyObject));
-                    if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    } else {
-                        setBodyAlert("");
-                    }
+                const dataAux = {
+                    ...data,
+                    headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
+                    footerenabled: data.footer !== '' ? true : false,
+                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
                 }
-
-                if (data.type === "HTML") {
-                    if (data.body) {
-                        setBodyAlert("");
-                    } else {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
+    
+                const callback = () => {
+                    if (dataAux.type === "MAIL") {
+                        dataAux.body = renderToString(toElement(bodyObject));
+                        if (dataAux.body === '<div data-reactroot=""><p><span></span></p></div>') {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        } else {
+                            setBodyAlert("");
+                        }
                     }
-                }
-
-                dispatch(addTemplate({
-                    ...dataAux,
-                    authenticationdata: JSON.stringify(dataAux.authenticationdata),
-                    bodyvariables: JSON.stringify(dataAux.bodyvariables),
-                    buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
-                    buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
-                    carouseldata: JSON.stringify(dataAux.carouseldata),
-                    headervariables: JSON.stringify(dataAux.headervariables),
-                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
-                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0 )) ? buttonsGeneral?.[0]?.name : null
-                }));
-                dispatch(showBackdrop(true));
-                setWaitAdd(true);
-            };
-
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback,
-                })
-            );
-        } else {
-            const dataAux = {
-                ...data,
-                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
-                footerenabled: data.footer !== '' ? true : false,
-                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
+    
+                    if (dataAux.type === "HTML") {
+                        if (dataAux.body) {
+                            setBodyAlert("");
+                        } else {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        }
+                    }
+    
+                    dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
+                    dispatch(showBackdrop(true));
+                    setWaitSave(true);
+                };
+    
+                dispatch(
+                    manageConfirmation({
+                        visible: true,
+                        question: t(langKeys.confirmation_save),
+                        callback,
+                    })
+                );
             }
-
-            const callback = () => {
-                if (dataAux.type === "MAIL") {
-                    dataAux.body = renderToString(toElement(bodyObject));
-                    if (dataAux.body === '<div data-reactroot=""><p><span></span></p></div>') {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    } else {
-                        setBodyAlert("");
-                    }
-                }
-
-                if (dataAux.type === "HTML") {
-                    if (dataAux.body) {
-                        setBodyAlert("");
-                    } else {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    }
-                }
-
-                dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
-                dispatch(showBackdrop(true));
-                setWaitSave(true);
-            };
-
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback,
-                })
-            );
-        }
+        }      
     });
 
     useEffect(() => {
