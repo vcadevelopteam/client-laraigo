@@ -2622,6 +2622,11 @@ const translation: LangKeys = {
   report_reportvoicecall_filter_channels: 'Channels',
   report_userproductivityhours_filter_hours: 'Hour',
 
+  opportunity_funnel: "Opportunity Funnel",
+  opportunity_funnel_channels: "Channels",
+  opportunity_funnel_advisor: "Advisor",
+  opportunity_funnel_product: "Product",
+
   report_survey: 'Satisfaction surveys',
   report_survey_ticketnum: 'Ticket',
   report_survey_ticketdate: 'Ticket date',

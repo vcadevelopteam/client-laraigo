@@ -2592,6 +2592,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_userproductivity_filter_includebot: 'Incluir bot',
   report_userproductivity_desconectedtimejson: 'Tiempos para motivos de desconexión',
 
+  opportunity_funnel: 'Funnel de oportunidades',
+  opportunity_funnel_channels: 'Canales',
+  opportunity_funnel_advisor: 'Asesor',
+  opportunity_funnel_product: 'Producto',
+
   type_shippingtype_hsm: 'HSM',
   type_shippingtype_mail: 'Correo',
   type_shippingtype_sms: 'SMS',

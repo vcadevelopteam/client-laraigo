@@ -2932,6 +2932,11 @@ export const langKeys = {
   report_userproductivity_tmravg_help: "report_userproductivity_tmravg_help",
   report_userproductivity_tmradviseravg_help: "report_userproductivity_tmradviseravg_help",
 
+  opportunity_funnel: 'opportunity_funnel',
+  opportunity_funnel_channels: 'opportunity_funnel_channels',
+  opportunity_funnel_advisor: 'opportunity_funnel_advisor',
+  opportunity_funnel_product: 'opportunity_funnel_product',
+
   type_shippingtype_hsm: 'type_shippingtype_hsm',
   type_shippingtype_mail: 'type_shippingtype_mail',
   type_shippingtype_sms: 'type_shippingtype_sms',
