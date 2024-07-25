@@ -51,6 +51,7 @@ import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
 import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
+import { formatTextToUnicode, removeUnicodeStyle } from "common/helpers";
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -1399,48 +1400,53 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-    const formatText = (c: string) => {
+
+    const toggleTextStyle = (style) => {
         const input = inputRef.current.querySelector('textarea');
         const { value, selectionStart, selectionEnd } = input;
-
-        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
-            if (selectionStart !== selectionEnd) {
-                // Hay texto seleccionado
-                const selectedText = value.slice(selectionStart, selectionEnd);
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionEnd);
-                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
-                    input.focus();
-                }, 0);
+        const selectedText = value.slice(selectionStart, selectionEnd);
+        const beforeText = value.slice(0, selectionStart);
+        const afterText = value.slice(selectionEnd);
+    
+        let newText = selectedText;
+    
+        if (selectedText) {
+            const textWithStyle = formatTextToUnicode({ text: selectedText, [style]: true });
+            let textWithoutStyle = removeUnicodeStyle(selectedText, style);    
+    
+            if (style === 'underline' || style === 'strikethrough') {
+                const regex = new RegExp(`[\\u0332\\u0336]`, 'g');
+                textWithoutStyle = selectedText.replace(regex, '');
+                if (selectedText === textWithoutStyle) {
+                    newText = textWithStyle;
+                } else {
+                    newText = textWithoutStyle;
+                }
             } else {
-                // No hay texto seleccionado
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionStart);
-                const newValue = `${beforeText}${c}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                    input.focus();
-                }, 0);
-            }
-        } else {
-            if (selectionStart !== selectionEnd) {
-                if (c === "*") {
-
-                    const beforeSelection = text.slice(0, selectionStart);
-                    const selectedText = text.slice(selectionStart, selectionEnd);
-                    const afterSelection = text.slice(selectionEnd);
-
-                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
-                    setText(newText);
+                if (selectedText === textWithStyle) {
+                    newText = textWithoutStyle;
+                } else {
+                    newText = textWithStyle;
                 }
             }
+    
+            const newValue = `${beforeText}${newText}${afterText}`;
+            setText(newValue);
+    
+            const selectionLengthDiff = newText.length - selectedText.length;
+            const newSelectionStart = selectionStart;
+            const newSelectionEnd = selectionEnd + selectionLengthDiff;
+    
+            setTimeout(() => {
+                input.setSelectionRange(newSelectionStart, newSelectionEnd);
+                input.focus();
+            }, 0);
+        } else {
+            const newValue = value; 
+            setText(newValue);
         }
-    }
-
+    };
+    
     const handleKeyDown = (event: Dictionary) => {
         if (event.altKey && event.key === 'Enter') {
             event.preventDefault();
@@ -1757,52 +1763,41 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                     </div>
 
                                     <div style={{ display: 'flex', gap: '0.7rem' }}>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("*")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
+                                        <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('bold')} size='small'>
+                                                <FormatBoldIcon className={classes.root} />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('italic')} size='small'>
+                                                <FormatItalicIcon className={classes.root} />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {ticketSelected?.communicationchanneltype.includes("WHA") && (
                                             <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
+                                                <IconButton onClick={() => toggleTextStyle('underline')} size='small'>
+                                                    <FormatUnderlinedIcon className={classes.root} />
                                                 </IconButton>
                                             </Tooltip>
-                                        </span>}
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("~")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("```")
-                                                }} size='small'>
-                                                    <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
+                                        )}
+                                        <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('strikethrough')} size='small'>
+                                                <StrikethroughSIcon className={classes.root} />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('monospaced')} size='small'>
+                                                <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
+                                            </IconButton>
+                                        </Tooltip>
                                     </div>
+
+
+
+
+
+
+
                                 </div>
                             )}
                             <BottomGoToUnder />
