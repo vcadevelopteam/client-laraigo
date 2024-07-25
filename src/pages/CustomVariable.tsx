@@ -335,15 +335,11 @@ const DetailCustomVariable: React.FC<DetailProps> = ({ data: { row, domainname, 
 
             setWaitSave(true);
         }
-        if (!!dataDomain.length) {
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        } else {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
-        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
     return (
         <div style={{ width: "100%" }}>
