@@ -756,7 +756,7 @@ const RecordAudioIcon: React.FC<{
                     <RecordIcon
                         className={classes.iconResponse}
                         onClick={handleClick}
-                        style={{ width: 22, height: 22 }}
+                        style={{ width: 28, height: 28 }}
                     />
                 )}
             </Tooltip>
@@ -1016,7 +1016,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([]);
     const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
-    const [numRows, setNumRows] = useState(2);
+    const [numRows, setNumRows] = useState(1.5);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([
         { type: "paragraph", align: "left", children: [{ text: "" }] },
     ]);
@@ -1640,7 +1640,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 id="chat-input"
                                                 fullWidth
                                                 value={text}
-                                                onChange={handleInputChange}
+                                                onChange={(e) => setText(e.target.value)}
                                                 placeholder={t(langKeys.send_your_message)}
                                                 onKeyPress={handleKeyPress}
                                                 rows={numRows}
@@ -1660,7 +1660,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 ref={inputRef}
                                             />
                                             <div style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>
-                                                {!files.length && !text && allowRecording ? (
+                                                {!files.length && isTextEmptyOrWhitespace(text) && allowRecording ? (                                                    
                                                     <RecordAudioIcon
                                                         classes={classes}
                                                         setRecord={setRecord}
