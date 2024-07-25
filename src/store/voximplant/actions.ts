@@ -37,7 +37,7 @@ export const holdTransferCall = (payload?: { call?: Call | null, hold?: boolean 
 
 export const makeCall = (payload: { number: string, site: string }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
-export const setModalCall = (showModalCall?: Boolean, transferAction?: boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload: { showModalCall, transferAction } });
+export const setModalCall = (showModalCall?: boolean, transferAction?: boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload: { showModalCall, transferAction } });
 
 export const setPhoneNumber = (payload?: string): IActionCall => ({ type: actionTypes.SET_PHONE_NUMBER, payload });
 

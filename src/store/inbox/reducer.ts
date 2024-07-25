@@ -111,7 +111,7 @@ export const initialState: IState = {
     showInfoPanel: true,
     userType: null,
     wsConnected: false,
-    userConnected: !!localStorage.getItem("agentConnected"),
+    userConnected: Boolean(localStorage.getItem("agentConnected")),
     isOnBottom: null,
     showGoToBottom: false,
     triggerNewMessageClient: false,

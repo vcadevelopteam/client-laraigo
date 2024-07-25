@@ -4,14 +4,14 @@ import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
 export interface IProduct {
-    corpid: Number,
-    orgid: Number,
-    productcatalogid: Number,
-    code: String,
-    description: String,
-    category: String,
-    status: String,
-    unitprice: Number
+    corpid: number,
+    orgid: number,
+    productcatalogid: number,
+    code: string,
+    description: string,
+    category: string,
+    status: string,
+    unitprice: number
 }
 
 export interface IState {

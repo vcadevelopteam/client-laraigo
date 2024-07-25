@@ -12,7 +12,7 @@ import { conversationTransferStatus } from 'common/helpers';
 const cleanNumber = (number: string | null) => number?.includes("@") ? number?.split("@")[0].split(":")?.[1] : (number?.includes("_") ? number?.split("_")[0] : number);
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
-let transferdata: any = {};
+const transferdata: any = {};
 
 const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async (action) => {
     const { type, payload } = action;
@@ -130,7 +130,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                             dispatch(emitEvent({
                                 event: 'deleteTicket',
                                 data: {
-                                    conversationid: +headers["X-conversationid"],
+                                    conversationid: Number(headers["X-conversationid"]),
                                     userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
                                     getToken: false //userType === "SUPERVISOR"
                                 }
@@ -144,7 +144,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                             dispatch(emitEvent({
                                 event: 'deleteTicket',
                                 data: {
-                                    conversationid: +headers["X-conversationid"],
+                                    conversationid: Number(headers["X-conversationid"]),
                                     userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
                                     getToken: false //userType === "SUPERVISOR"
                                 }
@@ -533,7 +533,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Offline);
             }
         } catch (error) {
-
+            console.log("error:", error)
         }
         return
     } else if (type === typeVoximplant.DISCONNECT) {
