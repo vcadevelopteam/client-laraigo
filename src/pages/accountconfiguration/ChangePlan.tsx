@@ -10,7 +10,6 @@ import { Radio, Table, TableBody, TableCell, TableContainer, TableRow } from '@m
 import SaveIcon from '@material-ui/icons/Save';
 import { cancelSuscription as cancelSuscriptionFunction } from 'common/helpers';
 import { showSnackbar, manageConfirmation } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
 import clsx from 'clsx';
 import { execute } from 'store/main/actions';
 import { changePlan as changePlanFunction } from 'common/helpers';

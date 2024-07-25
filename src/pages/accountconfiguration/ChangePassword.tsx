@@ -15,7 +15,6 @@ import { useForm } from 'react-hook-form';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { updateUserSettings } from 'store/setting/actions';
-import ClearIcon from '@material-ui/icons/Clear';
 import clsx from 'clsx';
 import { validateDomainCharacters, validateDomainCharactersSpecials, validateNumbersEqualsConsecutive } from 'common/helpers';
 

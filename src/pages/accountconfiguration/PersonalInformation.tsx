@@ -12,7 +12,6 @@ import { showSnackbar, manageConfirmation } from 'store/popus/actions';
 import { updateUserInformation } from 'store/login/actions';
 import { useForm } from 'react-hook-form';
 import { updateUserSettings } from 'store/setting/actions';
-import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
