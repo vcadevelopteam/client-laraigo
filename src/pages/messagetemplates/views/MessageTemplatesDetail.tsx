@@ -277,6 +277,11 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 150,
         marginBottom: 10
     },
+    errorBorder: {
+        "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline": {
+            borderColor: 'red',
+        },
+    },
 }));
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
@@ -329,7 +334,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [cardAux, setCardAux] = useState<number | null>(null)
     const [buttonsType, setButtonsType] = useState('none')
     const [cursorPositionAux, setCursorPositionAux] = useState(0);
-    const [categoryChange, setCategoryChange] = useState('DESACTIVADO');
+    const [categoryChange, setCategoryChange] = useState('ACTIVADO');
+    const [showError, setShowError] = useState(false);
     const [buttonsGeneral, setButtonsGeneral] = useState<Dictionary[]>(
         row?.firstbuttons === "quickreply" ? [
             { id: 1, name: "quickreply",items: [] },
@@ -360,6 +366,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         const input = document.getElementById('bodyInput');
         setCursorPositionAux(input.selectionStart ? input.selectionStart : getValues('body').length);
         setShowEmojiPicker(!showEmojiPicker);
+    };
+
+    const handleCategoryChange = (value) => {
+        if (value) {
+            setCategoryChange(value.value);
+            setShowError(false);
+        } else {
+            setCategoryChange('');
+            setShowError(true);
+        }
     };
 
     const dataNewCategory = [
@@ -648,17 +664,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         });
 
         switch (type) {
-            case "HSM":
-                // register("body", {
-                //     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-                // });
+            case "HSM":                
                 register("name", {
                     validate: (value) =>
                         (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
-                });
-                // register("namespace", {
-                //     validate: (value) => (value && value.length) || t(langKeys.field_required),
-                // });
+                });               
                 if (getValues("footerenabled")) {
                     register("footer", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -680,10 +690,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setTemplateTypeDisabled(true);
                 break;
 
-            case "SMS":
-                // register("body", {
-                //     validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
-                // });
+            case "SMS":               
                 register("name", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -692,20 +699,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 break;
         }
 
-        if (type === "HSM") {
-            // register("body", {
-            //     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-            // });
-
+        if (type === "HSM") {          
             register("name", {
                 validate: (value) =>
                     (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
-            });
-
-            // register("namespace", {
-            //     validate: (value) => (value && value.length) || t(langKeys.field_required),
-            // });
-
+            });          
             if (row?.footerenabled) {
                 register("footer", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -717,17 +715,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             register("name", {
                 validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
-
-            // register("namespace");
-
             if (type === "SMS") {
                 // register("body", {
                 //     validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
                 // });
-            } else {
-                // register("body", {
-                //     validate: (value) => (value && value.length) || t(langKeys.field_required),
-                // });
+            } else {               
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -825,117 +817,122 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, [waitUploadFile, uploadResult]);
 
     const onSubmit = handleSubmit((data) => {
-        if (data.type === "MAIL") {
-            data.body = renderToString(toElement(bodyObject));
-            if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
-                setBodyAlert(t(langKeys.field_required));
-                return;
+        if (showError) {
+            return;
+        }
+        else {
+            if (data.type === "MAIL") {
+                data.body = renderToString(toElement(bodyObject));
+                if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
+                    setBodyAlert(t(langKeys.field_required));
+                    return;
+                } else {
+                    setBodyAlert("");
+                }
+            }
+    
+            if (data.type === "HTML") {
+                if (data.body) {
+                    setBodyAlert("");
+                } else {
+                    setBodyAlert(t(langKeys.field_required));
+                    return;
+                }
+            }
+    
+            if (isNew && data.type === 'HSM') {
+                const dataAux = {
+                    ...data,
+                    headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
+                    footerenabled: data.footer !== '' ? true : false,
+                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
+                    headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
+                }
+    
+                const callback = () => {
+                    if (data.type === "MAIL") {
+                        data.body = renderToString(toElement(bodyObject));
+                        if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        } else {
+                            setBodyAlert("");
+                        }
+                    }
+    
+                    if (data.type === "HTML") {
+                        if (data.body) {
+                            setBodyAlert("");
+                        } else {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        }
+                    }
+    
+                    dispatch(addTemplate({
+                        ...dataAux,
+                        authenticationdata: JSON.stringify(dataAux.authenticationdata),
+                        bodyvariables: JSON.stringify(dataAux.bodyvariables),
+                        buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
+                        buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
+                        carouseldata: JSON.stringify(dataAux.carouseldata),
+                        headervariables: JSON.stringify(dataAux.headervariables),
+                        categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                        firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0 )) ? buttonsGeneral?.[0]?.name : null
+                    }));
+                    dispatch(showBackdrop(true));
+                    setWaitAdd(true);
+                };
+    
+                dispatch(
+                    manageConfirmation({
+                        visible: true,
+                        question: t(langKeys.confirmation_save),
+                        callback,
+                    })
+                );
             } else {
-                setBodyAlert("");
-            }
-        }
-
-        if (data.type === "HTML") {
-            if (data.body) {
-                setBodyAlert("");
-            } else {
-                setBodyAlert(t(langKeys.field_required));
-                return;
-            }
-        }
-
-        if (isNew && data.type === 'HSM') {
-            const dataAux = {
-                ...data,
-                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
-                footerenabled: data.footer !== '' ? true : false,
-                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
-                headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
-            }
-
-            const callback = () => {
-                if (data.type === "MAIL") {
-                    data.body = renderToString(toElement(bodyObject));
-                    if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    } else {
-                        setBodyAlert("");
-                    }
+                const dataAux = {
+                    ...data,
+                    headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
+                    footerenabled: data.footer !== '' ? true : false,
+                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
                 }
-
-                if (data.type === "HTML") {
-                    if (data.body) {
-                        setBodyAlert("");
-                    } else {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
+    
+                const callback = () => {
+                    if (dataAux.type === "MAIL") {
+                        dataAux.body = renderToString(toElement(bodyObject));
+                        if (dataAux.body === '<div data-reactroot=""><p><span></span></p></div>') {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        } else {
+                            setBodyAlert("");
+                        }
                     }
-                }
-
-                dispatch(addTemplate({
-                    ...dataAux,
-                    authenticationdata: JSON.stringify(dataAux.authenticationdata),
-                    bodyvariables: JSON.stringify(dataAux.bodyvariables),
-                    buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
-                    buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
-                    carouseldata: JSON.stringify(dataAux.carouseldata),
-                    headervariables: JSON.stringify(dataAux.headervariables),
-                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
-                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0 )) ? buttonsGeneral?.[0]?.name : null
-                }));
-                dispatch(showBackdrop(true));
-                setWaitAdd(true);
-            };
-
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback,
-                })
-            );
-        } else {
-            const dataAux = {
-                ...data,
-                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
-                footerenabled: data.footer !== '' ? true : false,
-                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
+    
+                    if (dataAux.type === "HTML") {
+                        if (dataAux.body) {
+                            setBodyAlert("");
+                        } else {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        }
+                    }
+    
+                    dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
+                    dispatch(showBackdrop(true));
+                    setWaitSave(true);
+                };
+    
+                dispatch(
+                    manageConfirmation({
+                        visible: true,
+                        question: t(langKeys.confirmation_save),
+                        callback,
+                    })
+                );
             }
-
-            const callback = () => {
-                if (dataAux.type === "MAIL") {
-                    dataAux.body = renderToString(toElement(bodyObject));
-                    if (dataAux.body === '<div data-reactroot=""><p><span></span></p></div>') {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    } else {
-                        setBodyAlert("");
-                    }
-                }
-
-                if (dataAux.type === "HTML") {
-                    if (dataAux.body) {
-                        setBodyAlert("");
-                    } else {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    }
-                }
-
-                dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
-                dispatch(showBackdrop(true));
-                setWaitSave(true);
-            };
-
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback,
-                })
-            );
-        }
+        }      
     });
 
     useEffect(() => {
@@ -2306,7 +2303,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     <CustomTitleHelper
                                         title={t(langKeys.categorychange) + ' '}
-                                        helperText={t(langKeys.test)}
+                                        helperText={'Permite que Meta asigne cualquier categoría que determine apropiada para el template. Esto evita que las plantillas sean rechazadas durante el proceso de validación.'}
                                         titlestyle={{ fontWeight: 'bold', fontSize: 20 }}
                                     />
                                     <span>{t(langKeys.categorychangetext)}</span>
@@ -2363,22 +2360,25 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             />
                         )}
                         {(isNew && getValues('type') === 'HSM') && (
-                            <FieldSelect
-                                className="col-2"
-                                variant="outlined"
-                                data={[{value: "ACTIVADO"}, {value: "DESACTIVADO"}]}
-                                size="small"
-                                valueDefault={categoryChange}
-                                onChange={(value) => {
-                                    if(value) {
-                                        setCategoryChange(value.value)
-                                    } else {
-                                        setCategoryChange("DESACTIVADO")
-                                    }
-                                }}
-                                optionDesc="value"
-                                optionValue="value"
-                            />
+                            <>
+                               <FieldSelect
+                                    className={`col-3 ${showError ? classes.errorBorder : ''}`}
+                                    variant="outlined"
+                                    data={[{ value: "ACTIVADO" }, { value: "DESACTIVADO" }]}
+                                    size="small"
+                                    valueDefault={categoryChange}
+                                    onChange={handleCategoryChange}
+                                    optionDesc="value"
+                                    optionValue="value"
+                                    error={showError}
+                                />
+                                {showError && (
+                                    <p style={{ color: 'red', marginLeft: '33.6%', marginTop: '0', fontSize: '12px', paddingTop: '0' }}>
+                                        {t(langKeys.field_required)}
+                                    </p>
+                                )}
+                            </>                          
+                           
                         )}
                     </div>
                     {getValues("type") === 'HSM' && (

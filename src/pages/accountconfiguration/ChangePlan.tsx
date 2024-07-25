@@ -120,15 +120,6 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
                 <div style={{ display: 'flex', gap: '10px'}}>
                     <Button
                         variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}>
-                        {t(langKeys.back)}
-                    </Button>
-                    <Button
-                        variant="contained"
                         color="primary"
                         disabled={plan === user?.plan || executeResult.loading}
                         onClick={handlerSave}

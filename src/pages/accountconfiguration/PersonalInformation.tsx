@@ -90,16 +90,7 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
         <form onSubmit={onSubmit}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom:'2rem' }}>                
                 <div className={classes.seccionTitle}>{t(langKeys.changepersonalinformation)}</div>
-                <div style={{ display: 'flex', gap: '10px'}}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}>
-                        {t(langKeys.back)}
-                    </Button>
+                <div style={{ display: 'flex', gap: '10px'}}>                   
                     <Button
                         className={classes.button}
                         variant="contained"
