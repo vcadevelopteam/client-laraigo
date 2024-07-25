@@ -11,7 +11,6 @@ import { FieldSelect } from 'components';
 import {  manageConfirmation } from 'store/popus/actions';
 import { useForm } from 'react-hook-form';
 import { updateUserSettings } from 'store/setting/actions';
-import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -55,85 +54,29 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const resSetting = useSelector(state => state.setting.setting);
     const { register, handleSubmit, getValues, setValue, formState: { errors }, trigger } = useForm({
         defaultValues: {         
-            language: 'ES',
+            language: 'ES_LAT',
             spellingcheck:'ACTIVED',
-            translatelanguage: 'ES',
+            translatelanguage: 'ES_LAT',
             messagesendingmode: 'Default',
         }
     });
 
     const dataExternalLanguage = [
-        { description: t(langKeys.TEMPLATE_AF), value: "AF" },
-        { description: t(langKeys.TEMPLATE_AR), value: "AR" },
-        { description: t(langKeys.TEMPLATE_AZ), value: "AZ" },
-        { description: t(langKeys.TEMPLATE_BG), value: "BG" },
-        { description: t(langKeys.TEMPLATE_BN), value: "BN" },
-        { description: t(langKeys.TEMPLATE_CA), value: "CA" },
-        { description: t(langKeys.TEMPLATE_CS), value: "CS" },
-        { description: t(langKeys.TEMPLATE_DA), value: "DA" },
-        { description: t(langKeys.TEMPLATE_DE), value: "DE" },
-        { description: t(langKeys.TEMPLATE_EL), value: "EL" },
         { description: t(langKeys.TEMPLATE_EN), value: "EN" },
-        { description: t(langKeys.TEMPLATE_EN_GB), value: "EN_GB" },
-        { description: t(langKeys.TEMPLATE_EN_US), value: "EN_US" },
-        { description: t(langKeys.TEMPLATE_ES), value: "ES" },
-        { description: t(langKeys.TEMPLATE_ES_AR), value: "ES_AR" },
+        { description: t(langKeys.TEMPLATE_ES_LAT), value: "ES_LAT" },
         { description: t(langKeys.TEMPLATE_ES_ES), value: "ES_ES" },
-        { description: t(langKeys.TEMPLATE_ES_MX), value: "ES_MX" },
-        { description: t(langKeys.TEMPLATE_ET), value: "ET" },
-        { description: t(langKeys.TEMPLATE_FA), value: "FA" },
-        { description: t(langKeys.TEMPLATE_FI), value: "FI" },
-        { description: t(langKeys.TEMPLATE_FIL), value: "FIL" },
         { description: t(langKeys.TEMPLATE_FR), value: "FR" },
-        { description: t(langKeys.TEMPLATE_GA), value: "GA" },
-        { description: t(langKeys.TEMPLATE_GU), value: "GU" },
-        { description: t(langKeys.TEMPLATE_HA), value: "HA" },
-        { description: t(langKeys.TEMPLATE_HE), value: "HE" },
-        { description: t(langKeys.TEMPLATE_HI), value: "HI" },
-        { description: t(langKeys.TEMPLATE_HR), value: "HR" },
-        { description: t(langKeys.TEMPLATE_HU), value: "HU" },
-        { description: t(langKeys.TEMPLATE_ID), value: "ID" },
-        { description: t(langKeys.TEMPLATE_IT), value: "IT" },
-        { description: t(langKeys.TEMPLATE_JA), value: "JA" },
-        { description: t(langKeys.TEMPLATE_KA), value: "KA" },
-        { description: t(langKeys.TEMPLATE_KK), value: "KK" },
-        { description: t(langKeys.TEMPLATE_KN), value: "KN" },
-        { description: t(langKeys.TEMPLATE_KO), value: "KO" },
-        { description: t(langKeys.TEMPLATE_KY_KG), value: "KY_KG" },
-        { description: t(langKeys.TEMPLATE_LO), value: "LO" },
-        { description: t(langKeys.TEMPLATE_LT), value: "LT" },
-        { description: t(langKeys.TEMPLATE_LV), value: "LV" },
-        { description: t(langKeys.TEMPLATE_MK), value: "MK" },
-        { description: t(langKeys.TEMPLATE_ML), value: "ML" },
-        { description: t(langKeys.TEMPLATE_MR), value: "MR" },
-        { description: t(langKeys.TEMPLATE_MS), value: "MS" },
-        { description: t(langKeys.TEMPLATE_NB), value: "NB" },
-        { description: t(langKeys.TEMPLATE_NL), value: "NL" },
-        { description: t(langKeys.TEMPLATE_PA), value: "PA" },
-        { description: t(langKeys.TEMPLATE_PL), value: "PL" },
-        { description: t(langKeys.TEMPLATE_PT_BR), value: "PT_BR" },
-        { description: t(langKeys.TEMPLATE_PT_PT), value: "PT_PT" },
-        { description: t(langKeys.TEMPLATE_RO), value: "RO" },
-        { description: t(langKeys.TEMPLATE_RU), value: "RU" },
-        { description: t(langKeys.TEMPLATE_RW_RW), value: "RW_RW" },
-        { description: t(langKeys.TEMPLATE_SK), value: "SK" },
-        { description: t(langKeys.TEMPLATE_SL), value: "SL" },
-        { description: t(langKeys.TEMPLATE_SQ), value: "SQ" },
-        { description: t(langKeys.TEMPLATE_SR), value: "SR" },
-        { description: t(langKeys.TEMPLATE_SV), value: "SV" },
-        { description: t(langKeys.TEMPLATE_SW), value: "SW" },
-        { description: t(langKeys.TEMPLATE_TA), value: "TA" },
-        { description: t(langKeys.TEMPLATE_TE), value: "TE" },
-        { description: t(langKeys.TEMPLATE_TH), value: "TH" },
-        { description: t(langKeys.TEMPLATE_TR), value: "TR" },
-        { description: t(langKeys.TEMPLATE_UK), value: "UK" },
-        { description: t(langKeys.TEMPLATE_UR), value: "UR" },
-        { description: t(langKeys.TEMPLATE_UZ), value: "UZ" },
-        { description: t(langKeys.TEMPLATE_VI), value: "VI" },
         { description: t(langKeys.TEMPLATE_ZH_CN), value: "ZH_CN" },
-        { description: t(langKeys.TEMPLATE_ZH_HK), value: "ZH_HK" },
-        { description: t(langKeys.TEMPLATE_ZH_TW), value: "ZH_TW" },
-        { description: t(langKeys.TEMPLATE_ZU), value: "ZU" },
+        { description: t(langKeys.TEMPLATE_AR), value: "AR" },
+        { description: t(langKeys.TEMPLATE_RU), value: "RU" },
+        { description: t(langKeys.TEMPLATE_DE), value: "DE" },
+        { description: t(langKeys.TEMPLATE_JA), value: "JA" },
+        { description: t(langKeys.TEMPLATE_PT_BR), value: "PT_BR" },
+        { description: t(langKeys.TEMPLATE_HI), value: "HI" },
+        { description: t(langKeys.TEMPLATE_IT), value: "IT" },
+        { description: t(langKeys.TEMPLATE_KO), value: "KO" },
+        { description: t(langKeys.TEMPLATE_FA), value: "FA" },
+        { description: t(langKeys.TEMPLATE_TR), value: "TR" } 
     ];
 
     const dataActivated = [
@@ -178,7 +121,8 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                     <Button
                         className={classes.button}
                         variant="contained"
-                        disabled={resSetting.loading}
+                        //disabled={resSetting.loading}
+                        disabled={true}
                         color="primary"
                         type="submit"
                         startIcon={<SaveIcon color="secondary" />}
@@ -218,7 +162,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             <FieldSelect
                                 style={{width:'20rem'}}
                                 data={dataActivated}
-                                error={errors?.language?.message}
+                                error={errors?.spellingcheck?.message}
                                 onChange={(value) => {
                                     if (value) {
                                         setValue("spellingcheck", value.value)
@@ -246,7 +190,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             <FieldSelect
                                 style={{width:'20rem'}}
                                 data={dataExternalLanguage}
-                                error={errors?.language?.message}
+                                error={errors?.translatelanguage?.message}
                                 onChange={(value) => {
                                     if (value) {
                                         setValue("translatelanguage", value.value)
@@ -274,7 +218,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             <FieldSelect
                                 style={{width:'20rem'}}
                                 data={dataMessageSendingMode}
-                                error={errors?.language?.message}
+                                error={errors?.messagesendingmode?.message}
                                 onChange={(value) => {
                                     if (value) {
                                         setValue("messagesendingmode", value.value)

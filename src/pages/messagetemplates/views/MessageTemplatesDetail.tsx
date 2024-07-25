@@ -2298,6 +2298,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 </div>
                             </div>
                         )}
+
                         {(isNew && getValues('type') === 'HSM') && (
                             <div className="col-8" style={{ display: 'flex' }}>
                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -2310,6 +2311,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 </div>
                             </div>
                         )}
+
+
                     </div>
                     <div className="row-zyx" style={{ display: 'flex', alignItems: 'center' }}>
                         <FieldSelect
