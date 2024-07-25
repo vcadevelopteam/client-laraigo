@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const importXml = (state: IState, action: IAction): IState => ({
+export const importXml = (state: IState): IState => ({
     ...state,
     requestImportXml: {
         ...state.requestImportXml,

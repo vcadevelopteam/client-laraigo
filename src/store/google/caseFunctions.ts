@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const exchangeCode = (state: IState, action: IAction): IState => ({
+export const exchangeCode = (state: IState): IState => ({
     ...state,
     requestExchangeCode: {
         ...state.requestExchangeCode,
@@ -38,7 +38,7 @@ export const exchangeCodeReset = (state: IState): IState => ({
     requestExchangeCode: initialState.requestExchangeCode,
 })
 
-export const listBlogger = (state: IState, action: IAction): IState => ({
+export const listBlogger = (state: IState): IState => ({
     ...state,
     requestListBlogger: {
         ...state.requestListBlogger,
@@ -75,7 +75,7 @@ export const listBloggerReset = (state: IState): IState => ({
     requestListBlogger: initialState.requestListBlogger,
 })
 
-export const listYouTube = (state: IState, action: IAction): IState => ({
+export const listYouTube = (state: IState): IState => ({
     ...state,
     requestListYouTube: {
         ...state.requestListYouTube,

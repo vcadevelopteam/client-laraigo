@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const request_send = (state: IState, action: IAction): IState => ({
+export const request_send = (state: IState): IState => ({
     ...state,
     request: {
         ...state.request,
@@ -35,7 +35,7 @@ export const requestReset = (state: IState): IState => ({
     request: initialState.request
 })
 
-export const processzip_send = (state: IState, action: IAction): IState => ({
+export const processzip_send = (state: IState): IState => ({
     ...state,
     processzip: {
         ...state.processzip,
@@ -54,7 +54,7 @@ export const processzipFailure = (state: IState, action: IAction): IState => ({
     }
 })
 
-export const processzipSuccess = (state: IState, action: IAction): IState => ({
+export const processzipSuccess = (state: IState): IState => ({
     ...state,
     processzip: {
         ...state.processzip,

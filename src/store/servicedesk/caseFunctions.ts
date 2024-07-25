@@ -36,7 +36,7 @@ export const saveLead = (state: IState): IState => ({
     saveLead: { ...state.saveLead, loading: true, error: false },
 });
 
-export const saveLeadSuccess = (state: IState, action: IAction): IState => ({
+export const saveLeadSuccess = (state: IState): IState => ({
     ...state,
     saveLead: {
         success: true,
@@ -156,7 +156,7 @@ export const saveLeadNote = (state: IState): IState => ({
     saveLeadNote: { ...state.saveLeadNote, loading: true, error: false },
 });
 
-export const saveLeadNoteSuccess = (state: IState, action: IAction): IState => ({
+export const saveLeadNoteSuccess = (state: IState): IState => ({
     ...state,
     saveLeadNote: {
         success: true,
@@ -186,7 +186,7 @@ export const saveLeadActivity = (state: IState): IState => ({
     saveLeadActivity: { ...state.saveLeadActivity, loading: true, error: false },
 });
 
-export const saveLeadActivitySuccess = (state: IState, action: IAction): IState => ({
+export const saveLeadActivitySuccess = (state: IState): IState => ({
     ...state,
     saveLeadActivity: {
         success: true,
@@ -256,7 +256,7 @@ export const archiveLead = (state: IState): IState => ({
     archiveLead: { ...state.archiveLead, loading: true, error: false },
 });
 
-export const archiveLeadSuccess = (state: IState, action: IAction): IState => ({
+export const archiveLeadSuccess = (state: IState): IState => ({
     ...state,
     archiveLead: {
         success: true,
@@ -286,7 +286,7 @@ export const markDoneActivity = (state: IState): IState => ({
     markDoneActivity: { ...state.markDoneActivity, loading: true, error: false },
 });
 
-export const markDoneActivitySuccess = (state: IState, action: IAction): IState => ({
+export const markDoneActivitySuccess = (state: IState): IState => ({
     ...state,
     markDoneActivity: {
         success: true,
@@ -346,7 +346,7 @@ export const updateLeadTags = (state: IState): IState => ({
     updateLeadTags: { ...state.updateLeadTags, loading: true, error: false },
 });
 
-export const updateLeadTagsSuccess = (state: IState, action: IAction): IState => ({
+export const updateLeadTagsSuccess = (state: IState): IState => ({
     ...state,
     updateLeadTags: {
         success: true,
