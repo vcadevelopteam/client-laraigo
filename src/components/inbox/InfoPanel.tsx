@@ -10,7 +10,7 @@ import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePers
 import { GetIcon, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { convertLocalDate, getAssignmentRulesByGroup, getAttachmentsByPerson, getConversationClassification2, getLeadsByUserPerson, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
+import { conversationAttachmentHistorySel, conversationClassificationHistorySel, convertLocalDate, getAssignmentRulesByGroup, getAttachmentsByPerson, getConversationClassification2, getLeadsByUserPerson, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
@@ -28,6 +28,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DialogInteractions from './DialogInteractions';
 import DialogLinkPerson from './PersonLinked';
 import LinkIcon from '@material-ui/icons/Link';
+import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -121,6 +124,20 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: '#ececec'
         }
+    },
+    displayMenu: {
+        padding: theme.spacing(1),
+        flexDirection: 'column',
+        gap: theme.spacing(.5),
+        overflowY: 'auto',
+        cursor: 'pointer',
+        flex: 1,
+        borderBottom: '1px solid #EBEAED',
+        textAlign: "center", 
+        display: "block", 
+        alignContent: "center", 
+        color: "grey", 
+        paddingBottom: 0
     }
 }));
 
@@ -394,18 +411,18 @@ const InfoTab: React.FC = () => {
                                 prefixTranslation="type_ocupation_"
                                 error={errors?.occupation?.message}
                             />}
-                            <FieldSelect
-                                valueDefault={getValues("usergroup")}
-                                onChange={(value) => {
-                                    setValue('usergroup', value?.domainvalue || "");
-                                }}
-                                label={t(langKeys.group)}
-                                loading={multiData.loading}
-                                data={multiData.data[8]?.data || []}
-                                optionValue="domainvalue"
-                                optionDesc="domaindesc"
-                            />
-                            {/* grupos */}
+                        <FieldSelect
+                            valueDefault={getValues("usergroup")}
+                            onChange={(value) => {
+                                setValue('usergroup', value?.domainvalue || "");
+                            }}
+                            label={t(langKeys.group)}
+                            loading={multiData.loading}
+                            data={multiData.data[8]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domaindesc"
+                        />
+                        {/* grupos */}
                         <FieldEdit
                             label={t(langKeys.address)}
                             onChange={(value) => setValue('address', value)}
@@ -557,13 +574,13 @@ const InfoTab: React.FC = () => {
                 {person?.firstcontact && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
-                        <div>{person?.firstcontact? new Date(person?.firstcontact).toLocaleString(): "-"}</div>
+                        <div>{person?.firstcontact ? new Date(person?.firstcontact).toLocaleString() : "-"}</div>
                     </div>
                 </div>}
                 {person?.lastcontact && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
-                        <div>{person?.lastcontact? new Date(person?.lastcontact).toLocaleString(): "-"}</div>
+                        <div>{person?.lastcontact ? new Date(person?.lastcontact).toLocaleString() : "-"}</div>
                     </div>
                 </div>}
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
@@ -623,6 +640,30 @@ const Variables: React.FC = () => {
     )
 }
 
+const ClassificationsList: React.FC<{classifications:any, handleDelete:(x:any)=>void, ticket: any}> = ({classifications, handleDelete, ticket}) => {
+    const classes = useStyles();
+    return (
+        <div style={{ overflowY: 'auto' }} className="scroll-style-go">
+            <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
+                {classifications.map((x:any) => {
+                    return (
+                        <div className={classes.containerPreviewTicket} style={{ flexDirection: "initial", alignItems: "center", display: "block" }} key={x.classificationid}>
+                            <div className={classes.label} style={{ textAlign: "right" }}>{"test"}</div>
+                            <div style={{display: "flex"}}>
+                                <SubdirectoryArrowRightIcon style={{color: "grey"}}/>
+                                <div style={{ flex: 1 }}>
+                                    <div>{x?.path?.replace("/", " / ")}</div>
+                                </div>
+                                <DeleteIcon style={{ color: "#B6B4BA" }} onClick={() => { handleDelete(x) }} />
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+        )
+}
+
 const Classifications: React.FC = () => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const classes = useStyles();
@@ -631,12 +672,28 @@ const Classifications: React.FC = () => {
     const [classifications, setClassifications] = useState<any[]>([]);
     const [waitSave, setWaitSave] = useState(false);
     const tipifyRes = useSelector(state => state.main.execute);
+    const [showAll, setShowAll] = useState(false);
+    const previewTicketList = useSelector(state => state.inbox.previewTicketList);
+    const el = React.useRef<null | HTMLDivElement>(null);
+    const el1 = React.useRef<null | HTMLDivElement>(null);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [openModal, setOpenModal] = useState(false);
+
+    const handleClickOpen = (row: any) => {
+        setOpenModal(true);
+        setRowSelected(row)
+    };
+
 
     const mainAux2 = useSelector(state => state.main.mainAux2);
-    const fetchData = () => dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+    const fetchData = () => {
+        dispatch(getTicketsPerson(ticketSelected?.personid!, ticketSelected?.conversationid!))
+        dispatch(getCollectionAux2(conversationClassificationHistorySel(ticketSelected?.personid!!)))
+    }
 
     useEffect(() => {
-        dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+        dispatch(getTicketsPerson(ticketSelected?.personid!, ticketSelected?.conversationid!))
+        dispatch(getCollectionAux2(conversationClassificationHistorySel(ticketSelected?.personid!!)))
     }, [])
 
     useEffect(() => {
@@ -648,7 +705,7 @@ const Classifications: React.FC = () => {
     useEffect(() => {
         if (!mainAux2.loading && !mainAux2.error) {
             dispatch(updateClassificationPerson(mainAux2.data.length > 0))
-            setClassifications([...mainAux2?.data].reverse())
+            setClassifications(mainAux2.data.reverse())
         }
     }, [mainAux2])
 
@@ -662,7 +719,7 @@ const Classifications: React.FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid || 0, row.classificationid, row.jobplan, 'DELETE')));
+            dispatch(execute(insertClassificationConversation(row?.conversationid || 0, row.classificationid, row.jobplan, 'DELETE')));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -673,37 +730,65 @@ const Classifications: React.FC = () => {
             callback
         }))
     }
-
-    if (mainAux2.loading) {
+    
+    if (mainAux2.loading || previewTicketList.loading) {
         return (
             <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <CircularProgress />
             </div>
         )
     }
-
-    if (classifications.length === 0) {
-        return (
-            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
-                {t(langKeys.without_result)}
-            </div>
-        )
-    }
-
+    
     return (
-        <div style={{ overflowY: 'auto' }} className="scroll-style-go">
-            <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
-                {classifications.map((x, i) => {
-                    return (
-                        <div className={classes.containerPreviewTicket} style={{ flexDirection: "initial", alignItems: "center" }} key={x.classificationid}>
-                            <div style={{ flex: 1 }}>
-                                <div>- {x?.path?.replace("/", " / ")}</div>
-                            </div>
-                            <DeleteIcon style={{ color: "#B6B4BA" }} onClick={() => { handleDelete(x) }} />
-                        </div>
-                    )
-                })}
+        <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
+            [classes.orderDefault]: true,
+        })}>
+            <div ref={el}></div>
+            <div>
+                <TicketCard 
+                    ticket={ticketSelected||{}}
+                    handleClickOpen={handleClickOpen}
+                />
+                {classifications.some(x => x.conversationid === ticketSelected?.conversationid) ?
+                    <ClassificationsList ticket={ticketSelected} classifications={classifications.filter(x=>x.conversationid === ticketSelected?.conversationid)} handleDelete={handleDelete}/> :
+                    <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                        {t(langKeys.without_result)}
+                    </div>
+                }
             </div>
+            <div onClick={()=>setShowAll(!showAll)}>
+                {showAll?
+                <div className={classes.displayMenu} >
+                    <div>{t(langKeys.hidehistoricalattachments)}</div>
+                    <KeyboardArrowUpIcon />
+                </div>:
+                <div className={classes.displayMenu} >
+                    <div>{t(langKeys.seehistoricalattachments)}</div>
+                    <KeyboardArrowDownIcon />
+                </div>
+                }
+            </div>
+            {showAll && previewTicketList.data?.map((ticket, index) => {
+                if(classifications.some(x => x.conversationid === ticket?.conversationid)){
+                    return <>
+                        <div key={ticket.conversationid}>
+                            <TicketCard 
+                                ticket={ticket||{}}
+                                handleClickOpen={handleClickOpen}
+                            />
+                            <ClassificationsList ticket={ticket} classifications={classifications.filter(x=>x.conversationid === ticket?.conversationid)} handleDelete={handleDelete}/>
+                        </div>                    
+                    </>
+                }else{
+                    return <div></div>
+                }
+            })}
+            <div ref={el1}></div>
+            <DialogInteractions
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                ticket={rowSelected}
+            />
         </div>
     )
 }
@@ -787,57 +872,20 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     )
 }
 
-const Attachments: React.FC = () => {
+const AttachmentList: React.FC<{listFiles: Dictionary[]}> = ({listFiles}) => {
     const classes = useStyles();
-    const [listFiles, setListFiles] = useState<Dictionary[]>([]);
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const mainAux2 = useSelector(state => state.main.mainAux2);
-
-    useEffect(() => {
-        dispatch(getCollectionAux2(getAttachmentsByPerson(ticketSelected?.personid!!)))
-    }, [])
-
-    useEffect(() => {
-        if (!mainAux2.loading && !mainAux2.error && mainAux2.key === "QUERY_SELECT_ATTACHMENT") {
-            setListFiles(mainAux2?.data.map(x => ({
-                url: x.interactiontext,
-                filename: x.interactiontext.split("/").pop(),
-                extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
-                date: convertLocalDate(x.createdate).toLocaleString(),
-                user: x.userid ? x.user : "Person",
-            })))
-        }
-    }, [mainAux2])
-
-    if (mainAux2.loading) {
-        return (
-            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <CircularProgress />
-            </div>
-        )
-    }
-
-    if (listFiles.length === 0) {
-        return (
-            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
-                {t(langKeys.without_files)}
-            </div>
-        )
-    }
-
     return (
-        <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
-            {listFiles.map(({ interactionid, filename, date, url, extension, user }) => (
+        <div className={`scroll-style-go`} style={{ overflowY: 'auto', backgroundColor: 'transparent' }}>
+            {listFiles.map(({ filename, date, url, extension, user }) => (
                 <a
-                    key={interactionid}
+                    key={`${date}-${filename}`}
                     className={classes.containerAttachment}
                     href={url}
                     download
-                    style={{ textDecoration: 'none', color: 'inherit' }}
+                    style={{ textDecoration: 'none', color: 'inherit', paddingLeft: 5 }}
                     rel="noreferrer" target="_blank"
                 >
+                    <SubdirectoryArrowRightIcon style={{color: "grey"}}/>
                     {extension === "pdf" && <PdfIcon width="30" height="30" />}
                     {(extension === "doc" || extension === "docx") && <DocIcon width="30" height="30" />}
                     {(extension === "xls" || extension === "xlsx" || extension === "csv") && <XlsIcon width="30" height="30" />}
@@ -852,6 +900,128 @@ const Attachments: React.FC = () => {
                     </div>
                 </a>
             ))}
+        </div>
+    )
+}
+
+
+
+const TicketCard: React.FC<{ticket:Dictionary, handleClickOpen:(x:any)=>void}> = ({ticket, handleClickOpen}) => {
+    const { t } = useTranslation();
+    const classes = useStyles();
+    return <div className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
+        <div className={classes.titlePreviewTicket}>
+            <GetIcon color={ticket?.coloricon} channelType={ticket?.communicationchanneltype || ""} />
+            <div>{ticket?.ticketnum}</div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+                <div className={classes.label}>{t(langKeys.creationDate)}</div>
+                <div>{convertLocalDate(ticket?.firstconversationdate).toLocaleString()}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+                <div className={classes.label}>{t(langKeys.close_date)}</div>
+                <div>{ticket?.finishdate ? convertLocalDate(ticket?.finishdate).toLocaleString() : "-"}</div>
+            </div>
+        </div>
+    </div>
+}
+const Attachments: React.FC = () => {
+    const classes = useStyles();
+    const [listFiles, setListFiles] = useState<Dictionary[]>([]);
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const mainAux2 = useSelector(state => state.main.mainAux2);
+    const [showAll, setShowAll] = useState(false);
+    const previewTicketList = useSelector(state => state.inbox.previewTicketList);
+    const el = React.useRef<null | HTMLDivElement>(null);
+    const el1 = React.useRef<null | HTMLDivElement>(null);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [openModal, setOpenModal] = useState(false);
+
+    const handleClickOpen = (row: any) => {
+        setOpenModal(true);
+        setRowSelected(row)
+    };
+
+    useEffect(() => {
+        dispatch(getTicketsPerson(ticketSelected?.personid!, ticketSelected?.conversationid!))
+        dispatch(getCollectionAux2(conversationAttachmentHistorySel(ticketSelected?.personid!!)))
+    }, [])
+
+    useEffect(() => {
+        if (!mainAux2.loading && !mainAux2.error) {
+            setListFiles(mainAux2?.data.map(x => ({
+                ...x,
+                url: x?.lastmessage,
+                filename: x?.lastmessage?.split("/")?.pop(),
+                extension: ((x?.lastmessage?.split("/")?.pop() || '') || "").split(".").pop(),
+                date: convertLocalDate(x.createdate).toLocaleString(),
+                user: x.user || ticketSelected?.displayname,
+                finishdate: x.finishdate || null
+            })))
+        }
+    }, [mainAux2])
+
+    if (mainAux2.loading || previewTicketList.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </div>
+        )
+    }
+
+    return (
+        <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
+            [classes.orderDefault]: true,
+        })}>
+            <div ref={el}></div>
+            <div>
+                <TicketCard 
+                    ticket={ticketSelected||{}}
+                    handleClickOpen={handleClickOpen}
+                />
+                {listFiles.some(x => x.conversationid === ticketSelected?.conversationid) ?
+                    <AttachmentList listFiles={listFiles.filter(x=>x.conversationid === ticketSelected?.conversationid)}/> :
+                    <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                        {t(langKeys.without_files)}
+                    </div>
+                }
+            </div>
+            <div onClick={()=>setShowAll(!showAll)}>
+                {showAll?
+                <div className={classes.displayMenu} >
+                    <div>{t(langKeys.hidehistoricalattachments)}</div>
+                    <KeyboardArrowUpIcon />
+                </div>:
+                <div className={classes.displayMenu} >
+                    <div>{t(langKeys.seehistoricalattachments)}</div>
+                    <KeyboardArrowDownIcon />
+                </div>
+                }
+            </div>
+            {showAll && previewTicketList.data?.map((ticket, index) => {
+                if(listFiles.some(x => x.conversationid === ticket?.conversationid)){
+                    return <>
+                        <div key={ticket.conversationid}>
+                            <TicketCard 
+                                ticket={ticket||{}}
+                                handleClickOpen={handleClickOpen}
+                            />
+                            <AttachmentList listFiles={listFiles.filter(x=>x.conversationid === ticket?.conversationid)}/>
+                        </div>                    
+                    </>
+                }else{
+                    return <div></div>
+                }
+            })}
+            <div ref={el1}></div>
+            <DialogInteractions
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                ticket={rowSelected}
+            />
         </div>
     )
 }

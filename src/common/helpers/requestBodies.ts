@@ -5118,3 +5118,13 @@ export const modifyPinnedMessage = ({conversationid, interactionid, interactiont
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },
 });
+export const conversationAttachmentHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    parameters: { personid },
+});
+export const conversationClassificationHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    key: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    parameters: { personid },
+});

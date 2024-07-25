@@ -6193,6 +6193,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   pinmessagehelper: 'Fijar mensaje',
   message_business_origin: 'Message from an advertisement',
   closedtoday: 'Cerrados hoy',
+  seehistoricalattachments: 'Ver adjuntos históricos',
+  hidehistoricalattachments: 'Ocultar adjuntos históricos',
 };
 
 const esResource: ResourceLanguage = {

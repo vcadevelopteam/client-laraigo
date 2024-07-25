@@ -6245,6 +6245,8 @@ const translation: LangKeys = {
   pinmessagehelper: 'Pin message',
   message_business_origin: 'message_business_origin',
   closedtoday: 'Closed today',
+  seehistoricalattachments: 'See historical attachments',
+  hidehistoricalattachments: 'Hide historical attachments',
 };
 
 const enResource: ResourceLanguage = {

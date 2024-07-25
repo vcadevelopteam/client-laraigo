@@ -6191,6 +6191,8 @@ export const langKeys = {
   pinmessagehelper: 'pinmessagehelper',
   message_business_origin: 'message_business_origin',
   closedtoday: 'closedtoday',
+  seehistoricalattachments: 'seehistoricalattachments',
+  hidehistoricalattachments: 'hidehistoricalattachments',
 };
 
 export type LangKeys = typeof langKeys;
