@@ -80,6 +80,11 @@ export const getTickets = (userid: number | null): IRequestBody => ({
     key: `UFN_CONVERSATION_SEL_TICKETSBYUSER_${userid}`,
     parameters: { ...(userid && { agentid: userid }) }
 })
+export const getTicketsClosed = (userid: number | null): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_TICKETSBYUSER_CLOSED",
+    key: `UFN_CONVERSATION_SEL_TICKETSBYUSER_CLOSED_${userid}`,
+    parameters: { ...(userid && { agentid: userid }) }
+})
 
 export const getInfoPerson = (personid: ID, conversationid: number): IRequestBody => ({
     method: "UFN_CONVERSATION_PERSON_SEL",

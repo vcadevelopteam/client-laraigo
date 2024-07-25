@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, TackPinnedIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, BusinessMessageIcon, LaraigoOnlyLogo, TackPinnedIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -23,7 +23,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MapLeaflet from 'components/fields/MapLeaflet';
 import { execute } from 'store/main/actions';
 import { setPinnedComments } from 'store/inbox/actions';
-import { IconButton } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -486,7 +486,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
     const isselected = pinnedmessagesSelected.some((item:any) => item.interactionid === interactionid)
     const disableTack = ((pinnedmessagesSelected.length >= 20 || !interactionid))
-    
+
     function fixComment(interactiontext: string) {
         dispatch(execute(modifyPinnedMessage({
             interactionid,
@@ -932,6 +932,41 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 </div>
             </>
         )
+    } if (interactiontype === "referral") {
+        const dataText = JSON.parse(interactiontext)
+        return (
+            <div
+                title={convertLocalDate(createdate).toLocaleString()}
+                className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client'
+                })}
+                style={{ marginLeft: reply ? 24 : 0 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <div style={{display:"flex"}}>
+                        <BusinessMessageIcon style={{color:"grey", height: 20, width: 20, paddingRight: 2}}/>
+                        <span style={{fontStyle: "italic", color: "grey", fontWeight: "bold", fontSize: "0.8em"}}>{t(langKeys.message_business_origin)}</span>
+                    </div>
+                    <LaraigoOnlyLogo style={{height: 20, width: 20}}/>
+                </div>
+                <img
+                    className={classes.imageCard}
+                    src={dataText?.image?.url||""}
+                    style={{position:"static"}}
+                    alt=""
+                    onClick={() => {
+                        dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
+                    }}
+                />
+                <div style={{fontWeight: "bold"}}>{dataText.headline}</div>
+                <div style={{ fontStyle: 'italic', color: "grey" }}>{dataText.body}</div>
+                <Button variant="outlined" onClick={()=>{window.open(dataText?.source_url, '_blank')}} style={{margin:"11px 0"}}>{dataText.payload}</Button>
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        );
     }
     return (
         <div className={clsx(classes.interactionText, {
@@ -962,23 +997,34 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, interactions } }) => {
 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
     return (
         <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {interactions.map((item: IInteraction, index: number) => (
-                        <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
-                            [classes.interactionAgent]: usertype !== "client",
-                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
-                            [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
-                        })}>
-                            {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
-                                <Avatar src={item.avatar + "" || undefined} />
-                            )}
-                            <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
-                        </div>
-                    ))}
+                    {interactions.map((item: IInteraction, index: number) => {
+                        return (
+                        <>
+                            <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
+                                [classes.interactionAgent]: usertype !== "client",
+                                [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                                [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
+                            })}>
+                                {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
+                                    <Avatar src={item.avatar + "" || undefined} />
+                                )}
+                                <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
+                            </div>
+                            {item.interactiontype==="referral" && <div key={`interaction-${item.interactionid + index}`} id={`interactionlog-${item.interactionid}`} className={clsx({
+                                [classes.interactionAgent]: usertype !== "client",
+                                [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                            })}>
+                                {ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
+                                    <Avatar src={item.avatar + "" || undefined} />
+                                )}
+                                <ItemInteraction interaction={({...item, interactiontype: "LOG"})} classes={classes} userType={usertype!!} />
+                            </div>}
+                        </>
+                    )})}
                 </div>
             </div>
             {usertype === "agent" ?

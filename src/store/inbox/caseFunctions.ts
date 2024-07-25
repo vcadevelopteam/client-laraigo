@@ -371,6 +371,44 @@ export const getTicketsReset = (state: IState): IState => ({
     ticketList: initialState.ticketList,
 });
 
+export const getTicketsClosed = (state: IState): IState => ({
+    ...state,
+    closedticketList: { ...state.closedticketList, loading: true, error: false },
+});
+
+export const getTicketsClosedSuccess = (state: IState, action: IAction): IState => {
+    if ((state.agentSelected?.userid + "") === action.payload.key.split("_")?.pop()) {
+        return {
+            ...state,
+            isOnBottom: null,
+            closedticketList: {
+                data: action.payload.data || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+        }
+    } else {
+        return state
+    }
+};
+
+export const getTicketsClosedFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    closedticketList: {
+        ...state.closedticketList,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getTicketsClosedReset = (state: IState): IState => ({
+    ...state,
+    closedticketList: initialState.closedticketList,
+});
+
 export const connectAgentWS = (state: IState, action: IAction): IState => {
     let newAgentList = [...state.agentList.data];
     const data: IConnectAgentParams = action.payload;
@@ -1220,7 +1258,7 @@ export const getTipificationLevel2Failure = (state: IState, action: IAction): IS
 
 export const setLibraryByUser = (state: IState, action: IAction): IState => ({
     ...state,
-    libraryList: action.payload.map(x => {
+    libraryList: action.payload.map((x:any) => {
         const extension = x.link.split('.').pop().toLocaleLowerCase()
         const type = ["png", "jpg", "jpeg", "gif"].includes(extension) ? "image" :
                         (["avi", "mp4", "mov", "flv", "rm", "rmvb", "mkv", "3gp", "mpg"].includes(extension) ? "video" : "file")

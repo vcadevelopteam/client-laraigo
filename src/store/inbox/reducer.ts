@@ -28,6 +28,7 @@ const initialTransaction: IBaseState = {
 
 export interface IState {
     ticketList: IListStatePaginated<ITicket>;
+    closedticketList: IListStatePaginated<ITicket>;
     ticketFilteredList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
@@ -81,6 +82,7 @@ export const initialState: IState = {
     agentList: initialListPaginatedState,
     ticketFilteredList: initialListPaginatedState,
     ticketList: initialListPaginatedState,
+    closedticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionBaseList: [],
     libraryList: [],
@@ -136,6 +138,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TICKETS_SUCCESS]: caseFunctions.getTicketsSuccess,
     [actionTypes.GET_TICKETS_FAILURE]: caseFunctions.getTicketsFailure,
     [actionTypes.GET_TICKETS_RESET]: caseFunctions.getTicketsReset,
+    
+    [actionTypes.GET_TICKETS_CLOSED]: caseFunctions.getTicketsClosed,
+    [actionTypes.GET_TICKETS_CLOSED_SUCCESS]: caseFunctions.getTicketsClosedSuccess,
+    [actionTypes.GET_TICKETS_CLOSED_FAILURE]: caseFunctions.getTicketsClosedFailure,
+    [actionTypes.GET_TICKETS_CLOSED_RESET]: caseFunctions.getTicketsClosedReset,
 
     [actionTypes.GET_AGENTS]: caseFunctions.getAgents,
     [actionTypes.GET_AGENTS_SUCCESS]: caseFunctions.getAgentsSuccess,
