@@ -12,7 +12,7 @@ const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = 
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
-    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
+    return (!hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
@@ -521,6 +521,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 interactionid: data.interactionid,
                 interactiontype: data.typemessage,
                 interactiontext: data.lastmessage,
+                uuid: data.uuid,
                 createdate: new Date().toISOString(),
                 userid: data.usertype === "agent" ? data.userid : 0,
                 usertype: data?.usertype === "agent" && data.userid === 2 ? "BOT" : data?.usertype,
@@ -644,6 +645,22 @@ export const newCallTicket = (state: IState, action: IAction): IState => ({
         data: state.ticketList.data.some(x => x.conversationid === action.payload.conversationid) ? state.ticketList.data : state.userType === "AGENT" ? [action.payload, ...state.ticketList.data] : state.ticketList.data
     },
 })
+
+
+export const setSearchTerm = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        searchTerm: action.payload||"",
+    };
+};
+
+export const setPinnedComment = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        pinnedmessages: action.payload||[],
+    };
+};
+
 
 export const resetShowModal = (state: IState, action: IAction): IState => ({
     ...state,
@@ -815,6 +832,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
                 loading: false,
                 error: false,
             },
+            pinnedmessages: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0].pinnedmessages : [],
         }
     } else {
         return state;
@@ -846,6 +864,18 @@ export const setHideLogsOnTicket = (state: IState, action: IAction): IState => {
 };
 
 
+export const updateInteractionByUUID = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        interactionList: {
+            ...state.interactionList,
+            data: state.interactionList.data.map(group => ({
+                ...group,
+                interactions: group.interactions.map(interaction => interaction.uuid === action.payload.uuid ? { ...interaction, interactionid: action.payload.interactionid } : interaction)
+            }))
+        }
+    }
+};
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -879,7 +909,7 @@ export const getInteractionsExtra = (state: IState): IState => ({
 export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     interactionExtraList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), false, true),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), true, true),
         count: action.payload.count,
         loading: false,
         error: false,
@@ -1038,6 +1068,8 @@ export const replyTicketSuccess = (state: IState, action: IAction): IState => ({
     triggerReplyTicket: {
         loading: false,
         error: false,
+        interactionid: action.payload.Result.interactionid,
+        uuid: action.payload.Result.uuid,
     },
 });
 

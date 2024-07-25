@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon } from 'icons';
+import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon, TackIcon } from 'icons';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson, setSearchTerm, setPinnedComments } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson, updateGroupOnHSM } from 'common/helpers';
+import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson, modifyPinnedMessage, updateGroupOnHSM } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
 import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized, PhoneFieldEdit } from 'components'
 import { langKeys } from 'lang/keys';
@@ -20,7 +21,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Rating from '@material-ui/lab/Rating';
-import { Box, InputBase } from '@material-ui/core';
+import { Box, InputBase, makeStyles } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
@@ -37,6 +38,9 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ReplyPanel from './ReplyPanel';
 import InteractionsPanel from './InteractionsPanel';
 import { getLeadProductsDomain, resetGetLeadProductsDomain } from 'store/lead/actions';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import ReplyIcon from '@material-ui/icons/Reply';
+import { ExpandLess, ExpandMore, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -44,6 +48,44 @@ const dataPriority = [
     { option: 'MEDIUM' },
     { option: 'HIGH' },
 ]
+
+const useStyles = makeStyles((theme) => ({
+    container: {
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    tagsWrapper: {
+        display: 'flex',
+        whiteSpace: 'nowrap',
+        paddingBottom: 0,
+        overflowX: 'hidden',
+        transition: 'transform 0.3s ease-in-out',
+    },
+    tag: {
+        backgroundColor: '#efefef',
+        borderRadius: '4px',
+        padding: theme.spacing(0.38, 1),
+        marginRight: theme.spacing(1),
+        display: 'inline-block',
+    },
+    iconHelpText: {
+        marginLeft: theme.spacing(1),
+    },
+    arrowLeft: {
+        left: 0,
+    },
+    arrowRight: {
+        right: 0,
+    },
+    enablebutton: {
+        cursor: "pointer"
+    },
+    disablebutton: {
+        cursor: "not-allowed"
+    }
+}));
 
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
@@ -641,11 +683,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            const rules = multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")||[]
+            const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL") || []
             let groups = user?.groups ? user?.groups.split(",") : [];
-            if(rules?.data && propertyGrupoDelegacion){
+            if (rules?.data && propertyGrupoDelegacion) {
                 let extragroups = rules.data.map(item => item.assignedgroup)
-                groups = extragroups.length?extragroups:groups
+                groups = extragroups.length ? extragroups : groups
             }
             setUsableGroups(groups)
             if (user.properties.limit_reassign_group) {
@@ -653,8 +695,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             } else {
                 setUserToReassign((multiData?.data?.[3]?.data || []))
             }
-            if(propertyAsesorReassign && !propertyGrupoDelegacion){
-                const usergroups = (user?.groups||"")?.split(',')
+            if (propertyAsesorReassign && !propertyGrupoDelegacion) {
+                const usergroups = (user?.groups || "")?.split(',')
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
                     return agentGroups.some(group => usergroups.includes(group.trim()));
@@ -665,14 +707,14 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         const group = getValues('newUserGroup')
-        if(propertyAsesorReassign){
-            if(!propertyGrupoDelegacion){
+        if (propertyAsesorReassign) {
+            if (!propertyGrupoDelegacion) {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => usableGroups.includes(group))));
-            }else{
+            } else {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (group ? (x.groups || "").split(",").includes(group) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true))))
             }
         }
-        else{
+        else {
             setAgentList([])
         }
     }, [propertyAsesorReassign, userToReassign, getValues('newUserGroup'), usableGroups])
@@ -1041,7 +1083,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
         setWaitTipify(true)
     });
-    
+
     return (
         <DialogZyx
             open={openModal}
@@ -1143,7 +1185,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     useEffect(() => {
         const dataasesorsuspende = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.data;
         const reassignAsesor = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.data;
-        setPropertyGrupoDelegacion(user?.roledesc?.includes("ASESOR")? multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEGRUPODELEGACION")?.data?.[0]?.propertyvalue === "1":true)
+        setPropertyGrupoDelegacion(user?.roledesc?.includes("ASESOR") ? multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEGRUPODELEGACION")?.data?.[0]?.propertyvalue === "1" : true)
         if (dataasesorsuspende && reassignAsesor && multiData) {
             if (user?.roledesc?.includes("ASESOR")) {
                 if (user?.groups) {
@@ -1171,14 +1213,10 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             }
         }
     }, [mainAux2])
-    useEffect(() => {
-        console.log(multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL"))
-        console.log(!!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)
-    }, [multiDataAux])
 
     return (
         <>
-            <div className={classes.containerButtonsChat}>
+            <div className={classes.containerButtonsChat} style={{ justifyContent: "center", display: "flex", alignItems: "center" }}>
                 {(!voxiConnection.error && userConnected && ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call)} arrow placement="top">
                         <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
@@ -1186,7 +1224,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                <Tooltip title={t(!hideLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
+                <Tooltip title={t(hideLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <IOSSwitch checked={hideLogs} onChange={handlerShowLogs} name="checkedB" />
                     </div>
@@ -1217,7 +1255,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size='small' style={{ height: 30 }}>
                     <MoreVertIcon />
                 </IconButton>
             </div>
@@ -1239,7 +1277,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 {(
                     ticketSelected?.status !== 'CERRADO' &&
                     ticketSelected?.communicationchanneltype !== "VOXI" &&
-                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && !!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)) 
+                    (propertyAsesorReassign || propertyGrupoDelegacion || (!propertyAsesorReassign && !propertyGrupoDelegacion && !!multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length))
                 ) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
@@ -1293,8 +1331,8 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             <DialogReassignticket
                 openModal={openModalReassignticket}
                 setOpenModal={setOpenModalReassignticket}
-                propertyAsesorReassign={user?.roledesc?.includes("ASESOR")?propertyAsesorReassign:true}
-                propertyGrupoDelegacion={user?.roledesc?.includes("ASESOR")?((!propertyAsesorReassign && !propertyGrupoDelegacion)?true:propertyGrupoDelegacion):true}
+                propertyAsesorReassign={user?.roledesc?.includes("ASESOR") ? propertyAsesorReassign : true}
+                propertyGrupoDelegacion={user?.roledesc?.includes("ASESOR") ? ((!propertyAsesorReassign && !propertyGrupoDelegacion) ? true : propertyGrupoDelegacion) : true}
             />
             <DialogSendHSM
                 openModal={openModalHSM}
@@ -1312,7 +1350,89 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     )
 }
 
-const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG", "email"]
+const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags }) => {
+    const { t } = useTranslation();
+    const classes2 = useStyles();
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const tagsWrapperRef = useRef<{ scrollWidth: number; scrollLeft: number; clientWidth: number }>(null);
+    const [atEnd, setAtEnd] = useState(false);
+    const uniqueTags = !!tags.length ? tags.split(",").filter((word, index, array) => word !== array[index - 1]) : [];
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (tagsWrapperRef.current) {
+                const isOverflowing = tagsWrapperRef?.current?.scrollWidth > tagsWrapperRef?.current?.clientWidth;
+                if (!isOverflowing) {
+                    setScrollPosition(0);
+                    tagsWrapperRef.current.scrollLeft = 0;
+                } else {
+                    setAtEnd(tagsWrapperRef.current.scrollLeft + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+                }
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [uniqueTags]);
+
+    const handleScroll = (direction: string) => {
+        const scrollAmount = 100; // Ajusta esta cantidad según tus necesidades
+        const newPosition = direction === 'left'
+            ? scrollPosition - scrollAmount
+            : scrollPosition + scrollAmount;
+        setScrollPosition(newPosition);
+        tagsWrapperRef.current.scrollLeft = newPosition;
+
+        const atEndPosition = newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth;
+
+        setAtEnd(atEndPosition);
+    };
+
+    useEffect(() => {
+        if (tagsWrapperRef.current) {
+            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+        }
+    }, [scrollPosition]);
+
+    
+    if (uniqueTags.length) {
+        return (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "33%", borderLeft: "1px solid lightgrey", flex: 10 }}>
+                <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 0px", width: "100%" }}>
+                    <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
+                        <div style={{ paddingLeft: 4 }}>
+                            Tags
+                            <Tooltip title={<div style={{ fontSize: 12, zIndex: 9999, }}>{t(langKeys.tagshelper)}</div>} arrow placement="top">
+                                <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                            </Tooltip>
+                        </div>
+                        <div className={classes2.container} >
+                            <IconButton size='small' disabled={!(scrollPosition > 0)} className={`${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
+                                <KeyboardArrowLeft fontSize='small' />
+                            </IconButton>
+                            <div className={classes2.tagsWrapper} ref={tagsWrapperRef} >
+                                {uniqueTags.map((tag, index) => (
+                                    <span key={index} className={classes2.tag}>{tag}</span>
+                                ))}
+                            </div>
+                            <IconButton disabled={atEnd} size='small' className={`${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
+                                <KeyboardArrowRight />
+                            </IconButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    } else {
+        return <div style={{ flex: 0 }}></div>
+    }
+}
+
+
+const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "email"]
 
 const applySearch = (list: Dictionary[], index: number) => {
     const inthtml = document.getElementById(`interaction-${list[index].interactionid}`)
@@ -1329,6 +1449,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
     const [value, setvalue] = useState('');
     const timeOut = React.useRef<NodeJS.Timeout | null>(null);
     const { t } = useTranslation();
+    const dispatch = useDispatch();
 
     const interactionList = useSelector(state => state.inbox.interactionBaseList);
     const [indexSearch, setIndexSearch] = useState(0);
@@ -1345,6 +1466,8 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 setIndexSearch(0);
                 setTriggerSearch(!triggerSearch);
             }
+        } else {
+            setListFound([]);
         }
     }
 
@@ -1353,6 +1476,11 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
             applySearch(listFound, indexSearch);
         }
     }, [triggerSearch])
+    useEffect(() => {
+        setvalue("");
+        dispatch(setSearchTerm(""))
+        setListFound([])
+    }, [interactionList])
 
     const handlerManageFilter = (type: string) => {
         if (type === "down") {
@@ -1367,6 +1495,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         setvalue(event.target.value);
+        dispatch(setSearchTerm(event.target.value))
 
         if (timeOut.current) clearTimeout(timeOut.current);
 
@@ -1394,7 +1523,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 style={{ marginTop: 2, marginBottom: 2 }}
             />
             <div style={{ display: 'inline', color: '#8F92A1' }}>
-                {indexSearch + 1}/{listFound.length}
+                {!!listFound.length ? indexSearch + 1 : 0}/{listFound.length}
             </div>
             <IconButton size="small" onClick={() => handlerManageFilter('up')}>
                 <KeyboardArrowDownIcon style={{ color: '#8F92A1' }} />
@@ -1407,19 +1536,116 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
     )
 }
 
+const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const [selectedComment, setSelectedComment] = useState(0);
+    const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
+    const [showFullText, setShowFullText] = useState(false);
+    const interactionText = pinnedmessagesSelected[selectedComment].interactiontext;
+
+    const handleTextClick = () => {
+        setShowFullText(!showFullText);
+    };
+
+    const handlerManagePinnedComment = (type: string) => {
+        if (type === "down") {
+            setSelectedComment(selectedComment - 1);
+        } else {
+            setSelectedComment(selectedComment + 1);
+        }
+    }
+    function deleteTack() {
+        let meesage = pinnedmessagesSelected[selectedComment]
+        dispatch(execute(modifyPinnedMessage({
+            interactionid: meesage.interactionid,
+            conversationid: ticketSelected?.conversationid || 0,
+            interactiontext: meesage.interactiontext,
+            operation: "DELETE"
+        })))
+        const pinncomment = [...pinnedmessagesSelected.slice(0, selectedComment), ...pinnedmessagesSelected.slice(selectedComment + 1)]
+        if (selectedComment === pinncomment.length) {
+            setSelectedComment(selectedComment - 1)
+        }
+        dispatch(setPinnedComments(pinncomment))
+    }
+
+    function gotomessage() {
+        const inthtml = document.getElementById(`interaction-${pinnedmessagesSelected[selectedComment].interactionid}`)
+        if (inthtml) {
+            inthtml.scrollIntoView({ block: "center" });
+            inthtml.classList.add('item-result-searcher');
+            setTimeout(() => {
+                inthtml.classList.remove('item-result-searcher');
+            }, 500);
+        }
+    }
+
+    return (
+        <div style={{ backgroundColor: "white", display: "grid", alignItems: "center", position: "relative", gridTemplateColumns: "40px auto 100px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+                <Tooltip title={t(langKeys.increase)} arrow placement="top">
+                    <IconButton size="small" style={{ padding: 0, marginTop: 0 }} onClick={() => handlerManagePinnedComment('up')} disabled={pinnedmessagesSelected.length - 1 === selectedComment}>
+                        <ExpandLess />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={t(langKeys.decrease)} arrow placement="top">
+                    <IconButton size="small" style={{ padding: 0, marginBottom: 0 }} onClick={() => handlerManagePinnedComment('down')} disabled={selectedComment === 0}>
+                        <ExpandMore />
+                    </IconButton>
+                </Tooltip>
+            </div>
+            <div
+                style={{
+                    flex: 1, height: "100%", display: "flex", alignItems: "center", gap: 8,
+                    fontSize: 16,
+                    borderRight: "1px lightgrey solid", cursor: 'pointer', whiteSpace: showFullText ? 'normal' : 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                }}
+                onClick={handleTextClick}
+                title={showFullText ? '' : (interactionText.length > 100 ? interactionText : '')}
+            >
+                <div style={{  display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f5', padding: 4, borderRadius: 4 }}>
+                    <TackIcon fill="#8F92A1" width={20} height={20} />
+                </div>
+                <div style={{ width: "100%" }}>
+                    {interactionText.length > 100 && !showFullText ? interactionText.substring(0, 100) + '...' : interactionText}
+                </div>
+            </div>
+            <div style={{
+                display: "flex",
+                gap: 4,
+                justifySelf: 'center'
+            }}>
+                <Tooltip title={t(langKeys.delete)} arrow placement="top">
+                    <IconButton size="small" onClick={deleteTack}>
+                        <DeleteForeverIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={t(langKeys.gotomessage)} arrow placement="top">
+                    <IconButton size="small" onClick={gotomessage} >
+                        <ReplyIcon />
+                    </IconButton>
+                </Tooltip>
+            </div>
+        </div>
+    )
+}
 const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const person = useSelector(state => state.inbox.person.data);
+    const person = useSelector(state => state.inbox.person);
     const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
     const { t } = useTranslation();
-
+    
+    const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
+    
     return (
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
-            <div className={classes.headChat}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: 10 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1438,13 +1664,19 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
+                {!person.loading && 
+                    <TicketTags classes={classes} tags={person?.data?.tags || ""} />
+                }
+                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 12px", flex: 1, alignItems: "center", justifyContent: "center", display: "flex" }}>
+                    <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
+                </div>
             </div>
             {showSearcher &&
-                <div style={{ position: 'absolute', zIndex: 9999, right: 16, marginTop: 8 }}>
+                <div style={{ zIndex: 9999, right: 16, padding: 8 }}>
                     <SearchOnInteraction setShowSearcher={setShowSearcher} />
                 </div>
             }
+            {!!pinnedmessagesSelected.length && <PinnedMessageMenu classes={classes} />}
         </div>
     )
 }

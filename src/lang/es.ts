@@ -6351,6 +6351,16 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   gotomessage:'Ir al mensaje',
   increase: 'Subir',
   decrease: 'Bajar',
+  sentoblock: 'Enviar a bloque',
+  strikethrough:'Tachado',
+  monospaced:'Monoespaciado',
+  tagshelper: 'Muestra los tags de la conversación del más reciente al más antiguo.',  
+  gotomessage:'Ir al mensaje',
+  increase: 'Subir',
+  decrease: 'Bajar',
+  pinmessagehelper: 'Fijar mensaje',
+
+  send_your_message: 'Envía un mensaje...',
 };
 
 const esResource: ResourceLanguage = {

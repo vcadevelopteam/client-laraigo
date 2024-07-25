@@ -303,6 +303,9 @@ export { ReactComponent as AutomatizationRouteIcon } from './automatizacion_rout
 export { ReactComponent as ConectivityIARouteIcon } from './conectividad-IAnew.svg';
 export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IAnew.svg';
 export { ReactComponent as IARouteIcon } from './IA_route.svg';
+export { ReactComponent as CopilotIconEsp } from './IAESP.svg';
+export { ReactComponent as CopilotIconEng } from './IAENG.svg';
+export { ReactComponent as SendToBlockIcon } from './SendToBlock.svg';
 export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
 export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
 export { ReactComponent as IAEntrenamientoIcon } from './Ai_laraigo_new.svg';
@@ -338,3 +341,10 @@ export {ReactComponent as AIGenerative} from './generativa 1.svg'
 export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
 export {ReactComponent as CampaignsIcon} from './campañas.svg'
 export {ReactComponent as FlaskIcon} from './flask_icon.svg'
+export {ReactComponent as CodeSnippetIcon} from './codeSnippetIcon.svg'
+export {ReactComponent as BoldNIcon} from './boldN.svg'
+export {ReactComponent as ItalicKIcon} from './italicKIcon.svg'
+export {ReactComponent as UnderlineSIcon} from './underlineSIcon.svg'
+export {ReactComponent as StrikethroughLineIcon} from './strikethroughLineIcon.svg'
+export {ReactComponent as TackIcon} from './tackIcon.svg'
+export {ReactComponent as TackPinnedIcon} from './tackIcon-pinned.svg'

@@ -6400,6 +6400,16 @@ const translation: LangKeys = {
   gotomessage:'Go to message',
   increase: 'Increase',
   decrease: 'Decrease',
+  sentoblock: 'Sen to block',
+  strikethrough:'Strikethrough',
+  monospaced:'Monospaced',
+  tagshelper: 'Displays the conversation tags from most recent to oldest.',
+  gotomessage:'Go to message',
+  increase: 'Increase',
+  decrease: 'Decrease',
+  pinmessagehelper: 'Pin message',
+
+  send_your_message: 'Send your message...',
 };
 
 const enResource: ResourceLanguage = {

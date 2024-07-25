@@ -6348,6 +6348,16 @@ export const langKeys = {
   gotomessage:'gotomessage',
   increase: 'increase',
   decrease: 'decrease',
+  sentoblock: 'sentoblock',
+  strikethrough:'strikethrough',
+  monospaced:'monospaced',
+  tagshelper: 'tagshelper',
+  gotomessage:'gotomessage',
+  increase: 'increase',
+  decrease: 'decrease',
+  pinmessagehelper: 'pinmessagehelper',
+
+  send_your_message: 'send_your_message',
 };
 
 export type LangKeys = typeof langKeys;
