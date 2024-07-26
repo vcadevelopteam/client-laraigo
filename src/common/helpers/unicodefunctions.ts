@@ -1,4 +1,5 @@
 type StyleMap = { [key: string]: string };
+import {string_to_unicode_variant} from "string-to-unicode-variant";
 
 const boldMap: StyleMap = {
     'A': '𝐀', 'B': '𝐁', 'C': '𝐂', 'D': '𝐃', 'E': '𝐄', 'F': '𝐅', 'G': '𝐆',
@@ -55,22 +56,25 @@ const monospacedMap: StyleMap = {
 
 export function formatTextToUnicode({text = '', bold = false, italic = false, underline = false, strikethrough = false, monospaced = false} = {}) {    
     let formattedText = text;
+    let variant = ""
+    let combinings = []
     if (bold) {
-        formattedText = formattedText.split('').map(char => boldMap[char] || char).join('');
+        variant += "bold "
     }
     if (italic) {
+        variant += "italic "
         formattedText = formattedText.split('').map(char => italicMap[char] || char).join('');
     }
     if (underline) {
-        formattedText = formattedText.split('').map(char => char + '\u0332').join('');
+        combinings.push("underline")
     }
     if (strikethrough) {
-        formattedText = formattedText.split('').map(char => char + '\u0336').join('');
+        combinings.push("strike")
     }
     if (monospaced) {
-        formattedText = formattedText.split('').map(char => monospacedMap[char] || char).join('');
+        variant += "monospace"
     }
-    return formattedText;
+    return string_to_unicode_variant(text, variant.trim(), combinings);
 }
 
 export const removeUnicodeStyle = (text: string, style: 'bold' | 'italic' | 'strikethrough' | 'monospaced' | 'underline'): string => {
