@@ -53,26 +53,63 @@ const monospacedMap: StyleMap = {
     '|': '｜', '}': '｝', '~': '～', ' ': ' '
 };
 
-export function formatTextToUnicode({text = '',bold = false, italic = false, underline = false, strikethrough = false, monospaced = false} = {}) {
-    
+export function formatTextToUnicode({text = '', bold = false, italic = false, underline = false, strikethrough = false, monospaced = false} = {}) {    
     let formattedText = text;
-
     if (bold) {
-      formattedText = formattedText.split('').map(char => boldMap[char] || char).join('');
+        formattedText = formattedText.split('').map(char => boldMap[char] || char).join('');
     }
     if (italic) {
-      formattedText = formattedText.split('').map(char => italicMap[char] || char).join('');
+        formattedText = formattedText.split('').map(char => italicMap[char] || char).join('');
     }
     if (underline) {
-      formattedText = formattedText.split('').map(char => char + '\u0332').join('');
+        formattedText = formattedText.split('').map(char => char + '\u0332').join('');
     }
     if (strikethrough) {
-      formattedText = formattedText.split('').map(char => char + '\u0336').join('');
+        formattedText = formattedText.split('').map(char => char + '\u0336').join('');
     }
     if (monospaced) {
-      formattedText = formattedText.split('').map(char => monospacedMap[char] || char).join('');
+        formattedText = formattedText.split('').map(char => monospacedMap[char] || char).join('');
     }
-  
     return formattedText;
-    
 }
+
+export const removeUnicodeStyle = (text: string, style: 'bold' | 'italic' | 'strikethrough' | 'monospaced' | 'underline'): string => {
+    let map: StyleMap;
+    switch (style) {
+        case 'bold':
+            map = boldMap;
+            break;
+        case 'italic':
+            map = italicMap;
+            break;
+        case 'strikethrough':
+            return text.replace(/[\u0336]/g, '');
+        case 'underline':
+            return text.replace(/[\u0332]/g, '');
+        case 'monospaced':
+            map = monospacedMap;
+            break;
+        default:
+            return text;
+    }
+
+    if (map) {
+        const reversedMap = Object.fromEntries(Object.entries(map).map(([k, v]) => [v, k]));
+        console.log(`Reversed Map: ${JSON.stringify(reversedMap)}`);
+
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            const codePoint = text.codePointAt(i);
+            if (codePoint !== undefined) {
+                const char = String.fromCodePoint(codePoint);
+                const originalChar = reversedMap[char] || char;
+                result += originalChar;
+                if (codePoint > 0xFFFF) {
+                    i++;
+                }
+            }
+        }
+        return result;
+    }
+    return text;
+};
