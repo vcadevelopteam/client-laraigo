@@ -122,7 +122,7 @@ export const resetTransferCall = (state: IState, action: IAction): IState => {
     }
 }
 
-export const getCategories = (state: IState, action: IAction): IState => ({
+export const getCategories = (state: IState): IState => ({
     ...state,
     requestGetCategories: {
         ...state.requestGetCategories,
@@ -159,7 +159,7 @@ export const getCategoriesReset = (state: IState): IState => ({
     requestGetCategories: initialState.requestGetCategories,
 })
 
-export const getCountryStates = (state: IState, action: IAction): IState => ({
+export const getCountryStates = (state: IState): IState => ({
     ...state,
     requestGetCountryStates: {
         ...state.requestGetCountryStates,
@@ -196,7 +196,7 @@ export const getCountryStatesReset = (state: IState): IState => ({
     requestGetCountryStates: initialState.requestGetCountryStates,
 })
 
-export const getRegions = (state: IState, action: IAction): IState => ({
+export const getRegions = (state: IState): IState => ({
     ...state,
     requestGetRegions: {
         ...state.requestGetRegions,
@@ -234,7 +234,7 @@ export const getRegionsReset = (state: IState): IState => ({
 })
 
 
-export const getHistory = (state: IState, action: IAction): IState => ({
+export const getHistory = (state: IState): IState => ({
     ...state,
     requestGetHistory: {
         ...state.requestGetHistory,
@@ -271,7 +271,7 @@ export const getHistoryReset = (state: IState): IState => ({
     requestGetHistory: initialState.requestGetHistory,
 })
 
-export const getAdvisors = (state: IState, action: IAction): IState => ({
+export const getAdvisors = (state: IState): IState => ({
     ...state,
     requestGetAdvisors: {
         ...state.requestGetAdvisors,
@@ -308,7 +308,7 @@ export const getAdvisorsReset = (state: IState): IState => ({
     requestGetAdvisors: initialState.requestGetAdvisors,
 })
 
-export const getMaximumConsumption = (state: IState, action: IAction): IState => ({
+export const getMaximumConsumption = (state: IState): IState => ({
     ...state,
     requestGetMaximumConsumption: {
         ...state.requestGetMaximumConsumption,
@@ -345,7 +345,7 @@ export const getMaximumConsumptionReset = (state: IState): IState => ({
     requestGetMaximumConsumption: initialState.requestGetMaximumConsumption,
 })
 
-export const transferAccountBalance = (state: IState, action: IAction): IState => ({
+export const transferAccountBalance = (state: IState): IState => ({
     ...state,
     requestTransferAccountBalance: {
         ...state.requestTransferAccountBalance,
@@ -382,7 +382,7 @@ export const transferAccountBalanceReset = (state: IState): IState => ({
     requestTransferAccountBalance: initialState.requestTransferAccountBalance,
 })
 
-export const getAccountBalance = (state: IState, action: IAction): IState => ({
+export const getAccountBalance = (state: IState): IState => ({
     ...state,
     requestGetAccountBalance: {
         ...state.requestGetAccountBalance,
@@ -419,7 +419,7 @@ export const getAccountBalanceReset = (state: IState): IState => ({
     requestGetAccountBalance: initialState.requestGetAccountBalance,
 })
 
-export const getCallRecord = (state: IState, action: IAction): IState => ({
+export const getCallRecord = (state: IState): IState => ({
     ...state,
     requestGetCallRecord: {
         ...state.requestGetCallRecord,
@@ -456,7 +456,7 @@ export const getCallRecordReset = (state: IState): IState => ({
     requestGetCallRecord: initialState.requestGetCallRecord,
 })
 
-export const updateScenario = (state: IState, action: IAction): IState => ({
+export const updateScenario = (state: IState): IState => ({
     ...state,
     requestUpdateScenario: {
         ...state.requestUpdateScenario,

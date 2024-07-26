@@ -1,5 +1,3 @@
-import { Orders } from "pages/orders";
-
 export const langKeys = {
   english: 'english',
   spanish: 'spanish',

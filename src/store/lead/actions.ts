@@ -111,7 +111,7 @@ export const saveLeadLogNote = (body: IRequestBody): IActionCall => ({
     callAPI: async () => {
         const mediaFiles = (body.parameters as ICrmLeadNoteSave).media as File[] | null;
         if (mediaFiles) {
-            const urls: String[] = [];
+            const urls: string[] = [];
             for (const fileToUpload of mediaFiles) {
                 const fd = new FormData();
                 fd.append('file', fileToUpload, fileToUpload.name);

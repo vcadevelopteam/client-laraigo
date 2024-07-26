@@ -55,7 +55,7 @@ export const invokeIncremental = (state: IState): IState => ({
     }
 });
 
-export const invokeIncrementalSuccess = (state: IState, action: IAction): IState => {
+export const invokeIncrementalSuccess = (state: IState): IState => {
     return {
         ...state,
         invokeIncremental: {
@@ -235,7 +235,7 @@ export const logoutSuccess = (state: IState, action: IAction): IState => {
     }
 };
 
-export const cleanValidateToken = (state: IState, action: IAction): IState => ({
+export const cleanValidateToken = (state: IState): IState => ({
     ...state,
     validateToken: initialState.validateToken,
 });

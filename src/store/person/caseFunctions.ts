@@ -341,7 +341,7 @@ export const editPerson = (state: IState): IState => ({
     editPerson: { ...state.editPerson, loading: true },
 });
 
-export const editPersonSuccess = (state: IState, action: IAction): IState => ({
+export const editPersonSuccess = (state: IState): IState => ({
     ...state,
     editPerson: {
         ...state.editPerson,

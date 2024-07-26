@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const send = (state: IState, action: IAction): IState => ({
+export const send = (state: IState): IState => ({
     ...state,
     activation: {
         ...state.activation,

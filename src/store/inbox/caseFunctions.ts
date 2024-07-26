@@ -280,7 +280,7 @@ export const updatePersonClassification = (state: IState, action: IAction): ISta
     }
 })
 
-export const resetSelectTicket = (state: IState, action: IAction): IState => ({
+export const resetSelectTicket = (state: IState): IState => ({
     ...state,
     ticketSelected: null,
     person: {
@@ -301,7 +301,7 @@ export const showInfoPanel = (state: IState): IState => ({
     showInfoPanel: !state.showInfoPanel
 })
 
-export const resetSelectAgent = (state: IState, action: IAction): IState => ({
+export const resetSelectAgent = (state: IState): IState => ({
     ...state,
     agentSelected: null,
 })
@@ -709,7 +709,7 @@ export const setPinnedComment = (state: IState, action: IAction): IState => {
 };
 
 
-export const resetShowModal = (state: IState, action: IAction): IState => ({
+export const resetShowModal = (state: IState): IState => ({
     ...state,
     showModalClose: 0,
 })
@@ -998,7 +998,7 @@ export const closeTicket = (state: IState): IState => ({
     triggerCloseTicket: { ...state.triggerCloseTicket, loading: true, error: false },
 });
 
-export const closeTicketSuccess = (state: IState, action: IAction): IState => ({
+export const closeTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerCloseTicket: {
         loading: false,
@@ -1029,7 +1029,7 @@ export const massiveCloseTicket = (state: IState): IState => ({
     triggerMassiveCloseTicket: { ...state.triggerMassiveCloseTicket, loading: true, error: false },
 });
 
-export const massiveCloseTicketSuccess = (state: IState, action: IAction): IState => ({
+export const massiveCloseTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerMassiveCloseTicket: {
         loading: false,
@@ -1061,7 +1061,7 @@ export const reassignTicket = (state: IState): IState => ({
     triggerReassignTicket: { ...state.triggerReassignTicket, loading: true, error: false },
 });
 
-export const reassignTicketSuccess = (state: IState, action: IAction): IState => ({
+export const reassignTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerReassignTicket: {
         loading: false,
@@ -1095,7 +1095,7 @@ export const connectAgentUItmp = (state: IState): IState => ({
     triggerConnectAgentGo: { ...state.triggerConnectAgentGo, loading: true, error: false },
 });
 
-export const connectAgentUItmpSuccess = (state: IState, action: IAction): IState => ({
+export const connectAgentUItmpSuccess = (state: IState): IState => ({
     ...state,
     triggerConnectAgentGo: {
         loading: false,
@@ -1155,7 +1155,7 @@ export const sendHSM = (state: IState): IState => ({
     triggerSendHSM: { ...state.triggerSendHSM, loading: true, error: false },
 });
 
-export const sendHSMSuccess = (state: IState, action: IAction): IState => ({
+export const sendHSMSuccess = (state: IState): IState => ({
     ...state,
     triggerSendHSM: { ...state.triggerSendHSM, loading: false, error: false },
 });
@@ -1183,7 +1183,7 @@ export const importTicket = (state: IState): IState => ({
     triggerImportTicket: { ...state.triggerImportTicket, loading: true, error: false },
 });
 
-export const importTicketSuccess = (state: IState, action: IAction): IState => ({
+export const importTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerImportTicket: {
         loading: false,
@@ -1354,7 +1354,7 @@ export const callConnected = (state: IState, action: IAction): IState => ({
     }
 });
 
-export const resetForceddesconection = (state: IState, action: IAction): IState => ({
+export const resetForceddesconection = (state: IState): IState => ({
     ...state,
     forceddisconnect: initialState.forceddisconnect,
 });

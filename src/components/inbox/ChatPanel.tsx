@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
     tagsWrapper: {
         display: 'flex',
-        whiteSpace: 'nowrap',
+        // whiteSpace: 'nowrap',
         paddingBottom: 0,
         overflowX: 'hidden',
         transition: 'transform 0.3s ease-in-out',
@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#efefef',
         borderRadius: '4px',
         padding: theme.spacing(0.38, 1),
+        flexShrink: 0,
         marginRight: theme.spacing(1),
         display: 'inline-block',
     },
@@ -686,8 +687,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         if (user) {
             const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL") || []
             let groups = user?.groups ? user?.groups.split(",") : [];
-            if(rules?.data && propertyGrupoDelegacion){
-                
+            if (rules?.data && propertyGrupoDelegacion) {
                 let extragroups = rules.data.map(item => item.assignedgroup)
                 groups = extragroups.length ? extragroups : groups
             }
@@ -1407,7 +1407,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     
     if (uniqueTags.length) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", width: "33%", borderLeft: "1px solid lightgrey", flex: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", maxWidth: "25vw", borderLeft: "1px solid lightgrey", flex: 11 }}>
                 <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 0px", width: "100%" }}>
                     <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
                         <div style={{ paddingLeft: 4 }}>
@@ -1650,9 +1650,9 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     
     return (
         <div style={{ position: 'relative' }}>
-            <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
+            <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat + " row-zyx"} style={{ justifyContent: "space-between", zIndex: 1, marginBottom: 0, display: "flex", gap: 1, padding: 0 }}>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", width: '100%', flex: 10 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 0, padding: "0 8px", flex: 10 }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1674,7 +1674,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                 {!person.loading && 
                     <TicketTags classes={classes} tags={person?.data?.tags || ""} />
                 }
-                <div style={{ marginBottom: 0, borderLeft: ticketSelected?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 12px", flex: 1, alignItems: "center", justifyContent: "center", display: "flex" }}>
+                <div style={{ marginBottom: 0, borderLeft: person?.data?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 12px", flex: 1, alignItems: "center", justifyContent: "center", display: "flex" }}>
                     <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
                 </div>
             </div>
