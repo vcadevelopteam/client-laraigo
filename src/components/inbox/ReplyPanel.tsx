@@ -1757,7 +1757,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                     </div>
 
                                     <div style={{ display: 'flex', gap: '0.7rem' }}>
-                                        <span>
+                                        {/* <span>
                                             <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
                                                 <IconButton onClick={() => {
                                                     formatText("*")
@@ -1801,7 +1801,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
                                                 </IconButton>
                                             </Tooltip>
-                                        </span>
+                                        </span> */}
                                     </div>
                                 </div>
                             )}
