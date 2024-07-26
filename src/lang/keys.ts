@@ -6366,6 +6366,20 @@ export const langKeys = {
   propertybalancetime: 'propertybalancetime',
   message_business_origin: 'message_business_origin',
   closedtoday: 'closedtoday',
+  seehistoricalattachments: 'seehistoricalattachments',
+  hidehistoricalattachments: 'hidehistoricalattachments',
+  seehistoricalclassifications: 'seehistoricalclassifications',
+  hidehistoricalclassifications: 'hidehistoricalclassifications',
+  seehistoricaloportunities: 'seehistoricaloportunities',
+  hidehistoricaloportunities: 'hidehistoricaloportunities',
+  seehistoricalsd: 'seehistoricalsd',
+  hidehistoricalsd: 'hidehistoricalsd',
+  seehistoricalorders: 'seehistoricalorders',
+  hidehistoricalorders: 'hidehistoricalorders',
+  gotoorder: 'gotoorder',
+  s_request: 's_request',
+  gotolead: 'gotolead',
+  gotosd: 'gotosd',
 };
 
 export type LangKeys = typeof langKeys;

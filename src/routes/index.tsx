@@ -157,6 +157,8 @@ const cleanPath = (pathx: string) => {
 		return "/dashboard";
 	} else if (pathx.includes('servicedesk')) {
 		return "/servicedesk";
+	} else if (pathx.includes('orders')) {
+		return "/orders";
 	}
 	return pathx
 }
@@ -171,7 +173,6 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ component: Component, ...rest }) 
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
-
 	const dispatch = useDispatch();
 	const existToken = getAccessToken();
 
