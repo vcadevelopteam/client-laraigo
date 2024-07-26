@@ -6247,6 +6247,18 @@ const translation: LangKeys = {
   closedtoday: 'Closed today',
   seehistoricalattachments: 'See historical attachments',
   hidehistoricalattachments: 'Hide historical attachments',
+  seehistoricalclassifications: 'See historical classifications',
+  hidehistoricalclassifications: 'Hide historical classifications',
+  seehistoricalorders: 'See historical orders',
+  hidehistoricalorders: 'Hide historical orders',
+  gotoorder: 'Go to order',
+  s_request: 'S. Requests',
+  gotolead: 'Go to lead',
+  seehistoricaloportunities: 'See historical oportunities',
+  hidehistoricaloportunities: 'Hide historical oportunities',
+  seehistoricalsd: 'View historical service requests',
+  hidehistoricalsd: 'Hide historical service requests',
+  gotosd: 'Go to SD request',
 };
 
 const enResource: ResourceLanguage = {

@@ -6195,6 +6195,18 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   closedtoday: 'Cerrados hoy',
   seehistoricalattachments: 'Ver adjuntos históricos',
   hidehistoricalattachments: 'Ocultar adjuntos históricos',
+  seehistoricalclassifications: 'Ver clasificaciones históricos',
+  hidehistoricalclassifications: 'Ocultar clasificaciones históricos',
+  seehistoricalorders: 'Ver pedidos históricos',
+  hidehistoricalorders: 'Ocultar pedidos históricos',
+  gotoorder: 'Ir a pedido',
+  s_request: 'S. Servicio',
+  gotolead: 'Ir a oportunidad',
+  seehistoricaloportunities: 'Ver oportunidades históricas',
+  hidehistoricaloportunities: 'Ocultar oportunidades históricas',
+  seehistoricalsd: 'Ver solicitudes de servicio históricas',
+  hidehistoricalsd: 'Ocultar solicitudes de servicio históricas',
+  gotosd: 'Ir a solicitud SD',
 };
 
 const esResource: ResourceLanguage = {

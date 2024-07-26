@@ -5128,3 +5128,19 @@ export const conversationClassificationHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
     parameters: { personid },
 });
+export const conversationOrderHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    parameters: { personid },
+});
+export const conversationOportunityHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    key: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    parameters: { personid },
+});
+
+export const conversationSDHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    key: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    parameters: { personid },
+});

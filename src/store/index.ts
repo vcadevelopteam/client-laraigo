@@ -35,6 +35,7 @@ import rasaiaReducer, { IState as IRasaia } from './rasaia/reducer';
 import conversationReducer, { IState as IConversation } from './conversation/reducer';
 import corporationReducer, { IState as ICorporation } from './corp/reducer';
 import deliveryReducer, { IState as IDelivery } from './delivery/reducer';
+import ordersReducer, { IState as IOrders } from './orders/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -69,6 +70,7 @@ export interface IRootState {
     rasaia: IRasaia
     conversation: IConversation
     corporation: ICorporation
+    orders: IOrders
 }
 
 declare global {
@@ -110,6 +112,7 @@ const rootReducer = combineReducers<IRootState>({
     rasaia: rasaiaReducer,
     conversation: conversationReducer,
     corporation: corporationReducer,
+    orders: ordersReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

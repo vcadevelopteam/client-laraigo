@@ -1,21 +1,21 @@
 import { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getOrderHistory, getOrderLineSel, productOrderList, getOrderSel } from 'common/helpers';
+import { productOrderList, getOrderSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useHistory } from 'react-router-dom';
-import { getCollectionAux, getMultiCollection, resetMainAux, getCollection } from 'store/main/actions';
+import { getCollectionAux,  resetMainAux, getCollection } from 'store/main/actions';
 import paths from 'common/constants/paths';
 import { IconButton, Tooltip, Button } from '@material-ui/core';
 import OrderTable from './components/OrderTable';
 import { ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Search as SearchIcon } from '@material-ui/icons';
-import DetailOrders from './components/DetailOrders';
 import OrderKanban from './components/OrderKanban';
 import { FieldSelect } from "components";
 import { makeStyles } from '@material-ui/core/styles';
 import { googleCategory } from 'common/constants/googleCategory';
+import DetailOrders from './components/DetailOrders';
 const dataTypes = [
 	{ key: "Recojo en tienda" },
 	{ key: "Delivery Inmediato" },
@@ -56,10 +56,11 @@ const Orders: FC = () => {
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
+	const params = new URLSearchParams(window.location.search);
+	const id = params.get('id');
 	const mainResult = useSelector(state => state.main.mainData);
-	const multi = useSelector(state => state.main.multiData);
 	const mainAux = useSelector(state => state.main.mainAux);
-	const [viewSelected, setViewSelected] = useState("GRID");
+	const [viewSelected, setViewSelected] = useState(id?"DETAIL":"GRID");
 	const [viewaux, setviewaux] = useState("GRID");
 	const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 	const classes = useStyles();
@@ -75,10 +76,6 @@ const Orders: FC = () => {
 	}, []);
 
 	const handleEdit = (row: Dictionary) => {
-		dispatch(getMultiCollection([
-			getOrderLineSel(row.orderid),
-			getOrderHistory(row.orderid)
-		]));
 		setViewSelected("DETAIL");
 		setRowSelected({ row, edit: true });
 	}
@@ -88,9 +85,7 @@ const Orders: FC = () => {
 			history.push(paths.CONFIGURATION)
 			return;
 		}
-		if (view === "GRID") {
-			fetchData()
-		}
+		fetchData()
 		setViewSelected(view === "GRID" ? viewaux : view)
 	}
 
@@ -98,7 +93,6 @@ const Orders: FC = () => {
 		return (<DetailOrders
 			data={rowSelected}
 			setViewSelected={redirectFunc}
-			multiData={multi.data}
 		/>)
 	}
 	else return (
