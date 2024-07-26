@@ -1401,7 +1401,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
     
     if (uniqueTags.length) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", maxWidth: "20vw", borderLeft: "1px solid lightgrey", flex: 11 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", maxWidth: "25vw", borderLeft: "1px solid lightgrey", flex: 11 }}>
                 <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 0px", width: "100%" }}>
                     <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
                         <div style={{ paddingLeft: 4 }}>
