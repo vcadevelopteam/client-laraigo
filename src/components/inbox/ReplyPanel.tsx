@@ -1764,24 +1764,24 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                     <div style={{ display: 'flex', gap: '0.7rem' }}>
                                         <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
                                             <IconButton onClick={() => toggleTextStyle('bold')} size='small'>
-                                                <FormatBoldIcon className={classes.root} />
+                                            {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
                                             <IconButton onClick={() => toggleTextStyle('italic')} size='small'>
-                                                <FormatItalicIcon className={classes.root} />
+                                            {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
                                             </IconButton>
                                         </Tooltip>
                                         {ticketSelected?.communicationchanneltype.includes("WHA") && (
                                             <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
                                                 <IconButton onClick={() => toggleTextStyle('underline')} size='small'>
-                                                    <FormatUnderlinedIcon className={classes.root} />
+                                                {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 18, height: 18 }} />}
                                                 </IconButton>
                                             </Tooltip>
                                         )}
                                         <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
                                             <IconButton onClick={() => toggleTextStyle('strikethrough')} size='small'>
-                                                <StrikethroughSIcon className={classes.root} />
+                                            {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 18, height: 18 }} />}
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
