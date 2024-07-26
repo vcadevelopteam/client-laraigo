@@ -1,3 +1,5 @@
+//version usando info 
+
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
@@ -8,9 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import SaveIcon from '@material-ui/icons/Save';
 import { FieldSelect } from 'components';
-import {  manageConfirmation } from 'store/popus/actions';
 import { useForm } from 'react-hook-form';
 import { updateUserSettings } from 'store/setting/actions';
+import { updateLanguageSettings } from 'common/helpers';
+import { showSnackbar, manageConfirmation } from 'store/popus/actions';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -50,14 +53,24 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const [waitsave, setwaitsave] = useState(false);
     const resSetting = useSelector(state => state.setting.setting);
     const { register, handleSubmit, getValues, setValue, formState: { errors }, trigger } = useForm({
         defaultValues: {         
-            language: 'ES_LAT',
-            spellingcheck:'ACTIVED',
-            translatelanguage: 'ES_LAT',
-            messagesendingmode: 'Default',
+            languagesettings: {
+                language: 'ES_LAT',
+                spellingcheck: 'ACTIVED',
+                translatelanguage: 'ES_LAT',
+                messagesendingmode: 'Default',
+            },
+            oldpassword: '',
+            password: '',
+            confirmpassword: '',
+            lastname: user?.lastname,
+            firstname: user?.firstname,
+            image: user?.image || null,            
+            operation: "SAVEINFORMATION" //"CHANGEPASSWORD"
         }
     });
 
@@ -86,19 +99,31 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
 
     const dataMessageSendingMode = [
         { description: t(langKeys.default), value: "Default" },
-        { description: 'Solo por ejecución del botón enviar', value: "ExectutionButton" },   
-        { description: 'Por acción de la tecla entero botón enviar', value: "EnterKey" },        
-     
+        { description: 'Solo por ejecución del botón enviar', value: "ExecutionButton" },   
+        { description: 'Por acción de la tecla Enter botón enviar', value: "EnterKey" },        
     ];
 
     useEffect(() => {
-        register('language', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('spellingcheck', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('translatelanguage', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('messagesendingmode', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });    
-    }, [])
+        register('languagesettings.language', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.spellingcheck', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.translatelanguage', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.messagesendingmode', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register, t]);
 
-   
+    useEffect(() => {
+        if (waitsave) {
+            if (!resSetting.loading && !resSetting.error) {
+                setwaitsave(false);
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
+                setViewSelected("view-1");
+            } else if (resSetting.error) {
+                const errormessage = t(resSetting.code || "error_unexpected_error");
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setwaitsave(false);
+            }
+        }
+    }, [resSetting, waitsave, dispatch, t]);
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             setwaitsave(true)
@@ -109,136 +134,135 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
             question: t(langKeys.confirmation_save),
             callback
         }))
-    });
-  
+    });  
 
-    return <div style={{ width: "100%" }}>
-        <form onSubmit={onSubmit}>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom:'2rem' }}>                
-                <div className={classes.seccionTitle}>{t(langKeys.usagesettings)}</div>
-                <div style={{ display: 'flex', gap: '10px'}}>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        //disabled={resSetting.loading}
-                        disabled={true}
-                        color="primary"
-                        type="submit"
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}>
-                        {t(langKeys.save)}
-                    </Button>
+    return (
+        <div style={{ width: "100%" }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>                
+                    <div className={classes.seccionTitle}>{t(langKeys.usagesettings)}</div>
+                    <div style={{ display: 'flex', gap: '10px'}}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            disabled={waitsave}
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}>
+                            {t(langKeys.save)}
+                        </Button>
+                    </div>
                 </div>
-            </div>
 
-            <div style={{margin:'2rem 0'}}>     
-                <div className={classes.seccionTitle}>{t(langKeys.correctionandlanguages)}</div>    
-                    <div  style={{display:'flex', gap:'2rem', width:'100%'}}>
-                        <div style={{display:'flex', gap:'12rem', alignItems:'center'}}>
-                            <h3 style={{fontWeight:'normal'}}>{t(langKeys.language)}</h3> 
+                <div style={{margin: '2rem 0'}}>     
+                    <div className={classes.seccionTitle}>{t(langKeys.correctionandlanguages)}</div>    
+                    <div style={{display: 'flex', gap: '2rem', width: '100%'}}>
+                        <div style={{display: 'flex', gap: '12rem', alignItems: 'center'}}>
+                            <h3 style={{fontWeight: 'normal'}}>{t(langKeys.language)}</h3> 
                             <FieldSelect
-                                style={{width:'20rem'}}
+                                style={{width: '20rem'}}
                                 data={dataExternalLanguage}
-                                error={errors?.language?.message}
+                                error={errors?.languagesettings?.language?.message}
                                 onChange={(value) => {
                                     if (value) {
-                                        setValue("language", value.value)
-                                        trigger("language")
+                                        setValue("languagesettings.language", value.value);
+                                        trigger("languagesettings.language");
                                     } else {
-                                        setValue("language", '')
-                                        trigger("language")
+                                        setValue("languagesettings.language", '');
+                                        trigger("languagesettings.language");
                                     }
                                 }}
                                 optionDesc="description"
                                 optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("language")}   
+                                valueDefault={getValues("languagesettings.language")}   
                                 variant={'outlined'}                    
                             />
                         </div>     
-                        <div style={{display:'flex', gap:'2rem', alignItems:'center'}}>
+                        <div style={{display: 'flex', gap: '2rem', alignItems: 'center'}}>
                             <h3 style={{fontWeight:'normal'}}>Revisión Ortográfica y Gramatical</h3> 
                             <FieldSelect
-                                style={{width:'20rem'}}
+                                style={{width: '20rem'}}
                                 data={dataActivated}
-                                error={errors?.spellingcheck?.message}
+                                error={errors?.languagesettings?.spellingcheck?.message}
                                 onChange={(value) => {
                                     if (value) {
-                                        setValue("spellingcheck", value.value)
-                                        trigger("spellingcheck")
+                                        setValue("languagesettings.spellingcheck", value.value);
+                                        trigger("languagesettings.spellingcheck");
                                     } else {
-                                        setValue("spellingcheck", '')
-                                        trigger("spellingcheck")
+                                        setValue("languagesettings.spellingcheck", '');
+                                        trigger("languagesettings.spellingcheck");
                                     }
                                 }}
                                 optionDesc="description"
                                 optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("spellingcheck")}   
+                                valueDefault={getValues("languagesettings.spellingcheck")}   
                                 variant={'outlined'}                    
                             />     
                         </div> 
                     </div>                         
-            </div>
+                </div>
 
-            <div style={{margin:'2rem 0'}}>     
+                <div style={{margin: '2rem 0'}}>     
                 <div className={classes.seccionTitle}>Transcripción y Traducción</div>         
-                    <div  style={{display:'flex', gap:'2rem', width:'100%'}}>
-                        <div style={{display:'flex', gap:'12rem', alignItems:'center'}}>
-                        <h3 style={{fontWeight:'normal'}}>{t(langKeys.language)}</h3> 
+                    <div style={{display: 'flex', gap: '2rem', width: '100%'}}>
+                        <div style={{display: 'flex', gap: '12rem', alignItems: 'center'}}>
+                            <h3 style={{fontWeight: 'normal'}}>{t(langKeys.language)}</h3> 
                             <FieldSelect
-                                style={{width:'20rem'}}
+                                style={{width: '20rem'}}
                                 data={dataExternalLanguage}
-                                error={errors?.translatelanguage?.message}
+                                error={errors?.languagesettings?.translatelanguage?.message}
                                 onChange={(value) => {
                                     if (value) {
-                                        setValue("translatelanguage", value.value)
-                                        trigger("translatelanguage")
+                                        setValue("languagesettings.translatelanguage", value.value);
+                                        trigger("languagesettings.translatelanguage");
                                     } else {
-                                        setValue("translatelanguage", '')
-                                        trigger("translatelanguage")
+                                        setValue("languagesettings.translatelanguage", '');
+                                        trigger("languagesettings.translatelanguage");
                                     }
                                 }}
                                 optionDesc="description"
                                 optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("translatelanguage")}   
+                                valueDefault={getValues("languagesettings.translatelanguage")}   
                                 variant={'outlined'}                    
                             /> 
                         </div>    
                     </div>                         
-            </div>
+                </div>
 
-            <div style={{margin:'2rem 0'}}>     
+                <div style={{margin: '2rem 0'}}>     
                 <div className={classes.seccionTitle}>Chat de Conversaciones</div>         
-                    <div  style={{display:'flex', gap:'2rem', width:'100%'}}>
-                        <div style={{display:'flex', gap:'2.6rem', alignItems:'center'}}>
-                            <h3 style={{fontWeight:'normal'}}>Modo de envío de mensaje</h3> 
+                    <div style={{display: 'flex', gap: '2rem', width: '100%'}}>
+                        <div style={{display: 'flex', gap: '2.6rem', alignItems: 'center'}}>
+                            <h3 style={{fontWeight: 'normal'}}>{t(langKeys.messagesendingmode)}</h3> 
                             <FieldSelect
-                                style={{width:'20rem'}}
+                                style={{width: '20rem'}}
                                 data={dataMessageSendingMode}
-                                error={errors?.messagesendingmode?.message}
+                                error={errors?.languagesettings?.messagesendingmode?.message}
                                 onChange={(value) => {
                                     if (value) {
-                                        setValue("messagesendingmode", value.value)
-                                        trigger("messagesendingmode")
+                                        setValue("languagesettings.messagesendingmode", value.value);
+                                        trigger("languagesettings.messagesendingmode");
                                     } else {
-                                        setValue("messagesendingmode", '')
-                                        trigger("messagesendingmode")
+                                        setValue("languagesettings.messagesendingmode", '');
+                                        trigger("languagesettings.messagesendingmode");
                                     }
                                 }}
                                 optionDesc="description"
                                 optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("messagesendingmode")}   
+                                valueDefault={getValues("languagesettings.messagesendingmode")}   
                                 variant={'outlined'}                    
                             /> 
                         </div>    
                     </div>                         
-            </div>        
-        </form>
-    </div>
-}
+                </div>        
+            </form>
+        </div>
+    );
+};
 
 export default UsageSettings;
