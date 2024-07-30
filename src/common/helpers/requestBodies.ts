@@ -5395,3 +5395,11 @@ export const prepareAttentionOrder = (orderids: string) => ({
     key: "UFN_ORDER_PREPARE",
     parameters: { orderids },
 })
+
+export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
+    method: "UPDATE_LANGUAGE_SETTINGS",
+    key: "UPDATE_LANGUAGE_SETTINGS",
+    parameters: {
+        languagesettings: JSON.stringify(languagesettings)
+    }
+});

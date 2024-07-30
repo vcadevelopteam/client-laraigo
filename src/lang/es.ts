@@ -6360,7 +6360,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   send_your_message: 'Envía un mensaje...',
   routinglogicerror2: "A uno o más pedidos de los seleccionados ya se le aplicó la lógica de ruteo",
   read_singular_help: 'Para aquellos usuarios que tengan desactivado el visto azul o de confirmación de lectura, no se podrá obtener dicho estado, por temas de privacidad.',
-  usagesettings: 'Configuraciones de Uso',
+  usagesettings: 'Configuraciones de uso',
   correctionandlanguages: 'Correción e Idiomas',
   activated: 'Activado',
   desactivated: 'Desactivado',
@@ -6383,7 +6383,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   hidehistoricaloportunities: 'Ocultar oportunidades históricas',
   seehistoricalsd: 'Ver solicitudes de servicio históricas',
   hidehistoricalsd: 'Ocultar solicitudes de servicio históricas',
-  gotosd: 'Ir a solicitud SD',
+  gotosd: 'Ir a solicitud SD',  spellingcheck: 'Revisión ortográfica y gramatical',
+  transcriptionandtranslation: 'Transcripción y Traducción',
+  translatelanguage: 'Chat de conversaciones',
+  chatsettings: 'Modo de envío de mensajes',
+
 };
 
 const esResource: ResourceLanguage = {

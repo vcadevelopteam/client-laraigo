@@ -6380,6 +6380,10 @@ export const langKeys = {
   s_request: 's_request',
   gotolead: 'gotolead',
   gotosd: 'gotosd',
+  spellingcheck: 'spellingcheck',
+  transcriptionandtranslation: 'transcriptionandtranslation',
+  translatelanguage: 'translatelanguage',
+  chatsettings: 'chatsettings',
 };
 
 export type LangKeys = typeof langKeys;

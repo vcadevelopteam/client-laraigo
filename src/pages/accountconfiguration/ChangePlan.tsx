@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -60,8 +59,24 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
     const executeResult = useSelector(state => state.main.execute);
-
     const [plan, setPlan] = useState(user?.plan || "");
+    const tableRef = useRef<HTMLDivElement>(null);
+    const thirdColRef = useRef<HTMLTableCellElement>(null);
+    const [calculatedWidth, setCalculatedWidth] = useState<number | null>(null);
+
+    const calculateWidth = () => {
+        if (tableRef.current && thirdColRef.current) {
+            const tableRect = tableRef.current.getBoundingClientRect();
+            const thirdColRect = thirdColRef.current.getBoundingClientRect();
+            setCalculatedWidth((thirdColRect.left - tableRect.left)-85);
+        }
+    };
+
+    useEffect(() => {
+        calculateWidth();
+        window.addEventListener('resize', calculateWidth);
+        return () => window.removeEventListener('resize', calculateWidth);
+    }, []);
 
     function changePlan(nameplan: "BASIC" | "PRO" | "ADVANCED" | "PREMIUM") {
         if (nameplan !== user?.plan)
@@ -129,9 +144,9 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
                 </div>
             </div>
 
-            <div className={classes.containerDetail}>
+            <div className={classes.containerDetail} ref={tableRef}>
                 <div className="row-zyx">
-                    <TableContainer >
+                    <TableContainer>
                         <Table className={classes.table} size="small" aria-label="a dense table">
                             <TableBody>
                                 <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("BASIC")} className={clsx({
@@ -144,7 +159,7 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
                                         />
                                     </TableCell>
                                     <TableCell component="th" scope="row" className={classes.nameplan}>BASIC</TableCell>
-                                    <TableCell component="th" scope="row">
+                                    <TableCell component="th" scope="row" ref={thirdColRef}>
                                         <b>{t(langKeys.basicdesc1)}</b>
                                         <div>{t(langKeys.basicdesc2)}</div>
                                     </TableCell>
@@ -205,7 +220,7 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
                 </div>
             </div>
 
-            <div style={{display:'flex', alignItems:'center', gap: '2rem'}}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: calculatedWidth ? `${calculatedWidth}px` : '2rem' }}>
                 <div className={classes.seccionTitle}>{t(langKeys.suscription)}</div>              
                 <Button
                     variant="outlined"

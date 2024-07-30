@@ -6410,7 +6410,7 @@ const translation: LangKeys = {
   send_your_message: 'Send your message...',
   routinglogicerror2: "Routing logic has already been applied to one or more of the selected orders",
   read_singular_help: 'For those users who have deactivated the blue tick or reading confirmation, it will not be possible to obtain this status, due to privacy issues.',
-  usagesettings: 'Usage Settings',
+  usagesettings: 'Usage settings',
   correctionandlanguages: 'Correction and Languages',
   activated: 'Activated',
   desactivated: 'Desactivated',
@@ -6433,7 +6433,11 @@ const translation: LangKeys = {
   hidehistoricaloportunities: 'Hide historical oportunities',
   seehistoricalsd: 'View historical service requests',
   hidehistoricalsd: 'Hide historical service requests',
-  gotosd: 'Go to SD request',
+  gotosd: 'Go to SD request',  spellingcheck: 'Spelling and Grammar Check',
+  transcriptionandtranslation: 'Transcription and Translation',
+  translatelanguage: 'Conversation Chat',
+  chatsettings: 'Message sending mode',
+
 };
 
 const enResource: ResourceLanguage = {

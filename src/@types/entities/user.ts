@@ -57,6 +57,12 @@ type ValueArray = [number, number, number, number, number, string, number];
 
 export type IApplicationsRecord = Record<string, ValueArray>;
 
+interface ILanguageSettings {
+    language: string;
+    spellingcheck: string;
+    translatelanguage: string;
+    messagesendingmode: string;
+}
 export interface IUser {
     email: string;
     firstname: string;
@@ -97,7 +103,8 @@ export interface IUser {
     iconurl?: string;
     balance: Balance;
     samlAuth?: boolean;
-    //notifications: Notification[];
+    languagesettings?: ILanguageSettings;    
+    // notifications: Notification[];
 }
 
 export interface NotificationZyx {
