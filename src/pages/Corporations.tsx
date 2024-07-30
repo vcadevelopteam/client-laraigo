@@ -28,7 +28,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
-import { cleanMemoryTable, getCollection, getMultiCollection, resetAllMain, resetUploadFile, setMemoryTable, uploadFile } from "store/main/actions";
+import { getCollection, getMultiCollection, resetAllMain, resetUploadFile, uploadFile } from "store/main/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import ClearIcon from "@material-ui/icons/Clear";
 import { CommonService } from "network";
@@ -92,14 +92,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const IDCORPORATION = "IDCORPORATION";
 const Corporations: FC = () => {
     const user = useSelector((state) => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector((state) => state.main);
     const executeResult = useSelector((state) => state.corporation.executecorp);
-    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const arrayBread = [{ id: "view-1", name: t(langKeys.corporation_plural) }];
     const [mainData, setMainData] = useState<any>([]);
@@ -167,11 +165,7 @@ const Corporations: FC = () => {
                 getCityBillingList(),
             ])
         );
-        dispatch(setMemoryTable({
-            id: IDCORPORATION
-        }))
         return () => {
-            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -250,9 +244,6 @@ const Corporations: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={(user?.roledesc ?? "").split(",").some((v) => ["SUPERADMIN"].includes(v))}
                     handleRegister={handleRegister}
-                    pageSizeDefault={IDCORPORATION === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                    initialPageIndex={IDCORPORATION === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                    initialStateFilter={IDCORPORATION === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         );
