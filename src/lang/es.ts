@@ -6355,13 +6355,17 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   message_templates_channel_help: 'Muestra el o los canales asignados a la plantilla de comunicación. Para os canales Whatsapp de manera automática mostrará las plantillas del WABA asignado.',
   send_your_message: 'Envía un mensaje...',
   read_singular_help: 'Para aquellos usuarios que tengan desactivado el visto azul o de confirmación de lectura, no se podrá obtener dicho estado, por temas de privacidad.',
-  usagesettings: 'Configuraciones de Uso',
+  usagesettings: 'Configuraciones de uso',
   correctionandlanguages: 'Correción e Idiomas',
   activated: 'Activado',
   desactivated: 'Desactivado',
   messagesendingmode: 'Modo de envío de mensaje',
   categorychange: 'Cambio de Categoría',
   categorychangetext: 'Habilita el cambio automático de la categoría después de su registro según Meta',
+  spellingcheck: 'Revisión ortográfica y gramatical',
+  transcriptionandtranslation: 'Transcripción y Traducción',
+  translatelanguage: 'Chat de conversaciones',
+  chatsettings: 'Modo de envío de mensajes',
 
 };
 

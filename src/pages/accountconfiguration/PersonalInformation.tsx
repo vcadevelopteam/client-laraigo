@@ -52,6 +52,12 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
             image: user?.image || null,
             lastname: user?.lastname,
             firstname: user?.firstname,
+            languagesettings: user?.languagesettings || {
+                language: 'ES_LAT',
+                spellingcheck: 'ACTIVED',
+                translatelanguage: 'ES_LAT',
+                messagesendingmode: 'Default',
+            },
             operation: "SAVEINFORMATION" //"CHANGEPASSWORD"
         }
     });

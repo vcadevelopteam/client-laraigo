@@ -6404,13 +6404,17 @@ const translation: LangKeys = {
   message_templates_channel_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the WABA templates assigned.',
   send_your_message: 'Send your message...',
   read_singular_help: 'For those users who have deactivated the blue tick or reading confirmation, it will not be possible to obtain this status, due to privacy issues.',
-  usagesettings: 'Usage Settings',
+  usagesettings: 'Usage settings',
   correctionandlanguages: 'Correction and Languages',
   activated: 'Activated',
   desactivated: 'Desactivated',
   messagesendingmode: 'Message sending mode',
   categorychange: 'Category Change',
   categorychangetext: 'Enables automatic change of category after registration according to Goal',
+  spellingcheck: 'Spelling and Grammar Check',
+  transcriptionandtranslation: 'Transcription and Translation',
+  translatelanguage: 'Conversation Chat',
+  chatsettings: 'Message sending mode',
 
 };
 

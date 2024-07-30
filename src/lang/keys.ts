@@ -6359,6 +6359,10 @@ export const langKeys = {
   messagesendingmode: 'messagesendingmode',
   categorychange: 'categorychange',
   categorychangetext: 'categorychangetext',
+  spellingcheck: 'spellingcheck',
+  transcriptionandtranslation: 'transcriptionandtranslation',
+  translatelanguage: 'translatelanguage',
+  chatsettings: 'chatsettings',
 };
 
 export type LangKeys = typeof langKeys;

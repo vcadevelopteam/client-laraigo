@@ -48,6 +48,12 @@ type ValueArray = [number, number, number, number, number, string, number];
 
 export type IApplicationsRecord = Record<string, ValueArray>;
 
+interface ILanguageSettings {
+    language: string;
+    spellingcheck: string;
+    translatelanguage: string;
+    messagesendingmode: string;
+}
 export interface IUser {
     email: string;
     firstname: string;
@@ -86,6 +92,7 @@ export interface IUser {
     startlogourl?: string;
     iconurl?: string;
     samlAuth?: boolean;
+    languagesettings?: ILanguageSettings;    
     // notifications: Notification[];
 }
 

@@ -10,6 +10,7 @@ export function updateUserSettings({ oldpassword,password,confirmpassword,lastna
     }
     return APIManager.post(apiUrls.UPDATE_USER, { data: { data } }, true);
 }
+
 export function closeTicket({ conversationid, motive, observation, ticketnum, personcommunicationchannel, communicationchannelsite, communicationchanneltype, status, isAnswered }: ICloseTicketsParams) {
     const data = {
         p_conversationid: conversationid,

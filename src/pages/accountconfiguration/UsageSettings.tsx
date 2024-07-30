@@ -1,5 +1,3 @@
-//version usando info 
-
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
@@ -10,10 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import SaveIcon from '@material-ui/icons/Save';
 import { FieldSelect } from 'components';
+import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { useForm } from 'react-hook-form';
-import { updateUserSettings } from 'store/setting/actions';
+import { execute } from 'store/main/actions';
 import { updateLanguageSettings } from 'common/helpers';
-import { showSnackbar, manageConfirmation } from 'store/popus/actions';
+import { updateUserSettings } from 'store/setting/actions';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -56,23 +55,30 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const [waitsave, setwaitsave] = useState(false);
     const resSetting = useSelector(state => state.setting.setting);
+    const storedLanguageSettings = JSON.parse(localStorage.getItem('languagesettings') || '{}');
     const { register, handleSubmit, getValues, setValue, formState: { errors }, trigger } = useForm({
-        defaultValues: {         
-            languagesettings: {
-                language: 'ES_LAT',
-                spellingcheck: 'ACTIVED',
-                translatelanguage: 'ES_LAT',
-                messagesendingmode: 'Default',
+        defaultValues: {           
+            languagesettings: user?.languagesettings || {
+                language: storedLanguageSettings.language || 'ES_LAT',
+                spellingcheck: storedLanguageSettings.spellingcheck || 'ACTIVED',
+                translatelanguage: storedLanguageSettings.translatelanguage || 'ES_LAT',
+                messagesendingmode: storedLanguageSettings.messagesendingmode || 'Default',
             },
             oldpassword: '',
             password: '',
             confirmpassword: '',
-            lastname: user?.lastname,
-            firstname: user?.firstname,
-            image: user?.image || null,            
-            operation: "SAVEINFORMATION" //"CHANGEPASSWORD"
+            image: '',
+            lastname: '',
+            firstname: '',
+            operation: "SAVEINFORMATION" 
         }
-    });
+    });    
+
+    //console.log('user: ', user)
+    const capitalizeFirstLetter = (string: string) => {
+        return string.toLowerCase().replace(/(?:^|\s|[(])[a-z]/g, (match) => match.toUpperCase());
+    };
+    
 
     const dataExternalLanguage = [
         { description: t(langKeys.TEMPLATE_EN), value: "EN" },
@@ -89,8 +95,12 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
         { description: t(langKeys.TEMPLATE_IT), value: "IT" },
         { description: t(langKeys.TEMPLATE_KO), value: "KO" },
         { description: t(langKeys.TEMPLATE_FA), value: "FA" },
-        { description: t(langKeys.TEMPLATE_TR), value: "TR" } 
-    ];
+        { description: t(langKeys.TEMPLATE_TR), value: "TR" }
+    ].map(item => ({
+        ...item,
+        description: capitalizeFirstLetter(item.description)
+    }));
+    
 
     const dataActivated = [
         { description: t(langKeys.activated), value: "ACTIVED" },
@@ -100,7 +110,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const dataMessageSendingMode = [
         { description: t(langKeys.default), value: "Default" },
         { description: 'Solo por ejecución del botón enviar', value: "ExecutionButton" },   
-        { description: 'Por acción de la tecla Enter botón enviar', value: "EnterKey" },        
+        { description: 'Por acción de la tecla enter o botón enviar', value: "EnterKey" },        
     ];
 
     useEffect(() => {
@@ -108,7 +118,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
         register('languagesettings.spellingcheck', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('languagesettings.translatelanguage', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('languagesettings.messagesendingmode', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-    }, [register, t]);
+    }, [register, t]);    
 
     useEffect(() => {
         if (waitsave) {
@@ -124,21 +134,36 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
         }
     }, [resSetting, waitsave, dispatch, t]);
 
-    const onSubmit = handleSubmit((data) => {
+    const handleSave = () => {
+        const data = getValues();
+        console.log('Language settings form data:', data.languagesettings);
+    
         const callback = () => {
-            setwaitsave(true)
-            dispatch(updateUserSettings(data))
-        }
+            setwaitsave(true);
+            const updatedUser = {
+                ...user,
+                languagesettings: data.languagesettings
+            };
+            console.log('Updated user with new language settings:', updatedUser);    
+            localStorage.setItem('languagesettings', JSON.stringify(data.languagesettings));
+    
+            dispatch(execute(updateLanguageSettings({ languagesettings: updatedUser.languagesettings })));
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
+            setwaitsave(false);
+        };
+    
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
             callback
-        }))
-    });  
+        }));
+    };
+    
+    
 
     return (
         <div style={{ width: "100%" }}>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={handleSave}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>                
                     <div className={classes.seccionTitle}>{t(langKeys.usagesettings)}</div>
                     <div style={{ display: 'flex', gap: '10px'}}>
@@ -147,7 +172,8 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             variant="contained"
                             disabled={waitsave}
                             color="primary"
-                            type="submit"
+                            type="button"
+                            onClick={handleSave}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}
@@ -155,13 +181,13 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </div>
                 </div>
 
-                <div style={{margin: '2rem 0'}}>     
+                <div style={{ margin: '2rem 0' }}>     
                     <div className={classes.seccionTitle}>{t(langKeys.correctionandlanguages)}</div>    
-                    <div style={{display: 'flex', gap: '2rem', width: '100%'}}>
-                        <div style={{display: 'flex', gap: '12rem', alignItems: 'center'}}>
-                            <h3 style={{fontWeight: 'normal'}}>{t(langKeys.language)}</h3> 
+                    <div style={{ display: 'flex', gap: '2rem', width: '100%' }}>
+                        <div style={{ display: 'flex', gap: '12rem', alignItems: 'center' }}>
+                            <h3 style={{ fontWeight: 'normal' }}>{t(langKeys.language)}</h3> 
                             <FieldSelect
-                                style={{width: '20rem'}}
+                                style={{ width: '20rem' }}
                                 data={dataExternalLanguage}
                                 error={errors?.languagesettings?.language?.message}
                                 onChange={(value) => {
@@ -180,10 +206,10 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                                 variant={'outlined'}                    
                             />
                         </div>     
-                        <div style={{display: 'flex', gap: '2rem', alignItems: 'center'}}>
-                            <h3 style={{fontWeight:'normal'}}>Revisión Ortográfica y Gramatical</h3> 
+                        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                            <h3 style={{ fontWeight: 'normal' }}>{t(langKeys.spellingcheck)}</h3> 
                             <FieldSelect
-                                style={{width: '20rem'}}
+                                style={{ width: '20rem' }}
                                 data={dataActivated}
                                 error={errors?.languagesettings?.spellingcheck?.message}
                                 onChange={(value) => {
@@ -205,13 +231,13 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </div>                         
                 </div>
 
-                <div style={{margin: '2rem 0'}}>     
-                <div className={classes.seccionTitle}>Transcripción y Traducción</div>         
-                    <div style={{display: 'flex', gap: '2rem', width: '100%'}}>
-                        <div style={{display: 'flex', gap: '12rem', alignItems: 'center'}}>
-                            <h3 style={{fontWeight: 'normal'}}>{t(langKeys.language)}</h3> 
+                <div style={{ margin: '2rem 0' }}>     
+                    <div className={classes.seccionTitle}>{t(langKeys.transcriptionandtranslation)}</div>         
+                    <div style={{ display: 'flex', gap: '2rem', width: '100%' }}>
+                        <div style={{ display: 'flex', gap: '12rem', alignItems: 'center' }}>
+                            <h3 style={{ fontWeight: 'normal' }}>{t(langKeys.language)}</h3> 
                             <FieldSelect
-                                style={{width: '20rem'}}
+                                style={{ width: '20rem' }}
                                 data={dataExternalLanguage}
                                 error={errors?.languagesettings?.translatelanguage?.message}
                                 onChange={(value) => {
@@ -233,13 +259,13 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </div>                         
                 </div>
 
-                <div style={{margin: '2rem 0'}}>     
-                <div className={classes.seccionTitle}>Chat de Conversaciones</div>         
-                    <div style={{display: 'flex', gap: '2rem', width: '100%'}}>
-                        <div style={{display: 'flex', gap: '2.6rem', alignItems: 'center'}}>
-                            <h3 style={{fontWeight: 'normal'}}>{t(langKeys.messagesendingmode)}</h3> 
+                <div style={{ margin: '2rem 0' }}>     
+                    <div className={classes.seccionTitle}>{t(langKeys.chatsettings)}</div>         
+                    <div style={{ display: 'flex', gap: '2rem', width: '100%' }}>
+                        <div style={{ display: 'flex', gap: '2.6rem', alignItems: 'center' }}>
+                            <h3 style={{ fontWeight: 'normal' }}>{t(langKeys.messagesendingmode)}</h3> 
                             <FieldSelect
-                                style={{width: '20rem'}}
+                                style={{ width: '20rem' }}
                                 data={dataMessageSendingMode}
                                 error={errors?.languagesettings?.messagesendingmode?.message}
                                 onChange={(value) => {

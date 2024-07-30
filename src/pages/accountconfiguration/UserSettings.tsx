@@ -93,11 +93,11 @@ const UserSettings: FC = () => {
             <div style={{ backgroundColor: 'white', display: 'block', height: '88vh', width: '23vw', paddingTop: '1rem' }}>
                 <div className={`${classes.navoption} ${view === 'view-1' ? classes.selectedNavoption : ''}`} onClick={() => setView('view-1')}>
                     <AccountBoxIcon />
-                    Datos Personales
+                    Datos personales
                 </div>
                 <div className={`${classes.navoption} ${view === 'view-2' ? classes.selectedNavoption : ''}`} onClick={() => setView('view-2')}>
                     <SecurityIcon />
-                    Contraseña y Seguridad
+                    Contraseña y seguridad
                 </div>
                 <div className={`${classes.navoption} ${view === 'view-3' ? classes.selectedNavoption : ''}`} onClick={() => setView('view-3')}>
                     <MonetizationOnIcon />
@@ -105,7 +105,7 @@ const UserSettings: FC = () => {
                 </div>
                 <div className={`${classes.navoption} ${view === 'view-4' ? classes.selectedNavoption : ''}`} onClick={() => setView('view-4')}>
                     <BuildIcon />
-                    Configuración de Uso
+                    Configuración de uso
                 </div>
             </div>
             <div style={{ backgroundColor: 'white', display: 'block', height: '88vh', width: '80vw', padding: '2rem' }}>
