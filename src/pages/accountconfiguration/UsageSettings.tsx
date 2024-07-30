@@ -108,7 +108,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     ];
 
     const dataMessageSendingMode = [
-        { description: t(langKeys.default), value: "Default" },
+        { description: 'Predefinido', value: "Default" },
         { description: 'Solo por ejecución del botón enviar', value: "ExecutionButton" },   
         { description: 'Por acción de la tecla enter o botón enviar', value: "EnterKey" },        
     ];
