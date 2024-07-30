@@ -94,8 +94,8 @@ export function processzip_send(requestBody: IRequestBody) {
 
 export function request_send(request: any) {
     const { method, url, authorization, headers, bodytype, body, parameters } = request;
-    let headersjson = headers.reduce((a: any, x: any) => ({ ...a, [x.key]: x.value }), {});
-    let parametersjson = parameters.reduce((a: any, x: any) => ({ ...a, [x.key]: x.value }), {});
+    const headersjson = headers.reduce((a: any, x: any) => ({ ...a, [x.key]: x.value }), {});
+    const parametersjson = parameters.reduce((a: any, x: any) => ({ ...a, [x.key]: x.value }), {});
     if (method === 'POST') {
         if (bodytype === 'URLENCODED') {
             return ExternalRequestManager.postForm(url, { auth: authorization, headers: headersjson, data: parametersjson })

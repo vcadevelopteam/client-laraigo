@@ -1,5 +1,5 @@
 export interface DashboardTemplateSave {
-    id: number | String;
+    id: number | string;
 	description: string;
 	status: string;
 	type: string;

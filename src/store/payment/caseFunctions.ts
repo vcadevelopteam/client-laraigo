@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const niubizAuthorizeTransaction = (state: IState, action: IAction): IState => ({
+export const niubizAuthorizeTransaction = (state: IState): IState => ({
     ...state,
     requestNiubizAuthorizeTransaction: {
         ...state.requestNiubizAuthorizeTransaction,
@@ -38,7 +38,7 @@ export const niubizAuthorizeTransactionReset = (state: IState): IState => ({
     requestNiubizAuthorizeTransaction: initialState.requestNiubizAuthorizeTransaction,
 })
 
-export const niubizCreateSessionToken = (state: IState, action: IAction): IState => ({
+export const niubizCreateSessionToken = (state: IState): IState => ({
     ...state,
     requestNiubizCreateSessionToken: {
         ...state.requestNiubizCreateSessionToken,
@@ -75,7 +75,7 @@ export const niubizCreateSessionTokenReset = (state: IState): IState => ({
     requestNiubizCreateSessionToken: initialState.requestNiubizCreateSessionToken,
 })
 
-export const openpayGetPaymentOrder = (state: IState, action: IAction): IState => ({
+export const openpayGetPaymentOrder = (state: IState): IState => ({
     ...state,
     requestOpenpayGetPaymentOrder: {
         ...state.requestOpenpayGetPaymentOrder,
@@ -112,7 +112,7 @@ export const openpayGetPaymentOrderReset = (state: IState): IState => ({
     requestOpenpayGetPaymentOrder: initialState.requestOpenpayGetPaymentOrder,
 })
 
-export const openpayProcessTransaction = (state: IState, action: IAction): IState => ({
+export const openpayProcessTransaction = (state: IState): IState => ({
     ...state,
     requestOpenpayProcessTransaction: {
         ...state.requestOpenpayProcessTransaction,
@@ -149,7 +149,7 @@ export const openpayProcessTransactionReset = (state: IState): IState => ({
     requestOpenpayProcessTransaction: initialState.requestOpenpayProcessTransaction,
 })
 
-export const izipayGetPaymentOrder = (state: IState, action: IAction): IState => ({
+export const izipayGetPaymentOrder = (state: IState): IState => ({
     ...state,
     requestIzipayGetPaymentOrder: {
         ...state.requestIzipayGetPaymentOrder,
@@ -186,7 +186,7 @@ export const izipayGetPaymentOrderReset = (state: IState): IState => ({
     requestIzipayGetPaymentOrder: initialState.requestIzipayGetPaymentOrder,
 })
 
-export const izipayProcessTransaction = (state: IState, action: IAction): IState => ({
+export const izipayProcessTransaction = (state: IState): IState => ({
     ...state,
     requestIzipayProcessTransaction: {
         ...state.requestIzipayProcessTransaction,
@@ -223,7 +223,7 @@ export const izipayProcessTransactionReset = (state: IState): IState => ({
     requestIzipayProcessTransaction: initialState.requestIzipayProcessTransaction,
 })
 
-export const epaycoGetPaymentOrder = (state: IState, action: IAction): IState => ({
+export const epaycoGetPaymentOrder = (state: IState): IState => ({
     ...state,
     requestEpaycoGetPaymentOrder: {
         ...state.requestEpaycoGetPaymentOrder,
@@ -260,7 +260,7 @@ export const epaycoGetPaymentOrderReset = (state: IState): IState => ({
     requestEpaycoGetPaymentOrder: initialState.requestEpaycoGetPaymentOrder,
 })
 
-export const epaycoProcessTransaction = (state: IState, action: IAction): IState => ({
+export const epaycoProcessTransaction = (state: IState): IState => ({
     ...state,
     requestEpaycoProcessTransaction: {
         ...state.requestEpaycoProcessTransaction,

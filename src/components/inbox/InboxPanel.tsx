@@ -13,7 +13,7 @@ import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
 import DrawerFilter from 'components/inbox/DrawerFilter'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, hideLogsOnTicket, resetQuickreplies, getQuickreplies } from 'store/inbox/actions';
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, hideLogsOnTicket, resetQuickreplies, getQuickreplies, getTicketsClosed, resetGetTicketsClosed } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
@@ -193,7 +193,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     iconSend: {
-        background: "#5542F6",
+        background: "#7721AD",
         width: 32,
         height: 32,
         display: 'flex',
@@ -208,6 +208,11 @@ const useStyles = makeStyles((theme) => ({
     },
     containerButtonsChat: {
         display: 'flex',
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     },
     buttonCloseticket: {
         background: '#F9F9FA',
@@ -343,10 +348,10 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
         return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 2 && searchName === "") {
-        return data
+        return data.filter(item => item.status === "CERRADO");
     }
     if (page === 2 && searchName !== "") {
-        return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => item.status === "CERRADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 1 && searchName === "") {
         return data.filter(item => item.status === "SUSPENDIDO");
@@ -399,6 +404,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [search, setSearch] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
+    const closedTicketList = useSelector(state => state.inbox.closedticketList);
     const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const isFiltering = useSelector(state => state.inbox.isFiltering);
@@ -420,6 +426,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     useEffect(() => {
         if (agentSelected) {
             dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
+            dispatch(getTicketsClosed(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
             setPageSelected(0)
             setCounterTickets({
                 assigned: -0,
@@ -430,6 +437,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
         return () => {
             dispatch(resetGetTickets())
+            dispatch(resetGetTicketsClosed())
         }
     }, [agentSelected, dispatch])
 
@@ -443,11 +451,11 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     useEffect(() => {
         if (!ticketList.loading && !ticketList.error) {
-            setDataTickets(ticketList.data as ITicket[]);
+            setDataTickets([...ticketList.data,...closedTicketList.data] as ITicket[]);
             setCounterTickets({
                 assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
                 paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
-                all: ticketList.data.length
+                all: closedTicketList.data.length
             })
             const tickets = ticketList.data.filter((x) => x.countnewmessages > 0);
 
@@ -460,11 +468,17 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         return () => {
             document.title = localStorage.title;
         };
-    }, [ticketList])
+    }, [ticketList, closedTicketList])
 
     const onChangeSearchTicket = (e: any) => {
         setSearch(e.target.value)
     }
+
+    useEffect(() => {
+        if(pageSelected === 2){
+            dispatch(getTicketsClosed(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
+        }
+    }, [pageSelected])
 
     useEffect(() => {
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
@@ -490,7 +504,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         >
                             <AntTab label={`${t(langKeys.assigned)}${counterTickets.assigned < 0 ? '' : "(" + counterTickets.assigned + ")"}`} />
                             <AntTab label={`${t(langKeys.paused)}${counterTickets.paused < 0 ? '' : "(" + counterTickets.paused + ")"}`} />
-                            <AntTab label={`${t(langKeys.all)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
+                            <AntTab label={`${t(langKeys.closedtoday)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
                         </Tabs>
                         <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
                             <IconButton size="small" onClick={() => setShowSearch(true)}>

@@ -8,6 +8,7 @@ export interface IInteraction {
     usertype?: string | null;
     avatar?: string | null;
     emailcopy?: string;
+    uuid?: string;
     emailcocopy?: string;
     reply?: boolean;
     indexImage?: number | undefined;

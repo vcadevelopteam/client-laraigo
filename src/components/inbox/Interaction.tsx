@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, BusinessMessageIcon, LaraigoOnlyLogo, TackPinnedIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -13,7 +13,7 @@ import { langKeys } from 'lang/keys';
 import { useSelector } from 'hooks';
 import { manageLightBox } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, validateIsUrl } from 'common/helpers';
+import { convertLocalDate, modifyPinnedMessage, validateIsUrl } from 'common/helpers';
 import Dialog from '@material-ui/core/Dialog';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -21,8 +21,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MapLeaflet from 'components/fields/MapLeaflet';
+import { execute } from 'store/main/actions';
+import { setPinnedComments } from 'store/inbox/actions';
+import { Button, IconButton } from '@material-ui/core';
 
-const useStylesInteraction = makeStyles(() => ({
+const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
         width: 230,
         backgroundColor: '#f0f2f5',
@@ -95,6 +98,20 @@ const useStylesInteraction = makeStyles(() => ({
         borderRadius: 4,
         marginRight: 4,
         gap: 4
+    },
+    tackIcon: {
+        width: '15px',
+        height: '15px',
+        position: 'absolute',
+        color: "grey",
+    },
+    tackIconTopRight: {
+        top: theme.spacing(1),
+        right: theme.spacing(1),
+    },
+    tackIconBottomRight: {
+        bottom: theme.spacing(1),
+        right: theme.spacing(1),
     }
 }));
 
@@ -437,19 +454,55 @@ const checkUrl = (url: string) => {
     const hasExtension = url.replace(/^.*[\\/]/, '').includes('.');
     return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
+const highlightWords = (text: any, searchTerm: any) => {
+    if (!searchTerm) return text;
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<span style="background-color: yellow;">$1</span>');
+};
+
+const HighlightedText = ({ interactiontext, searchTerm, showfulltext }) => {
+    const textToShow = showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ";
+    const highlightedText = highlightWords(textToShow, searchTerm);
+
+    return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
+};
+
+const HighlightedTextSimple = ({ interactiontext, searchTerm }) => {
+    const highlightedText = highlightWords(interactiontext, searchTerm);
+
+    return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
+};
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime, emailcopy, reply }, classes, userType }) => {
     const ref = React.useRef<HTMLIFrameElement>(null);
+    const classes2 = useStylesInteraction();
+    const searchTerm = useSelector(state => state.inbox.searchTerm);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
-    console.log("interactiontype, interactiontext", interactiontype, interactiontext, reply)
     const [height, setHeight] = React.useState("0px");
+    const [isHovered, setIsHovered] = useState(false);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
+    const isselected = pinnedmessagesSelected.some((item:any) => item.interactionid === interactionid)
+    const disableTack = ((pinnedmessagesSelected.length >= 20 || !interactionid))
 
+    function fixComment(interactiontext: string) {
+        dispatch(execute(modifyPinnedMessage({
+            interactionid,
+            conversationid: ticketSelected?.conversationid || 0,
+            interactiontext,
+            operation: "INSERT"
+        })))
+        dispatch(setPinnedComments([...pinnedmessagesSelected,
+        {
+            interactionid,
+            interactiontext
+        }]))
+    }
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
-
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text") {
@@ -460,8 +513,23 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client'
                 })}
                 style={{ marginLeft: reply ? 24 : 0 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
-                <span dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}></span>
+                {Boolean(interactionid) && <TackIcon fill="#8F92A1" className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
+                {!pinnedmessagesSelected.some((item: any) => item.interactionid === interactionid) &&
+                    <IconButton size="small"
+                        title={t(langKeys.pinmessagehelper)}
+                        disabled={disableTack}
+                        className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
+                        style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
+                        onClick={() => fixComment(interactiontext)}>
+                        <TackPinnedIcon
+                            fill="#8F92A1"
+                            className={clsx(classes2.tackIcon)}
+                        />
+                    </IconButton>}
+                <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
                 {!showfulltext && (
                     <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
                 )
@@ -595,7 +663,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     else if (interactiontype === "quickreply") {
         try {
             let text, json;
-
             if (interactiontext.substring(0, 1) === "{") {
                 const jj = JSON.parse(interactiontext);
                 return (
@@ -613,10 +680,25 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             }
             const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
             return (
-                <div className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
-                })} style={{ display: 'inline-block' }}>
-                    {text}
+                <div
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })} style={{ display: 'inline-block' }}>
+                    {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />}
+                    {!pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid) &&
+                        <IconButton size="small"
+                            title={t(langKeys.pinmessagehelper)}
+                            disabled={disableTack}
+                            className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
+                            style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
+                            onClick={() => fixComment(interactiontext)}>
+                            <TackIcon
+                                className={clsx(classes2.tackIcon)}
+                            />
+                        </IconButton>}
+                    <HighlightedTextSimple interactiontext={text} searchTerm={searchTerm} />
                     <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex" }}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
@@ -740,6 +822,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
+                <HighlightedTextSimple interactiontext={textres} searchTerm={searchTerm} />
                 {textres}
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
@@ -849,12 +932,62 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 </div>
             </>
         )
+    } if (interactiontype === "referral") {
+        const dataText = JSON.parse(interactiontext)
+        return (
+            <div
+                title={convertLocalDate(createdate).toLocaleString()}
+                className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client'
+                })}
+                style={{ marginLeft: reply ? 24 : 0 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <div style={{display:"flex"}}>
+                        <BusinessMessageIcon style={{color:"grey", height: 20, width: 20, paddingRight: 2}}/>
+                        <span style={{fontStyle: "italic", color: "grey", fontWeight: "bold", fontSize: "0.8em"}}>{t(langKeys.message_business_origin)}</span>
+                    </div>
+                    <LaraigoOnlyLogo style={{height: 20, width: 20}}/>
+                </div>
+                <img
+                    className={classes.imageCard}
+                    src={dataText?.image?.url||""}
+                    style={{position:"static"}}
+                    alt=""
+                    onClick={() => {
+                        dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
+                    }}
+                />
+                <div style={{fontWeight: "bold"}}>{dataText.headline}</div>
+                <div style={{ fontStyle: 'italic', color: "grey" }}>{dataText.body}</div>
+                <Button variant="outlined" onClick={()=>{window.open(dataText?.source_url, '_blank')}} style={{margin:"11px 0"}}>{dataText.payload}</Button>
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        );
     }
     return (
         <div className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
         })} style={{ marginTop: interactiontype === "comment-text" ? 16 : 0 }}>
-            {interactiontext}
+            {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />}
+            {((pinnedmessagesSelected.length < 20) && !pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid)) &&
+                <IconButton size="small"
+                    title={t(langKeys.pinmessagehelper)}
+                    disabled={disableTack}
+                    className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
+                    style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
+                    onClick={() => fixComment(interactiontext)}>
+                    <TackIcon
+                        className={clsx(classes2.tackIcon)}
+                    />
+                </IconButton>}
+            <HighlightedText interactiontext={interactiontext} searchTerm={searchTerm} showfulltext={showfulltext} />
+            {!showfulltext && (
+                <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+            )}
             <PickerInteraction userType={userType} fill={userType === "client" ? "#FFF" : "#eeffde"} />
             <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
         </div>
@@ -864,23 +997,34 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, interactions } }) => {
 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
     return (
         <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {interactions.map((item: IInteraction, index: number) => (
-                        <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
-                            [classes.interactionAgent]: usertype !== "client",
-                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
-                            [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
-                        })}>
-                            {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
-                                <Avatar src={item.avatar + "" || undefined} />
-                            )}
-                            <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
-                        </div>
-                    ))}
+                    {interactions.map((item: IInteraction, index: number) => {
+                        return (
+                        <>
+                            <div key={`interaction-${item.interactionid + index}`} id={`interaction-${item.interactionid}`} className={clsx({
+                                [classes.interactionAgent]: usertype !== "client",
+                                [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                                [classes.interactionAgentEmail]: usertype !== 'client' && item.interactiontype === 'email'
+                            })}>
+                                {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
+                                    <Avatar src={item.avatar + "" || undefined} />
+                                )}
+                                <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
+                            </div>
+                            {item.interactiontype==="referral" && <div key={`interaction-${item.interactionid + index}`} id={`interactionlog-${item.interactionid}`} className={clsx({
+                                [classes.interactionAgent]: usertype !== "client",
+                                [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA",
+                            })}>
+                                {ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
+                                    <Avatar src={item.avatar + "" || undefined} />
+                                )}
+                                <ItemInteraction interaction={({...item, interactiontype: "LOG"})} classes={classes} userType={usertype!!} />
+                            </div>}
+                        </>
+                    )})}
                 </div>
             </div>
             {usertype === "agent" ?

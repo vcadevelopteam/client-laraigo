@@ -8,7 +8,7 @@ export const calendarGoogleReset = (state: IState): IState => ({
     requestGoogleValidate: initialState.requestGoogleValidate,
 })
 
-export const calendarGoogleLogIn = (state: IState, action: IAction): IState => ({
+export const calendarGoogleLogIn = (state: IState): IState => ({
     ...state,
     requestGoogleLogIn: {
         ...state.requestGoogleLogIn,
@@ -45,7 +45,7 @@ export const calendarGoogleLogInReset = (state: IState): IState => ({
     requestGoogleLogIn: initialState.requestGoogleLogIn,
 })
 
-export const calendarGoogleDisconnect = (state: IState, action: IAction): IState => ({
+export const calendarGoogleDisconnect = (state: IState): IState => ({
     ...state,
     requestGoogleDisconnect: {
         ...state.requestGoogleDisconnect,
@@ -82,7 +82,7 @@ export const calendarGoogleDisconnectReset = (state: IState): IState => ({
     requestGoogleDisconnect: initialState.requestGoogleDisconnect,
 })
 
-export const calendarGoogleValidate = (state: IState, action: IAction): IState => ({
+export const calendarGoogleValidate = (state: IState): IState => ({
     ...state,
     requestGoogleValidate: {
         ...state.requestGoogleValidate,

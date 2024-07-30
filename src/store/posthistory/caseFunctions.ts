@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const schedulePost = (state: IState, action: IAction): IState => ({
+export const schedulePost = (state: IState): IState => ({
     ...state,
     requestSchedulePost: {
         ...state.requestSchedulePost,

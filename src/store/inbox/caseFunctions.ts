@@ -12,7 +12,7 @@ const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = 
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
-    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
+    return (!hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
@@ -278,7 +278,7 @@ export const updatePersonClassification = (state: IState, action: IAction): ISta
     }
 })
 
-export const resetSelectTicket = (state: IState, action: IAction): IState => ({
+export const resetSelectTicket = (state: IState): IState => ({
     ...state,
     ticketSelected: null,
     person: {
@@ -299,7 +299,7 @@ export const showInfoPanel = (state: IState): IState => ({
     showInfoPanel: !state.showInfoPanel
 })
 
-export const resetSelectAgent = (state: IState, action: IAction): IState => ({
+export const resetSelectAgent = (state: IState): IState => ({
     ...state,
     agentSelected: null,
 })
@@ -369,6 +369,44 @@ export const getTicketsFailure = (state: IState, action: IAction): IState => ({
 export const getTicketsReset = (state: IState): IState => ({
     ...state,
     ticketList: initialState.ticketList,
+});
+
+export const getTicketsClosed = (state: IState): IState => ({
+    ...state,
+    closedticketList: { ...state.closedticketList, loading: true, error: false },
+});
+
+export const getTicketsClosedSuccess = (state: IState, action: IAction): IState => {
+    if ((state.agentSelected?.userid + "") === action.payload.key.split("_")?.pop()) {
+        return {
+            ...state,
+            isOnBottom: null,
+            closedticketList: {
+                data: action.payload.data || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+        }
+    } else {
+        return state
+    }
+};
+
+export const getTicketsClosedFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    closedticketList: {
+        ...state.closedticketList,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getTicketsClosedReset = (state: IState): IState => ({
+    ...state,
+    closedticketList: initialState.closedticketList,
 });
 
 export const connectAgentWS = (state: IState, action: IAction): IState => {
@@ -521,6 +559,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 interactionid: data.interactionid,
                 interactiontype: data.typemessage,
                 interactiontext: data.lastmessage,
+                uuid: data.uuid,
                 createdate: new Date().toISOString(),
                 userid: data.usertype === "agent" ? data.userid : 0,
                 usertype: data?.usertype === "agent" && data.userid === 2 ? "BOT" : data?.usertype,
@@ -645,7 +684,23 @@ export const newCallTicket = (state: IState, action: IAction): IState => ({
     },
 })
 
-export const resetShowModal = (state: IState, action: IAction): IState => ({
+
+export const setSearchTerm = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        searchTerm: action.payload||"",
+    };
+};
+
+export const setPinnedComment = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        pinnedmessages: action.payload||[],
+    };
+};
+
+
+export const resetShowModal = (state: IState): IState => ({
     ...state,
     showModalClose: 0,
 })
@@ -815,6 +870,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
                 loading: false,
                 error: false,
             },
+            pinnedmessages: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0].pinnedmessages : [],
         }
     } else {
         return state;
@@ -846,6 +902,18 @@ export const setHideLogsOnTicket = (state: IState, action: IAction): IState => {
 };
 
 
+export const updateInteractionByUUID = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        interactionList: {
+            ...state.interactionList,
+            data: state.interactionList.data.map(group => ({
+                ...group,
+                interactions: group.interactions.map(interaction => interaction.uuid === action.payload.uuid ? { ...interaction, interactionid: action.payload.interactionid } : interaction)
+            }))
+        }
+    }
+};
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -879,7 +947,7 @@ export const getInteractionsExtra = (state: IState): IState => ({
 export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     interactionExtraList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), false, true),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), true, true),
         count: action.payload.count,
         loading: false,
         error: false,
@@ -907,7 +975,7 @@ export const closeTicket = (state: IState): IState => ({
     triggerCloseTicket: { ...state.triggerCloseTicket, loading: true, error: false },
 });
 
-export const closeTicketSuccess = (state: IState, action: IAction): IState => ({
+export const closeTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerCloseTicket: {
         loading: false,
@@ -938,7 +1006,7 @@ export const massiveCloseTicket = (state: IState): IState => ({
     triggerMassiveCloseTicket: { ...state.triggerMassiveCloseTicket, loading: true, error: false },
 });
 
-export const massiveCloseTicketSuccess = (state: IState, action: IAction): IState => ({
+export const massiveCloseTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerMassiveCloseTicket: {
         loading: false,
@@ -970,7 +1038,7 @@ export const reassignTicket = (state: IState): IState => ({
     triggerReassignTicket: { ...state.triggerReassignTicket, loading: true, error: false },
 });
 
-export const reassignTicketSuccess = (state: IState, action: IAction): IState => ({
+export const reassignTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerReassignTicket: {
         loading: false,
@@ -1004,7 +1072,7 @@ export const connectAgentUItmp = (state: IState): IState => ({
     triggerConnectAgentGo: { ...state.triggerConnectAgentGo, loading: true, error: false },
 });
 
-export const connectAgentUItmpSuccess = (state: IState, action: IAction): IState => ({
+export const connectAgentUItmpSuccess = (state: IState): IState => ({
     ...state,
     triggerConnectAgentGo: {
         loading: false,
@@ -1038,6 +1106,8 @@ export const replyTicketSuccess = (state: IState, action: IAction): IState => ({
     triggerReplyTicket: {
         loading: false,
         error: false,
+        interactionid: action.payload.Result.interactionid,
+        uuid: action.payload.Result.uuid,
     },
 });
 
@@ -1062,7 +1132,7 @@ export const sendHSM = (state: IState): IState => ({
     triggerSendHSM: { ...state.triggerSendHSM, loading: true, error: false },
 });
 
-export const sendHSMSuccess = (state: IState, action: IAction): IState => ({
+export const sendHSMSuccess = (state: IState): IState => ({
     ...state,
     triggerSendHSM: { ...state.triggerSendHSM, loading: false, error: false },
 });
@@ -1090,7 +1160,7 @@ export const importTicket = (state: IState): IState => ({
     triggerImportTicket: { ...state.triggerImportTicket, loading: true, error: false },
 });
 
-export const importTicketSuccess = (state: IState, action: IAction): IState => ({
+export const importTicketSuccess = (state: IState): IState => ({
     ...state,
     triggerImportTicket: {
         loading: false,
@@ -1188,7 +1258,7 @@ export const getTipificationLevel2Failure = (state: IState, action: IAction): IS
 
 export const setLibraryByUser = (state: IState, action: IAction): IState => ({
     ...state,
-    libraryList: action.payload.map(x => {
+    libraryList: action.payload.map((x:any) => {
         const extension = x.link.split('.').pop().toLocaleLowerCase()
         const type = ["png", "jpg", "jpeg", "gif"].includes(extension) ? "image" :
                         (["avi", "mp4", "mov", "flv", "rm", "rmvb", "mkv", "3gp", "mpg"].includes(extension) ? "video" : "file")
@@ -1261,7 +1331,7 @@ export const callConnected = (state: IState, action: IAction): IState => ({
     }
 });
 
-export const resetForceddesconection = (state: IState, action: IAction): IState => ({
+export const resetForceddesconection = (state: IState): IState => ({
     ...state,
     forceddisconnect: initialState.forceddisconnect,
 });

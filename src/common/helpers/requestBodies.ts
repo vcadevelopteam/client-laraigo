@@ -80,6 +80,11 @@ export const getTickets = (userid: number | null): IRequestBody => ({
     key: `UFN_CONVERSATION_SEL_TICKETSBYUSER_${userid}`,
     parameters: { ...(userid && { agentid: userid }) }
 })
+export const getTicketsClosed = (userid: number | null): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_TICKETSBYUSER_CLOSED",
+    key: `UFN_CONVERSATION_SEL_TICKETSBYUSER_CLOSED_${userid}`,
+    parameters: { ...(userid && { agentid: userid }) }
+})
 
 export const getInfoPerson = (personid: ID, conversationid: number): IRequestBody => ({
     method: "UFN_CONVERSATION_PERSON_SEL",
@@ -5353,4 +5358,9 @@ export const getUserMessageOutbound = ({startdate, enddate, communicationchannel
         enddate,
         communicationchannelid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, },
+});
+export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
+    method: "UPDATE_PINNED_MESSAGE",
+    key: "UPDATE_PINNED_MESSAGE",
+    parameters: { conversationid, interactionid, interactiontext, operation },
 });
