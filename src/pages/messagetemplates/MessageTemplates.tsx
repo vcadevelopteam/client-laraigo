@@ -1,6 +1,6 @@
 import { deleteTemplate, synchronizeTemplate } from "store/channel/actions";
 import { Delete, Search } from "@material-ui/icons";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary, IChannel, IFetchData } from "@types";
 import { langKeys } from "lang/keys";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import {
     exportData,
+    getCollectionAux,
     getCollectionPaginated,
     getMultiCollection,
     resetAllMain,
@@ -17,12 +18,15 @@ import {
 } from "store/main/actions";
 
 import {
+    FieldMultiSelect,
+    FieldSelect,
     TemplateBreadcrumbs,
 } from "components";
 
 import {
     dateToLocalDate,
     exportExcel,
+    getCommChannelLst,
     getMessageTemplateExport,
     getPaginatedMessageTemplate,
     getValuesFromDomain,
@@ -47,6 +51,9 @@ const useStyles = makeStyles(() => ({
         flexDirection: "column",
         flex: 1,
     },
+    fieldsfilter: {
+        width: "15rem",
+    },
 }));
 interface RowSelected {
     edit: boolean;
@@ -59,11 +66,13 @@ type BreadCrumb = {
 interface MessageTemplatesProps {
     arrayBread: BreadCrumb[];
     setAuxViewSelected: (view: string) => void;  
+    dataChannels: Dictionary[];
 }
 
 const MessageTemplates: React.FC<MessageTemplatesProps> = ({ 
     setAuxViewSelected,
     arrayBread,
+    dataChannels,
 }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -104,7 +113,17 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     const [waitDelete, setWaitDelete] = useState(false);
     const [waitSaveExport, setWaitSaveExport] = useState(false);
     const [waitSynchronize, setWaitSynchronize] = useState(false);
+    const mainMulti = useSelector(state => state.main.multiData);
 
+    const channels = useMemo(() => {
+        if (!mainMulti.data[3]?.data || mainMulti.data[3]?.key !== "UFN_COMMUNICATIONCHANNEL_LST") return [];
+        return (mainMulti.data[3].data as IChannel[]).sort((a, b) => {
+        return a.communicationchanneldesc.localeCompare(b.communicationchanneldesc);
+        });
+    }, [mainMulti.data[3]]);
+
+    console.log('antiguo: ', mainPaginated.data.map(item => item.communicationchanneldesc));
+    console.log('probando', mainMulti)
     const columns = React.useMemo(
         () => [
             /*{
@@ -528,10 +547,12 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                     sorts: sorts,
                     startdate: daterange?.startDate!,
                     take: pageSize,
+                    //channels: selectedChannel
                 })
             )
         );
     };
+    
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -748,6 +769,30 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         }
     }
 
+    const [selectedChannel, setSelectedChannel] = useState("");
+
+    const uniqueCommunicationChannels = (() => {
+        const allDescs = mainPaginated.data.map((item: Dictionary) => item.communicationchanneldesc);
+        const uniqueDescs = Array.from(new Set(allDescs)).filter(desc => desc !== null);
+        return uniqueDescs.map(desc => ({
+            domaindesc: desc,
+            domainvalue: desc
+        }));
+    })();
+
+    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
+
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+  
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
@@ -764,19 +809,44 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 </div>
                 <TablePaginated
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                            <Button
-                                color="primary"
-                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                                startIcon={<Delete style={{ color: "white" }} />}
-                                variant="contained"
-                                onClick={() => {
-                                    handleBulkDelete(rowWithDataSelected);
-                                }}
-                            >
-                                {t(langKeys.delete)}
-                            </Button>
+                        <div style={{ display: "flex", justifyContent: "space-between", width: `${windowWidth-380}px` }}>
+                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>
+                                <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.channels)}
+                                    className={classes.fieldsfilter}
+                                    valueDefault={uniqueCommunicationChannels}
+                                    onChange={(value) => setSelectedChannel(value?.type || "")}
+                                    data={uniqueCommunicationChannels}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <Button
+                                    color="primary"
+                                    style={{ width: 120, backgroundColor: "#55BD84" }}
+                                    variant="contained"
+                                    startIcon={<Search style={{ color: "white" }} />}
+                                    onClick={() => { fetchData(fetchDataAux) }}
+                                >
+                                    {t(langKeys.search)}
+                                </Button>
+                            </div>
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                <Button
+                                    color="primary"
+                                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                    startIcon={<Delete style={{ color: "white" }} />}
+                                    variant="contained"
+                                    onClick={() => {
+                                        handleBulkDelete(rowWithDataSelected);
+                                    }}
+                                >
+                                    {t(langKeys.delete)}
+                                </Button>
+                            </div>
                         </div>
+                       
+                        
                     )}
                     autotrigger={true}
                     columns={columns}
