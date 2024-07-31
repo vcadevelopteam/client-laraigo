@@ -170,7 +170,7 @@ export const TrafficLightConfigurationModal: React.FC<{
         const existingConfig = main.data.find(item => item.corpid === user?.corpid && item.orgid === user?.orgid);
         const callback = () => {
             dispatch(showBackdrop(true));
-            if(existingConfig) {
+            if (existingConfig) {
                 dispatch(execute(insOrderConfig({
                     id: existingConfig.orderconfigid,
                     orderconfig: JSON.stringify(configjson),
@@ -196,7 +196,7 @@ export const TrafficLightConfigurationModal: React.FC<{
         }))
     });
 
-    function handleCloseConfiguration () {
+    function handleCloseConfiguration() {
         setConfigjson({
             monbegin: configuration?.monbegin,
             monend: configuration?.monend,
@@ -218,7 +218,7 @@ export const TrafficLightConfigurationModal: React.FC<{
         setOpenModal(false);
     }
 
-    function handleSaveConfiguration () {
+    function handleSaveConfiguration() {
         onMainSubmit()
     }
 
@@ -233,9 +233,9 @@ export const TrafficLightConfigurationModal: React.FC<{
             maxWidth="sm"
         >
             <div className="row-zyx">
-                <Typography/>{t(langKeys.opportunityhours)}
+                <Typography />{t(langKeys.opportunityhours)}
             </div>
-            <div style={{height:20}}></div>
+            <div style={{ height: 20 }}></div>
             <div className="row-zyx">
                 <span className="col-1">{t(langKeys.day)}</span>
                 <span className="col-2">{t(langKeys.monday)}</span>
@@ -244,104 +244,104 @@ export const TrafficLightConfigurationModal: React.FC<{
                 <span className="col-2">{t(langKeys.thursday)}</span>
                 <span className="col-2">{t(langKeys.friday)}</span>
                 <div className="col-1"></div>
-                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.start)}</span>
+                <span className="col-1" style={{ alignSelf: 'center' }}>{t(langKeys.start)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.monbegin}
-                    onChange={(value) => setConfigjson({...configjson, monbegin: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, monbegin: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.tuebegin}
-                    onChange={(value) => setConfigjson({...configjson, tuebegin: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, tuebegin: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.wedbegin}
-                    onChange={(value) => setConfigjson({...configjson, wedbegin: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, wedbegin: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.thubegin}
-                    onChange={(value) => setConfigjson({...configjson, thubegin: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, thubegin: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.fribegin}
-                    onChange={(value) => setConfigjson({...configjson, fribegin: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, fribegin: value })}
                 />
                 <div className="col-1"></div>
-                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.end)}</span>
+                <span className="col-1" style={{ alignSelf: 'center' }}>{t(langKeys.end)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.monend}
-                    onChange={(value) => setConfigjson({...configjson, monend: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, monend: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.tueend}
-                    onChange={(value) => setConfigjson({...configjson, tueend: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, tueend: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.wedend}
-                    onChange={(value) => setConfigjson({...configjson, wedend: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, wedend: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.thuend}
-                    onChange={(value) => setConfigjson({...configjson, thuend: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, thuend: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.friend}
-                    onChange={(value) => setConfigjson({...configjson, friend: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, friend: value })}
                 />
                 <div className="col-1"></div>
                 <span className="col-1">{t(langKeys.day)}</span>
                 <span className="col-2">{t(langKeys.saturday)}</span>
                 <span className="col-2">{t(langKeys.sunday)}</span>
                 <div className="col-7"></div>
-                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.start)}</span>
+                <span className="col-1" style={{ alignSelf: 'center' }}>{t(langKeys.start)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.satbegin}
-                    onChange={(value) => setConfigjson({...configjson, satbegin: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, satbegin: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.sunbegin}
-                    onChange={(value) => setConfigjson({...configjson, sunbegin: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, sunbegin: value })}
                 />
                 <div className="col-7"></div>
-                <span className="col-1" style={{alignSelf: 'center'}}>{t(langKeys.end)}</span>
+                <span className="col-1" style={{ alignSelf: 'center' }}>{t(langKeys.end)}</span>
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.satend}
-                    onChange={(value) => setConfigjson({...configjson, satend: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, satend: value })}
                 />
                 <FieldEdit
                     type="time"
                     className="col-2"
                     valueDefault={configjson.sunend}
-                    onChange={(value) => setConfigjson({...configjson, sunend: value})}
+                    onChange={(value) => setConfigjson({ ...configjson, sunend: value })}
                 />
                 <div className="col-7"></div>
             </div>
-            <div style={{height:10}}></div>
+            <div style={{ height: 10 }}></div>
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.maxtimegreen)}
@@ -350,10 +350,10 @@ export const TrafficLightConfigurationModal: React.FC<{
                     className="col-12"
                     valueDefault={configjson.maxgreen}
                     onChange={(value) => {
-                        if(value < 0) {
-                            setConfigjson({...configjson, maxgreen: value * -1})
+                        if (value < 0) {
+                            setConfigjson({ ...configjson, maxgreen: value * -1 })
                         } else {
-                            setConfigjson({...configjson, maxgreen: value})
+                            setConfigjson({ ...configjson, maxgreen: value })
                         }
                     }}
                 />
@@ -364,10 +364,10 @@ export const TrafficLightConfigurationModal: React.FC<{
                     className="col-12"
                     valueDefault={configjson.maxyellow}
                     onChange={(value) => {
-                        if(value < 0) {
-                            setConfigjson({...configjson, maxyellow: value * -1})
+                        if (value < 0) {
+                            setConfigjson({ ...configjson, maxyellow: value * -1 })
                         } else {
-                            setConfigjson({...configjson, maxyellow: value})
+                            setConfigjson({ ...configjson, maxyellow: value })
                         }
                     }}
                 />
@@ -552,7 +552,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             communicationchanneltype: '',
             variables: [],
             buttons: [],
-            headervariables:[]
+            headervariables: []
         }
     });
 
@@ -560,7 +560,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
         control,
         name: 'variables',
     });
-    const { fields:buttons } = useFieldArray({
+    const { fields: buttons } = useFieldArray({
         control,
         name: 'buttons',
     });
@@ -629,7 +629,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 hsmtemplateid: 0,
                 variables: [],
                 buttons: [],
-                headervariables:[],
+                headervariables: [],
                 communicationchannelid: 0,
                 communicationchanneltype: ''
             })
@@ -657,22 +657,22 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
-            if(value?.header){
+            if (value?.header) {
                 const variablesListHeader = value?.header?.match(/({{)(.*?)(}})/g) || [];
                 const varaiblesCleanedHeader = variablesListHeader.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header||"" })));
-            }else{
-                setValue('headervariables',[])
+                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header || "" })));
+            } else {
+                setValue('headervariables', [])
             }
             if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some(element => element.btn.type === "dynamic")) {
                 const buttonsaux = value?.buttonsgeneric
                 let buttonsFiltered = []
-                buttonsaux.forEach((x,i)=>{
-                    const variablesListbtn  = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
+                buttonsaux.forEach((x, i) => {
+                    const variablesListbtn = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
                     const varaiblesCleanedbtn = variablesListbtn.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                    if(varaiblesCleanedbtn.length){
-                        const btns= varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url||"" }))||[]
-                        buttonsFiltered=[...buttonsFiltered, ...btns]
+                    if (varaiblesCleanedbtn.length) {
+                        const btns = varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url || "" })) || []
+                        buttonsFiltered = [...buttonsFiltered, ...btns]
                     }
                 })
                 setValue('buttons', buttonsFiltered);
@@ -704,7 +704,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 firstname: person.contact_name || "",
                 email: person.email || "",
                 parameters: [...data.variables, ...data.buttons, ...data.headervariables].map((v: any) => ({
-                    type: v?.type||"text",
+                    type: v?.type || "text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name
                 }))
@@ -759,11 +759,11 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                     optionDesc="name"
                     optionValue="id"
                 />
-            </div>  
-            {Boolean(fieldsheader.length) &&             
+            </div>
+            {Boolean(fieldsheader.length) &&
                 <FieldView
                     label={t(langKeys.header)}
-                    value={fieldsheader?.[0]?.header||""}
+                    value={fieldsheader?.[0]?.header || ""}
                 />
             }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, marginBottom: 16 }}>
@@ -866,8 +866,8 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                         <div key={item.id}>
                             <FieldView
-                                label={t(langKeys.button) + ` ${i+1}`}
-                                value={item?.url||""}
+                                label={t(langKeys.button) + ` ${i + 1}`}
+                                value={item?.url || ""}
                             />
                             <FieldSelect
                                 key={"var_" + item.id}

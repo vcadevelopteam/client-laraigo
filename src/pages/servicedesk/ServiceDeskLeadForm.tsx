@@ -262,7 +262,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
-                phone: person.phone?.replace("+",'') || "",
+                phone: person.phone?.replace("+", '') || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
@@ -432,7 +432,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         phone: lead.value?.phone || '',
         email: lead.value?.email || '',
     })
-    
+
     const openDialogInteractions = (row: any) => {
         setOpenModal(true);
         setRowSelected({ conversationid: getValues('conversationid'), displayname: values?.displayname, ticketnum: getValues('ticketnum') })
@@ -493,13 +493,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         register('phone');
         register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('personid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('personid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('leadgroups')//, { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('ticketnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('priority');
         register('email', {
             validate: {
-                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
+                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
             }
         });
         register('first_contact_date');
@@ -519,13 +519,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         const allOk = await trigger();
         if (allOk) {
             const data = getValues();
-            if (!data.priority){
+            if (!data.priority) {
                 dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.needslaconfig) }))
-            } 
-            else{
+            }
+            else {
 
                 const callback = () => {
-                    const cancelPhase = phases.data.find((x:any) => x.description.toLowerCase() === 'cancelado');
+                    const cancelPhase = phases.data.find((x: any) => x.description.toLowerCase() === 'cancelado');
                     if (cancelPhase?.columnid === data.columnid) {
                         data.status = "CERRADO";
                     }
@@ -548,7 +548,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     notes[i].media = urls.join(',');
                                 }
                             }
-    
+
                             return {
                                 header: insSDLead(data, data.operation),
                                 detail: [
@@ -559,7 +559,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         }, true));
                     }
                 };
-                
+
                 dispatch(manageConfirmation({
                     visible: true,
                     question: t(langKeys.confirmation_save),
@@ -579,10 +579,10 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 leadproduct: '',
                 supervisorid: user?.userid || 0,
                 all: false,
-                company:'',
-                groups:'',
+                company: '',
+                groups: '',
                 startdate: "",
-                enddate: "",  
+                enddate: "",
                 offset: -5,
             })));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
@@ -601,7 +601,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         dispatch(getImpact(getValuesFromDomain('IMPACTO')));
         dispatch(getPriority(getValuesFromDomain('PRIORIDAD')));
         dispatch(getCompany(getValuesFromDomain('EMPRESA')));
-        
+
         return () => {
             dispatch(resetGetLead());
             dispatch(resetSaveLead());
@@ -625,33 +625,33 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
 
-    function setcriticallity(impact:string, urgency:string, company: string){
-        if(!!impact && !!urgency && !!slarules){
-            let filtereddata= slarules.data.filter(x=>x.type === "SD" && x.company === company)
-            if(filtereddata.length>0){
-                let calcCriticallity=filtereddata?.[0].criticality.filter((x:any)=>x.impact===impact && x.urgency===urgency)
+    function setcriticallity(impact: string, urgency: string, company: string) {
+        if (!!impact && !!urgency && !!slarules) {
+            let filtereddata = slarules.data.filter(x => x.type === "SD" && x.company === company)
+            if (filtereddata.length > 0) {
+                let calcCriticallity = filtereddata?.[0].criticality.filter((x: any) => x.impact === impact && x.urgency === urgency)
                 let priority = calcCriticallity[0]?.priority
-                setValue('priority', priority||'')
-                if(priority){
+                setValue('priority', priority || '')
+                if (priority) {
                     let createdate = getValues("createdate")
-                    let servicetimes = filtereddata[0].service_times.filter((x:any)=>x.priority === priority)
-                    if(!!createdate && servicetimes.length>0){
+                    let servicetimes = filtereddata[0].service_times.filter((x: any) => x.priority === priority)
+                    if (!!createdate && servicetimes.length > 0) {
                         let first_contact_deadline = new Date(createdate)
                         let resolution_deadline = new Date(createdate)
-                        let umfirstreply = servicetimes[0].umfirstreply==="MINUTES"?60000:3600000
-                        let umsolutiontime = servicetimes[0].umsolutiontime==="MINUTES"?60000:3600000
-                        first_contact_deadline.setTime(first_contact_deadline.getTime() +Number(servicetimes[0].firstreply)*umfirstreply)
-                        resolution_deadline.setTime(resolution_deadline.getTime() +Number(servicetimes[0].solutiontime)*umsolutiontime)
-                        setValue('first_contact_deadline',first_contact_deadline.toISOString().replace("T"," "))
-                        setValue('resolution_deadline',resolution_deadline.toISOString().replace("T"," "))
+                        let umfirstreply = servicetimes[0].umfirstreply === "MINUTES" ? 60000 : 3600000
+                        let umsolutiontime = servicetimes[0].umsolutiontime === "MINUTES" ? 60000 : 3600000
+                        first_contact_deadline.setTime(first_contact_deadline.getTime() + Number(servicetimes[0].firstreply) * umfirstreply)
+                        resolution_deadline.setTime(resolution_deadline.getTime() + Number(servicetimes[0].solutiontime) * umsolutiontime)
+                        setValue('first_contact_deadline', first_contact_deadline.toISOString().replace("T", " "))
+                        setValue('resolution_deadline', resolution_deadline.toISOString().replace("T", " "))
                         trigger('first_contact_deadline')
                         trigger('resolution_deadline')
                     }
                 }
-            }else{
+            } else {
                 setValue('priority', '')
             }
-        }else{
+        } else {
             setValue('priority', '')
         }
         trigger('priority')
@@ -696,7 +696,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 type: lead.value?.type,
                 ticketnum: lead.value?.ticketnum,
                 createdate: lead.value?.createdate,
-                company: lead.value?.company||"",
+                company: lead.value?.company || "",
                 phone: lead.value?.phone,
                 impact: lead.value?.impact,
                 priority: lead.value?.priority,
@@ -721,7 +721,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 leadid: match.params.id,
                 phase: lead.value?.phase,
                 campaignid: lead.value?.campaignid,
-                personid: lead.value?.personid||0,
+                personid: lead.value?.personid || 0,
 
                 activities: [] as ICrmLeadActivitySave[],
                 notes: [] as ICrmLeadNoteSave[],
@@ -747,7 +747,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
 
     useEffect(() => {
         setExtraTriggers({
-            email:values?.email || "",
+            email: values?.email || "",
             phone: values?.phone || ""
         })
     }, [values]);
@@ -1032,7 +1032,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         >
                             <Trans i18nKey={langKeys.back} />
                         </Button>}
-                        {(edit && !!extraTriggers.phone && !visorSD) &&                      
+                        {(edit && !!extraTriggers.phone && !visorSD) &&
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -1045,20 +1045,20 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <Trans i18nKey={langKeys.send_hsm} />
                             </Button>
                         }
-                        {(edit && !!extraTriggers.email && !visorSD && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
+                        {(edit && !!extraTriggers.email && !visorSD && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&
                             <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("MAIL");
-                            }}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("MAIL");
+                                }}
                             >
                                 <Trans i18nKey={langKeys.send_mail} />
                             </Button>
                         }
-                        {(edit && !!extraTriggers.phone && !visorSD) &&                      
+                        {(edit && !!extraTriggers.phone && !visorSD) &&
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -1075,9 +1075,9 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={async() => {
+                                onClick={async () => {
                                     const allOk = await trigger();
-                                    if(allOk){
+                                    if (allOk) {
                                         setOpenModalChangePhase(true);
                                     }
                                 }}
@@ -1109,15 +1109,15 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     valueDefault={getValues('sd_request')}
                                     disabled={true}
                                 />
-                                {!(lead?.value?.ticketnum)?
-                                        <FieldEdit
-                                            label={t(langKeys.ticket)}
-                                            className={classes.field}
-                                            onChange={(value) => setValue('ticketnum', value)}
-                                            valueDefault={getValues('ticketnum')}
-                                            disabled={visorSD}
-                                            error={errors?.ticketnum?.message}
-                                        />
+                                {!(lead?.value?.ticketnum) ?
+                                    <FieldEdit
+                                        label={t(langKeys.ticket)}
+                                        className={classes.field}
+                                        onChange={(value) => setValue('ticketnum', value)}
+                                        valueDefault={getValues('ticketnum')}
+                                        disabled={visorSD}
+                                        error={errors?.ticketnum?.message}
+                                    />
                                     :
                                     <div className={classes.field}>
                                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
@@ -1167,12 +1167,12 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('company')}
                                     onChange={(value) => {
-                                        setValue('company', value.domainvalue||"");
-                                        setcriticallity(getValues("impact"), getValues('urgency'), value.domainvalue||"")
+                                        setValue('company', value.domainvalue || "");
+                                        setcriticallity(getValues("impact"), getValues('urgency'), value.domainvalue || "")
                                     }}
                                     error={errors?.company?.message}
                                     data={dataCompany.data}
-                                    disabled={(edit && !!lead?.value?.company)|| visorSD}
+                                    disabled={(edit && !!lead?.value?.company) || visorSD}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />
@@ -1183,7 +1183,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     fullWidth
                                     defaultCountry={user!.countrycode.toLowerCase()}
                                     className={classes.field}
-                                    onChange={(v: any) => {setValue('phone', v); setExtraTriggers({...extraTriggers, phone: v || ''})}}
+                                    onChange={(v: any) => { setValue('phone', v); setExtraTriggers({ ...extraTriggers, phone: v || '' }) }}
                                     error={errors?.phone?.message}
                                     disabled={visorSD}
                                     InputProps={{
@@ -1192,12 +1192,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                             <InputAdornment position="end">
                                                 {(!voxiConnection.error && userConnected) &&
                                                     <IconButton size="small" onClick={() => {
-                                                        if(voxiConnection.error){
-                                                            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
-                                                        }else {
+                                                        if (voxiConnection.error) {
+                                                            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
+                                                        } else {
                                                             dispatch(setModalCall(true))
                                                             dispatch(setPhoneNumber(getValues("phone")))
-                                                        }}}>
+                                                        }
+                                                    }}>
                                                         <PhoneIcon />
                                                     </IconButton>
                                                 }
@@ -1226,7 +1227,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('first_contact_date', value);
                                     }}
-                                    valueDefault={(convertLocalDate(lead.value?.first_contact_date||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(lead.value?.first_contact_date || "").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
@@ -1236,7 +1237,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('resolution_date', value);
                                     }}
-                                    valueDefault={(convertLocalDate(lead.value?.resolution_date||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(lead.value?.resolution_date || "").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldSelect
@@ -1283,7 +1284,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('type')}
                                     data={
-                                        [{domainvalue: "SS"},{domainvalue: "INC"}]
+                                        [{ domainvalue: "SS" }, { domainvalue: "INC" }]
                                     }
                                     disabled={visorSD}
                                     error={errors?.type?.message}
@@ -1297,13 +1298,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => {
                                         setValue('createdate', value);
                                     }}
-                                    valueDefault={(convertLocalDate(lead.value?.createdate||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(lead.value?.createdate || "").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.email)}
                                     className={classes.field}
-                                    onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
+                                    onChange={(value) => { setValue('email', value); setExtraTriggers({ ...extraTriggers, email: value || '' }) }}
                                     valueDefault={getValues('email')}
                                     error={errors?.email?.message}
                                     disabled
@@ -1340,7 +1341,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => {
                                         setValue('first_contact_deadline', value);
                                     }}
-                                    valueDefault={(convertLocalDate(getValues("first_contact_deadline")||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(getValues("first_contact_deadline") || "").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
@@ -1349,7 +1350,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => {
                                         setValue('resolution_deadline', value);
                                     }}
-                                    valueDefault={(convertLocalDate(getValues("resolution_deadline")||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(getValues("resolution_deadline") || "").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldMultiSelectFreeSolo
@@ -1466,14 +1467,14 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 <DialogSendTemplate
                     openModal={openDialogTemplate}
                     setOpenModal={setOpenDialogTemplate}
-                    persons={[{...lead?.value, ...extraTriggers}]}
+                    persons={[{ ...lead?.value, ...extraTriggers }]}
                     type={typeTemplate}
-                />  
+                />
                 <DialogInteractions
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     ticket={rowSelected}
-                />                  
+                />
                 <DialogChangePhase
                     openModal={openModalChangePhase}
                     data={phasemenu}
@@ -1669,186 +1670,186 @@ interface TabPanelLogNoteProps {
     AdditionalButtons?: () => JSX.Element | null;
 }
 
-const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?:boolean, leadId: number,data:any, columnid: any,column_uuid:string, onSubmit?: (columndata:any) => void}> =
-    ({openModal,loading, leadId, onSubmit, setOpenModal, data, columnid,column_uuid})=>{
-    const { t } = useTranslation();
-    const classes = useTabPanelLogNoteStyles();
-    const classes2 = useLeadFormStyles();
-    const [noteDescription, setNoteDescription] = useState("");
-    const [media, setMedia] = useState<File[] | null>(null);
-    const saveNote = useSelector(state => state.servicedesk.saveLeadNote);
-    const [datamanager, setDatamanager] = useState({
-        columnid: 0,
-        column_uuid: ''
-    });
-    
-    useEffect(() => {
-        setDatamanager({
-            columnid: columnid,
-            column_uuid: column_uuid
-        })
-    }, [columnid]);
+const DialogChangePhase: FC<{ openModal: any, setOpenModal: (a: any) => void, loading?: boolean, leadId: number, data: any, columnid: any, column_uuid: string, onSubmit?: (columndata: any) => void }> =
+    ({ openModal, loading, leadId, onSubmit, setOpenModal, data, columnid, column_uuid }) => {
+        const { t } = useTranslation();
+        const classes = useTabPanelLogNoteStyles();
+        const classes2 = useLeadFormStyles();
+        const [noteDescription, setNoteDescription] = useState("");
+        const [media, setMedia] = useState<File[] | null>(null);
+        const saveNote = useSelector(state => state.servicedesk.saveLeadNote);
+        const [datamanager, setDatamanager] = useState({
+            columnid: 0,
+            column_uuid: ''
+        });
 
-    const dispatch = useDispatch();
+        useEffect(() => {
+            setDatamanager({
+                columnid: columnid,
+                column_uuid: column_uuid
+            })
+        }, [columnid]);
 
-    useEffect(() => {
-        if (saveNote.loading) return;
-        if (saveNote.error) {
-            const errormessage = t(saveNote.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
-            dispatch(showSnackbar({
-                message: errormessage,
-                severity: "error",
-                show: true,
-            }));
-        } else if (saveNote.success) {
-            setOpenModal(false);
-            dispatch(showSnackbar({
-                message: "Se registró la nota",
-                severity: "success",
-                show: true,
-            }));
-            onSubmit?.(datamanager);
+        const dispatch = useDispatch();
+
+        useEffect(() => {
+            if (saveNote.loading) return;
+            if (saveNote.error) {
+                const errormessage = t(saveNote.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+                dispatch(showSnackbar({
+                    message: errormessage,
+                    severity: "error",
+                    show: true,
+                }));
+            } else if (saveNote.success) {
+                setOpenModal(false);
+                dispatch(showSnackbar({
+                    message: "Se registró la nota",
+                    severity: "success",
+                    show: true,
+                }));
+                onSubmit?.(datamanager);
+            }
+        }, [saveNote, dispatch]);
+
+        const deleteMediaFile = useCallback((fileToRemove: File) => {
+            setMedia(prev => prev?.filter(x => x !== fileToRemove) || null);
+        }, []);
+
+        const onChangeMediaInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+            if (!e.target.files) return;
+
+            const newFiles: File[] = [];
+            for (let i = 0; i < e.target.files.length; i++) {
+                newFiles.push(e.target.files[i]);
+            }
+
+            setMedia(prev => [...(prev || []), ...newFiles]);
+        }, []);
+
+        const handleInputMedia = useCallback(() => {
+            const input = document.getElementById('noteMediaInput2') as HTMLInputElement;
+            input.value = "";
+            input!.click();
+        }, []);
+
+        const handleSubmit = useCallback(() => {
+            if (!(datamanager.column_uuid !== "")) {
+                dispatch(showSnackbar({
+                    message: t(langKeys.mustselectphase),
+                    severity: "warning",
+                    show: true,
+                }));
+                return null;
+            }
+            if (!(datamanager.column_uuid !== column_uuid)) {
+                dispatch(showSnackbar({
+                    message: t(langKeys.haventchangedphase),
+                    severity: "warning",
+                    show: true,
+                }));
+                return null;
+            }
+            if (!noteDescription) {
+                dispatch(showSnackbar({
+                    message: t(langKeys.youmustfilldesc),
+                    severity: "warning",
+                    show: true,
+                }));
+                return null;
+            }
+            const newNote: ICrmLeadNoteSave = {
+                leadid: leadId,
+                leadnotesid: 0,
+                description: noteDescription,
+                type: "NINGUNO",
+                status: "ACTIVO",
+                media,
+                username: null,
+                operation: "INSERT",
+            };
+            const body = leadLogNotesIns(newNote);
+            dispatch(saveLeadLogNote(body));
+
+            handleCleanMediaInput();
+            setNoteDescription("");
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [noteDescription, media, dispatch, datamanager]);
+
+        const handleCleanMediaInput = () => {
+            if (media === null) return;
+            const input = document.getElementById('noteMediaInput2') as HTMLInputElement;
+            input.value = "";
+            setMedia(null);
         }
-    }, [saveNote, dispatch]);
 
-    const deleteMediaFile = useCallback((fileToRemove: File) => {
-        setMedia(prev => prev?.filter(x => x !== fileToRemove) || null);
-    }, []);
-    
-    const onChangeMediaInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files) return;
-
-        const newFiles: File[] = [];
-        for (let i = 0; i < e.target.files.length; i++) {
-            newFiles.push(e.target.files[i]);
-        }
-
-        setMedia(prev => [...(prev || []), ...newFiles]);
-    }, []);
-    
-    const handleInputMedia = useCallback(() => {
-        const input = document.getElementById('noteMediaInput2') as HTMLInputElement;
-        input.value = "";
-        input!.click();
-    }, []);
-
-    const handleSubmit = useCallback(() => {
-        if(!(datamanager.column_uuid !== "")){
-            dispatch(showSnackbar({
-                message: t(langKeys.mustselectphase),
-                severity: "warning",
-                show: true,
-            }));
-            return null;
-        }
-        if(!(datamanager.column_uuid !== column_uuid)){
-            dispatch(showSnackbar({
-                message: t(langKeys.haventchangedphase),
-                severity: "warning",
-                show: true,
-            }));
-            return null;
-        }
-        if(!noteDescription){
-            dispatch(showSnackbar({
-                message: t(langKeys.youmustfilldesc),
-                severity: "warning",
-                show: true,
-            }));
-            return null;
-        }
-        const newNote: ICrmLeadNoteSave = {
-            leadid: leadId,
-            leadnotesid: 0,
-            description: noteDescription,
-            type: "NINGUNO",
-            status: "ACTIVO",
-            media,
-            username: null,
-            operation: "INSERT",
-        };
-        const body = leadLogNotesIns(newNote);
-        dispatch(saveLeadLogNote(body));
-
-        handleCleanMediaInput();
-        setNoteDescription("");
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [noteDescription, media, dispatch, datamanager]);
-    
-    const handleCleanMediaInput = () => {
-        if (media === null) return;
-        const input = document.getElementById('noteMediaInput2') as HTMLInputElement;
-        input.value = "";
-        setMedia(null);
-    }
-
-    return <DialogZyx
-        open={openModal}
-        title={t(langKeys.phasechange)}
-        buttonText1={t(langKeys.cancel)}
-        buttonText2={t(langKeys.save)}
-        handleClickButton1={() => setOpenModal(false)}
-        handleClickButton2={handleSubmit}
-        maxWidth="md"
-    >
-        <div className="row-zyx">
-            <div className={classes.row} style={{paddingBottom: 10}}>
-                <FieldSelect
-                    label={t(langKeys.phase)}
-                    className={classes2.field}
-                    valueDefault={datamanager.column_uuid}
-                    onChange={(e) => {
-                        setDatamanager({columnid: Number(e?.columnid || "0"), column_uuid: e?.column_uuid || ""});
-                    }}
-                    data={data}
-                    optionDesc="description"
-                    optionValue="column_uuid"
-                />
-            </div>
-            <div className={classes.row}>
-                <Avatar className={classes.avatar} />
-                <div style={{ width: '1em' }} />
-                <div className={classes.column}>
-                    <TextField
-                        placeholder={t(langKeys.logAnInternalNote)}
-                        minRows={4}
-                        fullWidth
-                        value={noteDescription}
-                        onChange={e => setNoteDescription(e.target.value)}
-                        disabled={loading}
+        return <DialogZyx
+            open={openModal}
+            title={t(langKeys.phasechange)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={handleSubmit}
+            maxWidth="md"
+        >
+            <div className="row-zyx">
+                <div className={classes.row} style={{ paddingBottom: 10 }}>
+                    <FieldSelect
+                        label={t(langKeys.phase)}
+                        className={classes2.field}
+                        valueDefault={datamanager.column_uuid}
+                        onChange={(e) => {
+                            setDatamanager({ columnid: Number(e?.columnid || "0"), column_uuid: e?.column_uuid || "" });
+                        }}
+                        data={data}
+                        optionDesc="description"
+                        optionValue="column_uuid"
                     />
-                    <div style={{ height: 4 }} />
-                    {media && <FileCollectionPreview files={media} onCloseFile={deleteMediaFile} />}
-                    {media && <div style={{ height: 4 }} />}
-                    <input
-                        accept="file/*"
-                        style={{ display: 'none' }}
-                        id="noteMediaInput2"
-                        type="file"
-                        onChange={onChangeMediaInput}
-                        multiple
-                    />
-                    <div className={classes.row}>
-                        <EmojiPickerZyx
-                            emojisIndexed={EMOJISINDEXED} 
-                            style={{ zIndex: 10 }}
-                            onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
-                            icon={onClick => (
-                                <IconButton color="primary" onClick={onClick} disabled={loading}>
-                                    <Mood />
-                                </IconButton>
-                            )}
+                </div>
+                <div className={classes.row}>
+                    <Avatar className={classes.avatar} />
+                    <div style={{ width: '1em' }} />
+                    <div className={classes.column}>
+                        <TextField
+                            placeholder={t(langKeys.logAnInternalNote)}
+                            minRows={4}
+                            fullWidth
+                            value={noteDescription}
+                            onChange={e => setNoteDescription(e.target.value)}
+                            disabled={loading}
                         />
-                        <div style={{ width: '0.5em' }} />
-                        <IconButton onClick={handleInputMedia} color="primary" disabled={loading}>
-                            <AttachFile />
-                        </IconButton>
+                        <div style={{ height: 4 }} />
+                        {media && <FileCollectionPreview files={media} onCloseFile={deleteMediaFile} />}
+                        {media && <div style={{ height: 4 }} />}
+                        <input
+                            accept="file/*"
+                            style={{ display: 'none' }}
+                            id="noteMediaInput2"
+                            type="file"
+                            onChange={onChangeMediaInput}
+                            multiple
+                        />
+                        <div className={classes.row}>
+                            <EmojiPickerZyx
+                                emojisIndexed={EMOJISINDEXED}
+                                style={{ zIndex: 10 }}
+                                onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
+                                icon={onClick => (
+                                    <IconButton color="primary" onClick={onClick} disabled={loading}>
+                                        <Mood />
+                                    </IconButton>
+                                )}
+                            />
+                            <div style={{ width: '0.5em' }} />
+                            <IconButton onClick={handleInputMedia} color="primary" disabled={loading}>
+                                <AttachFile />
+                            </IconButton>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </DialogZyx>
-}
+        </DialogZyx>
+    }
 
 export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, readOnly, leadId, onSubmit, AdditionalButtons }) => {
     const classes = useTabPanelLogNoteStyles();
@@ -1931,7 +1932,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                             />
                             <div className={classes.row}>
                                 <EmojiPickerZyx
-                                    emojisIndexed={EMOJISINDEXED} 
+                                    emojisIndexed={EMOJISINDEXED}
                                     style={{ zIndex: 10 }}
                                     onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
                                     icon={onClick => (

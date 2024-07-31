@@ -141,25 +141,25 @@ const useLeadFormStyles = makeStyles(theme => ({
     }
 }));
 
-function returnpriority(prio:number) {
-    switch (prio){
+function returnpriority(prio: number) {
+    switch (prio) {
         case 3:
             return 'HIGH'
         case 2:
             return 'MEDIUM'
         default:
             return "LOW"
-    }    
+    }
 }
-function returnNumberprio(prio:string) {
-    switch (prio){
+function returnNumberprio(prio: string) {
+    switch (prio) {
         case 'HIGH':
             return 3
         case 'MEDIUM':
             return 2
         default:
             return 1
-    }    
+    }
 }
 interface DialogSendTemplateProps {
     setOpenModal: (param: any) => void;
@@ -195,7 +195,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
             variables: [],
             buttons: [],
-            headervariables:[]
+            headervariables: []
         }
     });
 
@@ -203,7 +203,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         control,
         name: 'variables',
     });
-    const { fields:buttons } = useFieldArray({
+    const { fields: buttons } = useFieldArray({
         control,
         name: 'buttons',
     });
@@ -245,7 +245,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 hsmtemplatename: '',
                 variables: [],
                 buttons: [],
-                headervariables:[],
+                headervariables: [],
                 communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
                 communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
             })
@@ -277,22 +277,22 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
-            if(value?.header){
+            if (value?.header) {
                 const variablesListHeader = value?.header?.match(/({{)(.*?)(}})/g) || [];
                 const varaiblesCleanedHeader = variablesListHeader.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header||"" })));
-            }else{
-                setValue('headervariables',[])
+                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header || "" })));
+            } else {
+                setValue('headervariables', [])
             }
             if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some(element => element.btn.type === "dynamic")) {
                 const buttonsaux = value?.buttonsgeneric
                 let buttonsFiltered = []
-                buttonsaux.forEach((x,i)=>{
-                    const variablesListbtn  = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
+                buttonsaux.forEach((x, i) => {
+                    const variablesListbtn = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
                     const varaiblesCleanedbtn = variablesListbtn.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                    if(varaiblesCleanedbtn.length){
-                        const btns= varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url||"" }))||[]
-                        buttonsFiltered=[...buttonsFiltered, ...btns]
+                    if (varaiblesCleanedbtn.length) {
+                        const btns = varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url || "" })) || []
+                        buttonsFiltered = [...buttonsFiltered, ...btns]
                     }
                 })
                 setValue('buttons', buttonsFiltered);
@@ -323,12 +323,12 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
-                phone: person.phone?.replace("+",'') || "",
+                phone: person.phone?.replace("+", '') || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
                 parameters: [...data.variables, ...data.buttons, ...data.headervariables].map((v: any) => ({
-                    type: v?.type||"text",
+                    type: v?.type || "text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name
                 }))
@@ -385,11 +385,11 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                     optionDesc="name"
                     optionValue="id"
                 />
-            </div>  
-            {Boolean(fieldsheader.length) &&             
+            </div>
+            {Boolean(fieldsheader.length) &&
                 <FieldView
                     label={t(langKeys.header)}
-                    value={fieldsheader?.[0]?.header||""}
+                    value={fieldsheader?.[0]?.header || ""}
                 />
             }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, marginBottom: 16 }}>
@@ -493,8 +493,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                         <div key={item.id}>
                             <FieldView
-                                label={t(langKeys.button) + ` ${i+1}`}
-                                value={item?.url||""}
+                                label={t(langKeys.button) + ` ${i + 1}`}
+                                value={item?.url || ""}
                             />
                             <FieldSelect
                                 key={"var_" + item.id}
@@ -567,7 +567,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
     const personTypeDomain = useSelector(state => state.lead.personTypeDomain);
-    
+
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
@@ -577,25 +577,25 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [tableDataVariables, setTableDataVariables] = useState<Dictionary[]>([]);
     const domains = useSelector(state => state.person.editableDomains);
-        
+
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
         phone: lead.value?.phone || '',
         email: lead.value?.email || '',
     })
-    
+
     useEffect(() => {
         dispatch(getDomainsByTypename());
     }, []);
-    
-    useEffect(() => {
-        if (domains.value?.customVariablesLead && lead) {
-            setTableDataVariables(domains.value.customVariablesLead.map(x=>({...x,value: lead?.value?.variablecontext?.[x.variablename]||""})))
-        }
-    }, [lead,domains]);
 
     useEffect(() => {
-        if(!domains.loading && !domains.error && domains.value?.customVariablesLead){
+        if (domains.value?.customVariablesLead && lead) {
+            setTableDataVariables(domains.value.customVariablesLead.map(x => ({ ...x, value: lead?.value?.variablecontext?.[x.variablename] || "" })))
+        }
+    }, [lead, domains]);
+
+    useEffect(() => {
+        if (!domains.loading && !domains.error && domains.value?.customVariablesLead) {
             dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariablesLead?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
         }
     }, [domains]);
@@ -659,8 +659,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         register('leadproduct', { validate: (value) => (value?.length) || t(langKeys.field_required) });
         register('email', {
             validate: {
-                hasvalue:  (value) => ((value?.length) ? true : t(langKeys.field_required) + ""),
-                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
+                hasvalue: (value) => ((value?.length) ? true : t(langKeys.field_required) + ""),
+                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
             }
         });
     }, [register, t]);
@@ -680,8 +680,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 }
                 if (edit) {
                     dispatch(saveLeadAction([
-                        insLead2({...data,
-                            variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                        insLead2({
+                            ...data,
+                            variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {})
                         }, data.operation),
                         ...leadProductsChanges.current.map(leadHistoryIns),
                         ...leadTagsChanges.current.map(leadHistoryIns),
@@ -702,8 +703,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         }
 
                         return {
-                            header: insLead2({...data,
-                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                            header: insLead2({
+                                ...data,
+                                variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {})
                             }, data.operation),
                             detail: [
                                 ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
@@ -713,15 +715,15 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     }, true));
                 }
             };
-            
-            if (edit || values?.displayname){
+
+            if (edit || values?.displayname) {
                 dispatch(manageConfirmation({
                     visible: true,
                     question: t(langKeys.confirmation_save),
                     callback
                 }))
-            }else{
-                dispatch(showSnackbar({ show: true, severity: "warning", message:  t(langKeys.mustassigncustomer)}))
+            } else {
+                dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.mustassigncustomer) }))
             }
         }
     };
@@ -738,7 +740,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 userid: "",
                 supervisorid: user?.userid || 0, // Obligatorio sin ser cero
                 ordertype: '',
-                orderby: '', 
+                orderby: '',
                 persontype: "",
                 all: false,
             })));
@@ -756,7 +758,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getLeadChannels());
         dispatch(getPersonType(getValuesFromDomain('TIPOPERSONA')));
         dispatch(getCalendar(selCalendar(0)));
-        
+
         return () => {
             dispatch(resetGetLead());
             dispatch(resetSaveLead());
@@ -810,7 +812,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
         } else if (lead.value && edit) {
             setValues(lead.value!);
-            setprioritycontrol(returnNumberprio(lead.value?.priority||""))
+            setprioritycontrol(returnNumberprio(lead.value?.priority || ""))
             reset({
                 description: lead.value?.description,
                 status: lead.value?.status,
@@ -837,7 +839,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 leadproduct: lead.value?.leadproduct || '',
                 persontype: lead.value?.persontype || '',
                 campaignid: lead.value?.campaignid,
-                personid: lead.value?.personid||0,
+                personid: lead.value?.personid || 0,
 
                 activities: [] as ICrmLeadActivitySave[],
                 notes: [] as ICrmLeadNoteSave[],
@@ -863,7 +865,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     useEffect(() => {
         setExtraTriggers({
-            email:values?.email || "",
+            email: values?.email || "",
             phone: values?.phone || ""
         })
     }, [values]);
@@ -1146,7 +1148,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 return 4;
         }
     }
-    
+
     const openDialogInteractions = (row: any) => {
         setOpenModal(true);
         setRowSelected({ conversationid: getValues('conversationid'), displayname: values?.displayname, ticketnum: getValues('ticketnum') })
@@ -1227,71 +1229,71 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             <Trans i18nKey={langKeys.back} />
                         </Button>}
                         {!isIncremental &&
-                        <>
-                            {(edit && !!extraTriggers.phone) &&                      
-                                <Button
+                            <>
+                                {(edit && !!extraTriggers.phone) &&
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                                        onClick={() => {
+                                            setOpenDialogTemplate(true);
+                                            setTypeTemplate("HSM");
+                                        }}
+                                    >
+                                        <Trans i18nKey={langKeys.send_hsm} />
+                                    </Button>
+                                }
+                                {(edit && !!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                                        onClick={() => {
+                                            setOpenDialogTemplate(true);
+                                            setTypeTemplate("MAIL");
+                                        }}
+                                    >
+                                        <Trans i18nKey={langKeys.send_mail} />
+                                    </Button>
+                                }
+                                {(edit && !!extraTriggers.phone) &&
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                                        onClick={() => {
+                                            setOpenDialogTemplate(true);
+                                            setTypeTemplate("SMS");
+                                        }}
+                                    >
+                                        <Trans i18nKey={langKeys.send_sms} />
+                                    </Button>
+                                }
+                                {(edit && lead.value && !isStatusClosed()) && (
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        color="secondary"
+                                        startIcon={<ArchiveIcon />}
+                                        onClick={handleCloseLead}
+                                        disabled={!canBeSentToHistory || iSProcessLoading()}
+                                    >
+                                        <Trans i18nKey={langKeys.sendToHistory} />
+                                    </Button>
+                                )}
+                                {(!isStatusClosed() && !lead.loading) && <Button
+                                    className={classes.button}
                                     variant="contained"
                                     color="primary"
-                                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                                    onClick={() => {
-                                        setOpenDialogTemplate(true);
-                                        setTypeTemplate("HSM");
-                                    }}
-                                >
-                                    <Trans i18nKey={langKeys.send_hsm} />
-                                </Button>
-                            }
-                            {(edit && !!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
-                                <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                                onClick={() => {
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("MAIL");
-                                }}
-                                >
-                                    <Trans i18nKey={langKeys.send_mail} />
-                                </Button>
-                            }
-                            {(edit && !!extraTriggers.phone) &&                      
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                                    onClick={() => {
-                                        setOpenDialogTemplate(true);
-                                        setTypeTemplate("SMS");
-                                    }}
-                                >
-                                    <Trans i18nKey={langKeys.send_sms} />
-                                </Button>
-                            }
-                            {(edit && lead.value && !isStatusClosed()) && (
-                                <Button
-                                    variant="contained"
                                     type="button"
-                                    color="secondary"
-                                    startIcon={<ArchiveIcon />}
-                                    onClick={handleCloseLead}
-                                    disabled={!canBeSentToHistory || iSProcessLoading()}
+                                    startIcon={<SaveIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                    disabled={iSProcessLoading()}
+                                    onClick={onSubmit}
                                 >
-                                    <Trans i18nKey={langKeys.sendToHistory} />
-                                </Button>
-                            )}
-                            {(!isStatusClosed() && !lead.loading) && <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="button"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                                disabled={iSProcessLoading()}
-                                onClick={onSubmit}
-                            >
-                                <Trans i18nKey={langKeys.save} />
-                            </Button>}
-                        </>}
+                                    <Trans i18nKey={langKeys.save} />
+                                </Button>}
+                            </>}
                     </div>
                     <div style={{ height: '1em' }} />
                     <Grid container direction="row" style={{ backgroundColor: 'white', padding: '16px' }}>
@@ -1308,14 +1310,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                 />
-                                {!(lead?.value?.ticketnum)?
-                                        <FieldEdit
-                                            label={t(langKeys.ticket)}
-                                            className={classes.field}
-                                            onChange={(value) => setValue('ticketnum', value)}
-                                            valueDefault={getValues('ticketnum')}
-                                            error={errors?.ticketnum?.message}
-                                        />
+                                {!(lead?.value?.ticketnum) ?
+                                    <FieldEdit
+                                        label={t(langKeys.ticket)}
+                                        className={classes.field}
+                                        onChange={(value) => setValue('ticketnum', value)}
+                                        valueDefault={getValues('ticketnum')}
+                                        error={errors?.ticketnum?.message}
+                                    />
                                     :
                                     <div className={classes.field}>
                                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
@@ -1332,7 +1334,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldEdit
                                     label={t(langKeys.email)}
                                     className={classes.field}
-                                    onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
+                                    onChange={(value) => { setValue('email', value); setExtraTriggers({ ...extraTriggers, email: value || '' }) }}
                                     valueDefault={getValues('email')}
                                     error={errors?.email?.message}
                                     disabled={isIncremental}
@@ -1441,7 +1443,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                         label={t(langKeys.customer)}
                                                         value={values?.displayname}
                                                     />
-                                                </div>                                                
+                                                </div>
                                                 {(!!lead?.value?.personid) && <IconButton size="small" disabled={isIncremental} onClick={(e) => {
                                                     e.preventDefault();
                                                     history.push(`/person/${lead?.value?.personid}`)
@@ -1481,7 +1483,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     disabled={isIncremental}
                                     defaultCountry={user!.countrycode.toLowerCase()}
                                     className={classes.field}
-                                    onChange={(v: any) => {setValue('phone', v); setExtraTriggers({...extraTriggers, phone: v || ''})}}
+                                    onChange={(v: any) => { setValue('phone', v); setExtraTriggers({ ...extraTriggers, phone: v || '' }) }}
                                     error={errors?.phone?.message}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
@@ -1489,12 +1491,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                             <InputAdornment position="end">
                                                 {(!voxiConnection.error && userConnected) &&
                                                     <IconButton disabled={isIncremental} size="small" onClick={() => {
-                                                        if(voxiConnection.error){
-                                                            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
-                                                        }else {
+                                                        if (voxiConnection.error) {
+                                                            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
+                                                        } else {
                                                             dispatch(setModalCall(true))
                                                             dispatch(setPhoneNumber(getValues("phone")))
-                                                        }}}>
+                                                        }
+                                                    }}>
                                                         <PhoneIcon />
                                                     </IconButton>
                                                 }
@@ -1557,8 +1560,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         disabled={isIncremental}
                                         value={prioritycontrol}
                                         onChange={(event, newValue) => {
-                                            setValue('priority', returnpriority(newValue||0))
-                                            setprioritycontrol(newValue||0)
+                                            setValue('priority', returnpriority(newValue || 0))
+                                            setprioritycontrol(newValue || 0)
                                         }}
                                         readOnly={isStatusClosed() || iSProcessLoading()}
                                     />
@@ -1626,8 +1629,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <Trans i18nKey={langKeys.history} />
                                 </div>
                             )}
-                            />
-                        )}
+                        />
+                    )}
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -1695,21 +1698,21 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 )}
                 <AntTabPanel index={3} currentIndex={tabIndex}>
                     <TabCustomVariables
-                        tableData={tableDataVariables} 
+                        tableData={tableDataVariables}
                         setTableData={setTableDataVariables}
                     />
                 </AntTabPanel>
                 <DialogSendTemplate
                     openModal={openDialogTemplate}
                     setOpenModal={setOpenDialogTemplate}
-                    persons={[{...lead?.value, ...extraTriggers}]}
+                    persons={[{ ...lead?.value, ...extraTriggers }]}
                     type={typeTemplate}
                 />
                 <DialogInteractions
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     ticket={rowSelected}
-                />         
+                />
             </div>
         </MuiPickersUtilsProvider>
     );
@@ -1974,7 +1977,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                             />
                             <div className={classes.row}>
                                 <EmojiPickerZyx
-                                    emojisIndexed={EMOJISINDEXED} 
+                                    emojisIndexed={EMOJISINDEXED}
                                     style={{ zIndex: 10 }}
                                     onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
                                     icon={onClick => (
@@ -2373,18 +2376,19 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             hsmtemplatetype: activity?.hsmtemplatetype || "",
             variables: [],
             calendar: activity?.calendar || 0,
+            linkcalendar: "",
             calendarbookingid: activity?.calendarbookingid || 0,
         },
     });
     useEffect(() => {
-        if(open && blockEditSummary){
+        if (open && blockEditSummary) {
             const descripcion = getValues2("description");
             let primeros20Caracteres = descripcion.slice(0, 20);
-            if(descripcion.length > 20) primeros20Caracteres = primeros20Caracteres+"..."
-            setValue("description",primeros20Caracteres)
-            setValue("assigneduser",getValues2("userid"))
+            if (descripcion.length > 20) primeros20Caracteres = primeros20Caracteres + "..."
+            setValue("description", primeros20Caracteres)
+            setValue("assigneduser", getValues2("userid"))
         }
-    }, [open,blockEditSummary]);
+    }, [open, blockEditSummary]);
 
     const { fields } = useFieldArray({
         control,
@@ -2438,7 +2442,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             variables: [],
             calendar: 0,
             linkcalendar: "",
-            calendarbookingid: 0
+            calendarbookingid: 0,
         });
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2470,6 +2474,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             variables: [],
             calendar: activity?.calendar || 0,
             linkcalendar: "",
+            calendarbookingid: activity?.calendarbookingid || 0,
         });
 
         setBodyMessage(template?.body || "")
@@ -2506,72 +2511,72 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     }, [open, userid, leadid, advisers, setValue]);
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
-        handleSubmit((values) => {            
-            if(values.type === "appointment" && values.linkcalendar){
+        handleSubmit((values) => {
+            if (values.type === "appointment" && values.linkcalendar) {
                 let calendarid = 0
-                setValue("calendarbookingid",0)
+                setValue("calendarbookingid", 0)
                 const url = "https://" + values.linkcalendar + "/?" +
-                "n=" + encodeURIComponent(otherData.displayname) +
-                "&t=" + encodeURIComponent(otherData.phone) +
-                "&c=" + encodeURIComponent(otherData.email);
+                    "n=" + encodeURIComponent(otherData.displayname) +
+                    "&t=" + encodeURIComponent(otherData.phone) +
+                    "&c=" + encodeURIComponent(otherData.email);
                 const win = window.open(url, '_blank');
                 dispatch(showBackdrop(true))
                 window.addEventListener('message', (event) => {
-                  if (event.source === win) {
-                    calendarid=event.data
-                    setValue("calendarbookingid",calendarid)
-                    const bb = "";            
-                    if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
-                        const supervisorid = advisers.data.find(x => x.userid === values.assigneduser)?.supervisorid || 0;
-                        const data = {
-                            leadid: lead.value?.leadid || 0,
-                            leadname: lead.value?.description,
-                            description: values.description,
-                            duedate: values.duedate,
-                            assigneduser: values.assigneduser,
-                            userid: values.assigneduser, //quien va a recibir la notificacion
-                            supervisorid,
-                            calendarbookingid: calendarid,
-                            assignto: values.assignto,
-                            status: "PROGRAMADO",
-                            type: "automated",
-                            feedback: "",
-                            notificationtype: "LEADACTIVITY"
+                    if (event.source === win) {
+                        calendarid = event.data
+                        setValue("calendarbookingid", calendarid)
+                        const bb = "";
+                        if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
+                            const supervisorid = advisers.data.find(x => x.userid === values.assigneduser)?.supervisorid || 0;
+                            const data = {
+                                leadid: lead.value?.leadid || 0,
+                                leadname: lead.value?.description,
+                                description: values.description,
+                                duedate: values.duedate,
+                                assigneduser: values.assigneduser,
+                                userid: values.assigneduser, //quien va a recibir la notificacion
+                                supervisorid,
+                                calendarbookingid: calendarid,
+                                assignto: values.assignto,
+                                status: "PROGRAMADO",
+                                type: "automated",
+                                feedback: "",
+                                notificationtype: "LEADACTIVITY"
+                            }
+                            dispatch(emitEvent({
+                                event: 'newNotification',
+                                data
+                            }))
                         }
-                        dispatch(emitEvent({
-                            event: 'newNotification',
-                            data
-                        }))
+
+                        onSubmit?.({
+                            ...values,
+                            calendarbookingid: calendarid,
+                            status,
+                            detailjson: JSON.stringify(detail),
+                            hsmtemplateid: values.hsmtemplateid,
+                            communicationchannelid: values?.communicationchannelid || 0,
+                            sendhsm: values.type.includes("automated") ? JSON.stringify(bb) : "",
+                            // duedate: dueate.toUTCString()
+                            // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
+                        });
+                        if (leadid === 0 && mustCloseOnSubmit.current) {
+                            onClose();
+                        } else {
+                            resetValues();
+                        }
                     }
-        
-                    onSubmit?.({
-                        ...values,
-                        calendarbookingid: calendarid,
-                        status,
-                        detailjson: JSON.stringify(detail),
-                        hsmtemplateid: values.hsmtemplateid,
-                        communicationchannelid: values?.communicationchannelid || 0,
-                        sendhsm: values.type.includes("automated") ? JSON.stringify(bb) : "",
-                        // duedate: dueate.toUTCString()
-                        // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
-                    });
-                    if (leadid === 0 && mustCloseOnSubmit.current) {
-                        onClose();
-                    } else {
-                        resetValues();
-                    }
-                  }
                 });
-                const timer = setInterval(function() {
+                const timer = setInterval(function () {
                     if (win.closed) {
                         clearInterval(timer);
-                        if(calendarid === 0){
+                        if (calendarid === 0) {
                             dispatch(showBackdrop(false))
                             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorappointmentlead) }))
                         }
                     }
                 }, 500);
-            }else{
+            } else {
                 dispatch(showBackdrop(true))
                 if (values.type.includes("automated")) {
                     setBodyMessage(body => {
@@ -2601,8 +2606,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                         })) || []
                     }]
                 } : "";
-    
-    
+
+
                 if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
                     const supervisorid = advisers.data.find(x => x.userid === values.assigneduser)?.supervisorid || 0;
                     const data = {
@@ -2624,7 +2629,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                         data
                     }))
                 }
-    
+
                 onSubmit?.({
                     ...values,
                     status,
@@ -2714,19 +2719,19 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        {blockEditSummary? <FieldView
+                                        {blockEditSummary ? <FieldView
                                             label={t(langKeys.summary)}
                                             className={classes.field}
                                             value={getValues('description')}
                                             tooltipcontent={getValues2("description")}
-                                        />:                       
-                                        <FieldEdit
-                                            label={t(langKeys.summary)}
-                                            className={classes.field}
-                                            valueDefault={getValues('description')}
-                                            onChange={v => setValue('description', v)}
-                                            error={errors?.description?.message}
-                                        />}
+                                        /> :
+                                            <FieldEdit
+                                                label={t(langKeys.summary)}
+                                                className={classes.field}
+                                                valueDefault={getValues('description')}
+                                                onChange={v => setValue('description', v)}
+                                                error={errors?.description?.message}
+                                            />}
                                     </Grid>
                                     {(getValues('type').includes("automated") && getValues("hsmtemplatetype") === "HSM") &&
                                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ paddingTop: 8, marginTop: 8 }}>
@@ -2774,29 +2779,29 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="column">
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        {getValues('type').includes("appointment")?
-                                        <FieldSelect
-                                            label={t(langKeys.calendar)}
-                                            className={classes.field}
-                                            data={calendarList.data}
-                                            optionDesc="code"
-                                            optionValue="calendareventid"
-                                            loading={calendarList.loading}
-                                            valueDefault={getValues('calendar')}
-                                            onChange={v => {
-                                                setValue('calendar', v?.calendareventid || 0);
-                                                setValue('linkcalendar', v?.eventlink|| "")
-                                            }}
-                                            error={errors?.assignto?.message}
-                                        />:
-                                        <FieldEdit
-                                            label={t(langKeys.dueDate)}
-                                            className={classes.field}
-                                            type="datetime-local"
-                                            valueDefault={(getValues('duedate') as string)?.replace(' ', 'T')?.substring(0, 16)}
-                                            onChange={(value) => setValue('duedate', value)}
-                                            error={errors?.duedate?.message}
-                                        />}
+                                        {getValues('type').includes("appointment") ?
+                                            <FieldSelect
+                                                label={t(langKeys.calendar)}
+                                                className={classes.field}
+                                                data={calendarList.data}
+                                                optionDesc="code"
+                                                optionValue="calendareventid"
+                                                loading={calendarList.loading}
+                                                valueDefault={getValues('calendar')}
+                                                onChange={v => {
+                                                    setValue('calendar', v?.calendareventid || 0);
+                                                    setValue('linkcalendar', v?.eventlink || "")
+                                                }}
+                                                error={errors?.assignto?.message}
+                                            /> :
+                                            <FieldEdit
+                                                label={t(langKeys.dueDate)}
+                                                className={classes.field}
+                                                type="datetime-local"
+                                                valueDefault={(getValues('duedate') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                                onChange={(value) => setValue('duedate', value)}
+                                                error={errors?.duedate?.message}
+                                            />}
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                         <FieldSelect
@@ -3316,7 +3321,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
 }
 
 interface TabCustomVariablesProps {
-    setTableData: (x:Dictionary[])=>void;
+    setTableData: (x: Dictionary[]) => void;
     tableData: Dictionary[];
 }
 
@@ -3360,7 +3365,7 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
                 sortType: 'string',
                 prefixTranslation: 'datatype_',
                 Cell: (props: any) => {
-                    const { variabletype } = props.cell.row.original || {}; 
+                    const { variabletype } = props.cell.row.original || {};
                     return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -3376,15 +3381,15 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
         ],
         []
     )
-    return (        
+    return (
         <CustomTableZyxEditable
             columns={columns}
             download={false}
-            loading={domains.loading||domainsCustomTable.loading}
+            loading={domains.loading || domainsCustomTable.loading}
             register={false}
             data={(tableData).map(x => ({
                 ...x,
-                domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
+                domainvalues: (domainsCustomTable?.data || []).filter(y => y.domainname === x?.domainname)
             }))}
             filterGeneral={false}
             updateCell={updateCell}
@@ -3394,14 +3399,14 @@ const TabCustomVariables: FC<TabCustomVariablesProps> = ({ tableData, setTableDa
 }
 interface Options {
     withTime?: boolean;
-    modhours?:number
+    modhours?: number
 }
 
 const formatDate = (strDate: string = "", options: Options = { withTime: true, modhours: 0 }) => {
     if (!strDate || strDate === '') return '';
 
     const date = new Date(typeof strDate === "number" ? strDate : strDate.replace("Z", ""));
-    date.setHours(date.getHours() + (options?.modhours||0));
+    date.setHours(date.getHours() + (options?.modhours || 0));
     const day = date.toLocaleDateString("en-US", { day: '2-digit' });
     const month = date.toLocaleDateString("en-US", { month: '2-digit' });
     const year = date.toLocaleDateString("en-US", { year: 'numeric' });
