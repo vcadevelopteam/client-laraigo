@@ -96,6 +96,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [templateAux, setTemplateAux] = useState<Dictionary>({})
     const [jsonPersons, setJsonPersons] = useState<Dictionary>({})
     const [detectionChangeSource, setDetectionChangeSource] = useState<boolean>(false);
+    const [primaryKey, setPrimaryKey] = useState<string>('');
+
 
     useEffect(() => {
         if (row !== null) {
@@ -417,35 +419,41 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     return ap;
                 }, []);
                 break;
-            case 'EXTERNAL':
-                campaignMemberList = detaildata.jsonData?.map((p) => {
-                    return {
-                        id: 0,
-                        personid: 0,
-                        personcommunicationchannel: '',
-                        personcommunicationchannelowner: p[Object.keys(p)[0]] || '',
-                        type: 'EXTERNAL',
-                        displayname: '',
-                        status: 'ACTIVO',
-                        field1: p[Object.keys(p)[0]] || '',
-                        field2: p[Object.keys(p)[1]] || '',
-                        field3: p[Object.keys(p)[2]] || '',
-                        field4: p[Object.keys(p)[3]] || '',
-                        field5: p[Object.keys(p)[4]] || '',
-                        field6: p[Object.keys(p)[5]] || '',
-                        field7: p[Object.keys(p)[6]] || '',
-                        field8: p[Object.keys(p)[7]] || '',
-                        field9: p[Object.keys(p)[8]] || '',
-                        field10: p[Object.keys(p)[9]] || '',
-                        field11: p[Object.keys(p)[10]] || '',
-                        field12: p[Object.keys(p)[11]] || '',
-                        field13: p[Object.keys(p)[12]] || '',
-                        field14: p[Object.keys(p)[13]] || '',
-                        field15: p[Object.keys(p)[14]] || '',
-                        batchindex: 0,
-                        operation: detaildata.operation
-                    };
-                });
+                case 'EXTERNAL':
+                    if (detaildata.selectedColumns && detaildata.selectedColumns.primarykey) {
+                        const primaryKeyColumn = detaildata.selectedColumns.primarykey;
+                        campaignMemberList = detaildata.jsonData?.map((p) => {
+                            const columns = Object.keys(p);
+                            const otherColumns = columns.filter(col => col !== primaryKeyColumn);
+        
+                            return {
+                                id: 0,
+                                personid: 0,
+                                personcommunicationchannel: '',
+                                personcommunicationchannelowner: p[primaryKeyColumn] || '',
+                                type: 'EXTERNAL',
+                                displayname: '',
+                                status: 'ACTIVO',
+                                field1: p[primaryKeyColumn] || '',
+                                field2: p[otherColumns[0]] || '',
+                                field3: p[otherColumns[1]] || '',
+                                field4: p[otherColumns[2]] || '',
+                                field5: p[otherColumns[3]] || '',
+                                field6: p[otherColumns[4]] || '',
+                                field7: p[otherColumns[5]] || '',
+                                field8: p[otherColumns[6]] || '',
+                                field9: p[otherColumns[7]] || '',
+                                field10: p[otherColumns[8]] || '',
+                                field11: p[otherColumns[9]] || '',
+                                field12: p[otherColumns[10]] || '',
+                                field13: p[otherColumns[11]] || '',
+                                field14: p[otherColumns[12]] || '',
+                                field15: p[otherColumns[13]] || '',
+                                batchindex: 0,
+                                operation: detaildata.operation
+                            };
+                        });
+                    }
                 break;
             case 'PERSON':
             case 'LEAD':
@@ -517,6 +525,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }
                 break;
         }
+        
         if (detaildata.executiontype === 'SCHEDULED') {
             const batchjson = detaildata.batchjson?.[0] || {};
             const { date, time, quantity } = batchjson;
@@ -815,6 +824,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         templateAux={templateAux}
                         setJsonPersons={setJsonPersons}
                         detectionChangeSource={detectionChangeSource}
+                        //primaryKey={primaryKey}
                     />
                 </AntTabPanelAux>
             )}
@@ -839,6 +849,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     templateAux={templateAux}
                     jsonPersons={jsonPersons}
                     detectionChangeSource={detectionChangeSource}
+                    //setPrimaryKey={setPrimaryKey}
                 />
             </AntTabPanel>
         </div>
