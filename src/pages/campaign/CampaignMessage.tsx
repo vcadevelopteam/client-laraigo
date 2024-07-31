@@ -434,6 +434,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }      
     }, [multiData]);
+
+    // console.log('template actual: ', templateToUse)
+    // console.log('campaña actual: ', multiData[4])
         
     const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
         if(row && !detectionChangeSource){
@@ -548,8 +551,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const handleVariableChange = (variableNumber: string, selectedOption: any, variableType: 'body' | 'header' | 'video' | 'cardImage' | 'dynamicUrl' | 'carousel' | 'authentication' | 'additional' | 'receiver', carouselIndex?: number) => {
         if (row && !detectionChangeSource) {
-            console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
-    
+            //console.log(`Variable Change - type: ${variableType}, variableNumber: ${variableNumber}, selectedOption:`, selectedOption, "carouselIndex", carouselIndex);
             const header = selectedOption ? selectedOption.key : '';
             const index = variableType === 'additional' ? getAdditionalVariableIndex() : variableNumber;
             updateValues(variableNumber, selectedOption, variableType, carouselIndex);
@@ -950,7 +952,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     updatedTemplate.body = updatedTemplate.body.replace(currentField, `{{${fieldToReset}}}`);
                 }
             }
-            console.log('editing final updatedTemplate:', updatedTemplate);
+            //console.log('editing final updatedTemplate:', updatedTemplate);
             setCurrentTemplate(updatedTemplate);
             setDetaildata((prev: any) => ({
                 ...prev,
@@ -1009,6 +1011,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
     
             let newSelectedFields = { ...selectedFields };
+            const buttonscombination = collectButtonsFromTemplate(updatedTemplate);
     
             Object.keys(variableSelections).forEach(key => {
                 let type, number, carouselIndexStr;
@@ -1169,7 +1172,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     ...prev.messagetemplateheader,
                     value: updatedTemplate.header
                 },
-                messagetemplatebuttons: updatedTemplate.buttonsgeneric || [],
+                messagetemplatebuttons: buttonscombination || [],
                 fields: {
                     ...prev.fields,
                     campaignvariables: newSelectedFields,
@@ -1284,9 +1287,23 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     };    
 
     const collectButtonsFromTemplate = (template: Dictionary) => {
-        const buttons = [...(template.buttonsgeneric || []), ...(template.buttonsquickreply || [])];
+        let buttons = [];
+        if (template.firstbuttons === "generic") {
+            buttons = [...(template.buttonsgeneric || []), ...(template.buttonsquickreply || [])];
+        } else {
+            buttons = [...(template.buttonsquickreply || []), ...(template.buttonsgeneric || [])];
+        }
         return buttons;
     };
+    
+    useEffect(() => {
+        const buttons = collectButtonsFromTemplate(templateToUse);
+        setDetaildata(prev => ({
+            ...prev,
+            messagetemplatebuttons: buttons
+        }));
+    }, [templateToUse]);
+    
     
     useEffect(() => {
         const buttons = collectButtonsFromTemplate(templateToUse);
@@ -1531,10 +1548,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                             const headerFields = Object.values(campaignVariables).filter(field => field.type === 'header');
                                             const maxIndex = Math.max(...headerFields.map(field => parseInt(field.index, 10)), 0);
 
-                                            return Array.from({ length: maxIndex }, (_, index) => {
-                                                const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
-                                                let valueDefault;
-
+                                        return Array.from({ length: maxIndex }, (_, index) => {
+                                            const field = headerFields.find(field => parseInt(field.index, 10) === index + 1);
+                                            let valueDefault;
                                                 const key = `header-${index + 1}`;
                                                 const selectedHeader = selectedHeaders[key];
                                                 if (selectedHeader) {

@@ -34,6 +34,7 @@ interface DetailProps {
     templateAux: Dictionary;
     setJsonPersons:  (value: Dictionary) => void;
     detectionChangeSource: boolean;
+    //primaryKey: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -479,6 +480,26 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     };
 
+    const detectPrimaryKeyIndex = (data: any[]): number => {
+        if (data.length === 0) return 0;
+    
+        const firstRow = data[0];
+        const keys = Object.keys(firstRow);
+    
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\d+$/;
+    
+        for (let i = 0; i < keys.length; i++) {
+            const value = firstRow[keys[i]];
+            if (emailRegex.test(value) || phoneRegex.test(value)) {
+                return i;
+            }
+        }
+    
+        return 0;
+    };   
+
+
     const uploadData = (data: any) => {
         if (data.length === 0) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_without_data) }));
@@ -500,8 +521,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     
         const localColumnList = actualHeaders ? actualHeaders : newHeaders;
         setColumnList(localColumnList);    
-        const primarykey = localColumnList[0];
-        const columns = localColumnList.slice(1);    
+        
+        const primarykeyIndex = detectPrimaryKeyIndex(data);         
+        const primarykey = localColumnList[primarykeyIndex];
+        const columns = localColumnList.filter((_, index) => index !== primarykeyIndex);
+
         const localSelectedColumns = {
             primarykey,
             column: columns.map(() => true),
@@ -511,6 +535,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         setSelectedColumns(localSelectedColumns);
         setJsonData(data);
         setJsonPersons(data);
+
     
         setHeaders(localColumnList.map(c => ({
             Header: c,
@@ -564,6 +589,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         return data.every(item => Object.values(item).every(value => value === ''));
     };
     const personsToUse = isEmptyData(transformedData) ? jsonData : transformedData;
+    
     const cleanData = () => {
         setJsonData([]);
         setHeaders([]);
