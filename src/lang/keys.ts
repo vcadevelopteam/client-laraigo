@@ -6384,6 +6384,8 @@ export const langKeys = {
   transcriptionandtranslation: 'transcriptionandtranslation',
   translatelanguage: 'translatelanguage',
   chatsettings: 'chatsettings',
+  channel_message_templates_help: 'channel_message_templates_help',
+  channel_column_mt_help: 'channel_column_help',
 };
 
 export type LangKeys = typeof langKeys;

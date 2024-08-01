@@ -3,7 +3,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import { AndroidColor, AppStoreColor, BloggerColor, ChannelBlogger, ChatWebColor, EmojiICon, FacebookColor, FormColor, GifIcon, InstagramColor, IosColor, LineColor, LinkedInColor, MailColor, MessengerColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WhatsAppColor, WorkplaceColor, YouTubeColor } from 'icons';
 import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon, Chip } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Picker } from 'emoji-mart';
@@ -45,7 +45,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
-
+import { useStyles } from 'pages/SignIn';
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
@@ -1112,6 +1112,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small' }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
+    const classes = useStyles();
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
@@ -1136,6 +1137,17 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 disableCloseOnSelect
                 loading={loading}
                 value={optionsSelected}
+                renderTags={disabled ? (tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                        <Chip
+                            key={index}
+                            label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                            {...getTagProps({ index })}
+                            className={classes.chip}
+                            style={{ margin: '0.4rem 0.5rem 0.4rem 0' }}
+                        />
+                    )) : undefined
+                }
                 renderOption={(option, { selected }: any) => (
                     <React.Fragment>
                         <Checkbox

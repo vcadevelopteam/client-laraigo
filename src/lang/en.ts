@@ -6403,13 +6403,17 @@ const translation: LangKeys = {
   gotomessage: 'Go to message',
   increase: 'Increase',
   decrease: 'Decrease',
+
+  read_singular_help: 'For those users who have deactivated the blue tick or reading confirmation, it will not be possible to obtain this status, due to privacy issues.',
+  channel_message_templates_help: 'Numbers belonging to the same WABA can use the same registered template, just select any number when registering the template.',
+  channel_column_mt_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the templates of the assigned WABA.',
+
   pinmessagehelper: 'Pin message',
   immediateorderserror: 'Orders with immediate scheduling type cannot be scheduled.',
   prepareorderserror: "One or more of the selected orders have already been prepared",
   message_templates_channel_help: 'Displays the channel(s) assigned to the communication template. For Whatsapp channels it will automatically display the WABA templates assigned.',
   send_your_message: 'Send your message...',
   routinglogicerror2: "Routing logic has already been applied to one or more of the selected orders",
-  read_singular_help: 'For those users who have deactivated the blue tick or reading confirmation, it will not be possible to obtain this status, due to privacy issues.',
   usagesettings: 'Usage settings',
   correctionandlanguages: 'Correction and Languages',
   activated: 'Activated',
