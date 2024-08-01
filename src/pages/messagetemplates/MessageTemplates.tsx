@@ -1,6 +1,6 @@
 import { deleteTemplate, synchronizeTemplate } from "store/channel/actions";
 import { Delete, Search } from "@material-ui/icons";
-import { Dictionary, IChannel, IFetchData } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import { langKeys } from "lang/keys";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
@@ -10,31 +10,29 @@ import { useTranslation } from "react-i18next";
 
 import {
     exportData,
-    getCollectionAux,
     getCollectionPaginated,
     getMultiCollection,
     resetAllMain,
     resetCollectionPaginated,
+    resetMultiMain,
 } from "store/main/actions";
 
 import {
     FieldMultiSelect,
-    FieldSelect,
     TemplateBreadcrumbs,
 } from "components";
 
 import {
     dateToLocalDate,
-    exportExcel,
-    getCommChannelLst,
+    getChannelsByOrg,
     getMessageTemplateExport,
-    getPaginatedMessageTemplate,
+    getPaginatedMessageTemplate1,
     getValuesFromDomain,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
 
 import Button from "@material-ui/core/Button";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import DetailMessageTemplates from "./views/MessageTemplatesDetail";
@@ -102,7 +100,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         row: null,
     });
 
-    const [communicationChannel, setCommunicationChannel] = useState<any>(null);
     const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
     const [pageCount, setPageCount] = useState(0);
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
@@ -113,36 +110,9 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     const [waitDelete, setWaitDelete] = useState(false);
     const [waitSaveExport, setWaitSaveExport] = useState(false);
     const [waitSynchronize, setWaitSynchronize] = useState(false);
-    const mainMulti = useSelector(state => state.main.multiData);
-
-    const channels = useMemo(() => {
-        if (!mainMulti.data[3]?.data || mainMulti.data[3]?.key !== "UFN_COMMUNICATIONCHANNEL_LST") return [];
-        return (mainMulti.data[3].data as IChannel[]).sort((a, b) => {
-        return a.communicationchanneldesc.localeCompare(b.communicationchanneldesc);
-        });
-    }, [mainMulti.data[3]]);
-
-    console.log('antiguo: ', mainPaginated.data.map(item => item.communicationchanneldesc));
-    console.log('probando', mainMulti)
+  
     const columns = React.useMemo(
-        () => [
-            /*{
-                accessor: "templateid",
-                isComponent: true,
-                minWidth: 60,
-                NoFilter: true,
-                width: "1%",
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                            viewFunction={() => handleView(row)}
-                        />
-                    );
-                },
-            },*/
+        () => [           
             {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),
@@ -527,6 +497,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
+                getChannelsByOrg(),
             ])
         );
 
@@ -536,23 +507,30 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         };
     }, []);
 
+    const [channelIds, setChannelIds] = useState("");
+    const [selectedChannels, setSelectedChannels] = useState<any[]>([]);
+
+    useEffect(() => {
+        const ids = selectedChannels.map(channel => channel.domaindesc).join(", ");
+        setChannelIds(ids); 
+    }, [selectedChannels]);
+
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
         dispatch(
             getCollectionPaginated(
-                getPaginatedMessageTemplate({
+                getPaginatedMessageTemplate1({
                     enddate: daterange?.endDate!,
                     filters: filters,
                     skip: pageIndex * pageSize,
                     sorts: sorts,
                     startdate: daterange?.startDate!,
                     take: pageSize,
-                    //channels: selectedChannel
+                    communicationchannelids: channelIds,                
                 })
             )
         );
     };
-    
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -660,11 +638,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         setRowSelected({ row: null, edit: true });
     };
 
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
-    };
-
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
@@ -674,38 +647,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         dispatch(synchronizeTemplate());
         dispatch(showBackdrop(true));
         setWaitSynchronize(true);
-    };
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(
-                deleteTemplate({
-                    messagetemplatelist: [
-                        {
-                            ...row,
-                            id: row.id,
-                            operation: "DELETE",
-                            status: "ELIMINADO",
-                        },
-                    ],
-                })
-            );
-            dispatch(showBackdrop(true));
-            setWaitDelete(true);
-        };
-
-        if (row.type === 'HSM') {
-            dispatch(
-                manageConfirmation({
-                    callback,
-                    question: t(langKeys.templatesdeletemessage),
-                    visible: true,
-                })
-            );
-        } else {
-            callback()
-        }
-    };
+    };  
 
     const handleBulkDelete = (dataSelected: Dictionary[]) => {
         const hasHSMType = dataSelected.some(item => item.type === 'HSM');
@@ -769,19 +711,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         }
     }
 
-    const [selectedChannel, setSelectedChannel] = useState("");
-
-    const uniqueCommunicationChannels = (() => {
-        const allDescs = mainPaginated.data.map((item: Dictionary) => item.communicationchanneldesc);
-        const uniqueDescs = Array.from(new Set(allDescs)).filter(desc => desc !== null);
-        return uniqueDescs.map(desc => ({
-            domaindesc: desc,
-            domainvalue: desc
-        }));
-    })();
-
-    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
-
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     useEffect(() => {
         const handleResize = () => {
@@ -792,7 +721,31 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
             window.removeEventListener('resize', handleResize);
         };
     }, []);
-  
+
+    const multiData = useSelector(state => state.main.multiData);
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetMultiMain());
+        }
+    }, [])
+    useEffect(() => {
+        if (!multiData.loading){
+            dispatch(showBackdrop(false));
+        }
+    }, [multiData])
+
+
+    let formattedData: { domaindesc: string; domainvalue: string }[] = [];
+    const targetData = multiData.data[3];
+
+    if (targetData && targetData.data) {
+        formattedData = targetData.data.map((item: any) => ({
+        domaindesc: item.communicationchannelid.toString(),
+        domainvalue: item.description,
+        }));
+    }   
+
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
@@ -810,17 +763,17 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 <TablePaginated
                     ButtonsElement={() => (
                         <div style={{ display: "flex", justifyContent: "space-between", width: `${windowWidth-380}px` }}>
-                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>
+                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>                               
                                 <FieldMultiSelect
                                     variant="outlined"
                                     label={t(langKeys.channels)}
                                     className={classes.fieldsfilter}
-                                    valueDefault={uniqueCommunicationChannels}
-                                    onChange={(value) => setSelectedChannel(value?.type || "")}
-                                    data={uniqueCommunicationChannels}
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
-                                />
+                                    valueDefault={selectedChannels.reduce((acc,x)=> [...acc,x.domaindesc],[]).join(",")}
+                                    onChange={(values) => {setSelectedChannels(values)}}
+                                    data={formattedData}
+                                    optionDesc="domainvalue"
+                                    optionValue="domaindesc"
+                                />                                               
                                 <Button
                                     color="primary"
                                     style={{ width: 120, backgroundColor: "#55BD84" }}
