@@ -15,6 +15,7 @@ interface Props extends InputBaseProps {
     setCleanState?:(params: string) => void,
     lazy?: boolean;
     timelapse?: number; // available when lazy prop is true
+    defaultGlobalFilter?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSubmitOther, timelapse = 1000, lazy = false,cleanState,setCleanState, ...props }: Props) => {
+const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSubmitOther, timelapse = 1000, lazy = false,cleanState,setCleanState, defaultGlobalFilter, ...props }: Props) => {
     const { t } = useTranslation();
     const classes = useStyles({ colorPlaceHolder });
     const [value, setvalue] = useState('');
@@ -96,7 +97,7 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
             </IconButton>
             <InputBase
                 className={classes.input}
-                value={value}
+                value={defaultGlobalFilter || value}
                 onChange={onChange}
                 placeholder={t(langKeys.search)}
                 inputProps={{ className: classes.inputPlaceholder }}
