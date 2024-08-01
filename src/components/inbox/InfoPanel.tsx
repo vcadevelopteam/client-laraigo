@@ -10,7 +10,7 @@ import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePers
 import { GetIcon, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { conversationAttachmentHistorySel, conversationClassificationHistorySel, conversationOportunityHistorySel, conversationOrderHistorySel, conversationSDHistorySel, convertLocalDate, getAssignmentRulesByGroup, getAttachmentsByPerson, getConversationClassification2, getLeadsByUserPerson, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
+import { conversationAttachmentHistorySel, conversationClassificationHistorySel, conversationOportunityHistorySel, conversationOrderHistorySel, conversationSDHistorySel, convertLocalDate, getAssignmentRulesByGroup, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
@@ -20,7 +20,6 @@ import { useForm } from 'react-hook-form';
 import { getMultiCollectionAux, resetMultiMainAux, execute, getCollectionAux2 } from 'store/main/actions';
 import Fab from '@material-ui/core/Fab';
 import { Button, CircularProgress } from '@material-ui/core';
-import AttachFileIcon from '@material-ui/icons/AttachFile';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import clsx from 'clsx';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -474,133 +473,133 @@ const InfoTab: React.FC = () => {
     return (
         <div style={{ overflowY: 'auto' }} className="scroll-style-go">
             <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
-                {person?.firstname && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.firstname)}</div>
                         <div>{person?.firstname || "-"}</div>
                     </div>
                 </div>}
-                {person?.lastname && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastname)}</div>
                         <div>{person?.lastname || "-"}</div>
                     </div>
                 </div>}
-                {person?.name && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>Nickname</div>
                         <div>{person?.name || "-"}</div>
                     </div>
                 </div>}
-                {person?.documenttype && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.documenttype)}</div>
                         <div>{(person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
-                {person?.documentnumber && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.documentnumber)}</div>
                         <div>{person?.documentnumber || "-"}</div>
                     </div>
                 </div>}
-                {person?.persontype && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.personType)}</div>
                         <div>{person?.persontype || "-"}</div>
                     </div>
                 </div>}
-                {person?.alternativephone && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
                         <div>{person?.alternativephone || "-"}</div>
                     </div>
                 </div>}
-                {person?.alternativeemail && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativeEmail)}</div>
                         <div>{person?.alternativeemail || "-"}</div>
                     </div>
                 </div>}
-                {person?.birthday && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.birthday)}</div>
                         <div>{person?.birthday || "-"}</div>
                     </div>
                 </div>}
-                {person?.genderdesc && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.gender)}</div>
                         <div>{(person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
-                {person?.educationleveldesc && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.educationLevel)}</div>
                         <div>{(person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
-                {person?.civilstatusdesc && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.civilStatus)}</div>
                         <div>{(person?.civilstatus && t("type_civilstatus_" + person?.civilstatus.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
-                {person?.occupation && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.occupation)}</div>
-                        <div>{(person?.occupation && t(person?.occupation)) || "-"}</div>
+                        <div>{(person?.occupation && t("type_ocupation_" + person?.occupation)) || "-"}</div>
                     </div>
                 </div>}
-                {person?.usergroup && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.group)}</div>
                         <div>{person?.usergroup || "-"}</div>
                     </div>
                 </div>}
-                {person?.address && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.address)}</div>
                         <div>{person?.address || "-"}</div>
                     </div>
                 </div>}
-                {person?.district && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.district)}</div>
                         <div>{person?.district || "-"}</div>
                     </div>
                 </div>}
-                {person?.addressreference && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.addressReference)}</div>
                         <div>{person?.addressreference || "-"}</div>
                     </div>
                 </div>}
-                {person?.firstcontact && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
                         <div>{person?.firstcontact ? new Date(person?.firstcontact).toLocaleString() : "-"}</div>
                     </div>
                 </div>}
-                {person?.lastcontact && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
                         <div>{person?.lastcontact ? new Date(person?.lastcontact).toLocaleString() : "-"}</div>
                     </div>
                 </div>}
-                {person?.lastcommunicationchannel && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
                         <div>{person?.lastcommunicationchannel || "-"}</div>
                     </div>
                 </div>}
-                {person?.totaltickets && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.totalconversations)}</div>
                         <div>{person?.totaltickets || "-"}</div>
                     </div>
                 </div>}
-                {person?.observation && <div className={classes.containerName}>
+                {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.observation)}</div>
                         <div style={{ whiteSpace: "pre-wrap" }}>{person?.observation || "-"}</div>
@@ -679,8 +678,6 @@ const Classifications: React.FC = () => {
     const tipifyRes = useSelector(state => state.main.execute);
     const [showAll, setShowAll] = useState(false);
     const previewTicketList = useSelector(state => state.inbox.previewTicketList);
-    const el = React.useRef<null | HTMLDivElement>(null);
-    const el1 = React.useRef<null | HTMLDivElement>(null);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
 
@@ -748,7 +745,6 @@ const Classifications: React.FC = () => {
         <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
             [classes.orderDefault]: true,
         })}>
-            <div ref={el}></div>
             <div>
                 <TicketCard
                     ticket={ticketSelected || {}}
@@ -788,7 +784,6 @@ const Classifications: React.FC = () => {
                     return <div></div>
                 }
             })}
-            <div ref={el1}></div>
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
@@ -1095,8 +1090,6 @@ const Attachments: React.FC = () => {
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const [showAll, setShowAll] = useState(false);
     const previewTicketList = useSelector(state => state.inbox.previewTicketList);
-    const el = React.useRef<null | HTMLDivElement>(null);
-    const el1 = React.useRef<null | HTMLDivElement>(null);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
 
@@ -1136,14 +1129,13 @@ const Attachments: React.FC = () => {
         <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
             [classes.orderDefault]: true,
         })}>
-            <div ref={el}></div>
             <div>
                 <TicketCard
                     ticket={ticketSelected || {}}
                     handleClickOpen={handleClickOpen}
                 />
                 {listFiles.some(x => x.conversationid === ticketSelected?.conversationid) ?
-                    <AttachmentList listFiles={listFiles.filter(x => x.conversationid === ticketSelected?.conversationid)} /> :
+                    <AttachmentList key={`attchmentlist-${ticketSelected?.conversationid}`} listFiles={listFiles.filter(x => x.conversationid === ticketSelected?.conversationid)} /> :
                     <div className={classes.label} style={{ padding: 8, flex: 1 }}>
                         {t(langKeys.without_files)}
                     </div>
@@ -1164,7 +1156,7 @@ const Attachments: React.FC = () => {
             {showAll && previewTicketList.data?.map((ticket, index) => {
                 if (listFiles.some(x => x.conversationid === ticket?.conversationid)) {
                     return <>
-                        <div key={ticket.conversationid}>
+                        <div key={`attachmentcards-${ticket.conversationid}`}>
                             <TicketCard
                                 ticket={ticket || {}}
                                 handleClickOpen={handleClickOpen}
@@ -1176,7 +1168,6 @@ const Attachments: React.FC = () => {
                     return <div></div>
                 }
             })}
-            <div ref={el1}></div>
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
@@ -1231,8 +1222,6 @@ const Leads: React.FC = () => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const mainAux2 = useSelector(state => state.main.mainAux2);
-    const el = React.useRef<null | HTMLDivElement>(null);
-    const el1 = React.useRef<null | HTMLDivElement>(null);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
     const [rowSelectedDetail, setRowSelectedDetail] = useState<Dictionary | null>(null);
@@ -1276,7 +1265,6 @@ const Leads: React.FC = () => {
         <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
             [classes.orderDefault]: true,
         })}>
-            <div ref={el}></div>
             <div>
                 <TicketCard
                     ticket={ticketSelected || {}}
@@ -1316,7 +1304,6 @@ const Leads: React.FC = () => {
                     return <div></div>
                 }
             })}
-            <div ref={el1}></div>
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
@@ -1372,8 +1359,6 @@ const ServiceDesk: React.FC = () => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const mainAux2 = useSelector(state => state.main.mainAux2);
-    const el = React.useRef<null | HTMLDivElement>(null);
-    const el1 = React.useRef<null | HTMLDivElement>(null);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
     const [rowSelectedDetail, setRowSelectedDetail] = useState<Dictionary | null>(null);
@@ -1417,7 +1402,6 @@ const ServiceDesk: React.FC = () => {
         <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
             [classes.orderDefault]: true,
         })}>
-            <div ref={el}></div>
             <div>
                 <TicketCard
                     ticket={ticketSelected || {}}
@@ -1457,7 +1441,6 @@ const ServiceDesk: React.FC = () => {
                     return <div></div>
                 }
             })}
-            <div ref={el1}></div>
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
