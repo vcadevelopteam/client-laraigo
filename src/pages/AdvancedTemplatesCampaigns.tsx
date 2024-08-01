@@ -87,7 +87,7 @@ const AdvancedTemplatesCampaigns: React.FC = () => {
                     <div className={classes.title}>{t(langKeys.advancedtemplatescampaigns)}</div>
                     <div>                        
                         <Grid container spacing={3} >
-                            {!user?.roledesc?.includes("GESTOR DE CAMPAÑAS") && (
+                            {!(user?.roledesc?.includes("GESTOR DE CAMPAÑAS") || user?.roledesc?.includes("SUPERVISOR CLIENTE")) && (
                                 <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
                                     <Card className={classes.card}>
                                         <div className={classes.containerInner}>
