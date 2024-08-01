@@ -1045,6 +1045,8 @@ export const insMessageTemplate = (
         providerquality,
         providerstatus,
         operation,
+        categorychange,
+        firstbuttons, 
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1084,9 +1086,12 @@ export const insMessageTemplate = (
             providerquality,
             providerstatus,
             operation,
+            categorychange,
+            firstbuttons, 
             buttons: []
         }
-    });
+    }
+);
 
 export const insMessageTemplateOld = (
     {

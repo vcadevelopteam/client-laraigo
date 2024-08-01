@@ -156,6 +156,7 @@ const dataCampaignType = [
     { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS' },
     { key: 'CALL', value: 'call', rif: 'starsWith', rifvalue: 'VOX' },
     { key: 'MAIL', value: 'mail', rif: 'starsWith', rifvalue: 'MAI' },
+    { key: 'HTML', value: 'HTML', rif: 'starsWith', rifvalue: 'HTML' },
 ];
 
 type FormFields = {
@@ -522,10 +523,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const filterMessageTemplate = () => {
-        if (getValues('type') === "MAIL") {
+        if (getValues('type') === "MAIL" || getValues('type') === "HTML") {
             const mailTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
-            const htmlTemplate = filterPipe(dataMessageTemplate, 'type', 'HTML');
-
+            const htmlTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
             return [...mailTemplate, ...htmlTemplate];
         }
         else {
@@ -930,7 +930,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                        
                     </div>
                     : null}
-                {['SMS', 'MAIL'].includes(getValues('type')) ?
+                {['SMS', 'MAIL', 'HTML'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
                             <FormControl className="col-6" >                     

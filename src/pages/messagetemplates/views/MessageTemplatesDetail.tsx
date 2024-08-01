@@ -820,8 +820,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onSubmit = handleSubmit((data) => {
         if (showError) {
             return;
-        }
-        else {
+        } else {
             if (data.type === "MAIL") {
                 data.body = renderToString(toElement(bodyObject));
                 if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
@@ -848,7 +847,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     footerenabled: data.footer !== '' ? true : false,
                     buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
                     headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
-                }
+                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && 
+                        (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0)) 
+                        ? buttonsGeneral?.[0]?.name : null
+                };
     
                 const callback = () => {
                     if (data.type === "MAIL") {
@@ -877,9 +880,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
                         buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
                         carouseldata: JSON.stringify(dataAux.carouseldata),
-                        headervariables: JSON.stringify(dataAux.headervariables),
-                        categorychange: categoryChange === 'ACTIVADO' ? true : false,
-                        firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0 )) ? buttonsGeneral?.[0]?.name : null
+                        headervariables: JSON.stringify(dataAux.headervariables)
                     }));
                     dispatch(showBackdrop(true));
                     setWaitAdd(true);
@@ -897,8 +898,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     ...data,
                     headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
                     footerenabled: data.footer !== '' ? true : false,
-                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
-                }
+                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
+                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && 
+                        (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0)) 
+                        ? buttonsGeneral?.[0]?.name : null // Añadido aquí también
+                };
     
                 const callback = () => {
                     if (dataAux.type === "MAIL") {
@@ -920,7 +925,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         }
                     }
     
-                    dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
+                    dispatch(execute(insMessageTemplate({ 
+                        ...dataAux, 
+                        bodyobject: getValues('type') === "MAIL" ? bodyObject : [], 
+                    })));
                     dispatch(showBackdrop(true));
                     setWaitSave(true);
                 };
@@ -933,8 +941,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     })
                 );
             }
-        }      
+        }
     });
+    
+    
+    
 
     useEffect(() => {
         if (row) {
@@ -2300,7 +2311,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         )}
 
-                        {(isNew && getValues('type') === 'HSM') && (
+                        {(isNew ) && (
                             <div className="col-8" style={{ display: 'flex' }}>
                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     <CustomTitleHelper
@@ -2363,7 +2374,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 size="small"
                             />
                         )}
-                        {(isNew && getValues('type') === 'HSM') && (
+                        {(isNew) && (
                             <>
                                <FieldSelect
                                     className={`col-3 ${showError ? classes.errorBorder : ''}`}
