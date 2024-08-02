@@ -74,11 +74,10 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
         }
     });    
 
-    //console.log('user: ', user)
+    console.log('user: ', user)
     const capitalizeFirstLetter = (string: string) => {
         return string.toLowerCase().replace(/(?:^|\s|[(])[a-z]/g, (match) => match.toUpperCase());
-    };
-    
+    };    
 
     const dataExternalLanguage = [
         { description: t(langKeys.TEMPLATE_EN), value: "EN" },
@@ -181,7 +180,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </div>
                 </div>
 
-                <div style={{ margin: '2rem 0' }}>     
+                {/* <div style={{ margin: '2rem 0' }}>     
                     <div className={classes.seccionTitle}>{t(langKeys.correctionandlanguages)}</div>    
                     <div style={{ display: 'flex', gap: '2rem', width: '100%' }}>
                         <div style={{ display: 'flex', gap: '12rem', alignItems: 'center' }}>
@@ -229,7 +228,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             />     
                         </div> 
                     </div>                         
-                </div>
+                </div> */}
 
                 <div style={{ margin: '2rem 0' }}>     
                     <div className={classes.seccionTitle}>{t(langKeys.transcriptionandtranslation)}</div>         
