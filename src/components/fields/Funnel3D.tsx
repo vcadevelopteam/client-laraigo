@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-interface funnelData {
+interface FunnelData {
     name: string;
     value: number;
     fill: string;
+    count: number;
 }
 
 interface Funnel3DProps {
-    data: funnelData[];
+    data: FunnelData[];
     spacing?: number;
 }
 
@@ -18,6 +19,7 @@ const useStyles = makeStyles({
         maxWidth: '450px',
         margin: 'auto',
         display: 'flex',
+        position: 'relative',
     },
     funnel: {
         width: '100%',
@@ -31,11 +33,24 @@ const useStyles = makeStyles({
         fontSize: '1.45px',
         fill: '#fff',
         whiteSpace: 'nowrap',
-    }
+    },
+    tooltip: {
+        position: 'absolute',
+        backgroundColor: '#fff',
+        border: '1px solid #ccc',
+        padding: '5px',
+        borderRadius: '5px',
+        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+        pointerEvents: 'none',
+        whiteSpace: 'nowrap',
+        zIndex: 1000,
+        color: '#000',
+    },
 });
 
 const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
     const classes = useStyles();
+    const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, content: '' });
 
     const darkenColor = (color: string, amount: number) => {
         let usePound = false;
@@ -56,7 +71,7 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
         return (usePound ? "#" : "") + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
     };
 
-    const renderFunnelSection = (section: funnelData, index: number, totalHeight: number) => {
+    const renderFunnelSection = (section: FunnelData, index: number, totalHeight: number) => {
         const nextSectionWidth = (data[index + 1]?.value ?? 0) / (data[0].value / 100);
         const currentSectionWidth = section.value / (data[0].value / 100);
         const sectionHeight = (totalHeight - spacing * (data.length - 1)) / data.length;
@@ -84,9 +99,25 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
 
         const yOffset = index * sectionHeight + (index * spacing);
 
+        const handleMouseEnter = (event: React.MouseEvent<SVGGElement, MouseEvent>) => {
+            const percentage = ((section.count / data.reduce((acc, item) => acc + item.count, 0)) * 100).toFixed(2);
+            const boundingRect = event.currentTarget.getBoundingClientRect();
+            const svgRect = event.currentTarget.ownerSVGElement!.getBoundingClientRect();
+            setTooltip({
+                visible: true,
+                x: boundingRect.left - svgRect.left + boundingRect.width / 2,
+                y: boundingRect.top - svgRect.top + window.scrollY,
+                content: `Cantidad: ${section.count} - ${percentage}%`,
+            });
+        };
+
+        const handleMouseLeave = () => {
+            setTooltip({ visible: false, x: 0, y: 0, content: '' });
+        };
+
         if (index === data.length - 1) {
             return (
-                <g key={index} transform={`translate(0, ${yOffset})`}>
+                <g key={index} transform={`translate(0, ${yOffset})`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <path
                         d={`
                             M ${50 - topWidth / 2} 0
@@ -134,7 +165,7 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
             );
         } else {
             return (
-                <g key={index} transform={`translate(0, ${yOffset})`}>
+                <g key={index} transform={`translate(0, ${yOffset})`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <path
                         d={createCurvedBasePath(topWidth, bottomWidth, sectionHeight, 1.2)}
                         fill={darkenColor(section.fill, -20)}
@@ -185,8 +216,16 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
             >
                 {data.map((section, index) => renderFunnelSection(section, index, 100))}
             </svg>
+            {tooltip.visible && (
+                <div
+                    className={classes.tooltip}
+                    style={{ left: tooltip.x + 70, top: tooltip.y + 12 }}
+                >
+                    {tooltip.content}
+                </div>
+            )}
         </div>
     );
 };
 
-export {Funnel3D};
+export { Funnel3D };
