@@ -16,6 +16,7 @@ import { useSelector } from 'hooks';
 import { getOrderDetail } from 'store/orders/actions';
 import { useDispatch } from 'react-redux';
 import { getCollection } from 'store/main/actions';
+import { useHistory } from 'react-router-dom';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -74,6 +75,7 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row }, setViewSelec
     const orderDetail = useSelector(state => state.orders.orderDetail);
 	const params = new URLSearchParams(window.location.search);
 	const id = params.get('id');
+    const history = useHistory();
   
     const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
         setPageSelected(newIndex);
@@ -113,7 +115,10 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row }, setViewSelec
                         type="button"
                         color="primary"
                         startIcon={<ArrowBackIcon color="secondary" />}
-                        onClick={() => setViewSelected("GRID")}
+                        onClick={() => {
+                            if (id) history.goBack();
+                            setViewSelected("GRID")
+                        }}
                     >
                         {t(langKeys.back)}
                     </Button>
