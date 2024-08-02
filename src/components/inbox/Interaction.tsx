@@ -685,20 +685,20 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     className={clsx(classes.interactionText, {
                         [classes.interactionTextAgent]: userType !== 'client',
                     })} style={{ display: 'inline-block' }}>
-                    {Boolean(interactionid) && <TackIcon className={clsx(classes2.tackIcon, classes2.tackIconBottomRight)} style={{ visibility: pinnedmessagesSelected.map(item => item.interactionid).includes(interactionid) ? 'visible' : 'hidden' }} />}
-                    {!pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid) &&
+                {Boolean(interactionid) && <TackIcon fill="#8F92A1" className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
+                {!pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid) &&
                         <IconButton size="small"
                             title={t(langKeys.pinmessagehelper)}
                             disabled={disableTack}
                             className={clsx(classes2.tackIcon, classes2.tackIconTopRight)}
                             style={{ visibility: (!isselected && isHovered) ? 'visible' : 'hidden', zIndex: 9999 }}
                             onClick={() => fixComment(interactiontext)}>
-                            <TackIcon
+                            <TackPinnedIcon
                                 className={clsx(classes2.tackIcon)}
                             />
                         </IconButton>}
                     <HighlightedTextSimple interactiontext={text} searchTerm={searchTerm} />
-                    <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex" }}>
+                    <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex", gap: 4 }}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
                             </div>
