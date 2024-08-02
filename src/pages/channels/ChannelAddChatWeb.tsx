@@ -1787,7 +1787,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
 
     if (!whatsAppData?.row) {
-        if (channel && !service.current && channel.servicecredentials.length > 0) {
+        if (channel && !service.current && channel.servicecredentials?.length > 0) {
             service.current = JSON.parse(channel.servicecredentials);
         }
     }
@@ -1826,6 +1826,10 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                     severity: "success",
                 })
             );
+
+            if (whatsAppData?.onboarding) {
+                history.push(paths.METACHANNELS, whatsAppData);
+            }
         }
     }, [dispatch, insertChannel, t]);
 
@@ -1850,7 +1854,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 }));
 
                 if (whatsAppData?.onboarding) {
-                    updateMetachannels(11)
+                    updateMetachannels(11);
                     history.push(paths.METACHANNELS, whatsAppData);
                 } else {
                     history.push(paths.CHANNELS);
@@ -1936,16 +1940,16 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        if (!channel) {
-            const body = getInsertChatwebChannel(0, name, auto, hexIconColor, values);
+        if (!channel || channel?.onboarding === true) {
+            const body = getInsertChatwebChannel(0, name, auto, hexIconColor, values, "CHATWEB", true);
             dispatch(insertChannel2(body));
         } else if (channel.status === "INACTIVO") {
             const id = channel.communicationchannelid;
-            const body = getInsertChatwebChannel(id, name, auto, hexIconColor, values);
+            const body = getInsertChatwebChannel(id, name, auto, hexIconColor, values, "CHATWEB", false);
             dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
-            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
+            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor, "CHATWEB");
             dispatch(getEditChannel(body, "CHAZ"));
         }
     };
@@ -1961,11 +1965,11 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                     handleSubmit("DEFAULT", false, "#7721ad");
                 },
                 callbackcancel: () => {
-                    history.push(paths.METACHANNELS)
+                    history.push(paths.METACHANNELS, whatsAppData);
                 },
                 textCancel: t(langKeys.decline)
             }))
-        } 
+        }
         else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
@@ -2101,12 +2105,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
+
         if (whatsAppData?.onboarding) {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.channelconfigsave),
                 callback: () => {
-                    onSubmit(name||"DEFAULT", false, hexIconColor);
+                    onSubmit(name || "DEFAULT", false, hexIconColor);
                 },
                 callbackcancel: () => {
                     window.location.reload();
@@ -2175,6 +2180,35 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         </div>
                     </div>
                 </div>
+                {(channel?.communicationchannelsite && channel?.status === "ACTIVO") && <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        marginLeft: 120,
+                        marginRight: 120,
+                    }}
+                >
+                    <pre
+                        style={{
+                            background: "#f4f4f4",
+                            border: "1px solid #ddd",
+                            color: "#666",
+                            pageBreakInside: "avoid",
+                            fontFamily: "monospace",
+                            lineHeight: 1.6,
+                            maxWidth: "100%",
+                            overflow: "auto",
+                            padding: "1em 1.5em",
+                            display: "block",
+                            wordWrap: "break-word",
+                        }}
+                    >
+                        <code>
+                            {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${channel?.communicationchannelsite}"></script>`}
+                        </code>
+                    </pre>
+                    <div style={{ height: 20 }} />
+                </div>}
                 <div style={{ paddingLeft: "80%" }}>
                     <Button
                         onClick={handleSave}

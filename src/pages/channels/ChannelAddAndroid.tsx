@@ -7,7 +7,7 @@ import { getMultiCollection } from "store/main/actions";
 import { IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
 import { insertChannel2, editChannel as getEditChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { TabPanel } from "pages/crm/components";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -2715,6 +2715,35 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onSubmit, loading, integ
                         </div>
                     </div>
                 </div>
+                {(channel?.communicationchannelsite && channel?.status === "ACTIVO") && <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        marginLeft: 120,
+                        marginRight: 120,
+                    }}
+                >
+                    <pre
+                        style={{
+                            background: "#f4f4f4",
+                            border: "1px solid #ddd",
+                            color: "#666",
+                            pageBreakInside: "avoid",
+                            fontFamily: "monospace",
+                            lineHeight: 1.6,
+                            maxWidth: "100%",
+                            overflow: "auto",
+                            padding: "1em 1.5em",
+                            display: "block",
+                            wordWrap: "break-word",
+                        }}
+                    >
+                        <code>
+                            {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${channel?.communicationchannelsite}"></script>`}
+                        </code>
+                    </pre>
+                    <div style={{ height: 20 }} />
+                </div>}
                 <div style={{ paddingLeft: "80%" }}>
                     <Button
                         onClick={handleSave}
@@ -2772,6 +2801,10 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                     severity: "success",
                 })
             );
+
+            if (whatsAppData?.onboarding) {
+                history.push(paths.METACHANNELS, whatsAppData);
+            }
         }
     }, [dispatch, insertChannel, t]);
 
@@ -2882,12 +2915,12 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
         dispatch(showBackdrop(true));
-        if (!channel?.appintegrationid) {
-            const body = getInsertChatwebChannel(0, name, auto, hexIconColor, values, "SMOOCHANDROID");
+        if (!channel?.appintegrationid || channel?.onboarding === true) {
+            const body = getInsertChatwebChannel(0, name, auto, hexIconColor, values, "SMOOCHANDROID", true);
             dispatch(insertChannel2(body));
         } else if (channel.status === "INACTIVO") {
             const id = channel.communicationchannelid;
-            const body = getInsertChatwebChannel(id, name, auto, hexIconColor, values, "SMOOCHANDROID");
+            const body = getInsertChatwebChannel(id, name, auto, hexIconColor, values, "SMOOCHANDROID", false);
             dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
@@ -2921,7 +2954,17 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                         e.preventDefault();
 
                         if (whatsAppData?.onboarding) {
-                            history.push(paths.METACHANNELS, whatsAppData);
+                            dispatch(manageConfirmation({
+                                visible: true,
+                                question: t(langKeys.channelconfigsave),
+                                callback: () => {
+                                    handleSubmit("DEFAULT", false, "#90c900");
+                                },
+                                callbackcancel: () => {
+                                    history.push(paths.METACHANNELS, whatsAppData);
+                                },
+                                textCancel: t(langKeys.decline)
+                            }))
                         } else {
                             channel?.status === "INACTIVO"
                                 ? history.push(paths.CHANNELS, whatsAppData)

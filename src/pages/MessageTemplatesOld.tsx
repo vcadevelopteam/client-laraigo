@@ -526,8 +526,8 @@ const MessageTemplatesOld: FC = () => {
         dispatch(showBackdrop(true));
         setWaitSaveExport(true);
     };
-    
-    
+
+
 
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
@@ -1179,8 +1179,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             );
         }
     });
-
-    console.log('getValues("buttons")', getValues("buttons"))
 
     useEffect(() => {
         if (row) {
@@ -2047,21 +2045,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     )}
                 </div>}
                 {pageSelected === 1 &&
-                <div className={classes.containerDetail}>                    
-                    <CustomTableZyxEditable
-                        columns={columns}
-                        download={false}
-                        data={(tableDataVariables).map(x => ({
-                            ...x,
-                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
-                        }))}
-                        //loading={multiData.loading}
-                        register={false}
-                        filterGeneral={false}
-                        updateCell={updateCell}
-                        skipAutoReset={skipAutoReset}
-                    />
-                </div>}
+                    <div className={classes.containerDetail}>
+                        <CustomTableZyxEditable
+                            columns={columns}
+                            download={false}
+                            data={(tableDataVariables).map(x => ({
+                                ...x,
+                                domainvalues: (domainsCustomTable?.data || []).filter(y => y.domainname === x?.domainname)
+                            }))}
+                            //loading={multiData.loading}
+                            register={false}
+                            filterGeneral={false}
+                            updateCell={updateCell}
+                            skipAutoReset={skipAutoReset}
+                        />
+                    </div>}
             </form>
         </div>
     );

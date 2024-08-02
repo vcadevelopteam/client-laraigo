@@ -3985,7 +3985,7 @@ const translation: LangKeys = {
   billingpaymentendpoint: 'Vendor API URL (Merchant ID)',
   messagingcostsmsnote: "Applies only to Peru",
   supplynumber: "Número de Suministro",
-  channeleditsuccess: "The channel was edites successfully",
+  channeleditsuccess: "The channel was edited successfully",
   channelcreatesuccess: "The channel was created successfully",
   contractedsupportplan: "Contracted Support Plan",
   agents_plural: "Agents",

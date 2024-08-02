@@ -730,7 +730,7 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                                         }
                                     },
                                     callbackcancel: () => {
-                                        history.push(paths.METACHANNELS)
+                                        history.push(paths.METACHANNELS, whatsAppData);
                                     },
                                     textCancel: t(langKeys.decline)
                                 }))
