@@ -72,7 +72,7 @@ const Emojis: FC = () => {
                         return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true);
                     }
                     default: {
-                        return emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
+                        return emoji?.categorydesc === category;
                     }
                 }
             } else {
@@ -85,7 +85,7 @@ const Emojis: FC = () => {
                     }
                     default: {
                         //return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
-                        return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
+                        return (String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase())|| String(emoji?.id).toLowerCase().includes(searchValue.toLowerCase()))  && emoji?.categorydesc === category;
                     }
                 }
             }
