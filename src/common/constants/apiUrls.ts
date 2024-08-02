@@ -66,7 +66,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
         OPENPAYSANDBOX: false,
     },
     STAGING: {
-        API: 'https://stagingapix.laraigo.com/api',
+        API: 'https://stagingapi.laraigo.com/api',
         WS: 'https://stagingsocket.laraigo.com',
         CHATFLOW: 'https://chatflow-staging.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',

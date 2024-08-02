@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const changePassword = (state: IState, action: IAction): IState => ({
+export const changePassword = (state: IState): IState => ({
     ...state,
     requestChangePassword: {
         ...state.requestChangePassword,
@@ -37,7 +37,7 @@ export const changePasswordReset = (state: IState): IState => ({
     requestChangePassword: initialState.requestChangePassword,
 })
 
-export const recoverPassword = (state: IState, action: IAction): IState => ({
+export const recoverPassword = (state: IState): IState => ({
     ...state,
     requestRecoverPassword: {
         ...state.requestRecoverPassword,
@@ -73,7 +73,7 @@ export const recoverPasswordReset = (state: IState): IState => ({
     requestRecoverPassword: initialState.requestRecoverPassword
 })
 
-export const validateChannels = (state: IState, action: IAction): IState => ({
+export const validateChannels = (state: IState): IState => ({
     ...state,
     requestValidateChannels: {
         ...state.requestValidateChannels,

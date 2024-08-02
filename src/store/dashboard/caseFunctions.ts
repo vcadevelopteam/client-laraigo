@@ -77,7 +77,7 @@ export const saveDashboardTemplate = (state: IState): IState => ({
     dashboardtemplateSave: { ...state.dashboardtemplateSave, loading: true, error: false },
 });
 
-export const saveDashboardTemplateSuccess = (state: IState, action: IAction): IState => ({
+export const saveDashboardTemplateSuccess = (state: IState): IState => ({
     ...state,
     dashboardtemplateSave: {
         success: true,
@@ -107,7 +107,7 @@ export const deleteDashboardTemplate = (state: IState): IState => ({
     dashboardtemplateDelete: { ...state.dashboardtemplateDelete, loading: true, error: false },
 });
 
-export const deleteDashboardTemplateSuccess = (state: IState, action: IAction): IState => ({
+export const deleteDashboardTemplateSuccess = (state: IState): IState => ({
     ...state,
     dashboardtemplateDelete: {
         success: true,

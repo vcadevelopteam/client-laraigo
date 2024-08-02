@@ -10,6 +10,11 @@ export interface IBaseState {
     message?: string;
 }
 
+export interface IReplyState extends IBaseState {
+    interactionid?: number; 
+    uuid?: string
+}
+
 export interface IPesonState extends IBaseState {
     data?: IPerson | null;
 }
@@ -23,6 +28,7 @@ const initialTransaction: IBaseState = {
 
 export interface IState {
     ticketList: IListStatePaginated<ITicket>;
+    closedticketList: IListStatePaginated<ITicket>;
     ticketFilteredList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
@@ -42,7 +48,7 @@ export interface IState {
     triggerCloseTicket: IBaseState;
     triggerSendHSM: IBaseState;
     triggerMassiveCloseTicket: IBaseState;
-    triggerReplyTicket: IBaseState;
+    triggerReplyTicket: IReplyState;
     triggerReassignTicket: IBaseState;
     triggerBlock: IBaseState;
     triggerImportTicket: IBaseState;
@@ -68,12 +74,15 @@ export interface IState {
         [key: string]: number
     }
     quickreplies: IListState<Dictionary>;
+    searchTerm: string;
+    pinnedmessages: any;
 }
 
 export const initialState: IState = {
     agentList: initialListPaginatedState,
     ticketFilteredList: initialListPaginatedState,
     ticketList: initialListPaginatedState,
+    closedticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionBaseList: [],
     libraryList: [],
@@ -102,7 +111,7 @@ export const initialState: IState = {
     showInfoPanel: true,
     userType: null,
     wsConnected: false,
-    userConnected: !!localStorage.getItem("agentConnected"),
+    userConnected: Boolean(localStorage.getItem("agentConnected")),
     isOnBottom: null,
     showGoToBottom: false,
     triggerNewMessageClient: false,
@@ -115,6 +124,8 @@ export const initialState: IState = {
     userGroup: "",
     alertTMO: {},
     quickreplies: initialListState,
+    searchTerm: "",
+    pinnedmessages: []
 };
 
 export default createReducer<IState>(initialState, {
@@ -127,6 +138,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TICKETS_SUCCESS]: caseFunctions.getTicketsSuccess,
     [actionTypes.GET_TICKETS_FAILURE]: caseFunctions.getTicketsFailure,
     [actionTypes.GET_TICKETS_RESET]: caseFunctions.getTicketsReset,
+    
+    [actionTypes.GET_TICKETS_CLOSED]: caseFunctions.getTicketsClosed,
+    [actionTypes.GET_TICKETS_CLOSED_SUCCESS]: caseFunctions.getTicketsClosedSuccess,
+    [actionTypes.GET_TICKETS_CLOSED_FAILURE]: caseFunctions.getTicketsClosedFailure,
+    [actionTypes.GET_TICKETS_CLOSED_RESET]: caseFunctions.getTicketsClosedReset,
 
     [actionTypes.GET_AGENTS]: caseFunctions.getAgents,
     [actionTypes.GET_AGENTS_SUCCESS]: caseFunctions.getAgentsSuccess,
@@ -264,9 +280,12 @@ export default createReducer<IState>(initialState, {
     [actionTypes.RESET_SHOW_MODAL_CLOSE]: caseFunctions.resetShowModal,
     [actionTypes.SET_HIDE_LOGS_ON_TICKET]: caseFunctions.setHideLogsOnTicket,
     [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
+    [actionTypes.SET_SEARCHTERM]: caseFunctions.setSearchTerm,
+    [actionTypes.SET_PINNEDCOMMENTS]: caseFunctions.setPinnedComment,
     [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
     [actionTypes.SET_DATA_USER]: caseFunctions.setDataUser,
     [actionTypes.UPDATE_CLASSIFICATION_PERSON]: caseFunctions.updatePersonClassification,
     
     [actionTypes.SET_LIBRARY]: caseFunctions.setLibraryByUser,
+    [actionTypes.UPDATE_INTERACTION_UUID]: caseFunctions.updateInteractionByUUID,
 });

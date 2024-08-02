@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const catalogBusinessList = (state: IState, action: IAction): IState => ({
+export const catalogBusinessList = (state: IState): IState => ({
     ...state,
     requestCatalogBusinessList: {
         ...state.requestCatalogBusinessList,
@@ -38,7 +38,7 @@ export const catalogBusinessListReset = (state: IState): IState => ({
     requestCatalogBusinessList: initialState.requestCatalogBusinessList,
 })
 
-export const catalogManageCatalog = (state: IState, action: IAction): IState => ({
+export const catalogManageCatalog = (state: IState): IState => ({
     ...state,
     requestCatalogManageCatalog: {
         ...state.requestCatalogManageCatalog,
@@ -74,7 +74,7 @@ export const catalogManageCatalogReset = (state: IState): IState => ({
     requestCatalogManageCatalog: initialState.requestCatalogManageCatalog,
 })
 
-export const catalogSynchroCatalog = (state: IState, action: IAction): IState => ({
+export const catalogSynchroCatalog = (state: IState): IState => ({
     ...state,
     requestCatalogSynchroCatalog: {
         ...state.requestCatalogSynchroCatalog,
@@ -110,7 +110,7 @@ export const catalogSynchroCatalogReset = (state: IState): IState => ({
     requestCatalogSynchroCatalog: initialState.requestCatalogSynchroCatalog,
 })
 
-export const catalogSynchroProduct = (state: IState, action: IAction): IState => ({
+export const catalogSynchroProduct = (state: IState): IState => ({
     ...state,
     requestCatalogSynchroProduct: {
         ...state.requestCatalogSynchroProduct,
@@ -146,7 +146,7 @@ export const catalogSynchroProductReset = (state: IState): IState => ({
     requestCatalogSynchroProduct: initialState.requestCatalogSynchroProduct,
 })
 
-export const catalogImportProduct = (state: IState, action: IAction): IState => ({
+export const catalogImportProduct = (state: IState): IState => ({
     ...state,
     requestCatalogImportProduct: {
         ...state.requestCatalogImportProduct,
@@ -182,7 +182,7 @@ export const catalogImportProductReset = (state: IState): IState => ({
     requestCatalogImportProduct: initialState.requestCatalogImportProduct,
 })
 
-export const catalogManageProduct = (state: IState, action: IAction): IState => ({
+export const catalogManageProduct = (state: IState): IState => ({
     ...state,
     requestCatalogManageProduct: {
         ...state.requestCatalogManageProduct,
@@ -218,7 +218,7 @@ export const catalogManageProductReset = (state: IState): IState => ({
     requestCatalogManageProduct: initialState.requestCatalogManageProduct,
 })
 
-export const catalogDeleteProduct = (state: IState, action: IAction): IState => ({
+export const catalogDeleteProduct = (state: IState): IState => ({
     ...state,
     requestCatalogDeleteProduct: {
         ...state.requestCatalogDeleteProduct,
@@ -254,7 +254,7 @@ export const catalogDeleteProductReset = (state: IState): IState => ({
     requestCatalogDeleteProduct: initialState.requestCatalogDeleteProduct,
 })
 
-export const catalogDownloadProduct = (state: IState, action: IAction): IState => ({
+export const catalogDownloadProduct = (state: IState): IState => ({
     ...state,
     requestCatalogDownloadProduct: {
         ...state.requestCatalogDownloadProduct,

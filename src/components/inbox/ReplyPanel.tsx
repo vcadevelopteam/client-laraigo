@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, RichResponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
 import { useDispatch } from "react-redux";
-import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock } from "store/inbox/actions";
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock, updateInteractionByUUID } from "store/inbox/actions";
 import { uploadFile, resetUploadFile } from "store/main/actions";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import InputBase from "@material-ui/core/InputBase";
@@ -29,7 +29,7 @@ import ListItem from "@material-ui/core/ListItem";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import TextField from "@material-ui/core/TextField";
-import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from "common/helpers/functions";
+import { convertLocalDate, getSecondsUntelNow, uuidv4 } from "common/helpers/functions";
 import { Descendant } from "slate";
 import { RichText, renderToString, toElement } from "components/fields/RichText";
 import { emojis } from "common/constants/emojis";
@@ -47,6 +47,10 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
+import FormatBoldIcon from '@material-ui/icons/FormatBold';
+import FormatItalicIcon from '@material-ui/icons/FormatItalic';
+import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
+import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -147,7 +151,7 @@ const DialogSearchLibrary: React.FC<{
             button2Type="submit"
         >
             <div>
-                <div style={{ display: "flex", gap: 16 }}>
+                <div style={{ display: "flex", gap: 12 }}>
                     <div style={{ width: 200 }}>
                         <FieldSelect
                             label={t(langKeys.category)}
@@ -752,9 +756,37 @@ const RecordAudioIcon: React.FC<{
                     <RecordIcon
                         className={classes.iconResponse}
                         onClick={handleClick}
-                        style={{ width: 22, height: 22 }}
+                        style={{ width: 28, height: 28 }}
                     />
                 )}
+            </Tooltip>
+        </div>
+    );
+};
+
+const CopilotLaraigoIcon: React.FC<{
+    classes: ClassNameMap;
+    enabled: boolean
+}> = ({ classes, enabled }) => {
+    const { t } = useTranslation();
+
+    //{t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+    return (
+        <div style={{ display: "flex" }}>
+            <Tooltip title={"Copilot Laraigo"} arrow placement="top">
+                <IconButton size="small" disabled={!enabled}
+                >
+                    {t(langKeys.currentlanguage) === "en" ?
+                        <CopilotIconEng
+                            className={enabled ? classes.iconResponse : ""}
+                            style={{ width: 22, height: 22}}
+                        /> :
+                        <CopilotIconEsp
+                            className={enabled ? classes.iconResponse : ""}
+                            style={{ width: 22, height: 22}}
+                        />
+                    }
+                </IconButton>
             </Tooltip>
         </div>
     );
@@ -838,7 +870,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: "flex" }}>
                 <Tooltip title={t(langKeys.send_enrich_response)} arrow placement="top">
-                    <RichResponseIcon
+                    <SendToBlockIcon
                         className={classes.iconResponse}
                         onClick={handleClick}
                         style={{ width: 22, height: 22 }}
@@ -856,7 +888,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
-                                        <div>User Rich Response</div>
+                                        <div>{t(langKeys.sentoblock)}</div>
                                         <IconButton size="small" onClick={() => setShowSearch(true)} edge="end">
                                             <SearchIcon />
                                         </IconButton>
@@ -956,11 +988,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
     const listAllowRecords = ["FBDM", "FBMS", "WHA", "INDM", "INMS"];
     const [copyEmails, setCopyEmails] = useState<Dictionary>({ cc: false, cco: false, error: false });
-    
+
     const resReplyTicket = useSelector((state) => state.inbox.triggerReplyTicket);
     const [triggerReply, settriggerReply] = useState(false);
     const [lastSelection, setLastSelection] = useState(0);
-    
+
     const variablecontext = useSelector((state) => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector((state) => state.inbox.agentSelected);
     const user = useSelector((state) => state.login.validateToken.user);
@@ -976,6 +1008,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [typeHotKey, setTypeHotKey] = useState("");
     const quickReplies = useSelector((state) => state.inbox.quickreplies);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([]);
+    const [propertyCopilotLaraigo, setPropertyCopilotLaraigo] = useState(false);
     const [emojiFavorite, setemojiFavorite] = useState<string[]>([]);
     const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([]);
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
@@ -983,6 +1016,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([]);
     const [showReply, setShowReply] = useState<boolean | null>(true);
     const [fileimage, setfileimage] = useState<any>(null);
+    const [numRows, setNumRows] = useState(1.5);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([
         { type: "paragraph", align: "left", children: [{ text: "" }] },
     ]);
@@ -993,6 +1027,15 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [flagredo, setflagredo] = useState(false);
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
+    const inputRef = useRef(null);
+
+    const handleInputChange = (e: any) => {
+        const lines = e.target.value.split('\n').length;
+        if (lines <= 6) {
+            setNumRows(lines);
+            setText(e.target.value);
+        }
+    };
 
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
@@ -1034,12 +1077,16 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     useEffect(() => {
         if (triggerReply) {
-            if (!resReplyTicket.loading && resReplyTicket.error) {
-                const errormessage = t(resReplyTicket.code || "error_unexpected_error", {
-                    module: t(langKeys.user).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                settriggerReply(false);
+            if (!resReplyTicket.loading) {
+                if (resReplyTicket.error) {
+                    const errormessage = t(resReplyTicket.code || "error_unexpected_error", {
+                        module: t(langKeys.user).toLocaleLowerCase(),
+                    });
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                    settriggerReply(false);
+                } else {
+                    dispatch(updateInteractionByUUID({ uuid: resReplyTicket.uuid || "", interactionid: resReplyTicket.interactionid || 0 }))
+                }
             }
         }
     }, [resReplyTicket, triggerReply]);
@@ -1093,6 +1140,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     const triggerReplyMessage = () => {
         if (copyEmails.error) return;
+        setNumRows(2);
         const callback = () => {
             let wasSend = false;
             if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
@@ -1201,12 +1249,14 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
                 if (textCleaned) {
                     if (!errormessage) {
+                        const uuid = uuidv4();
                         wasSend = true;
                         const newInteractionSocket = {
                             ...ticketSelected!!,
                             interactionid: 0,
                             typemessage: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             typeinteraction: null,
+                            uuid,
                             lastmessage: textCleaned,
                             createdate: new Date().toISOString(),
                             userid: 0,
@@ -1228,6 +1278,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 ...ticketSelected!!,
                                 interactiontype: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                                 interactiontext: textCleaned,
+                                uuid,
                                 validateUserOnTicket: userType === "AGENT",
                                 isAnswered: !ticketSelected!!.isAnswered,
                                 emailcocopy: copyEmails.cco || "",
@@ -1266,6 +1317,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setemojiNoShow(multiData?.data?.[10]?.data.filter((x) => x.restricted).map((x) => x.emojihex) || []);
             setemojiFavorite(multiData?.data?.[10]?.data.filter((x) => x.favorite).map((x) => x.emojihex) || []);
+            setPropertyCopilotLaraigo(multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMECOPILOTLARAIGO")?.data?.[0]?.propertyvalue === "1")
             setinnappropiatewordsList(multiData?.data?.[11]?.data || []);
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
@@ -1319,80 +1371,26 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         setText(myquickreply);
     };
 
-    const selectRichResponse = (block: Dictionary) => {
-        const callback = () => {
-            const listInteractions = cleanedRichResponse(block.cards, variablecontext);
-
-            if (listInteractions.length === 0) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: "No hay cards" }));
-                return;
-            }
-            settriggerReply(true);
-            dispatch(
-                replyTicket(
-                    listInteractions.map((x) => ({
-                        ...ticketSelected!!,
-                        interactiontype: x.type,
-                        interactiontext: x.content,
-                        validateUserOnTicket: userType === "AGENT",
-                    })),
-                    true
-                )
-            );
-
-            listInteractions.forEach((x: Dictionary, i: number) => {
-                const newInteractionSocket = {
-                    ...ticketSelected!!,
-                    interactionid: 0,
-                    typemessage: x.type,
-                    typeinteraction: null,
-                    lastmessage: x.content,
-                    createdate: new Date().toISOString(),
-                    userid: 0,
-                    usertype: "agent",
-                    ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
-                };
-                if (userType === "AGENT") {
-                    dispatch(
-                        emitEvent({
-                            event: "newMessageFromAgent",
-                            data: newInteractionSocket,
-                        })
-                    );
-                }
-            });
-
-            if (userType === "SUPERVISOR") reasignTicket();
-
-            setText("");
-        };
-
-        if (userType === "SUPERVISOR") {
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_reasign_with_reply),
-                    callback,
-                })
-            );
-        } else {
-            callback();
-        }
-    };
-
-    const handleKeyPress = (event: any) => {
-        if (event.ctrlKey || event.shiftKey) return;
-        if (event.charCode === 13) {
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.ctrlKey && event.code === 'Enter') {
+            setText((prevText) => prevText + '\n');
             event.preventDefault();
-            if (text.trim() || files.length > 0) return triggerReplyMessage();
+        } else if (event.shiftKey) {
+            console.log("");
+            return;
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            if (text.trim() || files.length > 0) {
+                triggerReplyMessage();
+            }
         }
     };
 
-    const handleSelectionChange = (event: any) => {
+    const handleSelectionChange = (event: Dictionary) => {
         setLastSelection(event?.target?.selectionEnd ?? 0);
     };
 
-    function onPasteTextbar(e: any) {
+    function onPasteTextbar(e: Dictionary) {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
             e.preventDefault();
             if (e.clipboardData.files[0].type.includes("image")) {
@@ -1401,6 +1399,59 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
+    const formatText = (c: string) => {
+        const input = inputRef.current.querySelector('textarea');
+        const { value, selectionStart, selectionEnd } = input;
+
+        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
+            if (selectionStart !== selectionEnd) {
+                // Hay texto seleccionado
+                const selectedText = value.slice(selectionStart, selectionEnd);
+                const beforeText = value.slice(0, selectionStart);
+                const afterText = value.slice(selectionEnd);
+                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
+                setText(newValue);
+                setTimeout(() => {
+                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
+                    input.focus();
+                }, 0);
+            } else {
+                // No hay texto seleccionado
+                const beforeText = value.slice(0, selectionStart);
+                const afterText = value.slice(selectionStart);
+                const newValue = `${beforeText}${c}${c}${afterText}`;
+                setText(newValue);
+                setTimeout(() => {
+                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
+                    input.focus();
+                }, 0);
+            }
+        } else {
+            if (selectionStart !== selectionEnd) {
+                if (c === "*") {
+
+                    const beforeSelection = text.slice(0, selectionStart);
+                    const selectedText = text.slice(selectionStart, selectionEnd);
+                    const afterSelection = text.slice(selectionEnd);
+
+                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
+                    setText(newText);
+                }
+            }
+        }
+    }
+
+    const handleKeyDown = (event: Dictionary) => {
+        if (event.altKey && event.key === 'Enter') {
+            event.preventDefault();
+            setText(text + '\n');
+        }
+    };
+
+    const isTextEmptyOrWhitespace = (text: string) => {
+        return text.trim() === '';
+    };
+
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
@@ -1447,7 +1498,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     className={clsx(classes.iconSend, {
                                                         [classes.iconSendDisabled]: !(
                                                             renderToString(toElement(bodyobject)) !==
-                                                                `<div data-reactroot=""><p><span></span></p></div>` ||
+                                                            `<div data-reactroot=""><p><span></span></p></div>` ||
                                                             files.filter((x) => x.url).length > 0
                                                         ),
                                                     })}
@@ -1492,24 +1543,15 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 }}
                                             >
                                                 {typeHotKey === "quickreply"
-                                                    ? quickRepliesToShow.map((item) => (
-                                                          <div
-                                                              key={item.quickreplyid}
-                                                              className={classes.hotKeyQuickReply}
-                                                              onClick={() => selectQuickReply(item.quickreply)}
-                                                          >
-                                                              {item.description}
-                                                          </div>
-                                                      ))
-                                                    : richResponseToShow.map((item) => (
-                                                          <div
-                                                              key={item.id}
-                                                              className={classes.hotKeyQuickReply}
-                                                              onClick={() => selectRichResponse(item)}
-                                                          >
-                                                              {item.title}
-                                                          </div>
-                                                      ))}
+                                                    && quickRepliesToShow.map((item) => (
+                                                        <div
+                                                            key={item.quickreplyid}
+                                                            className={classes.hotKeyQuickReply}
+                                                            onClick={() => selectQuickReply(item.quickreply)}
+                                                        >
+                                                            {item.description}
+                                                        </div>
+                                                    ))}
                                             </div>
                                         </div>
                                     )}
@@ -1542,18 +1584,37 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 <div
                                     style={{
                                         display: "flex",
-                                        gap: 8,
-                                        flexWrap: "wrap",
-                                        borderBottom: "1px solid #EBEAED",
-                                        paddingBottom: 8,
-                                    }}
-                                >
-                                    <RecordComponent
-                                        record={record}
-                                        setRecord={setRecord}
-                                        setStartRecording={setStartRecording}
-                                        startRecording={startRecording}
-                                    />
+                                    }}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            width: "100%",
+                                            gap: 8,
+                                            flexWrap: "wrap",
+                                            borderBottom: "1px solid #EBEAED",
+                                            paddingBottom: 8,
+                                        }}
+                                    >
+                                        <RecordComponent
+                                            record={record}
+                                            setRecord={setRecord}
+                                            setStartRecording={setStartRecording}
+                                            startRecording={startRecording}
+                                        />
+                                    </div>
+                                    <div
+                                        className={clsx(classes.iconSend, {
+                                            [classes.iconSendDisabled]: !(
+                                                text ||
+                                                files.filter((x) => !!x.url).length > 0 ||
+                                                record
+                                            ),
+                                        })}
+                                        style={{ marginTop: 12 }}
+                                        onClick={triggerReplyMessage}
+                                    >
+                                        <SendIcon />
+                                    </div>
                                 </div>
                             )}
                             {files.length > 0 && (
@@ -1574,18 +1635,52 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             {!record && !startRecording && (
                                 <ClickAwayListener onClickAway={handleClickAway}>
                                     <div>
-                                        <InputBase
-                                            fullWidth
-                                            value={text}
-                                            onChange={(e) => setText(e.target.value)}
-                                            placeholder="Send your message..."
-                                            onKeyPress={handleKeyPress}
-                                            rows={2}
-                                            multiline
-                                            inputProps={{ "aria-label": "naked" }}
-                                            onPaste={onPasteTextbar}
-                                            onSelect={handleSelectionChange}
-                                        />
+                                        <div style={{ display: "flex", alignItems: "flex-end" }}>
+                                            <InputBase
+                                                id="chat-input"
+                                                fullWidth
+                                                value={text}
+                                                onChange={(e) => setText(e.target.value)}
+                                                placeholder={t(langKeys.send_your_message)}
+                                                onKeyPress={handleKeyPress}
+                                                rows={numRows}
+                                                multiline
+                                                onKeyDown={handleKeyDown}
+                                                minRows={1}
+                                                maxRows={5}
+                                                inputProps={{
+                                                    'aria-label': 'naked',
+                                                    style: {
+                                                        maxHeight: '144px',
+                                                        overflow: 'auto',
+                                                    },
+                                                }}
+                                                onPaste={onPasteTextbar}
+                                                onSelect={handleSelectionChange}
+                                                ref={inputRef}
+                                            />
+                                            <div style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>
+                                                {!files.length && isTextEmptyOrWhitespace(text) && allowRecording ? (                                                    
+                                                    <RecordAudioIcon
+                                                        classes={classes}
+                                                        setRecord={setRecord}
+                                                        setStartRecording={setStartRecording}
+                                                        startRecording={startRecording}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        className={clsx(classes.iconSend, {
+                                                            [classes.iconSendDisabled]: isTextEmptyOrWhitespace(text) && !(
+                                                                files.filter((x) => Boolean(x.url)).length > 0 || record
+                                                            ),
+                                                        })}
+                                                        onClick={triggerReplyMessage}
+                                                    >
+                                                        <SendIcon />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                         {openDialogHotKey && (
                                             <div
                                                 style={{
@@ -1605,47 +1700,47 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     }}
                                                 >
                                                     {typeHotKey === "quickreply"
-                                                        ? quickRepliesToShow.map((item) => (
-                                                              <div
-                                                                  key={item.quickreplyid}
-                                                                  className={classes.hotKeyQuickReply}
-                                                                  onClick={() => selectQuickReply(item.quickreply)}
-                                                              >
-                                                                  {item.description}
-                                                              </div>
-                                                          ))
-                                                        : richResponseToShow.map((item) => (
-                                                              <div
-                                                                  key={item.id}
-                                                                  className={classes.hotKeyQuickReply}
-                                                                  onClick={() => selectRichResponse(item)}
-                                                              >
-                                                                  {item.title}
-                                                              </div>
-                                                          ))}
+                                                        && quickRepliesToShow.map((item) => (
+                                                            <div
+                                                                key={item.quickreplyid}
+                                                                className={classes.hotKeyQuickReply}
+                                                                onClick={() => selectQuickReply(item.quickreply)}
+                                                            >
+                                                                {item.description}
+                                                            </div>
+                                                        ))}
                                                 </div>
                                             </div>
                                         )}
                                     </div>
                                 </ClickAwayListener>
                             )}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                                    {!record && !startRecording && (
+                            {!record && !startRecording && (
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                                         <QuickReplyIcon classes={classes} setText={setText} />
-                                    )}
-                                    {!record && !startRecording && (
                                         <TmpRichResponseIcon classes={classes} setText={setText} />
-                                    )}
-                                    {!record && !startRecording && (
                                         <UploaderIcon
                                             classes={classes}
                                             setFiles={setFiles}
                                             initfile={fileimage}
                                             setfileimage={setfileimage}
                                         />
-                                    )}
-                                    {!record && !startRecording && (
+                                        <EmojiPickerZyx
+                                            emojisIndexed={EMOJISINDEXED}
+                                            onSelect={(e) => {
+                                                lastSelection < (text || "").length - 1
+                                                    ? setText(
+                                                        (p) =>
+                                                            p.substring(0, lastSelection) +
+                                                            e.native +
+                                                            p.substring(lastSelection)
+                                                    )
+                                                    : setText((p) => p + e.native);
+                                            }}
+                                            emojisNoShow={emojiNoShow}
+                                            emojiFavorite={emojiFavorite}
+                                        />
                                         <GifPickerZyx
                                             onSelect={(url: string) =>
                                                 setFiles((p) => [
@@ -1654,46 +1749,62 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 ])
                                             }
                                         />
-                                    )}
-                                    {!record && !startRecording && (
-                                        <EmojiPickerZyx
-                                            emojisIndexed={EMOJISINDEXED}
-                                            onSelect={(e) => {
-                                                lastSelection < (text || "").length - 1
-                                                    ? setText(
-                                                          (p) =>
-                                                              p.substring(0, lastSelection) +
-                                                              e.native +
-                                                              p.substring(lastSelection)
-                                                      )
-                                                    : setText((p) => p + e.native);
-                                            }}
-                                            emojisNoShow={emojiNoShow}
-                                            emojiFavorite={emojiFavorite}
-                                        />
-                                    )}
-                                    {!files.length && !text && allowRecording && (
-                                        <RecordAudioIcon
+
+                                        <CopilotLaraigoIcon
                                             classes={classes}
-                                            setRecord={setRecord}
-                                            setStartRecording={setStartRecording}
-                                            startRecording={startRecording}
+                                            enabled={propertyCopilotLaraigo}
                                         />
-                                    )}
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '0.7rem' }}>
+                                        {/* <span>
+                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("*")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>
+                                        <span>
+                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("_")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>
+                                        {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
+                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("_")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>}
+                                        <span>
+                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("~")
+                                                }} size='small'>
+                                                    {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span>
+                                        <span>
+                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                                <IconButton onClick={() => {
+                                                    formatText("```")
+                                                }} size='small'>
+                                                    <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </span> */}
+                                    </div>
                                 </div>
-                                <div
-                                    className={clsx(classes.iconSend, {
-                                        [classes.iconSendDisabled]: !(
-                                            text ||
-                                            files.filter((x) => !!x.url).length > 0 ||
-                                            record
-                                        ),
-                                    })}
-                                    onClick={triggerReplyMessage}
-                                >
-                                    <SendIcon />
-                                </div>
-                            </div>
+                            )}
                             <BottomGoToUnder />
                         </div>
                     </DragDropFile>

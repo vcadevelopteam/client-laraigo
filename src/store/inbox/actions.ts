@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary, ILibrary } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getInteractionsByConversationFree } from 'common/helpers';
+import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getTicketsClosed as getTicketClosedRequestBody } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -58,8 +58,19 @@ export const getTickets = (userid: number | null): IActionCall => ({
     },
     type: null,
 });
-
 export const resetGetTickets = (): IActionCall => ({ type: actionTypes.GET_TICKETS_RESET });
+
+export const getTicketsClosed = (userid: number | null): IActionCall => ({
+    callAPI: () => CommonService.main(getTicketClosedRequestBody(userid)),
+    types: {
+        loading: actionTypes.GET_TICKETS_CLOSED,
+        success: actionTypes.GET_TICKETS_CLOSED_SUCCESS,
+        failure: actionTypes.GET_TICKETS_CLOSED_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetTicketsClosed = (): IActionCall => ({ type: actionTypes.GET_TICKETS_CLOSED_RESET });
 
 
 export const getPerson = (personid: number, conversationid: number): IActionCall => ({
@@ -125,6 +136,8 @@ export const selectAgent = (ticket: IAgent | null): IActionCall => ({ type: acti
 
 
 export const addTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.ADD_TICKET, payload: ticket });
+
+export const updateInteractionByUUID = (data: { interactionid: number; uuid: string }): IActionCall => ({ type: actionTypes.UPDATE_INTERACTION_UUID, payload: data });
 
 export const modifyTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.MODIFY_TICKET, payload: ticket });
 
@@ -336,3 +349,7 @@ export const getQuickreplies = (): IActionCall => ({
 });
 
 export const resetQuickreplies = (): IActionCall => ({ type: actionTypes.GET_QUICKREPLIES_RESET });
+
+export const setSearchTerm = (payload: any): IActionCall => ({ type: actionTypes.SET_SEARCHTERM, payload });
+
+export const setPinnedComments = (payload: any): IActionCall => ({ type: actionTypes.SET_PINNEDCOMMENTS, payload });

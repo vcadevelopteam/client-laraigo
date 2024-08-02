@@ -526,6 +526,7 @@ const Supervisor: FC = () => {
             getPropertySelByName("ASESORSUSPENDE", "ASESORSUSPENDE"),
             getDocumentLibraryByUser(),
             getPropertySelByName("GRUPODELEGACION","GRUPODELEGACION"),
+            getPropertySelByName("COPILOTLARAIGO","COPILOTLARAIGO"),
         ]))
         return () => {
             dispatch(resetAllMain());

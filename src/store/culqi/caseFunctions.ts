@@ -1,7 +1,7 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const charge = (state: IState, action: IAction): IState => ({
+export const charge = (state: IState): IState => ({
     ...state,
     request: {
         ...state.request,
@@ -38,7 +38,7 @@ export const chargeReset = (state: IState): IState => ({
     request: initialState.request,
 });
 
-export const balance = (state: IState, action: IAction): IState => ({
+export const balance = (state: IState): IState => ({
     ...state,
     request: {
         ...state.request,
@@ -75,7 +75,7 @@ export const balanceReset = (state: IState): IState => ({
     request: initialState.request,
 });
 
-export const paymentOrder = (state: IState, action: IAction): IState => ({
+export const paymentOrder = (state: IState): IState => ({
     ...state,
     request: {
         ...state.request,
@@ -111,7 +111,7 @@ export const paymentOrderReset = (state: IState): IState => ({
     request: initialState.request,
 });
 
-export const createInvoice = (state: IState, action: IAction): IState => ({
+export const createInvoice = (state: IState): IState => ({
     ...state,
     requestCreateInvoice: {
         ...state.requestCreateInvoice,
@@ -148,7 +148,7 @@ export const createInvoiceReset = (state: IState): IState => ({
     requestCreateInvoice: initialState.requestCreateInvoice,
 });
 
-export const subscribe = (state: IState, action: IAction): IState => ({
+export const subscribe = (state: IState): IState => ({
     ...state,
     request: {
         ...state.request,
@@ -185,7 +185,7 @@ export const subscribeReset = (state: IState): IState => ({
     request: initialState.request,
 });
 
-export const unsubscribe = (state: IState, action: IAction): IState => ({
+export const unsubscribe = (state: IState): IState => ({
     ...state,
     request: {
         ...state.request,
@@ -222,7 +222,7 @@ export const unsubscribeReset = (state: IState): IState => ({
     request: initialState.request,
 });
 
-export const sendInvoice = (state: IState, action: IAction): IState => ({
+export const sendInvoice = (state: IState): IState => ({
     ...state,
     request: {
         ...state.request,
@@ -259,7 +259,7 @@ export const sendInvoiceReset = (state: IState): IState => ({
     request: initialState.request,
 });
 
-export const createCreditNote = (state: IState, action: IAction): IState => ({
+export const createCreditNote = (state: IState): IState => ({
     ...state,
     requestCreateCreditNote: {
         ...state.requestCreateCreditNote,
@@ -296,7 +296,7 @@ export const createCreditNoteReset = (state: IState): IState => ({
     requestCreateCreditNote: initialState.requestCreateCreditNote,
 });
 
-export const regularizeInvoice = (state: IState, action: IAction): IState => ({
+export const regularizeInvoice = (state: IState): IState => ({
     ...state,
     requestRegularizeInvoice: {
         ...state.requestRegularizeInvoice,
@@ -333,7 +333,7 @@ export const regularizeInvoiceReset = (state: IState): IState => ({
     requestRegularizeInvoice: initialState.requestRegularizeInvoice,
 });
 
-export const getExchangeRate = (state: IState, action: IAction): IState => ({
+export const getExchangeRate = (state: IState): IState => ({
     ...state,
     requestGetExchangeRate: {
         ...state.requestGetExchangeRate,
@@ -371,7 +371,7 @@ export const getExchangeRateReset = (state: IState): IState => ({
     requestGetExchangeRate: initialState.requestGetExchangeRate,
 });
 
-export const emitInvoice = (state: IState, action: IAction): IState => ({
+export const emitInvoice = (state: IState): IState => ({
     ...state,
     requestEmitInvoice: {
         ...state.requestEmitInvoice,
@@ -408,7 +408,7 @@ export const emitInvoiceReset = (state: IState): IState => ({
     requestEmitInvoice: initialState.requestEmitInvoice,
 });
 
-export const cardCreate = (state: IState, action: IAction): IState => ({
+export const cardCreate = (state: IState): IState => ({
     ...state,
     requestCardCreate: {
         ...state.requestCardCreate,
@@ -444,7 +444,7 @@ export const cardCreateReset = (state: IState): IState => ({
     requestCardCreate: initialState.requestCardCreate,
 });
 
-export const cardDelete = (state: IState, action: IAction): IState => ({
+export const cardDelete = (state: IState): IState => ({
     ...state,
     requestCardDelete: {
         ...state.requestCardDelete,
@@ -480,7 +480,7 @@ export const cardDeleteReset = (state: IState): IState => ({
     requestCardDelete: initialState.requestCardDelete,
 });
 
-export const reportPdf = (state: IState, action: IAction): IState => ({
+export const reportPdf = (state: IState): IState => ({
     ...state,
     requestReportPdf: {
         ...state.requestReportPdf,

@@ -212,7 +212,7 @@ export interface AutomatizationRuleSave {
     products: string,
     messagetemplateid: number,
     hsmtemplatename: string,
-    order: Boolean,
+    order: boolean,
     variables?: any[],
 }
 
