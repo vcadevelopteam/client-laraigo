@@ -1,22 +1,26 @@
 import React from 'react';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
-interface FunnelData {
+interface funnelData {
     name: string;
     value: number;
     fill: string;
 }
 
 interface Funnel3DProps {
-    data: FunnelData[];
+    data: funnelData[];
     spacing?: number;
 }
 
 const useStyles = makeStyles({
     funnelContainer: {
         width: '100%',
-        maxWidth: '550px',
+        maxWidth: '450px',
         margin: 'auto',
+        display: 'flex',
+    },
+    funnel: {
+        width: '100%',
     },
     funnelText: {
         fontSize: '2.1px',
@@ -30,7 +34,7 @@ const useStyles = makeStyles({
     }
 });
 
-const Funnel3D: React.FC<Funnel3DProps> = ({data, spacing = 2.3}) => {
+const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
     const classes = useStyles();
 
     const darkenColor = (color: string, amount: number) => {
@@ -52,13 +56,12 @@ const Funnel3D: React.FC<Funnel3DProps> = ({data, spacing = 2.3}) => {
         return (usePound ? "#" : "") + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
     };
 
-    const renderFunnelSection = (section: FunnelData, index: number, totalHeight: number) => {
+    const renderFunnelSection = (section: funnelData, index: number, totalHeight: number) => {
         const nextSectionWidth = (data[index + 1]?.value ?? 0) / (data[0].value / 100);
         const currentSectionWidth = section.value / (data[0].value / 100);
         const sectionHeight = (totalHeight - spacing * (data.length - 1)) / data.length;
-        const depth = 1.2;
 
-        const isoscelesFactor = 0.80;
+        const isoscelesFactor = 1;
         const topWidth = currentSectionWidth * isoscelesFactor;
         const bottomWidth = nextSectionWidth * isoscelesFactor;
 
@@ -79,7 +82,7 @@ const Funnel3D: React.FC<Funnel3DProps> = ({data, spacing = 2.3}) => {
             `;
         };
 
-        const yOffset = index * (sectionHeight + spacing);
+        const yOffset = index * sectionHeight + (index * spacing);
 
         if (index === data.length - 1) {
             return (
@@ -99,8 +102,8 @@ const Funnel3D: React.FC<Funnel3DProps> = ({data, spacing = 2.3}) => {
                         d={`
                             M ${50 - topWidth / 2} 0
                             L ${50 + topWidth / 2} 0
-                            L ${50 + topWidth / 2} ${sectionHeight/2}
-                            L ${50 - topWidth / 2} ${sectionHeight/2}
+                            L ${50 + topWidth / 2} ${sectionHeight / 2}
+                            L ${50 - topWidth / 2} ${sectionHeight / 2}
                             Z
                         `}
                         fill={darkenColor(section.fill, -20)}
@@ -174,13 +177,15 @@ const Funnel3D: React.FC<Funnel3DProps> = ({data, spacing = 2.3}) => {
     };
 
     return (
-        <svg className={classes.funnelContainer} viewBox={`0 -5 100 ${data.reduce((total, _,
-                                                                                   index) => total + ((
-                index === 0 ? 0 : spacing) +
-            (100 / data.length)), 0)}`}
-             preserveAspectRatio="none">
-            {data.map((section, index) => renderFunnelSection(section, index, 100))}
-        </svg>
+        <div className={classes.funnelContainer}>
+            <svg
+                className={classes.funnel}
+                viewBox={`0 0 100 100`}
+                preserveAspectRatio="none"
+            >
+                {data.map((section, index) => renderFunnelSection(section, index, 100))}
+            </svg>
+        </div>
     );
 };
 
