@@ -5354,3 +5354,15 @@ export const getUserMessageOutbound = ({startdate, enddate, communicationchannel
         communicationchannelid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });
+export const getDashboardFunnelDataSel = ({startdate, enddate, channel, userid, leadproduct}:Dictionary) => ({
+    method: "UFN_LEAD_FUNNEL_SEL",
+    key: "UFN_LEAD_FUNNEL_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        userid,
+        leadproduct,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
+});
