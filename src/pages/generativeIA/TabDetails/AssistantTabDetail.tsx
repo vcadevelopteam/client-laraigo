@@ -104,6 +104,14 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         {
             "domainvalue": "llama3:8b",
             "domaindesc": "llama3:8b",
+        },
+        {
+            "domainvalue": "llama3.1:70b",
+            "domaindesc": "llama3.1:70b",
+        },
+        {
+            "domainvalue": "llama3.1:8b",
+            "domaindesc": "llama3.1:8b",
         }
     ]
 
