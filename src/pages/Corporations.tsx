@@ -243,6 +243,7 @@ const Corporations: FC = () => {
                     data={mainData}
                     download={true}
                     defaultGlobalFilter={generalFilter}
+                    setOutsideGeneralFilter={setGeneralFilter}
                     loading={mainResult.mainData.loading}
                     register={(user?.roledesc ?? "").split(",").some((v) => ["SUPERADMIN"].includes(v))}
                     handleRegister={handleRegister}
