@@ -2626,6 +2626,12 @@ const translation: LangKeys = {
   opportunity_funnel_channels: "Channels",
   opportunity_funnel_advisor: "Advisor",
   opportunity_funnel_product: "Product",
+  opportunity_funnel_quantity: "Quantity",
+  opportunity_funnel_phase: "Phase",
+  opportunity_funnel_new: "New",
+  opportunity_funnel_qualified: "Qualified",
+  opportunity_funnel_proposition: "Proposition",
+  opportunity_funnel_won: "Won",
 
   report_survey: 'Satisfaction surveys',
   report_survey_ticketnum: 'Ticket',

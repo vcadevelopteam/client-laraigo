@@ -2936,6 +2936,12 @@ export const langKeys = {
   opportunity_funnel_channels: 'opportunity_funnel_channels',
   opportunity_funnel_advisor: 'opportunity_funnel_advisor',
   opportunity_funnel_product: 'opportunity_funnel_product',
+  opportunity_funnel_quantity: 'opportunity_funnel_quantity',
+  opportunity_funnel_phase: 'opportunity_funnel_phase',
+  opportunity_funnel_new: 'opportunity_funnel_new',
+  opportunity_funnel_qualified: 'opportunity_funnel_qualified',
+  opportunity_funnel_proposition: 'opportunity_funnel_proposition',
+  opportunity_funnel_won: 'opportunity_funnel_won',
 
   type_shippingtype_hsm: 'type_shippingtype_hsm',
   type_shippingtype_mail: 'type_shippingtype_mail',
