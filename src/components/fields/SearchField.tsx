@@ -90,6 +90,11 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cleanState]);
 
+    useEffect(() => {
+        setvalue(defaultGlobalFilter||"")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [defaultGlobalFilter]);
+
     return (
         <Paper component="div" className={classes.root} elevation={0} onSubmit={handleSubmit}>
             <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
@@ -97,7 +102,7 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
             </IconButton>
             <InputBase
                 className={classes.input}
-                value={defaultGlobalFilter || value}
+                value={value}
                 onChange={onChange}
                 placeholder={t(langKeys.search)}
                 inputProps={{ className: classes.inputPlaceholder }}
