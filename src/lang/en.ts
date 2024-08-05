@@ -1303,7 +1303,7 @@ const translation: LangKeys = {
   userinformation: 'User information',
   templateinformation: 'Template Information',
   datatype_number: "Integers",
-  datatype_string: "Letters",
+  datatype_string: "Alphanumeric",
   "datatype_datetime-local": "Date and Time",
   datatype_domain: "Domain",
   variableconfiguration_plural: 'Variable Configuration',
