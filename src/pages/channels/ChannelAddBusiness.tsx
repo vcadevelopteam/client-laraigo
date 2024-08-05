@@ -193,7 +193,7 @@ export const ChannelAddBusiness: FC<{ edit: boolean }> = ({ edit }) => {
                             href="/"
                             onClick={(e) => {
                                 e.preventDefault();
-                                
+
                                 if (whatsAppData?.onboarding) {
                                     history.push(paths.METACHANNELS, whatsAppData);
                                 } else {
@@ -278,7 +278,7 @@ export const ChannelAddBusiness: FC<{ edit: boolean }> = ({ edit }) => {
                                         }
                                     },
                                     callbackcancel: () => {
-                                        history.push(paths.METACHANNELS)
+                                        history.push(paths.METACHANNELS, whatsAppData);
                                     },
                                     textCancel: t(langKeys.decline)
                                 }))

@@ -1047,7 +1047,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
 
     if (!whatsAppData?.row) {
-        if (channel && !service.current && channel.servicecredentials.length > 0) {
+        if (channel && !service.current && channel.servicecredentials?.length > 0) {
             service.current = JSON.parse(channel.servicecredentials);
         }
     }
@@ -1086,6 +1086,10 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                     severity: "success",
                 })
             );
+
+            if (whatsAppData?.onboarding) {
+                history.push(paths.METACHANNELS, whatsAppData);
+            }
         }
     }, [dispatch, insertChannel, t]);
 
@@ -1109,7 +1113,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
             );
 
             if (whatsAppData?.onboarding) {
-                updateMetachannels(14)
+                updateMetachannels(14);
                 history.push(paths.METACHANNELS, whatsAppData);
             } else {
                 history.push(paths.CHANNELS);
@@ -1198,38 +1202,38 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
         }
     };
 
-    const handleSubmit = (name: string, auto: boolean) => {
+    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        if (!channel) {
-            const body = getInsertChatwebChannel(0, name, auto, "", values, "FORM");
+        if (!channel || channel?.onboarding === true) {
+            const body = getInsertChatwebChannel(0, name, auto, hexIconColor, values, "FORM", true);
             dispatch(insertChannel2(body));
         } else if (channel.status === "INACTIVO") {
             const id = channel.communicationchannelid;
-            const body = getInsertChatwebChannel(id, name, auto, "", values, "FORM");
+            const body = getInsertChatwebChannel(id, name, auto, hexIconColor, values, "FORM", false);
             dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
-            const body = getEditChatWebChannel(id, channel, values, name, auto, "", "FORM");
+            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor, "FORM");
             dispatch(getEditChannel(body, "CHAZ"));
         }
     };
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
-        
+
         if (whatsAppData?.onboarding) {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.channelconfigsave),
                 callback: () => {
-                    handleSubmit("DEFAULT", false);
+                    handleSubmit("DEFAULT", false, "#7721ad");
                 },
                 callbackcancel: () => {
-                    history.push(paths.METACHANNELS)
+                    history.push(paths.METACHANNELS, whatsAppData);
                 },
                 textCancel: t(langKeys.decline)
             }))
-        } 
+        }
         else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
@@ -1323,7 +1327,7 @@ const useFinalStepStyles = makeStyles(() => ({
 interface ChannelAddEndProps {
     loading: boolean;
     integrationId?: string;
-    onSubmit: (name: string, auto: boolean) => void;
+    onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
     onClose?: () => void;
     channel: IChannel | null;
 }
@@ -1340,12 +1344,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
+
         if (whatsAppData?.onboarding) {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.channelconfigsave),
                 callback: () => {
-                    onSubmit(name||"DEFAULT", false);
+                    onSubmit(name || "DEFAULT", false, "#7721ad");
                 },
                 callbackcancel: () => {
                     window.location.reload();
@@ -1358,7 +1363,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     };
 
     const handleSave = () => {
-        onSubmit(name, auto);
+        onSubmit(name, auto, "#7721ad");
     };
 
     return (
@@ -1382,6 +1387,35 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         valueDefault={channel?.communicationchanneldesc}
                     />
                 </div>
+                {(channel?.communicationchannelsite && channel?.status === "ACTIVO") && <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        marginLeft: 120,
+                        marginRight: 120,
+                    }}
+                >
+                    <pre
+                        style={{
+                            background: "#f4f4f4",
+                            border: "1px solid #ddd",
+                            color: "#666",
+                            pageBreakInside: "avoid",
+                            fontFamily: "monospace",
+                            lineHeight: 1.6,
+                            maxWidth: "100%",
+                            overflow: "auto",
+                            padding: "1em 1.5em",
+                            display: "block",
+                            wordWrap: "break-word",
+                        }}
+                    >
+                        <code>
+                            {`<div id="${name}"></div><script src="${apiUrls.WEBFORMCHANNEL_FORM}" integrationid="${channel?.communicationchannelsite}" containerid="${name}"></script>`}
+                        </code>
+                    </pre>
+                    <div style={{ height: 20 }} />
+                </div>}
                 <div style={{ paddingLeft: "80%" }}>
                     <Button
                         onClick={handleSave}

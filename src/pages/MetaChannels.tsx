@@ -103,7 +103,6 @@ const MetaChannels: FC = () => {
     const [channelList, setchannelList] = useState(["Facebook", "Messenger", "Instagram", "Instagram Direct"]);
     const [metachannelsDone, setmetachannelsDone] = useState<any>([]);
     const doneChannels = localStorage.getItem('metachannels') || [];
-    console.log(doneChannels)
 
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -221,7 +220,11 @@ const MetaChannels: FC = () => {
             icon: (c) => <ChatWebColor className={c} />,
             label: t(langKeys.channel_chatweb),
             id: 11,
-            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.path),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_CHATWEB.path, {
+                    onboarding: true,
+                });
+            },
         },
         {
             icon: (c) => <SmsColor className={c} />,
@@ -247,15 +250,21 @@ const MetaChannels: FC = () => {
             icon: (c) => <FormColor className={c} />,
             id: 14,
             label: t(langKeys.web_form),
-            onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM.path),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_WEBFORM.path, {
+                    onboarding: true,
+                });
+            },
         },
         {
             icon: (c) => <BloggerColor className={c} />,
             label: t(langKeys.channel_blogger),
             id: 15,
-            onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, {
-                onboarding: true,
-            }),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_BLOGGER.path, {
+                    onboarding: true,
+                });
+            },
         },
         {
             icon: (c) => <MyBusinessColor className={c} />,
@@ -281,9 +290,11 @@ const MetaChannels: FC = () => {
             icon: (c) => <TeamsColor className={c} />,
             label: t(langKeys.channel_teams),
             id: 18,
-            onClick: () => history.push(paths.CHANNELS_ADD_TEAMS.path, {
-                onboarding: true,
-            }),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_TEAMS.path, {
+                    onboarding: true,
+                });
+            },
         },
         {
             icon: (c) => <PlayStoreColor className={c} />,
@@ -299,25 +310,31 @@ const MetaChannels: FC = () => {
             icon: (c) => <AppStoreColor className={c} />,
             label: t(langKeys.channel_appstore),
             id: 20,
-            onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, {
-                onboarding: true,
-            }),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_APPSTORE.path, {
+                    onboarding: true,
+                });
+            },
         },
         {
             icon: (c) => <IosColor className={c} />,
             label: t(langKeys.channel_ios),
             id: 21,
-            onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, {
-                onboarding: true,
-            }),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_IOS.path, {
+                    onboarding: true,
+                });
+            },
         },
         {
             icon: (c) => <AndroidColor className={c} />,
             label: t(langKeys.channel_android),
             id: 22,
-            onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, {
-                onboarding: true,
-            }),
+            onClick: () => {
+                history.push(paths.CHANNELS_ADD_ANDROID.path, {
+                    onboarding: true,
+                });
+            },
         },
         {
             icon: (c) => <WorkplaceColor className={c} />,

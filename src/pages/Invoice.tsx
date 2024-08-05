@@ -1689,7 +1689,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 }
 
                 if (dataArtificialInsert.length > 0) {
-                    console.log("test");
                     dispatch(
                         execute(
                             {
@@ -1706,7 +1705,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         )
                     );
                 } else {
-                    console.log("test");
                     dispatch(execute(billingPeriodUpd(data)));
                 }
 

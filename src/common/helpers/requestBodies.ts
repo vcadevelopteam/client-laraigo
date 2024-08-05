@@ -1474,7 +1474,7 @@ export const insarrayInventoryCost = (table: Dictionary[]): IRequestBody => ({
     }
 });
 
-export const getInsertChatwebChannel = (id: number, name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
+export const getInsertChatwebChannel = (id: number, name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string, onboarding?: boolean): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         id: id || 0,
@@ -1493,6 +1493,7 @@ export const getInsertChatwebChannel = (id: number, name: string, auto: boolean,
         voximplantrecording: '',
         voximplantholdtone: "",
         voximplantcallsupervision: false,
+        onboarding: onboarding ? true : false,
     },
     type: typechannel || "CHATWEB",
     service,
@@ -1548,7 +1549,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
 export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
-    parameters: {       
+    parameters: {
         startdate: startdate || null,
         enddate: enddate || null,
         offset: (new Date().getTimezoneOffset() / 60) * -1
@@ -1558,7 +1559,7 @@ export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
 export const getCampaignOldLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST_OLD",
     key: "UFN_CAMPAIGN_LST_OLD",
-    parameters: {       
+    parameters: {
         startdate: startdate || null,
         enddate: enddate || null,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
@@ -1603,7 +1604,7 @@ export const insCampaign = ({
     fields,
     operation,
     carouseljson,
-    variableshidden, 
+    variableshidden,
     selectedColumns
 }: Dictionary, membercount: number = 0): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
@@ -1673,7 +1674,7 @@ export const insCampaignOld = ({
     fields,
     operation,
     carouseljson,
-    variableshidden, 
+    variableshidden,
     selectedColumns
 }: Dictionary, membercount: number = 0): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS_OLD",
@@ -1969,7 +1970,7 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const getHSMShipping= ({ startdate, enddate, communicationchannelid, userSid }: Dictionary): IRequestBody => ({
+export const getHSMShipping = ({ startdate, enddate, communicationchannelid, userSid }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
     key: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
     parameters: {
@@ -1980,7 +1981,7 @@ export const getHSMShipping= ({ startdate, enddate, communicationchannelid, user
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid, messagetemplateid,usersid }: Dictionary): IRequestBody => ({
+export const getHSMShippingDetail = ({ startdate, enddate, communicationchannelid, messagetemplateid, usersid }: Dictionary): IRequestBody => ({
     method: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
     key: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
     parameters: {
@@ -2049,7 +2050,7 @@ export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: nu
     method: "UFN_CAMPAIGNMEMBER_STATUS",
     parameters: {
         campaignid,
-        campaignmemberid, 
+        campaignmemberid,
         status
     },
 });
@@ -5364,16 +5365,17 @@ export const integrationManagerCodePersonDel = ({ integrationmanagerid, type, id
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     parameters: { integrationmanagerid, type, ids },
 });
-export const getUserMessageOutbound = ({startdate, enddate, communicationchannelid}:Dictionary) => ({
+export const getUserMessageOutbound = ({ startdate, enddate, communicationchannelid }: Dictionary) => ({
     method: "UFN_USER_MESSAGE_OUTBOUND",
     key: "UFN_USER_MESSAGE_OUTBOUND",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         communicationchannelid,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, },
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
 });
-export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
+export const modifyPinnedMessage = ({ conversationid, interactionid, interactiontext, operation }: Dictionary) => ({
     method: "UPDATE_PINNED_MESSAGE",
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },

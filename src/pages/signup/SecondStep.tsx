@@ -311,7 +311,6 @@ const SecondStep = () => {
                         )}
                         rules={{
                             validate: (value) => {
-                                console.log(value);
                                 if (value === null || value === undefined) {
                                     return `${t(langKeys.field_required)}`;
                                 }
