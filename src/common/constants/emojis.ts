@@ -1086,7 +1086,7 @@ export const emojis = [
         emojidec: 128573,
         emojihex: "1f63d",
         categorydesc: "SMILEYS",
-        keywords: ["animal", "cats", "kiss"],
+        keywords: ["animal", "cats", "kiss", "kissing face"],
         categoryorder: 3,
         id: "kissing_cat",
     },
