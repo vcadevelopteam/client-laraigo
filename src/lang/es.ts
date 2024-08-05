@@ -1600,7 +1600,7 @@ const translation: LangKeys = {
   variableconfiguration_plural: 'Configuración de variables',
   variableconfigurationdetail: 'Detalle de configuracion de variable',
   datatype_number: "Enteros",
-  datatype_string: "Letras",
+  datatype_string: "Alfanúmerico",
   "datatype_datetime-local": "Fecha y Hora",
   datatype_domain: "Dominio",
   flow: 'Flujo',
