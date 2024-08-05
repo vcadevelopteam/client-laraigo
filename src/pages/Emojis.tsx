@@ -66,26 +66,27 @@ const Emojis: FC = () => {
             if (searchValue === null || searchValue.trim().length === 0) {
                 switch (category) {
                     case 'FAVORITES': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.favorite === true);
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.favorite === true);
                     }
                     case 'RESTRICTED': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true);
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.restricted === true);
                     }
                     default: {
-                        return emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
+                        return emoji?.categorydesc === category;
                     }
                 }
             } else {
                 switch (category) {
                     case 'FAVORITES': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.favorite === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.favorite === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
                     }
                     case 'RESTRICTED': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.restricted === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
                     }
                     default: {
+                        let foundonstring =[...emoji.keywords, emoji.description.toLowerCase(), emoji.id].some(str => str.includes(searchValue.toLowerCase()))
                         //return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
-                        return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
+                        return (foundonstring || String(emoji?.id).toLowerCase().includes(searchValue.toLowerCase())) // && emoji?.categorydesc === category;
                     }
                 }
             }
@@ -144,7 +145,7 @@ const Emojis: FC = () => {
                     {
                         filteredEmojis.map((emoji: Dictionary) =>
                             <Emoji
-                                key={"menuEmoji_" + emoji?.emojidec}
+                                key={"menuEmoji_" + emoji?.emojihex}
                                 emoji={emoji}
                                 fetchData={fetchData}
                                 category={category}
@@ -276,41 +277,41 @@ const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category:string }> =
 
     return (
         <>
-            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.description} arrow>
+            <Tooltip key={'tooltip_' + emoji?.emojihex} title={emoji?.description} arrow>
                 <Button
                     aria-controls="simple-menu" aria-haspopup="true"
                     onContextMenu={handleClick}
-                    key={'button_' + emoji?.emojidec}
+                    key={'button_' + emoji?.emojihex}
                     style={{ padding: 0, minWidth: 50 }}>
                     <label
-                        key={'label_' + emoji?.emojidec}
+                        key={'label_' + emoji?.emojihex}
                         style={{ fontSize: 30 }}>{emoji?.emojichar}
                     </label>
                 </Button>
             </Tooltip>
             <Menu
-                key={"simple-menu_" + emoji?.emojidec}
+                key={"simple-menu_" + emoji?.emojihex}
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleOnClose}
             >
-                <MenuItem key={"menu_item_x_" + emoji?.emojidec} style={{textAlign: "center"}}>{emoji?.description}</MenuItem>
+                <MenuItem key={"menu_item_x_" + emoji?.emojihex} style={{textAlign: "center"}}>{emoji?.description}</MenuItem>
                 {category==="FAVORITES" &&
                 <>
-                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removefavorites)}</MenuItem>
-                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
+                    <MenuItem key={"menu_item_1_" + emoji?.emojihex} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removefavorites)}</MenuItem>
+                    <MenuItem key={"menu_item_2_" + emoji?.emojihex} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
                 </>
                 }
                 {category==="RESTRICTED"&&
                  <>
-                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removerestricted)}</MenuItem>
-                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
+                    <MenuItem key={"menu_item_2_" + emoji?.emojihex} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removerestricted)}</MenuItem>
+                    <MenuItem key={"menu_item_1_" + emoji?.emojihex} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
                  </>
                 }
                 {(category!=="RESTRICTED" && category!=="FAVORITES") &&
                 <>
-                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
-                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
+                    <MenuItem key={"menu_item_1_" + emoji?.emojihex} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
+                    <MenuItem key={"menu_item_2_" + emoji?.emojihex} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
                 </>
                     
                 }
