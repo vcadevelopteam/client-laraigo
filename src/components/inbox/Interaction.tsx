@@ -698,7 +698,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                             />
                         </IconButton>}
                     <HighlightedTextSimple interactiontext={text} searchTerm={searchTerm} />
-                    <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex", gap: 4 }}>
+                    <div className={classes.containerQuickReply} style={{  }}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
                             </div>
