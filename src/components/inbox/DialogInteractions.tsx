@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
         // backgroundColor: '#e0e0e0',
         background: 'linear-gradient(90deg, rgba(119,33,173,0.7203256302521008) 35%, rgba(189,240,249,1) 100%)'
     },
-    containerQuickreply: {
+    containerQuickReply: {
         whiteSpace: 'break-spaces',
         flexWrap: 'wrap',
         fontStyle: 'normal',
@@ -98,6 +98,7 @@ const useStyles = makeStyles((theme) => ({
         padding: `0 ${theme.spacing(1)}px`,
         backgroundColor: theme.palette.primary.main,
         borderRadius: '6px',
+        flex: '1 1 45%', // Ocupa el 50% del contenedor
         color: '#FFF',
         cursor: 'pointer',
         '&:hover': {
@@ -284,11 +285,11 @@ const useStyles = makeStyles((theme) => ({
         textOverflow: 'ellipsis',
         maxWidth: 200
     },
-    containerQuickReply: {
-        boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
-        backgroundColor: '#FFF',
-        width: 250,
-    },
+    // containerQuickReply: {
+    //     boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
+    //     backgroundColor: '#FFF',
+    //     width: 250,
+    // },
     headerQuickReply: {
         fontSize: 13,
         fontWeight: 500,
