@@ -13,7 +13,9 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import {
     getCollection, resetAllMain, getMultiCollection,
-    execute
+    execute,
+    setMemoryTable,
+    cleanMemoryTable
 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -195,6 +197,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     );
 }
 
+const IDINAPPROPRIATEWORDS = 'IDINAPPROPRIATEWORDS';
 const InappropriateWords: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -204,7 +207,9 @@ const InappropriateWords: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [generalFilter, setGeneralFilter] = useState("");
     const [waitImport, setWaitImport] = useState(false);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const [mainData, setMainData] = useState<any>([]);
     
     const arrayBread = [
@@ -267,7 +272,11 @@ const InappropriateWords: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("CLASSINNAWORDS"),
         ]));
+        dispatch(setMemoryTable({
+            id: IDINAPPROPRIATEWORDS
+        }))
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -396,6 +405,11 @@ const InappropriateWords: FC = () => {
                     handleRegister={handleRegister}
                     importCSV={handleUpload}
                     handleTemplate={handleTemplate}
+                    defaultGlobalFilter={generalFilter}
+                    setOutsideGeneralFilter={setGeneralFilter}
+                    pageSizeDefault={IDINAPPROPRIATEWORDS === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDINAPPROPRIATEWORDS === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDINAPPROPRIATEWORDS === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         )
