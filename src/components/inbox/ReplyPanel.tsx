@@ -1600,7 +1600,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     } else
         return (
             <>
-                {!showReply && (
+                {showReply && (
                     <DragDropFile setFiles={setFiles} disabled={lock_send_file_pc}>
                         <div className={classes.containerResponse}>
                             {(record || startRecording) && (
