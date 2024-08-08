@@ -30,7 +30,8 @@ interface Properties {
     time_reassign_call: number | undefined;
     seconds_to_answer_call: number | undefined;
     waiting_customer_message: string | undefined;
-    holding_by_supervisor: "CANAL" | "GRUPO" | undefined;
+    holding_by_supervisor: "TODO" | "CANAL" | "GRUPO" | undefined;
+    bot_by_supervisor: "TODO" | "CANAL" | "GRUPO" | undefined;
     environment: string;
     ringer_volume: number;
     origin_label: boolean;
@@ -57,6 +58,7 @@ export interface IUser {
     usr: string;
     /**SUPERADMIN | ASESOR | ... */
     roledesc: string;
+    channels: string;
     corpdesc: string;
     ownervoxi: string | null;
     sitevoxi: string | null;

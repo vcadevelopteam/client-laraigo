@@ -84,6 +84,7 @@ export interface IDeleteTicketParams {
     ticketnum: string;
     status: string;
     usergroup: string;
+    communicationchannelid: string;
     orgid: number;
     isanswered: boolean;
     userid: number;
