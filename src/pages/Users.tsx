@@ -1986,7 +1986,7 @@ const Users: FC = () => {
                     (f.balanced === undefined ||
                         ["true", "false"].includes(String(f.balanced))) &&
                     (f.role === undefined ||
-                        (String(f.role.replace(/;/g, ',')) || '').split(",").every((role: string) => {
+                        (String(f?.role || "").replace(/;/g, ',')).split(",").every((role: string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                         }))
@@ -2051,7 +2051,7 @@ const Users: FC = () => {
                         ) ||
                         !(
                             f.role === undefined ||
-                            (String(f.role.replace(/;/g, ',')) || '')
+                            (String(f?.role||"").replace(/;/g, ','))
                                 .split(",")
                                 .every((role: string) => {
                                     const roleId = parseInt(role.trim(), 10);
@@ -2085,7 +2085,7 @@ const Users: FC = () => {
                     if (channelError.length === 0) {
                         const table: Dictionary = data.reduce(
                             (a: any, d) => {
-                                const roleids = (String(d?.role.replace(/;/g, ',')) || '').split(",") || []
+                                const roleids = String(d?.role||"")?.replace(/;/g, ',').split(",") || []
                                 let roles = domains?.value?.roles?.filter(x => roleids.includes(String(x.roleid))) || []
                                 let type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
                                 let showbots = d.showbots === "true"
@@ -2128,7 +2128,7 @@ const Users: FC = () => {
                                         image: d?.image || "",
                                         detail: {
                                             showbots: Boolean(showbots),
-                                            rolegroups: d.role.replace(/;/g, ','),
+                                            rolegroups: String(d?.role||"").replace(/;/g, ','),
                                             orgid: user?.orgid,
                                             bydefault: true,
                                             labels: "",
