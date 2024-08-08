@@ -1202,8 +1202,8 @@ const Quickreplies: FC = () => {
                         operation: "INSERT",
                         type: 'NINGUNO',
                         id: 0,
-                        body: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.detail : '',
-                        bodyobject: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.bodyobject || [{ type: "paragraph", children: [{text: x.detail || ''}]}] : {},
+                        body: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.detail : '<div data-reactroot=""><p><span></span></p></div>',
+                        bodyobject: [{ type: "paragraph", children: [{text: (x.quickanswertype === 'CORREO ELECTRONICO')? x.detail || '': ""}]}],
                         quickreply_type: x.quickanswertype || 'CORREO ELECTRONICO',
                         quickreply_priority: '',
                         attachment: ''

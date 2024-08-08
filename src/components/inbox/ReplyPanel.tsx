@@ -1352,6 +1352,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }, [text]);
 
     const selectQuickReply = (value: string) => {
+        debugger
         const variablesList = value.match(/({{)(.*?)(}})/g) || [];
         let myquickreply = value
             .replace("{{numticket}}", `${ticketSelected?.ticketnum}`)
