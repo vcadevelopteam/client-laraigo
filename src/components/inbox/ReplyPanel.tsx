@@ -1149,7 +1149,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }, [dispatch, ticketSelected, agentSelected]);
 
     function findDefaultAnswer(array: any, searchString: string) {
-        const found = array.find(item => searchString.includes(item.description));
+        const found = array.find(item => searchString.includes(item.description.toLocaleLowerCase()));
         return found ? found.defaultanswer : "";
     }
 
@@ -1256,7 +1256,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                     setFiles([]);
                 }
 
-                const errormessage = findDefaultAnswer(inappropiatewordsList, textCleaned)
+                const errormessage = findDefaultAnswer(inappropiatewordsList, textCleaned.toLocaleLowerCase())
                 debugger
 
                 if (textCleaned) {
