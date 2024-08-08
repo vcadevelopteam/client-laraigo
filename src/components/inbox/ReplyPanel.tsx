@@ -1647,7 +1647,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 multiline
                                                 onKeyDown={handleKeyDown}
                                                 minRows={1}
-                                                maxRows={5}
+                                                maxRows={6}
                                                 inputProps={{
                                                     'aria-label': 'naked',
                                                     style: {
