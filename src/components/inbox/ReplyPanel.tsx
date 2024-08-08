@@ -1219,6 +1219,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                     ticketSelected?.communicationchanneltype === "MAIL" &&
                     groupInteractionList.data[0]?.interactiontext
                 ) {
+                    debugger
                     textCleaned = (
                         "Re: " +
                         groupInteractionList.data[0].interactiontext.split("&%MAIL%&")[0] +
@@ -1352,7 +1353,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }, [text]);
 
     const selectQuickReply = (value: string) => {
-        debugger
         const variablesList = value.match(/({{)(.*?)(}})/g) || [];
         let myquickreply = value
             .replace("{{numticket}}", `${ticketSelected?.ticketnum}`)
