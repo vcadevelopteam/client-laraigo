@@ -6369,7 +6369,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   categorychangetext: 'Habilita el cambio automático de la categoría después de su registro según Meta',
   propertybalancetime: 'Configura el tiempo (segundos) de balanceo del "BOT HOLDING"',
   message_business_origin: 'Message from an advertisement',
-  closedtoday: 'Cerrados hoy',
+  closedtoday: 'Cerrados hoy', 
+  spellingcheck: 'Revisión ortográfica y gramatical',
+  transcriptionandtranslation: 'Transcripción y Traducción',
+  translatelanguage: 'Chat de conversaciones',
+  chatsettings: 'Modo de envío de mensajes',
+
 };
 
 const esResource: ResourceLanguage = {

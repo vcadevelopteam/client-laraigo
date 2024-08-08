@@ -509,7 +509,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 <FieldSelect
                                                     data={filteredData}
                                                     onChange={(value) => {
-                                                        console.log('onChange value:', value);
                                                         handleSelectChange(value);
                                                         if (value?.domainvalue) {
                                                             setUnansweredQueries(value.domainvalue);
@@ -806,7 +805,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     <FieldEditMultiAux
                                         variant="outlined"
                                         inputProps={{
-                                            rows: 7,
+                                            rows: 1,
                                             maxRows: 40
                                         }}
                                         valueDefault={selectedCardData?.prompt}

@@ -154,6 +154,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
             {
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
+                helpText: t(langKeys.message_templates_channel_help),             
             },
             {
                 accessor: "name",
@@ -271,7 +272,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 listSelectFilter: [
                     { key: t(langKeys.TEMPLATE2_MULTIMEDIA), value: "MULTIMEDIA" },
                     { key: t(langKeys.TEMPLATE2_CAROUSEL), value: "CAROUSEL" },
-                    { key: t(langKeys.messagetemplate_standard).toUpperCase(), value: "STANDARD" },
                 ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
