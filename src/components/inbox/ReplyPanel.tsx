@@ -502,7 +502,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
                             zIndex: 1201,
                         }}
                     >
-                        <div className={classes.containerQuickReply}>
+                        <div className={classes.containerQuickReply2}>
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
@@ -880,7 +880,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             zIndex: 1201,
                         }}
                     >
-                        <div className={classes.containerQuickReply}>
+                        <div className={classes.containerQuickReply2}>
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
