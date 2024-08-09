@@ -459,15 +459,20 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
     const handleClickAway = () => setOpen(false);
 
     useEffect(() => {
-        setquickRepliesToShow(quickReplies.data.filter((x) => !!x.favorite));
-    }, [quickReplies]);
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)
+        debugger
+        setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
+    }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
         if (search === "") {
-            setquickRepliesToShow(quickReplies.data.filter((x) => !!x.favorite));
+            setquickRepliesToShow(quickreplyFiltered.filter((x) => !!x.favorite));
         } else {
             setquickRepliesToShow(
-                quickReplies.data.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
+                quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
             );
         }
     }, [search, quickReplies]);
@@ -1028,15 +1033,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
     const inputRef = useRef(null);
-
-    const handleInputChange = (e: any) => {
-        const lines = e.target.value.split('\n').length;
-        if (lines <= 6) {
-            setNumRows(lines);
-            setText(e.target.value);
-        }
-    };
-
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
         if (ticketSelected?.status !== "ASIGNADO") {
@@ -1219,7 +1215,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                     ticketSelected?.communicationchanneltype === "MAIL" &&
                     groupInteractionList.data[0]?.interactiontext
                 ) {
-                    debugger
                     textCleaned = (
                         "Re: " +
                         groupInteractionList.data[0].interactiontext.split("&%MAIL%&")[0] +
@@ -1324,19 +1319,23 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     }, [multiData]);
 
-    useEffect(() => {
-        setquickRepliesToShow(quickReplies?.data?.filter((x) => x.favorite) || []);
-    }, [quickReplies]);
+    useEffect(() => {        
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const favoritequickreplies = quickReplies.data.filter(x=>x.favorite)
+        setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
+    }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
+            const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+            const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
             setTypeHotKey("quickreply");
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
-            if (textToSearch === "") setquickRepliesToShow(quickReplies.data.filter((x) => x.favorite));
+            if (textToSearch === "") setquickRepliesToShow(quickreplyFiltered.filter((x) => x.favorite));
             else
                 setquickRepliesToShow(
-                    quickReplies.data.filter((x) => x.description.toLowerCase().includes(textToSearch.toLowerCase()))
+                    quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(textToSearch.toLowerCase()))
                 );
         } else if (text.substring(0, 2).toLowerCase() === "\\r") {
             setTypeHotKey("richresponse");
@@ -1400,47 +1399,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-    const formatText = (c: string) => {
-        const input = inputRef.current.querySelector('textarea');
-        const { value, selectionStart, selectionEnd } = input;
-
-        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
-            if (selectionStart !== selectionEnd) {
-                // Hay texto seleccionado
-                const selectedText = value.slice(selectionStart, selectionEnd);
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionEnd);
-                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
-                    input.focus();
-                }, 0);
-            } else {
-                // No hay texto seleccionado
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionStart);
-                const newValue = `${beforeText}${c}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                    input.focus();
-                }, 0);
-            }
-        } else {
-            if (selectionStart !== selectionEnd) {
-                if (c === "*") {
-
-                    const beforeSelection = text.slice(0, selectionStart);
-                    const selectedText = text.slice(selectionStart, selectionEnd);
-                    const afterSelection = text.slice(selectionEnd);
-
-                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
-                    setText(newText);
-                }
-            }
-        }
-    }
 
     const handleKeyDown = (event: Dictionary) => {
         if (event.altKey && event.key === 'Enter') {
@@ -1484,7 +1442,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         positionEditable="top"
                                         spellCheck
                                         onKeyPress={handleKeyPress}
-                                        quickReplies={quickReplies.data}
+                                        quickReplies={quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO")}
                                         refresh={refresh}
                                         placeholder="Send your message..."
                                         emojiNoShow={emojiNoShow}
