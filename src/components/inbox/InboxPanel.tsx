@@ -294,6 +294,9 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'normal',
         fontWeight: 'normal',
         display: 'flex',
+        boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
+        backgroundColor: '#FFF',
+        width: 250,
         gap: theme.spacing(.5),
     },
     headerQuickReply: {

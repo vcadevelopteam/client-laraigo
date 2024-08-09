@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -47,10 +47,6 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
-import FormatBoldIcon from '@material-ui/icons/FormatBold';
-import FormatItalicIcon from '@material-ui/icons/FormatItalic';
-import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
-import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -494,7 +490,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex"}}>
                 <Tooltip title={t(langKeys.send_quickreply)} arrow placement="top">
                     <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 </Tooltip>
@@ -1399,47 +1395,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-    const formatText = (c: string) => {
-        const input = inputRef.current.querySelector('textarea');
-        const { value, selectionStart, selectionEnd } = input;
-
-        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
-            if (selectionStart !== selectionEnd) {
-                // Hay texto seleccionado
-                const selectedText = value.slice(selectionStart, selectionEnd);
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionEnd);
-                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
-                    input.focus();
-                }, 0);
-            } else {
-                // No hay texto seleccionado
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionStart);
-                const newValue = `${beforeText}${c}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                    input.focus();
-                }, 0);
-            }
-        } else {
-            if (selectionStart !== selectionEnd) {
-                if (c === "*") {
-
-                    const beforeSelection = text.slice(0, selectionStart);
-                    const selectedText = text.slice(selectionStart, selectionEnd);
-                    const afterSelection = text.slice(selectionEnd);
-
-                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
-                    setText(newText);
-                }
-            }
-        }
-    }
 
     const handleKeyDown = (event: Dictionary) => {
         if (event.altKey && event.key === 'Enter') {
@@ -1754,55 +1709,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             classes={classes}
                                             enabled={propertyCopilotLaraigo}
                                         />
-                                    </div>
+                                    </div>                                 
 
-                                    <div style={{ display: 'flex', gap: '0.7rem' }}>
-                                        {/* <span>
-                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("*")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
-                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>}
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("~")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("```")
-                                                }} size='small'>
-                                                    <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span> */}
-                                    </div>
                                 </div>
                             )}
                             <BottomGoToUnder />
