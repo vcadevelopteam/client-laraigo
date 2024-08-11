@@ -1050,6 +1050,8 @@ export const insMessageTemplate = (
         providerquality,
         providerstatus,
         operation,
+        categorychange,
+        firstbuttons, 
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1089,9 +1091,12 @@ export const insMessageTemplate = (
             providerquality,
             providerstatus,
             operation,
+            categorychange,
+            firstbuttons, 
             buttons: []
         }
-    });
+    }
+);
 
 export const insMessageTemplateOld = (
     {
@@ -3297,13 +3302,14 @@ export const getRecordHSMList = ({ startdate, enddate }: Dictionary): IRequestBo
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const getRecordHSMReport = ({ name, from, date }: Dictionary): IRequestBody => ({
+export const getRecordHSMReport = ({ name, from, date, campaignname }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_SENTMESSAGES_REPORT",
     key: "UFN_REPORT_SENTMESSAGES_REPORT",
     parameters: {
         date,
         name,
         from,
+        campaignname,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

@@ -141,6 +141,9 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 4,
         color: 'rgb(143, 146, 161)'
     },
+    cardstyle: {
+        height: 230
+    }
 }));
 
 
@@ -1025,9 +1028,9 @@ const Reports: FC = () => {
         switch (report.reportname) {
             case 'HEATMAP':
                 return (
-                    <Grid item key={"heatmap"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("heatmap")}>
+                    <Grid item key={"heatmap"} xs={12} md={4} lg={2} style={{ minWidth: 330}} >
+                        <Card>
+                            <CardActionArea onClick={() => handleSelectedString("heatmap")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1035,8 +1038,8 @@ const Reports: FC = () => {
                                     image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/01mapadecalor.png'}
                                     title={t(langKeys.heatmap)}
                                 />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                <CardContent style={{paddingBottom:0}}>
+                                    <Typography  variant="h6"  style={{ fontSize: "130%" }}>
                                         {t(langKeys.heatmap)}
                                     </Typography>
                                 </CardContent>
@@ -1047,8 +1050,8 @@ const Reports: FC = () => {
             case 'RECORDHSMREPORT':
                 return (
                     <Grid item key={"recordhsmreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("recordhsmreport")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1056,7 +1059,7 @@ const Reports: FC = () => {
                                     image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
                                     title={t(langKeys.recordhsmreportexternal)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.recordhsmreportexternal)}
                                     </Typography>
@@ -1068,8 +1071,8 @@ const Reports: FC = () => {
             case 'HYSTORYHSM':
                 return (
                     <Grid item key={"hsmhistory"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("hsmhistory")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("hsmhistory")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1077,7 +1080,7 @@ const Reports: FC = () => {
                                     image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/5740f300-9107-4c2f-b7eb-eee27652acab/Historial%20HSM.png"
                                     title={t(langKeys.hsmhistory)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.hsmhistory)}
                                     </Typography>
@@ -1089,8 +1092,8 @@ const Reports: FC = () => {
             case 'CONVERSATIONWHATSAPP':
                 return (
                     <Grid item key={"reportconversationwhatsapp"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("reportconversationwhatsapp")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("reportconversationwhatsapp")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1098,7 +1101,7 @@ const Reports: FC = () => {
                                     image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'}
                                     title={t(langKeys.conversation_plural) + " Whatsapp"}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.conversation_plural) + " Whatsapp"}
                                     </Typography>
@@ -1110,8 +1113,8 @@ const Reports: FC = () => {
             case 'INVOICE':
                 return (
                     superadmin && <Grid item key={"invoice"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("reportinvoice")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("reportinvoice")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1119,7 +1122,7 @@ const Reports: FC = () => {
                                     image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
                                     title={t(langKeys.invoice)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.invoice)}
                                     </Typography>
@@ -1131,8 +1134,8 @@ const Reports: FC = () => {
             case 'KPIOPERATIVO':
                 return (
                     <Grid item key={"kpioperativo"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("kpioperativo")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("kpioperativo")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1140,7 +1143,7 @@ const Reports: FC = () => {
                                     image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/CLARO/72fd542f-719c-4226-89f9-b29c6a46a4d7/reporteKPI.svg'}
                                     title={t(langKeys.kpimanager)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.kpimanager)}
                                     </Typography>
@@ -1152,8 +1155,8 @@ const Reports: FC = () => {
             case 'TICKETVSADVISER':
                 return (
                     <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("report_ticketvsasesor")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("report_ticketvsasesor")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1161,7 +1164,7 @@ const Reports: FC = () => {
                                     image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/ad0b89eb-6ed6-409d-b2e7-ddc9ea6c6f28/asesorvstickets.png'}
                                     title={t(langKeys.report_ticketvsasesor)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.report_ticketvsasesor)}
                                     </Typography>
@@ -1173,8 +1176,8 @@ const Reports: FC = () => {
             case 'CAMPAIGN':
                 return (
                     <Grid item key={"campaign"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("campaign")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("campaign")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1182,7 +1185,7 @@ const Reports: FC = () => {
                                     image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
                                     title={t(langKeys.campaign)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.campaign)}
                                     </Typography>
@@ -1194,8 +1197,8 @@ const Reports: FC = () => {
             case 'HSMSHIPING':
                 return (
                     <Grid item key={"hsmshipping"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("hsmshipping")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("hsmshipping")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1203,7 +1206,7 @@ const Reports: FC = () => {
                                     image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/9c213ebc-6282-4948-9f9b-6342069ff560/Recurso%206Envios%20HSM02.png"
                                     title={t(langKeys.report_hsmshipping)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.report_hsmshipping)}
                                     </Typography>
@@ -1215,8 +1218,8 @@ const Reports: FC = () => {
             case 'COMPLIANCESLA':
                 return (
                     <Grid item key={"reportcompliancesla"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("reportcompliancesla")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("reportcompliancesla")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1224,7 +1227,7 @@ const Reports: FC = () => {
                                     image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
                                     title={t(langKeys.report_reportcompliancesla)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.report_reportcompliancesla)}
                                     </Typography>
@@ -1236,8 +1239,8 @@ const Reports: FC = () => {
             case 'REQUESTSD':
                 return (
                     <Grid item key={"reportrequestsd"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("reportrequestsd")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("reportrequestsd")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1245,7 +1248,7 @@ const Reports: FC = () => {
                                     image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
                                     title={t(langKeys.report_reportrequestsd)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.report_reportrequestsd)}
                                     </Typography>
@@ -1257,8 +1260,8 @@ const Reports: FC = () => {
             case 'LEADGRIDTRACKING':
                 return (
                     <Grid item key={"leadgridtracking"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("leadgridtracking")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("leadgridtracking")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1266,7 +1269,7 @@ const Reports: FC = () => {
                                     image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/36231e3d-cf33-4d5e-a676-88a9ce3aac64/image_720.png"
                                     title={t(langKeys.report_leadgridtracking)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.report_leadgridtracking)}
                                     </Typography>
@@ -1279,8 +1282,8 @@ const Reports: FC = () => {
                 if (user?.roledesc?.includes("SUPERADMIN") || user?.roledesc?.includes("SUPERVISOR")  || user?.roledesc?.includes("ADMINISTRADOR")) {
                     return (
                         <Grid item key={"uniquecontactsreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                            <Card >
-                                <CardActionArea onClick={() => handleSelectedString("uniquecontactsreport")}>
+                           <Card>
+                                <CardActionArea onClick={() => handleSelectedString("uniquecontactsreport")} className={classes.cardstyle}>
                                     <CardMedia
                                         component="img"
                                         height="140"
@@ -1288,7 +1291,7 @@ const Reports: FC = () => {
                                         image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                         title={t(langKeys.uniquecontactsreport)}
                                     />
-                                    <CardContent>
+                                    <CardContent style={{paddingBottom:0}}>
                                         <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                             {t(langKeys.uniquecontactsreport)}
                                         </Typography>
@@ -1303,8 +1306,8 @@ const Reports: FC = () => {
             case 'VOICECALL':
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelectedString("voicecallreport")}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelectedString("voicecallreport")} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1312,7 +1315,7 @@ const Reports: FC = () => {
                                     image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                     title={t('report_' + report?.origin)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
@@ -1324,8 +1327,8 @@ const Reports: FC = () => {
             case 'TIPIFICATION':
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("tipificationreport")}}>
+                       <Card>
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("tipificationreport")}} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1333,7 +1336,7 @@ const Reports: FC = () => {
                                     image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                     title={t('report_' + report?.origin)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
@@ -1345,8 +1348,8 @@ const Reports: FC = () => {
             case 'PRODUCTIVITYHOURS':
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("productivityhoursreport")}}>
+                       <Card>
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("productivityhoursreport")}} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1354,7 +1357,7 @@ const Reports: FC = () => {
                                     image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                     title={t('report_' + report?.origin)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
@@ -1366,8 +1369,8 @@ const Reports: FC = () => {
             case 'INPUTRETRY':
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("inputretryreport")}}>
+                       <Card>
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("inputretryreport")}} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1375,7 +1378,7 @@ const Reports: FC = () => {
                                     image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                     title={t('report_' + report?.origin)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
@@ -1388,8 +1391,8 @@ const Reports: FC = () => {
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card >
-                            <CardActionArea onClick={() => handleSelected(report, report.filters)}>
+                       <Card>
+                            <CardActionArea onClick={() => handleSelected(report, report.filters)} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
@@ -1397,7 +1400,7 @@ const Reports: FC = () => {
                                     image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
                                     title={t('report_' + report?.origin)}
                                 />
-                                <CardContent>
+                                <CardContent style={{paddingBottom:0}}>
                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
@@ -1479,7 +1482,7 @@ const Reports: FC = () => {
                                                     title={report.description}
                                                 />
 
-                                                <CardContent>
+                                                <CardContent style={{paddingBottom:0}}>
                                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                                         {report.description}
                                                     </Typography>
@@ -1556,12 +1559,13 @@ const Reports: FC = () => {
                                 ))}
                                 {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                                        <Card style={{ position: 'relative' }}>
+                                        <Card>
                                             <CardActionArea
                                                 onClick={() => {
                                                     setViewSelected("view-4");
                                                     setRowReportSelected({ row: report, edit: true });
                                                 }}
+                                                className={classes.cardstyle}
                                             >
                                                 <CardMedia
                                                     component="img"
@@ -1571,7 +1575,7 @@ const Reports: FC = () => {
                                                     title={report.description}
                                                 />
 
-                                                <CardContent>
+                                                <CardContent style={{paddingBottom:0}}>
                                                     <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                                         {report.description}
                                                     </Typography>

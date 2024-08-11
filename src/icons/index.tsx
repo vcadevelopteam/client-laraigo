@@ -334,14 +334,15 @@ export { ReactComponent as InventoryIcon } from './inventarios.svg';
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
 export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
 
+export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
+export {ReactComponent as CampaignsIcon} from './campañas.svg'
+export {ReactComponent as FlaskIcon} from './flask_icon.svg'
+
 export {ReactComponent as GoogleDriveIcon} from './google-drive.svg';
 export {ReactComponent as ExcelFileIcon} from './excel-file.svg';
 export {ReactComponent as AIBussiness} from './empresa 1.svg'
 export {ReactComponent as AIGenerative} from './generativa 1.svg'
 
-export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
-export {ReactComponent as CampaignsIcon} from './campañas.svg'
-export {ReactComponent as FlaskIcon} from './flask_icon.svg'
 export {ReactComponent as CodeSnippetIcon} from './codeSnippetIcon.svg'
 export {ReactComponent as BoldNIcon} from './boldN.svg'
 export {ReactComponent as ItalicKIcon} from './italicKIcon.svg'
