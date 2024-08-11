@@ -296,6 +296,17 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         gap: theme.spacing(.5),
     },
+    containerQuickReply2: {
+        whiteSpace: 'break-spaces',
+        flexWrap: 'wrap',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        display: 'flex',
+        boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
+        backgroundColor: '#FFF',
+        width: 250,
+        gap: theme.spacing(.5),
+    },
     headerQuickReply: {
         fontSize: 14,
         fontWeight: 500,

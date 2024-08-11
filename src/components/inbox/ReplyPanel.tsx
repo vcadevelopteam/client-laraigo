@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -500,7 +500,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex"}}>
                 <Tooltip title={t(langKeys.send_quickreply)} arrow placement="top">
                     <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 </Tooltip>
@@ -512,7 +512,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
                             zIndex: 1201,
                         }}
                     >
-                        <div className={classes.containerQuickReply}>
+                        <div className={classes.containerQuickReply2}>
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
@@ -890,7 +890,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             zIndex: 1201,
                         }}
                     >
-                        <div className={classes.containerQuickReply}>
+                        <div className={classes.containerQuickReply2}>
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
@@ -1655,7 +1655,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 multiline
                                                 onKeyDown={handleKeyDown}
                                                 minRows={1}
-                                                maxRows={5}
+                                                maxRows={6}
                                                 inputProps={{
                                                     'aria-label': 'naked',
                                                     style: {
@@ -1761,7 +1761,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             classes={classes}
                                             enabled={propertyCopilotLaraigo}
                                         />
-                                    </div>
+                                    </div>                                 
 
                                     <div style={{ display: 'flex', gap: '0.7rem' }}>
                                         <Tooltip title={String(t(langKeys.bold))} arrow placement="top">

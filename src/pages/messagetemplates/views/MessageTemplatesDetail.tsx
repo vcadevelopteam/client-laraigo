@@ -2311,7 +2311,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         )}
 
-                        {(isNew ) && (
+                        {(isNew && getValues('type')) && (
                             <div className="col-8" style={{ display: 'flex' }}>
                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     <CustomTitleHelper
@@ -2374,7 +2374,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 size="small"
                             />
                         )}
-                        {(isNew) && (
+                        {(isNew && getValues('type')) && (
                             <>
                                <FieldSelect
                                     className={`col-3 ${showError ? classes.errorBorder : ''}`}

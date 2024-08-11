@@ -223,7 +223,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                             )}
                         </div>
                     );
-                },
+                },        
             },
 
 

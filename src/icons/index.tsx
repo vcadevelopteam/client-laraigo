@@ -347,8 +347,6 @@ export {ReactComponent as DeliveryTicketIcon} from './boleta_24dp.svg'
 export {ReactComponent as CheckPrepareIcon} from './check-enviar.svg'
 export {ReactComponent as EmailSendIcon} from './email_black_24dp 2.svg'
 export {ReactComponent as WhatsappSendIcon} from './whatsapp-delineado.svg'
-export {ReactComponent as AIBussiness} from './empresa 1.svg'
-export {ReactComponent as AIGenerative} from './generativa 1.svg'
 
 export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
 export {ReactComponent as CampaignsIcon} from './campañas.svg'
@@ -356,6 +354,9 @@ export {ReactComponent as FlaskIcon} from './flask_icon.svg'
 
 export {ReactComponent as GoogleDriveIcon} from './google-drive.svg';
 export {ReactComponent as ExcelFileIcon} from './excel-file.svg';
+export {ReactComponent as AIBussiness} from './empresa 1.svg'
+export {ReactComponent as AIGenerative} from './generativa 1.svg'
+
 export {ReactComponent as CodeSnippetIcon} from './codeSnippetIcon.svg'
 export {ReactComponent as BoldNIcon} from './boldN.svg'
 export {ReactComponent as ItalicKIcon} from './italicKIcon.svg'
