@@ -2756,7 +2756,7 @@ export const langKeys = {
   report_tipification_closedby: 'report_tipification_closedby',
   report_tipification_closetype: 'report_tipification_closetype',
 
-  report_crm: 'report_opportunity',
+  report_crm: 'report_crm',
   report_opportunity_channels: 'report_opportunity_channels',
   report_opportunity_ticket: 'report_opportunity_ticket',
   report_opportunity_datehour: 'report_opportunity_datehour',
@@ -2774,6 +2774,7 @@ export const langKeys = {
   report_opportunity_priority: 'report_opportunity_priority',
   report_opportunity_assignedadviser: 'report_opportunity_assignedadviser',
   report_opportunity_products: 'report_opportunity_products',
+  report_opportunity_calendarview: 'report_opportunity_calendarview',
 
 
   report_ticketvsasesor: 'report_ticketvsasesor',

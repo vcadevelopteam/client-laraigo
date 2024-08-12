@@ -2480,6 +2480,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_opportunity_priority: 'Prioridad',
   report_opportunity_assignedadviser: 'Asesor asignado',
   report_opportunity_products: 'Productos',
+  report_opportunity_calendarview: 'Vista Calendario',
 
 
   report_userproductivityhours: 'Productividad de asesores hora',

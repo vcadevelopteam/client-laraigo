@@ -2612,6 +2612,7 @@ const translation: LangKeys = {
   report_opportunity_priority: 'Priority',
   report_opportunity_assignedadviser: 'Assigned advisor',
   report_opportunity_products: 'Products',
+  report_opportunity_calendarview: 'Calendar View',
 
 
   report_userproductivityhours: 'Hourly agent productivity',
