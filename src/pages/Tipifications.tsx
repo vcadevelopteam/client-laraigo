@@ -727,11 +727,15 @@ const Tipifications: FC = () => {
         const file = files[0];
         if (file) {
             let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
-            data=data.filter((d: Dictionary) => !['', null, undefined].includes(d.classification)                                                                                       
-                    && !['', null, undefined].includes(d.channels)    
-                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + String(d.parent)))
-                );
-                
+            data=data.filter(d => {
+                const hasValidClassification = d.classification !== '' && d.classification != null;
+                const hasValidChannels = d.channels !== '' && d.channels != null;
+                const parentExists = ['', null, undefined].includes(d.parent) || 
+                    Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
+                    .includes(String(d.parent));
+            
+                return hasValidClassification && hasValidChannels && parentExists;
+            });                
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
@@ -745,7 +749,7 @@ const Tipifications: FC = () => {
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        type: 'TIPIFICACION',
+                        type: x.type === "Clasificación"? 'TIPIFICACION':"CATEGORIA",
                         oder: '1',
                         status: x.status || "ACTIVO",
                         id: 0,
