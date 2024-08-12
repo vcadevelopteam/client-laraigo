@@ -5376,3 +5376,14 @@ export const modifyPinnedMessage = ({conversationid, interactionid, interactiont
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },
 });
+
+export const getLeadsReportSel = ({communicationchannel, startdate, enddate}:Dictionary) => ({
+    method: "UFN_LEAD_REPORT_SEL",
+    key: "UFN_LEAD_REPORT_SEL",
+    parameters: {
+        communicationchannel,
+        startdate,
+        enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+})
