@@ -400,7 +400,9 @@ const TableZyx = React.memo(({
     showHideColumns,
     groupedBy,
     ExtraMenuOptions,
-    acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+    acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv",
+    defaultGlobalFilter,
+    setOutsideGeneralFilter
 }: TableConfig) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -811,6 +813,7 @@ const TableZyx = React.memo(({
         []
     );
 
+
     const {
         getTableProps,
         getTableBodyProps,
@@ -838,7 +841,8 @@ const TableZyx = React.memo(({
         initialState: { 
             pageSize: pageSizeDefault, 
             selectedRowIds: initialSelectedRows || {}, 
-            filters: initialStateFilter || []         
+            filters: initialStateFilter || [],
+            globalFilter: defaultGlobalFilter || "",         
         },
         defaultColumn,
         getRowId: (row, relativeIndex: number, parent?: Row<Dictionary>) => selectionKey
@@ -898,6 +902,13 @@ const TableZyx = React.memo(({
     )
     const fileInputRef = useRef(null);
 
+    function setIsFiltering(param: string){
+        setGlobalFilter(param)
+        if(filterGeneral && setOutsideGeneralFilter){
+            setOutsideGeneralFilter(param)
+        }
+    }
+
     const handleCheckboxChange = (columnId: any) => {
         const updatedVisibility = {
             ...columnVisibility,
@@ -920,10 +931,6 @@ const TableZyx = React.memo(({
             column.toggleHidden(!isVisible);
         });
     }, [columnVisibility, allColumns]);
-
-    useEffect(() => {
-        setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
-    }, [globalFilteredRows])
 
     useEffect(() => {
         if (initialStateFilter) {
@@ -1215,7 +1222,8 @@ const TableZyx = React.memo(({
                         <SearchField
                             disabled={loading}
                             colorPlaceHolder='#FFF'
-                            handleChangeOther={setGlobalFilter}
+                            handleChangeOther={setIsFiltering}
+                            defaultGlobalFilter={defaultGlobalFilter}
                             lazy
                         />
                     </div>
