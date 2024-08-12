@@ -282,6 +282,7 @@ export const Channels: FC = () => {
                 Header: "",
                 accessor: 'haveflow',
                 NoFilter: true,
+                isComponent: true,
                 Cell: (props: { cell: { row: { original: { haveflow: boolean; }; }; }; }) => {
                     const { haveflow } = props.cell.row.original || {}; 
                     if (haveflow) {
