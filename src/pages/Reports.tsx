@@ -49,6 +49,7 @@ import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
 import { columnsHideShow, columnsHideGraphic, columnGroupedBy } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/ReportTipification';
+import OpportunityReport from "./staticReports/ReportOpportunity";
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
 import InputRetryReport from './staticReports/ReportInputRetry';
@@ -1383,8 +1384,28 @@ const Reports: FC = () => {
                             </CardActionArea>
                         </Card>
                     </Grid>
-                )                 
-            
+                )
+            case 'CRM':
+                return (
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("opportunityreport")}}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/36231e3d-cf33-4d5e-a676-88a9ce3aac64/image_720.png"
+                                    title={t('report_' + report?.origin)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t('report_' + report?.origin)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1835,10 +1856,18 @@ const Reports: FC = () => {
         )
     } else if (viewSelected === "tipificationreport") {
         return (
-            <TipificationReport 
+            <TipificationReport
                 setViewSelected={setViewSelected}
                 row={rowSelected}
                 setSearchValue={setSearchValue} 
+            />
+        )
+    }  else if (viewSelected === "opportunityreport") {
+        return (
+            <OpportunityReport
+                setViewSelected={setViewSelected}
+                row={rowSelected}
+                setSearchValue={setSearchValue}
             />
         )
     }  else if (viewSelected === "productivityhoursreport") {  
