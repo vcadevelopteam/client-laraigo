@@ -100,6 +100,7 @@ const Corporations: FC = () => {
     const executeResult = useSelector((state) => state.corporation.executecorp);
 
     const arrayBread = [{ id: "view-1", name: t(langKeys.corporation_plural) }];
+    const [generalFilter, setGeneralFilter] = useState("");
     const [mainData, setMainData] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -241,6 +242,8 @@ const Corporations: FC = () => {
                     onClickRow={handleEdit}
                     data={mainData}
                     download={true}
+                    defaultGlobalFilter={generalFilter}
+                    setOutsideGeneralFilter={setGeneralFilter}
                     loading={mainResult.mainData.loading}
                     register={(user?.roledesc ?? "").split(",").some((v) => ["SUPERADMIN"].includes(v))}
                     handleRegister={handleRegister}
