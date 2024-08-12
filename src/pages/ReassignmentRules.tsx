@@ -60,7 +60,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({
 }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState("");
+    const [selectedGroup, setSelectedGroup] = useState(row?.group || "");
     const executeRes = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -71,6 +71,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({
         register,
         handleSubmit,
         setValue,
+        getValues,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -182,7 +183,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({
                         <FieldSelect
                             label={t(langKeys.group)}
                             className="col-6"
-                            valueDefault={row?.group || ""}
+                            valueDefault={getValues("group")}
                             onChange={(value) => {
                                 setValue("group", value?.domainvalue || "");
                                 setSelectedGroup(value?.domainvalue || "");
@@ -198,7 +199,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({
                             label={t(langKeys.description)}
                             className="col-6"
                             onChange={(value) => setValue("description", value)}
-                            valueDefault={row ? row.description || "" : ""}
+                            valueDefault={getValues("description")}
                             error={errors?.description?.message}
                         />
                     </div>
@@ -206,7 +207,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({
                         <FieldMultiSelect
                             label={t(langKeys.assignedgroup)}
                             className="col-6"
-                            valueDefault={row?.assignedgroup || ""}
+                            valueDefault={getValues("assignedgroup")}
                             onChange={(value) =>
                                 setValue("assignedgroup", value?.map((o: Dictionary) => o?.domainvalue || "").join())
                             }
@@ -219,7 +220,7 @@ const DetailReassignmentRules: React.FC<DetailReassignmentRulesProps> = ({
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
+                            valueDefault={getValues("status")||"ACTIVO"}
                             onChange={(value) => setValue("status", value ? value.domainvalue : "")}
                             error={errors?.status?.message}
                             data={dataStatus}
