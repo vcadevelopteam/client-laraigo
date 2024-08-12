@@ -455,15 +455,20 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
     const handleClickAway = () => setOpen(false);
 
     useEffect(() => {
-        setquickRepliesToShow(quickReplies.data.filter((x) => !!x.favorite));
-    }, [quickReplies]);
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)
+        debugger
+        setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
+    }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
         if (search === "") {
-            setquickRepliesToShow(quickReplies.data.filter((x) => !!x.favorite));
+            setquickRepliesToShow(quickreplyFiltered.filter((x) => !!x.favorite));
         } else {
             setquickRepliesToShow(
-                quickReplies.data.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
+                quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
             );
         }
     }, [search, quickReplies]);
@@ -1024,15 +1029,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
     const inputRef = useRef(null);
-
-    const handleInputChange = (e: any) => {
-        const lines = e.target.value.split('\n').length;
-        if (lines <= 6) {
-            setNumRows(lines);
-            setText(e.target.value);
-        }
-    };
-
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
         if (ticketSelected?.status !== "ASIGNADO") {
@@ -1319,19 +1315,23 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     }, [multiData]);
 
-    useEffect(() => {
-        setquickRepliesToShow(quickReplies?.data?.filter((x) => x.favorite) || []);
-    }, [quickReplies]);
+    useEffect(() => {        
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const favoritequickreplies = quickReplies.data.filter(x=>x.favorite)
+        setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
+    }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
+            const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+            const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
             setTypeHotKey("quickreply");
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
-            if (textToSearch === "") setquickRepliesToShow(quickReplies.data.filter((x) => x.favorite));
+            if (textToSearch === "") setquickRepliesToShow(quickreplyFiltered.filter((x) => x.favorite));
             else
                 setquickRepliesToShow(
-                    quickReplies.data.filter((x) => x.description.toLowerCase().includes(textToSearch.toLowerCase()))
+                    quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(textToSearch.toLowerCase()))
                 );
         } else if (text.substring(0, 2).toLowerCase() === "\\r") {
             setTypeHotKey("richresponse");
@@ -1438,7 +1438,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         positionEditable="top"
                                         spellCheck
                                         onKeyPress={handleKeyPress}
-                                        quickReplies={quickReplies.data}
+                                        quickReplies={quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO")}
                                         refresh={refresh}
                                         placeholder="Send your message..."
                                         emojiNoShow={emojiNoShow}
