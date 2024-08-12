@@ -5,13 +5,10 @@ import {
     convertLocalDate,
     getCommChannelLst,
     getDateCleaned, getLeadsReportSel,
-    getLeadsSel,
-    getUserMessageOutbound
 } from 'common/helpers';
 import { Dictionary } from "@types";
 import {
     getCollectionAux,
-    getMultiCollection,
     getMultiCollectionAux3,
     resetCollectionPaginated
 } from 'store/main/actions';
@@ -29,14 +26,6 @@ import { CellProps } from 'react-table';
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
-}
-interface IBoardFilter {
-    campaign: number;
-    customer: string;
-    products: string;
-    tags: string;
-    asesorid: number;
-    persontype: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -81,7 +70,6 @@ const initialRange = {
 const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const user = useSelector((state: any) => state.login.validateToken.user);
     const { t } = useTranslation();
     const multiAux3 = useSelector(state => state.main.multiDataAux3);
     const resExportData = useSelector(state => state.main.exportData);
@@ -101,7 +89,6 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     const cell = (props: CellProps<Dictionary>) => {
         const column = props.cell.column;
         const row = props.cell.row.original;
-        console.log("Renderizando celda:", row[column.id]);
         return (
             <div>
                 {column.sortType === "datetime" && !!row[column.id]
@@ -117,32 +104,6 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
             </div>
         );
     };
-
-    const query = useMemo(() => new URLSearchParams(location.search), [location]);
-
-    const otherParams = useMemo(() => ({
-        asesorid: Number(query.get('asesorid')),
-        channels: query.get('channels') || '',
-        contact: query.get('contact') || '',
-        products: query.get('products') || '',
-        persontype: query.get('persontype') || '',
-        tags: query.get('tags') || '',
-        campaign: Number(query.get('campaign')),
-    }), [query]);
-
-    const [boardFilter, setBoardFilterPrivate] = useState<IBoardFilter>({
-        campaign: otherParams.campaign,
-        customer: otherParams.contact,
-        products: otherParams.products,
-        tags: otherParams.tags,
-        asesorid: otherParams.asesorid,
-        persontype: otherParams.persontype,
-    });
-
-    const [sortParams, setSortParams] = useState({
-        type: '',
-        order: ''
-    });
 
     const columns = React.useMemo(
         () => [
@@ -251,7 +212,6 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     );
 
     const fetchData = () => {
-        console.log("Communication Channel being sent:", selectedChannel);
         dispatch(showBackdrop(true));
         dispatch(getMultiCollectionAux3([getLeadsReportSel(
             {
@@ -259,13 +219,8 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
             }
-        ), getUserMessageOutbound(
-            {
-                startdate: dateRangeCreateDate.startDate,
-                enddate: dateRangeCreateDate.endDate,
-                communicationchannelid: selectedChannel || 0,
-            }
-        )]));
+        ),
+        ]));
     };
 
     useEffect(() => {
@@ -299,7 +254,6 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     }, [multiAux3]);
 
     const [selectedChannel, setSelectedChannel] = useState(0);
-    const [selectedUser, setSelectedUser] = useState("");
 
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()));
 
