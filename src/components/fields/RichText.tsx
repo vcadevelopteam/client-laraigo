@@ -53,7 +53,6 @@ export const renderToString = (element: React.ReactElement) => {
 
 export const toElement = (value: Descendant[], root: FC = ({ children }) => <div>{children}</div>): React.ReactElement => {
     let children: React.ReactNode[] = [];
-
     for (const item of value) {
         if (item.hasOwnProperty('type') && item.hasOwnProperty('children')) {
             const element = item as CustomElement;
