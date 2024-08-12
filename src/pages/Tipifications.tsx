@@ -13,7 +13,7 @@ import { langKeys } from 'lang/keys';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, setMemoryTable, cleanMemoryTable } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
@@ -145,7 +145,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         order: row?.order || "",
         parent: row?.parentid || 0,
     });
-    const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
+    const [showAddAction, setShowAddAction] = useState(!!JSON.parse(row?.jobplan||"[]").length || false);
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
@@ -342,7 +342,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         <FieldEdit
                             label={t(langKeys.path)}
                             className="col-6"
-                            valueDefault={row?.path || ""}optionDesc
+                            valueDefault={row?.path || ""}
                             onChange={(value) => setValue('path', value)}
                             error={errors?.path?.message}
                             disabled={true}
@@ -555,13 +555,19 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     );
 }
 
+const IDTIPIFICATION = "IDTIPIFICATION"
+
 const Tipifications: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const [openDialog, setOpenDialog] = useState(false);
+    const [tableData, setTableData] = useState<any>([]);
+
+    const [generalFilter, setGeneralFilter] = useState("");
     const [insertexcel, setinsertexcel] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -586,11 +592,20 @@ const Tipifications: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(setMemoryTable({
+            id: IDTIPIFICATION
+        }))
         
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
+    useEffect(() => {
+        if(!mainResult.mainData.loading && !mainResult.mainData.error){
+            setTableData(mainResult.mainData.data.map(x=>({...x, type2: x.type==="TIPIFICACION"?"Clasificación":"Categoría"})))
+        }
+    }, [mainResult.mainData]);
 
     const columns = React.useMemo(
         () => [
@@ -624,13 +639,7 @@ const Tipifications: FC = () => {
             },
             {
                 Header: t(langKeys.type),
-                accessor: 'type',
-                prefixTranslation: 'type_',
-                NoFilter: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { type } = props.cell.row.original || {};
-                    return (t(`type_${type}`) || "").toUpperCase()
-                }
+                accessor: 'type2',
             },
             {
                 Header: t(langKeys.app_productcatalog),
@@ -727,11 +736,15 @@ const Tipifications: FC = () => {
         const file = files[0];
         if (file) {
             let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
-            data=data.filter((d: Dictionary) => !['', null, undefined].includes(d.classification)                                                                                       
-                    && !['', null, undefined].includes(d.channels)    
-                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + String(d.parent)))
-                );
-                
+            data=data.filter(d => {
+                const hasValidClassification = d.classification !== '' && d.classification != null;
+                const hasValidChannels = d.channels !== '' && d.channels != null;
+                const parentExists = ['', null, undefined].includes(d.parent) || 
+                    Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
+                    .includes(String(d.parent));
+            
+                return hasValidClassification && hasValidChannels && parentExists;
+            });                
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
@@ -745,8 +758,8 @@ const Tipifications: FC = () => {
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        type: 'TIPIFICACION',
-                        oder: '1',
+                        type: x.type === "Clasificación"? 'TIPIFICACION':"CATEGORIA",
+                        oder: x.type === "Clasificación"? '1':"",
                         status: x.status || "ACTIVO",
                         id: 0,
                     }))
@@ -822,7 +835,7 @@ const Tipifications: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.tipification, { count: 2 })}
-                        data={mainResult.mainData.data}
+                        data={tableData}
                         loading={mainResult.mainData.loading}
                         download={true}
                         register={true}
@@ -843,6 +856,11 @@ const Tipifications: FC = () => {
                                 </Button>
                             </>
                         }
+                        defaultGlobalFilter={generalFilter}
+                        setOutsideGeneralFilter={setGeneralFilter}
+                        pageSizeDefault={IDTIPIFICATION === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                        initialPageIndex={IDTIPIFICATION === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                        initialStateFilter={IDTIPIFICATION === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                     />
                     <DialogZyx
                         open={openDialog}

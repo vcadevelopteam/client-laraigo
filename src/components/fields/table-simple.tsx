@@ -1,4 +1,4 @@
-import React, { useEffect, useState, MouseEventHandler } from 'react';
+import React, { useEffect, useState, MouseEventHandler, useRef } from 'react';
 import Table from '@material-ui/core/Table';
 import { Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Radio, TableSortLabel, Typography } from '@material-ui/core'
 import Button from '@material-ui/core/Button';
@@ -900,6 +900,7 @@ const TableZyx = React.memo(({
             })
         }
     )
+    const fileInputRef = useRef(null);
 
     function setIsFiltering(param: string){
         setGlobalFilter(param)
@@ -1040,7 +1041,11 @@ const TableZyx = React.memo(({
                                 id="laraigo-upload-csv-file"
                                 type="file"
                                 style={{ display: 'none' }}
-                                onChange={(e) => importCSV(e.target.files)}
+                                onChange={(e) => {importCSV(e.target.files);
+                                    if (fileInputRef.current) {
+                                        fileInputRef.current.value = '';
+                                    }}}
+                                ref={fileInputRef}
                             />
                             <label htmlFor="laraigo-upload-csv-file">
                                 <Button
