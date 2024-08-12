@@ -427,6 +427,7 @@ interface MessagePreviewMultimediaProps {
     footer: string;
     buttonstext: string[];
     buttonslink: Dictionary[];
+    isNew: boolean;
     buttonsGeneral: Dictionary[];
     isNew: boolean;
 }
