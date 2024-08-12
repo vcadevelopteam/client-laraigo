@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CodeSnippetIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
