@@ -406,10 +406,11 @@ interface MessagePreviewMultimediaProps {
     footer: string;
     buttonstext: string[];
     buttonslink: Dictionary[];
+    isNew: boolean;
     buttonsGeneral: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink, buttonsGeneral }) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink, buttonsGeneral, isNew }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [showAllButtons, setShowAllButtons] = useState(false)
