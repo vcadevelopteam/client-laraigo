@@ -5387,3 +5387,12 @@ export const getLeadsReportSel = ({communicationchannel, startdate, enddate}:Dic
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 })
+
+export const getLeadReportGraphicSel = ({communicationchannel, startdate, enddate, column,summarization  }:Dictionary): IRequestBody => ({
+    method: "UFN_LEAD_REPORT_GRAPHIC_SEL",
+    key: "UFN_LEAD_REPORT_GRAPHIC_SEL",
+    parameters: {
+        filters: {}, sorts: {}, communicationchannel, startdate, enddate, column, summarization,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
