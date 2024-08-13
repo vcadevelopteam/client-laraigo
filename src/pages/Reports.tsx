@@ -53,6 +53,7 @@ import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
 import InputRetryReport from './staticReports/ReportInputRetry';
 import { ReportHSMShipping } from './staticReports/ReportHSMShipping';
+import ReportAudit from './staticReports/ReportAudit';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1080,6 +1081,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'AUDIT':
+                return (
+                    <Grid item key={"audit"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card>
+                            <CardActionArea onClick={() => handleSelectedString("audit")} className={classes.cardstyle}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/Diners%20Club%20Per%C3%BA%20-%20Cartera/869adbfb-9ae8-48f7-a1fb-e76eb7669c25/1802806.png"
+                                    title={t(langKeys.audit)}
+                                />
+                                <CardContent style={{ paddingBottom: 0 }}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t(langKeys.audit)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'CONVERSATIONWHATSAPP':
                 return (
                     <Grid item key={"reportconversationwhatsapp"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1292,50 +1314,8 @@ const Reports: FC = () => {
                         </Grid>
                     )
                 } else {
-                    return (<></>)
+                    return null
                 }
-            case 'VOICECALL':
-                return (
-                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card>
-                            <CardActionArea onClick={() => handleSelectedString("voicecallreport")} className={classes.cardstyle}>
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    className={classes.media}
-                                    image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
-                                    title={t('report_' + report?.origin)}
-                                />
-                                <CardContent style={{ paddingBottom: 0 }}>
-                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
-                                        {t('report_' + report?.origin)}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </Grid>
-                )
-            case 'TIPIFICATION':
-                return (
-                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card>
-                            <CardActionArea onClick={() => { setRowSelected(report); handleSelectedString("tipificationreport") }} className={classes.cardstyle}>
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    className={classes.media}
-                                    image={reportsImage.find(x => x.name === report.image)?.image ?? 'no_data.png'}
-                                    title={t('report_' + report?.origin)}
-                                />
-                                <CardContent style={{ paddingBottom: 0 }}>
-                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
-                                        {t('report_' + report?.origin)}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </Grid>
-                )
             case 'PRODUCTIVITYHOURS':
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1378,7 +1358,6 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
-
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1701,6 +1680,16 @@ const Reports: FC = () => {
                     handleClick={handleSelectedString}
                 />
                 <HSMHistoryReport />
+            </div>
+        )
+    } else if (viewSelected === "audit") {
+        return (
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={getArrayBread(t('audit'), t(langKeys.report_plural))}
+                    handleClick={handleSelectedString}
+                />
+                <ReportAudit />
             </div>
         )
     } else if (viewSelected === "reportconversationwhatsapp") {
