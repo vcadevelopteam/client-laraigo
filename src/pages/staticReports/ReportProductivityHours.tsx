@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import CategoryIcon from "@material-ui/icons/Category";
-import { TemplateBreadcrumbs, FieldSelect, DialogZyx, FieldMultiSelect,} from "components";
+import { TemplateBreadcrumbs, FieldSelect, DialogZyx, FieldMultiSelect, } from "components";
 import { useSelector } from "hooks";
 import { Dictionary, IFetchData } from "@types";
 import { getPaginatedForReports, getReportExport, convertLocalDate, getReportGraphic, getUserAsesorByOrgID, getReportFilterSel, getCommChannelLstTypeDesc } from "common/helpers";
@@ -36,17 +36,17 @@ const useStyles = makeStyles(() => ({
         display: "flex",
         flexDirection: "column",
         width: "100%",
-    },  
+    },
     filterComponent: {
         minWidth: "220px",
         maxWidth: "260px",
-    },   
+    },
     button: {
         padding: 12,
         fontWeight: 500,
         fontSize: "14px",
         textTransform: "initial",
-    },   
+    },
 }));
 
 const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row }) => {
@@ -58,9 +58,9 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
     const resExportData = useSelector((state) => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
-    const [, setSelectedRow] = useState<Dictionary | undefined>({});
+    // const [, setSelectedRow] = useState<Dictionary | undefined>({});
     const [totalrow, settotalrow] = useState(0);
-    const [isTypificationFilterModalOpen, setTypificationFilterModalOpen] = useState(false);   
+    const [isTypificationFilterModalOpen, setTypificationFilterModalOpen] = useState(false);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
         pageSize: 0,
         pageIndex: 0,
@@ -83,199 +83,197 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
 
     const reportColumns = [
         {
-        "proargnames": "datehour",
-        "proargmodes": "t",
-        "proargtype": "date"
+            "proargnames": "datehour",
+            "proargmodes": "t",
+            "proargtype": "date"
         },
         {
-        "proargnames": "agent",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "agent",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "hoursrange",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "hoursrange",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "worktime",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "worktime",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "busytimewithinwork",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "busytimewithinwork",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "freetimewithinwork",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "freetimewithinwork",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "busytimeoutsidework",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "busytimeoutsidework",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "onlinetime",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "onlinetime",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "availabletime",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "availabletime",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "idletime",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "idletime",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "idletimewithoutattention",
-        "proargmodes": "t",
-        "proargtype": "text"
+            "proargnames": "idletimewithoutattention",
+            "proargmodes": "t",
+            "proargtype": "text"
         },
         {
-        "proargnames": "qtytickets",
-        "proargmodes": "t",
-        "proargtype": "bigint"
+            "proargnames": "qtytickets",
+            "proargmodes": "t",
+            "proargtype": "bigint"
         },
         {
-        "proargnames": "qtyconnection",
-        "proargmodes": "t",
-        "proargtype": "bigint"
+            "proargnames": "qtyconnection",
+            "proargmodes": "t",
+            "proargtype": "bigint"
         },
         {
-        "proargnames": "qtydisconnection",
-        "proargmodes": "t",
-        "proargtype": "bigint"
+            "proargnames": "qtydisconnection",
+            "proargmodes": "t",
+            "proargtype": "bigint"
         }
     ];
 
-     const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
+    const cell = (props: CellProps<Dictionary>) => {// eslint-disable-next-line react/prop-types
         const column = props.cell.column;// eslint-disable-next-line react/prop-types
         const row = props.cell.row.original;
         return (
-            <div onClick={() => {
-                setSelectedRow(row);               
-            }}>             
-                {column.sortType === "datetime" && !!row[column.id] 
-                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                }) // eslint-disable-next-line react/prop-types
-                : row[column.id]}
+            <div >
+                {column.sortType === "datetime" && !!row[column.id]
+                    ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric"
+                    }) // eslint-disable-next-line react/prop-types
+                    : row[column.id]}
             </div>
         )
     }
-  
+
     const columns = React.useMemo(
-        () => [                    
+        () => [
             {
                 Header: t(langKeys.report_userproductivityhours_datehour),
-                accessor: 'datehour',   
-                showGroupedBy: true,      
-                type: 'date',              
+                accessor: 'datehour',
+                showGroupedBy: true,
+                type: 'date',
                 sortType: 'datetime',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { datehour } = props.cell.row.original || {};
                     return datehour ? `${datehour}` : null;
-                }            
-               
+                }
+
             },
             {
                 Header: t(langKeys.report_userproductivityhours_agent),
-                accessor: 'agent',  
-                showGroupedBy: true,             
+                accessor: 'agent',
+                showGroupedBy: true,
                 Cell: cell,
             },
             {
                 Header: t(langKeys.report_userproductivityhours_hoursrange),
-                accessor: 'hoursrange',      
-                showGroupedBy: true,         
+                accessor: 'hoursrange',
+                showGroupedBy: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_worktime),
                 helpText: t(langKeys.report_userproductivityhours_worktime_help),
                 accessor: 'worktime',
-                showGroupedBy: true,   
+                showGroupedBy: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_busytimeoutsidework),
                 helpText: t(langKeys.report_userproductivityhours_busytimeoutsidework),
                 accessor: 'busytimeoutsidework',
-                showColumn: true,                 
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_busytimewithinwork),
                 accessor: 'busytimewithinwork',
-                helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),             
-                showColumn: true,                                    
+                helpText: t(langKeys.report_userproductivityhours_busytimewithinwork_help),
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_freetimewithinwork),
                 accessor: 'freetimewithinwork',
-                showColumn: true,      
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_onlinetime),
-                accessor: 'onlinetime',         
-                helpText: t(langKeys.report_userproductivityhours_onlinetime_help),     
-                showGroupedBy: true,          
+                accessor: 'onlinetime',
+                helpText: t(langKeys.report_userproductivityhours_onlinetime_help),
+                showGroupedBy: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_availabletime),
-                accessor: 'availabletime',                
-                helpText: t(langKeys.report_userproductivityhours_availabletime_help),                
-                showColumn: true,                 
+                accessor: 'availabletime',
+                helpText: t(langKeys.report_userproductivityhours_availabletime_help),
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_idletime),
-                accessor: 'idletime',               
+                accessor: 'idletime',
                 helpText: t(langKeys.report_userproductivityhours_idletime_help),
-                showColumn: true,                     
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_idletimewithoutattention),
-                accessor: 'idletimewithoutattention',                 
+                accessor: 'idletimewithoutattention',
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_qtytickets),
                 accessor: 'qtytickets',
                 helpText: t(langKeys.report_userproductivityhours_qtytickets_help),
-                showGroupedBy: true,   
+                showGroupedBy: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_qtyconnection),
-                accessor: 'qtyconnection',         
-                helpText: t(langKeys.report_userproductivityhours_qtyconnection_help),      
-                showColumn: true,                    
+                accessor: 'qtyconnection',
+                helpText: t(langKeys.report_userproductivityhours_qtyconnection_help),
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_userproductivityhours_qtydisconnection),
-                helpText: t(langKeys.report_userproductivityhours_qtydisconnection_help),      
+                helpText: t(langKeys.report_userproductivityhours_qtydisconnection_help),
                 accessor: 'qtydisconnection',
-                showColumn: true,                    
+                showColumn: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const { qtydisconnection } = props.cell.row.original || {};
-                    return <div onClick={() => { setSelectedRow(props.cell.row.original);  }}>{qtydisconnection}</div>;
+                    return <div >{qtydisconnection}</div>;
                 },
             },
         ],
@@ -345,7 +343,7 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                         skip: pageIndex * pageSize,
                         sorts: sorts,
                         distinct: distinct,
-                        filters: {...filters},
+                        filters: { ...filters },
                         ...allParameters,
                     }
                 )
@@ -421,28 +419,76 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                 />
             </div>
 
-            <>
-                {view === "GRID" ? (
-                    <TablePaginated
-                        columns={columns}
-                        data={mainPaginated.data}
-                        totalrow={totalrow}
-                        loading={mainPaginated.loading}
-                        pageCount={pageCount}
-                        filterrange={true}
-                        showHideColumns={true}
-                        groupedBy={true}
-                        ExtraMenuOptions={
-                            <MenuItem
-                                style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
-                                onClick={handleOpeTypificationFilterModal}
+            {view === "GRID" ? (
+                <TablePaginated
+                    columns={columns}
+                    data={mainPaginated.data}
+                    totalrow={totalrow}
+                    loading={mainPaginated.loading}
+                    pageCount={pageCount}
+                    filterrange={true}
+                    showHideColumns={true}
+                    groupedBy={true}
+                    ExtraMenuOptions={
+                        <MenuItem
+                            style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
+                            onClick={handleOpeTypificationFilterModal}
+                        >
+                            <ListItemIcon>
+                                <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
+                            </ListItemIcon>
+                            <Typography variant="inherit">{t(langKeys.filters) + " - " + t(langKeys.report_userproductivityhours)}</Typography>
+                        </MenuItem>
+                    }
+                    FiltersElement={
+                        <FieldSelect
+                            valueDefault={allParameters["channel"]}
+                            label={t("report_userproductivityhours_filter_channels")}
+                            className={classes.filterComponent}
+                            key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
+                            variant="outlined"
+                            loading={multiData.loading}
+                            onChange={(value) => setValue("channel", value ? value["typedesc"] : "")}
+                            data={
+                                multiData?.data[
+                                    multiData?.data?.findIndex(
+                                        (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
+                                    )
+                                ]?.data
+                            }
+                            optionDesc={"type"}
+                            optionValue={"typedesc"}
+                        />
+                    }
+                    ButtonsElement={
+                        <>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading || mainPaginated.data.length <= 0}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<AssessmentIcon />}
                             >
-                                <ListItemIcon>
-                                    <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
-                                </ListItemIcon>
-                                <Typography variant="inherit">{t(langKeys.filters) + " - " + t(langKeys.report_userproductivityhours)}</Typography>
-                            </MenuItem>
-                        }
+                                {t(langKeys.graphic_view)}
+                            </Button>
+                        </>
+                    }
+                    download={true}
+                    fetchData={fetchData}
+                    exportPersonalized={triggerExportData}
+                />
+            ) : (
+                <div className={classes.container}>
+                    <Graphic
+                        graphicType={view.split("-")?.[1] || "BAR"}
+                        column={view.split("-")?.[2] || "summary"}
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                        daterange={fetchDataAux.daterange}
+                        setView={setView}
+                        row={row!!}
+                        handlerSearchGraphic={handlerSearchGraphic}
                         FiltersElement={
                             <FieldSelect
                                 valueDefault={allParameters["channel"]}
@@ -450,11 +496,10 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                                 className={classes.filterComponent}
                                 key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
                                 variant="outlined"
-                                loading={multiData.loading}
                                 onChange={(value) => setValue("channel", value ? value["typedesc"] : "")}
                                 data={
-                                    multiData?.data[
-                                        multiData?.data?.findIndex(
+                                    multiData?.data?.[
+                                        multiData?.data.findIndex(
                                             (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
                                         )
                                     ]?.data
@@ -463,58 +508,9 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                                 optionValue={"typedesc"}
                             />
                         }
-                        ButtonsElement={
-                            <>
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={mainPaginated.loading || mainPaginated.data.length <= 0}
-                                    onClick={() => setOpenModal(true)}
-                                    startIcon={<AssessmentIcon />}
-                                >
-                                    {t(langKeys.graphic_view)}
-                                </Button>
-                            </>
-                        }
-                        download={true}
-                        fetchData={fetchData}
-                        exportPersonalized={triggerExportData}
                     />
-                ) : (
-                    <div className={classes.container}>
-                        <Graphic
-                            graphicType={view.split("-")?.[1] || "BAR"}
-                            column={view.split("-")?.[2] || "summary"}
-                            openModal={openModal}
-                            setOpenModal={setOpenModal}
-                            daterange={fetchDataAux.daterange}
-                            setView={setView}
-                            row={row!!}
-                            handlerSearchGraphic={handlerSearchGraphic}
-                            FiltersElement={
-                                <FieldSelect
-                                    valueDefault={allParameters["channel"]}
-                                    label={t("report_userproductivityhours_filter_channels")}
-                                    className={classes.filterComponent}
-                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                    variant="outlined"
-                                    onChange={(value) => setValue("channel", value ? value["typedesc"] : "")}
-                                    data={
-                                        multiData?.data?.[
-                                            multiData?.data.findIndex(
-                                                (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
-                                            )
-                                        ]?.data
-                                    }
-                                    optionDesc={"type"}
-                                    optionValue={"typedesc"}
-                                />
-                            }
-                        />
-                    </div>
-                )}
-            </>
+                </div>
+            )}
 
             <SummaryGraphic
                 openModal={openModal}
@@ -530,13 +526,13 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
             <DialogZyx
                 open={isTypificationFilterModalOpen}
                 title={t(langKeys.filters)}
-                buttonText1={t(langKeys.close)}         
-                buttonText2={t(langKeys.apply)}         
-                handleClickButton1={() => setTypificationFilterModalOpen(false)}      
+                buttonText1={t(langKeys.close)}
+                buttonText2={t(langKeys.apply)}
+                handleClickButton1={() => setTypificationFilterModalOpen(false)}
                 handleClickButton2={() => {
                     setTypificationFilterModalOpen(false);
                     fetchData(fetchDataAux)
-                }}           
+                }}
                 maxWidth="sm"
                 buttonStyle1={{ marginBottom: "0.3rem" }}
                 buttonStyle2={{ marginRight: "1rem", marginBottom: "0.3rem" }}
@@ -552,18 +548,18 @@ const ProductivityHoursReport: React.FC<ItemProps> = ({ setViewSelected, setSear
                             setValue("hours", value ? value.map((o: Dictionary) => o["hours"]).join() : "")
                         }
                         variant="outlined"
-                        data={multiData?.data?.find(x=>x.key==="UFN_REPORT_HOURS_SEL")?.data || []}
+                        data={multiData?.data?.find(x => x.key === "UFN_REPORT_HOURS_SEL")?.data || []}
                         optionDesc={"hourdescription"}
                         optionValue={"hours"}
                     />
-                    <FieldSelect 
+                    <FieldSelect
                         label={t(langKeys.agent)}
                         className={classes.filterComponent + " col-6"}
                         valueDefault={allParameters?.asesorid || ""}
                         key={"UFN_USER_ASESORBYORGID_LST"}
-                        onChange={(value) => setValue("asesorid", value?.userid || 0) }
+                        onChange={(value) => setValue("asesorid", value?.userid || 0)}
                         variant="outlined"
-                        data={multiData?.data?.find(x=>x.key==="UFN_USER_ASESORBYORGID_LST")?.data || []}
+                        data={multiData?.data?.find(x => x.key === "UFN_USER_ASESORBYORGID_LST")?.data || []}
                         optionDesc={"userdesc"}
                         optionValue={"userid"}
                     />
@@ -645,12 +641,12 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
 
     const excludeProductivityHours = [
         "busytimewithinwork",
-        "freetimewithinwork",  
+        "freetimewithinwork",
         "busytimeoutsidework",
         "availabletime",
         "idletime",
         "idletimewithoutattention",
-        "qtydisconnection",   
+        "qtydisconnection",
     ];
 
     const filteredColumns = columns.filter((column) => !excludeProductivityHours.includes(column));
