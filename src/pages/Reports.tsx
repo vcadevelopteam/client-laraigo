@@ -1524,7 +1524,7 @@ const Reports: FC = () => {
                             ))}
                             {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
                                 <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                                    <Card>
+                                    <Card style={{ position: "relative" }}>
                                         <CardActionArea
                                             onClick={() => {
                                                 setViewSelected("view-4");
