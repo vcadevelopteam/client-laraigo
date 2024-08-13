@@ -25,9 +25,9 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
-    setValue: Dictionary
-    getValues: Dictionary,
-    errors: FieldErrors
+    // setValue: Dictionary
+    // getValues: Dictionary,
+    // errors: FieldErrors
 }
 
 

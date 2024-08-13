@@ -67,6 +67,7 @@ export interface IReport {
     filters: Dictionary[];
     summaries: Dictionary[];
     description: string;
+    reporttemplateid: number;
 }
 
 interface DetailReportProps {
@@ -92,8 +93,8 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     });
 
     useEffect(() => {
-        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('graphictype', { validate: (value: any) => (value?.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value?.length) || t(langKeys.field_required) });
     }, [register]);
 
     const handleCancelModal = () => {
@@ -169,8 +170,8 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
             ...prev,
             [filter.columnname]: {
                 ...prev[filter.columnname],
-                start: getDateCleaned(dateRange.startDate!!),
-                end: getDateCleaned(dateRange.endDate!!)
+                start: getDateCleaned(dateRange.startDate!),
+                end: getDateCleaned(dateRange.endDate!)
             }
         }))
     }, [dateRange])
@@ -215,7 +216,7 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
     }
 }
 
-const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { columns, summaries, filters, description } }) => {
+const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { columns, summaries, filters, description, reporttemplateid } }) => {
     const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -226,6 +227,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
     const [dataFiltered, setDataFiltered] = useState<Dictionary[]>([]);
     const [footer, setFooter] = useState<Dictionary | null>(null);
     const [view, setView] = useState('GRID');
+    
     const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
         ...acc,
         [item.columnname]: {
@@ -340,11 +342,12 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
 
     const onSearch = (isExport: boolean = false) => {
         const body = {
-            columns,
+            // columns,
+            reporttemplateid: reporttemplateid,
             parameters: {
                 offset: (new Date().getTimezoneOffset() / 60) * -1,
             },
-            summaries,
+            // summaries,
             filters: Object.values(filtersDynamic)
         }
         if (isExport)
@@ -387,7 +390,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={mainDynamic.loading || !(mainDynamic.data.length > 0)}
+                            disabled={mainDynamic.loading || !mainDynamic.data.length}
                             onClick={() => setShowDialogGraphic(true)}
                             startIcon={<AssessmentIcon />}
                         >
