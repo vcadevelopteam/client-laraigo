@@ -103,7 +103,7 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
     async function finishreg() {
         setSetins(true);
         dispatch(insertChannel(fields));
-        updateMetachannels(getid()||0)
+        updateMetachannels(getid() || 0)
         setWaitSave(true);
         setViewSelected("main");
     }
@@ -289,19 +289,23 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
                                 e.preventDefault();
                                 dispatch(manageConfirmation({
                                     visible: true,
+                                    title: t(langKeys.confirmation),
                                     question: t(langKeys.channelconfigsave),
                                     callback: () => {
                                         if (channelreg || mainResult.loading || nextbutton) {
-                                            dispatch(showSnackbar({ show: true, severity: "error", message: "Debe poner un nombre al canal" }))
+                                            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.onboading_channelcomplete) }));
                                         } else {
-                                            setReturnNow(true)
-                                            finishreg()
+                                            setReturnNow(true);
+                                            finishreg();
                                         }
                                     },
                                     callbackcancel: () => {
                                         window.location.reload();
                                     },
-                                    textCancel: t(langKeys.decline)
+                                    textCancel: t(langKeys.decline),
+                                    textConfirm: t(langKeys.accept),
+                                    isBold: true,
+                                    showClose: true,
                                 }))
                             }}
                         >

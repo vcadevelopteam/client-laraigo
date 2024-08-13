@@ -2952,10 +2952,10 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-
                         if (whatsAppData?.onboarding) {
                             dispatch(manageConfirmation({
                                 visible: true,
+                                title: t(langKeys.confirmation),
                                 question: t(langKeys.channelconfigsave),
                                 callback: () => {
                                     handleSubmit("DEFAULT", false, "#90c900");
@@ -2963,7 +2963,10 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                                 callbackcancel: () => {
                                     history.push(paths.METACHANNELS, whatsAppData);
                                 },
-                                textCancel: t(langKeys.decline)
+                                textCancel: t(langKeys.decline),
+                                textConfirm: t(langKeys.accept),
+                                isBold: true,
+                                showClose: true,
                             }))
                         } else {
                             channel?.status === "INACTIVO"

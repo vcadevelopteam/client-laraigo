@@ -6365,11 +6365,12 @@ export const langKeys = {
   categorychangetext: 'categorychangetext',
   propertybalancetime: 'propertybalancetime',
   message_business_origin: 'message_business_origin',
-  closedtoday: 'closedtoday', 
+  closedtoday: 'closedtoday',
   spellingcheck: 'spellingcheck',
   transcriptionandtranslation: 'transcriptionandtranslation',
   translatelanguage: 'translatelanguage',
   chatsettings: 'chatsettings',
+  onboading_channelcomplete: 'onboading_channelcomplete',
 };
 
 export type LangKeys = typeof langKeys;

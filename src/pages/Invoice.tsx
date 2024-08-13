@@ -9469,7 +9469,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                 type: "number",
                 Cell: (props: any) => {
                     const { amount } = props.cell.row.original || {};
-                    return formatNumber(amount || 0);
+                    return formatNumberFourDecimals(amount || 0);
                 },
             },
             {
@@ -9479,7 +9479,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                 type: "number",
                 Cell: (props: any) => {
                     const { balance } = props.cell.row.original || {};
-                    return formatNumber(balance || 0);
+                    return formatNumberFourDecimals(balance || 0);
                 },
             },
             {
