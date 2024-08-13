@@ -313,6 +313,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         setValue,
         trigger,
         getValues,
+        watch,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -350,6 +351,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
             olddomainname: row?.domainname || ""
         },
     });
+    const sunatCountry = watch("sunatcountry");
 
     const handleIconImgClick = () => {
         const input = document.getElementById("IconImgInput");
@@ -630,7 +632,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     }, [countryList]);
 
     const docTypes = useMemo(() => {
-        if(getValues("sunatcountry")==="") return [];
+        if(sunatCountry==="") return [];
         if (!dataDocType || dataDocType.length === 0) return [];
 
         const val = dataDocType as Dictionary[];
@@ -638,7 +640,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         return val.sort((a, b) => {
             return a.domaindesc.localeCompare(b.domaindesc);
         });
-    }, [dataDocType, getValues("sunatcountry")]);
+    }, [dataDocType, sunatCountry]);
 
     
     const handleDragOver = (e) => {
