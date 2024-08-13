@@ -771,6 +771,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     onChange={(value) => {
                                         setValue("doctype", value?.domainvalue || "");
                                         setdoctype(value?.domainvalue || "");
+                                        setValue("docnum","")
                                     }}
                                     error={errors?.doctype?.message}
                                     data={docTypes}
@@ -780,7 +781,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
                                     className="col-6"
-                                    type='number'
+                                    type={(doctype === "1" || doctype === "6")?'number':"text"}
                                     valueDefault={getValues('docnum')}
                                     onChange={(value: any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
