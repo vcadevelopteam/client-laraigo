@@ -125,6 +125,23 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#FFF',
         boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
     },
+    interactionTextMailHtml: {
+        whiteSpace: 'break-spaces',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        fontSize: '14px',
+        lineHeight: 2,
+        color: '#2E2C34',
+        wordBreak: 'break-word',
+        width: 'fit-content',
+        borderRadius: 12,
+        borderBottomLeftRadius: 0,
+        padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
+        position: 'relative',
+        maxWidth: 'fit-content',
+        backgroundColor: '#FFF',
+        boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
+    },
     interactionTextAgent: {
         borderBottomLeftRadius: 12,
         borderBottomRightRadius: 0,
