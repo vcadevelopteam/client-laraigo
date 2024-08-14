@@ -287,7 +287,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
-    const [doctype, setdoctype] = useState(row?.doctype || "");
     const [pageSelected, setPageSelected] = useState(0);
     const [waitUpload, setWaitUpload] = useState("");
     const [domainname, setDomainName] = useState(row?.domainname||"");
@@ -352,6 +351,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         },
     });
     const sunatCountry = watch("sunatcountry");
+    const doctype = watch("doctype");
 
     const handleIconImgClick = () => {
         const input = document.getElementById("IconImgInput");
@@ -861,7 +861,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                         valueDefault={doctype}
                                         onChange={(value) => {
                                             setValue("doctype", value?.domainvalue || "");
-                                            setdoctype(value?.domainvalue || "");
                                         }}
                                         error={errors?.doctype?.message}
                                         data={docTypes}
@@ -871,6 +870,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                     <FieldEdit
                                         label={t(langKeys.documentnumber)}
                                         className="col-6"
+                                        type={(doctype !== "0")?'number':"text"}
                                         valueDefault={getValues("docnum")}
                                         onChange={(value) => setValue("docnum", value)}
                                         error={errors?.docnum?.message}
