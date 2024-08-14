@@ -685,11 +685,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL") || []
+            const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data || []
+            const grouprules = rules.map(item => item.assignedgroup)
             let groups = user?.groups ? user?.groups.split(",") : [];
-            if (rules?.data && propertyGrupoDelegacion) {
-                let extragroups = rules.data.map(item => item.assignedgroup)
-                groups = extragroups.length ? extragroups : groups
+            if (grouprules.length && propertyGrupoDelegacion) {
+                groups = grouprules
             }
             setUsableGroups(groups)
             if (user.properties.limit_reassign_group) {
@@ -698,10 +698,9 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 setUserToReassign((multiData?.data?.[3]?.data || []))
             }
             if (propertyAsesorReassign && !propertyGrupoDelegacion) {
-                const usergroups = (user?.groups || "")?.split(',')
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
-                    return agentGroups.some(group => usergroups.includes(group.trim()));
+                    return agentGroups.some((group:any) => grouprules.includes(group.trim()));
                 }))
             }
         }
