@@ -683,9 +683,10 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <div
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
-                    className={clsx(classes.interactionText, {
+                    className={clsx(classes.interactionTextMailHtml, {
                         [classes.interactionTextAgent]: userType !== 'client',
-                    })} style={{ display: 'inline-block' }}>
+                    })} 
+                    style={{ display: 'inline-block' }}>
                 {Boolean(interactionid) && <TackIcon fill="#8F92A1" className={clsx(classes2.tackIcon, classes2.tackIconTopRight)} style={{ visibility: isselected ? 'visible' : 'hidden' }} />}
                 {!pinnedmessagesSelected.map((item: any) => item.interactionid).includes(interactionid) &&
                         <IconButton size="small"
