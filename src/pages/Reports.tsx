@@ -1517,29 +1517,28 @@ const Reports: FC = () => {
                 {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
                     <SkeletonReportCard />
                 ) : (
-                    <>
-                        <div className={classes.containerDetails}>
-                            <Grid container spacing={3} >
-                                {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !!x.image).map((report, index) => (
-                                    reportSwitch(report, index)
-                                ))}
-                                {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
-                                    <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                                        <Card style={{ position: "relative" }}>
-                                            <CardActionArea
-                                                onClick={() => {
-                                                    setViewSelected("view-4");
-                                                    setRowReportSelected({ row: report, edit: true });
-                                                }}
-                                                className={classes.cardstyle}
-                                            >
-                                                <CardMedia
-                                                    component="img"
-                                                    height="140"
-                                                    className={classes.media}
-                                                    image='https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
-                                                    title={report.description}
-                                                />
+                    <div className={classes.containerDetails}>
+                        <Grid container spacing={3} >
+                            {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !!x.image).map((report, index) => (
+                                reportSwitch(report, index)
+                            ))}
+                            {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
+                                <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                                    <Card style={{ position: "relative" }}>
+                                        <CardActionArea
+                                            onClick={() => {
+                                                setViewSelected("view-4");
+                                                setRowReportSelected({ row: report, edit: true });
+                                            }}
+                                            className={classes.cardstyle}
+                                        >
+                                            <CardMedia
+                                                component="img"
+                                                height="140"
+                                                className={classes.media}
+                                                image='https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+                                                title={report.description}
+                                            />
 
                                             <CardContent style={{ paddingBottom: 0 }}>
                                                 <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
