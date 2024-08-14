@@ -3528,6 +3528,7 @@ export const langKeys = {
   labels: 'labels',
   personDetail: 'personDetail',
   audit: 'audit',
+  column_name_report_dashboard: 'column_name_report_dashboard',
   conversation: 'conversation',
   conversation_plural: 'conversation_plural',
   opportunity: 'opportunity',
