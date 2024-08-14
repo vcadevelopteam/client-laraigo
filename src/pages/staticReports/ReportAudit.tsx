@@ -132,6 +132,11 @@ const ReportAudit: FC = () => {
                 Header: t(langKeys.type),
                 accessor: 'type',
                 width: 'auto',
+                type: "select",
+                listSelectFilter: [
+                    { key: t(langKeys[langKeys.report]), value: t(langKeys[langKeys.report]) },
+                    { key: t(langKeys[langKeys.dashboard]), value: t(langKeys[langKeys.dashboard]) },
+                ],
             },
             {
                 Header: t(langKeys.name),
@@ -148,7 +153,7 @@ const ReportAudit: FC = () => {
                 accessor: 'parameters',
                 width: 'auto'
             },
-            
+
         ],
         [t]
     );
