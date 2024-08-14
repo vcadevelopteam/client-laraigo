@@ -1864,11 +1864,20 @@ const Reports: FC = () => {
         )
     }  else if (viewSelected === "opportunityreport") {
         return (
-            <OpportunityReport
-                setViewSelected={setViewSelected}
-                row={rowSelected}
-                setSearchValue={setSearchValue}
-            />
+            <>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t(langKeys.report_opportunity), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <OpportunityReport
+                        row={rowSelected}
+                        allFilters={rowSelected.filters}
+                    />
+                </div>
+
+            </>
+
         )
     }  else if (viewSelected === "productivityhoursreport") {  
         return (            

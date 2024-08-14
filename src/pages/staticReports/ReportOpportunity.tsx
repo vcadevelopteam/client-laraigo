@@ -1,69 +1,86 @@
-import React, { useMemo, useEffect, useState } from 'react';
-import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
-import {
-    convertLocalDate,
-    getCommChannelLst,
-    getDateCleaned, getLeadReportGraphicSel, getLeadsReportSel, getRecordVoicecallGraphic, getReportGraphic,
-} from 'common/helpers';
-import {Dictionary, IFetchData} from "@types";
-import {
-    getCollectionAux, getMainGraphic,
-    getMultiCollectionAux3,
-    resetCollectionPaginated
-} from 'store/main/actions';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import {TemplateBreadcrumbs, FieldSelect, DateRangePicker, DialogZyx} from 'components';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
-import {Button, ListItemIcon} from '@material-ui/core';
-import TableZyx from 'components/fields/table-simple';
-import { Range } from 'react-date-range';
-import { CalendarIcon } from 'icons';
-import { Search as SearchIcon } from '@material-ui/icons';
-import { CellProps } from 'react-table';
-import MenuItem from "@material-ui/core/MenuItem";
+import React, { FC, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { useSelector } from "hooks";
+import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
+import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
+import {DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch, TemplateBreadcrumbs} from "components";
+import { makeStyles } from "@material-ui/core/styles";
+import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
+import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { CalendarIcon, DownloadIcon } from "icons";
+import { Range } from "react-date-range";
 import CategoryIcon from "@material-ui/icons/Category";
-import Typography from "@material-ui/core/Typography";
+import TableZyx from "components/fields/table-simple";
+import { convertLocalDate,
+    getCommChannelLst,
+    getDateCleaned, getLeadReportGraphicSel, getLeadsReportSel, getRecordVoicecallGraphic, getReportGraphic, exportExcel } from "common/helpers";
+import { langKeys } from "lang/keys";
+import {Dictionary, IFetchData} from "@types";
+import { useForm } from "react-hook-form";
+import { CellProps } from 'react-table';
+import Graphic from "components/fields/Graphic";
 import AssessmentIcon from "@material-ui/icons/Assessment";
-import {useForm} from "react-hook-form";
-import Graphic from "../../components/fields/Graphic";
+import ListIcon from "@material-ui/icons/List";
+import { Settings } from "@material-ui/icons";
 
 interface DetailProps {
-    setViewSelected: (view: string) => void;
+    row: Dictionary | null;
+    allFilters: Dictionary[];
 }
 
 const useStyles = makeStyles((theme) => ({
-    select: {
-        width: '200px'
+    containerFilter: {
+        width: "100%",
+        padding: "10px",
+        marginBottom: "10px",
+        display: "flex",
+        gap: 8,
+        flexWrap: "wrap",
+        backgroundColor: "white",
+        justifyContent: "space-between",
     },
-    itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
-        borderRadius: 4,
-        color: 'rgb(143, 146, 161)',
-        alignItems: 'left'
+    filterComponent: {
+        minWidth: "220px",
+        maxWidth: "260px",
+    },
+    containerHeader: {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 16,
+        [theme.breakpoints.up("sm")]: {
+            display: "flex",
+        },
+    },
+    containerDetails: {
+        paddingBottom: theme.spacing(2),
     },
     button: {
         padding: 12,
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
+        fontSize: "14px",
+        textTransform: "initial",
     },
-    filterComponent: {
-        width: '180px'
+    BackGrRed: {
+        backgroundColor: "#fb5f5f",
     },
-    containerFilters: {
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        justifyContent: 'end',
-        gap: theme.spacing(1),
-        marginTop: theme.spacing(1),
-        backgroundColor: '#FFF',
-        padding: theme.spacing(1),
+    BackGrGreen: {
+        backgroundColor: "#55bd84",
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: "pointer",
+    },
+    containerHeaderItem: {
+        backgroundColor: "#FFF",
+        padding: 8,
+        display: "block",
+        flexWrap: "wrap",
+        gap: 8,
+        [theme.breakpoints.up("sm")]: {
+            display: "flex",
+        },
     },
     calendarContainer: {
         display: 'flex',
@@ -71,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
 }));
+
 const columnsTemp = [
     "ticketnum",
     "createdate",
@@ -91,38 +109,70 @@ const columnsTemp = [
 
 ];
 
-
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
 
-const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
+
+const OpportunityReport: FC<DetailProps> = ({ allFilters }) => {
+    const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const multiAux3 = useSelector(state => state.main.multiDataAux3);
-    const resExportData = useSelector(state => state.main.exportData);
-    const [waitExport, setWaitExport] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const multiData = useSelector(state => state.main.multiData);
+    const mainAux = useSelector((state) => state.main.mainAux);
+    const [groupsdata, setgroupsdata] = useState<any>([]);
+    const [allParameters, setAllParameters] = useState({});
+    const [dateRange, setdateRange] = useState<Range>({
+        startDate: new Date(new Date().setDate(1)),
+        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        key: "selection",
+    });
+    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
+    const [isday, setisday] = useState(false);
+    const [columnGraphic, setColumnGraphic] = useState("");
+    const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [, setOpenSeButtons] = useState(false);
     const [viewSelected2, setViewSelected2] = useState("view-2");
-    const [allParameters, setAllParameters] = useState<any>({});
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null })
-    const [view] = useState('GRID');
-    const multiData = useSelector((state) => state.main.multiData);
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null });
+
+    const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
+
+    const [openModal, setOpenModal] = useState(false);
+    const [view, setView] = useState("GRID");
+
+    const [dataGrid, setdataGrid] = useState<any[]>([]);
+
+    const [detailCustomReport, setDetailCustomReport] = useState<{
+        loading: boolean;
+        data: Dictionary[];
+    }>({
+        loading: false,
+        data: [],
+    });
+    const [selectedChannel, setSelectedChannel] = useState(0);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
 
 
+    useEffect(() => {
+        dispatch(setViewChange("report_opportunity"));
+        dispatch(getMultiCollection([
+            getLeadsReportSel(
+                {
+                    communicationchannel: selectedChannel || 0,
+                    startdate: dateRangeCreateDate.startDate,
+                    enddate: dateRangeCreateDate.endDate,
+                }
+            ),
+            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST", "UFN_COMMUNICATIONCHANNEL_LST", "probando"),
+            getReportFilterSel("UFN_DOMAIN_LST_VALORES", "UFN_DOMAIN_LST_VALORES_GRUPOS", "GRUPOS"),
 
-
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.report_plural) },
-        { id: "view-2", name: t(langKeys.report_crm) }
-    ];
-
-    const filterChannel = useSelector((state) => state.main.mainAux);
+        ]));
+        return () => {
+            dispatch(cleanViewChange());
+        };
+    }, []);
 
     const cell = (props: CellProps<Dictionary>) => {
         const column = props.cell.column;
@@ -160,7 +210,7 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 },
             },
             {
-                Header: t(langKeys.report_opportunity_op),
+                Header: t(langKeys.report_opportunity_description),
                 accessor: 'description',
                 Cell: cell
             },
@@ -183,7 +233,7 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 },
             },
             {
-                Header: t(langKeys.report_opportunity_customer),
+                Header: t(langKeys.report_opportunity_displayname),
                 accessor: 'displayname',
                 Cell: cell
             },
@@ -236,7 +286,7 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Cell: cell
             },
             {
-                Header: t(langKeys.report_opportunity_assignedadviser),
+                Header: t(langKeys.report_opportunity_fullname),
                 accessor: 'fullname',
                 Cell: cell
             },
@@ -249,41 +299,84 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
         [t]
     );
 
-    const fetchData = () => {
-        dispatch(showBackdrop(true));
-        dispatch(getMultiCollectionAux3([getLeadsReportSel(
-            {
-                communicationchannel: selectedChannel || 0,
-                startdate: dateRangeCreateDate.startDate,
-                enddate: dateRangeCreateDate.endDate,
-            }
-        ),
-        ]));
-    };
-
     useEffect(() => {
-        dispatch(resetCollectionPaginated());
-        fetchData();
-        fetchFiltersChannels();
-        return () => {
-            dispatch(resetCollectionPaginated());
-        };
-    }, []);
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'));
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
+        if (allFilters) {
+            if (!multiData.loading && !multiData.error && multiData.data.length) {
+                const groupitem = allFilters.find((e) => e.values[0].label === "group");
+                if (groupitem) {
+                    const arraygroups =
+                        multiData?.data[
+                            multiData?.data?.findIndex(
+                                (x) =>
+                                    x.key ===
+                                    (groupitem?.values[0].isListDomains
+                                        ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname
+                                        : groupitem?.values[0].filter)
+                            )
+                            ];
+                    setgroupsdata(arraygroups.data);
+                }
             }
         }
-    }, [resExportData, waitExport]);
+    }, [multiData, allFilters]);
+    useEffect(() => {
+        if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_LEAD_REPORT_SEL") {
+            setDetailCustomReport(mainAux);
+            setdataGrid(mainAux.data.map((x) => ({
+                ...x,
+                ...(x.desconectedtimejson ? JSON.parse(x.desconectedtimejson) : {})
+            })));
+
+            if (mainAux.data.length > 0) {
+                const desconectedMotives = Array.from(
+                    new Set(
+                        (mainAux.data as any).reduce(
+                            (ac: string[], x: any) =>
+                                x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac,
+                            []
+                        )
+                    )
+                );
+                setDesconectedmotives([...desconectedMotives]);
+            }
+        }
+    }, [mainAux]);
+
+
+    useEffect(() => {
+        setAllParameters({
+            ...allParameters,
+            startdate: dateRange.startDate
+                ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
+                : null,
+            enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
+        });
+    }, [dateRange]);
+
+    const fetchData = () => {
+        const stardate = dateRange.startDate
+            ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
+            : null;
+        const enddate = dateRange.endDate
+            ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10)
+            : null;
+        setisday(stardate === enddate);
+
+        dispatch(resetMainAux());
+        dispatch(getCollectionAux(getLeadsReportSel({
+            communicationchannel: selectedChannel || 0,
+            startdate: dateRangeCreateDate.startDate,
+            enddate: dateRangeCreateDate.endDate,
+        })));
+
+    };
+
+    const setValue = (parameterName: any, value: any) => {
+        setAllParameters({ ...allParameters, [parameterName]: value });
+    };
+
+
+    const format = (date: Date) => date.toISOString().split("T")[0];
 
     const handlerSearchGraphic = (daterange: any, column: string) => {
         setfetchDataAux(prev => ({ ...prev, daterange }));
@@ -299,169 +392,240 @@ const OpportunityReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 ...allParameters,
             }
         )));
-    }
-
-
+    };
     useEffect(() => {
-        if (!multiAux3.loading && !multiAux3.error) {
-            dispatch(showBackdrop(false));
-        }
-    }, [multiAux3]);
-
-    const setValue = (parameterName: any, value: any) => {
-        setAllParameters({ ...allParameters, [parameterName]: value });
-    };
-
-    const [selectedChannel, setSelectedChannel] = useState(0);
-
-    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()));
-
-    const setView = (e: string) => {
-        if (e === "view-1") {
-            setViewSelected(e);
-            setViewSelected2("view-2");
-        } else {
-            setViewSelected2(e);
-        }
-    };
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+            if (anchorElSeButtons && !anchorElSeButtons.contains(target)) {
+                setAnchorElSeButtons(null);
+                setOpenSeButtons(false);
+            }
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [anchorElSeButtons, setOpenSeButtons]);
 
     if (viewSelected2 === "view-2") {
         return (
-            <div style={{ width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={setView}
-                        />
-                    </div>
-                </div>
-                <div style={{ position: 'relative', height: '100%' }}>
+            <>
+                {view === "GRID" ? (
+                    <TableZyx
+                        columns={columns}
+                        filterGeneral={false}
+                        data={dataGrid}
+                        download={false}
+                        showHideColumns={true}
+                        groupedBy={true}
+                        loading={detailCustomReport.loading}
+                        register={false}
+                        ButtonsElement={
+                            <div className={classes.containerFilter}>
+                                <div style={{ display: "flex", gap: 8 }}>
+                                    <div style={{ display: "flex" }}>
+                                        <Box width={1}>
+                                            <Box
+                                                className={classes.containerHeader}
+                                                justifyContent="space-between"
+                                                alignItems="center"
+                                            >
+                                                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                                    <DateRangePicker
+                                                        open={openDateRangeModal}
+                                                        setOpen={setOpenDateRangeModal}
+                                                        range={dateRange}
+                                                        onSelect={setdateRange}
+                                                    >
+                                                        <Button
+                                                            disabled={detailCustomReport.loading}
+                                                            style={{
+                                                                border: "1px solid #bfbfc0",
+                                                                borderRadius: 4,
+                                                                color: "rgb(143, 146, 161)",
+                                                            }}
+                                                            startIcon={<CalendarIcon />}
+                                                            onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                                        >
+                                                            {format(dateRange.startDate!) +
+                                                                " - " +
+                                                                format(dateRange.endDate!)}
+                                                        </Button>
+                                                    </DateRangePicker>
+                                                </div>
+                                            </Box>
+                                        </Box>
+                                    </div>
+                                    <div style={{ display: "flex" }}>
+                                        <Box width={1}>
+                                            <Box
+                                                className={classes.containerHeader}
+                                                justifyContent="space-between"
+                                                alignItems="center"
+                                            >
+                                                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                                    <FieldSelect
 
-                    {view === "GRID" ? (
-                        <TableZyx
-                            columns={columns}
-                            data={multiAux3?.data?.[0]?.data || []}
-                            groupedBy={true}
-                            showHideColumns={true}
-                            loading={multiAux3.loading}
-                            download={true}
-                            ExtraMenuOptions={
-                                <MenuItem
-                                    style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
-                                    onClick={() => setViewSelected2('calendar')}
-                                >
-                                    <CalendarIcon style={{ marginRight: "1rem" }}>
-                                        <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
-                                    </CalendarIcon>
-                                    <Typography variant="inherit">{ t(langKeys.report_opportunity_calendarview)}</Typography>
-                                </MenuItem>
-                            }
-                            ButtonsElement={() => (
-                                <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto', marginTop: 5 }}>
-                                    <DateRangePicker
-                                        open={openDateRangeCreateDateModal}
-                                        setOpen={setOpenDateRangeCreateDateModal}
-                                        range={dateRangeCreateDate}
-                                        onSelect={setDateRangeCreateDate}
-                                    >
-                                        <Button
-                                            className={classes.itemDate}
-                                            startIcon={<CalendarIcon />}
-                                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                                        >
-                                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                        </Button>
-                                    </DateRangePicker>
-
-                                    <FieldSelect
-                                        label={t(langKeys.channel)}
-                                        variant="outlined"
-                                        className={classes.filterComponent}
-                                        data={filterChannel.data || []}
-                                        valueDefault={selectedChannel}
-                                        onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
-                                        optionDesc="communicationchanneldesc"
-                                        optionValue="communicationchannelid"
-                                    />
-
-                                    <Button
-                                        disabled={multiAux3.loading}
-                                        variant="contained"
-                                        color="primary"
-                                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                        style={{ width: 120, backgroundColor: "#55BD84" }}
-                                        onClick={() => fetchData()}
-                                    >
-                                        {t(langKeys.search)}
-                                    </Button>
-                                    <Button
-                                        className={classes.button}
-                                        variant="contained"
-                                        color="primary"
-                                        disabled={false}
-                                        onClick={() => setOpenModal(true)}
-                                        startIcon={<AssessmentIcon />}
-                                    >
-                                        {t(langKeys.graphic_view)}
-                                    </Button>
-
+                                                        label={t(langKeys.report_opportunity_channels)}
+                                                        className={classes.filterComponent}
+                                                        key={"UFN_COMMUNICATIONCHANNEL_LST"}
+                                                        valueDefault={selectedChannel}
+                                                        onChange={(value) =>
+                                                            setValue("channel", value?.typedesc || "ayuda2")
+                                                        }
+                                                        variant="outlined"
+                                                        data={
+                                                            multiData?.data?.find(x => x.key === "UFN_COMMUNICATIONCHANNEL_LST")?.data || []
+                                                        }
+                                                        loading={multiData.loading}
+                                                        optionDesc={"communicationchanneldesc"}
+                                                        optionValue={"typedesc"}
+                                                    />
+                                                </div>
+                                            </Box>
+                                        </Box>
+                                    </div>
+                                    <div style={{ display: "flex" }}>
+                                        <Box width={1}>
+                                            <Box
+                                                className={classes.containerHeader}
+                                                justifyContent="space-between"
+                                                alignItems="center"
+                                            >
+                                                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                                    <Button
+                                                        disabled={detailCustomReport.loading}
+                                                        variant="contained"
+                                                        color="primary"
+                                                        style={{ backgroundColor: "#55BD84", width: 120 }}
+                                                        onClick={() => {
+                                                            setDetailCustomReport({
+                                                                loading: true,
+                                                                data: [],
+                                                            });
+                                                            fetchData();
+                                                        }}
+                                                    >
+                                                        {t(langKeys.search)}
+                                                    </Button>
+                                                </div>
+                                            </Box>
+                                        </Box>
+                                    </div>
                                 </div>
-                            )}
-                            filterGeneral={false}
-                        />
-                    ): (
+                                <div>
+                                    <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                                        {view === "GRID" && (
+                                            <>
+                                                <Button
+                                                    className={classes.button}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    disabled={
+                                                        detailCustomReport.loading || !(detailCustomReport.data.length > 0)
+                                                    }
+                                                    onClick={() => setOpenModal(true)}
+                                                    startIcon={<AssessmentIcon />}
+                                                >
+                                                    {t(langKeys.graphic_view)}
+                                                </Button>
+                                                <Button
+                                                    className={classes.button}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    disabled={detailCustomReport.loading}
+                                                    onClick={() =>
+                                                        exportExcel(
+                                                            "report" + new Date().toISOString(),
+                                                            dataGrid,
+                                                            columns.filter((x: any) => !x.isComponent && !x.activeOnHover)
+                                                        )
+                                                    }
+                                                    startIcon={<DownloadIcon />}
+                                                >
+                                                    {t(langKeys.download)}
+                                                </Button>
+                                            </>
+                                        )}
+                                    </Box>
+                                </div>
+                            </div>
+                        }
+                        ExtraMenuOptions={
+                            <MenuItem
+                                style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
+                                onClick={() => setViewSelected2('calendar')}
+                            >
+                                <CalendarIcon style={{ marginRight: "1rem" }}>
+                                    <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
+                                </CalendarIcon>
+                                <Typography variant="inherit">{ t(langKeys.report_opportunity_calendarview)}</Typography>
+                            </MenuItem>
+                        }
+                    />
+                ) : (
+                    <div>
+                        <Box
+                            style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}
+                            className={classes.containerHeaderItem}
+                        >
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<Settings />}
+                            >
+                                {t(langKeys.configuration)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setView("GRID")}
+                                startIcon={<ListIcon />}
+                            >
+                                {t(langKeys.grid_view)}
+                            </Button>
+                        </Box>
                         <Graphic
                             graphicType={view.split("-")?.[1] || "BAR"}
                             column={view.split("-")?.[2] || "summary"}
                             openModal={openModal}
                             setOpenModal={setOpenModal}
-                            daterange={dateRangeCreateDate}
+                            daterange={{
+                                startDate: dateRange.startDate?.toISOString().substring(0, 10),
+                                endDate: dateRange.endDate?.toISOString().substring(0, 10),
+                            }}
+                            withFilters={false}
                             setView={setView}
-                            row={{origin: 'report_crm'}}
+                            withButtons={false}
+                            row={{ origin: "opportunity" }}
                             handlerSearchGraphic={handlerSearchGraphic}
-                            FiltersElement={
-                                <FieldSelect
-                                    valueDefault={allParameters["channel"]}
-                                    label={t(langKeys.report_opportunity_channels)}
-                                    className={classes.filterComponent}
-                                    key={"UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"}
-                                    variant="outlined"
-                                    onChange={(value) => setValue("channel", value ? value["typedesc"] : "")}
-                                    data={
-                                        multiData?.data?.[
-                                            multiData?.data.findIndex(
-                                                (x) => x.key === "UFN_COMMUNICATIONCHANNEL_LST_TYPEDESC"
-                                            )
-                                            ]?.data
-                                    }
-                                    optionDesc={"type"}
-                                    optionValue={"typedesc"}
-                                />
-                            }
                         />
-                    )}
-                    <SummaryGraphic
-                        openModal={openModal}
-                        setOpenModal={setOpenModal}
-                        setView={setView}
-                        daterange={dateRangeCreateDate}
-                        columns={columnsTemp.map(c => ({
-                            key: c, value: `report_opportunity_${c}`
-                        }))}
-                        columnsprefix='report_opportunity_'
-                        allParameters={allParameters}
-                    />
-                </div>
-            </div>
+                    </div>
+                )}
+
+                <SummaryGraphic
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    setColumnGraphic={setColumnGraphic}
+                    setView={setView}
+                    daterange={dateRange}
+                    filters={allParameters}
+                    columns={columnsTemp.map(c => ({
+                        key: c, value: `report_opportunity_${c}`
+                    }))}
+                    allParameters={allParameters}
+                />
+            </>
         );
-    } else if (viewSelected2 === 'calendar') {
+
+    }
+    else if (viewSelected2 === 'calendar') {
         return (
             <div style={{ width: '100%' }}>
-                <TemplateBreadcrumbs
-                    breadcrumbs={[{ id: "view-1", name: t(langKeys.report_plural) }, { id: "calendar", name: t(langKeys.report_crm) }]}
-                    handleClick={setView}
-                />
                 <div className={classes.calendarContainer}>
                     <Button
                         variant="contained"
@@ -485,42 +649,59 @@ interface SummaryGraphicProps {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
     setView: (value: string) => void;
+    setColumnGraphic: (value: string) => void;
     row?: Dictionary | null;
     daterange: any;
     filters?: Dictionary;
     columns: any[];
-    columnsprefix: string;
+    columnsprefix?: string;
     allParameters?: any;
+
 }
 
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix, allParameters = {}, }) => {
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({
+                                                           openModal,
+                                                           setOpenModal,
+                                                           setView,
+                                                           daterange,
+                                                           filters,
+                                                           columns,
+                                                           setColumnGraphic,
+                                                           allParameters = {},
+                                                       }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        getValues,
+        formState: { errors },
+    } = useForm<any>({
         defaultValues: {
-            graphictype: 'BAR',
-            column: ''
-        }
+            graphictype: "BAR",
+            column: "chamare",
+        },
     });
 
     useEffect(() => {
-        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register("graphictype", { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register("column", { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [register]);
 
     const handleCancelModal = () => {
         setOpenModal(false);
-    }
+    };
 
     const handleAcceptModal = handleSubmit((data) => {
         triggerGraphic(data);
     });
 
     const triggerGraphic = (data: any) => {
-        setView(`CHART-${data.graphictype}-${data.column}`);
+        setView(`CHART-${data.graphictype}-${data.column?.split("::")[0]}`);
         setOpenModal(false);
-
+        setColumnGraphic(data.column);
         dispatch(getMainGraphic(getLeadReportGraphicSel(
             {
                 communicationchannel: filters?.communicationchannel || 0,
@@ -531,8 +712,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 ...allParameters,
             }
         )));
-    }
-
+    };
     const excludeLeadsOpportunity= [
         "ticketnum",
         "createdate",
@@ -542,15 +722,13 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         "expected_revenue",
         "estimatedimplementationdate",
         "estimatedbillingdate",
-        "email",
         "phase",
     ];
 
     const filteredColumns = columns.filter((column) => !excludeLeadsOpportunity.includes(column.key));
 
-
-
     return (
+
         <DialogZyx
             open={openModal}
             title={t(langKeys.graphic_configuration)}
@@ -565,10 +743,14 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_type)}
                     className="col-12"
-                    valueDefault={getValues('graphictype')}
+                    valueDefault={getValues("graphictype")}
                     error={errors?.graphictype?.message}
-                    onChange={(value) => setValue('graphictype', value?.key)}
-                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }, { key: 'LINE', value: 'LINEA' },]}
+                    onChange={(value) => setValue("graphictype", value?.key)}
+                    data={[
+                        { key: "BAR", value: "BAR" },
+                        { key: "PIE", value: "PIE" },
+                        { key: "LINE", value: "LINEA" },
+                    ]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"
@@ -579,9 +761,9 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_view_by)}
                     className="col-12"
-                    valueDefault={getValues('column')}
+                    valueDefault={getValues("column")}
                     error={errors?.column?.message}
-                    onChange={(value) => setValue('column', value?.key)}
+                    onChange={(value) => setValue("column", value?.key)}
                     data={filteredColumns}
                     optionDesc="value"
                     optionValue="key"
@@ -590,8 +772,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 />
             </div>
         </DialogZyx>
-    )
-}
-
+    );
+};
 
 export default OpportunityReport;
