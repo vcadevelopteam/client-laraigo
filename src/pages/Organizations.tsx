@@ -121,7 +121,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const updateScenarioResult = useSelector(state => state.voximplant.requestUpdateScenario);
     const getConsumptionResult = useSelector(state => state.voximplant.requestGetMaximumConsumption);
     const transferBalanceResult = useSelector(state => state.voximplant.requestTransferAccountBalance);
-    const [doctype, setdoctype] = useState(row?.doctype || "");
     const [idUpload, setIdUpload] = useState('');
     const [skipAutoReset, setSkipAutoReset] = useState(false)
     const [updatingDataTable, setUpdatingDataTable] = useState(false);
@@ -187,6 +186,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     });
 
     const sunatcountry = watch("sunatcountry");
+    const doctype = watch("doctype");
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -770,7 +770,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     valueDefault={doctype}
                                     onChange={(value) => {
                                         setValue("doctype", value?.domainvalue || "");
-                                        setdoctype(value?.domainvalue || "");
                                         setValue("docnum","")
                                         debugger
                                     }}
@@ -782,7 +781,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
                                     className="col-6"
-                                    type={(doctype === "0")?'number':"text"}
+                                    type={(doctype !== "0")?'number':"text"}
                                     valueDefault={getValues('docnum')}
                                     onChange={(value: any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
