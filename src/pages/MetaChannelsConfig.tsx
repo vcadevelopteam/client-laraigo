@@ -103,17 +103,18 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
     async function finishreg() {
         setSetins(true);
         dispatch(insertChannel(fields));
-        updateMetachannels(getid() || 0)
+        updateMetachannels(getid() || 0);
         setWaitSave(true);
         setViewSelected("main");
     }
+
     function endReg() {
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.continuemetaconf),
             callback: () => {
                 if (channelList.length) {
-                    setViewSelected("view1")
+                    setViewSelected("view1");
                 } else {
                     window.location.reload();
                 }
@@ -121,11 +122,9 @@ const MetaChannelsConfig: FC<{ setView: (a: string) => void, metatype: string, s
             callbackcancel: () => {
                 window.location.reload();
             }
-        }
-
-        ))
-
+        }))
     }
+
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {

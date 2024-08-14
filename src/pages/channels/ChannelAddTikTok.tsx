@@ -101,7 +101,7 @@ export const ChannelAddTikTok: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(5)
+                    updateMetachannels(5);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

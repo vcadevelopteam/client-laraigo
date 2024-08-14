@@ -1055,7 +1055,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (edit && !channel) {
             if (whatsAppData?.onboarding) {
-                updateMetachannels(14)
+                updateMetachannels(14);
                 history.push(paths.METACHANNELS, whatsAppData);
             } else {
                 history.push(paths.CHANNELS);

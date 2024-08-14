@@ -100,7 +100,7 @@ export const ChannelAddFacebookWorkplace: FC<{ edit: boolean }> = ({ edit }) => 
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(24)
+                    updateMetachannels(24);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

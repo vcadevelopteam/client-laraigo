@@ -98,7 +98,7 @@ export const ChannelAddFacebookDM: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(23)
+                    updateMetachannels(23);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

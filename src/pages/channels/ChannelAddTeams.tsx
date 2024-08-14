@@ -92,7 +92,7 @@ export const ChannelAddTeams: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(18)
+                    updateMetachannels(18);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

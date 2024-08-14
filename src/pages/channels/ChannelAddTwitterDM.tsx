@@ -93,7 +93,7 @@ export const ChannelAddTwitterDM: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(4)
+                    updateMetachannels(4);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

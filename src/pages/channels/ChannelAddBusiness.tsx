@@ -153,7 +153,7 @@ export const ChannelAddBusiness: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(16)
+                    updateMetachannels(16);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

@@ -207,7 +207,7 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                 setSetins(false);
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(10)
+                    updateMetachannels(10);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

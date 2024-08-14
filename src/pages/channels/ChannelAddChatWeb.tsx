@@ -1795,7 +1795,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (edit && !channel) {
             if (whatsAppData?.onboarding) {
-                updateMetachannels(11)
+                updateMetachannels(11);
                 history.push(paths.METACHANNELS, whatsAppData);
             } else {
                 history.push(paths.CHANNELS);

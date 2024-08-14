@@ -95,7 +95,7 @@ export const ChannelAddSMS: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(12)
+                    updateMetachannels(12);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

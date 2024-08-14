@@ -200,7 +200,7 @@ export const ChannelAddBlogger: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(15)
+                    updateMetachannels(15);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

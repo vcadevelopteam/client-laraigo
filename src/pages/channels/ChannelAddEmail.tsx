@@ -174,7 +174,7 @@ export const ChannelAddEmail: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(13)
+                    updateMetachannels(13);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

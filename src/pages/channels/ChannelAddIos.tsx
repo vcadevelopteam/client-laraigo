@@ -99,7 +99,7 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
                 setIntegrationId(mainResult.data[0].integrationId);
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(21)
+                    updateMetachannels(21);
                 }
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code ?? "error_unexpected_error", {

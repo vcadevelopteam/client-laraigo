@@ -95,7 +95,7 @@ export const ChannelAddLinkedIn: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(8)
+                    updateMetachannels(8);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");

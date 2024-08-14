@@ -100,7 +100,7 @@ export const ChannelAddFacebookLead: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(17)
+                    updateMetachannels(17);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");
