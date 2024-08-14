@@ -141,40 +141,12 @@ const ReportAudit: FC = () => {
             {
                 Header: t(langKeys.rundate),
                 accessor: 'createdate',
-                width: 'auto',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
-                    return convertLocalDate(row.createdate).toLocaleString()
-                }
+                width: 'auto'
             },
             {
                 Header: t(langKeys.parameters),
                 accessor: 'parameters',
-                width: 'auto',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
-                    if (row.parameters instanceof Array) {
-                        return JSON.stringify(row.parameters)
-                    }
-                    delete row.parameters.corpid
-                    delete row.parameters.orgid
-                    delete row.parameters.userid
-                    delete row.parameters.username
-                    delete row.parameters.skip
-                    delete row.parameters.take
-                    delete row.parameters.take
-                    delete row.parameters._requestid
-                    delete row.parameters.sorts
-                    delete row.parameters.where
-                    delete row.parameters.partnerid
-                    if (!row.parameters.order)
-                        delete row.parameters.order
-                    if (!row.parameters.filters || Object.keys(row.parameters.filters).length === 0)
-                        delete row.parameters.filters
-                    if (!row.parameters.distinct)
-                        delete row.parameters.distinct
-                    return JSON.stringify(row.parameters)
-                }
+                width: 'auto'
             },
             
         ],
@@ -222,6 +194,31 @@ const ReportAudit: FC = () => {
                 ...x,
                 reportname: t(langKeys[cleanfunction(x.reportname)]) || x.reportname,
                 type: t(langKeys[x.type]),
+                createdate: convertLocalDate(x.createdate).toLocaleString(),
+                parameters: (() => {
+                    const row = x;
+                    if (row.parameters instanceof Array) {
+                        return JSON.stringify(row.parameters)
+                    }
+                    delete row.parameters.corpid
+                    delete row.parameters.orgid
+                    delete row.parameters.userid
+                    delete row.parameters.username
+                    delete row.parameters.skip
+                    delete row.parameters.take
+                    delete row.parameters.take
+                    delete row.parameters._requestid
+                    delete row.parameters.sorts
+                    delete row.parameters.where
+                    delete row.parameters.partnerid
+                    if (!row.parameters.order)
+                        delete row.parameters.order
+                    if (!row.parameters.filters || Object.keys(row.parameters.filters).length === 0)
+                        delete row.parameters.filters
+                    if (!row.parameters.distinct)
+                        delete row.parameters.distinct
+                    return JSON.stringify(row.parameters)
+                })()
             })) || []);
             dispatch(showBackdrop(false));
         }
