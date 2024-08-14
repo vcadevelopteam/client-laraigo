@@ -3417,6 +3417,7 @@ const translation: LangKeys = {
 
   personDetail: 'Person detail',
   audit: 'Audit',
+  column_name_report_dashboard: 'Dashboard or Report Name',
   conversation: 'Conversation',
   conversation_plural: 'Conversations',
   opportunity: 'Opportunity',

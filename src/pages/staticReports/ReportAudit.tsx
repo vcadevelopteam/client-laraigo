@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DateRangePicker } from 'components';
-import { convertLocalDate, getAudit, getDateCleaned, getHSMHistoryList, getReportAudit, getReportAuditExport } from 'common/helpers';
+import { convertLocalDate, getAudit, getDateCleaned } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -139,7 +139,7 @@ const ReportAudit: FC = () => {
                 ],
             },
             {
-                Header: t(langKeys.name),
+                Header: t(langKeys.column_name_report_dashboard),
                 accessor: 'reportname',
                 width: 'auto'
             },
