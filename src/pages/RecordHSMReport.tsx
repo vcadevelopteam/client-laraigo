@@ -85,6 +85,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 from: row?.from || "",
                 date: row?.shippingdate || "",
                 type: row?.type || "",
+                campaignname: row?.campaignname || ""
             })
         ]))
     }
@@ -218,7 +219,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
         <div style={{width: '100%'}}>
             <div className={classes.containerDetail}>
                 <TableZyx
-                    titlemodule={`${row?.name_translated} (${row?.shippingdate})` || `${t(langKeys.recordhsmreportexternal)} ${t(langKeys.detail)}`}
+                    titlemodule={(row?.campaignname ? (row?.campaignname + ": ") : "") + `${row?.name_translated} (${row?.shippingdate})`}
                     ButtonsElement={() => (
                         <Button
                             variant="contained"

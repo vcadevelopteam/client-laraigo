@@ -98,7 +98,9 @@ const cleanLogsReassignedTask = (interactions: IInteraction[], returnHidden: boo
 export const getAgents = (state: IState): IState => ({
     ...initialState,
     holdingBySupervisor: state.holdingBySupervisor,
+    botBySupervisor: state.botBySupervisor,
     userGroup: state.userGroup,
+    channels: state.channels,
     role: state.role,
     wsConnected: state.wsConnected,
     userConnected: state.userConnected,
@@ -483,9 +485,16 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3 && !!state.userGroup) {
-        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
-            return state;
+    if (state.role.split(",").includes("SUPERVISOR") && data.newConversation) {
+        const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
+        if (property === "GRUPO") {
+            if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
+                return state;
+            }
+        } else if (property === "CANAL") {
+            if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
+                return state;
+            }
         }
     }
     let newticketList = [...state.ticketList.data];
@@ -707,6 +716,20 @@ export const resetShowModal = (state: IState): IState => ({
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
+
+    if (state.role.split(",").includes("SUPERVISOR")) {
+        const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
+        if (property === "GRUPO") {
+            if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
+                return state;
+            }
+        } else if (property === "CANAL") {
+            if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
+                return state;
+            }
+        }
+    }
+    
     if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && !!state.userGroup) {
         if (!state.userGroup.split(",").includes(data.usergroup || "")) {
             return state;
@@ -1339,8 +1362,10 @@ export const resetForceddesconection = (state: IState): IState => ({
 export const setDataUser = (state: IState, action: IAction): IState => ({
     ...state,
     holdingBySupervisor: action.payload.holdingBySupervisor,
+    botBySupervisor: action.payload.botBySupervisor,
     userGroup: action.payload.userGroup,
-    role: action.payload.role
+    role: action.payload.role,
+    channels: action.payload.channels,
 });
 
 

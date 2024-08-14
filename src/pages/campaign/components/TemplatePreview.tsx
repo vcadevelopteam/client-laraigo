@@ -293,7 +293,6 @@ const ButtonList: React.FC<{ buttons: any, authenticationButton?: string, classN
     );
 };
 
-
 const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     const classes = useStyles();
     const [maxCardHeight, setMaxCardHeight] = useState(0);
@@ -340,7 +339,6 @@ const CarouselPreview: React.FC<{ carouselData: any }> = ({ carouselData }) => {
     );
 };
 
-
 interface TemplatePreviewProps {
     selectedTemplate: Dictionary;
     bodyVariableValues: Dictionary;
@@ -372,7 +370,6 @@ const isValidVideoUrl = (url: string) => {
         return false;
     }
 };
-
 
 const transformTextStyles = (text: string) => {
     text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>')    
@@ -411,7 +408,6 @@ const replaceVariables = (
     return transformTextStyles(transformedText);
 };
 
-
 const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     selectedTemplate,
     bodyVariableValues,
@@ -426,7 +422,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const classes = useStyles();
     const renderedHeader = transformTextStyles(replaceVariables(selectedTemplate.header || "", headerVariableValues));
     const renderedBody = transformTextStyles(replaceVariables(selectedTemplate.body || "", bodyVariableValues, {}, {}, {}, {}, undefined, selectedAuthVariable)).replace(/\n/g, '<br />');
-    const [maxCardHeight, setMaxCardHeight] = useState(0);
+    const [, setMaxCardHeight] = useState(0);
     const cardRefs = useRef<HTMLDivElement[]>([]);
     const videoUrl = (headerVariableValues && headerVariableValues[1]) ? headerVariableValues[1] : videoHeaderValue || selectedTemplate.header;
 
@@ -452,7 +448,12 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         })) || []
     })) || [];
 
-    const combinedButtons = [
+    const combinedButtons = selectedTemplate.firstbuttons === 'generic' 
+    ? [
+        ...(selectedTemplate.buttonsgeneric || []),
+        ...(selectedTemplate.buttonsquickreply || [])
+      ]
+    : [
         ...(selectedTemplate.buttonsquickreply || []),
         ...(selectedTemplate.buttonsgeneric || [])
     ];
@@ -460,37 +461,36 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     const replaceVariablesMail = (text: string, variables: Dictionary) => {
         if (!text) return "";
         return text.replace(/{{(\d+)}}/g, (_: any, number: number) => (variables && variables[number]) ? variables[number] : `{{${number}}}`);
-    };
-    
+    };    
 
     const replacedBodyMail = replaceVariablesMail(selectedTemplate.body, bodyVariableValues);
 
-const adjustHtmlStyles = (html: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const body = doc.body;
+    const adjustHtmlStyles = (html: string) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const body = doc.body;
 
-    const images = doc.querySelectorAll('img');
-    images.forEach(img => {
-        img.style.maxWidth = '100%';
-        img.style.height = 'auto';
-    });
+        const images = doc.querySelectorAll('img');
+        images.forEach(img => {
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+        });
 
-    body.style.maxWidth = '50vw';
-    body.style.margin = '0 auto';
+        body.style.maxWidth = '50vw';
+        body.style.margin = '0 auto';
 
-    return body.innerHTML;
-};
+        return body.innerHTML;
+    };
 
-const containerStyle = {
-    maxWidth: '40rem',
-    borderRadius: '0.5rem',
-    backgroundColor: '#FDFDFD',
-    padding: '1rem 1rem 0rem 1rem',
-    ...(selectedTemplate?.type !== "HTML" && { boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' })
-};
+    const containerStyle = {
+        maxWidth: '40rem',
+        borderRadius: '0.5rem',
+        backgroundColor: '#FDFDFD',
+        padding: '1rem 1rem 0rem 1rem',
+        ...(selectedTemplate?.type !== "HTML" && { boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' })
+    };
 
-const adjustedBodyMail = adjustHtmlStyles(replacedBodyMail);
+    const adjustedBodyMail = adjustHtmlStyles(replacedBodyMail);
 
     return (
         <div className={classes.containerDetail} style={{ width: '100%' }}>
