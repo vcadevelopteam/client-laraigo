@@ -1377,7 +1377,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             return;
         } else if (event.key === 'Enter') {
             event.preventDefault();
-            if (text.trim() || files.length > 0) {
+            if ((text.trim() || files.length > 0) &&  user?.languagesettings?.sendingmode !== "ExecutionButton") {
                 triggerReplyMessage();
             }
         }
@@ -1439,7 +1439,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }
 
     const handleKeyDown = (event: Dictionary) => {
-        if (event.altKey && event.key === 'Enter') {
+        if ((event.altKey || user?.languagesettings?.sendingmode === "ExecutionButton") && event.key === 'Enter') {
             event.preventDefault();
             setText(text + '\n');
         }

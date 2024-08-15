@@ -8,11 +8,12 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import SaveIcon from '@material-ui/icons/Save';
 import { FieldSelect } from 'components';
-import { manageConfirmation, showSnackbar } from 'store/popus/actions';
+import { manageConfirmation, showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useForm } from 'react-hook-form';
 import { execute } from 'store/main/actions';
 import { updateLanguageSettings } from 'common/helpers';
 import { updateUserSettings } from 'store/setting/actions';
+import { updateLocalLanguage } from 'store/login/actions';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -54,9 +55,9 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const [waitsave, setwaitsave] = useState(false);
-    const resSetting = useSelector(state => state.setting.setting);
+    const langupdate = useSelector(state => state.main.execute);
     const storedLanguageSettings = JSON.parse(localStorage.getItem('languagesettings') || '{}');
-    const { register, handleSubmit, getValues, setValue, formState: { errors }, trigger } = useForm({
+    const { register, getValues, setValue, formState: { errors }, trigger } = useForm({
         defaultValues: {           
             languagesettings: user?.languagesettings || {
                 languagereview: "",//storedLanguageSettings.languagereview || 'ES_LAT',
@@ -74,7 +75,6 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
         }
     });    
 
-    //console.log('user: ', user)
     const capitalizeFirstLetter = (string: string) => {
         return string.toLowerCase().replace(/(?:^|\s|[(])[a-z]/g, (match) => match.toUpperCase());
     };
@@ -122,34 +122,33 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
 
     useEffect(() => {
         if (waitsave) {
-            if (!resSetting.loading && !resSetting.error) {
+            if (!langupdate.loading && !langupdate.error) {
+                dispatch(showBackdrop(false))
                 setwaitsave(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
+                const data = getValues();
+                dispatch(updateLocalLanguage(JSON.stringify(data.languagesettings)))
                 setViewSelected("view-1");
-            } else if (resSetting.error) {
-                const errormessage = t(resSetting.code || "error_unexpected_error");
+            } else if (langupdate.error) {
+                const errormessage = t(langupdate.code || "error_unexpected_error");
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 setwaitsave(false);
             }
         }
-    }, [resSetting, waitsave, dispatch, t]);
+    }, [langupdate, waitsave, dispatch, t]);
 
     const handleSave = () => {
         const data = getValues();
-        console.log('Language settings form data:', data.languagesettings);
     
         const callback = () => {
-            setwaitsave(true);
             const updatedUser = {
                 ...user,
                 languagesettings: data.languagesettings
             };
-            console.log('Updated user with new language settings:', updatedUser);    
             localStorage.setItem('languagesettings', JSON.stringify(data.languagesettings));
-            debugger
             dispatch(execute(updateLanguageSettings({ languagesettings: updatedUser.languagesettings })));
-            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
-            setwaitsave(false);
+            dispatch(showBackdrop(true))
+            setwaitsave(true);
         };
     
         dispatch(manageConfirmation({

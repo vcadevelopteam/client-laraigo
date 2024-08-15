@@ -59,4 +59,6 @@ export default createReducer<IState>(initialState, {
     [actionTypes.NEW_NOTIFICATION]: caseFunctions.newNotification,
     [actionTypes.UPDATE_CONNECTION]: caseFunctions.updateConnection,
     [actionTypes.CLEAN_VALIDATETOKEN]: caseFunctions.cleanValidateToken,
+
+    [actionTypes.UPDATE_LANGUAGE]: caseFunctions.updateLanguage,
 });
