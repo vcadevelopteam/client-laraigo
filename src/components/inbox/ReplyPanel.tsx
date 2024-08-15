@@ -1412,6 +1412,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     
         if (selectedText) {
             const textWithStyle = formatTextToUnicode({ text: selectedText, [style]: true });
+            debugger
             let textWithoutStyle = removeUnicodeStyle(selectedText, style);    
     
             if (style === 'underline' || style === 'strikethrough') {
