@@ -13,7 +13,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
 import Avatar from "@material-ui/core/Avatar";
-import { getCollectionAux2, uploadFile } from "store/main/actions";
+import { cleanMemoryTable, getCollectionAux2, setMemoryTable, uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
 import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
@@ -1635,6 +1635,8 @@ const DetailUsers: React.FC<DetailProps> = ({
     );
 };
 
+const IDUSER= "IDUSER"
+
 const Users: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -1643,6 +1645,7 @@ const Users: FC = () => {
     const executeRes = useSelector((state) => state.activationuser.saveUser);
     const deleteResult = useSelector((state) => state.activationuser.delUser);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     // const [dataOrganizationsTmp, setdataOrganizationsTmp] = useState<Dictionary[]>([]);
     const [dataChannelsTemp, setdataChannelsTemp] = useState<Dictionary[]>([]);
     const [waitImport, setWaitImport] = useState(false);
@@ -1840,7 +1843,11 @@ const Users: FC = () => {
             getSecurityRules(),
             getPropertySelByName("VISUALIZACIONBOTSUSUARIOS"),
         ]));
+        dispatch(setMemoryTable({
+            id: IDUSER
+        }))
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -2332,6 +2339,9 @@ const Users: FC = () => {
                     register={true}
                     hoverShadow={true}
                     handleRegister={() => checkLimit("REGISTER")}
+                    pageSizeDefault={IDUSER === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDUSER === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDUSER === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                     importCSV={(file) => {
                         setFileToUpload(file);
                         checkLimit("UPLOAD");
