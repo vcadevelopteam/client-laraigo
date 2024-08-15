@@ -102,7 +102,7 @@ const MetaChannels: FC = () => {
     const [metatype, setMetaType] = useState("");
     const [channelList, setchannelList] = useState(["Facebook", "Messenger", "Instagram", "Instagram Direct"]);
     const [metachannelsDone, setmetachannelsDone] = useState<any>([]);
-    const doneChannels = localStorage.getItem('metachannels') || [];
+    const doneChannels = JSON.parse(localStorage.getItem('metachannels') || '[]');
 
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -456,7 +456,7 @@ const MetaChannels: FC = () => {
                                                     display: "flex",
                                                     flexDirection: "row",
                                                     flexWrap: "wrap",
-                                                    gap: 8,
+                                                    gap: 4,
                                                 }}
                                             >
                                                 {socialMediaOptions.filter(channel => !doneChannels.includes(channel.id)).map((e, i) => (
@@ -471,6 +471,7 @@ const MetaChannels: FC = () => {
                                                     display: "flex",
                                                     flexDirection: "row",
                                                     flexWrap: "wrap",
+                                                    gap: 4,
                                                 }}
                                             >
                                                 {businessChannelOptions.filter(channel => !doneChannels.includes(channel.id)).map((e, i) => (

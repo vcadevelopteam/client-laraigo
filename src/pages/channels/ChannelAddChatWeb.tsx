@@ -1795,7 +1795,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     useEffect(() => {
         if (edit && !channel) {
             if (whatsAppData?.onboarding) {
-                updateMetachannels(11)
+                updateMetachannels(11);
                 history.push(paths.METACHANNELS, whatsAppData);
             } else {
                 history.push(paths.CHANNELS);
@@ -1960,6 +1960,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
         if (whatsAppData?.onboarding) {
             dispatch(manageConfirmation({
                 visible: true,
+                title: t(langKeys.confirmation),
                 question: t(langKeys.channelconfigsave),
                 callback: () => {
                     handleSubmit("DEFAULT", false, "#7721ad");
@@ -1967,7 +1968,10 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 callbackcancel: () => {
                     history.push(paths.METACHANNELS, whatsAppData);
                 },
-                textCancel: t(langKeys.decline)
+                textCancel: t(langKeys.decline),
+                textConfirm: t(langKeys.accept),
+                isBold: true,
+                showClose: true,
             }))
         }
         else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
@@ -2109,6 +2113,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
         if (whatsAppData?.onboarding) {
             dispatch(manageConfirmation({
                 visible: true,
+                title: t(langKeys.confirmation),
                 question: t(langKeys.channelconfigsave),
                 callback: () => {
                     onSubmit(name || "DEFAULT", false, hexIconColor);
@@ -2116,7 +2121,10 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 callbackcancel: () => {
                     window.location.reload();
                 },
-                textCancel: t(langKeys.decline)
+                textCancel: t(langKeys.decline),
+                textConfirm: t(langKeys.accept),
+                isBold: true,
+                showClose: true,
             }))
         } else {
             if (!integrationId) onClose?.();

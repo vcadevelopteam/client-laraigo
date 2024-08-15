@@ -1,8 +1,5 @@
-/* eslint-disable no-eval */
-/* eslint-disable no-useless-escape */
 import { Dictionary } from "@types";
 import { showSnackbar } from 'store/popus/actions';
-// import * as XLSX from 'xlsx';
 
 export const contactCalculateList = [
     { value: "PER_CHANNEL", description: "per_channel" },
@@ -611,7 +608,7 @@ export const uploadExcelBuffer = (buffer: any) => {
                     }, {})
                 );
             res(rowsx)
-        })      
+        })
     })
 }
 
@@ -1337,7 +1334,7 @@ export const loadScripts = (scripts: string[]) => {
     return { scriptPlatform, scriptRecaptcha, clarityScript, gtmScript }
 }
 
-export function encrypt(plaintext:string, key:string) {
+export function encrypt(plaintext: string, key: string) {
     let ciphertext = '';
     for (let i = 0; i < plaintext.length; i++) {
         const charCode = plaintext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
@@ -1346,7 +1343,7 @@ export function encrypt(plaintext:string, key:string) {
     return btoa(ciphertext);
 }
 
-export function decrypt(ciphertext:string, key:string) {
+export function decrypt(ciphertext: string, key: string) {
     ciphertext = atob(ciphertext);
     let plaintext = '';
     for (let i = 0; i < ciphertext.length; i++) {
@@ -1356,7 +1353,7 @@ export function decrypt(ciphertext:string, key:string) {
     return plaintext;
 }
 
-export function hash256 (message: string) {
+export function hash256(message: string) {
     const msgBuffer = new TextEncoder().encode(message);
     return crypto.subtle.digest('SHA-256', msgBuffer).then(hashBuffer => {
         const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -1365,11 +1362,11 @@ export function hash256 (message: string) {
     });
 }
 
-export function updateMetachannels(newNumber:number) {
+export function updateMetachannels(newNumber: number) {
     const numbers = JSON.parse(localStorage.getItem('metachannels') || '[]');
-    
+
     if (!numbers.includes(newNumber)) {
-      numbers.push(newNumber);
-      localStorage.setItem('metachannels', JSON.stringify(numbers));
-    } 
+        numbers.push(newNumber);
+        localStorage.setItem('metachannels', JSON.stringify(numbers));
+    }
 }

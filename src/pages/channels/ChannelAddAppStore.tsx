@@ -93,7 +93,7 @@ export const ChannelAddAppStore: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showBackdrop(false));
                 if (whatsAppData?.onboarding) {
                     history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(20)
+                    updateMetachannels(20);
                 } else {
                     setWaitSave(false);
                     setViewSelected("enable-virtual-assistant");
@@ -250,18 +250,22 @@ export const ChannelAddAppStore: FC<{ edit: boolean }> = ({ edit }) => {
                             if (whatsAppData?.onboarding) {
                                 dispatch(manageConfirmation({
                                     visible: true,
+                                    title: t(langKeys.confirmation),
                                     question: t(langKeys.channelconfigsave),
                                     callback: () => {
                                         if (channelreg || mainResult.loading || nextbutton) {
-                                            dispatch(showSnackbar({ show: true, severity: "error", message: "Debe poner un nombre al canal" }))
+                                            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.onboading_channelcomplete) }));
                                         } else {
-                                            finishreg()
+                                            finishreg();
                                         }
                                     },
                                     callbackcancel: () => {
                                         history.push(paths.METACHANNELS, whatsAppData);
                                     },
-                                    textCancel: t(langKeys.decline)
+                                    textCancel: t(langKeys.decline),
+                                    textConfirm: t(langKeys.accept),
+                                    isBold: true,
+                                    showClose: true,
                                 }))
                             } else {
                                 setViewSelected("view1");
