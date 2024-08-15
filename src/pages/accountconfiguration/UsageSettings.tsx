@@ -62,7 +62,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
             languagesettings: user?.languagesettings || {
                 languagereview: "",//storedLanguageSettings.languagereview || 'ES_LAT',
                 gramaticalactivation: "",//storedLanguageSettings.gramaticalactivation || 'ACTIVED',
-                languagetranslation: storedLanguageSettings.languagetranslation || 'ES_LAT',
+                languagetranslation: storedLanguageSettings.languagetranslation || 'es-419',
                 sendingmode: storedLanguageSettings.sendingmode || 'Default',
             },
             oldpassword: '',
