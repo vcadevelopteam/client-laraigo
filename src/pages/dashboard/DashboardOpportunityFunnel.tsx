@@ -307,6 +307,14 @@ const DashboardOpportunityFunnel: FC = () => {
     const setValue = (parameterName: any, value: any) => {
         setTemporaryFilter({ ...temporaryFilter, [parameterName]: value });
     };
+    const handleExportClick = () => {
+        const dataForExport = funnelData.map(row => ({
+            Fase: row.name,
+            Cantidad: row.count,
+        }));
+        exportExcel("reporte_funnel", dataForExport);
+    };
+
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -413,7 +421,7 @@ const DashboardOpportunityFunnel: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={detailCustomReport.loading}
-                            onClick={() => exportExcel("report" + new Date().toISOString(), dataGrid)}
+                            onClick={handleExportClick}
                             startIcon={<DownloadIcon />}
                         >
                             {t(langKeys.download)}
