@@ -59,10 +59,10 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const { register, handleSubmit, getValues, setValue, formState: { errors }, trigger } = useForm({
         defaultValues: {           
             languagesettings: user?.languagesettings || {
-                language: storedLanguageSettings.language || 'ES_LAT',
-                spellingcheck: storedLanguageSettings.spellingcheck || 'ACTIVED',
-                translatelanguage: storedLanguageSettings.translatelanguage || 'ES_LAT',
-                messagesendingmode: storedLanguageSettings.messagesendingmode || 'Default',
+                languagereview: "",//storedLanguageSettings.languagereview || 'ES_LAT',
+                gramaticalactivation: "",//storedLanguageSettings.gramaticalactivation || 'ACTIVED',
+                languagetranslation: storedLanguageSettings.languagetranslation || 'ES_LAT',
+                sendingmode: storedLanguageSettings.sendingmode || 'Default',
             },
             oldpassword: '',
             password: '',
@@ -81,21 +81,21 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     
 
     const dataExternalLanguage = [
-        { description: t(langKeys.TEMPLATE_EN), value: "EN" },
-        { description: t(langKeys.TEMPLATE_ES_LAT), value: "ES_LAT" },
-        { description: t(langKeys.TEMPLATE_ES_ES), value: "ES_ES" },
-        { description: t(langKeys.TEMPLATE_FR), value: "FR" },
-        { description: t(langKeys.TEMPLATE_ZH_CN), value: "ZH_CN" },
-        { description: t(langKeys.TEMPLATE_AR), value: "AR" },
-        { description: t(langKeys.TEMPLATE_RU), value: "RU" },
-        { description: t(langKeys.TEMPLATE_DE), value: "DE" },
-        { description: t(langKeys.TEMPLATE_JA), value: "JA" },
-        { description: t(langKeys.TEMPLATE_PT_BR), value: "PT_BR" },
-        { description: t(langKeys.TEMPLATE_HI), value: "HI" },
-        { description: t(langKeys.TEMPLATE_IT), value: "IT" },
-        { description: t(langKeys.TEMPLATE_KO), value: "KO" },
-        { description: t(langKeys.TEMPLATE_FA), value: "FA" },
-        { description: t(langKeys.TEMPLATE_TR), value: "TR" }
+        { description: t(langKeys.TEMPLATE_EN), value: "en-US" },
+        { description: t(langKeys.TEMPLATE_ES_LAT), value: "es-419" },
+        { description: t(langKeys.TEMPLATE_ES_ES), value: "es-ES" },
+        { description: t(langKeys.TEMPLATE_FR), value: "fr-FR" },
+        { description: t(langKeys.TEMPLATE_ZH_CN), value: "zh-CN" },
+        { description: t(langKeys.TEMPLATE_AR), value: "ar-SA" },
+        { description: t(langKeys.TEMPLATE_RU), value: "ru-RU" },
+        { description: t(langKeys.TEMPLATE_DE), value: "de-DE" },
+        { description: t(langKeys.TEMPLATE_JA), value: "ja-JP" },
+        { description: t(langKeys.TEMPLATE_PT_BR), value: "pt-BR" },
+        { description: t(langKeys.TEMPLATE_HI), value: "hi-IN" },
+        { description: t(langKeys.TEMPLATE_IT), value: "it-IT" },
+        { description: t(langKeys.TEMPLATE_KO), value: "ko-KR" },
+        { description: t(langKeys.TEMPLATE_FA), value: "fa-IR" },
+        { description: t(langKeys.TEMPLATE_TR), value: "tr-TR" }
     ].map(item => ({
         ...item,
         description: capitalizeFirstLetter(item.description)
@@ -114,10 +114,10 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     ];
 
     useEffect(() => {
-        register('languagesettings.language', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('languagesettings.spellingcheck', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('languagesettings.translatelanguage', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('languagesettings.messagesendingmode', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.languagereview')//, { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.gramaticalactivation')//, { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.languagetranslation', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.sendingmode', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [register, t]);    
 
     useEffect(() => {
@@ -146,7 +146,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
             };
             console.log('Updated user with new language settings:', updatedUser);    
             localStorage.setItem('languagesettings', JSON.stringify(data.languagesettings));
-    
+            debugger
             dispatch(execute(updateLanguageSettings({ languagesettings: updatedUser.languagesettings })));
             dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
             setwaitsave(false);
@@ -181,7 +181,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </div>
                 </div>
 
-                <div style={{ margin: '2rem 0' }}>     
+                {/*<div style={{ margin: '2rem 0' }}>     
                     <div className={classes.seccionTitle}>{t(langKeys.correctionandlanguages)}</div>    
                     <div style={{ display: 'flex', gap: '2rem', width: '100%' }}>
                         <div style={{ display: 'flex', gap: '12rem', alignItems: 'center' }}>
@@ -229,7 +229,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             />     
                         </div> 
                     </div>                         
-                </div>
+                </div>*/}
 
                 <div style={{ margin: '2rem 0' }}>     
                     <div className={classes.seccionTitle}>{t(langKeys.transcriptionandtranslation)}</div>         
@@ -239,20 +239,20 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             <FieldSelect
                                 style={{ width: '20rem' }}
                                 data={dataExternalLanguage}
-                                error={errors?.languagesettings?.translatelanguage?.message}
+                                error={errors?.languagesettings?.languagetranslation?.message}
                                 onChange={(value) => {
                                     if (value) {
-                                        setValue("languagesettings.translatelanguage", value.value);
-                                        trigger("languagesettings.translatelanguage");
+                                        setValue("languagesettings.languagetranslation", value.value);
+                                        trigger("languagesettings.languagetranslation");
                                     } else {
-                                        setValue("languagesettings.translatelanguage", '');
-                                        trigger("languagesettings.translatelanguage");
+                                        setValue("languagesettings.languagetranslation", '');
+                                        trigger("languagesettings.languagetranslation");
                                     }
                                 }}
                                 optionDesc="description"
                                 optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("languagesettings.translatelanguage")}   
+                                valueDefault={getValues("languagesettings.languagetranslation")}   
                                 variant={'outlined'}                    
                             /> 
                         </div>    
@@ -267,20 +267,20 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             <FieldSelect
                                 style={{ width: '20rem' }}
                                 data={dataMessageSendingMode}
-                                error={errors?.languagesettings?.messagesendingmode?.message}
+                                error={errors?.languagesettings?.sendingmode?.message}
                                 onChange={(value) => {
                                     if (value) {
-                                        setValue("languagesettings.messagesendingmode", value.value);
-                                        trigger("languagesettings.messagesendingmode");
+                                        setValue("languagesettings.sendingmode", value.value);
+                                        trigger("languagesettings.sendingmode");
                                     } else {
-                                        setValue("languagesettings.messagesendingmode", '');
-                                        trigger("languagesettings.messagesendingmode");
+                                        setValue("languagesettings.sendingmode", '');
+                                        trigger("languagesettings.sendingmode");
                                     }
                                 }}
                                 optionDesc="description"
                                 optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("languagesettings.messagesendingmode")}   
+                                valueDefault={getValues("languagesettings.sendingmode")}   
                                 variant={'outlined'}                    
                             /> 
                         </div>    
