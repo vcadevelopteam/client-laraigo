@@ -210,7 +210,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
           },
           {
             Header: t(langKeys.organization),
-            accessor: "createdate",
+            accessor: "orgdesc",
             width: "auto",
           },
           {
