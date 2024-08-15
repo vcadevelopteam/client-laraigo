@@ -2,24 +2,23 @@ type StyleMap = { [key: string]: string };
 import {string_to_unicode_variant} from "string-to-unicode-variant";
 
 export function formatTextToUnicode({text = '', bold = false, italic = false, underline = false, strikethrough = false, monospaced = false} = {}) {    
-    let variant = []
-    let combinings = []
+    let resulttext = text;
     if (monospaced) {
-        variant.push("monospace")
+        resulttext = string_to_unicode_variant(text, "monospace")
     }
     if (bold) {
-        variant.push("bold")
+        resulttext = string_to_unicode_variant(text, "bold")
     }
     if (italic) {
-        variant.push("italic")
+        resulttext = string_to_unicode_variant(text, "italic")
     }
     if (underline) {
-        combinings.push("underline")
+        resulttext = string_to_unicode_variant(text, "", "underline")
     }
     if (strikethrough) {
-        combinings.push("strike")
+        resulttext = string_to_unicode_variant(text, "", "strike")
     }
-    return string_to_unicode_variant(text, variant, combinings);
+    return resulttext
 }
 
 export const removeUnicodeStyle = (text: string): string => {
