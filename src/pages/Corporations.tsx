@@ -28,7 +28,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
-import { getCollection, getMultiCollection, resetAllMain, resetUploadFile, uploadFile } from "store/main/actions";
+import { cleanMemoryTable, getCollection, getMultiCollection, resetAllMain, resetUploadFile, setMemoryTable, uploadFile } from "store/main/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import ClearIcon from "@material-ui/icons/Clear";
 import { CommonService } from "network";
@@ -92,12 +92,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const IDCORPORATION = "IDCORPORATION";
 const Corporations: FC = () => {
     const user = useSelector((state) => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector((state) => state.main);
     const executeResult = useSelector((state) => state.corporation.executecorp);
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const arrayBread = [{ id: "view-1", name: t(langKeys.corporation_plural) }];
     const [mainData, setMainData] = useState<any>([]);
@@ -165,7 +167,11 @@ const Corporations: FC = () => {
                 getCityBillingList(),
             ])
         );
+        dispatch(setMemoryTable({
+            id: IDCORPORATION
+        }))
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -244,6 +250,9 @@ const Corporations: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={(user?.roledesc ?? "").split(",").some((v) => ["SUPERADMIN"].includes(v))}
                     handleRegister={handleRegister}
+                    pageSizeDefault={IDCORPORATION === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDCORPORATION === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDCORPORATION === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         );
@@ -278,7 +287,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
-    const [doctype, setdoctype] = useState(row?.doctype || "");
     const [pageSelected, setPageSelected] = useState(0);
     const [waitUpload, setWaitUpload] = useState("");
     const [domainname, setDomainName] = useState(row?.domainname||"");
@@ -304,6 +312,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         setValue,
         trigger,
         getValues,
+        watch,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -341,6 +350,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
             olddomainname: row?.domainname || ""
         },
     });
+    const sunatCountry = watch("sunatcountry");
+    const doctype = watch("doctype");
 
     const handleIconImgClick = () => {
         const input = document.getElementById("IconImgInput");
@@ -502,7 +513,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         register("automaticpayment");
         register("automaticperiod");
         register("automaticinvoice");
-        register("partner");
+        register("partner", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("appsettingid", { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register("citybillingid");
         register("iconurl", {
@@ -621,6 +632,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     }, [countryList]);
 
     const docTypes = useMemo(() => {
+        if(sunatCountry==="") return [];
         if (!dataDocType || dataDocType.length === 0) return [];
 
         const val = dataDocType as Dictionary[];
@@ -628,7 +640,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         return val.sort((a, b) => {
             return a.domaindesc.localeCompare(b.domaindesc);
         });
-    }, [dataDocType, getValues("sunatcountry")]);
+    }, [dataDocType, sunatCountry]);
 
     
     const handleDragOver = (e) => {
@@ -849,7 +861,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                         valueDefault={doctype}
                                         onChange={(value) => {
                                             setValue("doctype", value?.domainvalue || "");
-                                            setdoctype(value?.domainvalue || "");
                                         }}
                                         error={errors?.doctype?.message}
                                         data={docTypes}
@@ -859,6 +870,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                     <FieldEdit
                                         label={t(langKeys.documentnumber)}
                                         className="col-6"
+                                        type={(doctype !== "0")?'number':"text"}
                                         valueDefault={getValues("docnum")}
                                         onChange={(value) => setValue("docnum", value)}
                                         error={errors?.docnum?.message}
