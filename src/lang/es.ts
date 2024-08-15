@@ -1650,7 +1650,7 @@ const translation: LangKeys = {
   reporttype: 'Tipo de reporte',
   displayinterval: "Intervalo de visualización",
   no_type_selected: 'Ningún tipo seleccionado',
-  rundate: 'Fecha de ejecución',
+  rundate: 'Fecha de Ejecución',
   total: 'Total',
   success: 'Satisfactorio',
   success_percent: '% Satisfactorio',

@@ -194,7 +194,7 @@ const ReportAudit: FC = () => {
     }, [])
 
     useEffect(() => {
-        if (!multiData.loading && multiData.data.length > 0 && multiData.data[0]?.data?.length > 0) {
+        if (!multiData.loading && !multiData.error) {
             setGridData(multiData.data[0]?.data.map(x => ({
                 ...x,
                 reportname: t(langKeys[cleanfunction(x.reportname)]) || x.reportname,
