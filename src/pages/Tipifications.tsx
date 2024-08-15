@@ -145,8 +145,9 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         order: row?.order || "",
         parent: row?.parentid || 0,
     });
-    const [showAddAction, setShowAddAction] = useState(!!JSON.parse(row?.jobplan||"[]").length || false);
-    const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
+    const validjobplan = JSON.parse(row?.jobplan||"[]").every(item => 'action' in item && 'type' in item);
+    const [showAddAction, setShowAddAction] = useState(!!JSON.parse(row?.jobplan||"[]").length && validjobplan || false);
+    const [jobplan, setjobplan] = useState<Dictionary[]>((row && row.jobplan && validjobplan) ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -603,7 +604,7 @@ const Tipifications: FC = () => {
     }, []);
     useEffect(() => {
         if(!mainResult.mainData.loading && !mainResult.mainData.error){
-            setTableData(mainResult.mainData.data.map(x=>({...x, type2: x.type==="TIPIFICACION"?"Clasificación":"Categoría"})))
+            setTableData(mainResult.mainData.data.map(x=>({...x, type2: x.type==="TIPIFICACION"?"Clasificación":"Categoría", order2: x.type === 'CATEGORIA'? x.order:""})))
         }
     }, [mainResult.mainData]);
 
@@ -653,7 +654,7 @@ const Tipifications: FC = () => {
             },
             {
                 Header: t(langKeys.order),
-                accessor: 'order',
+                accessor: 'order2',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original || {};
@@ -739,11 +740,12 @@ const Tipifications: FC = () => {
             data=data.filter(d => {
                 const hasValidClassification = d.classification !== '' && d.classification != null;
                 const hasValidChannels = d.channels !== '' && d.channels != null;
+                const hasValidType = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "categoría"
                 const parentExists = ['', null, undefined].includes(d.parent) || 
                     Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
                     .includes(String(d.parent));
             
-                return hasValidClassification && hasValidChannels && parentExists;
+                return hasValidClassification && hasValidChannels && parentExists && hasValidType;
             });                
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
@@ -758,8 +760,8 @@ const Tipifications: FC = () => {
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        type: x.type === "Clasificación"? 'TIPIFICACION':"CATEGORIA",
-                        oder: x.type === "Clasificación"? '1':"",
+                        type: (x.type.toLowerCase() === "clasificación") ? 'TIPIFICACION':"CATEGORIA",
+                        oder: (x.type.toLowerCase() === "clasificación") ? '':"1",
                         status: x.status || "ACTIVO",
                         id: 0,
                     }))
