@@ -184,7 +184,6 @@ const DashboardOpportunityFunnel: FC = () => {
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
 
     const multiData = useSelector((state) => state.main.multiData);
-    const [dataGrid, setdataGrid] = useState<any[]>([]);
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
