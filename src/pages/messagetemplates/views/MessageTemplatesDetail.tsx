@@ -277,6 +277,11 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 150,
         marginBottom: 10
     },
+    errorBorder: {
+        "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline": {
+            borderColor: 'red',
+        },
+    },
 }));
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
@@ -329,7 +334,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [cardAux, setCardAux] = useState<number | null>(null)
     const [buttonsType, setButtonsType] = useState('none')
     const [cursorPositionAux, setCursorPositionAux] = useState(0);
-
+    const noop = () => {""};
+    const [categoryChange, setCategoryChange] = useState('ACTIVADO');
+    const [showError, setShowError] = useState(false);
+    const [buttonsGeneral, setButtonsGeneral] = useState<Dictionary[]>(
+        row?.firstbuttons === "quickreply" ? [
+            { id: 1, name: "quickreply",items: [] },
+            { id: 2, name: "generic", items: [] }
+        ] : [
+            { id: 2, name: "generic", items: [] },
+            { id: 1, name: "quickreply",items: [] }
+        ]
+    )
+    
     useEffect(() => {
         if (showEmojiPicker && emojiButtonRef.current) {
             const buttonRect = emojiButtonRef.current.getBoundingClientRect();
@@ -350,6 +367,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         const input = document.getElementById('bodyInput');
         setCursorPositionAux(input.selectionStart ? input.selectionStart : getValues('body').length);
         setShowEmojiPicker(!showEmojiPicker);
+    };
+
+    const handleCategoryChange = (value) => {
+        if (value) {
+            setCategoryChange(value.value);
+            setShowError(false);
+        } else {
+            setCategoryChange('');
+            setShowError(true);
+        }
     };
 
     const dataNewCategory = [
@@ -547,6 +574,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         },
     });
 
+    useEffect(() => {
+        const quickReplyItems = getValues('buttonsquickreply');
+        const genericItems = getValues('buttonsgeneric');
+        setButtonsGeneral(prevButtons => prevButtons.map(button => {
+            if (button.name === 'quickreply') {
+                return { ...button, items: quickReplyItems };
+            } else if (button.name === 'generic') {
+                return { ...button, items: genericItems };
+            }
+            return button;
+        }));
+    }, [getValues('buttonsgeneric'), getValues('buttonsquickreply')]);
+
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
     const [type] = watch(["type"]);
@@ -625,17 +665,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         });
 
         switch (type) {
-            case "HSM":
-                // register("body", {
-                //     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-                // });
+            case "HSM":                
                 register("name", {
                     validate: (value) =>
                         (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
-                });
-                // register("namespace", {
-                //     validate: (value) => (value && value.length) || t(langKeys.field_required),
-                // });
+                });               
                 if (getValues("footerenabled")) {
                     register("footer", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -657,10 +691,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setTemplateTypeDisabled(true);
                 break;
 
-            case "SMS":
-                // register("body", {
-                //     validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
-                // });
+            case "SMS":               
                 register("name", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -669,20 +700,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 break;
         }
 
-        if (type === "HSM") {
-            // register("body", {
-            //     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
-            // });
-
+        if (type === "HSM") {          
             register("name", {
                 validate: (value) =>
                     (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
-            });
-
-            // register("namespace", {
-            //     validate: (value) => (value && value.length) || t(langKeys.field_required),
-            // });
-
+            });          
             if (row?.footerenabled) {
                 register("footer", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -694,17 +716,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             register("name", {
                 validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
-
-            // register("namespace");
-
             if (type === "SMS") {
                 // register("body", {
                 //     validate: (value) => (value && value.length <= 160) || "" + t(langKeys.validationchar),
                 // });
-            } else {
-                // register("body", {
-                //     validate: (value) => (value && value.length) || t(langKeys.field_required),
-                // });
+            } else {               
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -802,116 +818,134 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, [waitUploadFile, uploadResult]);
 
     const onSubmit = handleSubmit((data) => {
-        if (data.type === "MAIL") {
-            data.body = renderToString(toElement(bodyObject));
-            if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
-                setBodyAlert(t(langKeys.field_required));
-                return;
-            } else {
-                setBodyAlert("");
-            }
-        }
-
-        if (data.type === "HTML") {
-            if (data.body) {
-                setBodyAlert("");
-            } else {
-                setBodyAlert(t(langKeys.field_required));
-                return;
-            }
-        }
-
-        if (isNew && data.type === 'HSM') {
-            const dataAux = {
-                ...data,
-                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
-                footerenabled: data.footer !== '' ? true : false,
-                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
-                headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
-            }
-
-            const callback = () => {
-                if (data.type === "MAIL") {
-                    data.body = renderToString(toElement(bodyObject));
-                    if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    } else {
-                        setBodyAlert("");
-                    }
-                }
-
-                if (data.type === "HTML") {
-                    if (data.body) {
-                        setBodyAlert("");
-                    } else {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    }
-                }
-
-                dispatch(addTemplate({
-                    ...dataAux,
-                    authenticationdata: JSON.stringify(dataAux.authenticationdata),
-                    bodyvariables: JSON.stringify(dataAux.bodyvariables),
-                    buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
-                    buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
-                    carouseldata: JSON.stringify(dataAux.carouseldata),
-                    headervariables: JSON.stringify(dataAux.headervariables)
-                }));
-                dispatch(showBackdrop(true));
-                setWaitAdd(true);
-            };
-
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback,
-                })
-            );
+        if (showError) {
+            return;
         } else {
-            const dataAux = {
-                ...data,
-                headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
-                footerenabled: data.footer !== '' ? true : false,
-                buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false
+            if (data.type === "MAIL") {
+                data.body = renderToString(toElement(bodyObject));
+                if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
+                    setBodyAlert(t(langKeys.field_required));
+                    return;
+                } else {
+                    setBodyAlert("");
+                }
             }
-
-            const callback = () => {
-                if (dataAux.type === "MAIL") {
-                    dataAux.body = renderToString(toElement(bodyObject));
-                    if (dataAux.body === '<div data-reactroot=""><p><span></span></p></div>') {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
-                    } else {
-                        setBodyAlert("");
-                    }
+    
+            if (data.type === "HTML") {
+                if (data.body) {
+                    setBodyAlert("");
+                } else {
+                    setBodyAlert(t(langKeys.field_required));
+                    return;
                 }
-
-                if (dataAux.type === "HTML") {
-                    if (dataAux.body) {
-                        setBodyAlert("");
-                    } else {
-                        setBodyAlert(t(langKeys.field_required));
-                        return;
+            }
+    
+            if (isNew && data.type === 'HSM') {
+                const dataAux = {
+                    ...data,
+                    headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
+                    footerenabled: data.footer !== '' ? true : false,
+                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
+                    headervariables: getValues('headervariables')[0] === '' ? [getValues('header')] : getValues('headervariables'),
+                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && 
+                        (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0)) 
+                        ? buttonsGeneral?.[0]?.name : null
+                };
+    
+                const callback = () => {
+                    if (data.type === "MAIL") {
+                        data.body = renderToString(toElement(bodyObject));
+                        if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        } else {
+                            setBodyAlert("");
+                        }
                     }
-                }
-
-                dispatch(execute(insMessageTemplate({ ...dataAux, bodyobject: getValues('type') === "MAIL" ? bodyObject : [], })));
-                dispatch(showBackdrop(true));
-                setWaitSave(true);
-            };
-
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback,
-                })
-            );
+    
+                    if (data.type === "HTML") {
+                        if (data.body) {
+                            setBodyAlert("");
+                        } else {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        }
+                    }
+    
+                    dispatch(addTemplate({
+                        ...dataAux,
+                        authenticationdata: JSON.stringify(dataAux.authenticationdata),
+                        bodyvariables: JSON.stringify(dataAux.bodyvariables),
+                        buttonsgeneric: JSON.stringify(dataAux.buttonsgeneric),
+                        buttonsquickreply: JSON.stringify(dataAux.buttonsquickreply),
+                        carouseldata: JSON.stringify(dataAux.carouseldata),
+                        headervariables: JSON.stringify(dataAux.headervariables)
+                    }));
+                    dispatch(showBackdrop(true));
+                    setWaitAdd(true);
+                };
+    
+                dispatch(
+                    manageConfirmation({
+                        visible: true,
+                        question: t(langKeys.confirmation_save),
+                        callback,
+                    })
+                );
+            } else {
+                const dataAux = {
+                    ...data,
+                    headerenabled: (data.headertype !== 'NONE' && data.header !== '') ? true : false,
+                    footerenabled: data.footer !== '' ? true : false,
+                    buttonsenabled: (data.buttonsgeneric.length > 0 || data.buttonsquickreply.length > 0) ? true : false,
+                    categorychange: categoryChange === 'ACTIVADO' ? true : false,
+                    firstbuttons: (getValues('templatetype') === 'MULTIMEDIA' && 
+                        (getValues('buttonsgeneric')?.length > 0 || getValues(`buttonsquickreply`)?.length > 0)) 
+                        ? buttonsGeneral?.[0]?.name : null // Añadido aquí también
+                };
+    
+                const callback = () => {
+                    if (dataAux.type === "MAIL") {
+                        dataAux.body = renderToString(toElement(bodyObject));
+                        if (dataAux.body === '<div data-reactroot=""><p><span></span></p></div>') {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        } else {
+                            setBodyAlert("");
+                        }
+                    }
+    
+                    if (dataAux.type === "HTML") {
+                        if (dataAux.body) {
+                            setBodyAlert("");
+                        } else {
+                            setBodyAlert(t(langKeys.field_required));
+                            return;
+                        }
+                    }
+    
+                    dispatch(execute(insMessageTemplate({ 
+                        ...dataAux, 
+                        bodyobject: getValues('type') === "MAIL" ? bodyObject : [], 
+                    })));
+                    dispatch(showBackdrop(true));
+                    setWaitSave(true);
+                };
+    
+                dispatch(
+                    manageConfirmation({
+                        visible: true,
+                        question: t(langKeys.confirmation_save),
+                        callback,
+                    })
+                );
+            }
         }
     });
+    
+    
+    
 
     useEffect(() => {
         if (row) {
@@ -1430,6 +1464,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [waitUploadFile3, uploadResult])
+    
+    const handleDragDropGeneral = (results: DropResult) => {
+        const { source, destination, type } = results;
+        if (!destination) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+        if (type === 'group') {
+            const reorderedItems = [...buttonsGeneral];
+            const sourceIndex = source.index;
+            const destinationIndex = destination.index;
+            const [removedStore] = reorderedItems.splice(sourceIndex, 1);
+            reorderedItems.splice(destinationIndex, 0, removedStore);
+
+            setButtonsGeneral(reorderedItems)
+        }
+    }
 
     const handleDragDrop = (results: DropResult) => {
         const { source, destination, type } = results;
@@ -2261,6 +2310,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 </div>
                             </div>
                         )}
+
+                        {(isNew && getValues('type')) && (
+                            <div className="col-8" style={{ display: 'flex' }}>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <CustomTitleHelper
+                                        title={t(langKeys.categorychange) + ' '}
+                                        helperText={'Permite que Meta asigne cualquier categoría que determine apropiada para el template. Esto evita que las plantillas sean rechazadas durante el proceso de validación.'}
+                                        titlestyle={{ fontWeight: 'bold', fontSize: 20 }}
+                                    />
+                                    <span>{t(langKeys.categorychangetext)}</span>
+                                </div>
+                            </div>
+                        )}
+
+
                     </div>
                     <div className="row-zyx" style={{ display: 'flex', alignItems: 'center' }}>
                         <FieldSelect
@@ -2309,6 +2373,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled
                                 size="small"
                             />
+                        )}
+                        {(isNew && getValues('type')) && (
+                            <>
+                               <FieldSelect
+                                    className={`col-3 ${showError ? classes.errorBorder : ''}`}
+                                    variant="outlined"
+                                    data={[{ value: "ACTIVADO" }, { value: "DESACTIVADO" }]}
+                                    size="small"
+                                    valueDefault={categoryChange}
+                                    onChange={handleCategoryChange}
+                                    optionDesc="value"
+                                    optionValue="value"
+                                    error={showError}
+                                />
+                                {showError && (
+                                    <p style={{ color: 'red', marginLeft: '33.6%', marginTop: '0', fontSize: '12px', paddingTop: '0' }}>
+                                        {t(langKeys.field_required)}
+                                    </p>
+                                )}
+                            </>                          
+                           
                         )}
                     </div>
                     {getValues("type") === 'HSM' && (
@@ -2488,6 +2573,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 {getValues("type") === "HSM" && (
                                     <>
                                         {(!isNew) ? (
+                                           
                                             <FieldMultiSelect
                                                 className="col-6"
                                                 data={dataChannel}
@@ -2501,7 +2587,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 size="normal"
                                             />
                                         ) : (
-                                            <FieldSelect
+                                            <FieldSelect //acá
                                                 className="col-6"
                                                 data={dataChannel}
                                                 disabled={!isNew || disableInput}
@@ -2830,286 +2916,315 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <EmojiObjectsIcon />
                                             <span style={{ marginLeft: 10 }}>Si añades más de tres botones, se mostrarán en una lista</span>
                                         </div>
-                                        <DragDropContext onDragEnd={handleDragDrop}>
-                                            {getValues('buttonsquickreply')?.length > 0 && (
-                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
-                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
-                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
-                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
-                                                    </div>
-                                                    <React.Fragment>
-                                                        <Droppable droppableId="root" type="group">
-                                                            {(provided) => (
-                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                                                    {getValues("buttonsquickreply")?.map((btn: any, i: number) => {
-                                                                        return (
-                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                                {(provided) => (
-                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                        <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
-                                                                                            <DragIndicatorIcon />
-                                                                                            <div style={{ flex: 1 }}>
-                                                                                                <FieldEditAdvancedAux
-                                                                                                    disabled={disableInput || !isNew}
-                                                                                                    label={t(langKeys.buttontext)}
-                                                                                                    error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
-                                                                                                    onInput={(e) => handleQuickReply(e, i)}
-                                                                                                    onChange={(e) => handleQuickReply(e, i)}
-                                                                                                    valueDefault={btn?.btn?.text || ""}
-                                                                                                    variant="outlined"
-                                                                                                    maxLength={25}
-                                                                                                    rows={1}
-                                                                                                    style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
-                                                                                                    fregister={{
-                                                                                                        ...register(`buttonsquickreply.${i}.btn.text`, {
-                                                                                                            validate: (value) =>
-                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                        }),
-                                                                                                    }}
-                                                                                                />
-                                                                                            </div>
-                                                                                            <IconButton onClick={() => onClickRemoveButtonText(i)} disabled={!isNew}>
-                                                                                                <CloseIcon />
-                                                                                            </IconButton>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                )}
-                                                                            </Draggable>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                        </Droppable>
-                                                    </React.Fragment>
-                                                </div>
-                                            )}
-                                        </DragDropContext>
-                                        <DragDropContext onDragEnd={handleDragDropAux}>
-                                            {getValues('buttonsgeneric')?.length > 0 && (
-                                                <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
-                                                    <div style={{ display: 'flex', padding: '10px 0px 0px 20px' }}>
-                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
-                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
-                                                    </div>
-                                                    <React.Fragment>
-                                                        <Droppable droppableId="root2" type="group">
-                                                            {(provided) => (
-                                                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                                                    {getValues("buttonsgeneric")?.map((btn: any, i: number) => {
-                                                                        return (
-                                                                            <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i}>
-                                                                                {(provided) => (
-                                                                                    <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                        {btn.type === 'URL' ? (
-                                                                                            <>
-                                                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                                                                    <DragIndicatorIcon />
-                                                                                                    <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
-                                                                                                        <div className="row-zyx" style={{ width: '100%', marginBottom: 0, display: 'flex' }}>
-                                                                                                            <SingleLineInput
-                                                                                                                className='col-4'
-                                                                                                                label={t(langKeys.buttontext)}
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                                onInput={(e) => handleActionButtonText(e, i)}
-                                                                                                                onChange={(e) => handleActionButtonText(e, i)}
-                                                                                                                valueDefault={btn?.btn?.text || ""}
-                                                                                                                maxLength={25}
-                                                                                                                rows={1}
-                                                                                                                inputProps={{
-                                                                                                                    rows: 1,
-                                                                                                                    maxRows: 1
-                                                                                                                }}
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.text`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                            />
-                                                                                                            <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
-                                                                                                                <span>{t(langKeys.urltype)}</span>
-                                                                                                                <FieldSelect
-                                                                                                                    data={dataURLType}
-                                                                                                                    error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
-                                                                                                                    onChange={(value) => onChangeButton(i, "type", value?.value)}
-                                                                                                                    optionDesc="text"
-                                                                                                                    optionValue="value"
-                                                                                                                    valueDefault={btn?.btn?.type || ""}
-                                                                                                                    variant="outlined"
-                                                                                                                    fregister={{
-                                                                                                                        ...register(`buttonsgeneric.${i}.btn.type`, {
-                                                                                                                            validate: (value) =>
-                                                                                                                                (value && value.length) || t(langKeys.field_required),
-                                                                                                                        }),
-                                                                                                                    }}
-                                                                                                                    disabled={!isNew}
-                                                                                                                    size="normal"
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                            <SingleLineInput
-                                                                                                                className='col-4'
-                                                                                                                label={t(langKeys.urlwebsite)}
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
-                                                                                                                onInput={(e) => handleActionButtonUrl(e, i)}
-                                                                                                                onChange={(e) => handleActionButtonUrl(e, i)}
-                                                                                                                valueDefault={btn?.btn?.url || ""}
-                                                                                                                rows={1}
-                                                                                                                inputProps={{
-                                                                                                                    rows: 1,
-                                                                                                                    maxRows: 1
-                                                                                                                }}
-                                                                                                                maxLength={2000}
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.url`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                            />
-                                                                                                            {btn?.btn?.type === 'dynamic' && (
-                                                                                                                <div className="col-1" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                                                                                    <span>{'{{'}1{'}}'}</span>
-                                                                                                                    <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
-                                                                                                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                                                                                                    </Tooltip>
-                                                                                                                </div>
-                                                                                                            )}
-                                                                                                        </div>
+                                        <DragDropContext onDragEnd={isNew ? handleDragDropGeneral : noop}>
+                                            {(buttonsGeneral?.[0]?.items?.length > 0 || buttonsGeneral?.[1]?.items?.length > 0) && (
+                                                <Droppable droppableId="root3" type="group" isDropDisabled={!isNew}>
+                                                    {(provided) => (
+                                                        <div {...provided.droppableProps} ref={provided.innerRef}>
+                                                            {buttonsGeneral?.map((button: Dictionary, indexG: number) => {
+                                                                return (
+                                                                    <Draggable key={`button-${indexG}`} draggableId={`button-${indexG}`} index={indexG} isDragDisabled={!isNew}>
+                                                                        {(provided) => (
+                                                                            <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                {button.name === "quickreply" ? (
+                                                                                    <DragDropContext onDragEnd={isNew ? handleDragDrop : noop}>
+                                                                                        {button?.items?.length > 0 && (
+                                                                                            <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                                                                <div>
+                                                                                                    <div style={{display: 'flex', justifyContent: 'center'}}><DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/></div>
+                                                                                                    <div style={{ display: 'flex', padding: '0px 0px 0px 20px' }}>
+                                                                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.fastanswer)}</span>
                                                                                                     </div>
-                                                                                                    <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
-                                                                                                        <CloseIcon />
-                                                                                                    </IconButton>
                                                                                                 </div>
-                                                                                                {btn?.btn?.type === 'dynamic' && (
-                                                                                                    <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
-                                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                                                                                                            <span>{'{{'}1{'}}'}</span>
-                                                                                                            <div style={{ backgroundColor: 'white', width: '100%' }}>
-                                                                                                                <FieldEdit
-                                                                                                                    label={btn?.btn?.url !== '' ? `Introduce la URL completa de ${btn?.btn?.url}{{1}}` : ''}
-                                                                                                                    variant="outlined"
-                                                                                                                    size="small"
-                                                                                                                    onChange={(value) => {
-                                                                                                                        setValue(`buttonsgeneric.${i}.btn.variables[0]`, value)
-                                                                                                                        trigger('buttonsgeneric')
-                                                                                                                    }}
-                                                                                                                    valueDefault={btn?.btn?.variables[0] || ""}
-                                                                                                                    disabled={!isNew}
-                                                                                                                />
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        {getValues(`buttonsgeneric.${i}.btn.variables[0]`) === "" && (
-                                                                                                            <div className={classes.warningContainer}>
-                                                                                                                <WarningIcon style={{ color: '#FF7575' }} />
-                                                                                                                {t(langKeys.addexampletext)}
+                                                                                                <React.Fragment>
+                                                                                                    <Droppable droppableId="root" type="group" isDropDisabled={!isNew}>
+                                                                                                        {(provided) => (
+                                                                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                                                                {button?.items?.map((btn: any, i: number) => {
+                                                                                                                    return (
+                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i} isDragDisabled={!isNew}>
+                                                                                                                            {(provided) => (
+                                                                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                                                                    <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
+                                                                                                                                        <DragIndicatorIcon />
+                                                                                                                                        <div style={{ flex: 1 }}>
+                                                                                                                                            <FieldEditAdvancedAux
+                                                                                                                                                disabled={disableInput || !isNew}
+                                                                                                                                                label={t(langKeys.buttontext)}
+                                                                                                                                                error={errors?.buttonsquickreply?.[i]?.btn?.text?.message}
+                                                                                                                                                onInput={(e) => handleQuickReply(e, i)}
+                                                                                                                                                onChange={(e) => handleQuickReply(e, i)}
+                                                                                                                                                valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                variant="outlined"
+                                                                                                                                                maxLength={25}
+                                                                                                                                                rows={1}
+                                                                                                                                                style={{ border: '1px solid #959595', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                fregister={{
+                                                                                                                                                    ...register(`buttonsquickreply.${i}.btn.text`, {
+                                                                                                                                                        validate: (value) =>
+                                                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                    }),
+                                                                                                                                                }}
+                                                                                                                                            />
+                                                                                                                                        </div>
+                                                                                                                                        <IconButton onClick={() => onClickRemoveButtonText(i)} disabled={!isNew}>
+                                                                                                                                            <CloseIcon />
+                                                                                                                                        </IconButton>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            )}
+                                                                                                                        </Draggable>
+                                                                                                                    );
+                                                                                                                })}
                                                                                                             </div>
                                                                                                         )}
-                                                                                                    </div>
-                                                                                                )}
-                                                                                            </>
-                                                                                        ) : (
-                                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                                                                <DragIndicatorIcon />
-                                                                                                <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
-                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
-                                                                                                        <SingleLineInput
-                                                                                                            className='col-4'
-                                                                                                            label={t(langKeys.buttontext)}
-                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                            onInput={(e) => handleActionButtonText(e, i)}
-                                                                                                            onChange={(e) => handleActionButtonText(e, i)}
-                                                                                                            valueDefault={btn?.btn?.text || ""}
-                                                                                                            variant="outlined"
-                                                                                                            maxLength={25}
-                                                                                                            rows={1}
-                                                                                                            inputProps={{
-                                                                                                                rows: 1,
-                                                                                                                maxRows: 1
-                                                                                                            }}
-                                                                                                            fregister={{
-                                                                                                                ...register(`buttonsgeneric.${i}.btn.text`, {
-                                                                                                                    validate: (value) =>
-                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                }),
-                                                                                                            }}
-                                                                                                            size="small"
-                                                                                                            disabled={!isNew}
-                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                        />
-                                                                                                        <div className='col-4'>
-                                                                                                            <span>{t(langKeys.country)}</span>
-                                                                                                            <FieldSelect
-                                                                                                                data={dataCountryCodes}
-                                                                                                                onChange={(value) => {
-                                                                                                                    if (value) {
-                                                                                                                        setValue(`buttonsgeneric.${i}.btn.code`, value.value);
-                                                                                                                        trigger('buttonsgeneric')
-                                                                                                                    } else {
-                                                                                                                        setValue(`buttonsgeneric.${i}.btn.code`, null);
-                                                                                                                        trigger('buttonsgeneric')
-                                                                                                                    }
-                                                                                                                }}
-                                                                                                                optionDesc="text"
-                                                                                                                optionValue="value"
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
-                                                                                                                valueDefault={btn?.btn?.code || ""}
-                                                                                                                variant="outlined"
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.code`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value !== 0) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                size="normal"
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                        <div className='col-4'>
-                                                                                                            <span>{t(langKeys.telephonenumber)}</span>
-                                                                                                            <FieldEditAdvancedAux
-                                                                                                                type="number"
-                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
-                                                                                                                onInput={(e) => handleActionButtonPhone(e, i)}
-                                                                                                                onChange={(e) => handleActionButtonPhone(e, i)}
-                                                                                                                valueDefault={btn?.btn?.phone_number || ""}
-                                                                                                                variant="outlined"
-                                                                                                                fregister={{
-                                                                                                                    ...register(`buttonsgeneric.${i}.btn.phone_number`, {
-                                                                                                                        validate: (value) =>
-                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                    }),
-                                                                                                                }}
-                                                                                                                maxLength={20}
-                                                                                                                rows={1}
-                                                                                                                inputProps={{
-                                                                                                                    rows: 1,
-                                                                                                                    maxRows: 1
-                                                                                                                }}
-                                                                                                                disabled={!isNew}
-                                                                                                                style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
-                                                                                                    <CloseIcon />
-                                                                                                </IconButton>
+                                                                                                    </Droppable>
+                                                                                                </React.Fragment>
                                                                                             </div>
                                                                                         )}
-                                                                                    </div>
+                                                                                    </DragDropContext>
+                                                                                ) : (
+                                                                                    <DragDropContext onDragEnd={isNew ? handleDragDropAux : noop}> 
+                                                                                        {button?.items?.length > 0 && (
+                                                                                            <div className="row-zyx" style={{ display: 'flex', flexDirection: 'column', padding: 10, border: '1px solid #B4B4B4', borderRadius: 5, gap: '1rem' }}>
+                                                                                                <div>
+                                                                                                    <div style={{display: 'flex', justifyContent: 'center'}}><DragIndicatorIcon style={{ transform: 'rotate(90deg)' }}/></div>
+                                                                                                    <div style={{ display: 'flex', padding: '0px 0px 0px 20px' }}>
+                                                                                                        <ImportExportIcon style={{ color: '#0049CF' }} />
+                                                                                                        <span style={{ fontWeight: 'bold' }}>{t(langKeys.calltoaction)}</span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <React.Fragment>
+                                                                                                    <Droppable droppableId="root2" type="group" isDropDisabled={!isNew}>
+                                                                                                        {(provided) => (
+                                                                                                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                                                                                {button?.items?.map((btn: any, i: number) => {
+                                                                                                                    return (
+                                                                                                                        <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i} isDragDisabled={!isNew}>
+                                                                                                                            {(provided) => (
+                                                                                                                                <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+                                                                                                                                    {btn.type === 'URL' ? (
+                                                                                                                                        <>
+                                                                                                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                                                                                                <DragIndicatorIcon />
+                                                                                                                                                <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0, display: 'flex' }}>
+                                                                                                                                                        <SingleLineInput
+                                                                                                                                                            className='col-4'
+                                                                                                                                                            label={t(langKeys.buttontext)}
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                                                            onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                            onChange={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                            valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                            maxLength={25}
+                                                                                                                                                            rows={1}
+                                                                                                                                                            inputProps={{
+                                                                                                                                                                rows: 1,
+                                                                                                                                                                maxRows: 1
+                                                                                                                                                            }}
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                        />
+                                                                                                                                                        <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
+                                                                                                                                                            <span>{t(langKeys.urltype)}</span>
+                                                                                                                                                            <FieldSelect
+                                                                                                                                                                data={dataURLType}
+                                                                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
+                                                                                                                                                                onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                                                                optionDesc="text"
+                                                                                                                                                                optionValue="value"
+                                                                                                                                                                valueDefault={btn?.btn?.type || ""}
+                                                                                                                                                                variant="outlined"
+                                                                                                                                                                fregister={{
+                                                                                                                                                                    ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                                                                        validate: (value) =>
+                                                                                                                                                                            (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                    }),
+                                                                                                                                                                }}
+                                                                                                                                                                disabled={!isNew}
+                                                                                                                                                                size="normal"
+                                                                                                                                                            />
+                                                                                                                                                        </div>
+                                                                                                                                                        <SingleLineInput
+                                                                                                                                                            className='col-4'
+                                                                                                                                                            label={t(langKeys.urlwebsite)}
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
+                                                                                                                                                            onInput={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                                                            onChange={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                                                            valueDefault={btn?.btn?.url || ""}
+                                                                                                                                                            rows={1}
+                                                                                                                                                            inputProps={{
+                                                                                                                                                                rows: 1,
+                                                                                                                                                                maxRows: 1
+                                                                                                                                                            }}
+                                                                                                                                                            maxLength={2000}
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.url`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                        />
+                                                                                                                                                        {btn?.btn?.type === 'dynamic' && (
+                                                                                                                                                            <div className="col-1" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                                                                                                                                <span>{'{{'}1{'}}'}</span>
+                                                                                                                                                                <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
+                                                                                                                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                                                                                                                </Tooltip>
+                                                                                                                                                            </div>
+                                                                                                                                                        )}
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                                <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
+                                                                                                                                                    <CloseIcon />
+                                                                                                                                                </IconButton>
+                                                                                                                                            </div>
+                                                                                                                                            {btn?.btn?.type === 'dynamic' && (
+                                                                                                                                                <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
+                                                                                                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                                                                                                                                                        <span>{'{{'}1{'}}'}</span>
+                                                                                                                                                        <div style={{ backgroundColor: 'white', width: '100%' }}>
+                                                                                                                                                            <FieldEdit
+                                                                                                                                                                label={btn?.btn?.url !== '' ? `Introduce la URL completa de ${btn?.btn?.url}{{1}}` : ''}
+                                                                                                                                                                variant="outlined"
+                                                                                                                                                                size="small"
+                                                                                                                                                                onChange={(value) => {
+                                                                                                                                                                    setValue(`buttonsgeneric.${i}.btn.variables[0]`, value)
+                                                                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                                                                }}
+                                                                                                                                                                valueDefault={btn?.btn?.variables[0] || ""}
+                                                                                                                                                                disabled={!isNew}
+                                                                                                                                                            />
+                                                                                                                                                        </div>
+                                                                                                                                                    </div>
+                                                                                                                                                    {getValues(`buttonsgeneric.${i}.btn.variables[0]`) === "" && (
+                                                                                                                                                        <div className={classes.warningContainer}>
+                                                                                                                                                            <WarningIcon style={{ color: '#FF7575' }} />
+                                                                                                                                                            {t(langKeys.addexampletext)}
+                                                                                                                                                        </div>
+                                                                                                                                                    )}
+                                                                                                                                                </div>
+                                                                                                                                            )}
+                                                                                                                                        </>
+                                                                                                                                    ) : (
+                                                                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                                                                                            <DragIndicatorIcon />
+                                                                                                                                            <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                                                                <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
+                                                                                                                                                    <SingleLineInput
+                                                                                                                                                        className='col-4'
+                                                                                                                                                        label={t(langKeys.buttontext)}
+                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                                                        onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                        onChange={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                        valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                        variant="outlined"
+                                                                                                                                                        maxLength={25}
+                                                                                                                                                        rows={1}
+                                                                                                                                                        inputProps={{
+                                                                                                                                                            rows: 1,
+                                                                                                                                                            maxRows: 1
+                                                                                                                                                        }}
+                                                                                                                                                        fregister={{
+                                                                                                                                                            ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                                                                validate: (value) =>
+                                                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                            }),
+                                                                                                                                                        }}
+                                                                                                                                                        size="small"
+                                                                                                                                                        disabled={!isNew}
+                                                                                                                                                        style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                    />
+                                                                                                                                                    <div className='col-4'>
+                                                                                                                                                        <span>{t(langKeys.country)}</span>
+                                                                                                                                                        <FieldSelect
+                                                                                                                                                            data={dataCountryCodes}
+                                                                                                                                                            onChange={(value) => {
+                                                                                                                                                                if (value) {
+                                                                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, value.value);
+                                                                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                                                                } else {
+                                                                                                                                                                    setValue(`buttonsgeneric.${i}.btn.code`, null);
+                                                                                                                                                                    trigger('buttonsgeneric')
+                                                                                                                                                                }
+                                                                                                                                                            }}
+                                                                                                                                                            optionDesc="text"
+                                                                                                                                                            optionValue="value"
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.code?.message}
+                                                                                                                                                            valueDefault={btn?.btn?.code || ""}
+                                                                                                                                                            variant="outlined"
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.code`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value !== 0) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            size="normal"
+                                                                                                                                                        />
+                                                                                                                                                    </div>
+                                                                                                                                                    <div className='col-4'>
+                                                                                                                                                        <span>{t(langKeys.telephonenumber)}</span>
+                                                                                                                                                        <FieldEditAdvancedAux
+                                                                                                                                                            type="number"
+                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.phone_number?.message}
+                                                                                                                                                            onInput={(e) => handleActionButtonPhone(e, i)}
+                                                                                                                                                            onChange={(e) => handleActionButtonPhone(e, i)}
+                                                                                                                                                            valueDefault={btn?.btn?.phone_number || ""}
+                                                                                                                                                            variant="outlined"
+                                                                                                                                                            fregister={{
+                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.phone_number`, {
+                                                                                                                                                                    validate: (value) =>
+                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                }),
+                                                                                                                                                            }}
+                                                                                                                                                            maxLength={20}
+                                                                                                                                                            rows={1}
+                                                                                                                                                            inputProps={{
+                                                                                                                                                                rows: 1,
+                                                                                                                                                                maxRows: 1
+                                                                                                                                                            }}
+                                                                                                                                                            disabled={!isNew}
+                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                        />
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                            <IconButton onClick={() => onClickRemoveButton(i)} disabled={!isNew}>
+                                                                                                                                                <CloseIcon />
+                                                                                                                                            </IconButton>
+                                                                                                                                        </div>
+                                                                                                                                    )}
+                                                                                                                                </div>
+                                                                                                                            )}
+                                                                                                                        </Draggable>
+                                                                                                                    );
+                                                                                                                })}
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                    </Droppable>
+                                                                                                </React.Fragment>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </DragDropContext>
                                                                                 )}
-                                                                            </Draggable>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                        </Droppable>
-                                                    </React.Fragment>
-                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </Draggable>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </Droppable>
                                             )}
                                         </DragDropContext>
                                     </div>
@@ -3126,6 +3241,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 footer={getValues('footer')}
                                                 buttonstext={getValues('buttonsquickreply').map((btn: Dictionary) => { return btn?.btn?.text })}
                                                 buttonslink={getValues('buttonsgeneric').map((btn: Dictionary) => { return { type: btn?.type, text: btn?.btn?.text } })}
+                                                buttonsGeneral={buttonsGeneral}
                                                 isNew={isNew}
                                             />
                                         </div>
@@ -3529,7 +3645,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                             <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '90%' }}>
                                                                                 {getValues(`carouseldata.${index}.buttons`)?.map((btn: any, btni: number) => {
                                                                                     return (
-                                                                                        <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni}>
+                                                                                        <Draggable key={`btn-${btni}`} draggableId={`btn-${btni}`} index={btni} isDragDisabled={!isNew}>
                                                                                             {(provided) => (
                                                                                                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
                                                                                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #9E9E9E', backgroundColor: '#F5F5F5', padding: 5 }}>
