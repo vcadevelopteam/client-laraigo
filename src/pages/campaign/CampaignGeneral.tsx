@@ -527,20 +527,19 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         let filteredTemplates;
     
         if (type === "MAIL" || type === "HTML") {
-            const mailTemplate = filterPipe(dataMessageTemplate, 'type', type);
-            filteredTemplates = [...mailTemplate];
-        } else {
             filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);
+        } else {
+            filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);    
+            if (communicationChannelId) {
+                filteredTemplates = filteredTemplates.filter(template => {
+                    const templateChannelIds = template.communicationchannelid.split(',').map((id: Dictionary) => id.trim());
+                    return templateChannelIds.some((id: Dictionary) => id.trim() === String(communicationChannelId).trim());
+                });
+            }
         }
-        
-        if (communicationChannelId) {
-            filteredTemplates = filteredTemplates.filter(template => {
-                const templateChannelIds = template.communicationchannelid.split(',').map((id:Dictionary) => id.trim());        
-                return templateChannelIds.some((id:Dictionary) => id.trim() === String(communicationChannelId).trim());
-            });
-        }    
+    
         return filteredTemplates;
-    }
+    }    
         
     const onChangeMessageTemplateId = async (data: Dictionary) => {
         setValue('messagetemplateid', data?.id || 0);
