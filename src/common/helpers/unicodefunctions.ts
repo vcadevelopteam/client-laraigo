@@ -23,5 +23,5 @@ export function formatTextToUnicode({text = '', bold = false, italic = false, un
 }
 
 export const removeUnicodeStyle = (text: string): string => {
-    return string_to_unicode_variant(text,"","");
+    return text.normalize('NFKC')
 };
