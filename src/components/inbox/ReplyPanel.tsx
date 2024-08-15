@@ -1381,13 +1381,16 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         } else if (event.shiftKey) {
             console.log("");
             return;
-        } else if (event.key === 'Enter') {
+        } else if (
+            (user?.languagesettings?.sendingmode === "Default" && event.key === 'Enter') || 
+            (user?.languagesettings?.sendingmode === "EnterKey" && event.code === 'Enter')
+        ) {
             event.preventDefault();
             if ((text.trim() || files.length > 0) && user?.languagesettings?.sendingmode !== "ExecutionButton") {
                 triggerReplyMessage();
             }
         }
-    };
+    };    
 
     const handleSelectionChange = (event: Dictionary) => {
         setLastSelection(event?.target?.selectionEnd ?? 0);
