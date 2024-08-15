@@ -1374,7 +1374,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         setText(myquickreply);
     };
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {     
         if (event.ctrlKey && event.code === 'Enter') {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
@@ -1383,7 +1383,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             return;
         } else if (event.key === 'Enter') {
             event.preventDefault();
-            if (text.trim() || files.length > 0) {
+            if ((text.trim() || files.length > 0) && user?.languagesettings?.sendingmode !== "ExecutionButton") {
                 triggerReplyMessage();
             }
         }
@@ -1450,7 +1450,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     };
     
     const handleKeyDown = (event: Dictionary) => {
-        if (event.altKey && event.key === 'Enter') {
+        if ((event.altKey || user?.languagesettings?.sendingmode === "ExecutionButton") && event.key === 'Enter') {
             event.preventDefault();
             setText(text + '\n');
         }
