@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { Dictionary } from "@types";
+import { Dictionary, IRequestBody } from "@types";
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { calculateDateFromWeek, dayNames2, hash256, selBookingCalendar, timetomin } from "common/helpers";
@@ -239,12 +239,12 @@ const BoxDay: FC<{
 }
 
 const CalendarWithInfo: FC<{
-    calendarEventID: number;
+    rb: IRequestBody;
     selectBooking: (p: any) => void;
-    booking: Dictionary;
+    // booking: Dictionary;
     date: Date;
     setDateRange: (p: any) => void
-}> = ({ calendarEventID, selectBooking, date, setDateRange }) => {
+}> = ({ rb, selectBooking, date, setDateRange }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -255,11 +255,9 @@ const CalendarWithInfo: FC<{
     const fetchData = (newStartDate: Date) => {
         const newRangeDates = calculateDateFromWeek(newStartDate) as DayProp[];
         setRangeDates(newRangeDates)
-        dispatch(getCollectionAux(selBookingCalendar(
-            newRangeDates[0].dateString,
-            newRangeDates[6].dateString || "",
-            calendarEventID
-        )))
+        rb.parameters.startdate = newRangeDates[0].dateString;
+        rb.parameters.enddate = newRangeDates[6].dateString;
+        dispatch(getCollectionAux(rb))
     }
 
     useEffect(() => {

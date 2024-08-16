@@ -608,14 +608,18 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
             {view === "calendar" && (
                 <div style={{ width: "100%" }}>
                     <CalendarWithInfo
-                        calendarEventID={calendarEventID}
+                        rb={selBookingCalendar(
+                            "",
+                            "",
+                            calendarEventID
+                        )}
                         date={dateRange.startDate!!}
                         selectBooking={(item) => {
                             setBookingSelected(item);
                             setOpenDialog(true);
                         }}
                         setDateRange={setDateRange}
-                        booking={event}
+                        // booking={event}
                     />
                 </div>
             )}
