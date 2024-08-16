@@ -8,17 +8,15 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { CalendarIcon, DownloadIcon } from "../../icons";
 import {
-    exportExcel,
-    getAdviserFilteredUserRol, getColumnsSel, getCommChannelLst, getDashboardFunnelDataSel, getDateCleaned, getLeadsSel,
-    getProducts,
-    getReportFilterSel, getValuesFromDomain
+    exportExcel, getAdviserFilteredUserRol, getColumnsSel, getCommChannelLst,
+    getDashboardFunnelDataSel, getDateCleaned, getLeadsSel, getValuesFromDomain
 } from "common/helpers";
 import { DateRangePicker, FieldMultiSelect } from "../../components";
 import { Range } from "react-date-range";
 import { Dictionary, IChannel, IDomain } from "../../@types";
 import { useSelector } from "../../hooks";
 import { langKeys } from "../../lang/keys";
-import { cleanViewChange, getMultiCollection } from "../../store/main/actions";
+import { getCollectionAux, getMultiCollection } from "../../store/main/actions";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
@@ -27,7 +25,6 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import { Funnel3D } from "components/fields/Funnel3D";
 import { RectangularTrapezoid } from "../../components/fields/RectangularTrapezoid";
-import { useQueryParams } from "../../components/fields/table-paginated";
 
 const useStyles = makeStyles((theme) => ({
     filterContainer: {
@@ -68,22 +65,11 @@ const useStyles = makeStyles((theme) => ({
         },
         marginRight: theme.spacing(2),
     },
-    downloadButton: {
-        marginLeft: theme.spacing(1),
-    },
     button: {
         padding: 12,
         fontWeight: 500,
         fontSize: "14px",
         textTransform: "initial",
-    },
-    searchButton: {
-        marginLeft: theme.spacing(1),
-        backgroundColor: theme.palette.success.main,
-        color: "#fff",
-        "&:hover": {
-            backgroundColor: theme.palette.success.dark,
-        },
     },
     filterField: {
         minWidth: "200px",
@@ -121,14 +107,6 @@ const useStyles = makeStyles((theme) => ({
         left: "0",
         width: "100%",
     },
-    selectMenu: {
-        minWidth: "200px",
-    },
-    option: {
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-    },
 }));
 
 interface IBoardFilter {
@@ -165,9 +143,9 @@ const DashboardOpportunityFunnel: FC = () => {
     const dispatch = useDispatch();
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const mainMulti = useSelector((state) => state.main.multiData);
-    const params = useQueryParams(query, {
-        ignore: ["asesorid", "channels", "contact", "display", "products", "tags", "campaign", "persontype"],
-    });
+    const mainData = useSelector((state) => state.main.mainAux);
+    const [funnelData, setFunnelData] = useState([]);
+    const [trapezoidData, setTrapezoidData] = useState([]);
     const otherParams = useMemo(
         () => ({
             asesorid: query.get("asesorid"),
@@ -191,7 +169,7 @@ const DashboardOpportunityFunnel: FC = () => {
         persontype: otherParams.persontype || "",
     });
 
-    const [temporaryFilter, setTemporaryFilter] = useState<IBoardFilter>(boardFilter); // Filtros temporales
+    const [temporaryFilter, setTemporaryFilter] = useState<IBoardFilter>(boardFilter);
 
     const [sortParams, setSortParams] = useState({
         type: "",
@@ -202,155 +180,10 @@ const DashboardOpportunityFunnel: FC = () => {
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: "selection",
     });
-    const initialAsesorId = useMemo(() => {
-        if (!user) return "";
-        if (user.roledesc?.includes("ASESOR")) return user.userid;
-        return otherParams.asesorid || "";
-    }, [otherParams, user]);
-
-    const [allParameters, setAllParametersPrivate] = useState<{ contact: string; channel: string; asesorid: string; persontype: string }>({
-        asesorid: String(initialAsesorId),
-        channel: otherParams.channels,
-        contact: otherParams.contact,
-        persontype: otherParams.persontype,
-    });
-
-    const [funnelData, setFunnelData] = useState([]);
-    const [trapezoidData, setTrapezoidData] = useState([]);
-
-    const fetchFiltersData = async () => {
-        setBoardFilterPrivate(temporaryFilter);
-
-        setFunnelData(prevData => [...prevData]);
-    };
-
-
-    const fetchData = useCallback(async () => {
-        const dashboardParams = {
-            startdate: dateRange.startDate,
-            enddate: dateRange.endDate,
-            channel: allParameters.channel || "",
-            userid: boardFilter.asesorid || "",
-            leadproduct: boardFilter.products || "",
-        };
-
-        const columnsSel = getColumnsSel(1);
-        const leadsSel = getLeadsSel({
-            id: 0,
-            campaignid: boardFilter.campaign,
-            fullname: boardFilter.customer,
-            leadproduct: boardFilter.products,
-            persontype: boardFilter.persontype,
-            tags: boardFilter.tags,
-            userid: boardFilter.asesorid,
-            supervisorid: user?.userid ? user.userid : 0,
-            ordertype: sortParams.type,
-            orderby: sortParams.order,
-        });
-        const commChannelLst = getCommChannelLst();
-        const adviserFilteredUserRol = getAdviserFilteredUserRol();
-        const valuesFromDomain = getValuesFromDomain("OPORTUNIDADPRODUCTOS");
-        const dashboardFunnelDataSel = getDashboardFunnelDataSel(dashboardParams);
-
-        const result = await dispatch(
-            getMultiCollection([columnsSel, leadsSel, commChannelLst, adviserFilteredUserRol, valuesFromDomain, dashboardFunnelDataSel])
-        );
-
-        setFunnelData(prevData => [...prevData]);
-
-    }, [allParameters, boardFilter, dateRange, dispatch, sortParams, user?.userid]);
-
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData, dispatch]);
-
-
-    const funnelDataResult = useMemo(() => {
-        if (!mainMulti.data) return [];
-        const data = mainMulti.data.find((d) => d.key === "UFN_LEAD_FUNNEL_SEL");
-        return data ? data.data : [];
-    }, [mainMulti.data]);
-
-
-    useEffect(() => {
-        if (funnelDataResult.length) {
-            const order = ["NEW", "QUALIFIED", "PROPOSITION", "WON"];
-            const phases = [
-                t(langKeys.opportunity_funnel_new),
-                t(langKeys.opportunity_funnel_qualified),
-                t(langKeys.opportunity_funnel_proposition),
-                t(langKeys.opportunity_funnel_won),
-            ];
-
-            const sortedFunnelData = funnelDataResult
-                .map((item) => ({
-                    name: item.description,
-                    type: item.type,
-                    fill: item.type === "NEW" ? "#d13a41" : item.type === "QUALIFIED" ? "#fe813e" : item.type === "PROPOSITION" ? "#ffaf12" : "#4ec5a7",
-                    count: item.count,
-                    value: 0,
-                }))
-                .sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
-
-            const totalItems = sortedFunnelData.length;
-            sortedFunnelData.forEach((item, index) => {
-                item.value = ((totalItems - index) / totalItems) * 100;
-            });
-
-            const groupedData = order.map((type) => {
-                const items = sortedFunnelData.filter((item) => item.type === type);
-                const totalCount = items.reduce((acc, item) => acc + item.count, 0);
-                return {
-                    type,
-                    totalCount,
-                };
-            });
-
-            const limitedTrapezoidData = groupedData
-                .map((group, index) => {
-                    const item = sortedFunnelData.find((dataItem) => dataItem.type === group.type);
-                    return {
-                        name: phases[index],
-                        value: item ? item.value : 0,
-                        fill: item ? item.fill : "#ffffff",
-                        count: group.totalCount,
-                    };
-                })
-                .filter((item) => item.count > 0);
-
-            setFunnelData(sortedFunnelData);
-            setTrapezoidData(limitedTrapezoidData);
-        } else {
-            // Limpia los datos si no hay resultados
-            setFunnelData([]);
-            setTrapezoidData([]);
-        }
-    }, [funnelDataResult, t]);
-
-    const setBoardFilter = useCallback(
-        (prop: React.SetStateAction<typeof boardFilter>) => {
-            if (!user) return;
-            const newBoardFilter = typeof prop === "function" ? prop(boardFilter) : prop;
-            if (user.roledesc?.includes("ASESOR")) {
-                setBoardFilterPrivate({
-                    ...newBoardFilter,
-                    asesorid: user.userid.toString(),
-                });
-            } else {
-                setBoardFilterPrivate(newBoardFilter);
-            }
-        },
-        [user, boardFilter]
-    );
 
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
 
     const multiData = useSelector((state) => state.main.multiData);
-    const [dataGrid, setdataGrid] = useState<any[]>([]);
-
-    const [data, setData] = useState<any[]>([]);
-
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
@@ -374,26 +207,113 @@ const DashboardOpportunityFunnel: FC = () => {
         return mainMulti.data[4].data as IDomain[];
     }, [mainMulti.data]);
 
-    const proportionData = generateProportionData(funnelData);
 
-    const format = (date: Date) => date.toISOString().split("T")[0];
+    const fetchData = useCallback(async () => {
+        const dashboardParams = {
+            startdate: dateRange.startDate,
+            enddate: dateRange.endDate,
+            channel: temporaryFilter.channel || "",
+            userid: temporaryFilter.asesorid || "",
+            leadproduct: temporaryFilter.products || "",
+        };
+        await dispatch(getCollectionAux(getDashboardFunnelDataSel(dashboardParams)));
 
-    const setAllParameters = useCallback(
-        (prop: typeof allParameters) => {
-            if (!user) return;
+    }, [temporaryFilter, boardFilter, dateRange, dispatch, sortParams, user?.userid]);
 
-            if (user.roledesc?.includes("ASESOR") && prop.asesorid !== String(user.userid || "")) {
-                setAllParametersPrivate({ ...prop, asesorid: String(user.userid || "") });
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const columnsSel = getColumnsSel(1);
+        const leadsSel = getLeadsSel({
+            id: 0,
+            campaignid: boardFilter.campaign,
+            fullname: boardFilter.customer,
+            leadproduct: boardFilter.products,
+            persontype: boardFilter.persontype,
+            tags: boardFilter.tags,
+            userid: boardFilter.asesorid,
+            supervisorid: user?.userid ? user.userid : 0,
+            ordertype: sortParams.type,
+            orderby: sortParams.order,
+        });
+        const commChannelLst = getCommChannelLst();
+        const adviserFilteredUserRol = getAdviserFilteredUserRol();
+        const valuesFromDomain = getValuesFromDomain("OPORTUNIDADPRODUCTOS");
+
+        dispatch(getMultiCollection([columnsSel, leadsSel, commChannelLst, adviserFilteredUserRol, valuesFromDomain]));
+    }, [])
+
+    useEffect(() => {
+        if (!mainData.loading && !mainData.error) {
+            const funnelDataResult = mainData.data;
+            if (funnelDataResult.length) {
+                const order = ["NEW", "QUALIFIED", "PROPOSITION", "WON"];
+                const phases = [
+                    t(langKeys.opportunity_funnel_new),
+                    t(langKeys.opportunity_funnel_qualified),
+                    t(langKeys.opportunity_funnel_proposition),
+                    t(langKeys.opportunity_funnel_won),
+                ];
+
+                const sortedFunnelData = funnelDataResult
+                    .map((item) => ({
+                        name: item.description,
+                        type: item.type,
+                        fill: item.type === "NEW" ? "#d13a41" : item.type === "QUALIFIED" ? "#fe813e" : item.type === "PROPOSITION" ? "#ffaf12" : "#4ec5a7",
+                        count: item.count,
+                        value: 0,
+                    }))
+                    .sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+
+                const totalItems = sortedFunnelData.length;
+                sortedFunnelData.forEach((item, index) => {
+                    item.value = ((totalItems - index) / totalItems) * 100;
+                });
+
+                const groupedData = order.map((type) => {
+                    const items = sortedFunnelData.filter((item) => item.type === type);
+                    const totalCount = items.reduce((acc, item) => acc + item.count, 0);
+                    return {
+                        type,
+                        totalCount,
+                    };
+                });
+
+                const limitedTrapezoidData = groupedData
+                    .map((group, index) => {
+                        const item = sortedFunnelData.find((dataItem) => dataItem.type === group.type);
+                        return {
+                            name: phases[index],
+                            value: item ? item.value : 0,
+                            fill: item ? item.fill : "#ffffff",
+                            count: group.totalCount,
+                        };
+                    })
+                    .filter((item) => item.count > 0);
+
+                setFunnelData(sortedFunnelData);
+                setTrapezoidData(limitedTrapezoidData);
             } else {
-                setAllParametersPrivate(prop);
+                setFunnelData([]);
+                setTrapezoidData([]);
             }
-        },
-        [user]
-    );
+        }
+    }, [mainData]);
 
+    const proportionData = generateProportionData(funnelData);
     const setValue = (parameterName: any, value: any) => {
         setTemporaryFilter({ ...temporaryFilter, [parameterName]: value });
     };
+    const handleExportClick = () => {
+        const dataForExport = funnelData.map(row => ({
+            Fase: row.name,
+            Cantidad: row.count,
+        }));
+        exportExcel("reporte_funnel", dataForExport);
+    };
+
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -476,22 +396,22 @@ const DashboardOpportunityFunnel: FC = () => {
                                                 optionDesc={"domaindesc"}
                                                 optionValue={"domainvalue"}
                                             />
+                                            <div className={classes.filterField}>
+                                                <Button
+                                                    disabled={detailCustomReport.loading}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    style={{ backgroundColor: "#55BD84", width: 120 }}
+                                                    startIcon={<SearchIcon />}
+                                                    onClick={fetchData}
+                                                >
+                                                    {t(langKeys.search)}
+                                                </Button>
+                                            </div>
                                         </div>
                                     </Box>
                                 </Box>
                             </div>
-                        </div>
-                        <div className={classes.filterField}>
-                            <Button
-                                disabled={detailCustomReport.loading}
-                                variant="contained"
-                                color="primary"
-                                style={{ backgroundColor: "#55BD84", width: 120 }}
-                                startIcon={<SearchIcon />}
-                                onClick={fetchFiltersData}
-                            >
-                                {t(langKeys.search)}
-                            </Button>
                         </div>
                     </div>
                     <div>
@@ -500,7 +420,7 @@ const DashboardOpportunityFunnel: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={detailCustomReport.loading}
-                            onClick={() => exportExcel("report" + new Date().toISOString(), dataGrid)}
+                            onClick={handleExportClick}
                             startIcon={<DownloadIcon />}
                         >
                             {t(langKeys.download)}

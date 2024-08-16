@@ -24,9 +24,11 @@ const useStyles = makeStyles({
         maxWidth: '267px',
         margin: 'auto',
         display: 'flex',
+        overflow: 'visible',
     },
     funnel: {
         width: '100%',
+        overflow: 'visible',
     },
     trapezoidText: {
         fontSize: '15px',
@@ -48,26 +50,31 @@ const RectangularTrapezoid: React.FC<TrapezoidProps> = ({ data, proportionData, 
     const initialTrapezoidWidth = 120;
     const trapezoidDiagonalCut = 30;
 
-    const proportions = proportionData.map(item => item.proportion);
-    const scaleFactor = 400;
-    const totalProportion = proportions.reduce((sum, prop) => sum + prop, 0);
-    const svgHeight = totalProportion * scaleFactor + (data.length - 1) * spacing;
+    const predefinidos = {
+        1: [150],
+        2: [150, 150],
+        3: [100, 100, 100],
+    };
+
+    const predefinedSizes = predefinidos[data.length] || proportionData.map(item => item.proportion * 400);
 
     const totalSum = data.reduce((acc, item) => acc + item.count, 0);
 
-    const renderTrapezoidSection = (item: TrapezoidData, index: number, scaleFactor: number) => {
-        const trapezoidHeight = proportions[index] * scaleFactor;
+    const renderTrapezoidSection = (item: TrapezoidData, index: number) => {
+        const trapezoidHeight = predefinedSizes[index];
         const currentTopWidth = initialTrapezoidWidth + trapezoidDiagonalCut * index;
         const currentBottomWidth = initialTrapezoidWidth + trapezoidDiagonalCut * (index + 1);
 
-        const yOffset = proportions.slice(0, index).reduce((sum, prop) => sum + prop * scaleFactor + spacing, 0);
+        const yOffset = predefinedSizes.slice(0, index).reduce((sum, size) => sum + size + spacing, 0);
 
         const textX = Math.min(currentTopWidth, currentBottomWidth) - 10;
 
         const percentage = ((item.count / totalSum) * 100).toFixed(2);
 
+        const xOffset = data.length <= 3 ? -currentTopWidth / 2 : 0;  //
+
         return (
-            <g key={index} transform={`translate(0, ${yOffset})`}>
+            <g key={index} transform={`translate(${xOffset}, ${yOffset})`}>
                 <path
                     d={`M ${0} 0 L ${currentTopWidth} 0 L ${currentBottomWidth} ${trapezoidHeight} L ${0} ${trapezoidHeight} Z`}
                     fill={item.fill}
@@ -82,14 +89,16 @@ const RectangularTrapezoid: React.FC<TrapezoidProps> = ({ data, proportionData, 
         );
     };
 
+    const svgHeight = predefinedSizes.reduce((sum, size) => sum + size + spacing, 0);
+
     return (
         <div className={classes.trapezoidContainer}>
             <svg
                 className={classes.funnel}
-                viewBox={`0 0 ${initialTrapezoidWidth + trapezoidDiagonalCut * data.length} ${svgHeight + 5}`}
+                viewBox={`0 0 ${initialTrapezoidWidth + trapezoidDiagonalCut * data.length + 10} ${svgHeight + 5}`}
                 preserveAspectRatio="none"
             >
-                {data.map((section, index) => renderTrapezoidSection(section, index, scaleFactor))}
+                {data.map((section, index) => renderTrapezoidSection(section, index))}
             </svg>
         </div>
     );
