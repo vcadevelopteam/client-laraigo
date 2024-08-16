@@ -1417,7 +1417,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     
         if (selectedText) {
             const textWithStyle = formatTextToUnicode({ text: selectedText, [style]: true });
-            let textWithoutStyle = removeUnicodeStyle(selectedText, style);    
+            let textWithoutStyle = removeUnicodeStyle(selectedText);    
     
             if (style === 'underline' || style === 'strikethrough') {
                 const regex = new RegExp(`[\\u0332\\u0336]`, 'g');
