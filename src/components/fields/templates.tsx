@@ -1,12 +1,11 @@
-import 'emoji-mart/css/emoji-mart.css'
-
+// import 'emoji-mart/css/emoji-mart.css'
 import { AndroidColor, AppStoreColor, BloggerColor, ChannelBlogger, ChatWebColor, EmojiICon, FacebookColor, FormColor, GifIcon, InstagramColor, IosColor, LineColor, LinkedInColor, MailColor, MessengerColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WhatsAppColor, WorkplaceColor, YouTubeColor } from 'icons';
 import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
 import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon, Chip } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Picker } from 'emoji-mart';
+import Picker from '@emoji-mart/react'
 import { SearchField } from 'components';
 import { Skeleton } from '@material-ui/lab';
 import { Trans, useTranslation } from 'react-i18next';
@@ -1794,22 +1793,37 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                         zIndex: 1201
                     }}>
                         <Picker
-                            onSelect={onSelect}
-                            native={true}
-                            sheetSize={32}
+                            onEmojiSelect={onSelect}
+                            previewPosition="none"
+                            theme="light"
+                            locale="custom"
+                            skinTonePosition="none"
+                            emojiVersion={12}
                             i18n={{
                                 search: t(langKeys.search),
                                 categories: {
                                     search: t(langKeys.search_result),
                                     recent: t(langKeys.favorites),
+                                    smileys: t(langKeys.emoticons),
                                     people: t(langKeys.emoticons),
+                                    animals: t(langKeys.animals),
                                     nature: t(langKeys.animals),
-                                    foods: t(langKeys.food),
-                                    activity: t(langKeys.activities),
+                                    food: t(langKeys.food),
+                                    activities: t(langKeys.activities),
                                     places: t(langKeys.travel),
                                     objects: t(langKeys.objects),
                                     symbols: t(langKeys.symbols),
                                     flags: t(langKeys.flags),
+                                    // Agrega más categorías si es necesario
+                                },
+                                "skins": {
+                                    "choose": "Elige el tono de piel predeterminado",
+                                    "1": "Sin tono",
+                                    "2": "Claro",
+                                    "3": "Medio-Claro",
+                                    "4": "Medio",
+                                    "5": "Medio-Oscuro",
+                                    "6": "Oscuro"
                                 }
                             }}
                             recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}

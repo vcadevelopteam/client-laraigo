@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import 'emoji-mart/css/emoji-mart.css'
+/* eslint-disable jsx-a11y/iframe-has-title */
+import React, { useState, useEffect } from 'react'
+// import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, LaraigoOnlyLogo, TackPinnedIcon } from 'icons';

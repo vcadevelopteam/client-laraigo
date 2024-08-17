@@ -39,7 +39,7 @@ import { resetUploadFile, uploadFile } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
 import { ArrowDropDownIcon, QuickresponseIcon, SearchIcon } from 'icons';
-import { Picker } from 'emoji-mart';
+import Picker from '@emoji-mart/react'
 import { Dictionary, IFile } from '@types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -362,25 +362,40 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                         zIndex: 1200
                     }}>
                         <Picker
-                            onSelect={(e) => { setOpen(false); onSelect(e) }}
-                            native={true}
-                            sheetSize={32}
+                            onEmojiSelect={(e) => { setOpen(false); onSelect(e) }}
+                            previewPosition="none"
+                            theme="light"
+                            locale="custom"
+                            skinTonePosition="none"
+                            emojiVersion={12}
                             i18n={{
                                 search: t(langKeys.search),
                                 categories: {
                                     search: t(langKeys.search_result),
                                     recent: t(langKeys.favorites),
+                                    smileys: t(langKeys.emoticons),
                                     people: t(langKeys.emoticons),
+                                    animals: t(langKeys.animals),
                                     nature: t(langKeys.animals),
-                                    foods: t(langKeys.food),
-                                    activity: t(langKeys.activities),
+                                    food: t(langKeys.food),
+                                    activities: t(langKeys.activities),
                                     places: t(langKeys.travel),
                                     objects: t(langKeys.objects),
                                     symbols: t(langKeys.symbols),
                                     flags: t(langKeys.flags),
+                                    // Agrega más categorías si es necesario
+                                },
+                                "skins": {
+                                    "choose": "Elige el tono de piel predeterminado",
+                                    "1": "Sin tono",
+                                    "2": "Claro",
+                                    "3": "Medio-Claro",
+                                    "4": "Medio",
+                                    "5": "Medio-Oscuro",
+                                    "6": "Oscuro"
                                 }
                             }}
-                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
+                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
