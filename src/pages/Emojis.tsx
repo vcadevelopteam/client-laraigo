@@ -86,7 +86,7 @@ const Emojis: FC = () => {
                     default: {
                         let foundonstring =[...emoji.keywords, emoji.description.toLowerCase(), emoji.id].some(str => str.startsWith(searchValue.toLowerCase()))
                         //return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
-                        return (foundonstring || String(emoji?.id).toLowerCase().includes(searchValue.toLowerCase())) // && emoji?.categorydesc === category;
+                        return (foundonstring || String(emoji?.id).toLowerCase().startsWith(searchValue.toLowerCase())) // && emoji?.categorydesc === category;
                     }
                 }
             }
