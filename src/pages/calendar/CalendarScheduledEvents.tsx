@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DateRangePicker, FieldEdit, FieldEditMulti, FieldSelect, FieldView, IOSSwitch } from 'components';
-import { getDateCleaned, insCommentsBooking, calendarBookingCancel, getDateToday, selBookingCalendar, dayNames, editCalendarBooking } from 'common/helpers';
+import { getDateCleaned, insCommentsBooking, calendarBookingCancel, getDateToday, selBookingCalendar, dayNames, editCalendarBooking, hash256 } from 'common/helpers';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
@@ -398,6 +398,31 @@ interface CalendarScheduledEventsProps {
     event: Dictionary;
 }
 
+const BookingViewer = ({ item }: { item: Dictionary }) => {
+    const [color, setColor] = useState(item?.color || "#e1e1e1")
+
+    useEffect(() => {
+        if (item.email) {
+            hash256(item.email).then((res) => {
+                setColor('#' + res.substring(0, 6))
+            })
+        }
+    }, [item])
+
+    return (
+        <div
+            style={{
+                backgroundColor: color,
+                paddingLeft: 8
+            }}
+            title={`${item.name} - ${item.personname}`}
+        >
+            {item.personname}
+        </div>
+    )
+}
+
+
 const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
     calendarEventID,
     event
@@ -614,6 +639,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                             calendarEventID
                         )}
                         date={dateRange.startDate!!}
+                        BookingView={BookingViewer}
                         selectBooking={(item) => {
                             setBookingSelected(item);
                             setOpenDialog(true);
@@ -629,7 +655,6 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                             </Button>
                         }
                         setDateRange={setDateRange}
-                    // booking={event}
                     />
                 </div>
             )}

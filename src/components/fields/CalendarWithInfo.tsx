@@ -173,10 +173,11 @@ const useScheduleStyles = makeStyles(theme => ({
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         paddingTop: 1,
-        paddingLeft: 8,
+        // paddingLeft: 8,
         fontWeight: "bold",
         borderRadius: 4,
-        borderLeft: "1px solid white",
+        // borderLeft: "1px solid white",
+        marginLeft: "1px",
         borderBottom: "2px solid white",
         cursor: "pointer",
         zIndex: 2
@@ -186,30 +187,24 @@ const useScheduleStyles = makeStyles(theme => ({
 const BookingTime: FC<{
     item: Dictionary;
     handleClick: (event: any) => void;
-}> = ({ item, handleClick }) => {
-    const [color, setColor] = useState(item?.color || "#e1e1e1")
+    BookingView: ({ item }: { item: any }) => JSX.Element;
+}> = ({ item, handleClick, BookingView }) => {
     const classes = useScheduleStyles();
-
-    useEffect(() => {
-        if (item.email) {
-            hash256(item.email).then((res) => {
-                setColor('#' + res.substring(0, 6))
-            })
-        }
-    }, [item])
 
     return (
         <div
             className={classes.itemBooking}
             style={{
-                backgroundColor: color,
                 height: `${item.totalTime}%`,
                 position: "absolute",
                 top: `${item.initTime}%`
             }}
-            title={item.name ? `${item.name} - ${item.personname}` : ""}
             onClick={() => handleClick(item)}
-        >{item.personname}</div>
+        >
+            <BookingView
+                item={item}
+            />
+        </div>
     )
 }
 
@@ -217,7 +212,8 @@ const BookingTime: FC<{
 const BoxDay: FC<{
     hourDay: HourDayProp;
     handleClick: (event: any) => void;
-}> = ({ hourDay, handleClick }) => {
+    BookingView: ({ item }: { item: any }) => JSX.Element;
+}> = ({ hourDay, handleClick, BookingView }) => {
     const classes = useScheduleStyles();
 
     return (
@@ -225,15 +221,14 @@ const BoxDay: FC<{
             className={classes.boxDay}
             style={{ borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1", position: "relative" }}
         >
-            {/* <div style={{ maxWidth: 140, display: "flex", width: 130, marginLeft: 10 }}> */}
-            {hourDay.data?.map(x => (
+            {hourDay.data?.map((x, index) => (
                 <BookingTime
-                    key={x.calendarbookinguuid}
+                    key={index}
                     item={x}
+                    BookingView={BookingView}
                     handleClick={handleClick}
                 />
             ))}
-            {/* </div> */}
         </div>
     )
 }
@@ -243,9 +238,10 @@ const CalendarWithInfo: FC<{
     selectBooking: (p: any) => void;
     // booking: Dictionary;
     ButtonAux?: JSX.Element;
+    BookingView: ({ item }: { item: any }) => JSX.Element;
     date: Date;
     setDateRange: (p: any) => void
-}> = ({ rb, selectBooking, date, setDateRange, ButtonAux }) => {
+}> = ({ rb, selectBooking, date, setDateRange, ButtonAux, BookingView }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -354,6 +350,7 @@ const CalendarWithInfo: FC<{
                         <BoxDay
                             key={index}
                             hourDay={day}
+                            BookingView={BookingView}
                             handleClick={(e) => {
                                 selectBooking(e);
                                 setDateRange({
