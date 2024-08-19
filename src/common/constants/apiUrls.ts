@@ -68,7 +68,7 @@ const APIS_URL: Record<string, Record<string, string | boolean>> = {
     STAGING: {
         API: 'https://stagingapi.laraigo.com/api',
         WS: 'https://stagingsocket.laraigo.com',
-        CHATFLOW: 'https://chatflow-staging.s3-web.us-east.cloud-object-storage.appdomain.cloud',
+        CHATFLOW: 'https://chatflow-staging.s3-web.us-south.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
