@@ -1138,13 +1138,24 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 value={optionsSelected}
                 renderTags={disabled ? (tagValue, getTagProps) =>
                     tagValue.map((option, index) => (
-                        <Chip
-                            key={index}
-                            label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
-                            {...getTagProps({ index })}
-                            className={classes.chip}
-                            style={{ margin: '0.4rem 0.5rem 0.4rem 0' }}
-                        />
+                        disabled ? (
+                            <Chip
+                                key={index}                               
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                className={classes.customChip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0', userSelect: 'text'}}
+                                onMouseDown={(event) => event.stopPropagation()}
+                                onClick={(event) => event.stopPropagation()}
+                            />
+                          ) : (
+                            <Chip
+                                key={index}
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                {...getTagProps({ index })}
+                                className={classes.chip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0' }}
+                            />
+                          )                       
                     )) : undefined
                 }
                 renderOption={(option, { selected }: any) => (

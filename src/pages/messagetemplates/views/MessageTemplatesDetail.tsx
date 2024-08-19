@@ -303,7 +303,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const uploadResult = useSelector((state) => state.main.uploadFile);
     const dataChannel =
         multiData[2] && multiData[2].success
-            ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
+            ? multiData[2].data
+            //? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
             : [];
     const [bodyAlert, setBodyAlert] = useState("");
     const [bodyAttachment, setBodyAttachment] = useState(row?.body || "");
@@ -2592,7 +2593,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 size="normal"
                                             />
                                         ) : (
-                                            <FieldSelect //acá
+                                            <FieldSelect
                                                 className="col-6"
                                                 data={dataChannel}
                                                 disabled={!isNew || disableInput}
