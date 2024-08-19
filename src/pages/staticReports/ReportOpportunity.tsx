@@ -632,7 +632,9 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
         }, [item]);
 
         return (
-            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#7721AD', paddingLeft: '6px'}}>
+            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#7721AD', paddingLeft: '6px'}}
+                 title={`${item.personname}`}
+            >
                 <div
                     style={{
                         width: 6,
@@ -643,8 +645,10 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                         padding: '4px'
 
                     }}
+
                 />
                 <div style={{ color: '#fff' }}> {}
+
                     {item.personname}
                 </div>
             </div>
@@ -913,6 +917,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                 }
                             )}
                             date={dateRange.startDate!!}
+                            BookingView={BookingViewer}
                             selectBooking={(item) => {
                                 setBookingSelected(item);
                                 setOpenDialog(true);
@@ -928,7 +933,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                     {t(langKeys.back)}
                                 </Button>
                             }
-                            BookingView={BookingViewer}
                             setDateRange={setDateRange}
                         />
 
