@@ -86,6 +86,7 @@ export interface TableConfig {
   registertext?: string;
   useFooter?: boolean;
   ExtraMenuOptions?: ReactElement;
+  cleanImport?: Boolean
 }
 
 export interface Pagination {
