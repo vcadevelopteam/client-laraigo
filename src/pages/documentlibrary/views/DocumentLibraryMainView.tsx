@@ -295,10 +295,13 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	}, [importRes, waitDelete]);
 
 	const isValidData = (element: DocumentLibraryData) => {
+		const groupList = (multiResult?.data?.[0]?.data || []).map(x=>x.domainvalue)
+		const groups = element.groups.split(",") || []
+		
 		return (
 			typeof element.title === 'string' && element.title.length > 0 &&
 			(!element.description || (typeof element.description === 'string' && element.description.length <= 256)) &&
-			typeof element.groups === 'string' && element.groups.length > 0 &&
+			typeof element.groups === 'string' && element.groups.length > 0 && groups.every(e => groupList.includes(e)) &&
 			typeof element.linkfile === 'string' && element.linkfile.length > 0 &&
 			typeof element.category === 'string' && element.category.length > 0
 		);
@@ -307,7 +310,12 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	const handleUpload = async (files: any) => {
 		const file = files?.item(0);
 		if (file) {
-			const data: DocumentLibraryData[] = (await uploadExcel(file, undefined)) as DocumentLibraryData[];
+			const datainit: DocumentLibraryData[] = (await uploadExcel(file, undefined)) as DocumentLibraryData[];
+            const data = datainit.map(item => ({
+                ...item,
+                groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
+            }));
+            
 			if (data.length > 0) {
 				const error = data.some((element) => !isValidData(element));
 				if (!error) {
