@@ -100,7 +100,6 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSave(false)
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_change_plan) }));
-                setViewSelected("view-1")
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error")
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))

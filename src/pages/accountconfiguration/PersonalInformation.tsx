@@ -53,10 +53,10 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
             lastname: user?.lastname,
             firstname: user?.firstname,
             languagesettings: user?.languagesettings || {
-                language: 'ES_LAT',
-                spellingcheck: 'ACTIVED',
-                translatelanguage: 'ES_LAT',
-                messagesendingmode: 'Default',
+                language: '',
+                spellingcheck: '',
+                translatelanguage: '',
+                messagesendingmode: '',
             },
             operation: "SAVEINFORMATION" //"CHANGEPASSWORD"
         }
@@ -71,7 +71,6 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
                 setwaitsave(false)
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
                 dispatch(updateUserInformation(getValues('firstname') + "", getValues('lastname') + "", getValues('image') + ""));
-                setViewSelected("view-1")
             } else if (resSetting.error) {
                 const errormessage = t(resSetting.code || "error_unexpected_error")
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
