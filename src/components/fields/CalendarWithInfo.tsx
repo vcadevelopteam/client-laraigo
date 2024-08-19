@@ -169,15 +169,14 @@ const useScheduleStyles = makeStyles(theme => ({
     itemBooking: {
         wordBreak: "break-word",
         overflow: "hidden",
-        width: 135,
+        width: 100,
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         paddingTop: 1,
         // paddingLeft: 8,
         fontWeight: "bold",
         borderRadius: 4,
-        // borderLeft: "1px solid white",
-        marginLeft: "1px",
+        borderLeft: "1px solid white",
         borderBottom: "2px solid white",
         cursor: "pointer",
         zIndex: 2
@@ -186,9 +185,10 @@ const useScheduleStyles = makeStyles(theme => ({
 
 const BookingTime: FC<{
     item: Dictionary;
+    index: number;
     handleClick: (event: any) => void;
     BookingView: ({ item }: { item: any }) => JSX.Element;
-}> = ({ item, handleClick, BookingView }) => {
+}> = ({ item, handleClick, BookingView, index }) => {
     const classes = useScheduleStyles();
 
     return (
@@ -197,6 +197,7 @@ const BookingTime: FC<{
             style={{
                 height: `${item.totalTime}%`,
                 position: "absolute",
+                marginLeft: index * 32,
                 top: `${item.initTime}%`
             }}
             onClick={() => handleClick(item)}
@@ -223,6 +224,7 @@ const BoxDay: FC<{
         >
             {hourDay.data?.map((x, index) => (
                 <BookingTime
+                    index={index}
                     key={index}
                     item={x}
                     BookingView={BookingView}

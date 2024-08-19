@@ -413,7 +413,7 @@ const BookingViewer = ({ item }: { item: Dictionary }) => {
         <div
             style={{
                 backgroundColor: color,
-                paddingLeft: 8
+                paddingLeft: 4
             }}
             title={`${item.name} - ${item.personname}`}
         >
@@ -644,16 +644,6 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                             setBookingSelected(item);
                             setOpenDialog(true);
                         }}
-                        ButtonAux={
-                            <Button
-                                color="primary"
-                                style={{ backgroundColor: "#FB5F5F" }}
-                                type="button"
-                                variant="contained"
-                            >
-                                {t(langKeys.back)}
-                            </Button>
-                        }
                         setDateRange={setDateRange}
                     />
                 </div>
