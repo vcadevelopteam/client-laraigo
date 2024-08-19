@@ -1728,6 +1728,7 @@ const Users: FC = () => {
     const [dataChannelsTemp, setdataChannelsTemp] = useState<Dictionary[]>([]);
     const [waitImport, setWaitImport] = useState(false);
     const [waitChanges, setwaitChanges] = useState(false);
+    const [cleanImport, setCleanImport] = useState(false);
     const domains = useSelector((state) => state.person.editableDomains);
     const user = useSelector((state) => state.login.validateToken.user);
     useEffect(() => {
@@ -2032,10 +2033,11 @@ const Users: FC = () => {
         if (file) {
             const excel: any = await uploadExcel(file, undefined);
             const firstdatainit = array_trimmer(excel);
+            debugger
             const datainit = firstdatainit.map(item => ({
                 ...item,
-                role: item.role.replace(/;/g, ','),
-                groups: item.groups.replace(/;/g, ',')
+                role: String(item.role).replace(/\s+/g, '').replace(/;/g, ','),
+                groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
             }));
             
             const data = datainit.filter((f: Dictionary) => {
@@ -2263,9 +2265,11 @@ const Users: FC = () => {
                             })
                         );
                     }
+                    setCleanImport(!cleanImport)
                 }
             } else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: messageerrors }));
+                setCleanImport(!cleanImport)
             }
         }
     };
@@ -2420,6 +2424,7 @@ const Users: FC = () => {
                     loading={mainResult.loading}
                     register={true}
                     hoverShadow={true}
+                    cleanImport={cleanImport}
                     handleRegister={() => checkLimit("REGISTER")}
                     pageSizeDefault={IDUSER === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
                     initialPageIndex={IDUSER === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
