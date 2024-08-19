@@ -526,7 +526,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         const communicationChannelId = getValues('communicationchannelid');   
         let filteredTemplates;
     
-        if (type === "MAIL" || type === "HTML") {
+        if (type === "MAIL" || type === "HTML" || type === 'SMS') {
             filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);
         } else {
             filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);    
