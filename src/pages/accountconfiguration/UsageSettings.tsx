@@ -57,20 +57,20 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     const [waitsave, setwaitsave] = useState(false);
     const langupdate = useSelector(state => state.main.execute);
     const storedLanguageSettings = JSON.parse(localStorage.getItem('languagesettings') || '{}');
-    const { register, getValues, setValue, formState: { errors }, trigger } = useForm({
-        defaultValues: {           
-            languagesettings: user?.languagesettings || {
-                languagereview: "",//storedLanguageSettings.languagereview || 'ES_LAT',
-                gramaticalactivation: "",//storedLanguageSettings.gramaticalactivation || 'ACTIVED',
-                languagetranslation: storedLanguageSettings.languagetranslation || 'es-419',
-                sendingmode: storedLanguageSettings.sendingmode || 'Default',
-            },
+    const { register, handleSubmit, getValues, setValue, formState: { errors }, trigger } = useForm({
+        defaultValues: {   
             oldpassword: '',
             password: '',
             confirmpassword: '',
             image: '',
             lastname: '',
-            firstname: '',
+            firstname: '',        
+            languagesettings: user?.languagesettings || {
+                languagereview: "",
+                gramaticalactivation: "",
+                languagetranslation: storedLanguageSettings.languagetranslation || 'es-419',
+                sendingmode: storedLanguageSettings.sendingmode || 'Default',
+            },           
             operation: "SAVEINFORMATION" 
         }
     });    
@@ -128,7 +128,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
                 const data = getValues();
                 dispatch(updateLocalLanguage(JSON.stringify(data.languagesettings)))
-                setViewSelected("view-1");
+                setViewSelected("view-4");
             } else if (langupdate.error) {
                 const errormessage = t(langupdate.code || "error_unexpected_error");
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
@@ -146,7 +146,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                 languagesettings: data.languagesettings
             };
             localStorage.setItem('languagesettings', JSON.stringify(data.languagesettings));
-            dispatch(execute(updateLanguageSettings({ languagesettings: updatedUser.languagesettings })));
+            //dispatch(execute(updateLanguageSettings({ languagesettings: updatedUser.languagesettings })));
             dispatch(showBackdrop(true))
             setwaitsave(true);
         };
@@ -157,12 +157,22 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
             callback
         }));
     };
-    
-    
 
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            setwaitsave(true)
+            dispatch(updateUserSettings(data))
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });  
+    
     return (
         <div style={{ width: "100%" }}>
-            <form onSubmit={handleSave}>
+            <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>                
                     <div className={classes.seccionTitle}>{t(langKeys.usagesettings)}</div>
                     <div style={{ display: 'flex', gap: '10px'}}>
@@ -171,8 +181,7 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                             variant="contained"
                             disabled={waitsave}
                             color="primary"
-                            type="button"
-                            onClick={handleSave}
+                            type="submit"
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}
