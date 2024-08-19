@@ -647,13 +647,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             <div style={{ width: '100%' }}>
                 <div className={classes.calendarContainer}>
                     <div style={{ marginTop: '20px', width: '100%' }}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => setViewSelected2("view-2")}
-                        >
-                            {t('Regresar')}
-                        </Button>
                         <CalendarWithInfo
                             rb={getLeadsReportSel(
                                 {
@@ -667,6 +660,17 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                 setBookingSelected(item);
                                 setOpenDialog(true);
                             }}
+                            ButtonAux={
+                                <Button
+                                    color="primary"
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    type="button"
+                                    variant="contained"
+                                    onClick={() => setViewSelected2("view-2")}
+                                >
+                                    {t(langKeys.back)}
+                                </Button>
+                            }
                             setDateRange={setDateRange}
                         />
 
