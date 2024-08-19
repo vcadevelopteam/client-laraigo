@@ -3,8 +3,22 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
-import { getReportColumnSel, getReportFilterSel, getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
-import {DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch, TemplateBreadcrumbs} from "components";
+import {
+    getReportColumnSel,
+    getReportFilterSel,
+    getUserProductivityGraphic,
+    getUserProductivitySel,
+    selBookingCalendar
+} from "common/helpers/requestBodies";
+import {
+    DateRangePicker,
+    DialogZyx,
+    FieldMultiSelect,
+    FieldSelect,
+    IOSSwitch,
+    TemplateBreadcrumbs,
+    TitleDetail
+} from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
@@ -23,10 +37,14 @@ import Graphic from "components/fields/Graphic";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import ListIcon from "@material-ui/icons/List";
 import { Settings } from "@material-ui/icons";
+import CalendarScheduledEvents from "../calendar/CalendarScheduledEvents";
+import CalendarWithInfo from "components/fields/CalendarWithInfo";
 
 interface DetailProps {
     row: Dictionary | null;
     allFilters: Dictionary[];
+    calendarEventID: number;
+    event: Dictionary;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -116,7 +134,7 @@ const initialRange = {
 }
 
 
-const OpportunityReport: FC<DetailProps> = ({ allFilters }) => {
+const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -124,7 +142,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters }) => {
     const mainAux = useSelector((state) => state.main.mainAux);
     const [groupsdata, setgroupsdata] = useState<any>([]);
     const [allParameters, setAllParameters] = useState({});
-    const [dateRange, setdateRange] = useState<Range>({
+    const [dateRange, setDateRange] = useState<Range>({
         startDate: new Date(new Date().setDate(1)),
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: "selection",
@@ -138,7 +156,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters }) => {
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null });
 
     const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
-
+    const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
+    const [openDialog, setOpenDialog] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState("GRID");
 
@@ -435,7 +454,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters }) => {
                                                         open={openDateRangeModal}
                                                         setOpen={setOpenDateRangeModal}
                                                         range={dateRange}
-                                                        onSelect={setdateRange}
+                                                        onSelect={setDateRange}
                                                     >
                                                         <Button
                                                             disabled={detailCustomReport.loading}
@@ -627,16 +646,32 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters }) => {
         return (
             <div style={{ width: '100%' }}>
                 <div className={classes.calendarContainer}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => setViewSelected2("view-2")}
-                    >
-                        {t('Regresar')}
-                    </Button>
                     <div style={{ marginTop: '20px', width: '100%' }}>
-                        <p>ssssss</p>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => setViewSelected2("view-2")}
+                        >
+                            {t('Regresar')}
+                        </Button>
+                        <CalendarWithInfo
+                            rb={getLeadsReportSel(
+                                {
+                                    communicationchannel: selectedChannel || 0,
+                                    startdate: dateRangeCreateDate.startDate,
+                                    enddate: dateRangeCreateDate.endDate,
+                                }
+                            )}
+                            date={dateRange.startDate!!}
+                            selectBooking={(item) => {
+                                setBookingSelected(item);
+                                setOpenDialog(true);
+                            }}
+                            setDateRange={setDateRange}
+                        />
+
                     </div>
+
                 </div>
             </div>
         );
