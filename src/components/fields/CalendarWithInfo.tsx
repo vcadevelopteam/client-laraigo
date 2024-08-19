@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import React, { FC, useCallback, useEffect, useState } from "react";
@@ -130,7 +130,7 @@ const useScheduleStyles = makeStyles(theme => ({
         borderBottom: "none",
         padding: theme.spacing(1),
         display: 'grid',
-        gridTemplateColumns: '1fr 120px',
+        gridTemplateColumns: '1fr auto',
     },
     containerInfoTitle: {
         fontWeight: 'bold',
@@ -141,9 +141,9 @@ const useScheduleStyles = makeStyles(theme => ({
         border: '1px solid #e0e0e0',
         display: 'flex',
         height: 40,
+        width: "120px",
         justifySelf: 'center',
         alignSelf: 'center',
-        width: '100%'
     },
     buttonMonth: {
         flex: 1,
@@ -191,13 +191,13 @@ const BookingTime: FC<{
     const classes = useScheduleStyles();
 
     useEffect(() => {
-      if (item.email) {
-        hash256(item.email).then((res) => {
-            setColor('#' + res.substring(0, 6))
-        })
-      }
+        if (item.email) {
+            hash256(item.email).then((res) => {
+                setColor('#' + res.substring(0, 6))
+            })
+        }
     }, [item])
-    
+
     return (
         <div
             className={classes.itemBooking}
@@ -207,7 +207,7 @@ const BookingTime: FC<{
                 position: "absolute",
                 top: `${item.initTime}%`
             }}
-            title={`${item.name} - ${item.personname}`}
+            title={item.name ? `${item.name} - ${item.personname}` : ""}
             onClick={() => handleClick(item)}
         >{item.personname}</div>
     )
@@ -242,9 +242,10 @@ const CalendarWithInfo: FC<{
     rb: IRequestBody;
     selectBooking: (p: any) => void;
     // booking: Dictionary;
+    ButtonAux?: JSX.Element;
     date: Date;
     setDateRange: (p: any) => void
-}> = ({ rb, selectBooking, date, setDateRange }) => {
+}> = ({ rb, selectBooking, date, setDateRange, ButtonAux }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -301,19 +302,22 @@ const CalendarWithInfo: FC<{
                         {t((langKeys as Dictionary)[`month_${("" + (rangeDates[0]?.date.getMonth() + 1)).padStart(2, "0")}`])} {rangeDates[0]?.date.getFullYear()}
                     </div>
                 </div>
-                <div className={classes.containerButtons}>
-                    <div
-                        className={classes.buttonMonth}
-                        onClick={() => handleChangeWeek(-1)}
-                    >
-                        <NavigateBeforeIcon />
-                    </div>
-                    <div
-                        className={classes.buttonMonth}
-                        style={{ borderLeft: '1px solid #e0e0e0' }}
-                        onClick={() => handleChangeWeek(1)}
-                    >
-                        <NavigateNextIcon />
+                <div style={{ display: "flex", gap: 8 }}>
+                    {ButtonAux && ButtonAux}
+                    <div className={classes.containerButtons}>
+                        <div
+                            className={classes.buttonMonth}
+                            onClick={() => handleChangeWeek(-1)}
+                        >
+                            <NavigateBeforeIcon />
+                        </div>
+                        <div
+                            className={classes.buttonMonth}
+                            style={{ borderLeft: '1px solid #e0e0e0' }}
+                            onClick={() => handleChangeWeek(1)}
+                        >
+                            <NavigateNextIcon />
+                        </div>
                     </div>
                 </div>
             </div>
