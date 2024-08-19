@@ -738,7 +738,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 optionValue="paymentplanid"
                             />}
                     </div>
-                    {!getValues('billbyorg') && (
+                    {getValues('billbyorg') && (
                         <>
                             <div className="row-zyx">
                                 <FieldSelect
