@@ -11,7 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetAllMain, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, execute, setMemoryTable, cleanMemoryTable } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { DuplicateIcon } from 'icons';
@@ -153,15 +153,19 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
     );
 }
 
+const IDINPUTVALIDATION = "IDINPUTVALIDATION"
+
 const InputValidation: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state => state.main.mainData);
     const executeResult = useSelector(state => state.main.execute);
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [generalFilter, setGeneralFilter] = useState("");
     const arrayBread = [
         { id: "view-1", name: t(langKeys.inputvalidation) },
     ];
@@ -212,7 +216,11 @@ const InputValidation: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(setMemoryTable({
+            id: IDINPUTVALIDATION
+        }))
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -268,12 +276,17 @@ const InputValidation: FC = () => {
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.inputvalidation, { count: 2 })}
-                    data={mainResult.mainData.data}
+                    data={mainResult.data}
                     download={true}
                     onClickRow={handleEdit}
-                    loading={mainResult.mainData.loading}
+                    loading={mainResult.loading}
                     register={true}
                     handleRegister={handleRegister}
+                    defaultGlobalFilter={generalFilter}
+                    setOutsideGeneralFilter={setGeneralFilter}
+                    pageSizeDefault={IDINPUTVALIDATION === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDINPUTVALIDATION === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDINPUTVALIDATION === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 // fetchData={fetchData}
                 />
             </div>
