@@ -2,33 +2,39 @@ import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { cleanViewChange, getCollectionAux, getMainGraphic, getMultiCollection, resetMainAux, setViewChange } from "store/main/actions";
 import {
-    getReportColumnSel,
+    cleanViewChange,
+    execute,
+    getCollectionAux,
+    getMainGraphic,
+    getMultiCollection,
+    resetMainAux,
+    setViewChange
+} from "store/main/actions";
+import {
     getReportFilterSel,
-    getUserProductivityGraphic,
-    getUserProductivitySel,
-    selBookingCalendar
+
 } from "common/helpers/requestBodies";
 import {
     DateRangePicker,
     DialogZyx,
-    FieldMultiSelect,
-    FieldSelect,
-    IOSSwitch,
-    TemplateBreadcrumbs,
-    TitleDetail
+    FieldSelect, FieldView,
+
 } from "components";
 import { makeStyles } from "@material-ui/core/styles";
-import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon } from "icons";
 import { Range } from "react-date-range";
 import CategoryIcon from "@material-ui/icons/Category";
 import TableZyx from "components/fields/table-simple";
-import { convertLocalDate,
-    getCommChannelLst,
-    getDateCleaned, getLeadReportGraphicSel, getLeadsReportSel, getRecordVoicecallGraphic, getReportGraphic, exportExcel } from "common/helpers";
+import {
+    convertLocalDate,
+
+    getLeadReportGraphicSel,
+    getLeadsReportSel,
+    getReportGraphic,
+    exportExcel,
+} from "common/helpers";
 import { langKeys } from "lang/keys";
 import {Dictionary, IFetchData} from "@types";
 import { useForm } from "react-hook-form";
@@ -37,8 +43,11 @@ import Graphic from "components/fields/Graphic";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import ListIcon from "@material-ui/icons/List";
 import { Settings } from "@material-ui/icons";
-import CalendarScheduledEvents from "../calendar/CalendarScheduledEvents";
 import CalendarWithInfo from "components/fields/CalendarWithInfo";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
 
 interface DetailProps {
     row: Dictionary | null;
@@ -105,7 +114,214 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
     },
+    colInput: {
+        width: '100%'
+    },
 }));
+
+const PriorityStars = ({ priority }: { priority: string }) => {
+    let stars = 0;
+
+    switch (priority) {
+        case 'HIGH':
+            stars = 3;
+            break;
+        case 'MEDIUM':
+            stars = 2;
+            break;
+        case 'LOW':
+            stars = 1;
+            break;
+        default:
+            stars = 0;
+            break;
+    }
+
+    return (
+        <div>
+            {Array.from({ length: 3 }).map((_, index) =>
+                index < stars ? '⭐' : ''
+            )}
+        </div>
+    );
+};
+
+const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
+};
+
+const DialogOpportunity: React.FC<{
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    event: Dictionary;
+    booking: Dictionary | null;
+    fetchData: () => void
+}> = ({ setOpenModal, openModal, event, booking, fetchData }) => {
+    const { t } = useTranslation();
+    const classes = useStyles();
+
+    return (
+        <Dialog
+            open={openModal}
+            fullWidth
+            maxWidth="sm"
+        >
+            <DialogTitle>
+                {booking?.personname}
+            </DialogTitle>
+            <DialogContent>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <div style={{ width: "50%", display: 'flex', gap: 8 }}>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
+                                    label={`${t(langKeys.report_opportunity_ticket)}`}
+                                    value={booking?.ticketnum}
+                                    className={classes.colInput}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_datehour)}`}
+                                value={formatDate(booking?.createdate)}
+                                className={classes.colInput}
+                            />
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 20 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_description)}`}
+                                value={booking?.description}
+                                className={classes.colInput}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_fullname)}`}
+                                value={booking?.fullname}
+                                className={classes.colInput}
+                            />
+                        </div>
+                    </div>
+
+
+                    <div style={{ display: 'flex', gap: 20 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_lastupdate)}`}
+                                value={formatDate(booking?.lastchangestatusdate)}
+                                className={classes.colInput}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_dateinopportunity)}`}
+                                value={formatDate(booking?.date_deadline)}
+                                className={classes.colInput}
+                            />
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 20 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_displayname)}`}
+                                value={booking?.displayname}
+                                className={classes.colInput}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_priority)}`}
+                                value={<PriorityStars priority={booking?.priority} />}
+                                className={classes.colInput}
+                            />
+                        </div>
+
+                    </div>
+                    <div style={{ display: 'flex', gap: 20 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_phone)}`}
+                                value={booking?.phone}
+                                className={classes.colInput}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_tags)}`}
+                                value={booking?.tags}
+                                className={classes.colInput}
+                            />
+                        </div>
+
+                    </div>
+                    <div style={{ display: 'flex', gap: 20 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_email)}`}
+                                value={booking?.email}
+                                className={classes.colInput}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_products)}`}
+                                value={booking?.products}
+                                className={classes.colInput}
+                            />
+                        </div>
+
+                    </div>
+                    <div style={{ display: 'flex', gap: 20 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={`${t(langKeys.report_opportunity_expectedincome)}`}
+                                value={booking?.expected_revenue}
+                                className={classes.colInput}
+                            />
+                        </div>
+
+
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                        <FieldView
+                            label={`${t(langKeys.report_opportunity_expectedimplementationdate)}`}
+                            value={formatDate(booking?.estimatedimplementationdate)}
+                            className={classes.colInput}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                        <FieldView
+                            label={`${t(langKeys.report_opportunity_expectedbillingdate)}`}
+                            value={formatDate(booking?.estimatedbillingdate)}
+                            className={classes.colInput}
+                        />
+                    </div>
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setOpenModal(false)}>
+                    {t(langKeys.cancel)}
+                </Button>
+            </DialogActions>
+        </Dialog >
+    )
+}
 
 const columnsTemp = [
     "ticketnum",
@@ -393,6 +609,47 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     };
+    const BookingViewer = ({ item }: { item: Dictionary }) => {
+        const [color, setColor] = useState(item?.color || "#e1e1e1");
+
+        useEffect(() => {
+            if (item.priority) {
+                switch (item.priority.toUpperCase()) {
+                    case 'LOW':
+                        setColor('#069ce2');
+                        break;
+                    case 'MEDIUM':
+                        setColor('#f4be25');
+                        break;
+                    case 'HIGH':
+                        setColor('#cf0100');
+                        break;
+                    default:
+                        setColor("#e1e1e1");
+                        break;
+                }
+            }
+        }, [item]);
+
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#7721AD', paddingLeft: '6px'}}>
+                <div
+                    style={{
+                        width: 6,
+                        height: 6,
+                        backgroundColor: color,
+                        borderRadius: '50%',
+                        marginRight: 4,
+                        padding: '4px'
+
+                    }}
+                />
+                <div style={{ color: '#fff' }}> {}
+                    {item.personname}
+                </div>
+            </div>
+        );
+    };
 
 
     const format = (date: Date) => date.toISOString().split("T")[0];
@@ -671,13 +928,22 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                     {t(langKeys.back)}
                                 </Button>
                             }
+                            BookingView={BookingViewer}
                             setDateRange={setDateRange}
                         />
 
                     </div>
 
                 </div>
+                <DialogOpportunity
+                    booking={bookingSelected}
+                    setOpenModal={setOpenDialog}
+                    openModal={openDialog}
+                    event={event}
+                    fetchData={fetchData}
+                />
             </div>
+
         );
     } else {
         return <div>error</div>;
