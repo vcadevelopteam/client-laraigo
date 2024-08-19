@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, MouseEventHandler } from 'react';
+import React, { useState, useEffect, useMemo, MouseEventHandler, useRef } from 'react';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -612,7 +612,7 @@ const TableZyx = React.memo(({
             })
         }
     )
-
+    const fileInputRef = useRef(null);
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
             return { ...prev, filters, pageIndex: 0, trigger: true }
@@ -1017,8 +1017,12 @@ const TableZyx = React.memo(({
                                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                     id="laraigo-upload-csv-file"
                                     type="file"
-                                    style={{ display: 'none' }}
-                                    onChange={(e) => importCSV(e.target.files)}
+                                    style={{ display: 'none' }}    
+                                    onChange={(e) => {importCSV(e.target.files);
+                                        if (fileInputRef.current) {
+                                            fileInputRef.current.value = '';
+                                        }}}
+                                    ref={fileInputRef}
                                 />
                                 <label htmlFor="laraigo-upload-csv-file">
                                     <Button

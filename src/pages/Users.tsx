@@ -1953,8 +1953,8 @@ const Users: FC = () => {
             const firstdatainit = array_trimmer(excel);
             const datainit = firstdatainit.map(item => ({
                 ...item,
-                role: item.role.replace(/;/g, ','),
-                groups: item.groups.replace(/;/g, ',')
+                role: String(item.role).replace(/\s+/g, '').replace(/;/g, ','),
+                groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
             }));
             
             const data = datainit.filter((f: Dictionary) => {
