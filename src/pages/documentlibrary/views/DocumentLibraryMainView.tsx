@@ -35,6 +35,7 @@ interface DocumentLibraryMainViewProps {
 }
 
 const selectionKey = 'documentlibraryid';
+const IDDOCUMENTLIBRARY = "IDDOCUMENTLIBRARY";
 
 const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSelected, setRowSelected, fetchData }) => {
 	const { t } = useTranslation();
@@ -48,6 +49,8 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	const [selectedRows, setSelectedRows] = useState<any>({});
 	const [waitUpload, setWaitUpload] = useState(false);
 	const [waitDelete, setWaitDelete] = useState(false);
+    const memoryTable = useSelector(state => state.main.memoryTable);
+	const [globalFilter, setGlobalFilter] = useState("");
 	const [documentLibraryData, setDocumentLibraryData] = useState<any>([]);
 	const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 	const importRes = useSelector((state) => state.main.execute);
@@ -368,6 +371,11 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 				register={superadmin}
 				handleRegister={handleRegister}
 				importCSV={handleUpload}
+				defaultGlobalFilter={globalFilter}
+				setOutsideGeneralFilter={setGlobalFilter}
+				pageSizeDefault={IDDOCUMENTLIBRARY === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+				initialPageIndex={IDDOCUMENTLIBRARY === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+				initialStateFilter={IDDOCUMENTLIBRARY === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
 				ButtonsElement={() => (
 					<>
 						<Button
