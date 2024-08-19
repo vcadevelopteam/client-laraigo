@@ -217,6 +217,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [previousSource, ] = useState('INTERNAL');
     const initialBatchjson = { date: '', time: '', quantity: 1 };
 
+
+    console.log('dataMessageTemplate', dataMessageTemplate)
+
     const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
@@ -526,7 +529,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         const communicationChannelId = getValues('communicationchannelid');   
         let filteredTemplates;
     
-        if (type === "MAIL" || type === "HTML") {
+        if (type === "MAIL" || type === "HTML" || type === 'SMS') {
             filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);
         } else {
             filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);    
