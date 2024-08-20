@@ -433,12 +433,17 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             {
                 Header: t(langKeys.report_opportunity_ticket),
                 accessor: 'ticketnum',
+                showGroupedBy: true,
+                showColumn: true,
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_datehour),
                 accessor: 'createdate',
                 type: 'date',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: (props: CellProps<Dictionary>) => {
                     const { createdate } = props.cell.row.original || {};
                     return createdate ? new Date(createdate).toLocaleString() : null;
@@ -447,12 +452,18 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             {
                 Header: t(langKeys.report_opportunity_description),
                 accessor: 'description',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_lastupdate),
                 accessor: 'lastchangestatusdate',
                 type: 'date',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: (props: CellProps<Dictionary>) => {
                     const { lastchangestatusdate } = props.cell.row.original || {};
                     return lastchangestatusdate ? new Date(lastchangestatusdate).toLocaleString() : null;
@@ -462,6 +473,9 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 Header: t(langKeys.report_opportunity_dateinopportunity),
                 accessor: 'date_deadline',
                 type: 'date',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: (props: CellProps<Dictionary>) => {
                     const { date_deadline } = props.cell.row.original || {};
                     return date_deadline ? new Date(date_deadline).toLocaleString() : null;
@@ -470,27 +484,42 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             {
                 Header: t(langKeys.report_opportunity_displayname),
                 accessor: 'displayname',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_phone),
                 accessor: 'phone',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_email),
                 accessor: 'email',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_expectedincome),
                 accessor: 'expected_revenue',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_expectedimplementationdate),
                 accessor: 'estimatedimplementationdate',
                 type: 'date',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: (props: CellProps<Dictionary>) => {
                     const { estimatedimplementationdate } = props.cell.row.original || {};
                     return estimatedimplementationdate ? new Date(estimatedimplementationdate).toLocaleString() : null;
@@ -500,6 +529,9 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 Header: t(langKeys.report_opportunity_expectedbillingdate),
                 accessor: 'estimatedbillingdate',
                 type: 'date',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: (props: CellProps<Dictionary>) => {
                     const { estimatedbillingdate } = props.cell.row.original || {};
                     return estimatedbillingdate ? new Date(estimatedbillingdate).toLocaleString() : null;
@@ -508,26 +540,41 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             {
                 Header: t(langKeys.report_opportunity_tags),
                 accessor: 'tags',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_phase),
                 accessor: 'phase',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_priority),
                 accessor: 'priority',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_fullname),
                 accessor: 'fullname',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_products),
                 accessor: 'products',
+                showGroupedBy: true,
+                showColumn: true,
+
                 Cell: cell
             },
         ],
