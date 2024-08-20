@@ -2594,6 +2594,28 @@ const translation: LangKeys = {
   report_tipification_closedby: 'Closed by',
   report_tipification_closetype: 'Close type',
 
+  report_crm: 'Opportunities',
+  report_opportunity: 'Opportunities',
+  report_opportunity_channels: 'Channels',
+  report_opportunity_ticket: 'Ticket',
+  report_opportunity_datehour: 'Creation date and time',
+  report_opportunity_description: 'Opportunity',
+  report_opportunity_lastupdate: 'Last update',
+  report_opportunity_dateinopportunity: 'Date in opportunity',
+  report_opportunity_displayname: 'Customer',
+  report_opportunity_phone: 'Phone',
+  report_opportunity_email: 'Email',
+  report_opportunity_expectedincome: 'Expected income',
+  report_opportunity_expectedimplementationdate: 'Expected implementation date',
+  report_opportunity_expectedbillingdate: 'Expected billing date',
+  report_opportunity_tags: 'Tags',
+  report_opportunity_phase: 'Phase',
+  report_opportunity_priority: 'Priority',
+  report_opportunity_fullname: 'Assigned advisor',
+  report_opportunity_products: 'Products',
+  report_opportunity_calendarview: 'Calendar View',
+
+
   report_userproductivityhours: 'Hourly agent productivity',
   report_userproductivityhours_datehour: 'Idle time without attention',
   report_userproductivityhours_idletimewithoutattention: 'Date',
@@ -2623,6 +2645,17 @@ const translation: LangKeys = {
   report_userproductivityhours_filter_channels: 'Channels',
   report_reportvoicecall_filter_channels: 'Channels',
   report_userproductivityhours_filter_hours: 'Hour',
+
+  opportunity_funnel: "Opportunity Funnel",
+  opportunity_funnel_channels: "Channels",
+  opportunity_funnel_advisor: "Advisor",
+  opportunity_funnel_product: "Product",
+  opportunity_funnel_quantity: "Quantity",
+  opportunity_funnel_phase: "Phase",
+  opportunity_funnel_new: "New",
+  opportunity_funnel_qualified: "Qualified",
+  opportunity_funnel_proposition: "Proposition",
+  opportunity_funnel_won: "Won",
 
   report_survey: 'Satisfaction surveys',
   report_survey_ticketnum: 'Ticket',
@@ -6424,7 +6457,7 @@ const translation: LangKeys = {
   categorychangetext: 'Enables automatic change of category after registration according to Goal',
   propertybalancetime: 'Configures the balancing time (seconds) of the "BOT HOLDING"',
   message_business_origin: 'message_business_origin',
-  closedtoday: 'Closed today',
+  closedtoday: 'Closed today', 
   spellingcheck: 'Spelling and Grammar Check',
   seehistoricalattachments: 'See historical attachments',
   hidehistoricalattachments: 'Hide historical attachments',
@@ -6444,6 +6477,7 @@ const translation: LangKeys = {
   translatelanguage: 'Conversation Chat',
   chatsettings: 'Message sending mode',
   onboading_channelcomplete: 'The channel must have a name',
+
 };
 
 const enResource: ResourceLanguage = {

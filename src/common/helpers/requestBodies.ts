@@ -1060,6 +1060,7 @@ export const insMessageTemplate = (
         operation,
         categorychange,
         firstbuttons, 
+        
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -5384,6 +5385,18 @@ export const getUserMessageOutbound = ({ startdate, enddate, communicationchanne
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     },
 });
+export const getDashboardFunnelDataSel = ({startdate, enddate, channel, userid, leadproduct}:Dictionary) => ({
+    method: "UFN_LEAD_FUNNEL_SEL",
+    key: "UFN_LEAD_FUNNEL_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        userid,
+        leadproduct,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
+});
 export const modifyPinnedMessage = ({ conversationid, interactionid, interactiontext, operation }: Dictionary) => ({
     method: "UPDATE_PINNED_MESSAGE",
     key: "UPDATE_PINNED_MESSAGE",
@@ -5428,3 +5441,23 @@ export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
         languagesettings: JSON.stringify(languagesettings)
     }
 });
+
+export const getLeadsReportSel = ({communicationchannel, startdate, enddate}:Dictionary) => ({
+    method: "UFN_LEAD_REPORT_SEL",
+    key: "UFN_LEAD_REPORT_SEL",
+    parameters: {
+        communicationchannel,
+        startdate,
+        enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+})
+
+export const getLeadReportGraphicSel = ({communicationchannel, startdate, enddate, column,summarization  }:Dictionary): IRequestBody => ({
+    method: "UFN_LEAD_REPORT_GRAPHIC_SEL",
+    key: "UFN_LEAD_REPORT_GRAPHIC_SEL",
+    parameters: {
+        filters: {}, sorts: {}, communicationchannel, startdate, enddate, column, summarization,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
