@@ -58,10 +58,10 @@ type BreadCrumb = {
 }
 interface MessageTemplatesProps {
     arrayBread: BreadCrumb[];
-    setAuxViewSelected: (view: string) => void;  
+    setAuxViewSelected: (view: string) => void;
 }
 
-const MessageTemplates: React.FC<MessageTemplatesProps> = ({ 
+const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     setAuxViewSelected,
     arrayBread,
 }) => {
@@ -154,7 +154,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
             {
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
-                helpText: t(langKeys.message_templates_channel_help),             
+                helpText: t(langKeys.message_templates_channel_help),
             },
             {
                 accessor: "name",
@@ -291,7 +291,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                     { key: t(langKeys.messagetemplate_high).toUpperCase(), value: "HIGH" },
                     { key: t(langKeys.messagetemplate_medium).toUpperCase(), value: "MEDIUM" },
                     { key: t(langKeys.messagetemplate_low).toUpperCase(), value: "LOW" },
-                    { key: t(langKeys.productcatalog_reviewstatus_pending).toUpperCase(), value: 'NA'}
+                    { key: t(langKeys.productcatalog_reviewstatus_pending).toUpperCase(), value: 'NA' }
                 ],
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
@@ -303,7 +303,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                         switch (type) {
                             case "HSM":
                                 if (!providerquality) {
-                                    return t(langKeys.TEMPLATE2_UNREGISTERED);
+                                    return "-";
                                 }
                                 else if (providerquality === 'HIGH' || providerquality === 'MEDIUM' || providerquality === 'LOW') {
                                     qText = t(`template_${providerquality}`);
@@ -388,7 +388,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                                     limit = t(langKeys.unlimited);
                                     break;
                                 default:
-                                    limit = t(langKeys.TEMPLATE2_UNREGISTERED)
+                                    limit = "-";
                                     break;
                             }
                         }
@@ -657,10 +657,10 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         setWaitSaveExport(true);
     };
 
-    const functionChange = (change:string) => {
-        if(change === "templates"){
+    const functionChange = (change: string) => {
+        if (change === "templates") {
             setViewSelected("view-1")
-        }else{
+        } else {
             setAuxViewSelected(change);
         }
     }
@@ -672,7 +672,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         return (
             <div className={classes.container}>
                 <div className={classes.titleandcrumbs}>
-                    <div style={{ flexGrow: 1}}>
+                    <div style={{ flexGrow: 1 }}>
                         <TemplateBreadcrumbs
                             breadcrumbs={newArrayBread}
                             handleClick={functionChange}
