@@ -573,6 +573,7 @@ const Tipifications: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [cleanImport, setCleanImport] = useState(false);
     const arrayBread = [
         { id: "view-1", name: t(langKeys.classification_plural) },
     ];
@@ -740,7 +741,7 @@ const Tipifications: FC = () => {
             data=data.filter(d => {
                 const hasValidClassification = d.classification !== '' && d.classification != null;
                 const hasValidChannels = d.channels !== '' && d.channels != null;
-                const hasValidType = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "categoría"
+                const hasValidType = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "clasificacion" || d.type.toLowerCase() === "categoría" || d.type.toLowerCase() === "categoria"
                 const parentExists = ['', null, undefined].includes(d.parent) || 
                     Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
                     .includes(String(d.parent));
@@ -760,8 +761,8 @@ const Tipifications: FC = () => {
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        type: (x.type.toLowerCase() === "clasificación") ? 'TIPIFICACION':"CATEGORIA",
-                        oder: (x.type.toLowerCase() === "clasificación") ? '':"1",
+                        type: (x.type.toLowerCase() === "clasificación" || x.type.toLowerCase() === "clasificacion") ? 'TIPIFICACION':"CATEGORIA",
+                        oder: (x.type.toLowerCase() === "clasificación" || x.type.toLowerCase() === "clasificacion") ? '':"1",
                         status: x.status || "ACTIVO",
                         id: 0,
                     }))
@@ -771,6 +772,7 @@ const Tipifications: FC = () => {
             }else{
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_invaliddata) }))
             }
+            setCleanImport(!cleanImport)
         }
     }
 
@@ -845,6 +847,7 @@ const Tipifications: FC = () => {
                         importCSV={importCSV}
                         handleTemplate={handleTemplate}
                         handleRegister={handleRegister}
+                        cleanImport={cleanImport}
                         ButtonsElement={()=>
                             <>
                                 <Button
