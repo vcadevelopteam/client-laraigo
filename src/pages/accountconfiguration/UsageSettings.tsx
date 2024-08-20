@@ -10,8 +10,6 @@ import SaveIcon from '@material-ui/icons/Save';
 import { FieldSelect } from 'components';
 import { manageConfirmation, showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useForm } from 'react-hook-form';
-import { execute } from 'store/main/actions';
-import { updateLanguageSettings } from 'common/helpers';
 import { updateUserSettings } from 'store/setting/actions';
 import { updateLocalLanguage } from 'store/login/actions';
 
@@ -100,7 +98,6 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
         ...item,
         description: capitalizeFirstLetter(item.description)
     }));
-    
 
     const dataActivated = [
         { description: t(langKeys.activated), value: "ACTIVED" },
@@ -114,8 +111,8 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
     ];
 
     useEffect(() => {
-        register('languagesettings.languagereview')//, { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('languagesettings.gramaticalactivation')//, { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('languagesettings.languagereview')
+        register('languagesettings.gramaticalactivation')
         register('languagesettings.languagetranslation', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('languagesettings.sendingmode', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [register, t]);    
@@ -128,13 +125,14 @@ const UsageSettings: React.FC<DetailProps> = ({ setViewSelected }) => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
                 const data = getValues();
                 dispatch(updateLocalLanguage(JSON.stringify(data.languagesettings)))
+                setViewSelected("view-4");
             } else if (langupdate.error) {
                 const errormessage = t(langupdate.code || "error_unexpected_error");
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 setwaitsave(false);
             }
         }
-    }, [langupdate, waitsave, dispatch, t]);
+    }, [langupdate, waitsave, dispatch, t])
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
