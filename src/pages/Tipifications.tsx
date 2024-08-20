@@ -573,6 +573,7 @@ const Tipifications: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [cleanImport, setCleanImport] = useState(false);
     const arrayBread = [
         { id: "view-1", name: t(langKeys.classification_plural) },
     ];
@@ -771,6 +772,7 @@ const Tipifications: FC = () => {
             }else{
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_invaliddata) }))
             }
+            setCleanImport(!cleanImport)
         }
     }
 
@@ -845,6 +847,7 @@ const Tipifications: FC = () => {
                         importCSV={importCSV}
                         handleTemplate={handleTemplate}
                         handleRegister={handleRegister}
+                        cleanImport={cleanImport}
                         ButtonsElement={()=>
                             <>
                                 <Button
