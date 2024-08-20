@@ -224,7 +224,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                if (providerstatus === null) statusText = t(langKeys.TEMPLATE2_UNREGISTERED);
+                                if (providerstatus === null) statusText = t(langKeys.TEMPLATE_REJECTED);
                                 else statusText = t(`TEMPLATE2_${providerstatus}`);
                                 break;
                             default:
