@@ -301,25 +301,30 @@ const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category: string }> 
                 onClose={handleOnClose}
             >
                 <MenuItem key={"menu_item_x_" + emoji?.emojihex} style={{ textAlign: "center" }}>{emoji?.description}</MenuItem>
-                {category === "FAVORITES" &&
-                    <>
-                        <MenuItem key={"menu_item_1_" + emoji?.emojihex} onClick={() => handleExecution(false, false)}>{t(langKeys.emoji_removefavorites)}</MenuItem>
-                        <MenuItem key={"menu_item_2_" + emoji?.emojihex} onClick={() => handleExecution(false, true)}>{t(langKeys.emoji_restricted)}</MenuItem>
-                    </>
-                }
-                {category === "RESTRICTED" &&
-                    <>
-                        <MenuItem key={"menu_item_2_" + emoji?.emojihex} onClick={() => handleExecution(false, false)}>{t(langKeys.emoji_removerestricted)}</MenuItem>
-                        <MenuItem key={"menu_item_1_" + emoji?.emojihex} onClick={() => handleExecution(true, false)}>{t(langKeys.emoji_favorites)}</MenuItem>
-                    </>
-                }
-                {(category !== "RESTRICTED" && category !== "FAVORITES") &&
-                    <>
-                        <MenuItem key={"menu_item_1_" + emoji?.emojihex} onClick={() => handleExecution(true, false)}>{t(langKeys.emoji_favorites)}</MenuItem>
-                        <MenuItem key={"menu_item_2_" + emoji?.emojihex} onClick={() => handleExecution(false, true)}>{t(langKeys.emoji_restricted)}</MenuItem>
-                    </>
-
-                }
+                <MenuItem
+                    key={`menu_item_1_${emoji?.emojihex}`}
+                    onClick={() => handleExecution(
+                        category === "RESTRICTED",
+                        category === "FAVORITES" || category !== "RESTRICTED"
+                    )}
+                >
+                    {category === "RESTRICTED"
+                        ? t(langKeys.emoji_favorites)
+                        : t(langKeys.emoji_removefavorites)
+                    }
+                </MenuItem>
+                <MenuItem
+                    key={`menu_item_2_${emoji?.emojihex}`}
+                    onClick={() => handleExecution(
+                        category !== "RESTRICTED",
+                        category === "RESTRICTED" || category !== "FAVORITES"
+                    )}
+                >
+                    {category === "RESTRICTED"
+                        ? t(langKeys.emoji_removerestricted)
+                        : t(langKeys.emoji_restricted)
+                    }
+                </MenuItem>
             </Menu>
         </>
     )
