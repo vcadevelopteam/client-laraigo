@@ -1750,6 +1750,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
+    
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
@@ -1768,8 +1769,9 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                             onEmojiSelect={onSelect}
                             previewPosition="none"
                             theme="light"
-                            locale="custom"
                             skinTonePosition="none"
+                            noCountryFlags={false}
+                            // set="facebook"
                             emojiVersion={12}
                             i18n={{
                                 search: t(langKeys.search),
@@ -1799,7 +1801,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                                 }
                             }}
                             recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
-                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
+                            exceptEmojis={emojisNoShow.length > 0 ? emojisNoShow?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
+                            // emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
                 )}

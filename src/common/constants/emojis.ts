@@ -310,7 +310,7 @@ export const emojis = [
   },
   {
     "description": "Smiling Face",
-    "emojichar": "☺️",
+    "emojichar": "😄",
     "emojidec": 9786,
     "emojihex": "263a-fe0f",
     "categorydesc": "SMILEYS",
