@@ -402,7 +402,8 @@ const TableZyx = React.memo(({
     ExtraMenuOptions,
     acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv",
     defaultGlobalFilter,
-    setOutsideGeneralFilter
+    setOutsideGeneralFilter,
+    cleanImport,
 }: TableConfig) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -902,13 +903,6 @@ const TableZyx = React.memo(({
     )
     const fileInputRef = useRef(null);
 
-    function setIsFiltering(param: string){
-        setGlobalFilter(param)
-        if(filterGeneral && setOutsideGeneralFilter){
-            setOutsideGeneralFilter(param)
-        }
-    }
-
     const handleCheckboxChange = (columnId: any) => {
         const updatedVisibility = {
             ...columnVisibility,
@@ -961,6 +955,12 @@ const TableZyx = React.memo(({
             setAllRowsSelected && setAllRowsSelected(false);
         }
     }, [allRowsSelected])
+    
+    useEffect(() => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    }, [cleanImport])
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
@@ -1041,10 +1041,8 @@ const TableZyx = React.memo(({
                                 id="laraigo-upload-csv-file"
                                 type="file"
                                 style={{ display: 'none' }}
-                                onChange={(e) => {importCSV(e.target.files);
-                                    if (fileInputRef.current) {
-                                        fileInputRef.current.value = '';
-                                    }}}
+                                onChange={(e) => {
+                                    importCSV(e.target.files)}}
                                 ref={fileInputRef}
                             />
                             <label htmlFor="laraigo-upload-csv-file">
