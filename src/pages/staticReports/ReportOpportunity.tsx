@@ -409,25 +409,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
         };
     }, []);
 
-    const cell = (props: CellProps<Dictionary>) => {
-        const column = props.cell.column;
-        const row = props.cell.row.original;
-        return (
-            <div>
-                {column.sortType === "datetime" && !!row[column.id]
-                    ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "numeric",
-                        minute: "numeric",
-                        second: "numeric"
-                    })
-                    : row[column.id]}
-            </div>
-        );
-    };
-
     const columns = React.useMemo(
         () => [
             {
@@ -435,7 +416,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 accessor: 'ticketnum',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_datehour),
@@ -443,7 +423,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-
                 Cell: (props: CellProps<Dictionary>) => {
                     const { createdate } = props.cell.row.original || {};
                     return createdate ? new Date(createdate).toLocaleString() : null;
@@ -454,8 +433,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 accessor: 'description',
                 showGroupedBy: true,
                 showColumn: true,
-
-                Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_lastupdate),
@@ -463,7 +440,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-
                 Cell: (props: CellProps<Dictionary>) => {
                     const { lastchangestatusdate } = props.cell.row.original || {};
                     return lastchangestatusdate ? new Date(lastchangestatusdate).toLocaleString() : null;
@@ -475,7 +451,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-
                 Cell: (props: CellProps<Dictionary>) => {
                     const { date_deadline } = props.cell.row.original || {};
                     return date_deadline ? new Date(date_deadline).toLocaleString() : null;
@@ -486,32 +461,24 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 accessor: 'displayname',
                 showGroupedBy: true,
                 showColumn: true,
-
-                Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_phone),
                 accessor: 'phone',
                 showGroupedBy: true,
                 showColumn: true,
-
-                Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_email),
                 accessor: 'email',
                 showGroupedBy: true,
                 showColumn: true,
-
-                Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_expectedincome),
                 accessor: 'expected_revenue',
                 showGroupedBy: true,
                 showColumn: true,
-
-                Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_expectedimplementationdate),
@@ -542,40 +509,30 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 accessor: 'tags',
                 showGroupedBy: true,
                 showColumn: true,
-
-                Cell: cell
             },
             {
                 Header: t(langKeys.report_opportunity_phase),
                 accessor: 'phase',
                 showGroupedBy: true,
-                showColumn: true,
-
-                Cell: cell
+                showColumn: true,              
             },
             {
                 Header: t(langKeys.report_opportunity_priority),
                 accessor: 'priority',
                 showGroupedBy: true,
-                showColumn: true,
-
-                Cell: cell
+                showColumn: true,              
             },
             {
                 Header: t(langKeys.report_opportunity_fullname),
                 accessor: 'fullname',
                 showGroupedBy: true,
-                showColumn: true,
-
-                Cell: cell
+                showColumn: true,              
             },
             {
                 Header: t(langKeys.report_opportunity_products),
                 accessor: 'products',
                 showGroupedBy: true,
-                showColumn: true,
-
-                Cell: cell
+                showColumn: true,              
             },
         ],
         [t]
