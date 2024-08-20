@@ -903,6 +903,13 @@ const TableZyx = React.memo(({
     )
     const fileInputRef = useRef(null);
 
+    function setIsFiltering(param: string){
+        setGlobalFilter(param)
+        if(filterGeneral && setOutsideGeneralFilter){
+            setOutsideGeneralFilter(param)
+        }
+    }
+
     const handleCheckboxChange = (columnId: any) => {
         const updatedVisibility = {
             ...columnVisibility,
