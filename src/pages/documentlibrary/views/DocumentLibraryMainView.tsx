@@ -48,6 +48,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	const user = useSelector(state => state.login.validateToken.user);
 	const [selectedRows, setSelectedRows] = useState<any>({});
 	const [wrongImportData, setWrongImportData] = useState<any>([]);
+    const [cleanImport, setCleanImport] = useState(false);
 	const [waitUpload, setWaitUpload] = useState(false);
 	const [waitDelete, setWaitDelete] = useState(false);
     const memoryTable = useSelector(state => state.main.memoryTable);
@@ -225,6 +226,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	useEffect(() => {
 		if (waitUpload) {
 			if (!importRes.loading && !importRes.error) {
+				setCleanImport(!cleanImport)
 				if (importRes?.data?.[0]?.p_messagetype === "ERROR") {
 					dispatch(
 						showSnackbar({
@@ -264,6 +266,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 				);
 				dispatch(showBackdrop(false));
 				setWaitUpload(false);
+				setCleanImport(!cleanImport)
 			}
 		}
 	}, [importRes, waitUpload]);
@@ -326,11 +329,12 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
                 ...item,
                 groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
             }));
+			debugger
 			if (data.length > 0) {
 				const badData = data.filter(element => !isValidData(element)).map(element => element.title);
-				setWrongImportData(badData)
 				if (badData.length<data.length) {
-					const dataToSend = data.map((x: any) => ({
+					setWrongImportData(badData)
+					const dataToSend = data.filter(element => isValidData(element)).map((x: any) => ({
 						...x,
 						id: 0,
 						link: x.linkfile,
@@ -345,8 +349,9 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 					
 				} else {
 					dispatch(
-						showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+						showSnackbar({ show: true, severity: "error", message: t(langKeys.errorimportdocuments, {docs: badData.join(", ")}) })
 					);
+					setCleanImport(!cleanImport)
 				}
 			}
 		}
@@ -382,6 +387,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 				importCSV={handleUpload}
 				defaultGlobalFilter={globalFilter}
 				setOutsideGeneralFilter={setGlobalFilter}
+				cleanImport={cleanImport}
 				pageSizeDefault={IDDOCUMENTLIBRARY === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
 				initialPageIndex={IDDOCUMENTLIBRARY === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
 				initialStateFilter={IDDOCUMENTLIBRARY === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
