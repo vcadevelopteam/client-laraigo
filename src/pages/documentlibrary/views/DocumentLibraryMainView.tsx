@@ -47,6 +47,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	const [openModalPreview, setOpenModalPreview] = useState<any>(null);
 	const user = useSelector(state => state.login.validateToken.user);
 	const [selectedRows, setSelectedRows] = useState<any>({});
+	const [wrongImportData, setWrongImportData] = useState<any>([]);
 	const [waitUpload, setWaitUpload] = useState(false);
 	const [waitDelete, setWaitDelete] = useState(false);
     const memoryTable = useSelector(state => state.main.memoryTable);
@@ -234,13 +235,21 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 					);
 
 				} else {
-					dispatch(
-						showSnackbar({
-							show: true,
-							severity: "success",
-							message: t(langKeys.successful_import),
-						})
-					);
+					if(wrongImportData.length){
+						dispatch(
+							showSnackbar({ show: true, severity: "error", message: t(langKeys.errorimportdocuments, {docs: wrongImportData.join(", ")}) })
+						);
+						setWrongImportData([])
+
+					}else{
+						dispatch(
+							showSnackbar({
+								show: true,
+								severity: "success",
+								message: t(langKeys.successful_import),
+							})
+						);
+					}
 				}
 				dispatch(showBackdrop(false));
 				setWaitUpload(false);
@@ -300,7 +309,6 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	const isValidData = (element: DocumentLibraryData) => {
 		const groupList = (multiResult?.data?.[0]?.data || []).map(x=>x.domainvalue)
 		const groups = element.groups.split(",") || []
-		
 		return (
 			typeof element.title === 'string' && element.title.length > 0 &&
 			(!element.description || (typeof element.description === 'string' && element.description.length <= 256)) &&
@@ -318,10 +326,10 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
                 ...item,
                 groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
             }));
-            
 			if (data.length > 0) {
-				const error = data.some((element) => !isValidData(element));
-				if (!error) {
+				const badData = data.filter(element => !isValidData(element)).map(element => element.title);
+				setWrongImportData(badData)
+				if (badData.length<data.length) {
 					const dataToSend = data.map((x: any) => ({
 						...x,
 						id: 0,
@@ -334,6 +342,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 					dispatch(showBackdrop(true));
 					dispatch(execute(documentLibraryInsArray(JSON.stringify(dataToSend))));
 					setWaitUpload(true);
+					
 				} else {
 					dispatch(
 						showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })

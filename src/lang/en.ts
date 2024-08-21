@@ -6424,6 +6424,7 @@ const translation: LangKeys = {
   transcriptionandtranslation: 'Transcription and Translation',
   translatelanguage: 'Conversation Chat',
   chatsettings: 'Message sending mode',
+  errorimportdocuments: 'The documents {{docs}} are not valid registers'
 
 };
 

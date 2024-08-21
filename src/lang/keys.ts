@@ -6370,6 +6370,7 @@ export const langKeys = {
   transcriptionandtranslation: 'transcriptionandtranslation',
   translatelanguage: 'translatelanguage',
   chatsettings: 'chatsettings',
+  errorimportdocuments: 'errorimportdocuments',
 };
 
 export type LangKeys = typeof langKeys;
