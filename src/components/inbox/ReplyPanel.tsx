@@ -79,6 +79,7 @@ const useStylesInteraction = makeStyles(() => ({
     },
     inputPlaceholder: {
         padding: "2rem",
+        paddingRight: "1rem",
         "&::placeholder": {
             fontSize: "1rem",
             fontWeight: 500,
@@ -168,7 +169,6 @@ const DialogSearchLibrary: React.FC<{
                     <div style={{ flex: 1 }}>
                         <SearchField
                             style={{ fontSize: "1rem" }}
-                            className="col-8"
                             colorPlaceHolder="#FFF"
                             inputProps={{ className: classes.inputPlaceholder }}
                             handleChangeOther={applyFilter}
