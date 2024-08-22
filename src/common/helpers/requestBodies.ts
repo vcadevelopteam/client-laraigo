@@ -3895,6 +3895,15 @@ export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) =
     },
 });
 
+export const getAudit = ({ startdate, enddate }: Dictionary) => ({
+    method: "UFN_AUDIT_SEL",
+    parameters: { 
+        startdate, 
+        enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    },
+});
+
 export const getInvoiceReportSummary = ({ year, currency = '', location = '' }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_INVOICE_SUMMARY_SEL",
     key: "UFN_REPORT_INVOICE_SUMMARY_SEL",
