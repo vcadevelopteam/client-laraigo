@@ -738,9 +738,12 @@ const Tipifications: FC = () => {
         const file = files[0];
         if (file) {
             let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
-            data=data.filter(d => {
+            debugger
+            data=data.filter((d: any) => {
+                const channelList = filteredChannels.map((x: any)=>x.domainvalue)
+                debugger
                 const hasValidClassification = d.classification !== '' && d.classification != null;
-                const hasValidChannels = d.channels !== '' && d.channels != null;
+                const hasValidChannels = d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel))
                 const hasValidType = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "clasificacion" || d.type.toLowerCase() === "categoría" || d.type.toLowerCase() === "categoria"
                 const parentExists = ['', null, undefined].includes(d.parent) || 
                     Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
