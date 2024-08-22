@@ -740,25 +740,29 @@ const Tipifications: FC = () => {
             let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
             data = data.map((item:any) => ({
                 ...item,
+                classification: (item?.classification|| "").replace(/\s+/g, ''), 
                 channels: !!item.channels?String(item.channels).replace(/\s+/g, '').replace(/;/g, ','):item.channels,
             }));
             data=data.filter((d: any) => {
                 const channelList = filteredChannels.map((x: any)=>x.domainvalue)
                 const hasValidClassification = d.classification !== '' && d.classification != null;
-                const hasValidChannels = d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel))
+                const hasValidChannels = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "clasificacion"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
                 const hasValidType = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "clasificacion" || d.type.toLowerCase() === "categoría" || d.type.toLowerCase() === "categoria"
                 const parentExists = ['', null, undefined].includes(d.parent) || 
                     Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
                     .includes(String(d.parent));
             
                 return hasValidClassification && hasValidChannels && parentExists && hasValidType;
-            });                
+            });              
+            debugger  
             if (data.length > 0) {
+                debugger
                 dispatch(showBackdrop(true));
                 dispatch(execute({
                     header: null,
                     detail: data.map((x: Dictionary) => insClassification({
                         ...x,
+                        channels: (x.type.toLowerCase() === "clasificación" || x.type.toLowerCase() === "clasificacion")?x.channels:"",
                         title: x.classification,
                         description: x.description,
                         communicationchannel: x.channels,
