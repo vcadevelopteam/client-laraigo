@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary, IVariablesSyncParams } from "@types";
 import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
 import { keys } from 'common/constants';
@@ -820,6 +820,32 @@ export const personSawChat = (state: IState, action: IAction): IState => {
             data: newticketList
         },
     };
+}
+
+export const variablesSync = (state: IState, action: IAction): IState => {
+    const data: IVariablesSyncParams = action.payload;
+    
+    const { ticketSelected } = state;
+    if (ticketSelected?.conversationid === data.conversationid) {
+        const vv = { ...state.person.data?.variablecontext };
+        Object.keys(data.variables).forEach(x => {
+            vv[x] = data.variables[x]
+        })
+        
+        return {
+            ...state,
+            person: {
+                ...state.person,
+                data: {
+                    ...state.person.data!!,
+                    variablecontext : vv
+
+                }
+            }
+        }
+    } else {
+        return state;
+    }
 }
 
 

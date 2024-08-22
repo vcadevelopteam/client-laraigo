@@ -240,6 +240,7 @@ export default createReducer<IState>(initialState, {
 
 
     [actionTypes.UPD_QUICKREPLIES]: caseFunctions.updQuickreplies,
+    [actionTypes.VARIABLESSYNC]: caseFunctions.variablesSync,
 
     [actionTypes.GET_QUICKREPLIES]: caseFunctions.getDataQuickreplies,
     [actionTypes.GET_QUICKREPLIES_SUCCESS]: caseFunctions.getDataQuickrepliesSuccess,
