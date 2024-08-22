@@ -2311,7 +2311,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         )}
 
-                        {(isNew && getValues('type')) && (
+                        {(isNew && getValues('type') === 'HSM' && (
                             <div className="col-8" style={{ display: 'flex' }}>
                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     <CustomTitleHelper
@@ -2322,7 +2322,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span>{t(langKeys.categorychangetext)}</span>
                                 </div>
                             </div>
-                        )}
+                        ))}
 
 
                     </div>
@@ -2374,7 +2374,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 size="small"
                             />
                         )}
-                        {(isNew && getValues('type')) && (
+                        {(isNew && getValues('type') === 'HSM' && (
                             <>
                                <FieldSelect
                                     className={`col-3 ${showError ? classes.errorBorder : ''}`}
@@ -2392,9 +2392,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         {t(langKeys.field_required)}
                                     </p>
                                 )}
-                            </>                          
-                           
-                        )}
+                            </>                         
+                        ))}
                     </div>
                     {getValues("type") === 'HSM' && (
                         <>
