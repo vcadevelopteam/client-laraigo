@@ -6371,6 +6371,20 @@ export const langKeys = {
   transcriptionandtranslation: 'transcriptionandtranslation',
   translatelanguage: 'translatelanguage',
   chatsettings: 'chatsettings',
+  seehistoricalattachments: 'seehistoricalattachments',
+  hidehistoricalattachments: 'hidehistoricalattachments',
+  seehistoricalclassifications: 'seehistoricalclassifications',
+  hidehistoricalclassifications: 'hidehistoricalclassifications',
+  seehistoricaloportunities: 'seehistoricaloportunities',
+  hidehistoricaloportunities: 'hidehistoricaloportunities',
+  seehistoricalsd: 'seehistoricalsd',
+  hidehistoricalsd: 'hidehistoricalsd',
+  seehistoricalorders: 'seehistoricalorders',
+  hidehistoricalorders: 'hidehistoricalorders',
+  gotoorder: 'gotoorder',
+  s_request: 's_request',
+  gotolead: 'gotolead',
+  gotosd: 'gotosd',
 };
 
 export type LangKeys = typeof langKeys;
