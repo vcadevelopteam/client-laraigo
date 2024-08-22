@@ -224,7 +224,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                     if (type) {
                         switch (type) {
                             case "HSM":
-                                if (providerstatus === null) statusText = t(langKeys.TEMPLATE2_UNREGISTERED);
+                                if (providerstatus === null) statusText = t(langKeys.TEMPLATE_REJECTED);
                                 else statusText = t(`TEMPLATE2_${providerstatus}`);
                                 break;
                             default:
@@ -303,7 +303,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                         switch (type) {
                             case "HSM":
                                 if (!providerquality) {
-                                    return t(langKeys.TEMPLATE2_UNREGISTERED);
+                                    return "-";
                                 }
                                 else if (providerquality === 'HIGH' || providerquality === 'MEDIUM' || providerquality === 'LOW') {
                                     qText = t(`template_${providerquality}`);
@@ -388,7 +388,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                                     limit = t(langKeys.unlimited);
                                     break;
                                 default:
-                                    limit = t(langKeys.TEMPLATE2_UNREGISTERED)
+                                    limit = "-";
                                     break;
                             }
                         }
