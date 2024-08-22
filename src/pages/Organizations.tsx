@@ -771,7 +771,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     onChange={(value) => {
                                         setValue("doctype", value?.domainvalue || "");
                                         setValue("docnum","")
-                                        debugger
                                     }}
                                     error={errors?.doctype?.message}
                                     data={docTypes}

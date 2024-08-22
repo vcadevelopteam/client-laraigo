@@ -361,7 +361,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         input?.click();
     };
     const onChangeIconInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        debugger
         if (!e.target.files) return;
         const file = e.target.files[0];
         if (file) {
