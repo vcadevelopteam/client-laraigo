@@ -145,7 +145,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         order: row?.order || "",
         parent: row?.parentid || 0,
     });
-    const validjobplan = JSON.parse(row?.jobplan||"[]").every(item => 'action' in item && 'type' in item);
+    const validjobplan = JSON.parse(row?.jobplan||"[]").every((item:any) => 'action' in item && 'type' in item);
     const [showAddAction, setShowAddAction] = useState(!!JSON.parse(row?.jobplan||"[]").length && validjobplan || false);
     const [jobplan, setjobplan] = useState<Dictionary[]>((row && row.jobplan && validjobplan) ? JSON.parse(row.jobplan) : [])
 
@@ -738,9 +738,14 @@ const Tipifications: FC = () => {
         const file = files[0];
         if (file) {
             let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
-            data=data.filter(d => {
+            data = data.map((item:any) => ({
+                ...item,
+                channels: !!item.channels?String(item.channels).replace(/\s+/g, '').replace(/;/g, ','):item.channels,
+            }));
+            data=data.filter((d: any) => {
+                const channelList = filteredChannels.map((x: any)=>x.domainvalue)
                 const hasValidClassification = d.classification !== '' && d.classification != null;
-                const hasValidChannels = d.channels !== '' && d.channels != null;
+                const hasValidChannels = d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel))
                 const hasValidType = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "clasificacion" || d.type.toLowerCase() === "categoría" || d.type.toLowerCase() === "categoria"
                 const parentExists = ['', null, undefined].includes(d.parent) || 
                     Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
@@ -809,7 +814,7 @@ const Tipifications: FC = () => {
           {},
           {},
           dataType.reduce((a, d) => ({ ...a, [d.dat]: d.dat }), {}),
-          filteredChannels.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+          filteredChannels.reduce((a:any, d:any) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
           {},
           mainResult.multiData.data[3].data.reduce((a, d) => ({ ...a, [d.classificationid]: d.description }), { 0: '' }),
           mainResult.multiData.data[0].data.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {}),
