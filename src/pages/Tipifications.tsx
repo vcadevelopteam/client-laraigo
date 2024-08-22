@@ -754,9 +754,7 @@ const Tipifications: FC = () => {
             
                 return hasValidClassification && hasValidChannels && parentExists && hasValidType;
             });              
-            debugger  
             if (data.length > 0) {
-                debugger
                 dispatch(showBackdrop(true));
                 dispatch(execute({
                     header: null,
