@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker, getCatalogMasterList } from 'common/helpers';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker, getCatalogMasterList, insarrayClassification } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -757,9 +757,8 @@ const Tipifications: FC = () => {
             });              
             debugger
             if (data.length > 0) {
-                dispatch(execute({
-                    header: null,
-                    detail: data.map((x: Dictionary) => insClassification({
+                dispatch(execute(insarrayClassification(data.reduce((ad: any[], x: any) => {
+                    ad.push({
                         ...x,
                         title: x.classification,
                         description: x.description,
@@ -771,8 +770,9 @@ const Tipifications: FC = () => {
                         oder: x.type === "TIPIFICACION" ? '':"1",
                         status: "ACTIVO",
                         id: 0,
-                    }))
-                }, true));
+                    })
+                    return ad;
+                }, []))));
                 dispatch(showBackdrop(true));
                 setinsertexcel(true)
                 setWaitSave(true)
