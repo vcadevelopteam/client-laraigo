@@ -181,10 +181,10 @@ const SignUpFunc: FC = () => {
     };
 
     useEffect(() => {
-        if (["BUSINESS START", "BUSINESS BASIC", "BUSINESS PRO", "BUSINESS PRO+"].includes(match.params.token)) {
+        if (["BASICO", "PROFESIONAL"].includes(match.params.token)) {
             const scriptsToLoad = ["gtm"];
             const { scriptRecaptcha, scriptPlatform, clarityScript } = loadScripts(scriptsToLoad);
-    
+
             return () => {
                 scriptRecaptcha && document.body.removeChild(scriptRecaptcha);
                 scriptPlatform && document.body.removeChild(scriptPlatform);
