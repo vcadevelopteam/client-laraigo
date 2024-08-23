@@ -692,11 +692,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 groups = grouprules
             }
             setUsableGroups(groups)
-            if (user.properties.limit_reassign_group) {
-                setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
-            } else {
-                setUserToReassign((multiData?.data?.[3]?.data || []))
-            }
+            setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
             if (propertyAsesorReassign && !propertyGrupoDelegacion) {
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
