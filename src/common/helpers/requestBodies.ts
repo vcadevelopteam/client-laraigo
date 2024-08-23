@@ -5461,3 +5461,10 @@ export const getLeadReportGraphicSel = ({communicationchannel, startdate, enddat
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const insarrayClassification = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});

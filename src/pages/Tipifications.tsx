@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker, getCatalogMasterList } from 'common/helpers';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker, getCatalogMasterList, insarrayClassification } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -742,38 +742,38 @@ const Tipifications: FC = () => {
                 ...item,
                 classification: (item?.classification|| "").replace(/\s+/g, ''), 
                 channels: !!item.channels?String(item.channels).replace(/\s+/g, '').replace(/;/g, ','):item.channels,
+                type: (item.type.toLowerCase() === "clasificación" || item.type.toLowerCase() === "clasificacion") ? 'TIPIFICACION': ((item.type.toLowerCase() === "categoría" || item.type.toLowerCase() === "categoria")?"CATEGORIA":item.type),
             }));
             data=data.filter((d: any) => {
                 const channelList = filteredChannels.map((x: any)=>x.domainvalue)
                 const hasValidClassification = d.classification !== '' && d.classification != null;
-                const hasValidChannels = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "clasificacion"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
-                const hasValidType = d.type.toLowerCase() === "clasificación" || d.type.toLowerCase() === "clasificacion" || d.type.toLowerCase() === "categoría" || d.type.toLowerCase() === "categoria"
+                const hasValidChannels = d.type === "TIPIFICACION"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
+                const hasValidType = d.type === "TIPIFICACION" || d.type === "CATEGORIA"
                 const parentExists = ['', null, undefined].includes(d.parent) || 
                     Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
                     .includes(String(d.parent));
             
                 return hasValidClassification && hasValidChannels && parentExists && hasValidType;
             });              
+            debugger
             if (data.length > 0) {
-                dispatch(showBackdrop(true));
-                dispatch(execute({
-                    header: null,
-                    detail: data.map((x: Dictionary) => insClassification({
+                dispatch(execute(insarrayClassification(data.reduce((ad: any[], x: any) => {
+                    ad.push({
                         ...x,
-                        channels: (x.type.toLowerCase() === "clasificación" || x.type.toLowerCase() === "clasificacion")?x.channels:"",
                         title: x.classification,
                         description: x.description,
-                        communicationchannel: x.channels,
+                        communicationchannel: x.type === "TIPIFICACION"?x.channels:"",
                         jobplan: JSON.stringify([{action: x.action, type: x.type, variable: x.variable, endpoint: x.endpoint, data: x.data}]),
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        type: (x.type.toLowerCase() === "clasificación" || x.type.toLowerCase() === "clasificacion") ? 'TIPIFICACION':"CATEGORIA",
-                        oder: (x.type.toLowerCase() === "clasificación" || x.type.toLowerCase() === "clasificacion") ? '':"1",
-                        status: x.status || "ACTIVO",
+                        oder: x.type === "TIPIFICACION" ? '':"1",
+                        status: "ACTIVO",
                         id: 0,
-                    }))
-                }, true));
+                    })
+                    return ad;
+                }, []))));
+                dispatch(showBackdrop(true));
                 setinsertexcel(true)
                 setWaitSave(true)
             }else{
