@@ -1486,7 +1486,7 @@ const InfoPanel: React.FC = () => {
             >
                 <AntTab label={t(langKeys.information)} />
                 <AntTab label="Variables" />
-                <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
+                <AntTab label={t(langKeys.history)} icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
                 <AntTab label={t(langKeys.messagetemplate_attachment)} />
                 <AntTab label={t(langKeys.classification_plural)} />
                 <AntTab label={t(langKeys.orders)} />
