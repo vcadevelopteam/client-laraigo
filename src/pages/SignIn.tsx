@@ -363,7 +363,7 @@ const SignIn = () => {
             window.open("https://laraigo.com/en/#pricetable", "_blank");
         }
         else {
-            window.open("sign-up/BASIC", "_blank");
+            window.open("sign-up/BASICO", "_blank");
         }
     }
 

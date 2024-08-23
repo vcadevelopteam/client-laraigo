@@ -1137,7 +1137,6 @@ const DetailUsers: React.FC<DetailProps> = ({
 
     const updateCell = (rowIndex: number, columnId: string, value: string) => {
         setSkipAutoReset(true);
-        debugger
         const auxTableData = tableDataVariables
         auxTableData[rowIndex][columnId] = value
         setTableDataVariables(auxTableData)
