@@ -464,6 +464,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
     useEffect(() => {
         const ismail = ticketSelected?.communicationchanneltype === "MAIL"
         const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)        
+
         setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
     }, [quickReplies, ticketSelected]);
 

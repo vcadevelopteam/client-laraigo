@@ -1083,26 +1083,30 @@ const Reports: FC = () => {
                     </Grid>
                 )
             case 'AUDIT':
-                return (
-                    <Grid item key={"audit"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
-                        <Card>
-                            <CardActionArea onClick={() => handleSelectedString("audit")} className={classes.cardstyle}>
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    className={classes.media}
-                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/Diners%20Club%20Per%C3%BA%20-%20Cartera/869adbfb-9ae8-48f7-a1fb-e76eb7669c25/1802806.png"
-                                    title={t(langKeys.audit)}
-                                />
-                                <CardContent style={{ paddingBottom: 0 }}>
-                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
-                                        {t(langKeys.audit)}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </Grid>
-                )
+                if (user?.roledesc?.includes("SUPERADMIN") || user?.roledesc?.includes("ADMINISTRADOR")) {
+                    return (
+                        <Grid item key={"audit"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelectedString("audit")} className={classes.cardstyle}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/Diners%20Club%20Per%C3%BA%20-%20Cartera/869adbfb-9ae8-48f7-a1fb-e76eb7669c25/1802806.png"
+                                        title={t(langKeys.audit)}
+                                    />
+                                    <CardContent style={{ paddingBottom: 0 }}>
+                                        <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                            {t(langKeys.audit)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    )
+                } else {
+                    return null;
+                }
             case 'CONVERSATIONWHATSAPP':
                 return (
                     <Grid item key={"reportconversationwhatsapp"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>

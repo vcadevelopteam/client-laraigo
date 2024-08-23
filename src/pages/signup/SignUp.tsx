@@ -122,7 +122,7 @@ const SignUpFunc: FC = () => {
     const match = useRouteMatch<RouteParams>();
 
     useEffect(() => {
-        if (["BUSINESS START", "BUSINESS BASIC", "BUSINESS PRO", "BUSINESS PRO+"].includes(match.params.token)) {
+        if (["BASICO", "PROFESIONAL"].includes(match.params.token)) {
             const scriptsToLoad = ["gtm"];
             const { scriptRecaptcha, scriptPlatform, clarityScript } = loadScripts(scriptsToLoad);
 
