@@ -690,6 +690,7 @@ export const langKeys = {
   advisoricon: "advisoricon",
   typecredit: "typecredit",
   error_estructure_user: "error_estructure_user",
+  error_estructure_tipification: "error_estructure_tipification",
   distributionbycategoryHSMtooltip: "distributionbycategoryHSMtooltip",
   week: "week",
   periodicity: "periodicity",

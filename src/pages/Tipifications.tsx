@@ -569,6 +569,7 @@ const Tipifications: FC = () => {
     const [tableData, setTableData] = useState<any>([]);
 
     const [generalFilter, setGeneralFilter] = useState("");
+    const [invalidImportData, setInvalidImportData] = useState<any>([]);
     const [insertexcel, setinsertexcel] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -691,7 +692,13 @@ const Tipifications: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                if(invalidImportData.length){
+                    const messageerror = invalidImportData.reduce((acc, x) => acc + t(langKeys.error_estructure_tipification, { classification: x.classification }) + `\n`, "")
+                    dispatch(showSnackbar({ show: true, severity: "error", message: messageerror }))
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                }
+                setInvalidImportData([])
                 setinsertexcel(false)
                 fetchData();
                 dispatch(showBackdrop(false));
@@ -754,8 +761,19 @@ const Tipifications: FC = () => {
                     .includes(String(d.parent));
             
                 return hasValidClassification && hasValidChannels && parentExists && hasValidType;
-            });              
-            debugger
+            });   
+            const invaliddata = data.filter((d: any) => {
+                const channelList = filteredChannels.map((x: any)=>x.domainvalue)
+                const hasValidClassification = d.classification !== '' && d.classification != null;
+                const hasValidChannels = d.type === "TIPIFICACION"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
+                const hasValidType = d.type === "TIPIFICACION" || d.type === "CATEGORIA"
+                const parentExists = ['', null, undefined].includes(d.parent) || 
+                    Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
+                    .includes(String(d.parent));
+            
+                return !hasValidClassification || !hasValidChannels || !parentExists || !hasValidType;
+            });   
+            setInvalidImportData(invaliddata)    
             if (data.length > 0) {
                 dispatch(execute(insarrayClassification(data.reduce((ad: any[], x: any) => {
                     ad.push({
