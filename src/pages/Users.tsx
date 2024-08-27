@@ -2033,7 +2033,7 @@ const Users: FC = () => {
                         !(f.showbots === undefined || isBooleanLike(f.showbots))
                     );
                 })
-                .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, "");
+                .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.user || x.email }) + `\n`, "");
 
             setMessageError(messageerrors);
 
