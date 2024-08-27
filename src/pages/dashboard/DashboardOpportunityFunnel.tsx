@@ -41,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
     },
     filterComponent: {
         minWidth: "200px",
-        maxWidth: "200px",
+        maxWidth: "320px",
+
     },
     chartContainer: {
         marginTop: theme.spacing(1),
@@ -67,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         padding: 12,
-        fontWeight: 500,
+        fontWeight: 5,
         fontSize: "14px",
         textTransform: "initial",
     },
@@ -107,6 +108,11 @@ const useStyles = makeStyles((theme) => ({
         left: "0",
         width: "100%",
     },
+    title: {
+        fontSize: "25px",
+        fontFamily: "Times New Roman",
+        margin: theme.spacing(0.5, 0),
+    }
 }));
 
 interface IBoardFilter {
@@ -308,7 +314,7 @@ const DashboardOpportunityFunnel: FC = () => {
     };
     const handleExportClick = () => {
         const dataForExport = funnelData.map(row => ({
-            Fase: row.name,
+            Fases: row.name,
             Cantidad: row.count,
         }));
         exportExcel("reporte_funnel", dataForExport);
@@ -318,115 +324,102 @@ const DashboardOpportunityFunnel: FC = () => {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <div>
-                <Box className={classes.filterContainer} component={Paper}>
-                    <div className={classes.filterControls}>
-                        <div style={{ textAlign: "left", display: "flex", gap: "0.5rem", marginRight: "auto" }}>
-                            <DateRangePicker
-                                open={openDateRangeModal}
-                                setOpen={setOpenDateRangeModal}
-                                range={dateRange}
-                                onSelect={setdateRange}
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexGrow: 1 }}>
+                        <DateRangePicker
+                            open={openDateRangeModal}
+                            setOpen={setOpenDateRangeModal}
+                            range={dateRange}
+                            onSelect={setdateRange}
+                        >
+                            <Button
+                                disabled={detailCustomReport.loading}
+                                style={{
+                                    border: "1px solid #bfbfc0",
+                                    borderRadius: 4,
+                                    color: "rgb(143, 146, 161)",
+                                    minWidth: "200px",
+                                }}
+                                startIcon={<CalendarIcon />}
+                                onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                             >
-                                <Button
-                                    disabled={detailCustomReport.loading}
-                                    style={{
-                                        border: "1px solid #bfbfc0",
-                                        borderRadius: 4,
-                                        color: "rgb(143, 146, 161)",
-                                        minWidth: "200px",
-                                    }}
-                                    startIcon={<CalendarIcon />}
-                                    onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                                >
-                                    {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
-                                </Button>
-                            </DateRangePicker>
-                            <div style={{ display: "flex" }}>
-                                <Box width={1}>
-                                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
-                                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                            <FieldMultiSelect
-                                                label={t(langKeys.opportunity_funnel_channels)}
-                                                className={classes.filterComponent}
-                                                key={"UFN_COMMUNICATIONCHANNEL_LST"}
-                                                valueDefault={channels.filter((channel) =>
-                                                    temporaryFilter.channel.split(",").includes(String(channel.communicationchannelid))
-                                                )}
-                                                onChange={(value) => setValue("channel", value?.map((v) => v.communicationchannelid).join(",") || "")}
-                                                variant="outlined"
-                                                data={channels}
-                                                loading={multiData.loading}
-                                                optionDesc={"communicationchanneldesc"}
-                                                optionValue={"communicationchannelid"}
-                                            />
+                                {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
+                            </Button>
+                        </DateRangePicker>
 
-                                            {user && !user.roledesc?.includes("ASESOR") && (
-                                                <FieldMultiSelect
-                                                    label={t(langKeys.agent)}
-                                                    className={classes.filterComponent}
-                                                    key={"UFN_ADVISERSBYUSERID_SEL"}
-                                                    valueDefault={asesores.find((asesor) => asesor.userid === temporaryFilter.asesorid)}
-                                                    onChange={(value) => {
-                                                        const asesoresValue = value?.map((v) => v.userid).join(",") || "";
-                                                        setValue("asesorid", asesoresValue);
-                                                    }}
-                                                    variant="outlined"
-                                                    data={Array.isArray(asesores) ? asesores : []}
-                                                    loading={multiData.loading}
-                                                    optionDesc={"fullname"}
-                                                    optionValue={"userid"}
-                                                    disabled={Boolean(user?.roledesc?.includes("ASESOR")) || false}
-                                                />
-                                            )}
+                        <FieldMultiSelect
+                            label={t(langKeys.opportunity_funnel_channels)}
+                            className={classes.filterComponent}
+                            valueDefault={channels.filter((channel) =>
+                                temporaryFilter.channel.split(",").includes(String(channel.communicationchannelid))
+                            )}
+                            onChange={(value) => setValue("channel", value?.map((v) => v.communicationchannelid).join(",") || "")}
+                            variant="outlined"
+                            data={channels}
+                            loading={multiData.loading}
+                            optionDesc={"communicationchanneldesc"}
+                            optionValue={"communicationchannelid"}
+                        />
 
-                                            <FieldMultiSelect
-                                                label={t(langKeys.product, { count: 2 })}
-                                                className={classes.filterComponent}
-                                                key={"UFN_DOMAIN_LST_VALORES"}
-                                                valueDefault={products.filter((product) =>
-                                                    temporaryFilter.products.split(",").includes(String(product.domainvalue))
-                                                )}
-                                                onChange={(value) => {
-                                                    const productsValue = value?.map((v) => v.domainvalue).join(",") || "";
-                                                    setValue("products", productsValue);
-                                                }}
-                                                variant="outlined"
-                                                data={Array.isArray(products) ? products : []}
-                                                loading={multiData.loading}
-                                                optionDesc={"domaindesc"}
-                                                optionValue={"domainvalue"}
-                                            />
-                                            <div className={classes.filterField}>
-                                                <Button
-                                                    disabled={detailCustomReport.loading}
-                                                    variant="contained"
-                                                    color="primary"
-                                                    style={{ backgroundColor: "#55BD84", width: 120 }}
-                                                    startIcon={<SearchIcon />}
-                                                    onClick={fetchData}
-                                                >
-                                                    {t(langKeys.search)}
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </Box>
-                                </Box>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
+                        {user && !user.roledesc?.includes("ASESOR") && (
+                            <FieldMultiSelect
+                                label={t(langKeys.agent)}
+                                className={classes.filterComponent}
+                                valueDefault={asesores.filter((asesor) =>
+                                    temporaryFilter.asesorid.split(",").includes(String(asesor.userid))
+                                )}
+                                onChange={(value) => { setValue("asesorid", value?.map((v) => v.userid).join(",") || "")}}
+                                variant="outlined"
+                                data={asesores}
+                                loading={multiData.loading}
+                                optionDesc={"fullname"}
+                                optionValue={"userid"}
+                                disabled={Boolean(user?.roledesc?.includes("ASESOR")) || false}
+                            />
+                        )}
+
+                        <FieldMultiSelect
+                            label={t(langKeys.product, { count: 2 })}
+                            className={classes.filterComponent}
+                            valueDefault={products.filter((product) =>
+                                temporaryFilter.products.split(",").includes(String(product.domainvalue))
+                            )}
+                            onChange={(value) => {
+                                const productsValue = value?.map((v) => v.domainvalue).join(",") || "";
+                                setValue("products", productsValue);
+                            }}
+                            variant="outlined"
+                            data={Array.isArray(products) ? products : []}
+                            loading={multiData.loading}
+                            optionDesc={"domaindesc"}
+                            optionValue={"domainvalue"}
+                        />
+
+
+
                         <Button
-                            className={classes.button}
+                            disabled={detailCustomReport.loading}
                             variant="contained"
                             color="primary"
-                            disabled={detailCustomReport.loading}
-                            onClick={handleExportClick}
-                            startIcon={<DownloadIcon />}
+                            style={{ backgroundColor: "#55BD84", width: 120 }}
+                            startIcon={<SearchIcon />}
+                            onClick={fetchData}
                         >
-                            {t(langKeys.download)}
+                            {t(langKeys.search)}
                         </Button>
                     </div>
-                </Box>
+                    <Button
+                        className={classes.button}
+                        variant="contained"
+                        color="primary"
+                        disabled={detailCustomReport.loading}
+                        onClick={handleExportClick}
+                        startIcon={<DownloadIcon />}
+                    >
+                        {t(langKeys.download)}
+                    </Button>
+                </div>
+                <p className={classes.title}>{t(langKeys.opportunity_funnel)}</p>
                 <Box className={classes.chartContainer}>
                     <TableContainer component={Paper} className={classes.tableContainer}>
                         <Table stickyHeader size="small">
@@ -439,7 +432,7 @@ const DashboardOpportunityFunnel: FC = () => {
                             <TableBody>
                                 {funnelData.map((row, index) => (
                                     <TableRow key={index}>
-                                        <TableCell className={classes.tableCell}>{row.name}</TableCell>
+                                        <TableCell className={classes.tableCell}>{t(row.name)}</TableCell>
                                         <TableCell className={classes.tableCell}>{row.count}</TableCell>
                                     </TableRow>
                                 ))}

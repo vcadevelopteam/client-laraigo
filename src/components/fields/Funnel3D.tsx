@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import {useTranslation} from "react-i18next";
+import {langKeys} from "../../lang/keys";
 
 interface FunnelData {
     name: string;
@@ -51,6 +53,7 @@ const useStyles = makeStyles({
 const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
     const classes = useStyles();
     const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, content: '' });
+    const { t } = useTranslation();
 
     const darkenColor = (color: string, amount: number) => {
         let usePound = false;
@@ -115,6 +118,8 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
             setTooltip({ visible: false, x: 0, y: 0, content: '' });
         };
 
+        const fontSize = Math.max(1.5, Math.min(sectionHeight / 4, 5));
+
         if (index === data.length - 1) {
             return (
                 <g key={index} transform={`translate(0, ${yOffset})`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -156,6 +161,7 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
                         x="50"
                         y={sectionHeight / 4}
                         textAnchor="middle"
+                        style={{ fontSize: `${fontSize}px`, fontFamily: 'Times New Roman' }}
                         alignmentBaseline="middle"
                         className={classes.funnelTextBase}
                     >
@@ -197,10 +203,11 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
                         x="50"
                         y={sectionHeight / 2}
                         textAnchor="middle"
+                        style={{ fontSize: `${fontSize}px`, fontFamily: 'Times New Roman' }}
                         alignmentBaseline="middle"
                         className={classes.funnelText}
                     >
-                        {section.name}
+                        {t(section.name)}
                     </text>
                 </g>
             );
