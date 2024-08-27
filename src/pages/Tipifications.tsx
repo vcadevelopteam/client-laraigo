@@ -247,7 +247,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1" })));
+            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1", title: data.title.trim() })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -751,17 +751,6 @@ const Tipifications: FC = () => {
                 channels: !!item.channels?String(item.channels).replace(/\s+/g, '').replace(/;/g, ','):item.channels,
                 type: (item.type.toLowerCase() === "clasificación" || item.type.toLowerCase() === "clasificacion") ? 'TIPIFICACION': ((item.type.toLowerCase() === "categoría" || item.type.toLowerCase() === "categoria")?"CATEGORIA":item.type),
             }));
-            data=data.filter((d: any) => {
-                const channelList = filteredChannels.map((x: any)=>x.domainvalue)
-                const hasValidClassification = d.classification !== '' && d.classification != null;
-                const hasValidChannels = d.type === "TIPIFICACION"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
-                const hasValidType = d.type === "TIPIFICACION" || d.type === "CATEGORIA"
-                const parentExists = ['', null, undefined].includes(d.parent) || 
-                    Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
-                    .includes(String(d.parent));
-            
-                return hasValidClassification && hasValidChannels && parentExists && hasValidType;
-            });   
             const invaliddata = data.filter((d: any) => {
                 const channelList = filteredChannels.map((x: any)=>x.domainvalue)
                 const hasValidClassification = d.classification !== '' && d.classification != null;
@@ -773,20 +762,31 @@ const Tipifications: FC = () => {
             
                 return !hasValidClassification || !hasValidChannels || !parentExists || !hasValidType;
             });   
+            data=data.filter((d: any) => {
+                const channelList = filteredChannels.map((x: any)=>x.domainvalue)
+                const hasValidClassification = d.classification !== '' && d.classification != null;
+                const hasValidChannels = d.type === "TIPIFICACION"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
+                const hasValidType = d.type === "TIPIFICACION" || d.type === "CATEGORIA"
+                const parentExists = ['', null, undefined].includes(d.parent) || 
+                    Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
+                    .includes(String(d.parent));
+            
+                return hasValidClassification && hasValidChannels && parentExists && hasValidType;
+            });   
             setInvalidImportData(invaliddata)    
             if (data.length > 0) {
                 dispatch(execute(insarrayClassification(data.reduce((ad: any[], x: any) => {
                     ad.push({
                         ...x,
-                        title: x.classification,
+                        title: x.classification.trim(),
                         description: x.description,
                         communicationchannel: x.type === "TIPIFICACION"?x.channels:"",
                         jobplan: JSON.stringify([{action: x.action, type: x.type, variable: x.variable, endpoint: x.endpoint, data: x.data}]),
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        oder: x.type === "TIPIFICACION" ? '':"1",
-                        status: "ACTIVO",
+                        order: x.type === "TIPIFICACION" ? '':"1",
+                        status: x?.status || "ACTIVO",
                         id: 0,
                     })
                     return ad;
