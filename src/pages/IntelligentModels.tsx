@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getIntelligentModelsSel, getValuesFromDomain, insIntelligentModels } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect } from 'components';
+import { convertLocalDate, dateToLocalDate, getIntelligentModelsSel, getValuesFromDomain, insIntelligentModels } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,7 +15,7 @@ import { getCollection, resetAllMain, execute, getMultiCollection } from 'store/
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { CellProps } from 'react-table';
-
+import { Delete } from "@material-ui/icons";
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -389,15 +389,17 @@ interface IAConnectors {
 }
 
 const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBread }) => {
-    // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
-
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const mainPaginated = useSelector((state) => state.main.mainPaginated);
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const selectionKey = "id";
 
     const functionChange = (change:string) => {
         if(change==="view-0"){
@@ -408,66 +410,84 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
     }
 
     const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+        () => [          
             {
                 Header: t(langKeys.name),
                 accessor: 'name',
-                NoFilter: true,
+                NoFilter: false,
+                width: 'auto',
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true,
+                NoFilter: false,
+                width: 'auto',
             },
             {
-                Header: t(langKeys.type),
+                Header: t(langKeys.type_service),
                 accessor: 'type',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.endpoint),
-                accessor: 'endpoint',
-                NoFilter: true,
-                Cell: (props: Dictionary) => {
-                    const { endpoint } = props.cell.row.original;
-                    return endpoint !== '' ? endpoint : t(langKeys.none);
-                }
-            },
+                type: "select",
+                listSelectFilter: [
+                    { key: "Gen AI", value: "GenAI" },
+                    { key: "Assistant", value: "Assistant" },
+                    { key: "Conversor de voz", value: "VoiceConversor" },
+                ],
+                width: 'auto',
+            },          
             {
                 Header: t(langKeys.provider),
                 accessor: 'provider',
-                NoFilter: true,
+                type: "select",
+                listSelectFilter: [
+                    { key: "LaraigoLLM", value: "LaraigoLLM" },
+                    { key: "WatsonX", value: "WatsonX" },
+                    { key: "Open AI", value: "Open AI" },
+                    { key: "Meta", value: "Meta" },
+                    { key: "Mistral", value: "Mistral" },
+                ],
+                width: 'auto',
                 Cell: (props: Dictionary) => {
                     const { provider } = props.cell.row.original;
                     return provider !== '' ? provider : t(langKeys.none);
                 }
             },
             {
+                accessor: "createdate",
+                Header: t(langKeys.timesheet_registerdate),
+                NoFilter: false,               
+                type: "date",
+                sortType: "datetime",
+                width: 'auto',
+
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;                
+                    if (row && row.createdate) {
+                        return convertLocalDate(row.createdate).toLocaleString();
+                    } else {
+                        return "";
+                    }
+                },           
+            },         
+            {
+                Header: t(langKeys.createdBy),
+                accessor: 'createby',
+                NoFilter: false,               
+                width: 'auto'
+            },
+            {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true,
+                type: "select",
+                listSelectFilter: [
+                    { key: "ACTIVO", value: "ACTIVO" },
+                    { key: "DESACTIVO", value: "DESACTIVO" },                
+                ],
                 prefixTranslation: 'status_',
+                 width: 'auto',
                 Cell: (props: CellProps<Dictionary>) => {
                     const { status } = props.cell.row.original|| {}; 
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
+                },            
             },
         ],
         []
@@ -505,25 +525,40 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: false });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
-    }
+    } 
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
 
-    const handleDelete = (row: Dictionary) => {
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            const newRowWithDataSelected = Object.keys(selectedRows)
+                .map((key) =>
+                    mainResult.mainData.data.find((row) => row.id === parseInt(key)) ??
+                    rowWithDataSelected.find((row) => row.id === parseInt(key)) ??
+                    {}
+                )
+                .filter(row => row.id)    
+            setRowWithDataSelected(newRowWithDataSelected);
+        }
+    }, [selectedRows, mainResult.mainData.data])
+  
+    const handleMassiveDelete = (dataSelected: Dictionary[]) => {
         const callback = () => {
-            dispatch(execute(insIntelligentModels({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
+            dataSelected.forEach(row => {
+                const deleteOperation = {
+                    ...row,
+                    operation: 'DELETE',                   
+                    status: 'ELIMINADO',
+                    id: row.id
+                } 
+                dispatch(execute(insIntelligentModels(deleteOperation)))
+            })
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
-
+        }  
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_delete),
@@ -543,12 +578,24 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                     />
                 </div>}
                 <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}
                     ButtonsElement={() => {
-                        if(!setExternalViewSelected){
-                            return <></>
-                        }else{
+                        if (!setExternalViewSelected) {
+                            return (
+                                <>
+                                    <Button
+                                        color="primary"
+                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                        startIcon={<Delete style={{ color: "white" }} />}
+                                        variant="contained"
+                                        onClick={() => {
+                                            handleMassiveDelete(rowWithDataSelected);
+                                        }}
+                                    >
+                                        {t(langKeys.delete)}
+                                    </Button>                                  
+                                </>                             
+                            )
+                        } else {
                             return (
                                 <Button
                                     disabled={mainResult.mainData.loading}
@@ -558,16 +605,25 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                                     startIcon={<ClearIcon color="secondary" />}
                                     style={{ backgroundColor: "#FB5F5F" }}
                                     onClick={() => setExternalViewSelected("view-1")}
-                                >{t(langKeys.back)}</Button>
+                                >
+                                    {t(langKeys.back)}
+                                </Button>
                             )
-                        }}}
-                    titlemodule={!!window.location.href.includes("iaconectors")?t(langKeys.connectors):t(langKeys.intelligentmodels, { count: 2 })}
+                        }
+                    }}
+                    autotrigger={true}
+                    columns={columns}
                     data={mainResult.mainData.data}
-                    download={!setExternalViewSelected}
+                    filterGeneral={false}
+                    handleRegister={handleRegister}
+                    onClickRow={handleEdit}                    
                     loading={mainResult.mainData.loading}
                     register={true}
-                    handleRegister={handleRegister}
-                // fetchData={fetchData}
+                    download={true}
+                    useSelection={true}                  
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
+                    titlemodule={!!window.location.href.includes("iaconectors")?t(langKeys.connectors):t(langKeys.intelligentmodels, { count: 2 })}
                 />
             </div>
         )
