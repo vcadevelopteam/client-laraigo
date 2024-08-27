@@ -23,7 +23,7 @@ import {
 } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box, Button, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
-import { CalendarIcon, DownloadIcon } from "icons";
+import {CalendarIcon, CalendaryIcon, DownloadIcon} from "icons";
 import { Range } from "react-date-range";
 import CategoryIcon from "@material-ui/icons/Category";
 import TableZyx from "components/fields/table-simple";
@@ -48,6 +48,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
+import CloseIcon from "@material-ui/icons/Close";
 
 interface DetailProps {
     row: Dictionary | null;
@@ -117,6 +118,11 @@ const useStyles = makeStyles((theme) => ({
     colInput: {
         width: '100%'
     },
+    title: {
+        fontSize: "25px",
+        fontFamily: "Times New Roman",
+        margin: theme.spacing(0.5, 0),
+    }
 }));
 
 const PriorityStars = ({ priority }: { priority: string }) => {
@@ -519,6 +525,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             {
                 Header: t(langKeys.report_opportunity_priority),
                 accessor: 'priority',
+                Cell: ({ value }) => t(value),
                 showGroupedBy: true,
                 showColumn: true,              
             },
@@ -677,6 +684,25 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             }
         )));
     };
+
+    const handleExportExcel = () => {
+        const formattedData = dataGrid.map(row => ({
+            ...row,
+            createdate: formatDate(row.createdate),
+            lastchangestatusdate: formatDate(row.lastchangestatusdate),
+            date_deadline: formatDate(row.date_deadline),
+            estimatedimplementationdate: formatDate(row.estimatedimplementationdate),
+            estimatedbillingdate: formatDate(row.estimatedbillingdate),
+            priority: t(row.priority),
+        }));
+
+        exportExcel(
+            "report" + new Date().toISOString(),
+            formattedData,
+            columns.filter((x: any) => !x.isComponent && !x.activeOnHover)
+        );
+    };
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;
@@ -818,13 +844,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                                     variant="contained"
                                                     color="primary"
                                                     disabled={detailCustomReport.loading}
-                                                    onClick={() =>
-                                                        exportExcel(
-                                                            "report" + new Date().toISOString(),
-                                                            dataGrid,
-                                                            columns.filter((x: any) => !x.isComponent && !x.activeOnHover)
-                                                        )
-                                                    }
+                                                    onClick={handleExportExcel}
                                                     startIcon={<DownloadIcon />}
                                                 >
                                                     {t(langKeys.download)}
@@ -840,9 +860,9 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                 style={{ padding: "0.7rem 1rem", fontSize: "0.96rem" }}
                                 onClick={() => setViewSelected2('calendar')}
                             >
-                                <CalendarIcon style={{ marginRight: "1rem" }}>
-                                    <CategoryIcon fontSize="small" style={{ fill: "grey", height: "25px" }} />
-                                </CalendarIcon>
+                                <CalendaryIcon style={{ marginRight: "1rem", width: '23px', height: '23px', display: 'flex', alignItems: 'center', fill: "grey"}}>
+                                    <CategoryIcon fontSize="small" style={{ fill: "grey", width: '16px', height: '16px' }} />
+                                </CalendaryIcon>
                                 <Typography variant="inherit">{ t(langKeys.report_opportunity_calendarview)}</Typography>
                             </MenuItem>
                         }
@@ -910,6 +930,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     else if (viewSelected2 === 'calendar') {
         return (
             <div style={{ width: '100%' }}>
+                <p className={classes.title}>{t(langKeys.report_opportunity).toUpperCase()}</p>
                 <div className={classes.calendarContainer}>
                     <div style={{ marginTop: '20px', width: '100%' }}>
                         <CalendarWithInfo
@@ -934,6 +955,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                     variant="contained"
                                     onClick={() => setViewSelected2("view-2")}
                                 >
+                                    <CloseIcon style={{ marginRight: 4 }} />
                                     {t(langKeys.back)}
                                 </Button>
                             }
