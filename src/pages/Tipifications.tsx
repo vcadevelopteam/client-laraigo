@@ -247,7 +247,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1" })));
+            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1", title: data.title.trim() })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -778,7 +778,7 @@ const Tipifications: FC = () => {
                 dispatch(execute(insarrayClassification(data.reduce((ad: any[], x: any) => {
                     ad.push({
                         ...x,
-                        title: x.classification,
+                        title: x.classification.trim(),
                         description: x.description,
                         communicationchannel: x.type === "TIPIFICACION"?x.channels:"",
                         jobplan: JSON.stringify([{action: x.action, type: x.type, variable: x.variable, endpoint: x.endpoint, data: x.data}]),
