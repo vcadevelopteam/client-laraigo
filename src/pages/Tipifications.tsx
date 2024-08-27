@@ -772,7 +772,7 @@ const Tipifications: FC = () => {
                     .includes(String(d.parent));
             
                 return hasValidClassification && hasValidChannels && parentExists && hasValidType;
-            });   
+            });
             setInvalidImportData(invaliddata)    
             if (data.length > 0) {
                 dispatch(execute(insarrayClassification(data.reduce((ad: any[], x: any) => {
@@ -785,7 +785,7 @@ const Tipifications: FC = () => {
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        order: x.type === "TIPIFICACION" ? '':"1",
+                        order: x.type === "TIPIFICACION" ? '0':"1",
                         status: x?.status || "ACTIVO",
                         id: 0,
                     })
