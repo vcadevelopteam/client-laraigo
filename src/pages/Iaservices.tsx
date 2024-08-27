@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getChannelsByOrg, getIntelligentModelsConfigurations, getIntelligentModelsSel, getValuesFromDomain, insInteligentModelConfiguration } from 'common/helpers';
+import { convertLocalDate, getChannelsByOrg, getIntelligentModelsConfigurations, getIntelligentModelsSel, getValuesFromDomain, iaservicesBulkDel, insInteligentModelConfiguration } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,11 +15,12 @@ import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
-import { Accordion, AccordionDetails, AccordionSummary } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, IconButton } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { CellProps } from 'react-table';
+import { KeyboardArrowLeft, KeyboardArrowRight, Delete } from '@material-ui/icons';
 
 const serviceTypes = [
     {
@@ -160,6 +161,33 @@ interface DetailIaServiceProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+    container: {
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    tagsWrapper: {
+        display: 'flex',
+        // whiteSpace: 'nowrap',
+        paddingBottom: 0,
+        overflowX: 'hidden',
+        transition: 'transform 0.3s ease-in-out',
+    },
+    tag: {
+        backgroundColor: '#efefef',
+        borderRadius: '4px',
+        padding: theme.spacing(0.38, 1),
+        flexShrink: 0,
+        marginRight: theme.spacing(1),
+        display: 'inline-block',
+    },
+    arrowLeft: {
+        left: 0,
+    },
+    arrowRight: {
+        right: 0,
+    },
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
@@ -303,7 +331,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
             callback
         }))
     });
-    
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -571,7 +599,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         optionValue="value"
                                                     />
                                                 )}
-                                                {getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' &&(
+                                                {getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' && (
                                                     <FieldSelect
                                                         fregister={{
                                                             ...register(`services.${i}.analyzemode`, {
@@ -693,22 +721,97 @@ interface IAConfigurationProps {
     setExternalViewSelected?: (view: string) => void;
     arrayBread?: any;
 }
+const TicketTags: React.FC<{ tags: string }> = ({ tags }) => {
+    const { t } = useTranslation();
+    const classes2 = useStyles();
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const tagsWrapperRef = useRef<{ scrollWidth: number; scrollLeft: number; clientWidth: number }>(null);
+    const [atEnd, setAtEnd] = useState(false);
+    const uniqueTags = !!tags.length ? tags.split(";").filter((word, index, array) => word !== array[index - 1]) : [];
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (tagsWrapperRef.current) {
+                const isOverflowing = tagsWrapperRef?.current?.scrollWidth > tagsWrapperRef?.current?.clientWidth;
+                if (!isOverflowing) {
+                    setScrollPosition(0);
+                    tagsWrapperRef.current.scrollLeft = 0;
+                } else {
+                    setAtEnd(tagsWrapperRef.current.scrollLeft + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+                }
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [uniqueTags]);
+
+    const handleScroll = (direction: string) => {
+        const scrollAmount = 100; // Ajusta esta cantidad según tus necesidades
+        const newPosition = direction === 'left'
+            ? scrollPosition - scrollAmount
+            : scrollPosition + scrollAmount;
+        setScrollPosition(newPosition);
+        tagsWrapperRef.current.scrollLeft = newPosition;
+
+        const atEndPosition = newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth;
+
+        setAtEnd(atEndPosition);
+    };
+
+    useEffect(() => {
+        if (tagsWrapperRef.current) {
+            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+        }
+    }, [scrollPosition]);
+
+
+    if (uniqueTags.length) {
+        return (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", maxWidth: "25vw", borderLeft: "1px solid lightgrey", flex: 11 }}>
+                <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 0px", width: "100%" }}>
+                    <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
+                        <div className={classes2.container} >
+                            <IconButton size='small' disabled={!(scrollPosition > 0)} className={`${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
+                                <KeyboardArrowLeft fontSize='small' />
+                            </IconButton>
+                            <div className={classes2.tagsWrapper} ref={tagsWrapperRef} >
+                                {uniqueTags.map((tag, index) => (
+                                    <span key={index} className={classes2.tag}>{tag}</span>
+                                ))}
+                            </div>
+                            <IconButton disabled={atEnd} size='small' className={`${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
+                                <KeyboardArrowRight />
+                            </IconButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    } else {
+        return <div style={{ flex: 0 }}></div>
+    }
+}
+const selectionKey = "intelligentmodelsconfigurationid"
 const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelected, arrayBread }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
+    const [selectedRows, setSelectedRows] = useState<any>({});
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
 
-    
-    const functionChange = (change:string) => {
-        if(change==="view-0"){
+
+    const functionChange = (change: string) => {
+        if (change === "view-0") {
             setExternalViewSelected && setExternalViewSelected("view-1");
-        }else{
+        } else {
             setViewSelected(change);
         }
     }
@@ -716,46 +819,38 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'orgid',
-                NoFilter: true,
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original || {};
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
+                Header: t(langKeys.conector),
+                accessor: 'channeltype',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.channeltype),
-                accessor: 'channeltype',
-                NoFilter: true
+                width: 'auto',
             },
             {
                 Header: t(langKeys.channeldesc),
                 accessor: 'channeldesc',
-                NoFilter: true,
+                width: 'auto',
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    return <TicketTags tags={row.channeldesc} />
+                }
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true,
-                prefixTranslation: 'status_',
+                Header: t(langKeys.timesheet_registerdate),
+                accessor: 'createdate',
+                type: 'date',
+                sortType: 'datetime',
+                width: 'auto',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { status } = props.cell.row.original || {}; 
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.createdate).toLocaleString()
                 }
+            },
+            {
+                Header: t(langKeys.createdBy),
+                accessor: 'createby',
             },
         ],
         []
@@ -807,21 +902,10 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
         setRowSelected({ row, edit: true });
     }
 
-    const handleDelete = (row: Dictionary) => {
-        const data = {
-            channels: row.communicationchannelid,
-            id: row.intelligentmodelsconfigurationid,
-            operation: "DELETE",
-            description: row.description,
-            type: "NINGUNO",
-            color: row.color,
-            icontype: row.icontype,
-            services: row.parameters,
-            status: "ELIMINADO",
-        }
+    const handleDelete = () => {
 
         const callback = () => {
-            dispatch(execute(insInteligentModelConfiguration(data)));
+            dispatch(execute(iaservicesBulkDel(Object.keys(selectedRows).join())));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -836,20 +920,30 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
     if (viewSelected === "view-1") {
 
         return (
-            
+
             <div style={{ width: "100%" }}>
                 {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.iaconfiguration) }]}
+                        breadcrumbs={[...arrayBread, { id: "view-1", name: t(langKeys.iaconfiguration) }]}
                         handleClick={functionChange}
                     />
                 </div>}
                 <TableZyx
                     onClickRow={handleEdit}
                     ButtonsElement={() => {
-                        if(!setExternalViewSelected){
-                            return <></>
-                        }else{
+                        if (!setExternalViewSelected) {
+                            return <><Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0}
+                                type='button'
+                                style={{ backgroundColor: (mainResult.mainData.loading || Object.keys(selectedRows).length === 0)?"#dbdbdb":"#FB5F5F" }}
+                                startIcon={<Delete style={{ color: 'white' }} />}
+                                onClick={() => handleDelete()}
+                            >{t(langKeys.delete)}
+                            </Button>
+                            </>
+                        } else {
                             return (
                                 <Button
                                     disabled={mainResult.mainData.loading}
@@ -861,14 +955,19 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                                     onClick={() => setExternalViewSelected("view-1")}
                                 >{t(langKeys.back)}</Button>
                             )
-                        }}}
+                        }
+                    }}
                     columns={columns}
+                    filterGeneral={false}
                     titlemodule={t(langKeys.iaconfiguration)}
                     data={mainResult.mainData.data}
                     download={false}
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
+                    useSelection={true}
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
                 />
             </div>
         )

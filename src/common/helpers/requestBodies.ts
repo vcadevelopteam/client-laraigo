@@ -5405,3 +5405,8 @@ export const conversationSDHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
 });
+export const iaservicesBulkDel = (ids:string) => ({
+    method: "UFN_INTELLIGENTMODELSCONFIGURATION_MASSIVE_DEL",
+    key: "UFN_INTELLIGENTMODELSCONFIGURATION_MASSIVE_DEL",
+    parameters: { ids },
+});
