@@ -519,6 +519,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             {
                 Header: t(langKeys.report_opportunity_phase),
                 accessor: 'phase',
+                Cell: ({ value }) => t(value),
                 showGroupedBy: true,
                 showColumn: true,
             },
