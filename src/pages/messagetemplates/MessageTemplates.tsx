@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { ExpandLess, ExpandMore, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+import IconButton from '@material-ui/core/IconButton';
 
 import {
     exportData,
@@ -33,7 +35,7 @@ import {
 } from "common/helpers";
 
 import Button from "@material-ui/core/Button";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import DetailMessageTemplates from "./views/MessageTemplatesDetail";
@@ -49,6 +51,21 @@ const useStyles = makeStyles(() => ({
         display: "flex",
         flexDirection: "column",
         flex: 1,
+    },
+    tag: {
+        backgroundColor: '#EBF2F3',
+        borderRadius: '8px',
+        padding: '2px 8px',
+        marginRight: '4px',
+        marginBottom: '4px',
+        whiteSpace: 'nowrap',
+        wordBreak: 'keep-all',
+    },
+    tagcontainer: {
+        display: 'flex', 
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden',
+        width: '300px'
     },
     fieldsfilter: {
         width: "15rem",
@@ -144,89 +161,93 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
             {
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
-                style: {width: '250px'},
-                helpText: t(langKeys.message_templates_channel_help),
+                width: '300px',
+                helpText: t(langKeys.message_templates_channel_help),                
                 Cell: (props: CellProps<Dictionary>) => {
-                    const {row} = props.cell;
+                    const { row } = props.cell;
                     const data = row?.original?.communicationchanneldesc || '';
-                    const items = data.split(',').map(item => item.trim());
-
-                    const containerRef = React.useRef(null);
-
-                    const scrollLeft = () => {
-                        if (containerRef.current) {
-                            containerRef.current.scrollBy({left: -100, behavior: 'smooth'});
+                    const items = data.split(',').map((item: Dictionary) => item.trim()).filter(Boolean);
+                
+                    const [scrollPosition, setScrollPosition] = useState(0);
+                    const tagsWrapperRef = useRef<HTMLDivElement>(null);
+                    const [atEnd, setAtEnd] = useState(false);
+                    const [isOverflowing, setIsOverflowing] = useState(false);
+                
+                    useEffect(() => {
+                        if (tagsWrapperRef.current) {
+                            const isOverflowingContent = tagsWrapperRef.current.scrollWidth > tagsWrapperRef.current.clientWidth;
+                            setIsOverflowing(isOverflowingContent);
+                            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
                         }
-                    };
-
-                    const scrollRight = () => {
-                        if (containerRef.current) {
-                            containerRef.current.scrollBy({left: 100, behavior: 'smooth'});
+                    }, [scrollPosition, items]);
+                
+                    const handleScroll = (direction: string, event: React.MouseEvent) => {
+                        event.stopPropagation();
+                
+                        const scrollAmount = 100;
+                        const newPosition = direction === 'left'
+                            ? scrollPosition - scrollAmount
+                            : scrollPosition + scrollAmount;
+                
+                        setScrollPosition(newPosition);
+                        if (tagsWrapperRef.current) {
+                            tagsWrapperRef.current.scrollLeft = newPosition;
                         }
+                
+                        const atEndPosition = tagsWrapperRef.current 
+                            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth 
+                            : false;
+                
+                        setAtEnd(atEndPosition);
                     };
-
+                
+                    if (!data || items.length === 0) {
+                        return null;
+                    }
+                
+                    const shouldShowTags = items.length > 1;
+                
                     return (
-                        <div style={{display: 'flex', alignItems: 'center'}}>
-                            {items.length > 1 && (
-                                <button
-                                    onClick={scrollLeft}
-                                    style={{
-                                        marginRight: '4px',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '16px',
-                                        padding: '4px'
-                                    }}>
-                                    {'<'}
-                                </button>
+                        <div style={{ display: 'flex', alignItems: 'center', width: '300px', overflow: 'hidden' }}>
+                            {isOverflowing && shouldShowTags && (
+                                <IconButton 
+                                    size='small' 
+                                    disabled={!(scrollPosition > 0)} 
+                                    onClick={(event) => handleScroll('left', event)} 
+                                    style={{ padding: 0 }}
+                                >
+                                    <KeyboardArrowLeft fontSize='small' />
+                                </IconButton>
                             )}
                             <div
-                                ref={containerRef}
-                                style={{
-                                    display: 'flex',
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    width: '200px',
-                                    overflowX: items.length > 1 ? 'auto' : 'hidden'
-                                }}
+                                ref={tagsWrapperRef}
+                                className={classes.tagcontainer}
                             >
-                                {items.length > 1 ? (
-                                    items.map((item, index) => (
-                                        <span key={index} style={{
-                                            backgroundColor: '#E0E0E0',
-                                            borderRadius: '8px',
-                                            padding: '2px 8px',
-                                            marginRight: '4px',
-                                            whiteSpace: 'nowrap'
-                                        }}>
-                                {item}
-                            </span>
-                                    ))
-                                ) : (
-                                    <span style={{whiteSpace: 'nowrap'}}>{data}</span>
-                                )}
+                                {items.map((item: Dictionary, index: number) => (
+                                    <span 
+                                        key={index}
+                                        className={shouldShowTags && item ? classes.tag : ''}
+                                    >
+                                        {item}
+                                    </span>
+                                ))}
                             </div>
-                            {items.length > 1 && (
-                                <button
-                                    onClick={scrollRight}
-                                    style={{
-                                        marginLeft: '4px',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '16px',
-                                        padding: '4px'
-                                    }}>
-                                    {'>'}
-                                </button>
+                            {isOverflowing && shouldShowTags && (
+                                <IconButton 
+                                    size='small' 
+                                    disabled={atEnd} 
+                                    onClick={(event) => handleScroll('right', event)} 
+                                    style={{ padding: 0 }}
+                                >
+                                    <KeyboardArrowRight fontSize='small' />
+                                </IconButton>
                             )}
                         </div>
                     );
-                },        
+                },
+                
+                                
             },
-
 
             {
                 accessor: "name",
