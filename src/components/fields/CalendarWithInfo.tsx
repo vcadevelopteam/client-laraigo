@@ -295,13 +295,7 @@ const CalendarWithInfo: FC<{
     return (
         <div className={classes.container}>
             <div className={classes.containerInfo}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                    <div className={classes.containerInfoTitle}>
-                        {t((langKeys as Dictionary)[`month_${("" + (rangeDates[0]?.date.getMonth() + 1)).padStart(2, "0")}`])} {rangeDates[0]?.date.getFullYear()}
-                    </div>
-                </div>
-                <div style={{ display: "flex", gap: 8 }}>
-                    {ButtonAux && ButtonAux}
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <div className={classes.containerButtons}>
                         <div
                             className={classes.buttonMonth}
@@ -317,6 +311,13 @@ const CalendarWithInfo: FC<{
                             <NavigateNextIcon />
                         </div>
                     </div>
+                    <div className={classes.containerInfoTitle}>
+                        {t((langKeys as Dictionary)[`month_${("" + (rangeDates[0]?.date.getMonth() + 1)).padStart(2, "0")}`])} {t(langKeys.of_date)} {rangeDates[0]?.date.getFullYear()}
+                    </div>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                    {ButtonAux && ButtonAux}
+
                 </div>
             </div>
             <div className={classes.wrapperDays} style={{ flex: 1 }}>

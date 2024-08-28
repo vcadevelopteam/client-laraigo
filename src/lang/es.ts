@@ -1815,6 +1815,7 @@ const translation: LangKeys = {
   week: "Semana",
   conversationcompanywhatquantity: "Cantidad de Conversaciones WA Iniciadas por la Empresa",
   uniquecontacts: "Contactos Únicos",
+  of_date: "del",
   month_01: "Enero",
   month_02: "Febrero",
   month_03: "Marzo",

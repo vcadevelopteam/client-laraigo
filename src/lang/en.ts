@@ -1557,6 +1557,7 @@ const translation: LangKeys = {
   aboutlaraigo: 'About Laraigo',
   dashboardadd: "Create Dashboard",
   reports: "Reports",
+  of_date: "xxx",
   month_01: "January",
   month_02: "February",
   month_03: "March",
