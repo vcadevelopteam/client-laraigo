@@ -815,6 +815,7 @@ export const langKeys = {
   amounttopay: "amounttopay",
   others: "others",
   dateofissue: "dateofissue",
+  of_date: "of_date",
   month_01: "month_01",
   month_02: "month_02",
   month_03: "month_03",
