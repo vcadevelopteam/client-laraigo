@@ -76,7 +76,7 @@ const RectangularTrapezoid: React.FC<TrapezoidProps> = ({ data, proportionData, 
 
         const percentage = ((item.count / totalSum) * 100).toFixed(2);
 
-        const xOffset = data.length <= 3 ? -currentTopWidth / 2 : 0;
+        const xOffset = data.length <= 3 ? -50 : 0;
 
         return (
             <g key={index} transform={`translate(${xOffset}, ${yOffset})`}>
