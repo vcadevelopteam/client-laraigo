@@ -1956,9 +1956,9 @@ const Users: FC = () => {
             const channellist = dataChannelsTemp.map(x => x.communicationchannelid).join().split(",")
             const datainit = firstdatainit.map(item => ({
                 ...item,
-                role: !!item.role?String(item.role).replace(/\s+/g, '').replace(/;/g, ','):item.role,
-                groups: !!item.groups?String(item.groups).replace(/\s+/g, '').replace(/;/g, ','):item.groups,
-                channels: !!item.channels?String(item.channels).replace(/\s+/g, '').replace(/;/g, ','):item.channels,
+                role: !!item.role ? String(item.role).replace(/\s+/g, '').replace(/;/g, ',') : item.role,
+                groups: !!item.groups ? String(item.groups).replace(/\s+/g, '').replace(/;/g, ',') : item.groups,
+                channels: !!item.channels ? String(item.channels).replace(/\s+/g, '').replace(/;/g, ',') : item.channels,
             }));
             const data = datainit.filter((f: Dictionary) => {
                 const getDomainValues = (key: string, domainList: any[] | undefined) =>
@@ -1975,11 +1975,18 @@ const Users: FC = () => {
 
                 const isBooleanLike = (value: any) => ["true", "false"].includes(String(value));
 
-                const isValidIdList = (value: string | undefined, list: any[] | undefined) =>
-                (String(value).split(",").every((id: string) => {
-                    const idNum = parseInt(id.trim(), 10);
-                    return !isNaN(idNum) && list?.includes(idNum);
-                }));
+                const isValidIdList = (value: string | undefined, list: (string | number)[] | undefined) =>
+                    String(value)
+                        .split(",")
+                        .every((id: string) => {
+                            const trimmedId = id.trim();
+                            const idNum = parseInt(trimmedId, 10);
+                            return (
+                                (!isNaN(idNum) && list?.includes(idNum)) ||
+                                list?.includes(trimmedId)
+                            );
+                        });
+
 
                 return (
                     isInDomain(f.company, domainCompanyValues) &&
@@ -1991,7 +1998,7 @@ const Users: FC = () => {
                     (f.balanced === undefined || isBooleanLike(f.balanced)) &&
                     (f.role === undefined || isValidIdList(f.role, domains.value?.roles?.map(d => d.roleid))) &&
                     (f.channels === undefined || isValidIdList(f.channels, channellist)) &&
-                    (f.showbots === undefined || isBooleanLike(f.showbots))
+                    (f.showbots === undefined || isBooleanLike(f.showbots)) && f.password
                 );
             });
             debugger
@@ -2030,7 +2037,7 @@ const Users: FC = () => {
                         !(f.balanced === undefined || isBooleanLike(f.balanced)) ||
                         !(f.role === undefined || isValidIdList(f.role, roleIds)) ||
                         !(f.channels === undefined || isValidIdList(f.channels, channelIds)) ||
-                        !(f.showbots === undefined || isBooleanLike(f.showbots))
+                        !(f.showbots === undefined || isBooleanLike(f.showbots)) || !f.password
                     );
                 })
                 .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.user || x.email }) + `\n`, "");
