@@ -2101,11 +2101,18 @@ const Users: FC = () => {
                     const isBooleanLike = (value: any) =>
                         ["true", "false"].includes(String(value));
 
-                    const isValidIdList = (value: string | undefined, list: any[] | undefined) =>
-                    (String(value).split(",").every((id: string) => {
-                        const idNum = parseInt(id.trim(), 10);
-                        return !isNaN(idNum) && list?.includes(idNum);
-                    }));
+
+                    const isValidIdList = (value: string | undefined, list: (string | number)[] | undefined) =>
+                        String(value)
+                            .split(",")
+                            .every((id: string) => {
+                                const trimmedId = id.trim();
+                                const idNum = parseInt(trimmedId, 10);
+                                return (
+                                    (!isNaN(idNum) && list?.includes(idNum)) ||
+                                    list?.includes(trimmedId)
+                                );
+                            });
 
                     return (
                         !isInDomain(f.company, companyValues) ||
