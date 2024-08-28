@@ -694,6 +694,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             date_deadline: formatDate(row.date_deadline),
             estimatedimplementationdate: formatDate(row.estimatedimplementationdate),
             estimatedbillingdate: formatDate(row.estimatedbillingdate),
+            phase: t(row.phase),
             priority: t(row.priority),
         }));
 
