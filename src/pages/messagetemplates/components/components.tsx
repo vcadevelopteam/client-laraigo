@@ -11,10 +11,12 @@ import { PictureAsPdf as PdfIcon, Description as DocIcon, InsertDriveFile as Exc
 import ReplyIcon from '@material-ui/icons/Reply';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
+import WarningIcon from '@material-ui/icons/Warning';
 import ListIcon from '@material-ui/icons/List';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ClearIcon from "@material-ui/icons/Clear";
 import NoImage from '../../../icons/noimage.jpg'
+import { FieldSelect } from "components";
 
 const useStyles = makeStyles(() => ({
     main: {
@@ -195,7 +197,22 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         overflowX: 'scroll',
         cursor: 'grab',
-    }
+    },
+    customFieldPackageContainer: {
+        marginBottom: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    warningContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0.5rem',
+        backgroundColor: '#FFEBEB',
+        color: '#FF7575',
+        borderRadius: '4px',
+        marginLeft: '1rem',
+        width: 'fit-content',
+    }   
 }));
 
 interface TemplateIconsProps {
@@ -394,6 +411,55 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
                 </Tooltip>
             ) : ""}
         </span>
+    );
+};
+
+interface CustomFieldPackageProps {
+    title?: string;
+    subtitle?: string;
+    fieldSelectProps: any;
+    warningFlag?: boolean;
+    helperTextFlag?: boolean;
+    helperText?: string;
+    value: string;
+}
+
+export const CustomFieldPackage: React.FC<CustomFieldPackageProps> = ({
+    title,
+    subtitle,
+    fieldSelectProps,
+    warningFlag = false,
+    helperTextFlag = false,
+    helperText,
+    value
+}) => {
+    const classes = useStyles();
+
+    return (
+        <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+            {title && (
+                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{title}</span>
+            )}
+            {subtitle && (
+                <span>{subtitle}</span>
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                <FieldSelect
+                    {...fieldSelectProps}
+                />
+                {helperTextFlag && helperText && value && (
+                    <Tooltip title={helperText} arrow placement="top">
+                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                    </Tooltip>
+                )}
+                {warningFlag && value === '' && (
+                    <div className={classes.warningContainer} style={{ width: 220, marginLeft: '1rem' }}>
+                        <WarningIcon style={{ color: '#FF7575' }} />
+                        Selecciona una opción
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };
 

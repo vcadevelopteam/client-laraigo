@@ -16,6 +16,8 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import ClearIcon from '@material-ui/icons/Clear';
 import { CellProps } from 'react-table';
 import { Delete } from "@material-ui/icons";
+import WarningIcon from '@material-ui/icons/Warning';
+import { CustomFieldPackage, CustomTitleHelper } from './messagetemplates/components/components';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -48,6 +50,14 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    warningContainer: {
+        backgroundColor: '#FFD9D9',
+        padding: 10,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        borderRadius: 5
+    },
 }));
 
 const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread2 }) => {
@@ -58,6 +68,28 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     const { t } = useTranslation();
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const [service, setService] = useState( row ? row.type.trim() : '')
+
+    const serviceTypeData = [
+        {
+            domainid: 487446,
+            domainvalue: "GENAI",
+            domaindesc: "Gen AI",
+            bydefault: null
+        },
+        {
+            domainid: 342359,
+            domainvalue: "ASSISTANT",
+            domaindesc: "Assistant",
+            bydefault: null
+        },
+        {
+            domainid: 342360,
+            domainvalue: "VOICECONVERSOR",
+            domaindesc: "Conversor de voz",
+            bydefault: null
+        }
+      
+    ];
 
     const { getValues, register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -150,6 +182,16 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
         },
     ]
 
+    
+
+    const handleFieldSelectChange = (value: any) => {
+        if (value) {
+            setValue('type', value.domainvalue);
+        } else {
+            setValue('type', '');
+        }
+    };
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -186,28 +228,36 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                         </Button>
                     </div>
                 </div>
+
+
                 <div className={classes.containerDetail}>
-                    <div className='row-zyx'>
-                        <FieldSelect
-                            className='col-6'
-                            disabled={edit}
-                            label={t(langKeys.type_service)}
-                            valueDefault={service}
-                            onChange={(value) => {
-                                if(value) {
-                                    setService(value.domainvalue)
-                                    setValue('type', value.domainvalue)
-                                } else {
-                                    setService('')
-                                    setValue('type', '')
-                                }
-                            }}
-                            data={dataDomainStatus || []}
-                            optionDesc='domaindesc'
-                            optionValue='domainvalue'
-                        />
-                    </div>
-                    {service === 'WATSON ASSISTANT' ? (
+
+                   
+                <CustomFieldPackage
+                    title={t(langKeys.type_service)}
+                    subtitle={"Selecciona el tipo de servicio que registrarás y emplearas en Laraigo"}
+                    fieldSelectProps={{
+                        data: serviceTypeData,
+                        disabled: false,
+                        error: '',
+                        onChange: handleFieldSelectChange,
+                        optionDesc: 'domaindesc',
+                        optionValue: 'domainvalue',
+                        valueDefault: getValues("type"),
+                        variant: "outlined",
+                        size: "small"
+                    }}
+                    warningFlag={true}
+                    helperTextFlag={true}
+                    helperText={"Este es un texto de ayuda dinámico basado en la selección."}
+                    value={getValues("type")}
+                />
+
+
+
+                 
+
+                    {/* {service === 'WATSON ASSISTANT' ? (
                         <>
                             <div className="row-zyx">
                                 <FieldEdit
@@ -376,7 +426,9 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                         </>
                     ) : (
                         <></>
-                    )}
+                    )} */}
+
+
                 </div>
             </form>
         </div>
@@ -570,29 +622,34 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
 
         return (
             
-            <div style={{ width: "100%" }}>
+            <div style={{ width: "100%", marginTop:'1rem', marginRight:'0.5rem' }}>
                 {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.iaconnectors) }]}
                         handleClick={functionChange}
                     />
                 </div>}
+                <div style={{fontSize:'1.5rem', fontWeight:'bolder'}}>{t(langKeys.connectors)}</div>
                 <TableZyx
                     ButtonsElement={() => {
                         if (!setExternalViewSelected) {
                             return (
                                 <>
-                                    <Button
-                                        color="primary"
-                                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                                        startIcon={<Delete style={{ color: "white" }} />}
-                                        variant="contained"
-                                        onClick={() => {
-                                            handleMassiveDelete(rowWithDataSelected);
-                                        }}
-                                    >
-                                        {t(langKeys.delete)}
-                                    </Button>                                  
+                                    <div style={{marginTop:'0rem'}}>
+                                        <Button
+                                            color="primary"
+                                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                            startIcon={<Delete style={{ color: "white" }} />}
+                                            variant="contained"
+                                            onClick={() => {
+                                                handleMassiveDelete(rowWithDataSelected);
+                                            }}
+                                        >
+                                            {t(langKeys.delete)}
+                                        </Button>  
+                                    </div>
+                                    
+                                                                   
                                 </>                             
                             )
                         } else {
@@ -623,7 +680,7 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                     useSelection={true}                  
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
-                    titlemodule={!!window.location.href.includes("iaconectors")?t(langKeys.connectors):t(langKeys.intelligentmodels, { count: 2 })}
+                    titlemodule={!!window.location.href.includes("iaconectors")?" ":t(langKeys.intelligentmodels, { count: 2 })}
                 />
             </div>
         )
