@@ -49,6 +49,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import CloseIcon from "@material-ui/icons/Close";
+import DialogInteractions from "../../components/inbox/DialogInteractions";
 
 interface DetailProps {
     row: Dictionary | null;
@@ -380,11 +381,16 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
     const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openModalInteractions, setOpenModalInteractions] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+
     const [view, setView] = useState("GRID");
-
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [dataGrid, setdataGrid] = useState<any[]>([]);
-
+    const openDialogInteractions = (row: any) => {
+        setOpenModalInteractions(true);
+        setRowSelected(row)
+    }
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[];
@@ -422,6 +428,16 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 accessor: 'ticketnum',
                 showGroupedBy: true,
                 showColumn: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            onClick={() => openDialogInteractions(row)}
+                        >
+                            {row.ticketnum}
+                        </label>
+                    );
+                },
             },
             {
                 Header: t(langKeys.report_opportunity_datehour),
@@ -924,6 +940,11 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                         key: c, value: `report_opportunity_${c}`
                     }))}
                     allParameters={allParameters}
+                />
+                <DialogInteractions
+                    openModal={openModalInteractions}
+                    ticket={rowSelected}
+                    setOpenModal={setOpenModalInteractions}
                 />
             </>
         );
