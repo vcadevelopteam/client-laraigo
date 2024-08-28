@@ -161,32 +161,30 @@ interface DetailIaServiceProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        display: 'flex',
-        alignItems: 'center',
-        overflow: 'hidden',
-        position: 'relative',
+    titleandcrumbs: {
+        marginBottom: 4,
+        marginTop: 4,
     },
-    tagsWrapper: {
-        display: 'flex',
-        // whiteSpace: 'nowrap',
-        paddingBottom: 0,
-        overflowX: 'hidden',
-        transition: 'transform 0.3s ease-in-out',
+    container: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
     },
     tag: {
-        backgroundColor: '#efefef',
-        borderRadius: '4px',
-        padding: theme.spacing(0.38, 1),
-        flexShrink: 0,
-        marginRight: theme.spacing(1),
-        display: 'inline-block',
+        backgroundColor: '#EBF2F3',
+        borderRadius: '8px',
+        padding: '2px 8px',
+        marginRight: '4px',
+        marginBottom: '4px',
+        whiteSpace: 'nowrap',
+        wordBreak: 'keep-all',
     },
-    arrowLeft: {
-        left: 0,
-    },
-    arrowRight: {
-        right: 0,
+    tagcontainer: {
+        display: 'flex', 
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden',
+        width: '300px'
     },
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -721,84 +719,11 @@ interface IAConfigurationProps {
     setExternalViewSelected?: (view: string) => void;
     arrayBread?: any;
 }
-const TicketTags: React.FC<{ tags: string }> = ({ tags }) => {
-    const { t } = useTranslation();
-    const classes2 = useStyles();
-    const [scrollPosition, setScrollPosition] = useState(0);
-    const tagsWrapperRef = useRef<{ scrollWidth: number; scrollLeft: number; clientWidth: number }>(null);
-    const [atEnd, setAtEnd] = useState(false);
-    const uniqueTags = !!tags.length ? tags.split(";").filter((word, index, array) => word !== array[index - 1]) : [];
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (tagsWrapperRef.current) {
-                const isOverflowing = tagsWrapperRef?.current?.scrollWidth > tagsWrapperRef?.current?.clientWidth;
-                if (!isOverflowing) {
-                    setScrollPosition(0);
-                    tagsWrapperRef.current.scrollLeft = 0;
-                } else {
-                    setAtEnd(tagsWrapperRef.current.scrollLeft + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
-                }
-            }
-        };
-
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [uniqueTags]);
-
-    const handleScroll = (direction: string) => {
-        const scrollAmount = 100; // Ajusta esta cantidad según tus necesidades
-        const newPosition = direction === 'left'
-            ? scrollPosition - scrollAmount
-            : scrollPosition + scrollAmount;
-        setScrollPosition(newPosition);
-        tagsWrapperRef.current.scrollLeft = newPosition;
-
-        const atEndPosition = newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth;
-
-        setAtEnd(atEndPosition);
-    };
-
-    useEffect(() => {
-        if (tagsWrapperRef.current) {
-            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
-        }
-    }, [scrollPosition]);
-
-
-    if (uniqueTags.length) {
-        return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", maxWidth: "25vw", borderLeft: "1px solid lightgrey", flex: 11 }}>
-                <div style={{ zIndex: 99, margin: 0, marginBottom: 0, padding: "4px 0px", width: "100%" }}>
-                    <div style={{ zIndex: 999, width: "100%", height: "100%", padding: "0 4px", boxSizing: "border-box" }}>
-                        <div className={classes2.container} >
-                            <IconButton size='small' disabled={!(scrollPosition > 0)} className={`${classes2.arrowLeft}`} onClick={() => handleScroll('left')} style={{ padding: 0 }}>
-                                <KeyboardArrowLeft fontSize='small' />
-                            </IconButton>
-                            <div className={classes2.tagsWrapper} ref={tagsWrapperRef} >
-                                {uniqueTags.map((tag, index) => (
-                                    <span key={index} className={classes2.tag}>{tag}</span>
-                                ))}
-                            </div>
-                            <IconButton disabled={atEnd} size='small' className={`${classes2.arrowRight}`} onClick={() => handleScroll('right')} style={{ padding: 0 }}>
-                                <KeyboardArrowRight />
-                            </IconButton>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    } else {
-        return <div style={{ flex: 0 }}></div>
-    }
-}
 const selectionKey = "intelligentmodelsconfigurationid"
 const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelected, arrayBread }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -833,9 +758,87 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                 accessor: 'channeldesc',
                 width: 'auto',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
-                    return <TicketTags tags={row.channeldesc} />
-                }
+                    const { row } = props.cell;
+                    const data = row?.original?.channeldesc || '';
+                    const items = data.split(';').map((item: Dictionary) => item.trim()).filter(Boolean);
+                
+                    const [scrollPosition, setScrollPosition] = useState(0);
+                    const tagsWrapperRef = useRef<HTMLDivElement>(null);
+                    const [atEnd, setAtEnd] = useState(false);
+                    const [isOverflowing, setIsOverflowing] = useState(false);
+                
+                    useEffect(() => {
+                        if (tagsWrapperRef.current) {
+                            const isOverflowingContent = tagsWrapperRef.current.scrollWidth > tagsWrapperRef.current.clientWidth;
+                            setIsOverflowing(isOverflowingContent);
+                            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+                        }
+                    }, [scrollPosition, items]);
+                
+                    const handleScroll = (direction: string, event: React.MouseEvent) => {
+                        event.stopPropagation();
+                
+                        const scrollAmount = 100;
+                        const newPosition = direction === 'left'
+                            ? scrollPosition - scrollAmount
+                            : scrollPosition + scrollAmount;
+                
+                        setScrollPosition(newPosition);
+                        if (tagsWrapperRef.current) {
+                            tagsWrapperRef.current.scrollLeft = newPosition;
+                        }
+                
+                        const atEndPosition = tagsWrapperRef.current 
+                            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth 
+                            : false;
+                
+                        setAtEnd(atEndPosition);
+                    };
+                
+                    if (!data || items.length === 0) {
+                        return null;
+                    }
+                
+                    const shouldShowTags = items.length > 1;
+                
+                    return (
+                        <div style={{ display: 'flex', alignItems: 'center', width: '300px', overflow: 'hidden' }}>
+                            {isOverflowing && shouldShowTags && (
+                                <IconButton 
+                                    size='small' 
+                                    disabled={!(scrollPosition > 0)} 
+                                    onClick={(event) => handleScroll('left', event)} 
+                                    style={{ padding: 0 }}
+                                >
+                                    <KeyboardArrowLeft fontSize='small' />
+                                </IconButton>
+                            )}
+                            <div
+                                ref={tagsWrapperRef}
+                                className={classes.tagcontainer}
+                            >
+                                {items.map((item: Dictionary, index: number) => (
+                                    <span 
+                                        key={index}
+                                        className={shouldShowTags && item ? classes.tag : ''}
+                                    >
+                                        {item}
+                                    </span>
+                                ))}
+                            </div>
+                            {isOverflowing && shouldShowTags && (
+                                <IconButton 
+                                    size='small' 
+                                    disabled={atEnd} 
+                                    onClick={(event) => handleScroll('right', event)} 
+                                    style={{ padding: 0 }}
+                                >
+                                    <KeyboardArrowRight fontSize='small' />
+                                </IconButton>
+                            )}
+                        </div>
+                    );
+                },
             },
             {
                 Header: t(langKeys.timesheet_registerdate),
