@@ -31,16 +31,20 @@ const useStyles = makeStyles({
         overflow: 'visible',
     },
     trapezoidText: {
-        fontSize: '15px',
+        fontSize: '22px',
         fill: '#fff',
         whiteSpace: 'nowrap',
-        textAnchor: 'end',
+        textAnchor: 'start',
+        fontFamily: 'Times New Roman',
+
     },
     trapezoidTotalText: {
-        fontSize: '8px',
+        fontSize: '12px',
         fill: '#fff',
         whiteSpace: 'nowrap',
         textAnchor: 'end',
+        fontFamily: 'Times New Roman',
+
     },
 });
 
@@ -67,11 +71,12 @@ const RectangularTrapezoid: React.FC<TrapezoidProps> = ({ data, proportionData, 
 
         const yOffset = predefinedSizes.slice(0, index).reduce((sum, size) => sum + size + spacing, 0);
 
-        const textX = Math.min(currentTopWidth, currentBottomWidth) - 10;
+        const textXLeft  =  12;
+        const textXRight = Math.min(currentTopWidth, currentBottomWidth) + 15;
 
         const percentage = ((item.count / totalSum) * 100).toFixed(2);
 
-        const xOffset = data.length <= 3 ? -currentTopWidth / 2 : 0;  //
+        const xOffset = data.length <= 3 ? -50 : 0;
 
         return (
             <g key={index} transform={`translate(${xOffset}, ${yOffset})`}>
@@ -79,10 +84,10 @@ const RectangularTrapezoid: React.FC<TrapezoidProps> = ({ data, proportionData, 
                     d={`M ${0} 0 L ${currentTopWidth} 0 L ${currentBottomWidth} ${trapezoidHeight} L ${0} ${trapezoidHeight} Z`}
                     fill={item.fill}
                 />
-                <text x={textX} y={trapezoidHeight / 2 - 5} className={classes.trapezoidText}>
+                <text x={textXLeft} y={trapezoidHeight / 2 - 5} className={classes.trapezoidText}>
                     {item.name}
                 </text>
-                <text x={textX} y={trapezoidHeight / 2 + 15} className={classes.trapezoidTotalText}>
+                <text x={textXRight} y={trapezoidHeight - 5} className={classes.trapezoidTotalText}>
                     Total: {item.count} - {percentage}%
                 </text>
             </g>

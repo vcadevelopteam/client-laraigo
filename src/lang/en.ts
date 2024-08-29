@@ -1557,6 +1557,7 @@ const translation: LangKeys = {
   aboutlaraigo: 'About Laraigo',
   dashboardadd: "Create Dashboard",
   reports: "Reports",
+  of_date: "xxx",
   month_01: "January",
   month_02: "February",
   month_03: "March",
@@ -2601,7 +2602,7 @@ const translation: LangKeys = {
   report_opportunity_datehour: 'Creation date and time',
   report_opportunity_description: 'Opportunity',
   report_opportunity_lastupdate: 'Last update',
-  report_opportunity_dateinopportunity: 'Date in opportunity',
+  report_opportunity_dateinopportunity: 'End opportunity',
   report_opportunity_displayname: 'Customer',
   report_opportunity_phone: 'Phone',
   report_opportunity_email: 'Email',
@@ -2614,6 +2615,10 @@ const translation: LangKeys = {
   report_opportunity_fullname: 'Assigned advisor',
   report_opportunity_products: 'Products',
   report_opportunity_calendarview: 'Calendar View',
+  HIGH: 'High',
+  MEDIUM: 'Medium',
+  LOW: 'Low',
+
 
 
   report_userproductivityhours: 'Hourly agent productivity',
@@ -2651,7 +2656,7 @@ const translation: LangKeys = {
   opportunity_funnel_advisor: "Advisor",
   opportunity_funnel_product: "Product",
   opportunity_funnel_quantity: "Quantity",
-  opportunity_funnel_phase: "Phase",
+  opportunity_funnel_phase: "Phases",
   opportunity_funnel_new: "New",
   opportunity_funnel_qualified: "Qualified",
   opportunity_funnel_proposition: "Proposition",

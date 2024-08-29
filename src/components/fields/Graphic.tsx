@@ -134,7 +134,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                     return (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
-                            {row?.columnname}
+                            {t(row?.columnname)}
                         </div>
                     );
                 },
@@ -395,10 +395,10 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 margin={{ top: 20, right: 30, left: 20, bottom: 5}}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+                                <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} tickFormatter={(value) => t(value)} />
                                 <YAxis domain={[0, maxSummary]}/>
-                                <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
-                                <Bar 
+                                <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} labelFormatter={(label) => t(label)}/>
+                                <Bar
                                     dataKey="summary" 
                                     fill="#7721AD" 
                                     textAnchor="end" 
@@ -432,8 +432,10 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     <div style={{ flex: '0 0 65%', height: 500 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
-                                <ChartTooltip />
-                                <Pie
+                                <ChartTooltip
+                                    formatter={(value: any, name: any) => [value, t(name)]}
+                                    labelFormatter={(label) => t(label)}
+                                />                                <Pie
                                     data={dataGraphic}
                                     dataKey="summary"
                                     labelLine={false}
@@ -443,6 +445,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                     cy="50%"
                                     innerRadius={40}
                                     fill="#8884d8"
+
                                 >
                                     {dataGraphic.map((item) => (
                                         <Cell
@@ -473,10 +476,10 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+                                <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} tickFormatter={(value) => t(value)} />
                                 <YAxis domain={[0, maxSummary]} />
-                                <ChartTooltip formatter={(value: number, name: string) => [value, t(name)]} />                                                           
-                                <Line 
+                                <ChartTooltip formatter={(value: number, name: string) => [value, t(name)]} labelFormatter={(label) => t(label)} />
+                                <Line
                                     type="linear" 
                                     dataKey="summary" 
                                     stroke={randomColorGeneratorPerPage()} 

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from "react-i18next";
+import { langKeys } from "../../lang/keys";
 
 interface FunnelData {
     name: string;
@@ -51,6 +53,7 @@ const useStyles = makeStyles({
 const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
     const classes = useStyles();
     const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, content: '' });
+    const { t } = useTranslation();
 
     const darkenColor = (color: string, amount: number) => {
         let usePound = false;
@@ -72,13 +75,11 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
     };
 
     const renderFunnelSection = (section: FunnelData, index: number, totalHeight: number) => {
-        const nextSectionWidth = (data[index + 1]?.value ?? 0) / (data[0].value / 100);
-        const currentSectionWidth = section.value / (data[0].value / 100);
-        const sectionHeight = (totalHeight - spacing * (data.length - 1)) / data.length;
+        const isSingleSection = data.length === 1;
+        const sectionHeight = isSingleSection ? totalHeight : (totalHeight - spacing * (data.length - 1)) / data.length;
 
-        const isoscelesFactor = 1;
-        const topWidth = currentSectionWidth * isoscelesFactor;
-        const bottomWidth = nextSectionWidth * isoscelesFactor;
+        const topWidth = isSingleSection ? 50 : section.value / (data[0].value / 100);
+        const bottomWidth = isSingleSection ? 80 : (data[index + 1]?.value ?? 0) / (data[0].value / 100);
 
         const createCurvedBasePath = (topWidth: number, bottomWidth: number, sectionHeight: number, curveOffset: number) => {
             const halfTopWidth = topWidth / 2;
@@ -88,13 +89,13 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
             const middleY = sectionHeight + curveOffset;
 
             return `
-                M ${middleX - halfTopWidth} 0
-                L ${middleX + halfTopWidth} 0
-                L ${middleX + halfBottomWidth} ${sectionHeight}
-                Q ${middleX + halfBottomWidth} ${middleY} ${middleX} ${middleY}
-                Q ${middleX - halfBottomWidth} ${middleY} ${middleX - halfBottomWidth} ${sectionHeight}
-                Z
-            `;
+            M ${middleX - halfTopWidth} 0
+            L ${middleX + halfTopWidth} 0
+            L ${middleX + halfBottomWidth} ${sectionHeight}
+            Q ${middleX + halfBottomWidth} ${middleY} ${middleX} ${middleY}
+            Q ${middleX - halfBottomWidth} ${middleY} ${middleX - halfBottomWidth} ${sectionHeight}
+            Z
+        `;
         };
 
         const yOffset = index * sectionHeight + (index * spacing);
@@ -115,40 +116,67 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
             setTooltip({ visible: false, x: 0, y: 0, content: '' });
         };
 
-        if (index === data.length - 1) {
+        const fontSize = Math.max(1.5, Math.min(sectionHeight / 4, 5));
+
+        if (isSingleSection) {
             return (
                 <g key={index} transform={`translate(0, ${yOffset})`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <path
                         d={`
-                            M ${50 - topWidth / 2} 0
-                            L ${50 + topWidth / 2} 0
-                            L ${50 + topWidth / 2} ${sectionHeight / 2}
-                            Q ${50 + topWidth / 2} ${(sectionHeight / 2) + 1} 50 ${(sectionHeight / 2) + 1}
-                            Q ${50 - topWidth / 2} ${(sectionHeight / 2) + 1} ${50 - topWidth / 2} ${sectionHeight / 2}
-                            Z
-                        `}
+                        M ${50 - bottomWidth / 2} 0
+                        L ${50 + bottomWidth / 2} 0
+                        L ${50 + topWidth / 2} ${sectionHeight}
+                        L ${50 - topWidth / 2} ${sectionHeight}
+                        Z
+                    `}
+                        fill={darkenColor(section.fill, -20)}
+                    />
+                    <text
+                        x="50"
+                        y={sectionHeight / 2}
+                        textAnchor="middle"
+                        style={{ fontSize: `${fontSize}px`, fontFamily: 'Times New Roman' }}
+                        alignmentBaseline="middle"
+                        className={classes.funnelTextBase}
+                    >
+                        {t(section.name)}
+                    </text>
+                </g>
+            );
+        } else if (index === data.length - 1) {
+            return (
+                <g key={index} transform={`translate(0, ${yOffset})`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                    <path
+                        d={`
+                        M ${50 - topWidth / 2} 0
+                        L ${50 + topWidth / 2} 0
+                        L ${50 + topWidth / 2} ${sectionHeight / 2}
+                        Q ${50 + topWidth / 2} ${(sectionHeight / 2) + 1} 50 ${(sectionHeight / 2) + 1}
+                        Q ${50 - topWidth / 2} ${(sectionHeight / 2) + 1} ${50 - topWidth / 2} ${sectionHeight / 2}
+                        Z
+                    `}
                         fill={darkenColor(section.fill, -20)}
                     />
                     <path
                         d={`
-                            M ${50 - topWidth / 2} 0
-                            L ${50 + topWidth / 2} 0
-                            L ${50 + topWidth / 2} ${sectionHeight / 2}
-                            L ${50 - topWidth / 2} ${sectionHeight / 2}
-                            Z
-                        `}
+                        M ${50 - topWidth / 2} 0
+                        L ${50 + topWidth / 2} 0
+                        L ${50 + topWidth / 2} ${sectionHeight / 2}
+                        L ${50 - topWidth / 2} ${sectionHeight / 2}
+                        Z
+                    `}
                         fill={darkenColor(section.fill, -20)}
                     />
                     <path
                         d={`
-                            M ${50 - topWidth / 2} 0
-                            Q ${50 - topWidth / 2 - 1} 0.7 ${50} 0.7
-                            Q ${50 + topWidth / 2 + 1} 0.7 ${50 + topWidth / 2} 0
-                            L ${50 + topWidth / 2} 0
-                            Q ${50 + topWidth / 2 + 1} -0.7 ${50} -0.7
-                            Q ${50 - topWidth / 2 - 1} -0.7 ${50 - topWidth / 2} 0
-                            Z
-                        `}
+                        M ${50 - topWidth / 2} 0
+                        Q ${50 - topWidth / 2 - 1} 0.7 ${50} 0.7
+                        Q ${50 + topWidth / 2 + 1} 0.7 ${50 + topWidth / 2} 0
+                        L ${50 + topWidth / 2} 0
+                        Q ${50 + topWidth / 2 + 1} -0.7 ${50} -0.7
+                        Q ${50 - topWidth / 2 - 1} -0.7 ${50 - topWidth / 2} 0
+                        Z
+                    `}
                         fill={darkenColor(section.fill, 20)}
                     />
 
@@ -156,6 +184,7 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
                         x="50"
                         y={sectionHeight / 4}
                         textAnchor="middle"
+                        style={{ fontSize: `${fontSize}px`, fontFamily: 'Times New Roman' }}
                         alignmentBaseline="middle"
                         className={classes.funnelTextBase}
                     >
@@ -172,24 +201,24 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
                     />
                     <path
                         d={`
-                            M ${50 - topWidth / 2} 0
-                            L ${50 + topWidth / 2} 0
-                            L ${50 + bottomWidth / 2} ${sectionHeight}
-                            L ${50 - bottomWidth / 2} ${sectionHeight}
-                            Z
-                        `}
+                        M ${50 - topWidth / 2} 0
+                        L ${50 + topWidth / 2} 0
+                        L ${50 + bottomWidth / 2} ${sectionHeight}
+                        L ${50 - bottomWidth / 2} ${sectionHeight}
+                        Z
+                    `}
                         fill={darkenColor(section.fill, -20)}
                     />
                     <path
                         d={`
-                            M ${50 - topWidth / 2} 0
-                            Q ${50 - topWidth / 2 - 1} 0.7 ${50} 0.7
-                            Q ${50 + topWidth / 2 + 1} 0.7 ${50 + topWidth / 2} 0
-                            L ${50 + topWidth / 2} 0
-                            Q ${50 + topWidth / 2 + 1} -0.7 ${50} -0.7
-                            Q ${50 - topWidth / 2 - 1} -0.7 ${50 - topWidth / 2} 0
-                            Z
-                        `}
+                        M ${50 - topWidth / 2} 0
+                        Q ${50 - topWidth / 2 - 1} 0.7 ${50} 0.7
+                        Q ${50 + topWidth / 2 + 1} 0.7 ${50 + topWidth / 2} 0
+                        L ${50 + topWidth / 2} 0
+                        Q ${50 + topWidth / 2 + 1} -0.7 ${50} -0.7
+                        Q ${50 - topWidth / 2 - 1} -0.7 ${50 - topWidth / 2} 0
+                        Z
+                    `}
                         fill={darkenColor(section.fill, 20)}
                     />
 
@@ -197,24 +226,27 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
                         x="50"
                         y={sectionHeight / 2}
                         textAnchor="middle"
+                        style={{ fontSize: `${fontSize}px`, fontFamily: 'Times New Roman' }}
                         alignmentBaseline="middle"
                         className={classes.funnelText}
                     >
-                        {section.name}
+                        {t(section.name)}
                     </text>
                 </g>
             );
         }
     };
 
+    const isSingleSection = data.length === 1;
+
     return (
-        <div className={classes.funnelContainer}>
+        <div className={classes.funnelContainer} >
             <svg
                 className={classes.funnel}
-                viewBox={`0 0 100 100`}
+                viewBox={`0 0 100 ${isSingleSection ? 50 : 100}`}
                 preserveAspectRatio="none"
             >
-                {data.map((section, index) => renderFunnelSection(section, index, 100))}
+                {data.map((section, index) => renderFunnelSection(section, index, isSingleSection ? 50 : 100))}
             </svg>
             {tooltip.visible && (
                 <div
