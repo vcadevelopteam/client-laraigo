@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     },
     filterComponent: {
         minWidth: "200px",
-        maxWidth: "320px",
+        maxWidth: "480px",
 
     },
     chartContainer: {
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: "25px",
-        fontFamily: "Times New Roman",
+        fontWeight: "bold",
         margin: theme.spacing(0.5, 0),
     }
 }));

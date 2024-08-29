@@ -121,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: "25px",
-        fontFamily: "Times New Roman",
+        fontWeight: "bold",
         margin: theme.spacing(0.5, 0),
     }
 }));

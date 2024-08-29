@@ -39,7 +39,7 @@ const useStyles = makeStyles({
 
     },
     trapezoidTotalText: {
-        fontSize: '8px',
+        fontSize: '12px',
         fill: '#fff',
         whiteSpace: 'nowrap',
         textAnchor: 'end',
