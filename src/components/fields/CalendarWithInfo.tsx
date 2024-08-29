@@ -211,16 +211,21 @@ const BookingTime: FC<{
 
 
 const BoxDay: FC<{
+    index: number;
     hourDay: HourDayProp;
     handleClick: (event: any) => void;
     BookingView: ({ item }: { item: any }) => JSX.Element;
-}> = ({ hourDay, handleClick, BookingView }) => {
+}> = ({ hourDay, handleClick, BookingView, index }) => {
     const classes = useScheduleStyles();
-
     return (
         <div
             className={classes.boxDay}
-            style={{ borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1", position: "relative" }}
+            style={{
+                borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1",
+                position: "relative",
+                overflowX: "hidden",
+                // overflowX: "hidden"
+            }}
         >
             {hourDay.data?.map((x, index) => (
                 <BookingTime
@@ -351,7 +356,7 @@ const CalendarWithInfo: FC<{
                     })}
                     {daysToShow.map((day, index) => (
                         <BoxDay
-                            key={index}
+                            index={index}
                             hourDay={day}
                             BookingView={BookingView}
                             handleClick={(e) => {
