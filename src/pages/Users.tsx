@@ -2109,7 +2109,7 @@ const Users: FC = () => {
                                         operation: "INSERT",
                                         company: d.company,
                                         twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                                        registercode: String(d.registercode),
+                                        registercode: (d.registercode || "") + "",
                                         billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                         image: d?.image || "",
                                         detail: {
