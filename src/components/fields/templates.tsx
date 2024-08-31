@@ -1771,7 +1771,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                             theme="light"
                             skinTonePosition="none"
                             noCountryFlags={false}
-                            // set="facebook"
+                            set="apple"
                             emojiVersion={12}
                             i18n={{
                                 search: t(langKeys.search),
