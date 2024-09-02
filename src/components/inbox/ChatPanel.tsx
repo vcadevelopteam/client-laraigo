@@ -692,7 +692,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 groups = grouprules
             }
             setUsableGroups(groups)
-            setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+            if (user.properties.limit_reassign_group) {
+                setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+            } else {
+                setUserToReassign((multiData?.data?.[3]?.data || []))
+            }
             if (propertyAsesorReassign && !propertyGrupoDelegacion) {
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
@@ -1183,6 +1187,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         const dataasesorsuspende = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.data;
         const reassignAsesor = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.data;
         setPropertyGrupoDelegacion(user?.roledesc?.includes("ASESOR") ? multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEGRUPODELEGACION")?.data?.[0]?.propertyvalue === "1" : true)
+        debugger
         if (dataasesorsuspende && reassignAsesor && multiData) {
             if (user?.roledesc?.includes("ASESOR")) {
                 if (user?.groups) {
