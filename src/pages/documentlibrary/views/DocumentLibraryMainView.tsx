@@ -213,6 +213,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 			{ "# Obligatorio |Grupos que tendran permiso al acceso del archivo. Se puede indicar varios grupos colocando ',' entre cada uno de ellos. Ejemplo: GR01,GR02": "# Obligatorio |Grupos que tendran permiso al acceso del archivo. Se puede indicar varios grupos colocando ',' entre cada uno de ellos. Ejemplo: GR01,GR02" },
 			{ "# Obligatorio |Link donde se encuentra almacenado el archivo que se requiere subir. Ejemplo: https://laraigo.com/wp-content/uploads/2023/11/Laraigo.svg": "# Obligatorio |Link donde se encuentra almacenado el archivo que se requiere subir. Ejemplo: https://laraigo.com/wp-content/uploads/2023/11/Laraigo.svg" },
 			{ "# Obligatorio |Categoría del registro del archivo. Puedes asignarle cualquier categoría. Ejemplo: Saludo": "# Obligatorio |Categoría del registro del archivo. Puedes asignarle cualquier categoría. Ejemplo: Saludo" },
+			{ "# Opcional | Si el documento sera favorito o no, Valores: TRUE o FALSE": "# Opcional | Si el documento sera favorito o no, Valores: TRUE o FALSE" },
 		];
 		const header = [
 			"title",
@@ -220,6 +221,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 			"groups",
 			"linkfile",
 			"category",
+			'favorite'
 		];
 		exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
 	};
@@ -338,7 +340,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 						...x,
 						id: 0,
 						link: x.linkfile,
-						favorite: false,
+						favorite: x?.favorite?(String(x.favorite).toLocaleLowerCase() === "true"):false,
 						operation: "INSERT",
 						type: "NINGUNO",
 						status: "ACTIVO",
