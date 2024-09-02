@@ -15,7 +15,7 @@ export const login = (state: IState): IState => ({
 
 export const loginSuccess = (state: IState, action: IAction): IState => {
     saveAuthorizationToken(action.payload.data.token);
-    localStorage.removeItem(keys.HIDE_LOGS)
+    // localStorage.removeItem(keys.HIDE_LOGS)
     return {
         ...state,
         login: {
