@@ -181,8 +181,8 @@ const useStyles = makeStyles((theme) => ({
         wordBreak: 'keep-all',
     },
     tagcontainer: {
-        display: 'flex',
-        whiteSpace: 'nowrap',
+        display: 'flex', 
+        whiteSpace: 'nowrap', 
         overflow: 'hidden',
         width: '300px'
     },
@@ -367,23 +367,6 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                             >{t(langKeys.save)}
                             </Button>
                         }
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.status)}
-                            className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
-                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                            error={errors?.status?.message}
-                            uset={true}
-                            prefixTranslation="status_"
-                            data={dataStatus}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            variant="outlined"
-                        />
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -778,12 +761,12 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                     const { row } = props.cell;
                     const data = row?.original?.channeldesc || '';
                     const items = data.split(';').map((item: Dictionary) => item.trim()).filter(Boolean);
-
+                
                     const [scrollPosition, setScrollPosition] = useState(0);
                     const tagsWrapperRef = useRef<HTMLDivElement>(null);
                     const [atEnd, setAtEnd] = useState(false);
                     const [isOverflowing, setIsOverflowing] = useState(false);
-
+                
                     useEffect(() => {
                         if (tagsWrapperRef.current) {
                             const isOverflowingContent = tagsWrapperRef.current.scrollWidth > tagsWrapperRef.current.clientWidth;
@@ -791,40 +774,40 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                             setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
                         }
                     }, [scrollPosition, items]);
-
+                
                     const handleScroll = (direction: string, event: React.MouseEvent) => {
                         event.stopPropagation();
-
+                
                         const scrollAmount = 100;
                         const newPosition = direction === 'left'
                             ? scrollPosition - scrollAmount
                             : scrollPosition + scrollAmount;
-
+                
                         setScrollPosition(newPosition);
                         if (tagsWrapperRef.current) {
                             tagsWrapperRef.current.scrollLeft = newPosition;
                         }
-
-                        const atEndPosition = tagsWrapperRef.current
-                            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth
+                
+                        const atEndPosition = tagsWrapperRef.current 
+                            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth 
                             : false;
-
+                
                         setAtEnd(atEndPosition);
                     };
-
+                
                     if (!data || items.length === 0) {
                         return null;
                     }
-
+                
                     const shouldShowTags = items.length > 1;
-
+                
                     return (
                         <div style={{ display: 'flex', alignItems: 'center', width: '300px', overflow: 'hidden' }}>
                             {isOverflowing && shouldShowTags && (
-                                <IconButton
-                                    size='small'
-                                    disabled={!(scrollPosition > 0)}
-                                    onClick={(event) => handleScroll('left', event)}
+                                <IconButton 
+                                    size='small' 
+                                    disabled={!(scrollPosition > 0)} 
+                                    onClick={(event) => handleScroll('left', event)} 
                                     style={{ padding: 0 }}
                                 >
                                     <KeyboardArrowLeft fontSize='small' />
@@ -835,7 +818,7 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                                 className={classes.tagcontainer}
                             >
                                 {items.map((item: Dictionary, index: number) => (
-                                    <span
+                                    <span 
                                         key={index}
                                         className={shouldShowTags && item ? classes.tag : ''}
                                     >
@@ -844,10 +827,10 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                                 ))}
                             </div>
                             {isOverflowing && shouldShowTags && (
-                                <IconButton
-                                    size='small'
-                                    disabled={atEnd}
-                                    onClick={(event) => handleScroll('right', event)}
+                                <IconButton 
+                                    size='small' 
+                                    disabled={atEnd} 
+                                    onClick={(event) => handleScroll('right', event)} 
                                     style={{ padding: 0 }}
                                 >
                                     <KeyboardArrowRight fontSize='small' />
@@ -871,7 +854,6 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
             {
                 Header: t(langKeys.createdBy),
                 accessor: 'createby',
-                width: 'auto',
             },
         ],
         []
@@ -958,7 +940,7 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                                 color="primary"
                                 disabled={mainResult.mainData.loading || Object.keys(selectedRows).length === 0}
                                 type='button'
-                                style={{ backgroundColor: (mainResult.mainData.loading || Object.keys(selectedRows).length === 0) ? "#dbdbdb" : "#FB5F5F" }}
+                                style={{ backgroundColor: (mainResult.mainData.loading || Object.keys(selectedRows).length === 0)?"#dbdbdb":"#FB5F5F" }}
                                 startIcon={<Delete style={{ color: 'white' }} />}
                                 onClick={() => handleDelete()}
                             >{t(langKeys.delete)}
