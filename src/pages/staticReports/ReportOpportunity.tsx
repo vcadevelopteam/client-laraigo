@@ -33,7 +33,7 @@ import {
     getLeadReportGraphicSel,
     getLeadsReportSel,
     getReportGraphic,
-    exportExcel,
+    exportExcel, getDateCleaned,
 } from "common/helpers";
 import { langKeys } from "lang/keys";
 import {Dictionary, IFetchData} from "@types";
@@ -154,20 +154,9 @@ const PriorityStars = ({ priority }: { priority: string }) => {
 };
 
 const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-
-    const date = new Date(dateString);
-
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-
-    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
+    return dateString ? convertLocalDate(dateString, false, true).toLocaleString() : "";
 };
+
 
 const DialogOpportunity: React.FC<{
     setOpenModal: (param: any) => void;
@@ -429,12 +418,12 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 showGroupedBy: true,
                 showColumn: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const ticketnum = props.cell.value;
                     return (
                         <label
-                            onClick={() => openDialogInteractions(row)}
+                            onClick={() => openDialogInteractions(props.cell.row.original)}
                         >
-                            {row.ticketnum}
+                            {ticketnum}
                         </label>
                     );
                 },
@@ -447,7 +436,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 showColumn: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const { createdate } = props.cell.row.original || {};
-                    return createdate ? new Date(createdate).toLocaleString() : null;
+                    return formatDate(createdate) ? new Date(createdate).toLocaleString() : null;
                 },
             },
             {
@@ -617,19 +606,19 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     }, [dateRange]);
 
     const fetchData = () => {
-        const stardate = dateRange.startDate
-            ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
+        const startdate: string | null = dateRange.startDate
+            ? new Date(dateRange.startDate).toISOString()
             : null;
-        const enddate = dateRange.endDate
-            ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10)
+        const enddate: string | null = dateRange.endDate
+            ? new Date(dateRange.endDate).toISOString()
             : null;
-        setisday(stardate === enddate);
+        setisday(startdate === enddate);
 
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getLeadsReportSel({
             communicationchannel: selectedChannel || 0,
-            startdate: dateRangeCreateDate.startDate,
-            enddate: dateRangeCreateDate.endDate,
+            startdate: startdate,
+            enddate: enddate,
         })));
 
     };
@@ -775,9 +764,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                                             startIcon={<CalendarIcon />}
                                                             onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                                         >
-                                                            {format(dateRange.startDate!) +
-                                                                " - " +
-                                                                format(dateRange.endDate!)}
+                                                            {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
+
                                                         </Button>
                                                     </DateRangePicker>
                                                 </div>

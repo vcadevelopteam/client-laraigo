@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     },
     filterComponent: {
         minWidth: "200px",
-        maxWidth: "480px",
+        maxWidth: "425px",
 
     },
     chartContainer: {
@@ -314,7 +314,7 @@ const DashboardOpportunityFunnel: FC = () => {
     };
     const handleExportClick = () => {
         const dataForExport = funnelData.map(row => ({
-            Fases: row.name,
+            Fases: t(row.name),
             Cantidad: row.count,
         }));
         exportExcel("reporte_funnel", dataForExport);
@@ -324,6 +324,7 @@ const DashboardOpportunityFunnel: FC = () => {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <div>
+                <p className={classes.title}>{t(langKeys.opportunity_funnel)}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                     <div style={{ display: 'flex', gap: '0.5rem', flexGrow: 1 }}>
                         <DateRangePicker
@@ -419,7 +420,6 @@ const DashboardOpportunityFunnel: FC = () => {
                         {t(langKeys.download)}
                     </Button>
                 </div>
-                <p className={classes.title}>{t(langKeys.opportunity_funnel)}</p>
                 <Box className={classes.chartContainer}>
                     <TableContainer component={Paper} className={classes.tableContainer}>
                         <Table stickyHeader size="small">
