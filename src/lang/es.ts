@@ -1377,7 +1377,7 @@ const translation: LangKeys = {
   dateofresolutiondeadline: "Fecha límite de resolución",
   assigneduser: "Usuario asignado",
   neworganization: "Nueva organización",
-  newiaservice: "Nuevo Servicio IA",
+  newiaservice: "Nueva configuración",
   services_plural: "Servicios",
   tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
   tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
