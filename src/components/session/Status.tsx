@@ -31,7 +31,9 @@ const DialogReasonsDisconnection: React.FC<{
     const userConnected = useSelector(state => state.inbox.userConnected);
     const domains = useSelector(state => state.login.validateToken.user?.domains);
     const voxiConnection = useSelector(state => state.voximplant.connection);    
-
+    const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
+    const user = useSelector(state => state.login.validateToken.user);
+    const userType = useSelector((state) => state.inbox.userType);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
@@ -60,6 +62,28 @@ const DialogReasonsDisconnection: React.FC<{
                 orgid: 0
             }
         }));
+        if (ticketSelected && userType === "AGENT") {
+            const message =  `${user?.firstname} ${user?.lastname} (${user?.usr}) pasó a estar desconectado por motivo de "${data.motive}"`;
+            
+            const newInteractionSocket = {
+                ...ticketSelected!!,
+                interactionid: 0,
+                typemessage: "LOG",
+                typeinteraction: "LOG",
+                uuid: "2222",
+                lastmessage: message,
+                createdate: new Date().toISOString(),
+                userid: 0,
+                usertype: "agent",
+                ticketWasAnswered: !ticketSelected!!.isAnswered,
+            };
+            dispatch(
+                emitEvent({
+                    event: "newMessageFromAgent",
+                    data: newInteractionSocket,
+                })
+            );
+        }
         setOpenModal(false);
     });
 
@@ -101,6 +125,9 @@ const Status: FC = () => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openDialog, setOpenDialog] = useState(false);
     const voxiConnection = useSelector(state => state.voximplant.connection);    
+    const ticketSelected = useSelector((state) => state.inbox.ticketSelected);
+    const userType = useSelector((state) => state.inbox.userType);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const onChecked = () => {
         if (userConnected) {
@@ -119,6 +146,28 @@ const Status: FC = () => {
                     orgid: 0
                 }
             }));
+            if (ticketSelected && userType === "AGENT") {
+                const message =  `${user?.firstname} ${user?.lastname} (${user?.usr}) pasó a estar conectado.`;
+                
+                const newInteractionSocket = {
+                    ...ticketSelected!!,
+                    interactionid: 0,
+                    typemessage: "LOG",
+                    typeinteraction: "LOG",
+                    uuid: "2222",
+                    lastmessage: message,
+                    createdate: new Date().toISOString(),
+                    userid: 0,
+                    usertype: "agent",
+                    ticketWasAnswered: !ticketSelected!!.isAnswered,
+                };
+                dispatch(
+                    emitEvent({
+                        event: "newMessageFromAgent",
+                        data: newInteractionSocket,
+                    })
+                );
+            }
         }
     }
 

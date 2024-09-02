@@ -1247,7 +1247,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 }
 
                 const errormessage = findDefaultAnswer(inappropiatewordsList, textCleaned.toLocaleLowerCase())
-                debugger
 
                 if (textCleaned) {
                     if (!errormessage) {
