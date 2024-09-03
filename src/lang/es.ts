@@ -6427,8 +6427,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   translatelanguage: 'Chat de conversaciones',
   chatsettings: 'Modo de envío de mensajes',
   onboading_channelcomplete: 'Debe poner un nombre al canal',
+  errorimportdocuments: 'Los documentos {{docs}} no son registros válidos',
 
-  errorimportdocuments: 'Los documentos {{docs}} no son registros válidos'
+  newconnector: 'Nuevo Conector',
 
 };
 

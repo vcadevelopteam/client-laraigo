@@ -6422,6 +6422,8 @@ export const langKeys = {
   channel_column_mt_help: 'channel_column_help',
   onboading_channelcomplete: 'onboading_channelcomplete',
   errorimportdocuments: 'errorimportdocuments',
+
+  newconnector: 'newconector',
 };
 
 export type LangKeys = typeof langKeys;
