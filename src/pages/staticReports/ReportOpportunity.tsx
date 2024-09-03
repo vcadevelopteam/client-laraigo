@@ -153,10 +153,23 @@ const PriorityStars = ({ priority }: { priority: string }) => {
     );
 };
 
-const formatDate = (dateString: string) => {
-    return dateString ? convertLocalDate(dateString, false, true).toLocaleString() : "";
+const formatDateHour = (dateString: string) => {
+    if (!dateString) return "";
+
+    const localDateString = dateString.replace("Z", "");
+    const date = new Date(localDateString);
+
+    return date.toLocaleString();
 };
 
+const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+
+    return date.toLocaleDateString();
+};
 
 const DialogOpportunity: React.FC<{
     setOpenModal: (param: any) => void;
@@ -193,7 +206,7 @@ const DialogOpportunity: React.FC<{
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_datehour)}`}
-                                value={formatDate(booking?.createdate)}
+                                value={ formatDateHour(booking?.createdate)}
                                 className={classes.colInput}
                             />
                         </div>
@@ -220,14 +233,14 @@ const DialogOpportunity: React.FC<{
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_lastupdate)}`}
-                                value={formatDate(booking?.lastchangestatusdate)}
+                                value={formatDateHour(booking?.lastchangestatusdate)}
                                 className={classes.colInput}
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_dateinopportunity)}`}
-                                value={formatDate(booking?.date_deadline)}
+                                value={formatDateHour(booking?.date_deadline)}
                                 className={classes.colInput}
                             />
                         </div>
@@ -434,10 +447,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { createdate } = props.cell.row.original || {};
-                    return formatDate(createdate) ? new Date(createdate).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDateHour(value),
+
             },
             {
                 Header: t(langKeys.report_opportunity_description),
@@ -451,10 +462,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { lastchangestatusdate } = props.cell.row.original || {};
-                    return lastchangestatusdate ? new Date(lastchangestatusdate).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDateHour(value),
+
             },
             {
                 Header: t(langKeys.report_opportunity_dateinopportunity),
@@ -462,10 +471,9 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { date_deadline } = props.cell.row.original || {};
-                    return date_deadline ? new Date(date_deadline).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDateHour(value),
+
+
             },
             {
                 Header: t(langKeys.report_opportunity_displayname),
@@ -497,11 +505,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
+                Cell: ({ value }) => formatDate(value),
 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { estimatedimplementationdate } = props.cell.row.original || {};
-                    return estimatedimplementationdate ? new Date(estimatedimplementationdate).toLocaleString() : null;
-                },
             },
             {
                 Header: t(langKeys.report_opportunity_expectedbillingdate),
@@ -510,10 +515,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 showGroupedBy: true,
                 showColumn: true,
 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { estimatedbillingdate } = props.cell.row.original || {};
-                    return estimatedbillingdate ? new Date(estimatedbillingdate).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDate(value),
+
             },
             {
                 Header: t(langKeys.report_opportunity_tags),
@@ -694,11 +697,11 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     const handleExportExcel = () => {
         const formattedData = dataGrid.map(row => ({
             ...row,
-            createdate: formatDate(row.createdate),
-            lastchangestatusdate: formatDate(row.lastchangestatusdate),
-            date_deadline: formatDate(row.date_deadline),
-            estimatedimplementationdate: formatDate(row.estimatedimplementationdate),
-            estimatedbillingdate: formatDate(row.estimatedbillingdate),
+            createdate: formatDateHour(row.createdate),
+            lastchangestatusdate: formatDateHour(row.lastchangestatusdate),
+            date_deadline: formatDateHour(row.date_deadline),
+            estimatedimplementationdate: formatDateHour(row.estimatedimplementationdate),
+            estimatedbillingdate: formatDateHour(row.estimatedbillingdate),
             phase: t(row.phase),
             priority: t(row.priority),
         }));
