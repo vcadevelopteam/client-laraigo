@@ -33,7 +33,7 @@ import {
     getLeadReportGraphicSel,
     getLeadsReportSel,
     getReportGraphic,
-    exportExcel,
+    exportExcel, getDateCleaned,
 } from "common/helpers";
 import { langKeys } from "lang/keys";
 import {Dictionary, IFetchData} from "@types";
@@ -153,20 +153,22 @@ const PriorityStars = ({ priority }: { priority: string }) => {
     );
 };
 
+const formatDateHour = (dateString: string) => {
+    if (!dateString) return "";
+
+    const localDateString = dateString.replace("Z", "");
+    const date = new Date(localDateString);
+
+    return date.toLocaleString();
+};
+
 const formatDate = (dateString: string) => {
     if (!dateString) return "";
 
-    const date = new Date(dateString);
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
 
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-
-    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
+    return date.toLocaleDateString();
 };
 
 const DialogOpportunity: React.FC<{
@@ -204,7 +206,7 @@ const DialogOpportunity: React.FC<{
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_datehour)}`}
-                                value={formatDate(booking?.createdate)}
+                                value={ formatDateHour(booking?.createdate)}
                                 className={classes.colInput}
                             />
                         </div>
@@ -231,14 +233,14 @@ const DialogOpportunity: React.FC<{
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_lastupdate)}`}
-                                value={formatDate(booking?.lastchangestatusdate)}
+                                value={formatDateHour(booking?.lastchangestatusdate)}
                                 className={classes.colInput}
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_dateinopportunity)}`}
-                                value={formatDate(booking?.date_deadline)}
+                                value={formatDateHour(booking?.date_deadline)}
                                 className={classes.colInput}
                             />
                         </div>
@@ -429,12 +431,12 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 showGroupedBy: true,
                 showColumn: true,
                 Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
+                    const ticketnum = props.cell.value;
                     return (
                         <label
-                            onClick={() => openDialogInteractions(row)}
+                            onClick={() => openDialogInteractions(props.cell.row.original)}
                         >
-                            {row.ticketnum}
+                            {ticketnum}
                         </label>
                     );
                 },
@@ -445,10 +447,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { createdate } = props.cell.row.original || {};
-                    return createdate ? new Date(createdate).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDateHour(value),
+
             },
             {
                 Header: t(langKeys.report_opportunity_description),
@@ -462,10 +462,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { lastchangestatusdate } = props.cell.row.original || {};
-                    return lastchangestatusdate ? new Date(lastchangestatusdate).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDateHour(value),
+
             },
             {
                 Header: t(langKeys.report_opportunity_dateinopportunity),
@@ -473,10 +471,9 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { date_deadline } = props.cell.row.original || {};
-                    return date_deadline ? new Date(date_deadline).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDateHour(value),
+
+
             },
             {
                 Header: t(langKeys.report_opportunity_displayname),
@@ -508,11 +505,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
+                Cell: ({ value }) => formatDate(value),
 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { estimatedimplementationdate } = props.cell.row.original || {};
-                    return estimatedimplementationdate ? new Date(estimatedimplementationdate).toLocaleString() : null;
-                },
             },
             {
                 Header: t(langKeys.report_opportunity_expectedbillingdate),
@@ -521,10 +515,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 showGroupedBy: true,
                 showColumn: true,
 
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { estimatedbillingdate } = props.cell.row.original || {};
-                    return estimatedbillingdate ? new Date(estimatedbillingdate).toLocaleString() : null;
-                },
+                Cell: ({ value }) => formatDate(value),
+
             },
             {
                 Header: t(langKeys.report_opportunity_tags),
@@ -617,19 +609,19 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     }, [dateRange]);
 
     const fetchData = () => {
-        const stardate = dateRange.startDate
-            ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10)
+        const startdate: string | null = dateRange.startDate
+            ? new Date(dateRange.startDate).toISOString()
             : null;
-        const enddate = dateRange.endDate
-            ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10)
+        const enddate: string | null = dateRange.endDate
+            ? new Date(dateRange.endDate).toISOString()
             : null;
-        setisday(stardate === enddate);
+        setisday(startdate === enddate);
 
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getLeadsReportSel({
             communicationchannel: selectedChannel || 0,
-            startdate: dateRangeCreateDate.startDate,
-            enddate: dateRangeCreateDate.endDate,
+            startdate: startdate,
+            enddate: enddate,
         })));
 
     };
@@ -705,11 +697,11 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     const handleExportExcel = () => {
         const formattedData = dataGrid.map(row => ({
             ...row,
-            createdate: formatDate(row.createdate),
-            lastchangestatusdate: formatDate(row.lastchangestatusdate),
-            date_deadline: formatDate(row.date_deadline),
-            estimatedimplementationdate: formatDate(row.estimatedimplementationdate),
-            estimatedbillingdate: formatDate(row.estimatedbillingdate),
+            createdate: formatDateHour(row.createdate),
+            lastchangestatusdate: formatDateHour(row.lastchangestatusdate),
+            date_deadline: formatDateHour(row.date_deadline),
+            estimatedimplementationdate: formatDateHour(row.estimatedimplementationdate),
+            estimatedbillingdate: formatDateHour(row.estimatedbillingdate),
             phase: t(row.phase),
             priority: t(row.priority),
         }));
@@ -775,9 +767,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                                             startIcon={<CalendarIcon />}
                                                             onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                                         >
-                                                            {format(dateRange.startDate!) +
-                                                                " - " +
-                                                                format(dateRange.endDate!)}
+                                                            {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
+
                                                         </Button>
                                                     </DateRangePicker>
                                                 </div>
