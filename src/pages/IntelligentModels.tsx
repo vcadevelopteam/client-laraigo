@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useCallback, useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect } from 'components';
-import { convertLocalDate, dateToLocalDate, getIntelligentModelsSel, getValuesFromDomain, insIntelligentModels } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditPassword } from 'components';
+import { convertLocalDate, getIntelligentModelsSel, getValuesFromDomain, insIntelligentModels } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,7 +17,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { CellProps } from 'react-table';
 import { Delete } from "@material-ui/icons";
 import WarningIcon from '@material-ui/icons/Warning';
-import { CustomFieldPackage, CustomTitleHelper } from './messagetemplates/components/components';
+import { Tooltip } from "@material-ui/core";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -52,11 +53,21 @@ const useStyles = makeStyles((theme) => ({
     },
     warningContainer: {
         backgroundColor: '#FFD9D9',
-        padding: 10,
+        padding: 8,
         display: 'flex',
         alignItems: 'center',
         gap: 10,
         borderRadius: 5
+    },
+    customFieldPackageContainer: {
+        marginBottom: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     },
 }));
 
@@ -66,9 +77,10 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const [service, setService] = useState( row ? row.type.trim() : '')
-
+    //const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const [selectedValue, setSelectedValue] = useState<string>('');
+    const [helperText, setHelperText] = useState<string>('');
+    
     const serviceTypeData = [
         {
             domainid: 487446,
@@ -87,9 +99,41 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
             domainvalue: "VOICECONVERSOR",
             domaindesc: "Conversor de voz",
             bydefault: null
-        }
-      
+        }      
     ];
+
+    const statusData = [
+        {
+            domainid: 487446,
+            domainvalue: "ACTIVO",
+            domaindesc: "ACTIVO",
+            bydefault: null
+        },
+        {
+            domainid: 342359,
+            domainvalue: "INACTIVO",
+            domaindesc: "INACTIVO",
+            bydefault: null
+        },         
+    ];
+
+    const helperServiceType = useCallback((value: string) => {
+        switch (value) {
+            case "GENAI":
+                return "Registra un servicio de inteligencia artificial generativa, con el uso de modelos como Llama3, GPT4, Gemini y más.";
+            case "ASSISTANT":
+                return "Registra un servicio de inteligencia artificial tradicional, crea tus modelos de detección de intenciones y entidades.";
+            case "VOICECONVERSOR":
+                return "Registra un servicio de transcripción y traducción de audio para tus conversaciones.";
+            default:
+                return "";
+        }
+    }, []);
+
+    useEffect(() => {
+        const updatedHelperText = helperServiceType(selectedValue);
+        setHelperText(updatedHelperText);
+    }, [selectedValue, helperServiceType]);
 
     const { getValues, register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -98,6 +142,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
             endpoint: row ? (row.endpoint || '') : '',
             modelid: row ? (row.modelid || '') : '',
             apikey: row ? (row.apikey || '') : '',
+            skillid: row ? (row.skillid || '') : '',
             name: row ? (row.name || '') : '',
             description: row ? (row.description || '') : '',
             provider: row ? (row.provider || '') : '',
@@ -133,6 +178,15 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
+    React.useEffect(() => {
+        const selectedType = getValues('type');
+        if (selectedType === 'Conversor de voz') {
+            setValue('provider', 'OpenAI');
+        } else {
+            setValue('provider', '');
+        }
+    }, [getValues('type'), setValue]);
+
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -163,34 +217,57 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
         }))
     });
 
-    const providers = [
+    const genAiProviders = [
         {
-            domaindesc: 'Open AI',
-            domainvalue: 'Open AI',
+            domaindesc: 'Laraigo',
+            domainvalue: 'Laraigo',
         },
         {
-            domaindesc: 'Meta',
-            domainvalue: 'Meta',
+            domaindesc: 'IBM',
+            domainvalue: 'IBM',
         },
         {
-            domaindesc: 'Mistral',
-            domainvalue: 'Mistral',
+            domaindesc: 'OpenAI',
+            domainvalue: 'OpenAI',
         },
         {
-            domaindesc: 'LaraigoLLM',
-            domainvalue: 'LaraigoLLM',
+            domaindesc: 'Google',
+            domainvalue: 'Google',
+        },
+        {
+            domaindesc: 'Microsoft Azure',
+            domainvalue: 'Microsoft Azure',
         },
     ]
 
-    
+    const assistantProviders = [
+        {
+            domaindesc: 'IBM',
+            domainvalue: 'IBM',
+        },
+        {
+            domaindesc: 'Microsoft Azure',
+            domainvalue: 'Microsoft Azure',
+        },
+        {
+            domaindesc: 'Google',
+            domainvalue: 'Google',
+        },
+        {
+            domaindesc: 'Rasa',
+            domainvalue: 'Rasa',
+        },
+       
+        {
+            domaindesc: 'Meta',
+            domainvalue: 'Meta',
+        },       
+    ]
 
-    const handleFieldSelectChange = (value: any) => {
-        if (value) {
-            setValue('type', value.domainvalue);
-        } else {
-            setValue('type', '');
-        }
-    };
+    const handleFieldSelectChange = useCallback((newValue: any) => {
+        const selectedDomainValue = newValue?.domainvalue || '';
+        setSelectedValue(selectedDomainValue);
+    }, []);
 
     return (
         <div style={{ width: '100%' }}>
@@ -232,30 +309,332 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
 
                 <div className={classes.containerDetail}>
 
-                   
-                <CustomFieldPackage
-                    title={t(langKeys.type_service)}
-                    subtitle={"Selecciona el tipo de servicio que registrarás y emplearas en Laraigo"}
-                    fieldSelectProps={{
-                        data: serviceTypeData,
-                        disabled: false,
-                        error: '',
-                        onChange: handleFieldSelectChange,
-                        optionDesc: 'domaindesc',
-                        optionValue: 'domainvalue',
-                        valueDefault: getValues("type"),
-                        variant: "outlined",
-                        size: "small"
-                    }}
-                    warningFlag={true}
-                    helperTextFlag={true}
-                    helperText={"Este es un texto de ayuda dinámico basado en la selección."}
-                    value={getValues("type")}
-                />
+
+                <div style={{ display: 'flex', width: '100%' }}>
+                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Tipo de Servicio'}</span>
+                        <span>{'Selecciona el tipo de servicio que registrarás y emplearas en Laraigo'}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                            <div className="row-zyx" style={{ width: '30vw', marginBottom: 0 }}>
+                                <FieldSelect
+                                    data={serviceTypeData}
+                                    variant="outlined"
+                                    optionDesc='domaindesc'
+                                    optionValue='domainvalue'
+                                    onChange={(value) => {
+                                        handleFieldSelectChange(value);
+                                        if (value) {
+                                            setValue('type', value.domaindesc);
+                                        } else {
+                                            setValue('type', '');
+                                        }
+                                    }}
+                                    valueDefault={getValues('type')}
+                                    error={errors?.provider?.message}
+                                />
+                            </div>
+                            <div style={{ margin: '0 0.5rem' }}>
+                                {helperText && selectedValue && (
+                                    <Tooltip title={helperText} arrow placement="top">
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                )}
+                            </div>
+                            <div style={{ margin: '0 1rem', padding: '0' }}>
+                                {getValues('type') === '' && (
+                                    <div className={classes.warningContainer} style={{ width: 220 }}>
+                                        <WarningIcon style={{ color: '#FF7575' }} />
+                                        Selecciona una opción
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {getValues('type') && 
+                        <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Proveedor'}</span>
+                            <span>{'Selecciona el proveedor del servicio de inteligencia artificial que deseas registrar.'}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                <div className="row-zyx" style={{ width: '30vw', marginBottom: 0 }}>
+                                    <FieldSelect
+                                        data={getValues('type') === 'Gen AI' ? genAiProviders : getValues('type') === 'Assistant' ? assistantProviders : getValues('type') === 'Conversor de voz' ? [{ domaindesc: 'OpenAI', domainvalue: 'OpenAI' }] : []}
+                                        variant="outlined"
+                                        disabled={getValues('type') === 'Conversor de voz'}
+                                        optionDesc='domaindesc'
+                                        optionValue='domainvalue'
+                                        onChange={(value) => {
+                                            handleFieldSelectChange(value);
+                                            if (value) {
+                                                setValue('provider', value.domaindesc);
+                                            } else {
+                                                setValue('provider', '');
+                                            }
+                                        }}
+                                        valueDefault={getValues('provider')}
+                                        error={errors?.provider?.message}
+                                    />
+                                </div>
+                                <div style={{ margin: '0 1rem', padding: '0' }}>
+                                    {getValues('provider') === '' && (
+                                        <div className={classes.warningContainer} style={{ width: 220 }}>
+                                            <WarningIcon style={{ color: '#FF7575' }} />
+                                            Selecciona una opción
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                {getValues('type') === 'Assistant' && getValues('provider') === 'IBM' && (
+                    <>
+                        <div className='row-zyx' style={{ borderBottom: '1px solid black', padding: '15px 0 10px 0' }}>
+                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Registro de Servicios'}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>    
+
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Url'}</span>
+                                <span>{'Coloca la url que brinda IBM relacionada a la instancia del modelo que deseas registrar.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '92.2vw', marginBottom: 0 }}>
+                                        <FieldEditPassword
+                                            error={errors?.name?.message}
+                                            label={''}
+                                            onChange={(value) => {
+                                                setValue("apikey", value)
+                                            }}
+                                            valueDefault={getValues("apikey")}
+                                            maxLength={512}
+                                            variant="outlined"
+                                        />
+                                    </div>                                   
+                                </div>
+                            </div>     
+                        </div>
+
+                        <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>    
+
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Api Key'}</span>
+                                <span>{'Registra el api key proporcionado por el proveedor de IA seleccionado.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                        <FieldEditPassword
+                                            error={errors?.name?.message}
+                                            label={''}
+                                            onChange={(value) => {
+                                                setValue("apikey", value)
+                                            }}
+                                            valueDefault={getValues("apikey")}
+                                            maxLength={512}
+                                            variant="outlined"
+                                        />
+                                    </div>                                                                  
+                                </div>
+                            </div>
+
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Skill ID'}</span>
+                                <span>{'Registra el api key proporcionado por el proveedor de IA seleccionado.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                        <FieldEditPassword
+                                            error={errors?.name?.message}
+                                            label={''}
+                                            onChange={(value) => {
+                                                setValue("skillid", value)
+                                            }}
+                                            valueDefault={getValues("skillid")}
+                                            maxLength={512}
+                                            variant="outlined"
+                                        />
+                                    </div>
+                                    <div style={{ margin: '0 0.5rem' }}>
+                                        <Tooltip title={'Si no cuentas con un skill creado previamente en IBM, podrás crearlo en la opción de “Entrenamiento IA” de Laraigo.'} arrow placement="top">
+                                            <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                        </Tooltip>                                       
+                                    </div>                                 
+                                </div>
+                            </div>
+
+                        </div>                    
+                    
+                        <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Nombre'}</span>
+                                <span>{'Asigna un nombre para el conector que registrarás.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                        <FieldEdit
+                                            error={errors?.name?.message}
+                                            label={''}
+                                            onChange={(value) => {
+                                                setValue("name", value)
+                                            }}
+                                            valueDefault={getValues("name")}
+                                            maxLength={512}
+                                            variant="outlined"
+                                        />
+                                    </div>                                   
+                                </div>
+                            </div>
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Descripción'}</span>
+                                <span>{'Asigna una breve descripción al conector que registrarás.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                    <FieldEdit
+                                        error={errors?.name?.message}
+                                        label={''}
+                                        onChange={(value) => {
+                                            setValue("description", value)
+                                        }}
+                                        valueDefault={getValues("description")}
+                                        maxLength={512}
+                                        variant="outlined"
+                                    />
+                                    </div>                                  
+                                </div>
+                            </div>                          
+                        </div>
+
+                        <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Estado'}</span>
+                                <span>{'Selecciona el estado de tu conector, si deseas que se encuentre activo o inactivo.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                   
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
+                                        <FieldSelect
+                                            data={statusData}
+                                            variant="outlined"
+                                            optionDesc='domaindesc'
+                                            optionValue='domainvalue'
+                                            onChange={(value) => {
+                                                handleFieldSelectChange(value);
+                                                if (value) {
+                                                    setValue('status', value.domaindesc);
+                                                } else {
+                                                    setValue('status', '');
+                                                }
+                                            }}
+                                            valueDefault={getValues('status')}
+                                            error={errors?.provider?.message}
+                                        />
+                                    </div>                                   
+                                
+                                </div>
+                            </div>                   
+                        </div>
 
 
 
-                 
+                    </>
+                )}
+
+                {getValues('type') && getValues('provider') && !(getValues('type') === 'Assistant' && getValues('provider') === 'IBM') && (
+                    <>
+                        <div className='row-zyx' style={{ borderBottom: '1px solid black', padding: '15px 0 10px 0' }}>
+                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Registro de Servicios'}</span>
+                        </div>
+                        <div style={{ display: 'flex', width: '100%', gap:'1rem' }}>                       
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Api Key'}</span>
+                                <span>{'Registra el api key proporcionado por el proveedor de IA seleccionado.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                        <FieldEditPassword
+                                            error={errors?.name?.message}
+                                            label={''}
+                                            onChange={(value) => {
+                                                setValue("apikey", value)
+                                            }}
+                                            valueDefault={getValues("apikey")}
+                                            maxLength={512}
+                                            variant="outlined"
+                                        />
+                                    </div>
+                                    <div style={{ margin: '0 0.5rem' }}>
+                                        <Tooltip title={'El api key usualmente se encuentra en el perfil de tu cuenta relacionada al proveedor de la inteligencia artificial.'} arrow placement="top">
+                                            <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                        </Tooltip>                                       
+                                    </div>                                 
+                                </div>
+                            </div>
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Estado'}</span>
+                                <span>{'Selecciona el estado de tu conector, si deseas que se encuentre activo o inactivo.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                   
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
+                                        <FieldSelect
+                                            data={statusData}
+                                            variant="outlined"
+                                            optionDesc='domaindesc'
+                                            optionValue='domainvalue'
+                                            onChange={(value) => {
+                                                handleFieldSelectChange(value);
+                                                if (value) {
+                                                    setValue('status', value.domaindesc);
+                                                } else {
+                                                    setValue('status', '');
+                                                }
+                                            }}
+                                            valueDefault={getValues('status')}
+                                            error={errors?.provider?.message}
+                                        />
+                                    </div>                                   
+                                
+                                </div>
+                            </div>
+                        </div>                    
+                    
+                        <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Nombre'}</span>
+                                <span>{'Asigna un nombre para el conector que registrarás.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                        <FieldEdit
+                                            error={errors?.name?.message}
+                                            label={''}
+                                            onChange={(value) => {
+                                                setValue("name", value)
+                                            }}
+                                            valueDefault={getValues("name")}
+                                            maxLength={512}
+                                            variant="outlined"
+                                        />
+                                    </div>                                   
+                                </div>
+                            </div>
+                            <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Descripción'}</span>
+                                <span>{'Asigna una breve descripción al conector que registrarás.'}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                    <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                    <FieldEdit
+                                        error={errors?.name?.message}
+                                        label={''}
+                                        onChange={(value) => {
+                                            setValue("description", value)
+                                        }}
+                                        valueDefault={getValues("description")}
+                                        maxLength={512}
+                                        variant="outlined"
+                                    />
+                                    </div>                                  
+                                </div>
+                            </div>
+                           
+                          
+                        </div>
+                    </>
+                )}
 
                     {/* {service === 'WATSON ASSISTANT' ? (
                         <>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Button, IconButton, Menu, MenuItem, Tooltip, makeStyles } from "@material-ui/core";
@@ -210,7 +210,6 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#FFEBEB',
         color: '#FF7575',
         borderRadius: '4px',
-        marginLeft: '1rem',
         width: 'fit-content',
     }   
 }));
@@ -411,55 +410,6 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
                 </Tooltip>
             ) : ""}
         </span>
-    );
-};
-
-interface CustomFieldPackageProps {
-    title?: string;
-    subtitle?: string;
-    fieldSelectProps: any;
-    warningFlag?: boolean;
-    helperTextFlag?: boolean;
-    helperText?: string;
-    value: string;
-}
-
-export const CustomFieldPackage: React.FC<CustomFieldPackageProps> = ({
-    title,
-    subtitle,
-    fieldSelectProps,
-    warningFlag = false,
-    helperTextFlag = false,
-    helperText,
-    value
-}) => {
-    const classes = useStyles();
-
-    return (
-        <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-            {title && (
-                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{title}</span>
-            )}
-            {subtitle && (
-                <span>{subtitle}</span>
-            )}
-            <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                <FieldSelect
-                    {...fieldSelectProps}
-                />
-                {helperTextFlag && helperText && value && (
-                    <Tooltip title={helperText} arrow placement="top">
-                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                    </Tooltip>
-                )}
-                {warningFlag && value === '' && (
-                    <div className={classes.warningContainer} style={{ width: 220, marginLeft: '1rem' }}>
-                        <WarningIcon style={{ color: '#FF7575' }} />
-                        Selecciona una opción
-                    </div>
-                )}
-            </div>
-        </div>
     );
 };
 
@@ -730,7 +680,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
         if (!isDragging) return;
         e.preventDefault();
         const x = e.pageX - containerRef.current.offsetLeft;
-        const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
+        const walk = (x - startX) * 2;
         containerRef.current.scrollLeft = scrollLeft - walk;
         containerRef2.current.scrollLeft = scrollLeft - walk;
     };
@@ -744,7 +694,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
     const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
         if (!isDragging) return;
         const x = e.touches[0].pageX - containerRef.current.offsetLeft;
-        const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
+        const walk = (x - startX) * 2;
         containerRef.current.scrollLeft = scrollLeft - walk;
         containerRef2.current.scrollLeft = scrollLeft - walk;
     };
