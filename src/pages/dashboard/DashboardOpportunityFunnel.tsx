@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     },
     filterComponent: {
         minWidth: "200px",
-        maxWidth: "425px",
+        maxWidth: "420px",
 
     },
     chartContainer: {
