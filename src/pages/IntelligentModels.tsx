@@ -199,18 +199,21 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
+        if (data.provider === 'OpenAI') {data.provider = 'Open AI'}    
+        if (data.provider === 'Laraigo') {data.provider = 'LaraigoLLM'}    
+        console.log(data)    
         const callback = () => {
             dispatch(execute(insIntelligentModels(data)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
+            setWaitSave(true);
         }
-
+    
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
             callback
         }))
-    });
+    })    
 
     const genAiProviders = [
         {
@@ -880,7 +883,7 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                 listSelectFilter: [
                     { key: "LaraigoLLM", value: "LaraigoLLM" },
                     { key: "WatsonX", value: "WatsonX" },
-                    { key: "Open AI", value: "Open AI" },
+                    { key: "OpenAI", value: "OpenAI" },
                     { key: "Meta", value: "Meta" },
                     { key: "Mistral", value: "Mistral" },
                 ],
