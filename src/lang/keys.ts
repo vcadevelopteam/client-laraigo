@@ -2218,6 +2218,8 @@ export const langKeys = {
   password_required: 'password_required',
   organization_by_default: 'organization_by_default',
   field_required: 'field_required',
+  invalid_phone: 'invalid_phone',
+  invalid_email: 'invalid_email',
   field_nonnegative: 'field_nonnegative',
   emailverification: 'emailverification',
   code_duplicate: 'code_duplicate',

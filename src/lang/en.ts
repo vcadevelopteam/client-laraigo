@@ -1509,6 +1509,8 @@ const translation: LangKeys = {
   password_required: 'Password is required',
   code_duplicate: 'Code duplicated',
   field_required: 'Field is required',
+  invalid_phone: 'Invalid phone',
+  invalid_email: 'Invalid email',
   field_nonnegative: 'Nonnegative field',
   field_key_required: 'Must add at least 1 "key" field',
   field_duplicate: 'Field duplicate',
