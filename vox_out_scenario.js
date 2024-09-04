@@ -283,6 +283,8 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
             call.hangup();
             return;
         }
+        variables = { ...(data.variables || {}), conversationid: `${parseInt(splitIdentifier[3])}` };
+        
         const amd = detectvoicemail ? AMD.create({ model: AMD.Model.PE }) : undefined;
 
         if (configSIP?.SIP) {
