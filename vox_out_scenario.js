@@ -162,6 +162,7 @@ function sendInteraction(type, text, customer = false) {
         typeinteraction: "NINGUNO",
         typemessage: type,
         lastmessage: text,
+        callrecording: red.recording
     };
     Logger.write("insert/withdata-body: " + JSON.stringify(body));
     Net.httpRequest(
