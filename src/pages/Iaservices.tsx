@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
 import { convertLocalDate, getChannelsByOrg, getIntelligentModelsConfigurations, getIntelligentModelsSel, getValuesFromDomain, iaservicesBulkDel, insInteligentModelConfiguration } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -14,112 +14,73 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import AddIcon from '@material-ui/icons/Add';
-import { Accordion, AccordionDetails, AccordionSummary, IconButton } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { IconButton } from '@material-ui/core';
 import { CellProps } from 'react-table';
 import { KeyboardArrowLeft, KeyboardArrowRight, Delete } from '@material-ui/icons';
+import WarningIcon from '@material-ui/icons/Warning';
 
-const serviceTypes = [
-    {
-        type: 'ASSISTANT',
-        options: [
-            { value: 'RASA', description: 'RASA' },
-            { value: 'WATSON ASSISTANT', description: 'WATSON ASSISTANT' },
-            { value: 'WIT.AI', description: 'WIT.AI' }
-        ]
-    },
-    {
-        type: 'CLASSIFIER',
-        options: [
-            { value: 'NATURAL LANGUAGE CLASSIFIER', description: 'NATURAL LANGUAGE CLASSIFIER' }
-        ]
-    },
-    {
-        type: 'NATURAL LANGUAGE UNDERSTANDING',
-        options: [
-            { value: 'NATURAL LANGUAGE UNDERSTANDING', description: 'NATURAL LANGUAGE UNDERSTANDING' }
-        ]
-    },
-    {
-        type: 'TONE ANALYZER',
-        options: [
-            { value: 'TONE ANALYZER', description: 'TONE ANALYZER' }
-        ]
-    },
-    {
-        type: 'LARGE LANGUAGE MODEL'
-    }
-]
 
-const transtaltion_services = [
+const languageList = [
     {
-        value: 'IBM',
-        description: 'IBM'
+        domainvalue: 'Alemán',
+        domaindesc: 'Alemán'
     },
     {
-        value: 'GOOGLE',
-        description: 'GOOGLE'
-    }
-]
-
-const analysis_type = [
-    {
-        value: 'DESACTIVADO',
-        description: 'DESACTIVADO'
+        domainvalue: 'Árabe',
+        domaindesc: 'Árabe'
     },
     {
-        value: 'BYINTERACTION',
-        description: 'Por Interaccion'
+        domainvalue: 'Bengalí',
+        domaindesc: 'Bengalí'
     },
     {
-        value: 'BYCONVERSATION',
-        description: 'Por Conversacion'
-    }
-];
-
-const service_type_tone = [
-    {
-        value: 'CUSTOMER',
-        description: 'Atención al cliente'
+        domainvalue: 'Chino',
+        domaindesc: 'Chino'
     },
     {
-        value: 'GENERAL',
-        description: 'General'
-    },
-]
-
-const nlu_fields = [
-    {
-        value: 'categories',
-        description: 'Categorias'
+        domainvalue: 'Español',
+        domaindesc: 'Español'
     },
     {
-        value: 'concepts',
-        description: 'Conceptos'
+        domainvalue: 'Francés',
+        domaindesc: 'Francés'
     },
     {
-        value: 'emotion',
-        description: 'Emociones'
+        domainvalue: 'Hindi',
+        domaindesc: 'Hindi'
     },
     {
-        value: 'entities',
-        description: 'Entidades'
+        domainvalue: 'Indonesio',
+        domaindesc: 'Indonesio'
     },
     {
-        value: 'keywords',
-        description: 'Palabras Clave'
+        domainvalue: 'Inglés',
+        domaindesc: 'Inglés'
     },
     {
-        value: 'semanticroles',
-        description: 'Roles Semanticos'
+        domainvalue: 'Italiano',
+        domaindesc: 'Italiano'
     },
     {
-        value: 'sentiment',
-        description: 'Sentimiento'
-    }
+        domainvalue: 'Japonés',
+        domaindesc: 'Japonés'
+    },
+    {
+        domainvalue: 'Portugués',
+        domaindesc: 'Portugués'
+    },
+    {
+        domainvalue: 'Ruso',
+        domaindesc: 'Ruso'
+    },
+    {
+        domainvalue: 'Turco',
+        domaindesc: 'Turco'
+    },
+    {
+        domainvalue: 'Urdu',
+        domaindesc: 'Urdu'
+    },        
 ]
 
 interface servicesData {
@@ -211,7 +172,15 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid #ccc',
         borderRadius: '5px',
         marginBottom: '4px'
-    }
+    },
+    warningContainer: {
+        backgroundColor: '#FFD9D9',
+        padding: 10,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        borderRadius: 5
+    },
 }));
 
 const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
@@ -227,52 +196,42 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
     //const dataModelType = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataStatus = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
-    const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors }, watch } = useForm<any>({
         defaultValues: {
             id: row ? row.intelligentmodelsconfigurationid : 0,
             description: row ? (row.description || '') : '',
-            status: row ? row.status : 'ACTIVO',
             type: 'NINGUNO',
             color: '#FFFFFF',
             icontype: "fab fa-reddit-alien",
             channels: row?.communicationchannelid || '',
             channelsdesc: row ? row.channeldesc : '', //for table
             operation: row ? "EDIT" : "INSERT",
-            services: (row?.parameters) ? JSON.parse(row?.parameters) : []
+            services: (row?.parameters) ? JSON.parse(row?.parameters) : [],
+            connector: row?.connector || "",
+            connectortype: row?.connectortype || "",
+            firstinteraccion: row?.firstinteraccion || "",
+            originanalysis: row?.originanalysis || "",
+            model: row?.model || "",
+            translation: row?.translation || "",
+            language: row?.language || "",
         }
     });
 
-    const { fields, append: fieldsAppend, remove: fieldRemove, update: fieldUpdate } = useFieldArray({
-        control,
-        name: 'services',
-    });
-
-    const handlerNewColumn = () => fieldsAppend({
-        type_of_service: '',
-        service: '',
-        intelligentmodelsid: '',
-        analyzemode: '',
-        translationservice: '',
-        analyzecustomer: false,
-        analyzebot: false,
-        servicetype: '',
-        analyzeuser: false,
-        categories: false,
-        concepts: false,
-        emotion: false,
-        entities: false,
-        keywords: false,
-        semanticroles: false,
-        sentiment: false,
-        contextperconversation: true,
-        firstinteraction: false,
-    });
+    const watchConnectorType = watch("connectortype")
 
     React.useEffect(() => {
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('connector', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channelsdesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('originanalysis', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('channels', { validate: (value) => ((value && value.length)|| watchConnectorType==="Gen AI") || t(langKeys.field_required) });
+        register('firstinteraccion', { validate: (value) => ((value && value.length)|| watchConnectorType!=="Assistant") || t(langKeys.field_required) });
+        register('context', { validate: (value) => ((value && value.length)|| watchConnectorType!=="Gen AI") || t(langKeys.field_required) });
+        register('model', { validate: (value) => ((value && value.length)|| watchConnectorType!=="Conversor de voz") || t(langKeys.field_required) });
+        register('translation', { validate: (value) => ((value && value.length)|| watchConnectorType!=="Conversor de voz") || t(langKeys.field_required) });
+        register('language', { validate: (value) => ((value && value.length)|| watchConnectorType!=="Conversor de voz") || t(langKeys.field_required) });
+        register('precision', { validate: (value) => ((value>=0 && value <=1)|| watchConnectorType!=="Assistant") || t(langKeys.error_between_range, { min: 0, max: 1 }) });
     }, [register]);
 
 
@@ -291,10 +250,6 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
             }
         }
     }, [executeRes, waitSave])
-
-    const handlerDeleteColumn = (index: number) => {
-        fieldRemove(index)
-    };
 
     const onSubmit = handleSubmit((data) => {
         if (data.services.length === 0) {
@@ -372,361 +327,176 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.status)}
                             className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
-                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                            error={errors?.status?.message}
-                            uset={true}
-                            prefixTranslation="status_"
-                            data={dataStatus}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
+                            label={t(langKeys.conector)}
+                            helperText2={t(langKeys.conectoriahelper)}
+                            valueDefault={getValues("connector")}
+                            onChange={(value) => {setValue('connector', value?.id || ''); setValue("connectortype", value?.type||"")}}
+                            data={dataModels}
+                            optionDesc="description"
+                            optionValue="id"
                             variant="outlined"
                         />
+                        {watchConnectorType === "" && <div className="col-4" style={{ display: 'flex', justifyContent: 'flex-end', flexDirection: 'column' }}>
+                            <div className={classes.warningContainer} style={{ width: 220 }}>
+                                <WarningIcon style={{ color: '#FF7575' }} />
+                                Selecciona una opción
+                            </div>
+                        </div>
+                        }
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
+                {watchConnectorType!=="" && <div className={classes.containerDetail}>
+                    <div style={{ fontSize: 20, fontWeight: "bold", paddingBottom: 15 }}>{t(langKeys.configuration)}</div>
+                    <div className="row-zyx" style={{ marginBottom: 0 }}>
                         <FieldEdit
-                            label={t(langKeys.corporation)} // "Corporation"
-                            className="col-6"
-                            valueDefault={user?.corpdesc}
-                            disabled={true}
-                        />
-
-                        <FieldEdit
-                            label={t(langKeys.organization)} // "Organization"
-                            className="col-6"
-                            valueDefault={user?.orgdesc}
-                            disabled={true}
+                            className="col-12"
+                            valueDefault={getValues("description")}
+                            onChange={(value) => setValue('description', value)}
+                            variant='outlined'
+                            size="small"
+                            error={errors?.description?.message}
+                            label={t(langKeys.description)}
+                            helperText2={t(langKeys.descriptioniahelper)}
                         />
                     </div>
-                    <div className="row-zyx">
-                        <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                            label={t(langKeys.channel)}
+                    {watchConnectorType !=="Gen AI" &&<div className="row-zyx">
+                        <FieldMultiSelect
                             className="col-12"
-                            valueDefault={row?.communicationchannelid || ""}
+                            valueDefault={getValues("channels")}
                             onChange={(value) => {
                                 setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
                                 setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
                             }}
                             error={errors?.channels?.message}
-                            loading={false}
                             data={dataChannels}
                             optionDesc="description"
+                            variant='outlined'
+                            size="small"
                             optionValue="communicationchannelid"
+                            label={t(langKeys.channel_plural)}
+                            helperText2={t(langKeys.channeliahelper)}
                         />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            className="col-6"
-                            valueDefault={row ? (row.description || "") : ""}
-                            onChange={(value) => setValue('description', value)}
-                            disabled={false}
-                            error={errors?.description?.message}
-                        />
+                    </div>}
+                    {watchConnectorType==="Gen AI" && <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.status)}
+                            label={t(langKeys.contextAI)}
+                            helperText2={t(langKeys.contextAIHelper)}
                             className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
-                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                            error={errors?.status?.message}
+                            valueDefault={getValues("context")}
+                            onChange={(value) => setValue('context', value?.domainvalue||"")}
+                            error={errors?.context?.message}
+                            data={dataStatus}
                             uset={true}
                             prefixTranslation="status_"
-                            data={dataStatus}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                            variant="outlined"
                         />
-                    </div>
-                </div>
+                    </div>}
+                    {watchConnectorType==="Assistant" && <>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                label={t(langKeys.firstinteractionIA)}
+                                helperText2={t(langKeys.firstinteractionIAhelper)}
+                                className="col-6"
+                                valueDefault={getValues("firstinteraccion")}
+                                onChange={(value) => setValue('firstinteraccion', value?.domainvalue||"")}
+                                error={errors?.firstinteraccion?.message}
+                                data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                variant="outlined"
+                            />
+                            <FieldMultiSelect
+                                className="col-6"
+                                valueDefault={getValues("originanalysis")}
+                                onChange={(value) => {
+                                    setValue('originanalysis', value.map((o: Dictionary) => o.desc).join())
+                                }}
+                                error={errors?.originanalysis?.message}
+                                data={[
+                                    {desc: "Mensajes del cliente"},
+                                    {desc: "Mensajes del bot"},
+                                    {desc: "Mensajes del asesor"},
+                                ]}
+                                optionDesc="desc"
+                                variant='outlined'
+                                size="small"
+                                optionValue="desc"
+                                label={t(langKeys.originanalysis)}
+                                helperText2={t(langKeys.originanalysisIAhelper)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                valueDefault={getValues("precision")}
+                                onChange={(value) => setValue('precision', value)}
+                                variant='outlined'
+                                size="small"
+                                type="number"
+                                error={errors?.precision?.message}
+                                label={t(langKeys.precision)}
+                                helperText2={t(langKeys.precisionIAhelper)}
+                                helperText={t(langKeys.precisionIAhelper2)}
+                                inputProps={{ step: 0.1 }} 
+                            />
+                        </div>
+                    </>}
+                    {watchConnectorType==="Conversor de voz" && <>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                label={t(langKeys.languagemodel)}
+                                helperText2={t(langKeys.languagemodelhelper)}
+                                className="col-6"
+                                valueDefault={getValues("model")}
+                                onChange={(value) => setValue('model', value?.domainvalue||"")}
+                                error={errors?.model?.message}
+                                data={[
+                                    {desc: "Small"},
+                                    {desc: "Medium"},
+                                    {desc: "Large"},
+                                ]}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                variant="outlined"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                label={t(langKeys.translationai)}
+                                helperText2={t(langKeys.translationaihelper)}
+                                className="col-6"
+                                valueDefault={getValues("translation")}
+                                onChange={(value) => setValue('translation', value?.domainvalue||"")}
+                                error={errors?.translation?.message}
+                                data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                variant="outlined"
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                valueDefault={getValues("language")}
+                                onChange={(value) => setValue('language', value?.domainvalue||"")}
+                                error={errors?.language?.message}
+                                data={languageList}
+                                variant='outlined'
+                                size="small"
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                label={t(langKeys.language)}
+                                helperText2={t(langKeys.languageaihelper)}
+                            />
+                        </div>
+                    </>}
+                </div>}
             </form>
-
-            <div className={classes.containerDetail}>
-                <div>
-                    <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                        <div className={classes.title}>{t(langKeys.services_plural)}</div>
-                        <div>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                startIcon={<AddIcon color="secondary" />}
-                                onClick={() => handlerNewColumn()}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.register)}
-                            </Button>
-                        </div>
-                    </div>
-                    {fields.map((item: Dictionary, i) =>
-                        <div key={item.id}>
-                            <Accordion expanded={!row ? true : undefined} style={{ marginBottom: '8px' }}>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="panel1a-content"
-                                    id="panel1a-header"
-                                >
-                                    <Typography style={{ fontSize: 16 }}>{getValues(`services.${i}.service`) || t(langKeys.newiaservice)}</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <form onSubmit={onSubmit} style={{ width: '100%' }}>
-                                        <div className="row-zyx">
-                                            <div className="col-12">
-                                                <FieldSelect
-                                                    fregister={{
-                                                        ...register(`services.${i}.type_of_service`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        })
-                                                    }}
-                                                    onChange={(value) => {
-                                                        // fieldUpdate(i, { ...fields[i], type_of_service: value ? value.type : '', service: '' })
-                                                        setValue(`services.${i}.type_of_service`, value?.type || "")
-                                                        trigger(`services.${i}.type_of_service`)
-
-                                                        setValue(`services.${i}.service`, "")
-                                                        trigger(`services.${i}.service`)
-                                                    }}
-                                                    label={t(langKeys.type_service)}
-                                                    className={classes.mb2}
-                                                    valueDefault={getValues(`services.${i}.type_of_service`)}
-                                                    error={errors?.services?.[i]?.type_of_service?.message}
-                                                    data={serviceTypes}
-                                                    optionDesc="type"
-                                                    optionValue="type"
-                                                />
-                                                {getValues(`services.${i}.type_of_service`) !== '' && getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' && (
-                                                    <FieldSelect
-                                                        fregister={{
-                                                            ...register(`services.${i}.service`, {
-                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                            })
-                                                        }}
-                                                        onChange={(value) => {
-                                                            if (value) {
-                                                                if (fields.some((x: any) => x.service === value.value)) {
-                                                                    // fieldUpdate(i, { ...fields[i], service: '' })
-                                                                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.iaservice_already_exist) }))
-                                                                    setValue(`services.${i}.type_of_service`, "");
-                                                                    setValue(`services.${i}.service`, "");
-                                                                    trigger(`services.${i}.service`)
-                                                                    trigger(`services.${i}.type_of_service`)
-                                                                } else {
-                                                                    setValue(`services.${i}.service`, value?.value || "")
-                                                                    trigger(`services.${i}.service`)
-                                                                }
-                                                            } else {
-                                                                setValue(`services.${i}.service`, value?.value || "")
-                                                                trigger(`services.${i}.service`)
-                                                            }
-                                                            // fieldUpdate(i, { ...fields[i], service: value ? value.value : '' })
-
-                                                        }}
-                                                        // triggerOnChangeOnFirst={true}
-                                                        label={t(langKeys.model_type)}
-                                                        className={classes.mb2}
-                                                        valueDefault={getValues(`services.${i}.service`)}
-                                                        error={errors?.services?.[i]?.service?.message}
-                                                        data={serviceTypes.find((y: any) => y.type === getValues(`services.${i}.type_of_service`))?.options || []}
-                                                        optionDesc="value"
-                                                        optionValue="value"
-                                                    />
-                                                )}
-
-                                                {getValues(`services.${i}.service`) !== '' && (
-                                                    <FieldSelect
-                                                        fregister={{
-                                                            ...register(`services.${i}.intelligentmodelsid`, {
-                                                                validate: (value: any) => (value) || t(langKeys.field_required)
-                                                            })
-                                                        }}
-                                                        onChange={(value) => {
-                                                            setValue(`services.${i}.intelligentmodelsid`, value?.id || 0)
-                                                            trigger(`services.${i}.intelligentmodelsid`)
-                                                            // fieldUpdate(i, { ...fields[i], intelligentmodelsid: value.intelligentmodelsid })
-                                                        }
-                                                        }
-                                                        label={t(langKeys.model)}
-                                                        className={classes.mb2}
-                                                        error={errors?.services?.[i]?.intelligentmodelsid?.message}
-                                                        data={dataModels.filter((y: any) => y.type.trim() === getValues(`services.${i}.service`))}
-                                                        valueDefault={getValues(`services.${i}.intelligentmodelsid`)}
-                                                        optionDesc="description"
-                                                        optionValue="id"
-                                                    />
-                                                )}
-                                                {getValues(`services.${i}.service`) === 'NATURAL LANGUAGE UNDERSTANDING' && (
-                                                    <div>
-                                                        <FieldSelect
-                                                            fregister={{
-                                                                ...register(`services.${i}.translationservice`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                })
-                                                            }}
-                                                            onChange={(value) => {
-                                                                fieldUpdate(i, { ...fields[i], translationservice: value.value })
-                                                            }}
-                                                            label={t(langKeys.translationservice)}
-                                                            className={classes.mb2}
-                                                            valueDefault={(item.translationservice) ? item.translationservice : ''}
-                                                            error={errors?.services?.[i]?.translationservice?.message}
-                                                            data={transtaltion_services}
-                                                            optionDesc="description"
-                                                            optionValue="value"
-                                                        />
-
-                                                        <div style={{ display: 'flex', flexWrap: 'wrap' }} className={classes.mb2}>
-                                                            {nlu_fields.map((it, index) =>
-                                                                <TemplateSwitch
-                                                                    key={index}
-                                                                    valueDefault={item[it.value] || false}
-                                                                    fregister={{
-                                                                        ...register(`services.${i}.${it.value}`)
-                                                                    }}
-                                                                    label={it.description}
-                                                                    className={classes.switches}
-                                                                    style={{ flex: '0 0 170px', paddingBottom: '10px' }}
-                                                                    onChange={(value) => setValue(`services.${i}.${it.value}`, value)}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                {getValues(`services.${i}.service`) === 'TONE ANALYZER' && (
-                                                    <FieldSelect
-                                                        fregister={{
-                                                            ...register(`services.${i}.servicetype`, {
-                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                            })
-                                                        }}
-                                                        onChange={(value) => {
-                                                            setValue(`services.${i}.servicetype`, value?.value || "")
-                                                            trigger(`services.${i}.servicetype`)
-
-                                                            // fieldUpdate(i, { ...fields[i], servicetype: value.value })
-                                                        }}
-                                                        label={'Service type'} //traduccion
-                                                        className={classes.mb2}
-                                                        valueDefault={(item.servicetype) ? item.servicetype : ''}
-                                                        error={errors?.services?.[i]?.servicetype?.message}
-                                                        data={service_type_tone}
-                                                        optionDesc="description"
-                                                        optionValue="value"
-                                                    />
-                                                )}
-                                                {getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' && (
-                                                    <FieldSelect
-                                                        fregister={{
-                                                            ...register(`services.${i}.analyzemode`, {
-                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                            })
-                                                        }}
-                                                        label={t(langKeys.analysis_type)}
-                                                        className={classes.mb2}
-                                                        error={errors?.services?.[i]?.analyzemode?.message}
-                                                        valueDefault={getValues(`services.${i}.analyzemode`)}
-                                                        onChange={(value) => {
-                                                            setValue(`services.${i}.analyzemode`, value?.value || "")
-                                                        }}
-                                                        data={analysis_type}
-                                                        optionDesc="description"
-                                                        optionValue="value"
-                                                    />
-                                                )}
-                                                {getValues(`services.${i}.type_of_service`) === 'LARGE LANGUAGE MODEL' && (
-                                                    <FieldSelect
-                                                        fregister={{
-                                                            ...register(`services.${i}.intelligentmodelsid`, {
-                                                                validate: (value: any) => (value) || t(langKeys.field_required)
-                                                            })
-                                                        }}
-                                                        onChange={(value) => {
-                                                            setValue(`services.${i}.intelligentmodelsid`, value?.id || 0)
-                                                            trigger(`services.${i}.intelligentmodelsid`)
-                                                            // fieldUpdate(i, { ...fields[i], intelligentmodelsid: value.intelligentmodelsid })
-                                                        }
-                                                        }
-                                                        label={t(langKeys.model)}
-                                                        className={classes.mb2}
-                                                        error={errors?.services?.[i]?.intelligentmodelsid?.message}
-                                                        data={dataModels.filter((y: any) => y.type.trim() === 'LARGE LANGUAGE MODEL')}
-                                                        valueDefault={getValues(`services.${i}.intelligentmodelsid`)}
-                                                        optionDesc="name"
-                                                        optionValue="id"
-                                                    />
-                                                )}
-                                                {getValues(`services.${i}.type_of_service`) !== 'LARGE LANGUAGE MODEL' && (
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap' }} className={classes.mb2}>
-                                                        <TemplateSwitch
-                                                            fregister={{
-                                                                ...register(`services.${i}.analyzecustomer`)
-                                                            }}
-                                                            label={t(langKeys.client_message)}
-                                                            valueDefault={(item.analyzecustomer) ? item.analyzecustomer : false}
-                                                            style={{ flex: '0 0 170px' }}
-                                                            onChange={(value) => setValue(`services.${i}.analyzecustomer`, value)}
-                                                        />
-                                                        <TemplateSwitch
-                                                            fregister={{
-                                                                ...register(`services.${i}.analyzebot`)
-                                                            }}
-                                                            label={t(langKeys.bot_message)}
-                                                            valueDefault={(item.analyzebot) ? item.analyzebot : false}
-                                                            style={{ flex: '0 0 170px' }}
-                                                            onChange={(value) => setValue(`services.${i}.analyzebot`, value)}
-                                                        />
-                                                        <TemplateSwitch
-                                                            fregister={{
-                                                                ...register(`services.${i}.analyzeuser`)
-                                                            }}
-                                                            label={t(langKeys.agent_message)}
-                                                            valueDefault={(item.analyzeuser) ? item.analyzeuser : false}
-                                                            style={{ flex: '0 0 170px' }}
-                                                            onChange={(value) => setValue(`services.${i}.analyzeuser`, value)}
-                                                        />
-                                                    </div>
-                                                )}
-                                                {getValues(`services.${i}.type_of_service`) === 'LARGE LANGUAGE MODEL' && (
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap' }} className={classes.mb2}>
-                                                        <TemplateSwitch
-                                                            fregister={{
-                                                                ...register(`services.${i}.contextperconversation`)
-                                                            }}
-                                                            label={t(langKeys.contextperconversation)}
-                                                            valueDefault={(item.contextperconversation) ? item.contextperconversation : true}
-                                                            style={{ flex: '0 0 170px' }}
-                                                            onChange={(value) => setValue(`services.${i}.contextperconversation`, value)}
-                                                        />
-                                                        <TemplateSwitch
-                                                            fregister={{
-                                                                ...register(`services.${i}.firstinteraction`)
-                                                            }}
-                                                            label={t(langKeys.firstinteraction)}
-                                                            valueDefault={(item.firstinteraction) ? item.firstinteraction : false}
-                                                            style={{ flex: '0 0 170px' }}
-                                                            onChange={(value) => setValue(`services.${i}.firstinteraction`, value)}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <Button
-                                                variant="contained"
-                                                type="button"
-                                                color="primary"
-                                                startIcon={<DeleteIcon color="secondary" />}
-                                                style={{ backgroundColor: "#FB5F5F" }}
-                                                onClick={() => handlerDeleteColumn(i)}
-                                            >{t(langKeys.delete)}</Button>
-                                        </div>
-                                    </form>
-                                </AccordionDetails>
-                            </Accordion>
-                        </div>
-                    )}
-                </div>
-            </div>
         </div>
     );
 }
