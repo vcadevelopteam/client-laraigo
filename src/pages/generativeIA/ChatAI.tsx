@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, styled } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
 import { langKeys } from "lang/keys";
-import { Button, IconButton, Paper, Typography } from "@material-ui/core";
+import { Button, IconButton, Paper, Tooltip, Typography } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -54,9 +54,13 @@ const useStyles = makeStyles((theme) => ({
         bottom: 0,
         height: 'fit-content',
         padding: theme.spacing(2),
+        paddingRight: 0,
         display: 'flex',
         justifyContent: 'center',
-    },
+        alignItems: 'center', 
+        position: 'relative',
+        width: '100%',
+    },     
     buttonscontainer: {
         display: 'flex',
         marginBottom: '2rem',
@@ -146,7 +150,11 @@ const useStyles = makeStyles((theme) => ({
         width: 131,
         backgroundColor: '#ffff',
         color: '#7721AD',
-    },
+    },    
+    tooltipToken: {
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+    }
 }));
 
 interface ChatAIProps {
@@ -186,6 +194,28 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const endOfMessagesRef = useRef(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
     const textFieldRef = useRef(null);
+    const inputTokens = 66536;
+    const outputTokens = 21654645; 
+    const tokens = inputTokens + outputTokens;
+
+    const CustomTooltip = styled(({ className, ...props }) => (
+        <Tooltip {...props} classes={{ popper: className }} />
+    ))(({ theme }) => ({
+        '& .MuiTooltip-tooltip': {
+            backgroundColor: '#fff', 
+            color: '#000', 
+            boxShadow: theme.shadows[1],
+            fontSize: 12,
+            padding: '10px 15px', 
+            borderRadius: '6px',
+            minWidth: '6rem',
+            maxWidth: 'none',
+            wordWrap: 'break-word',
+        },
+        '& .MuiTooltip-arrow': {
+            color: '#fff',
+        },
+    }));    
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
@@ -827,8 +857,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     )}
 
                 </div>
+
                 <div className={classes.chatInputContainer}>
-                    <div style={{ width: '700px' }}>
+                    <div style={{ maxWidth: '800px', width: '100%' }}>
                         <FieldEdit
                             label={t(langKeys.typeamessage)}
                             variant="outlined"
@@ -840,12 +871,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 maxRows: 7,
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <IconButton                                           
+                                        <IconButton
                                             className={classes.sendicon}
                                             onClick={handleSendMessageGeneral}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
-                                          <SendMesageIcon color="secondary" />
+                                            <SendMesageIcon color="secondary" />
                                         </IconButton>
                                     </InputAdornment>
                                 ),
@@ -853,6 +884,26 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             inputRef={textFieldRef}
                         />
                     </div>
+                    <CustomTooltip
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                <div style={{ textAlign: 'left', marginRight: '10px' }}> 
+                                    <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
+                                    <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <Typography variant="body2"><strong>{inputTokens}</strong></Typography>
+                                    <Typography variant="body2"><strong>{outputTokens}</strong></Typography>
+                                </div>
+                            </div>
+                        }
+                        arrow={false}
+                        placement="top"
+                    >
+                        <div style={{ position: 'absolute', right: '2rem', alignSelf: 'center', padding: '0 1rem 0 0', cursor: 'pointer' }}>
+                            <p><strong>{tokens}</strong> tokens</p>
+                        </div>
+                    </CustomTooltip>
                 </div>
             </div>
         </div>
