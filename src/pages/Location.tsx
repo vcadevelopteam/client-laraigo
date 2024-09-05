@@ -687,6 +687,7 @@ const Location: FC = () => {
                 fetchData={fetchData}
                 onClickRow={(row)=>{setRowSelected({ row: row, edit: false });setViewSelected("view-2")}}
                 register={true}
+                initialPageIndex={fetchDataAux.pageIndex}
                 ButtonsElement={() => (
                     <Button
                         variant="contained"
