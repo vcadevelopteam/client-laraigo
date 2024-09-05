@@ -156,8 +156,15 @@ const VariableConfiguration: FC = () => {
 
     const downloadData = (data: Dictionary[]) => {
         if (data.length > 0) {
-            const mapdata = data.map(({ variable, description, fontcolor, fontbold, priority, visible }) => ({ variable, description, fontcolor, fontbold, priority, visible }));
-            const filename = `variableconfiguration_${rowSelected.row?.title}.csv`;
+            const mapdata = data.map(({ variable, description, fontcolor, fontbold, priority, visible }) => ({
+                variable,
+                description,
+                fontcolor,
+                fontbold,
+                priority,
+                visible
+            }));
+
             const columns = [
                 { accessor: "variable", Header: t(langKeys.variable) },
                 { accessor: "description", Header: t(langKeys.description) },
@@ -165,8 +172,29 @@ const VariableConfiguration: FC = () => {
                 { accessor: "fontbold", Header: t(langKeys.fontbold) },
                 { accessor: "priority", Header: t(langKeys.priority) },
                 { accessor: "visible", Header: t(langKeys.visible) },
-            ]
-            exportExcel(filename, mapdata, columns)
+            ];
+
+            // Convert the data to CSV format
+            const csvRows = [];
+            const headers = columns.map(col => col.Header).join(",");
+            csvRows.push(headers);
+
+            mapdata.forEach(row => {
+                const values = columns.map(col => row[col.accessor as keyof typeof row]);
+                csvRows.push(values.join(","));
+            });
+
+            // Create a CSV blob and trigger the download
+            const csvString = csvRows.join("\n");
+            const blob = new Blob([csvString], { type: "text/csv" });
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `variableconfiguration_${rowSelected.row?.title}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     }
 
