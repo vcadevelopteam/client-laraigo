@@ -29,7 +29,7 @@ const Whitelist = lazy(() => import('pages/Whitelist'));
 const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
 const ReassignmentRules = lazy(() => import('pages/ReassignmentRules'));
 const IntelligentModels = lazy(() => import('pages/IntelligentModels'));
-const IAConfiguration = lazy(() => import('pages/Iaservices'));
+const IAConfiguration = lazy(() => import('pages/iaconfiguration/IAConfiguration'));
 const SLA = lazy(() => import('pages/SLA'));
 const Domains = lazy(() => import('pages/Domains'));
 const Reports = lazy(() => import('pages/Reports'));
