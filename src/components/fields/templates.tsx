@@ -2234,3 +2234,114 @@ export function RadioGroudFieldEdit<T>({
         </div>
     );
 }
+
+
+
+const useStyles = makeStyles((theme) => ({
+    titleandcrumbs: {
+        marginBottom: 4,
+        marginTop: 4,
+    },
+    container: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+    },
+    tag: {
+        backgroundColor: '#EBF2F3',
+        borderRadius: '8px',
+        padding: '2px 8px',
+        marginRight: '4px',
+        marginBottom: '4px',
+        whiteSpace: 'nowrap',
+        wordBreak: 'keep-all',
+    },
+    tagcontainer: {
+        display: 'flex',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        width: '300px'
+    },
+}));
+
+export const TagTypeCell: React.FC<{ data: string, separator: string }> = ({ data, separator }) => {
+    const items = data.split(separator).map((item: string) => item.trim()).filter(Boolean);
+    const classes = useStyles();
+
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const tagsWrapperRef = useRef<HTMLDivElement>(null);
+    const [atEnd, setAtEnd] = useState(false);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+
+    useEffect(() => {
+        if (tagsWrapperRef.current) {
+            const isOverflowingContent = tagsWrapperRef.current.scrollWidth > tagsWrapperRef.current.clientWidth;
+            setIsOverflowing(isOverflowingContent);
+            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+        }
+    }, [scrollPosition, items]);
+
+    const handleScroll = (direction: string, event: React.MouseEvent) => {
+        event.stopPropagation();
+
+        const scrollAmount = 100;
+        const newPosition = direction === 'left'
+            ? scrollPosition - scrollAmount
+            : scrollPosition + scrollAmount;
+
+        setScrollPosition(newPosition);
+        if (tagsWrapperRef.current) {
+            tagsWrapperRef.current.scrollLeft = newPosition;
+        }
+
+        const atEndPosition = tagsWrapperRef.current
+            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth
+            : false;
+
+        setAtEnd(atEndPosition);
+    };
+
+    if (!data || items.length === 0) {
+        return null;
+    }
+
+    const shouldShowTags = items.length >= 1;
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', width: '300px', overflow: 'hidden' }}>
+            {isOverflowing && shouldShowTags && (
+                <IconButton
+                    size='small'
+                    disabled={!(scrollPosition > 0)}
+                    onClick={(event) => handleScroll('left', event)}
+                    style={{ padding: 0 }}
+                >
+                    <KeyboardArrowLeft fontSize='small' />
+                </IconButton>
+            )}
+            <div
+                ref={tagsWrapperRef}
+                className={classes.tagcontainer}
+            >
+                {items.map((item: string, index: number) => (
+                    <span
+                        key={index}
+                        className={shouldShowTags && item ? classes.tag : ''}
+                    >
+                        {item}
+                    </span>
+                ))}
+            </div>
+            {isOverflowing && shouldShowTags && (
+                <IconButton
+                    size='small'
+                    disabled={atEnd}
+                    onClick={(event) => handleScroll('right', event)}
+                    style={{ padding: 0 }}
+                >
+                    <KeyboardArrowRight fontSize='small' />
+                </IconButton>
+            )}
+        </div>
+    );
+}
