@@ -159,7 +159,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 />
                 <FieldSelect
                     className="col-6"
-                    data={multiDataAux?.data?.[3]?.data.filter(item => item.type === 'LARGE LANGUAGE MODEL') || []}
+                    data={multiDataAux?.data?.[3]?.data.filter(item => (item.type === 'LARGE LANGUAGE MODEL' || item.type === 'Gen AI')) || []}
                     label={t(langKeys.conector)}
                     valueDefault={getValues('intelligentmodelsid')}
                     onChange={(value) => {
@@ -195,10 +195,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 <FieldSelect
                     label={t(langKeys.basemodel)}
                     data={
-                        conector?.provider === 'Open AI' ? retrievalbasemodels :
+                        conector?.provider === 'OpenAI' || conector?.provider === 'Open AI' ? retrievalbasemodels :
                         conector?.provider === 'Meta' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
                         conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral')) :
-                        conector?.provider === 'LaraigoLLM' ? llama3basemodels : []
+                        conector?.provider === 'Laraigo' || conector?.provider === 'LaraigoLLM' ? llama3basemodels : []
                     }
                     valueDefault={getValues('basemodel')}
                     onChange={(value) => {

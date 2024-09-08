@@ -6427,6 +6427,25 @@ export const langKeys = {
   channel_column_mt_help: 'channel_column_help',
   onboading_channelcomplete: 'onboading_channelcomplete',
   errorimportdocuments: 'errorimportdocuments',
+
+  newconnector: 'newconnector',
+  genai_help: 'genai_help',
+  assistant_help: 'assistant_help',
+  voiceconversor_help: 'voiceconversor_help',
+  typeservicedescription: 'typeservicedescription',
+  selectoption: 'selectoption',
+  providerdescription: 'providerdescription',
+  serviceregistration: 'serviceregistration',
+  urlrasadescription: 'urlrasadescription',
+  urlibmdescription: 'urlibmdescription',
+  apikeydescription: 'apikeydescription',
+  apikey_help: 'apikey_help',
+  statusdescription: 'statusdescription',
+  namedescription: 'namedescription',
+  descriptiondescription: 'descriptiondescription',
+  skilliddescription: 'skilliddescription',
+  skillid_help: 'skillid_help',
+
   conectoriahelper: 'conectoriahelper',
   descriptioniahelper: 'descriptioniahelper',
   channeliahelper: 'channeliahelper',
@@ -6445,7 +6464,6 @@ export const langKeys = {
   translationai: 'translationai',
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
-
 };
 
 export type LangKeys = typeof langKeys;
