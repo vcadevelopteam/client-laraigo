@@ -6430,6 +6430,23 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   errorimportdocuments: 'Los documentos {{docs}} no son registros válidos',
 
   newconnector: 'Nuevo Conector',
+  genai_help: 'Registra un servicio de inteligencia artificial generativa, con el uso de modelos como Llama3, GPT4, Gemini y más.',
+  assistant_help: 'Registra un servicio de inteligencia artificial tradicional, crea tus modelos de detección de intenciones y entidades.',
+  voiceconversor_help: 'Registra un servicio de transcripción y traducción de audio para tus conversaciones.',
+  typeservicedescription: 'Selecciona el tipo de servicio que registrarás y emplearas en Laraigo.',
+  selectoption: 'Selecciona una opción',
+  providerdescription: 'Selecciona el proveedor del servicio de inteligencia artificial que deseas registrar.',
+  serviceregistration: 'Registro de Servicios',
+  urlrasadescription: 'Coloca la url que genera Laraigo relacionada al conector Rasa que se desea registrar.',
+  urlibmdescription: 'Coloca la url que brinda IBM relacionada a la instancia del modelo que deseas registrar.',
+  apikeydescription: 'Registra el api key proporcionado por el proveedor de IA seleccionado.',
+  apikey_help: 'El api key usualmente se encuentra en el perfil de tu cuenta relacionada al proveedor de la inteligencia artificial.',
+  statusdescription: 'Selecciona el estado de tu conector, si deseas que se encuentre activo o inactivo.',
+  namedescription: 'Asigna un nombre para el conector que registrarás.',
+  descriptiondescription: 'Asigna una breve descripción al conector que registrarás.',
+  skilliddescription: 'Coloca el skill id del modelo que deseas registrar, en la opción “View Api Details” encontraras el detalle.',
+  skillid_help: 'Si no cuentas con un skill creado previamente en IBM, podrás crearlo en la opción de “Entrenamiento IA” de Laraigo.',
+
 
 };
 

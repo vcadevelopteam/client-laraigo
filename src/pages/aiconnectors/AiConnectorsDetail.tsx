@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'; 
+import React, { useCallback, useEffect, useRef, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -80,18 +80,41 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const [selectedValue, setSelectedValue] = useState<string>('');
-    const [helperText, setHelperText] = useState<string>('');   
+    const [, setSelectedValue] = useState<string>('');
     const oldTypes = ["LARGE LANGUAGE MODEL", "NATURAL LANGUAGE CLASSIFIER", "NATURAL LANGUAGE UNDERSTANDING", "TONE ANALYZER","","WIT.AI"];
     const providerMap: Record<string, string> = { 'LaraigoLLM': 'Laraigo', 'Open AI': 'OpenAI', 'RASA': 'Rasa', 'WATSON ASSISTANT': 'IBM'}    
     const reverseProviderMap: Record<string, string> = { 'Laraigo': 'Laraigo', 'OpenAI': 'OpenAI'}
-    
+    const previousTypeRef = useRef()    
+
     const mapProvider = (provider: string, type?: string, forSave = false) => {
         if (forSave) { return reverseProviderMap[provider] || provider }
         if (type && providerMap[type]) { return providerMap[type] }
         return providerMap[provider] || provider
-    }    
-       
+    }  
+    
+    const statusData = [
+        { domainvalue: "ACTIVO", domaindesc: "ACTIVO"},
+        { domainvalue: "INACTIVO", domaindesc: "INACTIVO"},         
+    ]
+
+    const genAiProviders = [
+        { domaindesc: 'Laraigo', domainvalue: 'Laraigo' },
+        { domaindesc: 'IBM', domainvalue: 'IBM' },
+        { domaindesc: 'OpenAI', domainvalue: 'OpenAI' },
+        { domaindesc: 'Google', domainvalue: 'Google' },
+        { domaindesc: 'Microsoft Azure', domainvalue: 'Microsoft Azure' },
+        { domaindesc: 'Meta', domainvalue: 'Meta' },
+        { domaindesc: 'Mistral', domainvalue: 'Mistral' }
+    ]    
+
+    const assistantProviders = [
+        { domaindesc: 'IBM', domainvalue: 'IBM' },
+        { domaindesc: 'Microsoft Azure', domainvalue: 'Microsoft Azure' },
+        { domaindesc: 'Google', domainvalue: 'Google' },
+        { domaindesc: 'Rasa', domainvalue: 'Rasa' },
+        { domaindesc: 'Meta', domainvalue: 'Meta' }
+    ]   
+    
     const { getValues, register, handleSubmit, setValue, clearErrors, formState: { errors } } = useForm({
         defaultValues: {          
             type: row ? (oldTypes.includes(row.type) ? "Gen AI" : ["RASA", "WATSON ASSISTANT"].includes(row.type) ? "Assistant" : row.type) : '',
@@ -106,7 +129,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
             operation: row ? "EDIT" : "INSERT",            
         }
     })
-
+    
     React.useEffect(() => {
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('id');       
@@ -128,6 +151,19 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     : true,
         });
     }, [edit, register])
+
+    useEffect(() => {
+        const currentType = getValues('type');
+        const currentProvider = getValues('provider');
+        if (previousTypeRef.current && previousTypeRef.current !== currentType) {
+            if (currentType !== 'Conversor de voz') {
+                setValue('provider', '');  setValue('name', ''); setValue('endpoint', ''); setValue('modelid', ''); setValue('apikey', ''); setValue('description', ''); 
+                clearErrors('provider'); clearErrors('name'); clearErrors('endpoint'); clearErrors('modelid'); clearErrors('apikey'); clearErrors('description');
+            }
+        }
+        if (currentType === 'Conversor de voz' && currentProvider !== 'OpenAI') { setValue('provider', 'OpenAI'); clearErrors('provider') }
+        previousTypeRef.current = currentType
+    }, [getValues, setValue, clearErrors, getValues('type')]); 
 
     useEffect(() => {
         if (waitSave) {
@@ -158,69 +194,30 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
             question: t(langKeys.confirmation_save),
             callback
         }))
-    })    
-
-    const statusData = [
-        { domainvalue: "ACTIVO", domaindesc: "ACTIVO"},
-        { domainvalue: "INACTIVO", domaindesc: "INACTIVO"},         
-    ]
-
-    const genAiProviders = [
-        { domaindesc: 'Laraigo', domainvalue: 'Laraigo' },
-        { domaindesc: 'IBM', domainvalue: 'IBM' },
-        { domaindesc: 'OpenAI', domainvalue: 'OpenAI' },
-        { domaindesc: 'Google', domainvalue: 'Google' },
-        { domaindesc: 'Microsoft Azure', domainvalue: 'Microsoft Azure' },
-        { domaindesc: 'Meta', domainvalue: 'Meta' },
-        { domaindesc: 'Mistral', domainvalue: 'Mistral' }
-    ]    
-
-    const assistantProviders = [
-        { domaindesc: 'IBM', domainvalue: 'IBM' },
-        { domaindesc: 'Microsoft Azure', domainvalue: 'Microsoft Azure' },
-        { domaindesc: 'Google', domainvalue: 'Google' },
-        { domaindesc: 'Rasa', domainvalue: 'Rasa' },
-        { domaindesc: 'Meta', domainvalue: 'Meta' }
-    ]    
-
-    const helperServiceType = useCallback((value: string) => {
-        switch (value) {
+    })   
+    
+    const helperServiceType = useCallback(() => {
+        const type = getValues('type');
+        switch (type) {
             case "Gen AI":
-                return "Registra un servicio de inteligencia artificial generativa, con el uso de modelos como Llama3, GPT4, Gemini y más.";
+                return t(langKeys.genai_help)
             case "Assistant":
-                return "Registra un servicio de inteligencia artificial tradicional, crea tus modelos de detección de intenciones y entidades.";
+                return t(langKeys.assistant_help)
             case "Conversor de voz":
-                return "Registra un servicio de transcripción y traducción de audio para tus conversaciones.";
+                return t(langKeys.voiceconversor_help)
             default:
                 return "";
         }
+    }, [getValues('type')]);
+    
+    const handleFieldSelectChange = useCallback((newValue: Dictionary) => {
+        const selectedDomainValue = newValue?.domainvalue || ''
+        setSelectedValue(selectedDomainValue)
     }, [])
 
-    useEffect(() => {
-        const updatedHelperText = helperServiceType(selectedValue)
-        setHelperText(updatedHelperText)
-    }, [selectedValue, helperServiceType])
+    //console.log('row es: ', row)
+    //console.log('getValues es: ', getValues())
 
-    const handleFieldSelectChange = (value: Dictionary, field: string) => {
-        switch (field) {
-            case 'type':
-                setSelectedValue(value.domainvalue);
-                setValue('type', value.domainvalue);
-                break;
-            case 'provider':
-                setSelectedValue(value.domainvalue);
-                setValue('provider', value.domainvalue);
-                break;
-            case 'status':
-                setSelectedValue(value.domainvalue);
-                setValue('status', value.domainvalue);
-                break;                
-        }
-    }
-
-    console.log('getvalue type: ', getValues('type'))
-    console.log('getvalue provider: ', getValues('provider'))
-    
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -229,13 +226,13 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     <TemplateBreadcrumbs
                         breadcrumbs={arrayBread2 
                             ? [...arrayBread2.map(item => ({ ...item, name: item.name || "" })),
-                                { id: "view-1", name: "Conectores" }, 
-                                { id: "view-2", name: "Registrar conector" }]
+                                { id: "view-1", name: "" }, 
+                                { id: "view-2", name: "" }]
                             : arrayBread}
                         handleClick={setViewSelected}
                     />
                         <TitleDetail
-                            title={row ? `${row.name}` : 'Nuevo Conector'}
+                            title={row ? `${row.name}` : t(langKeys.newconnector)}
                         />                     
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -259,11 +256,11 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     </div>
                 </div>
 
-                <div className={classes.containerDetail}>                    
-                    <div style={{ display: 'flex', width: '100%' }}>                        
+                <div className={classes.containerDetail}>
+                    <div style={{ display: 'flex', width: '100%' }}>
                         <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>                        
-                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Tipo de Servicio'}</span>
-                            <span>{'Selecciona el tipo de servicio que registrarás y emplearas en Laraigo'}</span>
+                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.type_service)}</span>
+                            <span>{t(langKeys.typeservicedescription)}</span>
                             <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                 <div className="row-zyx" style={{ width: '30vw', marginBottom: 0 }}>
                                     <FieldSelect
@@ -272,7 +269,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                         optionDesc='domaindesc'
                                         optionValue='domainvalue'
                                         onChange={(value) => {
-                                            handleFieldSelectChange(value, 'type');
+                                            handleFieldSelectChange(value);
                                             if (value) {
                                                 setValue('type', value.domaindesc);
                                                 if (value.domaindesc === 'Conversor de voz') {setValue('provider', 'OpenAI')}
@@ -285,17 +282,17 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     />
                                 </div>
                                 <div style={{ margin: '0 0.5rem' }}>
-                                    {helperText && selectedValue && (
-                                        <Tooltip title={helperText} arrow placement="top">
-                                            <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                        </Tooltip>
-                                    )}
+                                {getValues('type') !== '' && (
+                                    <Tooltip title={helperServiceType()} arrow placement="top">
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
+                                )}
                                 </div>
                                 <div style={{ margin: '0 1rem', padding: '0' }}>
                                     {getValues('type') === '' && (
                                         <div className={classes.warningContainer} style={{ width: 220 }}>
                                             <WarningIcon style={{ color: '#FF7575' }} />
-                                            Selecciona una opción
+                                            {t(langKeys.selectoption)}
                                         </div>
                                     )}
                                 </div>
@@ -304,8 +301,8 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
 
                         {getValues('type') && 
                             <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Proveedor'}</span>
-                                <span>{'Selecciona el proveedor del servicio de inteligencia artificial que deseas registrar.'}</span>
+                                <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.provider)}</span>
+                                <span>{t(langKeys.providerdescription)}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                     <div className="row-zyx" style={{ width: '30vw', marginBottom: 0 }}>
                                         <FieldSelect
@@ -314,6 +311,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                             optionDesc='domaindesc'
                                             optionValue='domainvalue'
                                             onChange={(value) => {
+                                                handleFieldSelectChange(value);
                                                 if (value) {
                                                     setValue('provider', value.domaindesc);
                                                 } else {
@@ -328,7 +326,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                         {getValues('provider') === '' && (
                                             <div className={classes.warningContainer} style={{ width: 220 }}>
                                                 <WarningIcon style={{ color: '#FF7575' }} />
-                                                Selecciona una opción
+                                                {t(langKeys.selectoption)}
                                             </div>
                                         )}
                                     </div>
@@ -337,21 +335,21 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                         }
                     </div>    
 
-                    {getValues('provider') && (
+                    {getValues('type') && getValues('provider') && (
                         <div className='row-zyx' style={{ borderBottom: '1px solid black', padding: '15px 0 10px 0' }}>
-                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Registro de Servicios'}</span>
+                            <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.serviceregistration)}</span>
                         </div>
                     )}                   
 
                     {((getValues('type') === 'Assistant' && getValues('provider') === 'Rasa') || (getValues('type') === 'Assistant' && getValues('provider') === 'IBM')) && (
                         <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>  
                             <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Url'}</span>
+                                <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.url)}</span>
                                 {getValues('provider') === 'Rasa'&& (
-                                    <span>{'Coloca la url que genera Laraigo relacionada al conector Rasa que se desea registrar.'}</span>
+                                    <span>{t(langKeys.urlrasadescription)}</span>
                                 )}
                                 {getValues('provider') === 'IBM'&& (
-                                    <span>{'Coloca la url que brinda IBM relacionada a la instancia del modelo que deseas registrar.'}</span>
+                                    <span>{t(langKeys.urlibmdescription)}</span>
                                 )}
                                 <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                     <div className="row-zyx" style={{ width: '92.2vw', marginBottom: 0 }}>
@@ -362,7 +360,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                 clearErrors('endpoint')
                                             }}
                                             valueDefault={getValues("endpoint")}
-                                            maxLength={512}
                                             variant="outlined"
                                             error={errors?.endpoint?.message}
                                         />
@@ -377,7 +374,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             <div style={{ display: 'flex', width: '100%', gap:'1rem' }}>                       
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Api Key'}</span>
-                                    <span>{'Registra el api key proporcionado por el proveedor de IA seleccionado.'}</span>
+                                    <span>{t(langKeys.apikeydescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
                                             <FieldEditPassword
@@ -387,21 +384,20 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                     clearErrors('apikey')
                                                 }}
                                                 valueDefault={getValues("apikey")}
-                                                maxLength={512}
                                                 variant="outlined"
                                                 error={errors?.apikey?.message}
                                             />
                                         </div>
                                         <div style={{ margin: '0 0.5rem' }}>
-                                            <Tooltip title={'El api key usualmente se encuentra en el perfil de tu cuenta relacionada al proveedor de la inteligencia artificial.'} arrow placement="top">
+                                            <Tooltip title={t(langKeys.apikey_help)} arrow placement="top">
                                                 <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                             </Tooltip>                                       
                                         </div>                                 
                                     </div>
                                 </div>
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Estado'}</span>
-                                    <span>{'Selecciona el estado de tu conector, si deseas que se encuentre activo o inactivo.'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
+                                    <span>{t(langKeys.statusdescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                     
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
@@ -411,6 +407,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                 optionDesc='domaindesc'
                                                 optionValue='domainvalue'
                                                 onChange={(value) => {
+                                                    handleFieldSelectChange(value);
                                                     if (value) {
                                                         setValue('status', value.domaindesc);
                                                         clearErrors('status')
@@ -426,11 +423,12 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     
                                     </div>
                                 </div>
-                            </div>                   
+                            </div>                    
+                        
                             <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Nombre'}</span>
-                                    <span>{'Asigna un nombre para el conector que registrarás.'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.name)}</span>
+                                    <span>{t(langKeys.namedescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
                                             <FieldEdit
@@ -447,9 +445,10 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                         </div>                                   
                                     </div>
                                 </div>
+
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Descripción'}</span>
-                                    <span>{'Asigna una breve descripción al conector que registrarás.'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.description)}</span>
+                                    <span>{t(langKeys.descriptiondescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
                                         <FieldEdit
@@ -459,7 +458,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                 clearErrors('description')
                                             }}
                                             valueDefault={getValues("description")}
-                                            maxLength={512}
                                             variant="outlined"
                                             error={errors?.description?.message}
                                         />
@@ -475,7 +473,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>   
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Api Key'}</span>
-                                    <span>{'Registra el api key proporcionado por el proveedor de IA seleccionado.'}</span>
+                                    <span>{t(langKeys.apikeydescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
                                             <FieldEditPassword
@@ -485,7 +483,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                     clearErrors('apikey')
                                                 }}
                                                 valueDefault={getValues("apikey")}
-                                                maxLength={512}
                                                 variant="outlined"
                                                 error={errors?.apikey?.message}
                                             />
@@ -494,7 +491,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 </div>
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Skill ID'}</span>
-                                    <span>{'Coloca el skill id del modelo que deseas registrar, en la opción “View Api Details” encontraras el detalle.'}</span>
+                                    <span>{t(langKeys.skilliddescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
                                             <FieldEditPassword
@@ -504,13 +501,12 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                     clearErrors('modelid')
                                                 }}
                                                 valueDefault={getValues("modelid")}
-                                                maxLength={512}
                                                 variant="outlined"
                                                 error={errors?.modelid?.message}
                                             />
                                         </div>
                                         <div style={{ margin: '0 0.5rem' }}>
-                                            <Tooltip title={'Si no cuentas con un skill creado previamente en IBM, podrás crearlo en la opción de “Entrenamiento IA” de Laraigo.'} arrow placement="top">
+                                            <Tooltip title={t(langKeys.skillid_help)} arrow placement="top">
                                                 <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                             </Tooltip>                                       
                                         </div>                                 
@@ -519,8 +515,8 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             </div>                  
                             <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Nombre'}</span>
-                                    <span>{'Asigna un nombre para el conector que registrarás.'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.name)}</span>
+                                    <span>{t(langKeys.namedescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
                                             <FieldEdit
@@ -530,7 +526,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                     clearErrors('name')
                                                 }}
                                                 valueDefault={getValues("name")}
-                                                maxLength={512}
                                                 variant="outlined"
                                                 error={errors?.name?.message}
                                             />
@@ -538,8 +533,8 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     </div>
                                 </div>
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Descripción'}</span>
-                                    <span>{'Asigna una breve descripción al conector que registrarás.'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.description)}</span>
+                                    <span>{t(langKeys.descriptiondescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
                                         <FieldEdit
@@ -549,7 +544,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                 clearErrors('description')
                                             }}
                                             valueDefault={getValues("description")}
-                                            maxLength={512}
                                             variant="outlined"
                                             error={errors?.description?.message}
                                         />
@@ -559,8 +553,8 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             </div>
                             <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Estado'}</span>
-                                    <span>{'Selecciona el estado de tu conector, si deseas que se encuentre activo o inactivo.'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
+                                    <span>{t(langKeys.statusdescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                     
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
@@ -570,6 +564,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                 optionDesc='domaindesc'
                                                 optionValue='domainvalue'
                                                 onChange={(value) => {
+                                                    handleFieldSelectChange(value);
                                                     if (value) {
                                                         setValue('status', value.domaindesc);
                                                         clearErrors('status')
