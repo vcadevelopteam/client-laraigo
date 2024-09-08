@@ -42,6 +42,16 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const selectionKey = "id";
+    const providerOptions = [
+        { key: "Laraigo", value: "Laraigo" },
+        { key: "IBM", value: "IBM" },
+        { key: "OpenAI", value: "OpenAI" },
+        { key: "Google", value: "Google" },
+        { key: "Microsoft Azure", value: "Microsoft Azure" },
+        { key: "Meta", value: "Meta" },
+        { key: "Mistral", value: "Mistral" },
+        { key: "Rasa", value: "Rasa" },
+    ]   
 
     const functionChange = (change:string) => {
         if(change==="view-0"){
@@ -75,24 +85,33 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                     { key: "Conversor de voz", value: "VoiceConversor" },
                 ],
                 width: 'auto',
-            },          
+                Cell: ({ cell: { value } }: CellProps<Dictionary>) => {
+                    if (value === "LARGE LANGUAGE MODEL") {
+                        return "Gen AI";
+                    } else if (value === "WATSON ASSISTANT" || value === "RASA") {
+                        return "Assistant";
+                    } else {
+                        return value;
+                    }
+                }                
+            },                     
             {
                 Header: t(langKeys.provider),
                 accessor: 'provider',
                 type: "select",
-                listSelectFilter: [
-                    { key: "LaraigoLLM", value: "LaraigoLLM" },
-                    { key: "WatsonX", value: "WatsonX" },
-                    { key: "OpenAI", value: "OpenAI" },
-                    { key: "Meta", value: "Meta" },
-                    { key: "Mistral", value: "Mistral" },
-                ],
+                listSelectFilter: providerOptions,
                 width: 'auto',
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { provider } = props.cell.row.original;
-                    return provider !== '' ? provider : t(langKeys.none);
+                Cell: ({ row }: CellProps<Dictionary>) => {
+                    const { type, provider } = row.original;
+                    if (type === "WATSON ASSISTANT") {
+                        return "IBM";
+                    } else if (type === "RASA") {
+                        return "Rasa";
+                    } else {
+                        return provider !== '' ? provider : t(langKeys.none);
+                    }
                 }
-            },
+            },            
             {
                 accessor: "createdate",
                 Header: t(langKeys.timesheet_registerdate),

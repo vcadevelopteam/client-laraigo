@@ -84,7 +84,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     const [helperText, setHelperText] = useState<string>('');   
     const oldTypes = ["LARGE LANGUAGE MODEL", "NATURAL LANGUAGE CLASSIFIER", "NATURAL LANGUAGE UNDERSTANDING", "TONE ANALYZER","","WIT.AI"];
     const providerMap: Record<string, string> = { 'LaraigoLLM': 'Laraigo', 'Open AI': 'OpenAI', 'RASA': 'Rasa', 'WATSON ASSISTANT': 'IBM'}    
-    const reverseProviderMap: Record<string, string> = { 'Laraigo': 'LaraigoLLM', 'OpenAI': 'Open AI'}
+    const reverseProviderMap: Record<string, string> = { 'Laraigo': 'Laraigo', 'OpenAI': 'OpenAI'}
     
     const mapProvider = (provider: string, type?: string, forSave = false) => {
         if (forSave) { return reverseProviderMap[provider] || provider }
@@ -185,11 +185,11 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
 
     const helperServiceType = useCallback((value: string) => {
         switch (value) {
-            case "GENAI":
+            case "Gen AI":
                 return "Registra un servicio de inteligencia artificial generativa, con el uso de modelos como Llama3, GPT4, Gemini y más.";
-            case "ASSISTANT":
+            case "Assistant":
                 return "Registra un servicio de inteligencia artificial tradicional, crea tus modelos de detección de intenciones y entidades.";
-            case "VOICECONVERSOR":
+            case "Conversor de voz":
                 return "Registra un servicio de transcripción y traducción de audio para tus conversaciones.";
             default:
                 return "";
@@ -201,11 +201,26 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
         setHelperText(updatedHelperText)
     }, [selectedValue, helperServiceType])
 
-    const handleFieldSelectChange = useCallback((newValue: Dictionary) => {
-        const selectedDomainValue = newValue?.domainvalue || ''
-        setSelectedValue(selectedDomainValue)
-    }, [])
+    const handleFieldSelectChange = (value: Dictionary, field: string) => {
+        switch (field) {
+            case 'type':
+                setSelectedValue(value.domainvalue);
+                setValue('type', value.domainvalue);
+                break;
+            case 'provider':
+                setSelectedValue(value.domainvalue);
+                setValue('provider', value.domainvalue);
+                break;
+            case 'status':
+                setSelectedValue(value.domainvalue);
+                setValue('status', value.domainvalue);
+                break;                
+        }
+    }
 
+    console.log('getvalue type: ', getValues('type'))
+    console.log('getvalue provider: ', getValues('provider'))
+    
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -244,8 +259,8 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     </div>
                 </div>
 
-                <div className={classes.containerDetail}>
-                    <div style={{ display: 'flex', width: '100%' }}>
+                <div className={classes.containerDetail}>                    
+                    <div style={{ display: 'flex', width: '100%' }}>                        
                         <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>                        
                             <span style={{ fontWeight: 'bold', fontSize: 20 }}>{'Tipo de Servicio'}</span>
                             <span>{'Selecciona el tipo de servicio que registrarás y emplearas en Laraigo'}</span>
@@ -257,11 +272,13 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                         optionDesc='domaindesc'
                                         optionValue='domainvalue'
                                         onChange={(value) => {
-                                            handleFieldSelectChange(value);
+                                            handleFieldSelectChange(value, 'type');
                                             if (value) {
                                                 setValue('type', value.domaindesc);
+                                                if (value.domaindesc === 'Conversor de voz') {setValue('provider', 'OpenAI')}
                                             } else {
                                                 setValue('type', '');
+                                                setValue('provider', '');
                                             }
                                         }}
                                         valueDefault={getValues('type')}
@@ -297,7 +314,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                             optionDesc='domaindesc'
                                             optionValue='domainvalue'
                                             onChange={(value) => {
-                                                handleFieldSelectChange(value);
                                                 if (value) {
                                                     setValue('provider', value.domaindesc);
                                                 } else {
@@ -395,7 +411,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                 optionDesc='domaindesc'
                                                 optionValue='domainvalue'
                                                 onChange={(value) => {
-                                                    handleFieldSelectChange(value);
                                                     if (value) {
                                                         setValue('status', value.domaindesc);
                                                         clearErrors('status')
@@ -411,8 +426,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     
                                     </div>
                                 </div>
-                            </div>                    
-                        
+                            </div>                   
                             <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Nombre'}</span>
@@ -433,7 +447,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                         </div>                                   
                                     </div>
                                 </div>
-
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Descripción'}</span>
                                     <span>{'Asigna una breve descripción al conector que registrarás.'}</span>
@@ -557,7 +570,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                                 optionDesc='domaindesc'
                                                 optionValue='domainvalue'
                                                 onChange={(value) => {
-                                                    handleFieldSelectChange(value);
                                                     if (value) {
                                                         setValue('status', value.domaindesc);
                                                         clearErrors('status')
