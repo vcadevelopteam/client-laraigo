@@ -6483,8 +6483,9 @@ const translation: LangKeys = {
   translatelanguage: 'Conversation Chat',
   chatsettings: 'Message sending mode',
   onboading_channelcomplete: 'The channel must have a name',
-  errorimportdocuments: 'The documents {{docs}} are not valid registers'
-
+  errorimportdocuments: 'The documents {{docs}} are not valid registers',
+  inputtokens: 'Input Tokens',
+  outputtokens: 'Output Tokens',
 };
 
 const enResource: ResourceLanguage = {

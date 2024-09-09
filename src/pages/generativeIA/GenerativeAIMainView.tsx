@@ -377,6 +377,16 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                 width: "auto",
             },
             {
+                Header: t(langKeys.inputtokens),
+                accessor: 'intelligentmodelsid',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.outputtokens),
+                accessor: 'max_tokens',
+                width: "auto",
+            },
+            {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 width: "auto",

@@ -194,10 +194,22 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const endOfMessagesRef = useRef(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
     const textFieldRef = useRef(null);
-    const isLlamaModel = row?.basemodel === 'llama3.1:8b' || row?.basemodel === 'llama3.1:70b'       
-    const [inputTokensInThread, setInputTokensInThread] = useState(0);
-    const [outputTokensInThread, setOutputTokensInThread] = useState(0);
-
+    const isLlamaModel = row?.basemodel === 'llama3.1:8b' || row?.basemodel === 'llama3.1:70b'
+    const [tokenStore, setTokenStore] = useState<{ [key: number]: { inputTokens: number, outputTokens: number } }>({});
+    const totalTokens = messages.data.reduce((acc, message) => {
+        const inputTokens = tokenStore[message.messageaiid]?.inputTokens || 0;
+        const outputTokens = tokenStore[message.messageaiid]?.outputTokens || 0;
+        return acc + inputTokens + outputTokens;
+    }, 0);   
+    const totalInputTokens = messages.data.reduce((acc, message) => {
+        const inputTokenCount = Array.isArray(message.inputTokens) ? message.inputTokens.length : 0;
+        return acc + inputTokenCount;
+    }, 0);    
+    const totalOutputTokens = messages.data.reduce((acc, message) => {
+        const outputTokenCount = Array.isArray(message.outputTokens) ? message.outputTokens.length : 0;
+        return acc + outputTokenCount;
+    }, 0);   
+    
     const CustomTooltip = styled(({ className, ...props }) => (
         <Tooltip {...props} classes={{ popper: className }} />
     ))(({ theme }) => ({
@@ -224,48 +236,27 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [messages]);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
-    const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));    
-
-    useEffect(() => {
-        if (messages && Array.isArray(messages.data) && messages.data.length > 0) {    
-            let totalInputTokens = 0; let totalOutputTokens = 0;    
-            messages.data.forEach((message: Dictionary) => {
-                if (message.type === 'USER') {
-                    totalInputTokens += message.tokencount;
-                } else if (message.type === 'BOT') {
-                    totalOutputTokens += message.tokencount;
+    // const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));    
+   
+    const fetchThreadMessages = (threadid: number) => {
+        dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})))
+            .then((response: Dictionary) => {
+                if (response && response.data) {
+                    const tokens = response.data.reduce((acc: Dictionary, message: Dictionary) => {
+                        acc[message.messageaiid] = {
+                            inputTokens: message.inputTokens,
+                            outputTokens: message.outputTokens
+                        };
+                        return acc;
+                    }, {});
+                    setTokenStore(tokens);
                 }
-            });    
-            setInputTokensInThread(totalInputTokens);
-            setOutputTokensInThread(totalOutputTokens);    
-        }
-    }, [messages]);
-     
-    const calculateTokensInThread = (messages: Array<Dictionary>) => {
-        let inputTokensInThread = 0;
-        let outputTokensInThread = 0;
-        
-        messages.forEach(message => {
-            if (message.type === "USER") {
-            inputTokensInThread += message.tokencount;
-            } else if (message.type === "BOT") {
-            outputTokensInThread += message.tokencount;
-            }
-        });
-        
-        return {
-            inputTokensInThread,
-            outputTokensInThread,
-        };
+            })
+            .catch((error: Dictionary) => {
+                console.error("Error fetching thread messages:", error);
+            });
     };
-        
-    useEffect(() => {
-        const messages = executeResult?.data || [];
-        const { inputTokensInThread, outputTokensInThread } = calculateTokensInThread(messages);        
-        setInputTokensInThread(inputTokensInThread);
-        setOutputTokensInThread(outputTokensInThread);
-    }, [executeResult]);      
-    
+
     useEffect(() => {
         fetchThreadsByAssistant();
     }, []);
@@ -422,7 +413,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     } else {
                         dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
                         setIsLoading(false);
-                    }                    
+                    }
+                    
                 } else if (llm3Result.error) {
                     const errormessage = t(llm3Result.code || "error_unexpected_error", {
                         module: t(langKeys.domain).toLocaleLowerCase(),
@@ -435,7 +427,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 if (!llamaResult.loading && !llamaResult.error) {
                     setWaitSaveMessageLlama(false);
                     if (llamaResult.data && llamaResult.data.result) {
-                        const { output_tokens } = llm3Result.data;
+                        const { output_tokens } = llm3Result.data; //op-
                         dispatch(execute(insMessageAi({
                             assistantaiid: row?.assistantaiid,
                             threadid: activeThreadId,
@@ -937,27 +929,39 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     </div>
 
                     {isLlamaModel && (
-                        <CustomTooltip
-                            title={
-                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                <div style={{ textAlign: 'left', marginRight: '10px' }}>
-                                <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
-                                <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
+                        <>
+                             <CustomTooltip
+                                title={
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                        <div style={{ textAlign: 'left', marginRight: '10px' }}> 
+                                            <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
+                                            <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <Typography variant="body2"><strong>{totalInputTokens}</strong></Typography>
+                                            <Typography variant="body2"><strong>{totalOutputTokens}</strong></Typography>
+                                        </div>
+                                    </div>
+                                }
+                                arrow={false}
+                                placement="top"
+                            >
+                                <div style={{ position: 'absolute', right: '2rem', alignSelf: 'center', padding: '0 1rem 0 0', cursor: 'pointer' }}>
+                                    <p><strong>{totalTokens}</strong> tokens</p>
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
-                                <Typography variant="body2"><strong>{inputTokensInThread}</strong></Typography>
-                                <Typography variant="body2"><strong>{outputTokensInThread}</strong></Typography>
-                                </div>
-                            </div>
-                            }
-                            arrow={false}
-                            placement="top"
-                        >
-                            <div style={{ position: 'absolute', right: '2rem', alignSelf: 'center', padding: '0 1rem 0 0', cursor: 'pointer' }}>
-                            <p><strong>{inputTokensInThread + outputTokensInThread}</strong> tokens</p>
-                            </div>
-                        </CustomTooltip>
+                            </CustomTooltip>                      
+                        </>
                     )}
+                    
+
+
+
+                
+
+
+
+
+                   
                 </div>
             </div>
         </div>

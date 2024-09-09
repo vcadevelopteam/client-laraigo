@@ -6428,6 +6428,8 @@ export const langKeys = {
   channel_column_mt_help: 'channel_column_help',
   onboading_channelcomplete: 'onboading_channelcomplete',
   errorimportdocuments: 'errorimportdocuments',
+  inputtokens: 'inputtokens',
+  outputtokens: 'outputtokens',
 };
 
 export type LangKeys = typeof langKeys;
