@@ -21,6 +21,7 @@ import {
 
 import {
     FieldMultiSelect,
+    TagTypeCell,
     TemplateBreadcrumbs,
 } from "components";
 
