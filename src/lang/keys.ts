@@ -6424,6 +6424,11 @@ export const langKeys = {
   errorimportdocuments: 'errorimportdocuments',
   watsonxassistantdescription: 'watsonxassistantdescription',
   updateddate: 'updateddate',
+  topk: 'topk',
+  topkdescription: 'topkdescription',
+  repetitionpenalty: 'repetitionpenalty',
+  repetitionpenaltydescription: 'repetitionpenaltydescription',
+
 };
 
 export type LangKeys = typeof langKeys;

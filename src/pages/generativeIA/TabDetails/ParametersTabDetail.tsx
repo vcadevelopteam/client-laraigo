@@ -161,6 +161,8 @@ interface CardDataType {
     max_tokens: number;
     temperature: number;
     top_p: number;
+    top_k: number;
+    repetitionpenalty: number;
 }
 interface RowSelected {
     row: Dictionary | null;
@@ -306,7 +308,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         {
             title: t(langKeys.help_desk_clerk),
             description: t(langKeys.help_desk_clerk_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -315,12 +317,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 500,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetitionpenalty: 1,
             type: 'TABLE',
         },
         {
             title: t(langKeys.customer_service),
             description: t(langKeys.customer_service_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -329,12 +333,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetitionpenalty: 1,
             type: 'CLIENT',
         },
         {
             title: t(langKeys.sales_expert),
             description: t(langKeys.sales_expert_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -343,12 +349,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetitionpenalty: 1,
             type: 'SALES',
         },
         {
             title: t(langKeys.technical_support),
             description: t(langKeys.technical_support_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -357,12 +365,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 700,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetitionpenalty: 1,
             type: 'TECH',
         },
         {
             title: t(langKeys.ai_base),
             description: t(langKeys.ai_base_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -371,20 +381,24 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetitionpenalty: 1,
             type: 'AI',
         },
         {
             title: t(langKeys.custom_mode),
             description: t(langKeys.custom_mode_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
-            querywithoutanswer: 'Mejor Sugerencia',
+            querywithoutanswer: 'Sin reacción',
             response: '',
             prompt: '',
             negativeprompt: '',
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetitionpenalty: 1,
             type: 'PERSONALIZED',
         },
     ];
@@ -400,6 +414,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('temperature', cardData[cardIndex].temperature)
         setValue('max_tokens', cardData[cardIndex].max_tokens)
         setValue('top_p', cardData[cardIndex].top_p)
+        setValue('top_k', cardData[cardIndex].top_k)
+        setValue('repetitionpenalty', cardData[cardIndex].repetitionpenalty)
         setValue('type', cardData[cardIndex].type)
         setValidatePrompt(cardData[cardIndex].prompt)
         setViewSelected('detail');
@@ -416,6 +432,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('temperature', 0)
         setValue('max_tokens', 0)
         setValue('top_p', 0)
+        setValue('top_k', 0)
+        setValue('repetitionpenalty', 0)
         setValue('type', '')
         setValidatePrompt('')
         setViewSelected('main');
@@ -661,6 +679,41 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     />
                                 </div>
                                 <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                                <div className={classes.block20}/>
+                                <div className={classes.parameterContainer}>
+                                    <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
+                                    <div className={classes.widthBlock10}/>
+                                    <span>1 - 100</span>
+                                    <div className={classes.widthBlock10}/>
+                                    <FieldEdit
+                                        type="number"
+                                        variant="outlined"
+                                        size="small"
+                                        width={80}
+                                        valueDefault={selectedCardData?.top_k}
+                                        onChange={(value) => setValue('top_k', value)}
+                                        error={errors?.top_k?.message}
+                                    />
+                                </div>
+                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>
+                                <div className={classes.block20}/>
+                                <div className={classes.parameterContainer}>
+                                    <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
+                                    <div className={classes.widthBlock10}/>
+                                    <span>1 - 2</span>
+                                    <div className={classes.widthBlock10}/>
+                                    <FieldEdit
+                                        type="number"
+                                        variant="outlined"
+                                        size="small"
+                                        width={80}
+                                        valueDefault={selectedCardData?.repetitionpenalty}
+                                        onChange={(value) => setValue('repetitionpenalty', value)}
+                                        error={errors?.repetitionpenalty?.message}
+                                    />
+                                </div>
+                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
+                        
                             </div>
                         </div>
                     </div>
@@ -900,6 +953,42 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 />
                             </div>
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                            <div className={classes.block20}/>
+                            <div className={classes.parameterContainer}>
+                                <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
+                                <div className={classes.widthBlock10}/>
+                                <span>1 - 100</span>
+                                <div className={classes.widthBlock10}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                    valueDefault={selectedCardData?.top_k}
+                                    onChange={(value) => setValue('top_k', value)}
+                                    error={errors?.top_k?.message}
+                                />
+                            </div>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>
+                            <div className={classes.block20}/>
+                            <div className={classes.parameterContainer}>
+                                <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
+                                <div className={classes.widthBlock10}/>
+                                <span>1 - 2</span>
+                                <div className={classes.widthBlock10}/>
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                    valueDefault={selectedCardData?.repetitionpenalty}
+                                    onChange={(value) => setValue('repetitionpenalty', value)}
+                                    error={errors?.repetitionpenalty?.message}
+                                />
+                            </div>
+                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
+                        
+                        
                         </div>
                     </div>
                 </div>

@@ -6480,6 +6480,11 @@ const translation: LangKeys = {
   errorimportdocuments: 'The documents {{docs}} are not valid registers',
   watsonxassistantdescription: 'Train your artificial intelligence service',
   updateddate: 'Updated Date',
+  topk: 'Top K',
+  topkdescription: 'A low value reduces the probability that the model deviates from the queried topic.',
+  repetitionpenalty: 'Repetition Penalty',
+  repetitionpenaltydescription: 'It is a factor that is applied to discourage the model from generating repetitive text or phrases. A value of 1 means that there is no penalty.',
+
 };
 
 const enResource: ResourceLanguage = {
