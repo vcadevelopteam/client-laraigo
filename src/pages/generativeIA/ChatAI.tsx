@@ -191,12 +191,14 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [waitSaveMessageAux, setWaitSaveMessageLlamaAux] = useState(false);
     const [waitSaveThreadDeleteLlama, setWaitSaveThreadDeleteLlama] = useState(false)
     const [date, setDate] = useState('');
-    const endOfMessagesRef = useRef(null);
+    const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
-    const textFieldRef = useRef(null);
-    const isLlamaModel = row?.basemodel === 'llama3.1:8b' || row?.basemodel === 'llama3.1:70b'       
-    const [inputTokensInThread, setInputTokensInThread] = useState(0);
-    const [outputTokensInThread, setOutputTokensInThread] = useState(0);
+    const textFieldRef = useRef<HTMLInputElement | null>(null);
+        
+    const isLlamaModel = row?.basemodel === 'llama3.1:8b' || row?.basemodel === 'llama3.1:70b'
+    const [totalInputTokens, setTotalInputTokens] = useState(0);
+    const [totalOutputTokens, setTotalOutputTokens] = useState(0);
+
 
     const CustomTooltip = styled(({ className, ...props }) => (
         <Tooltip {...props} classes={{ popper: className }} />
@@ -224,48 +226,31 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [messages]);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
-    const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));    
-
+    const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
+    
     useEffect(() => {
-        if (messages && Array.isArray(messages.data) && messages.data.length > 0) {    
-            let totalInputTokens = 0; let totalOutputTokens = 0;    
+        if (messages && Array.isArray(messages.data) && messages.data.length > 0) {
+            let totalInput = 0;
+            let totalOutput = 0;    
+            const latestInputTokens = llm3Result?.data?.input_tokens || 0;
+            const latestQuery = llm3Result?.data?.query || '';    
             messages.data.forEach((message: Dictionary) => {
                 if (message.type === 'USER') {
-                    totalInputTokens += message.tokencount;
+                    if (message.messagetext.trim() === latestQuery.trim() && latestInputTokens > 0) {
+                        message.tokencount = latestInputTokens;  
+                        totalInput += latestInputTokens;
+                    } else {
+                        totalInput += message.tokencount;
+                    }
                 } else if (message.type === 'BOT') {
-                    totalOutputTokens += message.tokencount;
+                    totalOutput += message.tokencount;
                 }
             });    
-            setInputTokensInThread(totalInputTokens);
-            setOutputTokensInThread(totalOutputTokens);    
+            setTotalInputTokens(totalInput);
+            setTotalOutputTokens(totalOutput);
         }
-    }, [messages]);
-     
-    const calculateTokensInThread = (messages: Array<Dictionary>) => {
-        let inputTokensInThread = 0;
-        let outputTokensInThread = 0;
-        
-        messages.forEach(message => {
-            if (message.type === "USER") {
-            inputTokensInThread += message.tokencount;
-            } else if (message.type === "BOT") {
-            outputTokensInThread += message.tokencount;
-            }
-        });
-        
-        return {
-            inputTokensInThread,
-            outputTokensInThread,
-        };
-    };
-        
-    useEffect(() => {
-        const messages = executeResult?.data || [];
-        const { inputTokensInThread, outputTokensInThread } = calculateTokensInThread(messages);        
-        setInputTokensInThread(inputTokensInThread);
-        setOutputTokensInThread(outputTokensInThread);
-    }, [executeResult]);      
-    
+    }, [messages, llm3Result?.data]);  
+
     useEffect(() => {
         fetchThreadsByAssistant();
     }, []);
@@ -403,9 +388,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         if (waitSaveMessageLlama) {
             if(row?.basemodel.startsWith('llama')) {
                 if (!llm3Result.loading && !llm3Result.error) {
-                    setWaitSaveMessageLlama(false);                   
+                    setWaitSaveMessageLlama(false);
                     if (llm3Result.data && llm3Result.data.result) {
-                        const { output_tokens } = llm3Result.data;
+                        const outputTokens = llm3Result?.data?.output_tokens || 0;
                         dispatch(execute(insMessageAi({
                             assistantaiid: row?.assistantaiid,
                             threadid: activeThreadId,
@@ -416,13 +401,13 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             type: 'BOT',
                             status: 'ACTIVO',
                             operation: 'INSERT',
-                            tokencount: output_tokens,
+                            tokencount: outputTokens,
                         })));
                         setWaitSaveMessageLlamaAux(true);
                     } else {
                         dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
                         setIsLoading(false);
-                    }                    
+                    }
                 } else if (llm3Result.error) {
                     const errormessage = t(llm3Result.code || "error_unexpected_error", {
                         module: t(langKeys.domain).toLocaleLowerCase(),
@@ -435,7 +420,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 if (!llamaResult.loading && !llamaResult.error) {
                     setWaitSaveMessageLlama(false);
                     if (llamaResult.data && llamaResult.data.result) {
-                        const { output_tokens } = llm3Result.data;
+                        const outputTokens = llm3Result?.data?.output_tokens || 0;
                         dispatch(execute(insMessageAi({
                             assistantaiid: row?.assistantaiid,
                             threadid: activeThreadId,
@@ -446,7 +431,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             type: 'BOT',
                             status: 'ACTIVO',
                             operation: 'INSERT',
-                            tokencount: output_tokens,
+                            tokencount: outputTokens,
                         })));
                         setWaitSaveMessageLlamaAux(true);
                     } else {
@@ -513,7 +498,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessage = async () => {
         setIsLoading(true);
         const currentThreadId = selectedChat?.threadid;
-        const { input_tokens } = llm3Result.data;
+        const inputTokens = totalInputTokens;
         dispatch(
             execute(
                 insMessageAi({
@@ -526,7 +511,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
-                    tokencount: input_tokens,
+                    tokencount: inputTokens,
                 })
             )
         );
@@ -580,6 +565,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         if (waitSaveMessage) {
             if (!executeThreads.loading && !executeThreads.error) {
                 setWaitSaveMessage(false);
+                const outputTokens = llm3Result?.data?.output_tokens || 0;
                 dispatch(execute(insMessageAi({
                     assistantaiid: row?.assistantaiid,
                     threadid: activeThreadId,
@@ -590,7 +576,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'BOT',
                     status: 'ACTIVO',
                     operation: 'INSERT',
-                    tokencount: 0,
+                    tokencount: outputTokens,
                 })))
                 setWaitSaveMessage3(true)
             } else if (executeThreads.error) {
@@ -622,7 +608,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessageLLM3 = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
-        const { input_tokens } = llm3Result.data;
+        const inputTokens = totalInputTokens;
         dispatch(
             execute(
                 insMessageAi({
@@ -635,10 +621,11 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
-                    tokencount: input_tokens,
+                    tokencount: inputTokens,
                 })
             )
         );
+        setTotalInputTokens(prevTokens => prevTokens + inputTokens);
         const message = messageText
         setMessageText('');
         fetchThreadMessages(selectedChat?.threadid);
@@ -659,7 +646,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
-        const { input_tokens } = llm3Result.data;
+        const inputTokens = totalInputTokens;
         dispatch(
             execute(
                 insMessageAi({
@@ -672,7 +659,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
-                    tokencount: input_tokens,
+                    tokencount: inputTokens,
                 })
             )
         );
@@ -873,7 +860,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                                 <div className={classes.messageText}>
                                                     <div className={classes.messageAvatar}>
                                                        {message.type==='USER'?( <Avatar
-                                                            src={user?.image + "" || undefined}
+                                                            src={String(user?.image) + "" || undefined}
                                                             alt="User Avatar"
                                                         />):(<LaraigoChatProfileIcon/>)}
                                                     </div>
@@ -935,28 +922,33 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             inputRef={textFieldRef}
                         />
                     </div>
-
                     {isLlamaModel && (
-                        <CustomTooltip
-                            title={
-                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                <div style={{ textAlign: 'left', marginRight: '10px' }}>
-                                <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
-                                <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
+                        <>
+                             <CustomTooltip
+                                title={
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                        <div style={{ textAlign: 'left', marginRight: '10px' }}> 
+                                            <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
+                                            <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <Typography variant="body2">
+                                                <strong>{messages?.data?.length === 0 ? 0 : totalInputTokens}</strong>
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                <strong>{messages?.data?.length === 0 ? 0 : totalOutputTokens}</strong>
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                }
+                                arrow={false}
+                                placement="top"
+                            >
+                                <div style={{ position: 'absolute', right: '2rem', alignSelf: 'center', padding: '0 1rem 0 0', cursor: 'pointer' }}>
+                                    <p><strong>{messages?.data?.length === 0 ? 0 : totalInputTokens+totalOutputTokens}</strong> tokens</p>
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
-                                <Typography variant="body2"><strong>{inputTokensInThread}</strong></Typography>
-                                <Typography variant="body2"><strong>{outputTokensInThread}</strong></Typography>
-                                </div>
-                            </div>
-                            }
-                            arrow={false}
-                            placement="top"
-                        >
-                            <div style={{ position: 'absolute', right: '2rem', alignSelf: 'center', padding: '0 1rem 0 0', cursor: 'pointer' }}>
-                            <p><strong>{inputTokensInThread + outputTokensInThread}</strong> tokens</p>
-                            </div>
-                        </CustomTooltip>
+                            </CustomTooltip>                      
+                        </>
                     )}
                 </div>
             </div>
