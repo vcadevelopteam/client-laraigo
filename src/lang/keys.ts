@@ -6429,6 +6429,8 @@ export const langKeys = {
   channel_column_mt_help: 'channel_column_help',
   onboading_channelcomplete: 'onboading_channelcomplete',
   errorimportdocuments: 'errorimportdocuments',
+  inputtokens: 'inputtokens',
+  outputtokens: 'outputtokens',
 
   newconnector: 'newconnector',
   genai_help: 'genai_help',

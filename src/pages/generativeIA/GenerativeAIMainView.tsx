@@ -18,8 +18,8 @@ import { execute, getCollection, getMultiCollectionAux } from "store/main/action
 import { assistantAiSel, exportExcel, getIntelligentModelsSel, getValuesFromDomain, insAssistantAi } from "common/helpers";
 import { Dictionary } from "@types";
 import { CellProps } from "react-table";
-import { deleteAssistant, deleteMassiveAssistant } from "store/gpt/actions";
-import { deleteCollection, massiveDeleteCollection } from "store/llama/actions";
+import { deleteMassiveAssistant } from "store/gpt/actions";
+import { massiveDeleteCollection } from "store/llama/actions";
 import { massiveDeleteCollection3 } from "store/llama3/actions";
 
 interface RowSelected {
@@ -83,7 +83,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     });
     const main = useSelector((state) => state.main.mainData);
     const selectionKey = "assistantaiid";
-    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const newArrayBread = [
         ...arrayBread,
@@ -92,7 +92,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const [waitSave, setWaitSave] = useState(false);
     const executeAssistants = useSelector((state) => state.gpt.gptResult);
     const llamaResult = useSelector((state) => state.llama.llamaResult);
-    const llm3Result = useSelector(state => state.llama3.llama3Result);
     const [waitSaveAssistantsDelete, setWaitSaveAssistantDelete] = useState(false);
     const [assistantDelete, setAssistantDelete] = useState<Dictionary | null>(null);
     const [waitSaveAssistantDeleteLlama, setWaitSaveAssistantDeleteLlama] = useState(false)
@@ -175,35 +174,12 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         }
     }, [llamaResult, waitSaveAssistantDeleteLlama]);
 
-    const handleDelete = (row: Dictionary) => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));
-            dispatch(deleteAssistant({
-                assistant_id: row.code,
-                apikey: row.apikey,
-            }))
-            setAssistantDelete(row)
-            setWaitSaveAssistantDelete(true);  
-        };
-
-        const callbackLlama = async () => {
-            dispatch(showBackdrop(true));
-            dispatch(deleteCollection({
-                name: row.name,
-            }))
-            setAssistantDelete(row)
-            setWaitSaveAssistantDeleteLlama(true);
-        };
-    
-        dispatch(
-          manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback: row.basemodel.startsWith('gpt') ? callback : callbackLlama,
-          })
-        );
-    };
-    
+    useEffect(() => {
+        if (viewSelectedTraining === "assistantdetail") {
+            fetchData();
+        }
+    }, [viewSelectedTraining]);
+        
     const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
         const callback = async () => {
             dispatch(showBackdrop(true));  
@@ -377,6 +353,16 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                 width: "auto",
             },
             {
+                Header: t(langKeys.inputtokens),
+                accessor: 'inputtokens',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.outputtokens),
+                accessor: 'outputtokens',
+                width: "auto",
+            },
+            {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 width: "auto",
@@ -390,9 +376,9 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     return (
                         <div
                             className={classes.chatContainer}
-                            onClick={(event) => {
+                            onClick={(event) => {                              
                                 event.stopPropagation();
-                                handleChat(row);
+                                handleChat(row);                             
                             }}
                         >
                             <ForumIcon style={{ color: '#7721AD' }}/>
@@ -526,8 +512,9 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const functionChange = (change:string) => {
         if(change === "generativeia"){
             setViewSelectedTraining("assistantdetail")
+          
         }else{
-            setViewSelected(change);
+            setViewSelected(change);      
         }
     }
 

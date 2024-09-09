@@ -6485,8 +6485,9 @@ const translation: LangKeys = {
   translatelanguage: 'Conversation Chat',
   chatsettings: 'Message sending mode',
   onboading_channelcomplete: 'The channel must have a name',
-
   errorimportdocuments: 'The documents {{docs}} are not valid registers',
+  inputtokens: 'Input Tokens',
+  outputtokens: 'Output Tokens',
 
   newconnector: 'New Connector',
   genai_help: 'Register a generative artificial intelligence service, using models such as Llama3, GPT4, Gemini and more.',

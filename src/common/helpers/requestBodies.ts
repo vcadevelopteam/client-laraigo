@@ -5180,10 +5180,10 @@ export const messageAiSel = ({ assistantaiid, threadid }: Dictionary) => ({
     parameters: { assistantaiid, threadid },
 });
 
-export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation }: Dictionary) => ({
+export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation, tokencount }: Dictionary) => ({
     method: "UFN_MESSAGEAI_INS",
     key: "UFN_MESSAGEAI_INS",
-    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation },
+    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation, tokencount },
 });
 
 export const updateAssistantAiDocumentTraining = (assistantaiid: number, documentsid: string) => ({
