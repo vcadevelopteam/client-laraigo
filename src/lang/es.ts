@@ -1731,6 +1731,8 @@ const translation: LangKeys = {
   activate_derivation_direction_tooltip: "Si supera el tiempo de espera de respuesta en el bot, al encender el switch te dirige al flujo y bloque configurado, si se mantiene apagado envía solo el valor por defecto",
   password_required: 'La contraseña es requerida',
   field_required: 'El campo es requerido',
+  invalid_phone: 'Telefono inválido',
+  invalid_email: 'Correo inválido',
   field_nonnegative: 'El campo no puede ser negativo',
   code_duplicate: 'Código duplicado',
   field_key_required: 'Debe añadir al menos 1 campo "llave"',
