@@ -197,6 +197,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     data={
                         conector?.provider === 'OpenAI' || conector?.provider === 'Open AI' ? retrievalbasemodels :
                         conector?.provider === 'Meta' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
+                        conector?.provider === 'IBM' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
                         conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral')) :
                         conector?.provider === 'Laraigo' || conector?.provider === 'LaraigoLLM' ? llama3basemodels : []
                     }
