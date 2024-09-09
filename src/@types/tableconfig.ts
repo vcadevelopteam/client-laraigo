@@ -10,6 +10,10 @@ export interface MultiData {
   key?: string;
 }
 
+export interface BreadCrumb {
+  id: string
+  name: string
+}
 export interface TableConfig {
   columns: any;
   data: Dictionary[];
