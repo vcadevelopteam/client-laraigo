@@ -172,10 +172,10 @@ interface RowSelected {
 interface ParametersTabDetailProps {
     data: RowSelected
     setValue: any
-    getValues: any,
+    getValues: any
     errors: FieldErrors
-    setValidatePrompt: (data: string) => void,
-    trigger: any,
+    setValidatePrompt: (data: string) => void
+    trigger: any
 }
 
 const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
@@ -196,13 +196,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
     const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
     const [selectedOption, setSelectedOption] = useState('');
+    const personalityKey = `personality_${(getValues('type') as string).toLowerCase()}`;
 
     useEffect(() => {
-        const defaultValue = getValues('querywithoutanswer');
+        const defaultValue = getValues('querywithoutanswer') as string;
         setSelectedOption(defaultValue);
-    }, []);
+    }, []);    
 
-    const handleSelectChange = (value: any) => {
+    const handleSelectChange = (value: Dictionary) => {
         console.log('Selected option:', value);
         setSelectedOption(value?.domainvalue || '');
     };
@@ -486,8 +487,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         </div>
                         <div className={classes.block10}/>
                         <span className={classes.title}>
-                            {t(langKeys[`personality_${(getValues('type')).toLowerCase()}`])}
-                        </span>
+                        {personalityKey in langKeys ? t(langKeys[personalityKey as keyof typeof langKeys]) : ''}
+                    </span>
                     </div>
                     <div style={{display: 'flex', gap: 10}}>
                         <div style={{flex: 2, display: 'flex', flexDirection: 'column'}}>
