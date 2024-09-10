@@ -102,9 +102,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
         { domaindesc: 'IBM', domainvalue: 'IBM' },
         { domaindesc: 'OpenAI', domainvalue: 'OpenAI' },
         { domaindesc: 'Google', domainvalue: 'Google' },
-        { domaindesc: 'Microsoft Azure', domainvalue: 'Microsoft Azure' },
-        { domaindesc: 'Meta', domainvalue: 'Meta' },
-        { domaindesc: 'Mistral', domainvalue: 'Mistral' }
+        { domaindesc: 'Microsoft Azure', domainvalue: 'Microsoft Azure' },       
     ]    
 
     const assistantProviders = [
