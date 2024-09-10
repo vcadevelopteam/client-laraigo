@@ -6496,9 +6496,7 @@ const translation: LangKeys = {
   descriptiondescription: 'Assign a brief description to the connector you will register.',
   skilliddescription: 'Enter the skill id of the model you want to register, in the “View Api Details” option you will find the details.',
   skillid_help: 'If you do not have a skill previously created in IBM, you can create it in the “AI Training” option of Laraigo.',
-
-
-
+  registertime: 'Register Time',
 
 };
 

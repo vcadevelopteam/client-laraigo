@@ -6440,12 +6440,7 @@ export const langKeys = {
   descriptiondescription: 'descriptiondescription',
   skilliddescription: 'skilliddescription',
   skillid_help: 'skillid_help',
-
-
-
-
-
-  
+  registertime: 'registertime', 
 };
 
 export type LangKeys = typeof langKeys;
