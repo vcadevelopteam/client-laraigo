@@ -6179,6 +6179,7 @@ const translation: LangKeys = {
   deliverytypeerror: 'One of the selected orders has the delivery type Store Pickup',
   allmustbesameorder: 'The selected records must belong to the same order',
   needtopay: 'Payment to be confirmed',
+  rucvalidation: 'The RUC must have 11 digits',
   transactionnumber: 'Transaction Number',
   conversationTMO: 'Conversation TMO',
   numbers: 'Numbers',
