@@ -472,7 +472,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
         const callback = async () => {
             dispatch(showBackdrop(true));
-            if(provider === "LaraigoLLM") {
+            if(provider === "Laraigo") {
                 dispatch(createCollection3({
                     collection: data.name,
                 }))
@@ -485,7 +485,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         };
         const callbackEdit = async () => {
             dispatch(showBackdrop(true));
-            if(provider === "LaraigoLLM") {
+            if(provider === "Laraigo") {
                 dispatch(editCollection3({
                     name: row?.name,
                     new_name: data.name
@@ -545,7 +545,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
             setGeneralPrompt(generalprompt)
 
-            if(provider === "LaraigoLLM") {
+            if(provider === "Laraigo") {
                 dispatch(createCollectionDocuments3({
                     urls: cosFile.map((item: Dictionary) => item.file_url),
                     collection: data.name
@@ -570,7 +570,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     useEffect(() => {
         if (waitSaveCreateMeta) {
-            if(provider === "LaraigoLLM"){
+            if(provider === "Laraigo"){
                 if (!llm3Result.loading && !llm3Result.error) {
                     setWaitSaveCreateMeta(false);
                     dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
@@ -602,7 +602,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     useEffect(() => {
         if (waitSaveCreateCollection) {
-            if(provider === "LaraigoLLM") {
+            if(provider === "Laraigo") {
                 if (!llm3Result.loading && !llm3Result.error) {
                     setWaitSaveCreateCollection(false);
                     dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
