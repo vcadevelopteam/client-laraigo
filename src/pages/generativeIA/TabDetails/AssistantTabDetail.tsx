@@ -199,8 +199,14 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                         conector?.provider === 'Laraigo' || conector?.provider === 'LaraigoLLM' ? llama3basemodels : 
                         conector?.provider === 'IBM' ? 
                             multiDataAux?.data?.[2]?.data
-                            .filter(item => item.domainvalue.startsWith('meta'))
-                            .concat(multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral'))) : []                       
+                            .filter(item => 
+                                item.domainvalue.startsWith('meta') ||
+                                item.domainvalue.startsWith('mistral') ||
+                                item.domainvalue.startsWith('granite') ||
+                                item.domainvalue.startsWith('flan') ||
+                                item.domainvalue.startsWith('codellama')
+                            ) : []
+                   
                     }
                     valueDefault={getValues('basemodel')}
                     onChange={(value) => {

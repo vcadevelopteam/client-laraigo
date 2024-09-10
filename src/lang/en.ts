@@ -6526,8 +6526,6 @@ const translation: LangKeys = {
   languageaihelper: 'Select the language that will translate the language model of the detected language by default.',
   registertime: 'Register Time',
 
-
-
 };
 
 const enResource: ResourceLanguage = {

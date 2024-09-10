@@ -6457,6 +6457,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   descriptiondescription: 'Asigna una breve descripción al conector que registrarás.',
   skilliddescription: 'Coloca el skill id del modelo que deseas registrar, en la opción “View Api Details” encontraras el detalle.',
   skillid_help: 'Si no cuentas con un skill creado previamente en IBM, podrás crearlo en la opción de “Entrenamiento IA” de Laraigo.',
+  registertime: 'Hora Registro',
   conectoriahelper: 'Selecciona el conector que deseas configurar',
   descriptioniahelper: 'Añade una descripción corta para la configuración específica del conector seleccionado.',
   channeliahelper: 'Selecciona el o los canales que deseas que el servicio aplique.',
@@ -6475,8 +6476,6 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   translationai: 'Traducción',
   translationaihelper: 'Activa o desactiva la traducción del idioma detectado por el idioma seleccionado en la configuración de la cuenta.',
   languageaihelper: 'Selecciona el idioma que por defecto traducirá el modelo de lenguaje del idioma detectado.',
-  registertime: 'Hora Registro',
-
 
 };
 

@@ -82,7 +82,7 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                     { key: "Gen AI", value: "Gen AI" },
                     { key: "Assistant", value: "Assistant" },
                     { key: "Conversor de voz", value: "Conversor de voz" },
-                ],
+                ],                
                 Cell: ({ cell: { value } }: CellProps<Dictionary>) => {
                     if (value === "LARGE LANGUAGE MODEL") {
                         return "Gen AI";
@@ -91,14 +91,13 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                     } else {
                         return value;
                     }
-                }, 
-                width: '200px',              
+                }                
             },                     
             {
                 Header: t(langKeys.provider),
                 accessor: 'provider',
                 type: "select",
-                listSelectFilter: providerOptions,
+                listSelectFilter: providerOptions,                
                 Cell: ({ row }: CellProps<Dictionary>) => {
                     const { type, provider } = row.original;
                     if (type === "WATSON ASSISTANT") {
@@ -109,7 +108,7 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                         return provider !== '' ? provider : t(langKeys.none);
                     }
                 },
-                width: '200px',              
+                width: '200px',
             },            
             {
                 accessor: "createdate",
@@ -126,27 +125,28 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                     return null;
                 },
                 width: '200px',                     
-            },   
+            },  
             {
                 accessor: "registertime",
                 Header: t(langKeys.registertime),
                 NoFilter: false,              
-                type: "time",
+                type: "time",  
                 Cell: (props: CellProps<Dictionary>) => {
                     const { createdate } = props.cell.row.original || {};
                     if (createdate) {
                         const date = new Date(createdate)
+                        return date.toLocaleString('es-PE', {day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false})
                         return date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false})
                     }
                     return null;
-                },     
-                width: '200px',                     
-            },         
+                },             
+                width: '200px',                                  
+            },
             {
                 Header: t(langKeys.createdBy),
                 accessor: 'createby',
-                NoFilter: false,   
-                width: '300px',            
+                NoFilter: false,               
+                width: '300px',
             },
             {
                 Header: t(langKeys.status),
