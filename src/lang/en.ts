@@ -6524,6 +6524,7 @@ const translation: LangKeys = {
   translationai: 'Translation',
   translationaihelper: 'Turn detected language translation on or off for the language selected in your account settings.',
   languageaihelper: 'Select the language that will translate the language model of the detected language by default.',
+  registertime: 'Register Time',
 
 
 

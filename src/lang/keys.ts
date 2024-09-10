@@ -6468,6 +6468,7 @@ export const langKeys = {
   translationai: 'translationai',
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
+  registertime: 'registertime',
 };
 
 export type LangKeys = typeof langKeys;

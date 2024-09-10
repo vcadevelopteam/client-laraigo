@@ -6475,6 +6475,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   translationai: 'Traducción',
   translationaihelper: 'Activa o desactiva la traducción del idioma detectado por el idioma seleccionado en la configuración de la cuenta.',
   languageaihelper: 'Selecciona el idioma que por defecto traducirá el modelo de lenguaje del idioma detectado.',
+  registertime: 'Hora Registro',
 
 
 };
