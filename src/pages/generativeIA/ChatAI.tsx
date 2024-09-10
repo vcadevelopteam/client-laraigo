@@ -345,6 +345,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             type: 'BOT',
                             status: 'ACTIVO',
                             operation: 'INSERT',
+                            tokencount: 0,
                         })));
                         setWaitSaveMessageLlamaAux(true);
                     } else {
@@ -373,6 +374,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             type: 'BOT',
                             status: 'ACTIVO',
                             operation: 'INSERT',
+                            tokencount: 0,
                         })));
                         setWaitSaveMessageLlamaAux(true);
                     } else {
@@ -451,6 +453,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: 0,
                 })
             )
         );
@@ -514,6 +517,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'BOT',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: 0,
                 })))
                 setWaitSaveMessage3(true)
             } else if (executeThreads.error) {
@@ -557,6 +561,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: 0,
                 })
             )
         );
@@ -592,6 +597,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: 0,
                 })
             )
         );
