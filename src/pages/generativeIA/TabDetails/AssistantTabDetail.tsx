@@ -63,7 +63,6 @@ interface AssistantTabDetailProps {
     data: RowSelected
     setValue: (field: FieldType, value: unknown) => void
     getValues: (field?: FieldType) => unknown
-    clearErrors: (field?: FieldType) => unknown
     errors: FieldErrors
     setProvider: (provider: string) => void
     firstData: Dictionary
@@ -74,7 +73,6 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     data:{row},
     setValue,
     getValues,
-    clearErrors,
     errors,
     setProvider,
     firstData,
@@ -88,7 +86,8 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [isCodeInterpreter, setIsCodeInterpreter] = useState(row?.codeinterpreter || false);
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
-    
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
     const retrievalbasemodels = [
         {
             "domainid": 437605,
@@ -126,7 +125,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
             "domaindesc": "gpt-4o-mini-2024-07-18",
             "bydefault": null
         }
-    ];
+    ]
 
     const llama3basemodels = [
         {
@@ -162,6 +161,14 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
+    useEffect(() => {
+        function handleResize() {
+            setWindowWidth(window.innerWidth);
+        }
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx" style={{marginBottom: 0}}>     
@@ -169,15 +176,14 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap'}}>      
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.name)}</span>
-                        <span>{t('Ingrese el nombre del asistente.')}</span>
+                        <span>{t('Asigna un nombre para el asistente que registrarás.')}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                            <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldEdit
                                     label={''}
                                     onChange={(value) => {
                                         setValue("name", value)
                                         setFirstData({...firstData, name: value})
-                                        clearErrors('name')
                                     }}
                                     valueDefault={getValues("name")}
                                     type="text"
@@ -190,15 +196,14 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     </div>
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.description)}</span>
-                        <span>{t('Ingrese la description del asistente.')}</span>
+                        <span>{t('Asigna una breve descripción al asistente que registrarás.')}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                            <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldEdit
                                     label={''}
                                     onChange={(value) => {
                                         setValue("description", value)
                                         setFirstData({...firstData, description: value})
-                                        clearErrors('description')
                                     }}
                                     valueDefault={getValues("description")}
                                     type="text"
@@ -214,12 +219,12 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap' }}>      
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.connectors)}</span>
-                        <span>{'Conector acá'}</span>
+                        <span>{'Selecciona el conector vinculado a tu asistente, este se configura en "Conectores IA".'}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                         
-                            <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldSelect
-                                    data={multiDataAux?.data?.[3]?.data.filter(item => item.type === 'LARGE LANGUAGE MODEL') || []}
+                                    data={multiDataAux?.data?.[3]?.data.filter(item => (item.type === 'LARGE LANGUAGE MODEL' || item.type === 'Gen AI')) || []}
                                     variant="outlined"
                                     optionDesc="name"
                                     optionValue="id"
@@ -249,10 +254,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     </div>          
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
-                        <span>{'Estado acá'}</span>
+                        <span>{'Selecciona el estado de tu asistente, si deseas que se encuentre activo o inactivo.'}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                         
-                            <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldSelect
                                     data={(multiDataAux?.data?.[0]?.data||[])}
                                     variant="outlined"
@@ -260,7 +265,6 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                                     optionValue="domainvalue"
                                     onChange={(value) => {                                       
                                         setValue('status', value.domainvalue);
-                                        clearErrors('status')
                                     }}
                                     valueDefault={getValues('status')}
                                     error={errors?.status?.message}
@@ -271,19 +275,21 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     </div>          
                 </div>    
 
-                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap' }}>      
+                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>      
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.basemodel)}</span>
-                        <span>{'Conector acá'}</span>
+                        <span>{'Selecciona el modelo base de tu asistente, este será el motor de sus respuestas.'}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                         
-                            <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldSelect
                                     data={
-                                        conector?.provider === 'Open AI' ? retrievalbasemodels :
-                                        conector?.provider === 'Meta' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
-                                        conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral')) :
-                                        conector?.provider === 'LaraigoLLM' ? llama3basemodels : []
+                                        conector?.provider === 'OpenAI' || conector?.provider === 'Open AI' ? retrievalbasemodels :
+                                        conector?.provider === 'Laraigo' || conector?.provider === 'LaraigoLLM' ? llama3basemodels : 
+                                        conector?.provider === 'IBM' ? 
+                                            multiDataAux?.data?.[2]?.data
+                                            .filter(item => item.domainvalue.startsWith('meta'))
+                                            .concat(multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral'))) : []                       
                                     }
                                     variant="outlined"
                                     optionDesc="domaindesc"

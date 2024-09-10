@@ -34,6 +34,16 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: "#fff",
     },
+    containerDetail2: {
+        marginTop: '1rem',
+        display: 'flex',
+        gap:'1rem'
+    },
+    containerBox: {
+        width:'50%', 
+        background: "#fff",
+        padding: '1rem'
+    },
     containerHeader: {
         marginTop: '1rem',
     },
@@ -181,6 +191,23 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         padding: '10px',
         marginTop: 20
+    },
+    parameterContainer: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    detailTitle: {
+        fontWeight:'bold',
+        fontSize: 18
+    },
+    widthBlock10: {
+        width: 10
+    },
+    parameterDesc: {
+        marginTop: 15
+    }, 
+    text: {
+        fontSize: 16
     },
 }));
 
@@ -768,8 +795,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     if (viewSelected === 'main') {
         return (
             <>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
+                <div className={classes.containerDetail2}>
+                    <div className={classes.containerBox}>
                         <div className={classes.container2}>
                             <div>
                                 <span className={classes.title}>
@@ -791,6 +818,48 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 </Card>
                             </Grid>
                         </div>
+                    </div>
+                    <div className={classes.containerBox}>
+                        <div className={classes.container2}>
+                            <div>
+                                <span className={classes.title}>
+                                    {t(langKeys.parameters)}
+                                </span>                                
+                            </div>
+                        </div>
+
+                        <div className={classes.block20}/>
+                        <div className={classes.parameterContainer}>
+                            <span className={classes.detailTitle}>{'Tamaño del chunk'}</span>
+                            <div className={classes.widthBlock10}/>
+                            <div className={classes.widthBlock10}/>
+                            <FieldEdit
+                                type="number"
+                                variant="outlined"
+                                size="small"
+                                width={80}
+                                //valueDefault={selectedCardData?.repetitionpenalty}
+                                //onChange={(value) => setValue('repetitionpenalty', value)}
+                                //error={errors?.repetitionpenalty?.message}
+                            />
+                        </div>
+                        <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que puede contener el fragmento de la base de conocimiento subida que se le comparte al asistente, ya que cuando los documentos se incorporan a la base de conocimiento, estos se dividen en partes mas pequeñas con cierta suposición.'}</span></div>
+                        <div className={classes.block20}/>
+                        <div className={classes.parameterContainer}>
+                            <span className={classes.detailTitle}>{'Superposición del chunk'}</span>
+                            <div className={classes.widthBlock10}/>
+                            <div className={classes.widthBlock10}/>
+                            <FieldEdit
+                                type="number"
+                                variant="outlined"
+                                size="small"
+                                width={80}
+                                //valueDefault={selectedCardData?.repetitionpenalty}
+                                //onChange={(value) => setValue('repetitionpenalty', value)}
+                                //error={errors?.repetitionpenalty?.message}
+                            />
+                        </div>
+                        <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chuck adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
