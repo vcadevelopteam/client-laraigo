@@ -177,19 +177,20 @@ const exitConfirmation = (() => {
               optionDesc="orgdesc"
             />
             <FieldSelect
-              label={t(langKeys.partnertype)}
-              className="col-6"
-              valueDefault={row2?.typepartner || ''}
-              data={( row?.enterprisepartner ? multiDataAux?.data?.[5]?.data : multiDataAux?.data?.[5]?.data.filter(item => item.domainvalue !== 'ENTERPRISE'))}
-              error={typeof errors?.typepartner?.message === 'string' ? errors?.typepartner?.message : ''}
-              onChange={(value) => {
-                setValue('typepartner', value?.domainvalue || '')
-                setComissionPercentage(value?.domainvalue || '')
-                setComissionPercentageValue(getValues('comissionpercentage'))
-              }}
-              optionValue="domainvalue"
-              optionDesc="domaindesc"
+                label={t(langKeys.partnertype)}
+                className="col-6"
+                valueDefault={getValues('typepartner') || ''}
+                data={row?.enterprisepartner ? multiDataAux?.data?.[5]?.data : multiDataAux?.data?.[5]?.data.filter(item => item.domainvalue !== 'ENTERPRISE')}
+                error={typeof errors?.typepartner?.message === 'string' ? errors?.typepartner?.message : ''}
+                onChange={(value) => {
+                    setValue('typepartner', value?.domainvalue || '');
+                    setComissionPercentage(value?.domainvalue || '');
+                    setComissionPercentageValue(getValues('comissionpercentage'));
+                }}
+                optionValue="domainvalue"
+                optionDesc="domaindesc"
             />
+
             <FieldEdit
               label={t(langKeys.status)}
               valueDefault={edit ? row2?.status : status}
