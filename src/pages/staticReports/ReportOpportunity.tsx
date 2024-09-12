@@ -155,12 +155,20 @@ const PriorityStars = ({ priority }: { priority: string }) => {
 
 const formatDateHour = (dateString: string) => {
     if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleString();
+};
 
+const formatDateEnd = (dateString: string) => {
+    if (!dateString) return "";
     const localDateString = dateString.replace("Z", "");
     const date = new Date(localDateString);
 
     return date.toLocaleString();
 };
+
+
+
 
 const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -170,6 +178,11 @@ const formatDate = (dateString: string) => {
 
     return date.toLocaleDateString();
 };
+const formatTags = (tagsString: string | undefined) => {
+    if (!tagsString) return "";
+    return tagsString.split(",").map(tag => tag.trim()).join(", ");
+};
+
 
 const DialogOpportunity: React.FC<{
     setOpenModal: (param: any) => void;
@@ -240,7 +253,7 @@ const DialogOpportunity: React.FC<{
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_dateinopportunity)}`}
-                                value={formatDateHour(booking?.date_deadline)}
+                                value={formatDateEnd(booking?.date_deadline)}
                                 className={classes.colInput}
                             />
                         </div>
@@ -273,7 +286,11 @@ const DialogOpportunity: React.FC<{
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={`${t(langKeys.report_opportunity_tags)}`}
-                                value={booking?.tags}
+                                value={(
+                                    <div style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>
+                                        {formatTags(booking?.tags)}
+                                    </div>
+                                )}
                                 className={classes.colInput}
                             />
                         </div>
@@ -471,7 +488,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                 type: 'date',
                 showGroupedBy: true,
                 showColumn: true,
-                Cell: ({ value }) => formatDateHour(value),
+                Cell: ({ value }) => formatDateEnd(value),
 
 
             },
@@ -700,8 +717,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             createdate: formatDateHour(row.createdate),
             lastchangestatusdate: formatDateHour(row.lastchangestatusdate),
             date_deadline: formatDateHour(row.date_deadline),
-            estimatedimplementationdate: formatDateHour(row.estimatedimplementationdate),
-            estimatedbillingdate: formatDateHour(row.estimatedbillingdate),
+            estimatedimplementationdate: formatDate(row.estimatedimplementationdate),
+            estimatedbillingdate: formatDate(row.estimatedbillingdate),
             phase: t(row.phase),
             priority: t(row.priority),
         }));
