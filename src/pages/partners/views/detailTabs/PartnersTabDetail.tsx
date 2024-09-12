@@ -64,11 +64,17 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
         });
     }, [countryList]);
 
-    const handleCountryChange = (value: string) => {
-        setValue('country', value);
-        console.log(getValues('country'));
-    
-        if (value === 'PE') {
+    const handleCountryChange = (value: any) => {
+        const selectedCountry = value ? value.code : '';
+        setSunatCountry(selectedCountry);
+        setValue('country', selectedCountry);
+
+        if (!selectedCountry) {
+            setValue('documenttype', '');
+            setDocType('');
+            setValue('documentnumber', '');
+            setDocNumber('');
+        } else if (selectedCountry === 'PE') {
           setValue('documenttype', 'RUC');
           setDocType('RUC')
           setDocNumber(0)
@@ -88,8 +94,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     label={t(langKeys.country)}
                     valueDefault={sunatCountry}
                     onChange={(value) => {
-                        setSunatCountry(value.description)
-                        handleCountryChange(value.code)
+                        handleCountryChange(value);
                     }}
                     className="col-6"
                     data={countries}
@@ -119,11 +124,29 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     type='number'
                     valueDefault={docNumber}
                     className="col-6"
-                    error={typeof errors?.documentnumber?.message === 'string' ? errors?.documentnumber?.message : ''}
+                    error={
+                        docType === 'RUC' && docNumber.length < 11
+                            ? t(langKeys.rucvalidation)
+                            : typeof errors?.documentnumber?.message === 'string'
+                                ? errors?.documentnumber?.message
+                                : ''
+                    }
                     maxLength={docType === 'RUC' ? 11 : undefined}
                     onChange={(value) => {
-                        setValue('documentnumber', value)
-                        setDocNumber(value)
+                        if (docType === 'RUC') {
+                            if (value.length > 11) {
+                                setValue('documentnumber', value.slice(0, 11));
+                                setDocNumber(value.slice(0, 11));
+                            } else if (value.length < 11) {
+                                setDocNumber(value);
+                            } else {
+                                setValue('documentnumber', value);
+                                setDocNumber(value);
+                            }
+                        } else {
+                            setValue('documentnumber', value);
+                            setDocNumber(value);
+                        }
                     }}
                 />
                 <FieldEdit

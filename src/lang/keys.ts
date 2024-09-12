@@ -6130,6 +6130,7 @@ export const langKeys = {
   transactionnumber: 'transactionnumber',
   conversationTMO: 'conversationTMO',
   needtopay: 'needtopay',
+  rucvalidation: 'rucvalidation',
 
   maxTMR: 'maxTMR',
   minTMR: 'minTMR',

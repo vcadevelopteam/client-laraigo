@@ -164,46 +164,49 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
     const onMainSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
+
+            const pricePerBagValue = String(getValues('priceperbag'));
+            const additionalContactsValue = String(getValues('puadditionalcontacts'));
+
             if (getValues('operation') === 'INSERT') {
-                if(getValues('typecalculation') === 'Por bolsa') {
-                    if(getValues('priceperbag').split('.').length === 1){
-                        dispatch(execute(partnerIns({...data, priceperbag: getValues('priceperbag')+'.00'})));
-                    }
-                    else {
-                        dispatch(execute(partnerIns(data)));
-                    }
-                } else {
-                    if(getValues('puadditionalcontacts').split('.').length === 1){
-                        dispatch(execute(partnerIns({...data, puadditionalcontacts: getValues('puadditionalcontacts')+'.00'})));
-                    }
-                    else {
-                        dispatch(execute(partnerIns(data)));
-                    }
-                }
-            } else {
-                if(getValues('typecalculation') === 'Por bolsa') {
-                    if(getValues('priceperbag').split('.').length === 1) {
-                        dispatch(execute(partnerIns({...data, id: row?.partnerid, priceperbag: getValues('priceperbag')+'.00'})));
+                if (getValues('typecalculation') === 'Por bolsa') {
+                    if (pricePerBagValue.split('.').length === 1) {
+                        dispatch(execute(partnerIns({...data, priceperbag: pricePerBagValue + '.00'})));
                     } else {
                         dispatch(execute(partnerIns(data)));
                     }
                 } else {
-                    if(getValues('puadditionalcontacts').split('.').length === 1) {
-                        dispatch(execute(partnerIns({...data, id: row?.partnerid, puadditionalcontacts: getValues('puadditionalcontacts')+'.00'})));
+                    if (additionalContactsValue.split('.').length === 1) {
+                        dispatch(execute(partnerIns({...data, puadditionalcontacts: additionalContactsValue + '.00'})));
+                    } else {
+                        dispatch(execute(partnerIns(data)));
                     }
-                    else {
+                }
+            } else {
+                if (getValues('typecalculation') === 'Por bolsa') {
+                    if (pricePerBagValue.split('.').length === 1) {
+                        dispatch(execute(partnerIns({...data, id: row?.partnerid, priceperbag: pricePerBagValue + '.00'})));
+                    } else {
+                        dispatch(execute(partnerIns(data)));
+                    }
+                } else {
+                    if (additionalContactsValue.split('.').length === 1) {
+                        dispatch(execute(partnerIns({...data, id: row?.partnerid, puadditionalcontacts: additionalContactsValue + '.00'})));
+                    } else {
                         dispatch(execute(partnerIns({...data, id: row?.partnerid})));
                     }
                 }
             }
             setWaitSave(true);
-        }
+        };
+
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
             callback
-        }))
+        }));
     });
+
 
     const handleChangeTab = (event: ChangeEvent<NonNullable<unknown>>, newIndex: number) => {
         setTabIndex(newIndex);
