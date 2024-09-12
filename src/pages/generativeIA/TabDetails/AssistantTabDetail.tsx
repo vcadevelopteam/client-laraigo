@@ -204,6 +204,9 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                                 item.domainvalue.startsWith('mistral') ||
                                 item.domainvalue.startsWith('granite') ||
                                 item.domainvalue.startsWith('flan') ||
+                                item.domainvalue.startsWith('ibm') ||
+                                item.domainvalue.startsWith('bigscience') ||
+                                item.domainvalue.startsWith('google') ||
                                 item.domainvalue.startsWith('codellama')
                             ) : []
                    
