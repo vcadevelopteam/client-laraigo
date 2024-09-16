@@ -6435,6 +6435,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   topkdescription: 'Un valor bajo reduce la probabilidad de que el modelo se desvíe del tema consultado.',
   repetitionpenalty: 'Penalización por Repetición',
   repetitionpenaltydescription: 'Es un factor que se aplica para disuadir al modelo de generar texto o frases repetitivas. El valor 1 significa que no existe penalización.',
+  conflicts: 'Conflictos',
+  speakwithyourmodel: 'Habla con tu modelo',
+  modelplaceholder: 'Escribe algo para probar tu modelo de asistente.',
 };
 
 const esResource: ResourceLanguage = {

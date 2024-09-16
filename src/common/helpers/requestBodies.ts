@@ -5405,3 +5405,16 @@ export const conversationSDHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
 });
+
+export const watsonxModelSel = () => ({
+    method: "UFN_WATSON_MODELS_SEL",
+    key: "UFN_WATSON_MODELS_SEL",
+    parameters: { id: 0 },
+});
+
+export const watsonxModelItemSel = (watsonid: number, type: string) => ({
+    method: "UFN_WATSON_ITEMS_SEL",
+    key: "UFN_WATSON_ITEMS_SEL",
+    parameters: { watsonid, type },
+});
+

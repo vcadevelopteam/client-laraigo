@@ -11,13 +11,8 @@ import {Box } from '@material-ui/core';
 import { BreadCrumb, Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
 import { CellProps } from 'react-table';
-import { rasaModelSel, selUtterance } from 'common/helpers';
-import { IntentionsRasa } from 'pages/rasa/IntentionsRasa';
-
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
+import { watsonxModelSel } from 'common/helpers';
+import WatsonxMenu from './Watsonx/WatsonxMenu';
 
 const useStyles = makeStyles((theme) => ({  
     title: {
@@ -48,27 +43,16 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
     const { t } = useTranslation();
     const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
     const executeResult = useSelector(state => state.main.execute);
+    const mainAux = useSelector(state => state.main.mainAux);
     const classes = useStyles();
-    const selectionKey = "id";
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [rowSelected, setRowSelected] = useState<any>(null);
 
     const newArrayBread = [
         ...arrayBread,
         { id: "corporateia", name:  "Empresarial" },
-        { id: "watsonx", name:  "WATSONX ASSISTANT" },
+        { id: "watsonx", name:  "Watsonx Assistant" },
     ];
     const [waitSave, setWaitSave] = useState(false);
-
-    const simulatedData = [
-        {
-            name: "Connector 1",
-            description: "This is the first WatsonX connector.",
-            language: "HTML",
-            tintentionsype: "Intent 1",
-            entities: "Entity 1",
-            updateddate: "2024-01-29 15:33:53.076646Z",
-        },        
-    ];
     
     const columns = React.useMemo(
         () => [            
@@ -82,9 +66,9 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
                         <label
                             className={classes.labellink}
                             onClick={() => {      
-                                dispatch(getCollectionAux(selUtterance(row?.name||"")))                  
-                                setViewSelected("view-2");
-                                setRowSelected({ row: row, edit: true })
+                                //dispatch(getCollectionAux(selUtterance(row?.name||"")))                  
+                                setViewSelectedTraining("view-2");
+                                setRowSelected(row)
                             }}
                         >
                             {row.name}
@@ -102,14 +86,14 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
                 accessor: "language",
                 type: "select",
                 listSelectFilter: [
-                    { key: "Español", value: "Español" },
-                    { key: "Inglés", value: "Inglés" },                   
+                    { key: "es", value: "es" },
+                    { key: "en", value: "en" },                   
                 ],
                 width: 'auto',               
             },
             {
                 Header: t(langKeys.intentions),
-                accessor: 'tintentionsype',
+                accessor: 'intents',
                 width: 'auto',
             },    
             {
@@ -119,14 +103,14 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
             },     
             {
                 Header: t(langKeys.updateddate),
-                accessor: 'updateddate',
+                accessor: 'changedate',
                 type: 'date',
                 sortType: 'datetime',  
                 width: 'auto', 
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { updateddate } = props.cell.row.original || {};
-                    if (updateddate) {
-                        const date = new Date(updateddate)
+                    const { changedate } = props.cell.row.original || {};
+                    if (changedate) {
+                        const date = new Date(changedate)
                         return date.toLocaleString('es-PE', {day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false})
                     }
                     return null;
@@ -136,7 +120,7 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
         []
     );
 
-    const fetchData = () => dispatch(getCollectionAux(rasaModelSel()))
+    const fetchData = () => dispatch(getCollectionAux(watsonxModelSel()))
     const functionChange = (change:string) => {
         if(change === "watsonx"){
             setViewSelectedTraining("view-1")
@@ -197,9 +181,8 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
                 <div style={{ width: "100%" }}>
                     <TableZyx
                         columns={columns}                    
-                        data={simulatedData}
-                        useSelection={true}                  
-                        selectionKey={selectionKey}
+                        data={mainAux.data}    
+                        loading={mainAux.loading}       
                         download={true}
                         filterGeneral={false}
                     />
@@ -209,10 +192,10 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
     }
     else if (viewSelectedTraining === "view-2") {
         return (
-            <IntentionsRasa 
-                //data={rowSelected}
-                setExternalViewSelected={functionChange}
+            <WatsonxMenu 
+                data={rowSelected}
                 arrayBread={newArrayBread}
+                setViewSelected={functionChange}
             />
         )
     } else

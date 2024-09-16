@@ -346,6 +346,7 @@ export const apiUrls = {
     GETLOCATION: `${BASE_URL}/flow/location`,
     GETVERSION: `${BASE_URL}/check/version`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
+    WATSONTESTINT: `${BASE_URL}/watson/tryit`,
     RASATESTINT: `${BASE_URL}/rasa/test`,
     RASATRAININT: `${BASE_URL}/rasa/train`,
     RASADOWNLOADINT: `${BASE_URL}/rasa/download`,

@@ -431,7 +431,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
     )
 }
 
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard" }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard", placeholder = "" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -451,6 +451,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 error={!!error}
                 value={value}
                 multiline
+                placeholder={placeholder}
                 minRows={rows}
                 helperText={error || null}
                 onChange={(e) => {

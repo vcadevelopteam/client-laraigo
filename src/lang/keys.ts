@@ -6428,7 +6428,9 @@ export const langKeys = {
   topkdescription: 'topkdescription',
   repetitionpenalty: 'repetitionpenalty',
   repetitionpenaltydescription: 'repetitionpenaltydescription',
-
+  conflicts: 'conflicts',
+  speakwithyourmodel: 'speakwithyourmodel',
+  modelplaceholder: 'modelplaceholder',
 };
 
 export type LangKeys = typeof langKeys;

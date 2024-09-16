@@ -6484,7 +6484,9 @@ const translation: LangKeys = {
   topkdescription: 'A low value reduces the probability that the model deviates from the queried topic.',
   repetitionpenalty: 'Repetition Penalty',
   repetitionpenaltydescription: 'It is a factor that is applied to discourage the model from generating repetitive text or phrases. A value of 1 means that there is no penalty.',
-
+  conflicts: 'Conflicts',
+  speakwithyourmodel: 'Speak with your model',
+  modelplaceholder: 'Write something to test your assistant model.',
 };
 
 const enResource: ResourceLanguage = {
