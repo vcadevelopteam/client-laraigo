@@ -379,15 +379,15 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
                                 helperText2={t(langKeys.languagemodelhelper)}
                                 className="col-6"
                                 valueDefault={getValues("model")}
-                                onChange={(value) => setValue('model', value?.domainvalue || "")}
+                                onChange={(value) => setValue('model', value?.desc || "")}
                                 error={errors?.model?.message}
                                 data={[
                                     { desc: "Small" },
                                     { desc: "Medium" },
                                     { desc: "Large" },
                                 ]}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                optionDesc="desc"
+                                optionValue="desc"
                                 variant="outlined"
                             />
                         </div>
