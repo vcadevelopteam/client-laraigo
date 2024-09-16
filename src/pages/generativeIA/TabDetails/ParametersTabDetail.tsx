@@ -176,6 +176,7 @@ interface ParametersTabDetailProps {
     errors: FieldErrors
     setValidatePrompt: (data: string) => void
     trigger: any
+    provider: string
 }
 
 const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
@@ -184,7 +185,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     getValues,
     errors,
     setValidatePrompt,
-    trigger
+    trigger,
+    provider
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -204,7 +206,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     }, []);    
 
     const handleSelectChange = (value: Dictionary) => {
-        console.log('Selected option:', value);
         setSelectedOption(value?.domainvalue || '');
     };
     
@@ -610,6 +611,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
+                           
                             <div className={classes.decodingContainer}>
                                 <span className={classes.detailTitle}>Decoding</span>
                                 <div style={{display: 'flex', gap: 5}}>
@@ -646,75 +648,82 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     />
                                 </div>
                                 <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <span>0 - 2.0</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <FieldEdit
-                                        type="number"
-                                        variant="outlined"
-                                        size="small"
-                                        width={80}
-                                        valueDefault={getValues('temperature')}
-                                        onChange={(value) => setValue('temperature', value)}
-                                        error={errors?.temperature?.message}
-                                    />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <span>0 - 1.0</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <FieldEdit
-                                        type="number"
-                                        variant="outlined"
-                                        size="small"
-                                        width={80}
-                                        valueDefault={getValues('top_p')}
-                                        onChange={(value) => setValue('top_p', value)}
-                                        error={errors?.top_p?.message}
-                                    />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <span>1 - 100</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <FieldEdit
-                                        type="number"
-                                        variant="outlined"
-                                        size="small"
-                                        width={80}
-                                        valueDefault={selectedCardData?.top_k}
-                                        onChange={(value) => setValue('top_k', value)}
-                                        error={errors?.top_k?.message}
-                                    />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <span>1 - 2</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <FieldEdit
-                                        type="number"
-                                        variant="outlined"
-                                        size="small"
-                                        width={80}
-                                        valueDefault={selectedCardData?.repetition_penalty}
-                                        onChange={(value) => setValue('repetition_penalty', value)}
-                                        error={errors?.repetition_penalty?.message}
-                                    />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
-                        
+                                { (getValues("decoding_method")?.trim().toLowerCase() === 'sample' || provider?.trim().toLowerCase() === 'laraigo') && (
+                                    <>                                  
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>0 - 2.0</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={getValues('temperature')}
+                                                onChange={(value) => setValue('temperature', value)}
+                                                error={errors?.temperature?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>0 - 1.0</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={getValues('top_p')}
+                                                onChange={(value) => setValue('top_p', value)}
+                                                error={errors?.top_p?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>1 - 100</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={selectedCardData?.top_k}
+                                                onChange={(value) => setValue('top_k', value)}
+                                                error={errors?.top_k?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>                                       
+                                    </>
+                                )}
+                                {provider?.trim().toLowerCase() !== 'openai' && (
+                                    <>
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>1 - 2</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={selectedCardData?.repetition_penalty}
+                                                onChange={(value) => setValue('repetition_penalty', value)}
+                                                error={errors?.repetition_penalty?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -808,7 +817,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 <FieldSelect                                                   
                                                     data={filteredData}
                                                     onChange={(value) => {
-                                                        console.log('onChange value:', value);
                                                         handleSelectChange(value);
                                                         if(value?.domainvalue) {
                                                             setUnansweredQueries(value.domainvalue);
@@ -885,27 +893,29 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
-                            <div className={classes.decodingContainer}>
-                                <span className={classes.detailTitle}>Decoding</span>
-                                <div style={{display: 'flex', gap: 5}}>
-                                    <span className={classes.text}>Greedy</span>
-                                    <IOSSwitch
-                                        checked={getValues("decoding_method") === "sample"}
-                                        style={{color: '#078548'}}
-                                        onChange={() => {
-                                            if(getValues("decoding_method") === "sample") {
-                                                setValue("decoding_method", "greedy")
-                                                trigger("decoding_method")
-                                            }
-                                            else {
-                                                setValue("decoding_method", "sample")
-                                                trigger("decoding_method")
-                                            }
-                                        }}
-                                    />
-                                    <span className={classes.text}>Sampling</span>
+                            {provider?.trim().toLowerCase() !== 'laraigo' && (
+                                <div className={classes.decodingContainer}>
+                                    <span className={classes.detailTitle}>Decoding</span>
+                                    <div style={{display: 'flex', gap: 5}}>
+                                        <span className={classes.text}>Greedy</span>
+                                        <IOSSwitch
+                                            checked={getValues("decoding_method") === "sample"}
+                                            style={{color: '#078548'}}
+                                            onChange={() => {
+                                                if(getValues("decoding_method") === "sample") {
+                                                    setValue("decoding_method", "greedy")
+                                                    trigger("decoding_method")
+                                                }
+                                                else {
+                                                    setValue("decoding_method", "sample")
+                                                    trigger("decoding_method")
+                                                }
+                                            }}
+                                        />
+                                        <span className={classes.text}>Sampling</span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             <div className={classes.parameterContainer}>
                                 <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
                                 <div className={classes.widthBlock10}/>
@@ -920,76 +930,82 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 />
                             </div>
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
-                            <div className={classes.block20}/>
-                            <div className={classes.parameterContainer}>
-                                <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                                <div className={classes.widthBlock10}/>
-                                <span>0 - 2.0</span>
-                                <div className={classes.widthBlock10}/>
-                                <FieldEdit
-                                    type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    width={80}
-                                    valueDefault={selectedCardData?.temperature}
-                                    onChange={(value) => setValue('temperature', value)}
-                                    error={errors?.temperature?.message}
-                                />
-                            </div>
-                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
-                            <div className={classes.block20}/>
-                            <div className={classes.parameterContainer}>
-                                <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                                <div className={classes.widthBlock10}/>
-                                <span>0 - 1.0</span>
-                                <div className={classes.widthBlock10}/>
-                                <FieldEdit
-                                    type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    width={80}
-                                    valueDefault={selectedCardData?.top_p}
-                                    onChange={(value) => setValue('top_p', value)}
-                                    error={errors?.top_p?.message}
-                                />
-                            </div>
-                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
-                            <div className={classes.block20}/>
-                            <div className={classes.parameterContainer}>
-                                <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
-                                <div className={classes.widthBlock10}/>
-                                <span>1 - 100</span>
-                                <div className={classes.widthBlock10}/>
-                                <FieldEdit
-                                    type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    width={80}
-                                    valueDefault={selectedCardData?.top_k}
-                                    onChange={(value) => setValue('top_k', value)}
-                                    error={errors?.top_k?.message}
-                                />
-                            </div>
-                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>
-                            <div className={classes.block20}/>
-                            <div className={classes.parameterContainer}>
-                                <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
-                                <div className={classes.widthBlock10}/>
-                                <span>1 - 2</span>
-                                <div className={classes.widthBlock10}/>
-                                <FieldEdit
-                                    type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    width={80}
-                                    valueDefault={selectedCardData?.repetition_penalty}
-                                    onChange={(value) => setValue('repetition_penalty', value)}
-                                    error={errors?.repetition_penalty?.message}
-                                />
-                            </div>
-                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
-                        
-                        
+                            { (getValues("decoding_method")?.trim().toLowerCase() === 'sample' || provider?.trim().toLowerCase() === 'laraigo') && (
+                                <>      
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>0 - 2.0</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.temperature}
+                                            onChange={(value) => setValue('temperature', value)}
+                                            error={errors?.temperature?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>0 - 1.0</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.top_p}
+                                            onChange={(value) => setValue('top_p', value)}
+                                            error={errors?.top_p?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>1 - 100</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.top_k}
+                                            onChange={(value) => setValue('top_k', value)}
+                                            error={errors?.top_k?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>                                   
+                                </>
+                            )}
+                            {provider?.trim().toLowerCase() !== 'openai' && (
+                                <>
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>1 - 2</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.repetition_penalty}
+                                            onChange={(value) => setValue('repetition_penalty', value)}
+                                            error={errors?.repetition_penalty?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

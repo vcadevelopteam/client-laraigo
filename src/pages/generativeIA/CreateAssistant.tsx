@@ -111,6 +111,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     })
     const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
     const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
+    const [selectedProvider, setSelectedProvider] = React.useState(''); 
 
     useEffect(() => {
         if (waitSave) {
@@ -789,13 +790,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanelAux index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} />
+                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} setSelectedProvider={setSelectedProvider} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} provider={selectedProvider} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} set_chunk_size={(value) => setValue('chunk_size', value)} set_chunk_overlap={(value) => setValue('chunk_overlap', value)} chunk_size={getValues('chunk_size')} chunk_overlap={getValues('chunk_overlap')} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} set_chunk_size={(value) => setValue('chunk_size', value)} set_chunk_overlap={(value) => setValue('chunk_overlap', value)} chunk_size={getValues('chunk_size')} chunk_overlap={getValues('chunk_overlap')} provider={selectedProvider} />
                 </AntTabPanelAux>
             </form>
         </>

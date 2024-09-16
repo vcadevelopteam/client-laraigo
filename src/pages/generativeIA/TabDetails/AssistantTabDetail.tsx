@@ -67,6 +67,7 @@ interface AssistantTabDetailProps {
     setProvider: (provider: string) => void
     firstData: Dictionary
     setFirstData: (data: Dictionary) => void
+    setSelectedProvider: (provider: string) => void
 }
 
 const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
@@ -77,6 +78,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     setProvider,
     firstData,
     setFirstData,
+    setSelectedProvider
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -87,6 +89,8 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const [isCodeInterpreter, setIsCodeInterpreter] = useState(row?.codeinterpreter || false);
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const intelligentmodelsid = getValues('intelligentmodelsid');
+    const selectedProvider = multiDataAux?.data?.[3]?.data.find(item => item.id === intelligentmodelsid)?.provider || '';
 
     const retrievalbasemodels = [
         {
@@ -168,6 +172,12 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    React.useEffect(() => {
+        if (selectedProvider) {
+            setSelectedProvider(selectedProvider);
+        }
+    }, [selectedProvider, setSelectedProvider]);
 
     return (
         <div className={classes.containerDetail}>

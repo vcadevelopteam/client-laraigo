@@ -221,6 +221,7 @@ interface TrainingTabDetailProps {
     set_chunk_overlap: (value: number) => void;
     chunk_size: number;
     chunk_overlap: number;
+    provider: string;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -232,7 +233,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     set_chunk_size,
     set_chunk_overlap,
     chunk_size,
-    chunk_overlap
+    chunk_overlap,
+    provider
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -803,71 +805,100 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     if (viewSelected === 'main') {
         return (
             <>
-                <div className={classes.containerDetail2}>
-                    <div className={classes.containerBox}>
-                        <div className={classes.container2}>
-                            <div>
-                                <span className={classes.title}>
-                                    {t(langKeys.knowledge_base)}
-                                </span>
-                                <div className={classes.titleMargin}>
-                                    <span>{t(langKeys.knowledge_based_description)}</span>
+                { provider?.trim().toLowerCase() === 'openai' ? (
+                    <div className={classes.containerDetail}>
+                         <div className="row-zyx">
+                             <div className={classes.container2}>
+                                 <div>
+                                     <span className={classes.title}>
+                                         {t(langKeys.knowledge_base)}
+                                     </span>
+                                     <div className={classes.titleMargin}>
+                                         <span>{t(langKeys.knowledge_based_description)}</span>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div className={classes.cardsContainer}>
+                                 <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
+                                     <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
+                                         <div className={classes.cardContent}>
+                                             <UploadFileIcon className={classes.logo} />
+                                             <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
+                                             <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
+                                         </div>
+                                     </Card>
+                                 </Grid>
+                             </div>
+                         </div>
+                    </div>
+                    ) : (
+                        <div className={classes.containerDetail2}>
+                            <div className={classes.containerBox}>
+                                <div className={classes.container2}>
+                                    <div>
+                                        <span className={classes.title}>
+                                            {t(langKeys.knowledge_base)}
+                                        </span>
+                                        <div className={classes.titleMargin}>
+                                            <span>{t(langKeys.knowledge_based_description)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={classes.cardsContainer}>
+                                    <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
+                                        <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
+                                            <div className={classes.cardContent}>
+                                                <UploadFileIcon className={classes.logo} />
+                                                <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
+                                                <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
+                                            </div>
+                                        </Card>
+                                    </Grid>
                                 </div>
                             </div>
-                        </div>
-                        <div className={classes.cardsContainer}>
-                            <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
-                                <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
-                                    <div className={classes.cardContent}>
-                                        <UploadFileIcon className={classes.logo} />
-                                        <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                        <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
+                            <div className={classes.containerBox}>
+                                <div className={classes.container2}>
+                                    <div>
+                                        <span className={classes.title}>
+                                            {t(langKeys.parameters)}
+                                        </span>                                
                                     </div>
-                                </Card>
-                            </Grid>
-                        </div>
-                    </div>
-                    <div className={classes.containerBox}>
-                        <div className={classes.container2}>
-                            <div>
-                                <span className={classes.title}>
-                                    {t(langKeys.parameters)}
-                                </span>                                
+                                </div>
+        
+                                <div className={classes.block20}/>
+                                <div className={classes.parameterContainer}>
+                                    <span className={classes.detailTitle}>{'Tamaño del chunk'}</span>
+                                    <div className={classes.widthBlock10}/>
+                                    <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={chunk_size}
+                                            onChange={(value) => set_chunk_size(value)}
+                                        />
+                                </div>
+                                <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que puede contener el fragmento de la base de conocimiento subida que se le comparte al asistente, ya que cuando los documentos se incorporan a la base de conocimiento, estos se dividen en partes mas pequeñas con cierta suposición.'}</span></div>
+                                <div className={classes.block20}/>
+                                <div className={classes.parameterContainer}>
+                                    <span className={classes.detailTitle}>{'Superposición del chunk'}</span>
+                                    <div className={classes.widthBlock10}/>
+                                    <div className={classes.widthBlock10}/>
+                                    <FieldEdit
+                                        type="number"
+                                        variant="outlined"
+                                        size="small"
+                                        width={80}
+                                        valueDefault={chunk_overlap}
+                                        onChange={(value) => set_chunk_overlap(value)}
+                                    />
+                                </div>
+                                <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chuck adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>
                             </div>
                         </div>
-
-                        <div className={classes.block20}/>
-                        <div className={classes.parameterContainer}>
-                            <span className={classes.detailTitle}>{'Tamaño del chunk'}</span>
-                            <div className={classes.widthBlock10}/>
-                            <div className={classes.widthBlock10}/>
-                                <FieldEdit
-                                    type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    width={80}
-                                    valueDefault={chunk_size}
-                                    onChange={(value) => set_chunk_size(value)}
-                                />
-                        </div>
-                        <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que puede contener el fragmento de la base de conocimiento subida que se le comparte al asistente, ya que cuando los documentos se incorporan a la base de conocimiento, estos se dividen en partes mas pequeñas con cierta suposición.'}</span></div>
-                        <div className={classes.block20}/>
-                        <div className={classes.parameterContainer}>
-                            <span className={classes.detailTitle}>{'Superposición del chunk'}</span>
-                            <div className={classes.widthBlock10}/>
-                            <div className={classes.widthBlock10}/>
-                            <FieldEdit
-                                type="number"
-                                variant="outlined"
-                                size="small"
-                                width={80}
-                                valueDefault={chunk_overlap}
-                                onChange={(value) => set_chunk_overlap(value)}
-                            />
-                        </div>
-                        <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chuck adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>
-                    </div>
-                </div>
+                    )
+                }
                 <div className={classes.containerDetail}>
                     <div className={classes.header}>
                         <div>
