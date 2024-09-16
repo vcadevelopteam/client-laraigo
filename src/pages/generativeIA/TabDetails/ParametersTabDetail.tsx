@@ -162,7 +162,7 @@ interface CardDataType {
     temperature: number;
     top_p: number;
     top_k: number;
-    repetitionpenalty: number;
+    repetition_penalty: number;
 }
 interface RowSelected {
     row: Dictionary | null;
@@ -319,7 +319,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             temperature: 1,
             top_p: 1,
             top_k: 20,
-            repetitionpenalty: 1,
+            repetition_penalty: 1,
             type: 'TABLE',
         },
         {
@@ -335,7 +335,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             temperature: 1,
             top_p: 1,
             top_k: 20,
-            repetitionpenalty: 1,
+            repetition_penalty: 1,
             type: 'CLIENT',
         },
         {
@@ -351,7 +351,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             temperature: 1,
             top_p: 1,
             top_k: 20,
-            repetitionpenalty: 1,
+            repetition_penalty: 1,
             type: 'SALES',
         },
         {
@@ -367,7 +367,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             temperature: 1,
             top_p: 1,
             top_k: 20,
-            repetitionpenalty: 1,
+            repetition_penalty: 1,
             type: 'TECH',
         },
         {
@@ -383,7 +383,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             temperature: 1,
             top_p: 1,
             top_k: 20,
-            repetitionpenalty: 1,
+            repetition_penalty: 1,
             type: 'AI',
         },
         {
@@ -399,7 +399,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             temperature: 1,
             top_p: 1,
             top_k: 20,
-            repetitionpenalty: 1,
+            repetition_penalty: 1,
             type: 'PERSONALIZED',
         },
     ];
@@ -416,7 +416,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('max_tokens', cardData[cardIndex].max_tokens)
         setValue('top_p', cardData[cardIndex].top_p)
         setValue('top_k', cardData[cardIndex].top_k)
-        setValue('repetitionpenalty', cardData[cardIndex].repetitionpenalty)
+        setValue('repetition_penalty', cardData[cardIndex].repetition_penalty)
         setValue('type', cardData[cardIndex].type)
         setValidatePrompt(cardData[cardIndex].prompt)
         setViewSelected('detail');
@@ -434,7 +434,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('max_tokens', 0)
         setValue('top_p', 0)
         setValue('top_k', 0)
-        setValue('repetitionpenalty', 0)
+        setValue('repetition_penalty', 0)
         setValue('type', '')
         setValidatePrompt('')
         setViewSelected('main');
@@ -708,9 +708,9 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                         variant="outlined"
                                         size="small"
                                         width={80}
-                                        valueDefault={selectedCardData?.repetitionpenalty}
-                                        onChange={(value) => setValue('repetitionpenalty', value)}
-                                        error={errors?.repetitionpenalty?.message}
+                                        valueDefault={selectedCardData?.repetition_penalty}
+                                        onChange={(value) => setValue('repetition_penalty', value)}
+                                        error={errors?.repetition_penalty?.message}
                                     />
                                 </div>
                                 <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
@@ -982,9 +982,9 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     variant="outlined"
                                     size="small"
                                     width={80}
-                                    valueDefault={selectedCardData?.repetitionpenalty}
-                                    onChange={(value) => setValue('repetitionpenalty', value)}
-                                    error={errors?.repetitionpenalty?.message}
+                                    valueDefault={selectedCardData?.repetition_penalty}
+                                    onChange={(value) => setValue('repetition_penalty', value)}
+                                    error={errors?.repetition_penalty?.message}
                                 />
                             </div>
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>

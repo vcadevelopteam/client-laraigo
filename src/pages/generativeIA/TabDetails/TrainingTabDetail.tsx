@@ -217,6 +217,10 @@ interface TrainingTabDetailProps {
     fetchAssistants: () => void;
     edit: boolean;
     setFile: (data: Dictionary[]) => void;
+    set_chunk_size: (value: number) => void;  
+    set_chunk_overlap: (value: number) => void;
+    chunk_size: number;
+    chunk_overlap: number;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -224,7 +228,11 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     fetchData,
     fetchAssistants,
     edit,
-    setFile
+    setFile,
+    set_chunk_size,
+    set_chunk_overlap,
+    chunk_size,
+    chunk_overlap
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -833,15 +841,14 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                             <span className={classes.detailTitle}>{'Tamaño del chunk'}</span>
                             <div className={classes.widthBlock10}/>
                             <div className={classes.widthBlock10}/>
-                            <FieldEdit
-                                type="number"
-                                variant="outlined"
-                                size="small"
-                                width={80}
-                                //valueDefault={selectedCardData?.repetitionpenalty}
-                                //onChange={(value) => setValue('repetitionpenalty', value)}
-                                //error={errors?.repetitionpenalty?.message}
-                            />
+                                <FieldEdit
+                                    type="number"
+                                    variant="outlined"
+                                    size="small"
+                                    width={80}
+                                    valueDefault={chunk_size}
+                                    onChange={(value) => set_chunk_size(value)}
+                                />
                         </div>
                         <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que puede contener el fragmento de la base de conocimiento subida que se le comparte al asistente, ya que cuando los documentos se incorporan a la base de conocimiento, estos se dividen en partes mas pequeñas con cierta suposición.'}</span></div>
                         <div className={classes.block20}/>
@@ -854,9 +861,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 variant="outlined"
                                 size="small"
                                 width={80}
-                                //valueDefault={selectedCardData?.repetitionpenalty}
-                                //onChange={(value) => setValue('repetitionpenalty', value)}
-                                //error={errors?.repetitionpenalty?.message}
+                                valueDefault={chunk_overlap}
+                                onChange={(value) => set_chunk_overlap(value)}
                             />
                         </div>
                         <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chuck adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>

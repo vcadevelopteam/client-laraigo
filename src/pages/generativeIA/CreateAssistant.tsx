@@ -154,6 +154,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             temperature: row?.temperature || 0,
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
+            top_k: row?.top_k || 0,
+            repetition_penalty: row?.repetition_penalty || 0,
+            chunk_size: row?.chunk_size || 0,
+            chunk_overlap: row?.chunk_overlap || 0,
             apikey: row?.basemodel.startsWith('gpt') ? (edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '') : (edit ? row?.apikey : ''),
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
@@ -181,6 +185,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('temperature', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2.0) || t(langKeys.required) });
         register('max_tokens', { validate: (value) => (value && value > 0) || t(langKeys.required) });
         register('top_p', { validate: (value) => (value && value > 0 && parseFloat(value) <= 1.0) || t(langKeys.required) });
+        register('top_k', { validate: (value) => (value && value > 0 && parseFloat(value) <= 100) || t(langKeys.required) });
+        register('repetition_penalty', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2) || t(langKeys.required) });
+        register('chunk_size', { validate: (value) => (value && value.length) ||  t(langKeys.required) });
+        register('chunk_overlap', { validate: (value) => (value && value.length) ||  t(langKeys.required) });
         register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('retrieval');
         register('codeinterpreter');
@@ -787,7 +795,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} set_chunk_size={(value) => setValue('chunk_size', value)} set_chunk_overlap={(value) => setValue('chunk_overlap', value)} chunk_size={getValues('chunk_size')} chunk_overlap={getValues('chunk_overlap')} />
                 </AntTabPanelAux>
             </form>
         </>
