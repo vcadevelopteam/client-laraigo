@@ -233,7 +233,7 @@ const InfoTab: React.FC = () => {
         register('name');
         register('documenttype', {
             validate: {
-                validationDNI: (value) => getValues("documentnumber") !== "" ? (t(langKeys.required) + "") : true,
+                validationDNI: (value) => getValues("documentnumber") === "" ? (t(langKeys.required) + "") : true,
             }
         });
         register('persontype');

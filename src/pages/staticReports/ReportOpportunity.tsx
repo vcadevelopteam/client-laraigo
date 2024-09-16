@@ -716,7 +716,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
             ...row,
             createdate: formatDateHour(row.createdate),
             lastchangestatusdate: formatDateHour(row.lastchangestatusdate),
-            date_deadline: formatDateHour(row.date_deadline),
+            date_deadline: formatDateEnd(row.date_deadline),
             estimatedimplementationdate: formatDate(row.estimatedimplementationdate),
             estimatedbillingdate: formatDate(row.estimatedbillingdate),
             phase: t(row.phase),

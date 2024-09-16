@@ -188,7 +188,7 @@ const Funnel3D: React.FC<Funnel3DProps> = ({ data, spacing = 2.3 }) => {
                         alignmentBaseline="middle"
                         className={classes.funnelTextBase}
                     >
-                        {section.name}
+                        {t(section.name)}
                     </text>
                 </g>
             );
