@@ -26,7 +26,7 @@ export const langKeys = {
   application: "application",
   application_helper: "application_helper",
   custom_fields: "custom_fields",
-  datatype: "datatype",custom_field: "custom_field",
+  datatype: "datatype", custom_field: "custom_field",
   custom_fields_list: "custom_fields_list",
   custom_fields_list_helper: "custom_fields_list_he",
   custom_fields_of: "custom_fields_of",
@@ -4393,6 +4393,8 @@ export const langKeys = {
   pricemessagenote2: 'pricemessagenote2',
   conversationwhatsapp: 'conversationwhatsapp',
   billingreportconversations: 'billingreportconversations',
+  billingreportconversations360dialog: 'billingreportconversations360dialog',
+  billingreportconversationsgupshup: 'billingreportconversationsgupshup',
   billingreportmessaging: 'billingreportmessaging',
   billingreportsms: 'billingreportsms',
   billingreportmail: 'billingreportmail',
@@ -6130,6 +6132,7 @@ export const langKeys = {
   transactionnumber: 'transactionnumber',
   conversationTMO: 'conversationTMO',
   needtopay: 'needtopay',
+  rucvalidation: 'rucvalidation',
 
   maxTMR: 'maxTMR',
   minTMR: 'minTMR',
@@ -6406,7 +6409,7 @@ export const langKeys = {
   categorychangetext: 'categorychangetext',
   propertybalancetime: 'propertybalancetime',
   message_business_origin: 'message_business_origin',
-  closedtoday: 'closedtoday', 
+  closedtoday: 'closedtoday',
   seehistoricalattachments: 'seehistoricalattachments',
   hidehistoricalattachments: 'hidehistoricalattachments',
   seehistoricalclassifications: 'seehistoricalclassifications',
@@ -6449,7 +6452,7 @@ export const langKeys = {
   descriptiondescription: 'descriptiondescription',
   skilliddescription: 'skilliddescription',
   skillid_help: 'skillid_help',
-  registertime: 'registertime', 
+  registertime: 'registertime',
 
   conectoriahelper: 'conectoriahelper',
   descriptioniahelper: 'descriptioniahelper',
@@ -6464,11 +6467,12 @@ export const langKeys = {
   error_between_range: 'error_between_range',
   contextAI: 'contextAI',
   contextAIHelper: 'contextAIHelper',
-  languagemodel:'languagemodel',
-  languagemodelhelper:'languagemodelhelper',
+  languagemodel: 'languagemodel',
+  languagemodelhelper: 'languagemodelhelper',
   translationai: 'translationai',
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
+  billingreport_conversationbillable: 'billingreport_conversationbillable',
 };
 
 export type LangKeys = typeof langKeys;
