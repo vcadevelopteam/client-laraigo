@@ -13,6 +13,7 @@ import TableZyx from 'components/fields/table-simple';
 import { CellProps } from 'react-table';
 import { watsonxModelSel } from 'common/helpers';
 import WatsonxMenu from './Watsonx/WatsonxMenu';
+import { setWatsonRow } from 'store/watsonx/actions';
 
 const useStyles = makeStyles((theme) => ({  
     title: {
@@ -45,7 +46,6 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
     const executeResult = useSelector(state => state.main.execute);
     const mainAux = useSelector(state => state.main.mainAux);
     const classes = useStyles();
-    const [rowSelected, setRowSelected] = useState<any>(null);
 
     const newArrayBread = [
         ...arrayBread,
@@ -65,10 +65,9 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
                     return (
                         <label
                             className={classes.labellink}
-                            onClick={() => {      
-                                //dispatch(getCollectionAux(selUtterance(row?.name||"")))                  
+                            onClick={() => {                     
                                 setViewSelectedTraining("view-2");
-                                setRowSelected(row)
+                                dispatch(setWatsonRow({row}))
                             }}
                         >
                             {row.name}
@@ -192,8 +191,7 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
     }
     else if (viewSelectedTraining === "view-2") {
         return (
-            <WatsonxMenu 
-                data={rowSelected}
+            <WatsonxMenu
                 arrayBread={newArrayBread}
                 setViewSelected={functionChange}
             />

@@ -152,13 +152,13 @@ interface IMessageTest {
     entities?: IEntity[];
 }
 
-const TestModelWatsonXDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any) => void, data:any }> = ({
+const TestModelWatsonXDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any) => void }> = ({
     openModal,
     setOpenModal,
-    data,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const selectedRow = useSelector(state => state.watson.selectedRow);
     const [formValue, setFormValue] = useState("");
     const dummy = useRef<HTMLDivElement>(null);
     const [messages, setMessages] = useState<IMessageTest[]>([
@@ -176,9 +176,8 @@ const TestModelWatsonXDialog: React.FC<{ openModal: boolean; setOpenModal: (para
         };
 
         setMessages([...messages, newMessage]);
-
         try {
-            WatsonService.rasatest({ watsonid: data?.watsonid||0, text: formValue }).then(
+            WatsonService.rasatest({ watsonid: selectedRow?.watsonid||0, text: formValue }).then(
                 (axios_result) => {
                     if (axios_result.status === 200) {
                         newMessage.loading = false;

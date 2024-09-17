@@ -5412,9 +5412,9 @@ export const watsonxModelSel = () => ({
     parameters: { id: 0 },
 });
 
-export const watsonxModelItemSel = (watsonid: number, type: string) => ({
+export const watsonxModelItemSel = (watsonid: number) => ({
     method: "UFN_WATSON_ITEMS_SEL",
     key: "UFN_WATSON_ITEMS_SEL",
-    parameters: { watsonid, type },
+    parameters: { watsonid, type: "intention" },
 });
 

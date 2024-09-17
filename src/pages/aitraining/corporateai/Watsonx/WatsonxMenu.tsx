@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const WatsonxMenu: React.FC<{ data: any, arrayBread: BreadCrumb[], setViewSelected: (view: string) => void }> = ({ data, setViewSelected, arrayBread }) => {
+const WatsonxMenu: React.FC<{ arrayBread: BreadCrumb[], setViewSelected: (view: string) => void }> = ({ setViewSelected, arrayBread }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -225,7 +225,6 @@ const WatsonxMenu: React.FC<{ data: any, arrayBread: BreadCrumb[], setViewSelect
                                             </Button>
                                         </div>
                                         <TestModelWatsonXDialog
-                                            data={data}
                                             openModal={openModal}
                                             setOpenModal={setOpenModal}
                                         />
@@ -245,12 +244,10 @@ const WatsonxMenu: React.FC<{ data: any, arrayBread: BreadCrumb[], setViewSelect
         return <Intentions
             setExternalViewSelected={functionChange}
             arrayBread={newArrayBread}
-            data={data}
         />
     } else if (viewSelectedTraining === "entities") {
         return (
             <Entities
-                data={data}
                 setExternalViewSelected={functionChange}
                 arrayBread={newArrayBread}
             />
