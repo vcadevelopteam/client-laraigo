@@ -687,16 +687,14 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         if (user) {
             const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data || []
             const grouprules = rules.map(item => item.assignedgroup)
-            let groups = user?.groups ? user?.groups.split(",") : [];
+            let groups = user?.properties.limit_reassign_group ? (user?.groups?.split(",") || []) : [];
             if (grouprules.length && propertyGrupoDelegacion) {
                 groups = grouprules
             }
             setUsableGroups(groups)
-            if (user.properties.limit_reassign_group) {
-                setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
-            } else {
-                setUserToReassign((multiData?.data?.[3]?.data || []))
-            }
+            
+            setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+            
             if (propertyAsesorReassign && !propertyGrupoDelegacion) {
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
@@ -709,11 +707,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     useEffect(() => {
         const group = getValues('newUserGroup')
         if (propertyAsesorReassign) {
-            if (!propertyGrupoDelegacion) {
-                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => usableGroups.includes(group))));
-            } else {
-                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (group ? (x.groups || "").split(",").includes(group) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true))))
-            }
+            setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => usableGroups.length > 0 || usableGroups.includes(group))))
         }
         else {
             setAgentList([])
