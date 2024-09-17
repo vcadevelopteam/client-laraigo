@@ -155,10 +155,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             temperature: row?.temperature || 0,
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
-            top_k: row?.top_k || 0,
-            repetition_penalty: row?.repetition_penalty || 0,
-            chunk_size: row?.chunk_size || 0,
-            chunk_overlap: row?.chunk_overlap || 0,
+            // top_k: row?.top_k || 0,
+            // repetition_penalty: row?.repetition_penalty || 0,
+            // chunk_size: row?.chunk_size || 0,
+            // chunk_overlap: row?.chunk_overlap || 0,
             apikey: row?.basemodel.startsWith('gpt') ? (edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '') : (edit ? row?.apikey : ''),
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
@@ -186,10 +186,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('temperature', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2.0) || t(langKeys.required) });
         register('max_tokens', { validate: (value) => (value && value > 0) || t(langKeys.required) });
         register('top_p', { validate: (value) => (value && value > 0 && parseFloat(value) <= 1.0) || t(langKeys.required) });
-        register('top_k', { validate: (value) => (value && value > 0 && parseFloat(value) <= 100) || t(langKeys.required) });
-        register('repetition_penalty', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2) || t(langKeys.required) });
-        register('chunk_size', { validate: (value) => (value && value.length) ||  t(langKeys.required) });
-        register('chunk_overlap', { validate: (value) => (value && value.length) ||  t(langKeys.required) });
+        // register('top_k', { validate: (value) => (value && value > 0 && parseFloat(value) <= 100) || t(langKeys.required) });
+        // register('repetition_penalty', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2) || t(langKeys.required) });
+        // register('chunk_size', { validate: (value) => (value && value.length) ||  t(langKeys.required) });
+        // register('chunk_overlap', { validate: (value) => (value && value.length) ||  t(langKeys.required) });
         register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('retrieval');
         register('codeinterpreter');
