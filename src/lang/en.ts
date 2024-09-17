@@ -4443,6 +4443,8 @@ const translation: LangKeys = {
   pricemessagenote2: 'The price of the messages do not include tax.',
   conversationwhatsapp: 'WhatsApp Conversation',
   billingreportconversations: 'WhatsApp Conversations',
+  billingreportconversations360dialog: '360dialog WhatsApp Conversations',
+  billingreportconversationsgupshup: 'Gupshup WhatsApp Conversations',
   billingreportmessaging: 'Messaging',
   billingreportsms: 'SMS Messages',
   billingreportmail: 'Mail Messages',
@@ -6457,7 +6459,7 @@ const translation: LangKeys = {
   categorychangetext: 'Enables automatic change of category after registration according to Goal',
   propertybalancetime: 'Configures the balancing time (seconds) of the "BOT HOLDING"',
   message_business_origin: 'message_business_origin',
-  closedtoday: 'Closed today', 
+  closedtoday: 'Closed today',
   spellingcheck: 'Spelling and Grammar Check',
   seehistoricalattachments: 'See historical attachments',
   hidehistoricalattachments: 'Hide historical attachments',
@@ -6477,8 +6479,8 @@ const translation: LangKeys = {
   translatelanguage: 'Conversation Chat',
   chatsettings: 'Message sending mode',
   onboading_channelcomplete: 'The channel must have a name',
-  errorimportdocuments: 'The documents {{docs}} are not valid registers'
-
+  errorimportdocuments: 'The documents {{docs}} are not valid registers',
+  billingreport_conversationbillable: 'Billable WhatsApp Conversations',
 };
 
 const enResource: ResourceLanguage = {

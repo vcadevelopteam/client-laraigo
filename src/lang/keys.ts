@@ -4386,6 +4386,8 @@ export const langKeys = {
   pricemessagenote2: 'pricemessagenote2',
   conversationwhatsapp: 'conversationwhatsapp',
   billingreportconversations: 'billingreportconversations',
+  billingreportconversations360dialog: 'billingreportconversations360dialog',
+  billingreportconversationsgupshup: 'billingreportconversationsgupshup',
   billingreportmessaging: 'billingreportmessaging',
   billingreportsms: 'billingreportsms',
   billingreportmail: 'billingreportmail',
@@ -6399,7 +6401,7 @@ export const langKeys = {
   categorychangetext: 'categorychangetext',
   propertybalancetime: 'propertybalancetime',
   message_business_origin: 'message_business_origin',
-  closedtoday: 'closedtoday', 
+  closedtoday: 'closedtoday',
   seehistoricalattachments: 'seehistoricalattachments',
   hidehistoricalattachments: 'hidehistoricalattachments',
   seehistoricalclassifications: 'seehistoricalclassifications',
@@ -6422,6 +6424,7 @@ export const langKeys = {
   channel_column_mt_help: 'channel_column_help',
   onboading_channelcomplete: 'onboading_channelcomplete',
   errorimportdocuments: 'errorimportdocuments',
+  billingreport_conversationbillable: 'billingreport_conversationbillable',
 };
 
 export type LangKeys = typeof langKeys;

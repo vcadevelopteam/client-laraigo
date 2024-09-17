@@ -4326,6 +4326,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   pricemessagenote2: 'Los precios de los mensajes no incluyen los impuestos de ley.',
   conversationwhatsapp: 'Conversación WhatsApp',
   billingreportconversations: 'Conversaciones WhatsApp',
+  billingreportconversations360dialog: 'Conversaciones WhatsApp 360dialog',
+  billingreportconversationsgupshup: 'Conversaciones WhatsApp Gupshup',
   billingreportmessaging: 'Mensajeria',
   billingreportsms: 'Mensajes SMS',
   billingreportmail: 'Mensajes Correo',
@@ -6407,7 +6409,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   categorychangetext: 'Habilita el cambio automático de la categoría después de su registro según Meta',
   propertybalancetime: 'Configura el tiempo (segundos) de balanceo del "BOT HOLDING"',
   message_business_origin: 'Message from an advertisement',
-  closedtoday: 'Cerrados hoy', 
+  closedtoday: 'Cerrados hoy',
   spellingcheck: 'Revisión ortográfica y gramatical',
   seehistoricalattachments: 'Ver adjuntos históricos',
   hidehistoricalattachments: 'Ocultar adjuntos históricos',
@@ -6428,8 +6430,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   chatsettings: 'Modo de envío de mensajes',
   onboading_channelcomplete: 'Debe poner un nombre al canal',
 
-  errorimportdocuments: 'Los documentos {{docs}} no son registros válidos'
-
+  errorimportdocuments: 'Los documentos {{docs}} no son registros válidos',
+  billingreport_conversationbillable: 'Conversaciones WhatsApp Facturables',
 };
 
 const esResource: ResourceLanguage = {
