@@ -238,11 +238,10 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
                             variant="contained"
                             color="primary"
                             type="submit"
-                            startIcon={<SaveIcon color="secondary" />}>
+                            startIcon={<SaveIcon color="secondary" />} >
                             {t(langKeys.save)}
                         </Button>
                     </div>
-
                 </div>
                 <Tabs
                     value={tabIndex}
@@ -259,13 +258,15 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
                             </div>
                         )}
                     />
-                    <AntTab
-                        label={(
-                            <div className={classes.tab}>
-                                <Trans i18nKey={langKeys.clients}/>
-                            </div>
-                        )}
-                    />
+                    {row && (
+                        <AntTab
+                            label={(
+                                <div className={classes.tab}>
+                                    <Trans i18nKey={langKeys.clients} />
+                                </div>
+                            )}
+                        />
+                    )}
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <PartnersTabDetail
@@ -275,12 +276,15 @@ const PartnersDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected,
                         errors={errors}
                     />
                 </AntTabPanel>
-                <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <ClientsTabDetail fetchdata={fetchCustomerByPartner} row={row}/>
-                </AntTabPanel>
+                {row && (
+                    <AntTabPanel index={1} currentIndex={tabIndex}>
+                        <ClientsTabDetail fetchdata={fetchCustomerByPartner} row={row} />
+                    </AntTabPanel>
+                )}
             </form>
         </>
     );
+
 }
 
 
