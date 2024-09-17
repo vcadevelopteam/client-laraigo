@@ -6448,6 +6448,8 @@ export const langKeys = {
   conflicts: 'conflicts',
   speakwithyourmodel: 'speakwithyourmodel',
   modelplaceholder: 'modelplaceholder',
+  uniqueexamplesuserintention: 'uniqueexamplesuserintention',
+  annotateentities: 'annotateentities',
 };
 
 export type LangKeys = typeof langKeys;

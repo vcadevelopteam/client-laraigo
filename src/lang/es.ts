@@ -6456,6 +6456,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   conflicts: 'Conflictos',
   speakwithyourmodel: 'Habla con tu modelo',
   modelplaceholder: 'Escribe algo para probar tu modelo de asistente.',
+  uniqueexamplesuserintention: 'Agregue ejemplos únicos que el usuario podría decir. (Consejo profesional: agregue al menos 5 ejemplos únicos)',
+  annotateentities: 'Anotar entidades',
 };
 
 const esResource: ResourceLanguage = {

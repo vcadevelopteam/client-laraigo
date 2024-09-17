@@ -6505,6 +6505,8 @@ const translation: LangKeys = {
   conflicts: 'Conflicts',
   speakwithyourmodel: 'Speak with your model',
   modelplaceholder: 'Write something to test your assistant model.',
+  uniqueexamplesuserintention: 'Add unique examples that the user could say. (Pro Tip: Add at least 5 unique examples)',
+  annotateentities: 'Annotate entities',
 };
 
 const enResource: ResourceLanguage = {

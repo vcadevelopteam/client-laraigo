@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import { DialogZyx, FieldEdit, TemplateBreadcrumbs, TitleDetail } from 'components';
+import { DialogZyx, FieldEdit, IOSSwitch, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Box, Button, makeStyles, TextField, Tooltip } from '@material-ui/core';
@@ -88,10 +88,9 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [disableSave, setDisableSave] = useState(!row);
-    const [disableCreate, setDisableCreate] = useState(true);
     const [openModal, setOpenModal] = useState(false);
+    const [showEntities, setShowEntities] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    const [name, setname] = useState(row?.intent_name || '');
     const [intentionIndex, setIntentionIndex] = useState(-1);
     const [newIntention, setnewIntention] = useState("");
     const [newEntity, setNewEntity] = useState<Dictionary>({
@@ -106,26 +105,27 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
     const executeResult = useSelector(state => state.main.execute);
     const selectionKey = "texto"
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } , watch} = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row?.rasaintentid || 0,
+            watsonid: row?.watsonid || 0,
             rasaid: row?.rasaid || 0,
-            intent_name: row?.intent_name || '',
-            intent_description: row?.intent_description || '',
+            item_name: row?.item_name || '',
+            description: row?.description || '',
             operation: row ? "EDIT" : "INSERT",
             status: "ACTIVO",
         }
     });
 
+    const item_name_watch = watch("item_name");
+
     React.useEffect(() => {
         register('type');
-        register('id');
+        register('watsonid');
         register('status');
         register('operation');
-        register('intent_name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('intent_description'//, { validate: (value) => (value && value.length) || t(langKeys.field_required) }
-        );
+        register('item_name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
     }, [edit, register]);
 
     useEffect(() => {
@@ -143,6 +143,10 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
             }
         }
     }, [executeResult, waitSave])
+
+    useEffect(() => {
+        console.log(showEntities)
+    }, [showEntities])
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -176,15 +180,6 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
         }))
     });
 
-    const openModalEntity = (entity: any, index: number) => {
-        setIntentionIndex(index);
-        setOpenModal(true)
-        setNewEntity({
-            entity: entity.entidades[0].entity,
-            description: entity.entidades[0]?.description || "",
-            value: entity.entidades[0].value,
-        });
-    }
     const addtoTable = () => {
         if (!!newEntity.entity.trim() && !!newEntity.value.trim()) {
             let auxExamples = examples
@@ -208,13 +203,59 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                 Header: t(langKeys.userexample),
                 accessor: 'texto',
                 width: "auto",
+                NoFilter: true,
                 Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return <IntentionCell row={row} openModalEntity={openModalEntity} index={props.cell.row.index} />
+                    const index = props.cell.row.index;
+                    if(showEntities){
+                        const sentence = props.cell.row.original.texto;
+                        const words = sentence.split(" ");
+                        return (
+                            <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
+                                {words.map((word: string, i: number) => (
+                                    <span key={i} style={{ border: "1px dashed black", padding: "2px 5px" }}>
+                                        {word}
+                                    </span>
+                                ))}
+                            </div>
+                        );
+                    }else{
+                        return <FieldEdit
+                            style={{ padding: 0 }}       
+                            valueDefault={props.cell.row.original.texto}
+                            onChange={(value) => {
+                                let auxExamples = examples;
+                                auxExamples[index].text = value;
+                                auxExamples[index].createdate = new Date();
+                                setexamples(auxExamples)
+                            }}
+                            size="small"
+                        />
+                    }
+                    
+                }
+            },
+            {
+                Header: t(langKeys.date),
+                accessor: 'createdate',
+                width: "300px",
+                NoFilter: true,
+                Cell: (props) => {
+                    const createdate = props.cell.row.original?.createdate || new Date();
+                    return convertLocalDate(createdate).toLocaleString()
+                }
+            },
+            {
+                Header: t(langKeys.conflicts),
+                accessor: 'conflicts',
+                width: "150px",
+                type: "number",
+                NoFilter: true,
+                Cell: () => {
+                    return 0
                 }
             },
         ],
-        []
+        [showEntities]
     );
 
     return (
@@ -255,38 +296,35 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <div className={classes.containerFields}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.name)}</Box>
-                            <TextField
-                                color="primary"
-                                fullWidth
-                                value={name}
-                                error={!!errors?.intent_name?.message}
-                                helperText={errors?.intent_name?.message || null}
-                                onInput={(e: any) => {
-                                    if (!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))) {
-                                        if (e.target.value !== "") e.target.value = name
-                                    }
-                                }}
-                                onChange={(e) => {
-                                    setValue('intent_name', e.target.value)
-                                    setname(e.target.value)
-                                    setDisableCreate(getValues("intent_description") === "" || e.target.value === "")
-                                }}
-                            />
-                        </div>
-                        <div style={{ paddingTop: "8px", paddingBottom: "16px" }}>{t(langKeys.intentionnametooltip)}</div>
                         <FieldEdit
-                            label={t(langKeys.description)}
-                            className={classes.containerFields}
-                            onChange={(value) => {
-                                setValue('intent_description', value)
-                                setDisableCreate(getValues("intent_name") === "" || value === "")
+                            className="col-12"
+                            valueDefault={getValues("item_name")}
+                            onChange={(value) => setValue('item_name', value)}
+                            variant='outlined'
+                            size="small"
+                            disabled={!disableSave}
+                            error={errors?.item_name?.message}
+                            label={t(langKeys.name)}
+                            inputProps={{ maxLength: 128 }} 
+                            helperText2={t(langKeys.intentionnametooltip)}
+                            onInput={(e: any) => {
+                                if (!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))) {
+                                    if (e.target.value !== "") e.target.value = name;
+                                }
                             }}
-                            valueDefault={row?.intent_description || ""}
-                            error={errors?.intent_description?.message}
                         />
-                        <div style={{ paddingTop: "8px" }}>{t(langKeys.intentiondescriptiontooltip)}</div>
+                        <FieldEdit
+                            className="col-12"
+                            valueDefault={getValues("description")}
+                            onChange={(value) => {setValue('description', value)}}
+                            variant='outlined'
+                            disabled={!disableSave}
+                            size="small"
+                            inputProps={{ maxLength: 1024 }} 
+                            error={errors?.item_name?.message}
+                            label={t(langKeys.description)}
+                            helperText2={t(langKeys.intentiondescriptiontooltip)}
+                        />
                     </div>
                     {(disableSave) &&
                         <div className="row-zyx">
@@ -294,13 +332,12 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                 variant="contained"
                                 type="button"
                                 className='col-3'
-                                disabled={disableCreate}
+                                disabled={!item_name_watch}
                                 color="primary"
-                                style={{ backgroundColor: disableCreate ? "#dbdbdc" : "#0078f6" }}
+                                style={{ backgroundColor: !item_name_watch ? "#dbdbdc" : "#0078f6" }}
                                 onClick={() => {
                                     let tempint = newIntention
                                     setnewIntention(tempint)
-                                    setDisableCreate(true);
                                     setDisableSave(false)
                                 }}
                             >{t(langKeys.create)}</Button>
@@ -309,35 +346,38 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
 
                 </div>
                 {!disableSave && (
-
                     <div className={classes.containerDetail}>
-                        <FieldEdit
-                            label={t(langKeys.adduserexample)}
-                            className="col-12"
-                            valueDefault={newIntention}
-                            onChange={(value) => setnewIntention(value)}
-                        />
-                        <div style={{ paddingTop: "8px", paddingBottom: "8px" }}>{t(langKeys.uniqueexamplesuser)}</div>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            className='col-3'
-                            disabled={newIntention === ""}
-                            color="primary"
-                            startIcon={<AddIcon color="secondary" />}
-                            style={{ backgroundColor: newIntention === "" ? "#dbdbdc" : "#0078f6" }}
-                            onClick={() => {
-                                if (newIntention.trim()) {
-                                    setexamples([{ texto: newIntention, entidades: [] }, ...examples])
-                                    if (/\[[^\]]+\]/.test(newIntention)) {
-                                        setOpenModal(true)
-                                        setIntentionIndex(0)
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.userexample)}
+                                className="col-9"
+                                valueDefault={newIntention}
+                                variant='outlined'
+                                size="small"
+                                onChange={(value) => setnewIntention(value)}
+                                helperText2={t(langKeys.uniqueexamplesuserintention)}
+                            />
+                            <Button
+                                variant="contained"
+                                type="button"
+                                className='col-3'
+                                disabled={!newIntention}
+                                color="primary"
+                                startIcon={<AddIcon color="secondary" />}
+                                style={{ backgroundColor: !newIntention ? "#dbdbdc" : "#0078f6", marginTop: 'auto' }}
+                                onClick={() => {
+                                    if (newIntention.trim()) {
+                                        setexamples([{ texto: newIntention, entidades: [] }, ...examples])
+                                        if (/\[[^\]]+\]/.test(newIntention)) {
+                                            setOpenModal(true)
+                                            setIntentionIndex(0)
+                                        }
+                                        setnewIntention("")
                                     }
-                                    setnewIntention("")
-                                }
 
-                            }}
-                        >{t(langKeys.add)}</Button>
+                                }}
+                            >{t(langKeys.add)}</Button>
+                        </div>
 
                         <div style={{ width: '100%' }}>
                             <TableZyx
@@ -348,7 +388,13 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                 selectionKey={selectionKey}
                                 setSelectedRows={setSelectedRows}
                                 ButtonsElement={() => (
-                                    <div style={{ display: "flex", justifyContent: "end", width: "100%" }}>
+                                    <div style={{ display: "flex", justifyContent: "end", width: "100%", gap: 8 }}>
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <IOSSwitch checked={showEntities} onChange={(e) => {
+                                                setShowEntities(e.target.checked);
+                                            }} />
+                                            {t(langKeys.annotateentities)}
+                                        </div>
                                         <Button
                                             disabled={Object.keys(selectedRows).length === 0}
                                             variant="contained"
