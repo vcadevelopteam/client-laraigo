@@ -4451,6 +4451,8 @@ const translation: LangKeys = {
   pricemessagenote2: 'The price of the messages do not include tax.',
   conversationwhatsapp: 'WhatsApp Conversation',
   billingreportconversations: 'WhatsApp Conversations',
+  billingreportconversations360dialog: '360dialog WhatsApp Conversations',
+  billingreportconversationsgupshup: 'Gupshup WhatsApp Conversations',
   billingreportmessaging: 'Messaging',
   billingreportsms: 'SMS Messages',
   billingreportmail: 'Mail Messages',
@@ -6466,7 +6468,7 @@ const translation: LangKeys = {
   categorychangetext: 'Enables automatic change of category after registration according to Goal',
   propertybalancetime: 'Configures the balancing time (seconds) of the "BOT HOLDING"',
   message_business_origin: 'message_business_origin',
-  closedtoday: 'Closed today', 
+  closedtoday: 'Closed today',
   spellingcheck: 'Spelling and Grammar Check',
   seehistoricalattachments: 'See historical attachments',
   hidehistoricalattachments: 'Hide historical attachments',
@@ -6520,13 +6522,14 @@ const translation: LangKeys = {
   error_between_range: 'The field value must be between the values ​​{{min}} and {{max}}.',
   contextAI: 'Context by conversation',
   contextAIHelper: 'Select whether the agent should maintain the context of the conversation or will only be able to respond based on the indicated prompt.',
-  languagemodel:'Language model',
-  languagemodelhelper:'Select the language model that you will use to detect the transcription and translation of the audio of the conversation. A larger model means greater confidence in the results, but comes with greater cost and processing time.',
+  languagemodel: 'Language model',
+  languagemodelhelper: 'Select the language model that you will use to detect the transcription and translation of the audio of the conversation. A larger model means greater confidence in the results, but comes with greater cost and processing time.',
   translationai: 'Translation',
   translationaihelper: 'Turn detected language translation on or off for the language selected in your account settings.',
   languageaihelper: 'Select the language that will translate the language model of the detected language by default.',
   registertime: 'Register Time',
 
+  billingreport_conversationbillable: 'Billable WhatsApp Conversations',
 };
 
 const enResource: ResourceLanguage = {
