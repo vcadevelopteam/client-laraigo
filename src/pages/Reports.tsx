@@ -1367,12 +1367,12 @@ const Reports: FC = () => {
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
-                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("opportunityreport")}}>
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("opportunityreport")}} className={classes.cardstyle}>
                                 <CardMedia
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/36231e3d-cf33-4d5e-a676-88a9ce3aac64/image_720.png"
+                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20SOPORTE/4dd8a9b8-f441-4180-8cf3-493bab284823/Reporte%20Informacio%CC%81n02.png"
                                     title={t('report_' + report?.origin)}
                                 />
                                 <CardContent>
