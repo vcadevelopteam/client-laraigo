@@ -392,7 +392,7 @@ const Dashboard: React.FC<ItemProps> = ({ row, allFilters }) => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={''}
+                                        image={'https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20SOPORTE/edcd2a86-977e-4fa2-9fcd-ef5d04f8fcd6/dashboard01.png'}
                                         title={t(langKeys.opportunity_funnel)}
                                         style={{ objectFit: 'contain'}}
                                     />
