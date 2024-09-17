@@ -2071,7 +2071,7 @@ export const getIntelligentModels = (): IRequestBody => ({
     parameters: {}
 });
 
-export const insInteligentModelConfiguration = ({ channels, id, operation, description, type, status, color, icontype, services }: Dictionary): IRequestBody => ({
+export const insInteligentModelConfiguration = ({ channels,model, translation, context, precision, language,originanalysis, id, operation, description, type, status, color, icontype,firstinteraccion, intelligentmodelsid, connectortype }: Dictionary): IRequestBody => ({
     method: 'UFN_INTELLIGENTMODELSCONFIGURATION_INS',
     key: "UFN_INTELLIGENTMODELSCONFIGURATION_INS",
     parameters: {
@@ -2083,7 +2083,10 @@ export const insInteligentModelConfiguration = ({ channels, id, operation, descr
         status,
         color,
         icontype,
-        parameters: services
+        intelligentmodelsid,
+        connectortype,
+        firstinteraccion,
+        originanalysis,model, translation, language, context, precision
     }
 });
 export const gerencialTMOsel = ({ startdate, enddate, channel, group, company, closedby = "ASESOR,BOT", min = "", max = "", target = 0, skipdown = 0, skipup = 0, bd = true }: Dictionary): IRequestBody => ({
@@ -5404,6 +5407,11 @@ export const conversationSDHistorySel = (personid:number) => ({
     method: "UFN_CONVERSATION_SEL_SS_HISTORY",
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
+});
+export const iaservicesBulkDel = (ids:string) => ({
+    method: "UFN_INTELLIGENTMODELSCONFIGURATION_MASSIVE_DEL",
+    key: "UFN_INTELLIGENTMODELSCONFIGURATION_MASSIVE_DEL",
+    parameters: { ids },
 });
 
 export const watsonxModelSel = () => ({

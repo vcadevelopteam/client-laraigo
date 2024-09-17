@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { ExpandLess, ExpandMore, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+import IconButton from '@material-ui/core/IconButton';
 
 import {
     exportData,
@@ -30,7 +32,7 @@ import {
 } from "common/helpers";
 
 import Button from "@material-ui/core/Button";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import DetailMessageTemplates from "./views/MessageTemplatesDetail";
@@ -47,6 +49,21 @@ const useStyles = makeStyles(() => ({
         flexDirection: "column",
         flex: 1,
     },
+    tag: {
+        backgroundColor: '#EBF2F3',
+        borderRadius: '8px',
+        padding: '2px 8px',
+        marginRight: '4px',
+        marginBottom: '4px',
+        whiteSpace: 'nowrap',
+        wordBreak: 'keep-all',
+    },
+    tagcontainer: {
+        display: 'flex', 
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden',
+        width: '300px'
+    }
 }));
 interface RowSelected {
     edit: boolean;
@@ -154,8 +171,17 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
             {
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
-                helpText: t(langKeys.message_templates_channel_help),             
+                width: '300px',
+                helpText: t(langKeys.message_templates_channel_help),                
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const data = row?.original?.communicationchanneldesc || '';
+                    return <TagTypeCell separator={","} data={data}/>
+                },
+                
+                                
             },
+
             {
                 accessor: "name",
                 Header: t(langKeys.name),
