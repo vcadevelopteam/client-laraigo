@@ -5402,3 +5402,9 @@ export const getLeadReportGraphicSel = ({communicationchannel, startdate, enddat
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const getLeadProductsSel = () => ({
+    method: "UFN_LEAD_REPORT_PRODUCT_SEL",
+    key: "UFN_LEAD_REPORT_PRODUCT_SEL",
+    parameters: {},
+});
