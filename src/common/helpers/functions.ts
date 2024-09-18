@@ -1343,14 +1343,19 @@ export function encrypt(plaintext: string, key: string) {
     return btoa(ciphertext);
 }
 
-export function decrypt(ciphertext: string, key: string) {
-    ciphertext = atob(ciphertext);
-    let plaintext = '';
-    for (let i = 0; i < ciphertext.length; i++) {
-        const charCode = ciphertext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-        plaintext += String.fromCharCode(charCode);
+export function decrypt(ciphertext: string, key: string): string {
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(ciphertext)) {return "Error: Texto cifrado inválido."}
+    let decryptedText = '';
+    try {
+        const decodedText = atob(ciphertext);
+        for (let i = 0; i < decodedText.length; i++) {
+            const charCode = decodedText.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+            decryptedText += String.fromCharCode(charCode);
+        }
+    } catch (error) {
+        return "Error al descifrar el texto";
     }
-    return plaintext;
+    return decryptedText;
 }
 
 export function hash256(message: string) {
