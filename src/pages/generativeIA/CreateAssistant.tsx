@@ -667,7 +667,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         } else if (tabIndex === 1) {
             handleChangeTab(e, 2);
         } else {
-            if(provider === 'Open AI') {
+            if(provider === 'OpenAI') {
                 if (cosFile.length < 1) {
                     onMainSubmit();
                 } else {
