@@ -3636,10 +3636,10 @@ export const getCorpSelVariant = (corpid: number, orgid: number, username: strin
     }
 });
 
-export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
+export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month, conversationprovider }: Dictionary): IRequestBody => ({
     method: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
     key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
-    parameters: { corpid, orgid, year, month }
+    parameters: { corpid, orgid, year, month, conversationprovider }
 })
 
 export const billingReportHsmHistory = ({ corpid, orgid, year, month, type }: Dictionary): IRequestBody => ({
