@@ -364,12 +364,12 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             {
                 Header: t(langKeys.name),
                 accessor: 'name',
-                width: "auto",
+                minWidth: "280px",
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                width: "auto",
+                minWidth: "250px",
             },
             {
                 Header: t(langKeys.last_modification),
