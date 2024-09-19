@@ -16,6 +16,7 @@ import {
     getMultiCollection,
     resetAllMain,
     resetCollectionPaginated,
+    resetMultiMain,
 } from "store/main/actions";
 
 import {
@@ -25,9 +26,9 @@ import {
 
 import {
     dateToLocalDate,
-    exportExcel,
+    getChannelsByOrg,
     getMessageTemplateExport,
-    getPaginatedMessageTemplate,
+    getPaginatedMessageTemplate1,
     getValuesFromDomain,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
@@ -64,7 +65,10 @@ const useStyles = makeStyles(() => ({
         whiteSpace: 'nowrap', 
         overflow: 'hidden',
         width: '300px'
-    }
+    },
+    fieldsfilter: {
+        width: "15rem",
+    },
 }));
 interface RowSelected {
     edit: boolean;
@@ -77,11 +81,13 @@ type BreadCrumb = {
 interface MessageTemplatesProps {
     arrayBread: BreadCrumb[];
     setAuxViewSelected: (view: string) => void;  
+    dataChannels: Dictionary[];
 }
 
 const MessageTemplates: React.FC<MessageTemplatesProps> = ({ 
     setAuxViewSelected,
     arrayBread,
+    dataChannels,
 }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -111,7 +117,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         row: null,
     });
 
-    const [communicationChannel, setCommunicationChannel] = useState<any>(null);
     const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
     const [pageCount, setPageCount] = useState(0);
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
@@ -122,26 +127,9 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     const [waitDelete, setWaitDelete] = useState(false);
     const [waitSaveExport, setWaitSaveExport] = useState(false);
     const [waitSynchronize, setWaitSynchronize] = useState(false);
-
+  
     const columns = React.useMemo(
-        () => [
-            /*{
-                accessor: "templateid",
-                isComponent: true,
-                minWidth: 60,
-                NoFilter: true,
-                width: "1%",
-                Cell: (props: CellProps<Dictionary>) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                            viewFunction={() => handleView(row)}
-                        />
-                    );
-                },
-            },*/
+        () => [           
             {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),
@@ -451,6 +439,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
+                getChannelsByOrg(),
             ])
         );
 
@@ -460,17 +449,26 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         };
     }, []);
 
+    const [channelIds, setChannelIds] = useState("");
+    const [selectedChannels, setSelectedChannels] = useState<any[]>([]);
+
+    useEffect(() => {
+        const ids = selectedChannels.map(channel => channel.domaindesc).join(", ");
+        setChannelIds(ids); 
+    }, [selectedChannels]);
+
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
         dispatch(
             getCollectionPaginated(
-                getPaginatedMessageTemplate({
+                getPaginatedMessageTemplate1({
                     enddate: daterange?.endDate!,
                     filters: filters,
                     skip: pageIndex * pageSize,
                     sorts: sorts,
                     startdate: daterange?.startDate!,
                     take: pageSize,
+                    communicationchannelids: channelIds,                
                 })
             )
         );
@@ -582,11 +580,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         setRowSelected({ row: null, edit: true });
     };
 
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
-    };
-
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
@@ -596,38 +589,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         dispatch(synchronizeTemplate());
         dispatch(showBackdrop(true));
         setWaitSynchronize(true);
-    };
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(
-                deleteTemplate({
-                    messagetemplatelist: [
-                        {
-                            ...row,
-                            id: row.id,
-                            operation: "DELETE",
-                            status: "ELIMINADO",
-                        },
-                    ],
-                })
-            );
-            dispatch(showBackdrop(true));
-            setWaitDelete(true);
-        };
-
-        if (row.type === 'HSM') {
-            dispatch(
-                manageConfirmation({
-                    callback,
-                    question: t(langKeys.templatesdeletemessage),
-                    visible: true,
-                })
-            );
-        } else {
-            callback()
-        }
-    };
+    };  
 
     const handleBulkDelete = (dataSelected: Dictionary[]) => {
         const hasHSMType = dataSelected.some(item => item.type === 'HSM');
@@ -691,6 +653,41 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         }
     }
 
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const multiData = useSelector(state => state.main.multiData);
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetMultiMain());
+        }
+    }, [])
+    useEffect(() => {
+        if (!multiData.loading){
+            dispatch(showBackdrop(false));
+        }
+    }, [multiData])
+
+
+    let formattedData: { domaindesc: string; domainvalue: string }[] = [];
+    const targetData = multiData.data[3];
+
+    if (targetData && targetData.data) {
+        formattedData = targetData.data.map((item: any) => ({
+        domaindesc: item.communicationchannelid.toString(),
+        domainvalue: item.description,
+        }));
+    }   
+
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
@@ -707,19 +704,44 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 </div>
                 <TablePaginated
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                            <Button
-                                color="primary"
-                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                                startIcon={<Delete style={{ color: "white" }} />}
-                                variant="contained"
-                                onClick={() => {
-                                    handleBulkDelete(rowWithDataSelected);
-                                }}
-                            >
-                                {t(langKeys.delete)}
-                            </Button>
+                        <div style={{ display: "flex", justifyContent: "space-between", width: `${windowWidth-380}px` }}>
+                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>                               
+                                <FieldMultiSelect
+                                    variant="outlined"
+                                    label={t(langKeys.channels)}
+                                    className={classes.fieldsfilter}
+                                    valueDefault={selectedChannels.reduce((acc,x)=> [...acc,x.domaindesc],[]).join(",")}
+                                    onChange={(values) => {setSelectedChannels(values)}}
+                                    data={formattedData}
+                                    optionDesc="domainvalue"
+                                    optionValue="domaindesc"
+                                />                                               
+                                <Button
+                                    color="primary"
+                                    style={{ width: 120, backgroundColor: "#55BD84" }}
+                                    variant="contained"
+                                    startIcon={<Search style={{ color: "white" }} />}
+                                    onClick={() => { fetchData(fetchDataAux) }}
+                                >
+                                    {t(langKeys.search)}
+                                </Button>
+                            </div>
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                <Button
+                                    color="primary"
+                                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                    startIcon={<Delete style={{ color: "white" }} />}
+                                    variant="contained"
+                                    onClick={() => {
+                                        handleBulkDelete(rowWithDataSelected);
+                                    }}
+                                >
+                                    {t(langKeys.delete)}
+                                </Button>
+                            </div>
                         </div>
+                       
+                        
                     )}
                     autotrigger={true}
                     columns={columns}

@@ -990,6 +990,14 @@ export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, sta
     }
 })
 
+export const getPaginatedMessageTemplate1 = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelids }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL1",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS1",
+    parameters: {
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, communicationchannelids,
+    }
+})
+
 export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelid }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",

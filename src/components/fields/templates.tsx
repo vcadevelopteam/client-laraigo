@@ -43,7 +43,7 @@ import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
-
+import { useStyles } from 'pages/SignIn';
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;

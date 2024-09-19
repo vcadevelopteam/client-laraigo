@@ -389,10 +389,10 @@ interface CustomTitleHelperProps {
     titlestyle?: React.CSSProperties;
 }
 
-export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText, titlestyle }) => {
+export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
     const classes = useStyles();
     return (
-        <span className={classes.subtittles} style={titlestyle}>
+        <span className={classes.normaltext}>
             {title}
             {helperText ? (
                 <Tooltip title={helperText} arrow placement="top" >
