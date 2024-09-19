@@ -1,6 +1,6 @@
 import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
@@ -32,8 +32,9 @@ const RegisterClientDialog: React.FC<{
   const [orgId, setOrgId] = useState(edit ? row2?.orgid : 0);
   const [status, setStatus] = useState(edit ? row2?.status : '');
   const [comissionPercentageValue, setComissionPercentageValue] = useState(edit ? row2?.comissionPercentageValue : 0);
+  const [partnertypeOptions, setPartnertypeOptions] = useState<Dictionary[]>([]);
 
-  const { register, handleSubmit, setValue, getValues, reset, formState:{errors}} = useForm({
+  const { register, handleSubmit, setValue, reset, formState:{errors}} = useForm({
     defaultValues: {
         id: row2?.customerpartnerid || 0,
         partnerid: row?.partnerid || 0,
@@ -56,7 +57,18 @@ const RegisterClientDialog: React.FC<{
       setValue('comissionpercentage', row2.comissionpercentage)
       setValue('status', row2.status)
     }
-  }, [row2])
+  }, [row2, setValue]);
+
+
+    useEffect(() => {
+        if (multiDataAux?.data?.[5]?.data) {
+            const options = row?.enterprisepartner
+                ? multiDataAux?.data?.[5]?.data
+                : multiDataAux?.data?.[5]?.data.filter(item => item.domainvalue !== 'ENTERPRISE');
+            setPartnertypeOptions(options);
+        }
+    }, [multiDataAux?.data?.[5]?.data, row?.enterprisepartner]);
+
 
   useEffect(() => {
     if (waitSave) {
@@ -79,64 +91,99 @@ const RegisterClientDialog: React.FC<{
     }
 }, [executeRes, waitSave])
 
-function setComissionPercentage(value: string) {
-  if (value === 'ENTERPRISE') {
-    setValue('comissionpercentage', multiDataAux?.data?.[8]?.data?.[0]?.propertyvalue);
-  } else if (value === 'RESELLER') {
-    setValue('comissionpercentage', multiDataAux?.data?.[7]?.data?.[0]?.propertyvalue);
-  } else if (value === 'DEVELOPER') {
-    setValue('comissionpercentage', multiDataAux?.data?.[6]?.data?.[0]?.propertyvalue);
-  }
-}
+    function setComissionPercentage(value: string) {
+        let newCommission = 0;
 
-React.useEffect(() => {
-  register('id')
-  register('corpid', { validate: (value) =>((value && value > 0) ? true : String(t(langKeys.field_required)) + "") });
-  register('orgid', { validate: (value) =>((value && value > 0) ? true : String(t(langKeys.field_required)) + "") });
-  register('partnerid');
-  register('typepartner', { validate: (value) =>((value && value.length>0) ? true : String(t(langKeys.field_required)) + "") });
-  register('billingplan');
-  register('comissionpercentage');
-  register('status')
-}, [register, openModal]);
-  
-const onMainSubmit = handleSubmit((data) => {
-  const callback = () => {
-      dispatch(showBackdrop(true));
-      if(edit) {
-        dispatch(execute(customerByPartnerIns({...data, operation: 'UPDATE'})));
-      } else {
-        dispatch(execute(customerByPartnerIns({...data, operation: 'INSERT'})));
-      }
-      setWaitSave(true);
-  }
-  dispatch(manageConfirmation({
-      visible: true,
-      question: t(langKeys.confirmation_save),
-      callback
-  }))
-});
+        if (multiDataAux?.data) {
+            if (value === 'ENTERPRISE' && multiDataAux?.data?.[8]?.data?.length > 0) {
+                newCommission = multiDataAux?.data?.[8]?.data?.[0]?.propertyvalue || 0;
+            } else if (value === 'RESELLER' && multiDataAux?.data?.[7]?.data?.length > 0) {
+                newCommission = multiDataAux?.data?.[7]?.data?.[0]?.propertyvalue || 0;
+            } else if (value === 'DEVELOPER' && multiDataAux?.data?.[6]?.data?.length > 0) {
+                newCommission = multiDataAux?.data?.[6]?.data?.[0]?.propertyvalue || 0;
+            }
+        }
+        setValue('comissionpercentage', newCommission);
+        setComissionPercentageValue(newCommission);
+    }
 
-const exitConfirmation = (() => {
-  const callback = () => {
-      onMainSubmit()
-  }
-  dispatch(manageConfirmation({
-      visible: true,
-      question: t(langKeys.confirmation_exit),
-      textConfirm: 'Sí',
-      textCancel: 'No',
-      callback: (() => {
-        setOpenModal(false)
-        setOrgId(0)
-        setStatus('');
-        setComissionPercentageValue(0)
-      }),
-      callbackcancel: callback
-  }))
-});
+    useEffect(() => {
+        register('id');
+        register('corpid', {
+            validate: (value) => ((value && value > 0) ? true : String(t(langKeys.field_required)))
+        });
+        register('orgid', {
+            validate: (value) => ((value && value > 0) ? true : String(t(langKeys.field_required)))
+        });
+        register('partnerid');
+        register('typepartner', {
+            validate: (value) => ((value && value.length > 0) ? true : String(t(langKeys.field_required)))
+        });
+        register('billingplan');
+        register('comissionpercentage');
+        register('status');
+    }, [register, openModal]);
 
-  return (
+    const onMainSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            if (edit) {
+                dispatch(execute(customerByPartnerIns({ ...data, operation: 'UPDATE' })));
+            } else {
+                dispatch(execute(customerByPartnerIns({ ...data, operation: 'INSERT' })));
+            }
+            setWaitSave(true);
+        };
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }));
+    });
+
+    useEffect(() => {
+        if (openModal && !edit) {
+            reset({
+                id: 0,
+                partnerid: row?.partnerid || 0,
+                orgid: 0,
+                corpid: 0,
+                typepartner: '',
+                billingplan: '',
+                comissionpercentage: 0,
+                status: 'ACTIVO',
+            });
+            setComissionPercentageValue(0);
+            setOrgId(0);
+            setCorpId(0);
+            setStatus('');
+        }
+    }, [openModal]);
+
+    const exitConfirmation = (() => {
+        const callback = () => {
+            onMainSubmit();
+        };
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_exit),
+            textConfirm: 'Sí',
+            textCancel: 'No',
+            callback: (() => {
+                setOpenModal(false);
+                setOrgId(0);
+                setStatus('');
+                setComissionPercentageValue(0);
+            }),
+            callbackcancel: callback
+        }));
+    });
+
+
+
+
+
+    return (
     <form onSubmit={onMainSubmit}>
       <DialogZyx
         open={openModal}
@@ -179,13 +226,12 @@ const exitConfirmation = (() => {
             <FieldSelect
                 label={t(langKeys.partnertype)}
                 className="col-6"
-                valueDefault={getValues('typepartner') || ''}
-                data={row?.enterprisepartner ? multiDataAux?.data?.[5]?.data : multiDataAux?.data?.[5]?.data.filter(item => item.domainvalue !== 'ENTERPRISE')}
+                valueDefault={row2?.typepartner || ''}
+                data={partnertypeOptions}
                 error={typeof errors?.typepartner?.message === 'string' ? errors?.typepartner?.message : ''}
                 onChange={(value) => {
                     setValue('typepartner', value?.domainvalue || '');
                     setComissionPercentage(value?.domainvalue || '');
-                    setComissionPercentageValue(getValues('comissionpercentage'));
                 }}
                 optionValue="domainvalue"
                 optionDesc="domaindesc"
