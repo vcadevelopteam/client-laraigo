@@ -5476,3 +5476,9 @@ export const iaservicesBulkDel = (ids:string) => ({
     key: "UFN_INTELLIGENTMODELSCONFIGURATION_MASSIVE_DEL",
     parameters: { ids },
 });
+
+export const getLeadProductsSel = () => ({
+    method: "UFN_LEAD_REPORT_PRODUCT_SEL",
+    key: "UFN_LEAD_REPORT_PRODUCT_SEL",
+    parameters: {},
+});

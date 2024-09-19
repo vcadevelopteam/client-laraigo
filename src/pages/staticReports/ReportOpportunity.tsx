@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, {FC, useEffect, useMemo, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
@@ -12,6 +12,7 @@ import {
     setViewChange
 } from "store/main/actions";
 import {
+    getCommChannelLst,
     getReportFilterSel,
 
 } from "common/helpers/requestBodies";
@@ -36,7 +37,7 @@ import {
     exportExcel, getDateCleaned,
 } from "common/helpers";
 import { langKeys } from "lang/keys";
-import {Dictionary, IFetchData} from "@types";
+import {Dictionary, IChannel, IFetchData} from "@types";
 import { useForm } from "react-hook-form";
 import { CellProps } from 'react-table';
 import Graphic from "components/fields/Graphic";
@@ -396,7 +397,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     const [, setOpenSeButtons] = useState(false);
     const [viewSelected2, setViewSelected2] = useState("view-2");
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, distinct: {}, daterange: null });
-
+    const mainMulti = useSelector((state) => state.main.multiData);
     const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
     const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
     const [openDialog, setOpenDialog] = useState(false);
@@ -420,6 +421,11 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     const [selectedChannel, setSelectedChannel] = useState(0);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
 
+    const channels = useMemo(() => {
+        if (!mainMulti.data[2]?.data || mainMulti.data[2]?.key !== "UFN_COMMUNICATIONCHANNEL_LST") return [];
+        return mainMulti.data[2].data as IChannel[];
+    }, [mainMulti.data]);
+
 
     useEffect(() => {
         dispatch(setViewChange("report_opportunity"));
@@ -431,8 +437,8 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                     enddate: dateRangeCreateDate.endDate,
                 }
             ),
-            getReportFilterSel("UFN_COMMUNICATIONCHANNEL_LST", "UFN_COMMUNICATIONCHANNEL_LST", "probando"),
             getReportFilterSel("UFN_DOMAIN_LST_VALORES", "UFN_DOMAIN_LST_VALORES_GRUPOS", "GRUPOS"),
+            getCommChannelLst()
 
         ]));
         return () => {
@@ -593,6 +599,7 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     }, [multiData, allFilters]);
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_LEAD_REPORT_SEL") {
+            console.log("Datos obtenidos de la API:", mainAux.data);
             setDetailCustomReport(mainAux);
             setdataGrid(mainAux.data.map((x) => ({
                 ...x,
@@ -801,22 +808,18 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
                                             >
                                                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                                                     <FieldSelect
-
                                                         label={t(langKeys.report_opportunity_channels)}
                                                         className={classes.filterComponent}
                                                         key={"UFN_COMMUNICATIONCHANNEL_LST"}
                                                         valueDefault={selectedChannel}
-                                                        onChange={(value) =>
-                                                            setValue("channel", value?.typedesc || "ayuda2")
-                                                        }
+                                                        onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
                                                         variant="outlined"
-                                                        data={
-                                                            multiData?.data?.find(x => x.key === "UFN_COMMUNICATIONCHANNEL_LST")?.data || []
-                                                        }
+                                                        data={channels}
                                                         loading={multiData.loading}
                                                         optionDesc={"communicationchanneldesc"}
-                                                        optionValue={"typedesc"}
+                                                        optionValue={"communicationchannelid"}
                                                     />
+
                                                 </div>
                                             </Box>
                                         </Box>

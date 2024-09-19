@@ -9,11 +9,11 @@ import DateFnsUtils from "@date-io/date-fns";
 import { CalendarIcon, DownloadIcon } from "../../icons";
 import {
     exportExcel, getAdviserFilteredUserRol, getColumnsSel, getCommChannelLst,
-    getDashboardFunnelDataSel, getDateCleaned, getLeadsSel, getValuesFromDomain
+    getDashboardFunnelDataSel, getDateCleaned, getLeadProductsSel, getLeadsSel, getValuesFromDomain
 } from "common/helpers";
 import { DateRangePicker, FieldMultiSelect } from "../../components";
 import { Range } from "react-date-range";
-import { Dictionary, IChannel, IDomain } from "../../@types";
+import {Dictionary, IChannel, IDomain, IProduct} from "../../@types";
 import { useSelector } from "../../hooks";
 import { langKeys } from "../../lang/keys";
 import { getCollectionAux, getMultiCollection } from "../../store/main/actions";
@@ -209,8 +209,8 @@ const DashboardOpportunityFunnel: FC = () => {
     }, [mainMulti.data]);
 
     const products = useMemo(() => {
-        if (!mainMulti.data[4]?.data || mainMulti.data[4]?.key !== "UFN_DOMAIN_LST_VALORES") return [];
-        return mainMulti.data[4].data as IDomain[];
+        if (!mainMulti.data[4]?.data || mainMulti.data[4]?.key !== "UFN_LEAD_REPORT_PRODUCT_SEL") return [];
+        return mainMulti.data[4].data as IProduct[];
     }, [mainMulti.data]);
 
 
@@ -246,7 +246,7 @@ const DashboardOpportunityFunnel: FC = () => {
         });
         const commChannelLst = getCommChannelLst();
         const adviserFilteredUserRol = getAdviserFilteredUserRol();
-        const valuesFromDomain = getValuesFromDomain("OPORTUNIDADPRODUCTOS");
+        const valuesFromDomain = getLeadProductsSel();
 
         dispatch(getMultiCollection([columnsSel, leadsSel, commChannelLst, adviserFilteredUserRol, valuesFromDomain]));
     }, [])
@@ -383,17 +383,17 @@ const DashboardOpportunityFunnel: FC = () => {
                             label={t(langKeys.product, { count: 2 })}
                             className={classes.filterComponent}
                             valueDefault={products.filter((product) =>
-                                temporaryFilter.products.split(",").includes(String(product.domainvalue))
+                                temporaryFilter.products.split(",").includes(String(product.productids))
                             )}
                             onChange={(value) => {
-                                const productsValue = value?.map((v) => v.domainvalue).join(",") || "";
+                                const productsValue = value?.map((v) => v.productids).join(",") || "";
                                 setValue("products", productsValue);
                             }}
                             variant="outlined"
                             data={Array.isArray(products) ? products : []}
                             loading={multiData.loading}
-                            optionDesc={"domaindesc"}
-                            optionValue={"domainvalue"}
+                            optionDesc={"title"}
+                            optionValue={"productids"}
                         />
 
 
