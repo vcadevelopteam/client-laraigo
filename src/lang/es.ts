@@ -6435,6 +6435,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   topkdescription: 'Un valor bajo reduce la probabilidad de que el modelo se desvíe del tema consultado.',
   repetitionpenalty: 'Penalización por Repetición',
   repetitionpenaltydescription: 'Es un factor que se aplica para disuadir al modelo de generar texto o frases repetitivas. El valor 1 significa que no existe penalización.',
+
+  invalid: 'Inválido',
+  assistantnamedesc: 'Asigna un nombre para el asistente que registrarás.',
+  assistantdescriptiondesc: 'Asigna una breve descripción al asistente que registrarás.',
+  assistantconnectorsdesc: 'Selecciona el conector vinculado a tu asistente, este se configura en "Conectores IA".',
+  assistantstatussdesc: 'Selecciona el estado de tu asistente, si deseas que se encuentre activo o inactivo.',
+  assistantbasemodeldesc: 'Selecciona el modelo base de tu asistente, este será el motor de sus respuestas.',
+
+
 };
 
 const esResource: ResourceLanguage = {

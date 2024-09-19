@@ -186,7 +186,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap'}}>      
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.name)}</span>
-                        <span>{t('Asigna un nombre para el asistente que registrarás.')}</span>
+                        <span>{t(langKeys.assistantnamedesc)}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                             <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldEdit
@@ -206,7 +206,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     </div>
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.description)}</span>
-                        <span>{t('Asigna una breve descripción al asistente que registrarás.')}</span>
+                        <span>{t(langKeys.assistantdescriptiondesc)}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                             <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldEdit
@@ -229,7 +229,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap' }}>      
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.connectors)}</span>
-                        <span>{'Selecciona el conector vinculado a tu asistente, este se configura en "Conectores IA".'}</span>
+                        <span>{t(langKeys.assistantconnectorsdesc)}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                         
                             <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
@@ -264,9 +264,8 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     </div>          
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
-                        <span>{'Selecciona el estado de tu asistente, si deseas que se encuentre activo o inactivo.'}</span>
+                        <span>{t(langKeys.assistantstatussdesc)}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                        
                             <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
                                 <FieldSelect
                                     data={(multiDataAux?.data?.[0]?.data||[])}
@@ -288,7 +287,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>      
                     <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.basemodel)}</span>
-                        <span>{'Selecciona el modelo base de tu asistente, este será el motor de sus respuestas.'}</span>
+                        <span>{t(langKeys.assistantbasemodeldesc)}</span>
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                         
                             <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>

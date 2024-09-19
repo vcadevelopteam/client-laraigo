@@ -89,7 +89,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     ];      
     const [encryptedApikey, setEncryptedApikey] = useState<string | null>(null)
     const [generalprompt, setGeneralPrompt] = useState<string | null>(null)
-    const [documentId, setDocumentId] = useState<string | null>(null)
     const [waitSaveCreateAssistant, setWaitSaveCreateAssistant] = useState(false)
     const [waitSaveCreateAssistantFile, setWaitSaveCreateAssistantFile] = useState(false)
     const [waitSaveCreateAssistantAssignFile, setWaitSaveCreateAssistantAssignFile] = useState(false)
@@ -158,7 +157,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             top_k: row?.top_k || 0,
             repetition_penalty: row?.repetition_penalty || 0,
             chunk_size: row?.chunk_size || 1024,
-            chunk_overlap: row?.chunk_overlap || 500,
+            chunk_overlap: row?.chunk_overlap || 20,
             apikey: row?.basemodel.startsWith('gpt') ? (edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '') : (edit ? row?.apikey : ''),
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
@@ -183,13 +182,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('negativeprompt');
         register('generalprompt');
-        register('temperature', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2.0) || t(langKeys.required) });
+        register('temperature', { validate: (value) => (!value ? t(langKeys.required) : (parseFloat(value) <= 0 || parseFloat(value) > 2.0 ? t(langKeys.invalid) : true)) });
         register('max_tokens', { validate: (value) => (value && value > 0) || t(langKeys.required) });
-        register('top_p', { validate: (value) => (value && value > 0 && parseFloat(value) <= 1.0) || t(langKeys.required) });
-        register('top_k', { validate: (value) => (value && value > 0 && parseFloat(value) <= 100) || t(langKeys.required) });
-        register('repetition_penalty', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2) || t(langKeys.required) });
-        register('chunk_size');
-        register('chunk_overlap');
+        register('top_p', { validate: (value) => (!value ? t(langKeys.required) : (parseFloat(value) <= 0 || parseFloat(value) > 1.0 ? t(langKeys.invalid) : true)) });
+        register('top_k', { validate: (value) => (!value ? t(langKeys.required) : (parseFloat(value) < 0 || parseFloat(value) > 100 ? t(langKeys.invalid) : true)) });
+        register('repetition_penalty', { validate: (value) => (!value ? t(langKeys.required) : (parseInt(value, 10) !== 1 && parseInt(value, 10) !== 2 ? t(langKeys.invalid) : true)) });
+        register('chunk_size', { validate: (value) => (!value ? t(langKeys.required) : (parseInt(value, 10) <= 0 ? t(langKeys.invalid) : true)) });
+        register('chunk_overlap', { validate: (value) => (!value ? t(langKeys.required) : (parseInt(value, 10) <= 0 ? t(langKeys.invalid) : true)) });        
         register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('retrieval');
         register('codeinterpreter');
@@ -796,7 +795,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} provider={selectedProvider} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} set_chunk_size={(value) => setValue('chunk_size', value)} set_chunk_overlap={(value) => setValue('chunk_overlap', value)} chunk_size={getValues('chunk_size')} chunk_overlap={getValues('chunk_overlap')} provider={selectedProvider} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} provider={selectedProvider} getValues={getValues} setValue={setValue} errors={errors} />
                 </AntTabPanelAux>
             </form>
         </>

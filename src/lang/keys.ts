@@ -6429,6 +6429,15 @@ export const langKeys = {
   repetitionpenalty: 'repetitionpenalty',
   repetitionpenaltydescription: 'repetitionpenaltydescription',
 
+  invalid: 'invalid',
+  assistantnamedesc: 'assistantnamedesc',
+  assistantdescriptiondesc: 'assistantdescriptiondesc',
+  assistantconnectorsdesc: 'assistantconnectorsdesc',
+  assistantstatussdesc: 'assistantstatussdesc',
+  assistantbasemodeldesc: 'assistantbasemodeldesc',
+
+
+
 };
 
 export type LangKeys = typeof langKeys;

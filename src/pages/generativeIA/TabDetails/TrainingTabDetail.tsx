@@ -13,7 +13,7 @@ import { FieldEdit } from "components";
 import { execute, uploadFile } from "store/main/actions";
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from "@types";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { insAssistantAiDoc } from "common/helpers";
 import { CellProps } from "react-table";
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
@@ -26,7 +26,6 @@ import { addFile, assignFile } from "store/gpt/actions";
 import { addFilesLlama, deleteFileLlama } from "store/llama/actions";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { addFilesLlama3, deleteFileLlama3 } from "store/llama3/actions";
-
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -147,6 +146,10 @@ const useStyles = makeStyles((theme) => ({
     gridWidth: {
         minWidth: 500
     },
+    gridWidth2: {
+        minWidth: 200,
+        width: '100%', 
+    },    
     block10: {
         height: 10
     },
@@ -217,11 +220,10 @@ interface TrainingTabDetailProps {
     fetchAssistants: () => void;
     edit: boolean;
     setFile: (data: Dictionary[]) => void;
-    set_chunk_size: (value: number) => void;  
-    set_chunk_overlap: (value: number) => void;
-    chunk_size: number;
-    chunk_overlap: number;
     provider: string;
+    getValues: (field: string) => any;
+    setValue: (field: any, value: any) => void;
+    errors: FieldErrors
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -230,17 +232,15 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     fetchAssistants,
     edit,
     setFile,
-    set_chunk_size,
-    set_chunk_overlap,
-    chunk_size,
-    chunk_overlap,
-    provider
+    provider,
+    getValues,
+    setValue,
+    errors
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveFileDelete, setWaitSaveFileDelete] = useState(false);
     const [viewSelected, setViewSelected] = useState('main');
@@ -286,7 +286,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [selectedRows]);
 
-    const { register, handleSubmit, setValue, getValues } = useForm({
+    const { register, handleSubmit, setValue: setFormValue, getValues: getFormValues } = useForm({
         defaultValues: {
             assistantaiid: row?.assistantaiid,
             id: 0,
@@ -298,7 +298,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             operation: 'INSERT',
         }
     });
-
     React.useEffect(() => {
         register('assistantaiid');
         register('id');
@@ -308,7 +307,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         register('type');
         register('status');
         register('operation');
-    }, [register, setValue]);
+    }, [register, setFormValue]);
 
     const onClickAttachment = useCallback(() => {
         const input = document.getElementById('attachmentInput');
@@ -456,7 +455,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         setFile(fileAttachments)
     }
 
-    const handleUpload = handleSubmit(async (data) => {
+    const handleUpload = handleSubmit(async () => {
         const callback = async () => {
             dispatch(showBackdrop(true));
             dispatch(addFile({
@@ -587,34 +586,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeFiles, waitSaveFileDelete]);
 
-    const handleDelete = (row2: Dictionary) => {
-        const callback = async () => {
-            dispatch(showBackdrop(true));
-            dispatch(deleteFile({
-                file_id: row2.fileid,
-                apikey: row?.apikey,
-            }))
-            setRowAux(row2)
-            setWaitSaveFileDelete(true)
-        };
-        const callbackMeta = async () => {
-            dispatch(showBackdrop(true));
-            dispatch(deleteFileLlama({
-                collection: row?.name,
-                filename: row2?.description,
-            }))
-            setRowAux(row2)
-            setWaitSaveFileDeleteLlama(true)
-        };
-        dispatch(
-            manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_delete),
-                callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
-            })
-        );
-    };
-
     useEffect(() => {
         if (waitSaveFileDeleteLlama) {
             if (!llamaResult.loading && !llamaResult.error) {
@@ -676,22 +647,6 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     const columns = React.useMemo(
         () => [
-            /*{
-                accessor: "assistantaidocumentid",
-                NoFilter: true,
-                disableGlobalFilter: true,
-                isComponent: true,
-                minWidth: 60,
-                width: "1%",
-                Cell: (props: CellProps<Dictionary>) => {
-                  const row = props.cell.row.original;
-                  return (
-                    <TemplateIcons
-                      deleteFunction={() => handleDelete(row)}
-                    />
-                  );
-                },
-            },*/
             {
                 Header: t(langKeys.name),
                 accessor: 'description',
@@ -768,20 +723,20 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
-    const handleDrop = (event) => {
+    const handleDrop = (event: Dictionary) => {
         event.preventDefault();
         const files = event.dataTransfer.files;
         onChangeAttachment(files);
     };
 
-    const handleDragOver = (event) => {
+    const handleDragOver = (event: Dictionary) => {
         event.preventDefault();
     };
 
-    const handleRemoveAttachment = (index) => {
+    const handleRemoveAttachment = (index: number) => {
         setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
-//get values code inter true
+
     const handleUploadGeneral = () => {        
         if(edit) {
             if(conector?.provider === 'Open AI') {
@@ -845,7 +800,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     </div>
                                 </div>
                                 <div className={classes.cardsContainer}>
-                                    <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
+                                    <Grid item xs={12} sm={8} md={8} lg={6} className={classes.gridWidth2}>
                                         <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
                                             <div className={classes.cardContent}>
                                                 <UploadFileIcon className={classes.logo} />
@@ -875,8 +830,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                             variant="outlined"
                                             size="small"
                                             width={80}
-                                            valueDefault={chunk_size}
-                                            onChange={(value) => set_chunk_size(value)}
+                                            valueDefault={getValues('chunk_size')}
+                                            onChange={(value) => setValue('chunk_size', value)}
+                                            error={errors?.chunk_size?.message}
                                         />
                                 </div>
                                 <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que puede contener el fragmento de la base de conocimiento subida que se le comparte al asistente, ya que cuando los documentos se incorporan a la base de conocimiento, estos se dividen en partes mas pequeñas con cierta suposición.'}</span></div>
@@ -890,8 +846,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                         variant="outlined"
                                         size="small"
                                         width={80}
-                                        valueDefault={chunk_overlap}
-                                        onChange={(value) => set_chunk_overlap(value)}
+                                        valueDefault={getValues('chunk_overlap')}
+                                        onChange={(value) => setValue('chunk_overlap', value)}
+                                        error={errors?.chunk_overlap?.message}
                                     />
                                 </div>
                                 <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chuck adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>
@@ -1136,7 +1093,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 <FieldEdit
                                     variant="outlined"
                                     label="URL"
-                                    valueDefault={getValues('url')}
+                                    valueDefault={getFormValues('url')}
                                     style={{ flexGrow: 1 }}
                                     disabled={true}
                                 />
