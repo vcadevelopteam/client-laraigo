@@ -695,7 +695,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 variant="outlined"
                                                 size="small"
                                                 width={80}
-                                                valueDefault={selectedCardData?.top_k}
+                                                valueDefault={getValues('top_k')}
                                                 onChange={(value) => setValue('top_k', value)}
                                                 error={errors?.top_k?.message}
                                             />
@@ -716,7 +716,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 variant="outlined"
                                                 size="small"
                                                 width={80}
-                                                valueDefault={selectedCardData?.repetition_penalty}
+                                                valueDefault={getValues('repetition_penalty')}
                                                 onChange={(value) => setValue('repetition_penalty', value)}
                                                 error={errors?.repetition_penalty?.message}
                                             />

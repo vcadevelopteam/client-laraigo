@@ -16,7 +16,7 @@ import CreateAssistant from "./CreateAssistant";
 import ChatAI from "./ChatAI";
 import { execute, getCollection, getMultiCollectionAux } from "store/main/actions";
 import { assistantAiSel, exportExcel, getIntelligentModelsSel, getValuesFromDomain, insAssistantAi } from "common/helpers";
-import { Dictionary } from "@types";
+import { Dictionary, IActionCall } from "@types";
 import { CellProps } from "react-table";
 import { deleteMassiveAssistant } from "store/gpt/actions";
 import { massiveDeleteCollection } from "store/llama/actions";
@@ -200,7 +200,7 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             }
         }
     }, [llamaResult, waitSaveAssistantDeleteLlama]);
-    
+
     const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
         const callback = async () => {
             dispatch(showBackdrop(true));  
@@ -223,6 +223,8 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             });
             setWaitSave(true);
         }
+        console.log('ibm borrando', dataSelected[0].apikey)
+
 
         dispatch(
             manageConfirmation({
@@ -295,44 +297,44 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         );
     };
 
-    const handleDeleteBothSelection = (gptObjects: Dictionary[], watsonObjetcs: Dictionary[], llama3Objects: Dictionary[]) => {
+    const handleDeleteBothSelection = (gptObjects: Dictionary[], watsonObjects: Dictionary[], llama3Objects: Dictionary[]) => {
+        type Action = (args: { names: string[] }) => IActionCall
+        const processDeletion = async (objects: Dictionary[], filterFn: (obj: Dictionary) => boolean, mapFn: (obj: Dictionary) => string, action: Action) => {
+            const items = objects.filter(filterFn).map(mapFn);
+            if (items.length > 0) {
+                const actionResult = action({ names: items });
+                await dispatch(actionResult);
+            }
+        }    
         const callback = async () => {
-            dispatch(showBackdrop(true));  
-            const collections = watsonObjetcs.map(obj=> obj.name)
-            dispatch(massiveDeleteCollection({
-                names: collections,
-            }))
-            const collections3 = llama3Objects.map(obj=> obj.name)
-            dispatch(massiveDeleteCollection3({
-                names: collections3,
-            }))
-            const codes = gptObjects.map(obj=> obj.code)
-            dispatch(deleteMassiveAssistant({
-                ids: codes,
-                apikey: gptObjects[0].apikey,            
-            }))
-            const dataSelected = gptObjects.concat(watsonObjetcs, llama3Objects)
-            dataSelected.map(async (row) => {
-                dispatch(
-                    execute(insAssistantAi({
-                        ...row,
-                        id: row.assistantaiid,
-                        operation: "DELETE",
-                        status: "ELIMINADO",
-                        type: "NINGUNO" 
-                    }))
-                );
-            });
-            setWaitSave(true);
-        }
-
-        dispatch(
-            manageConfirmation({
-              visible: true,
-              question: t(langKeys.confirmation_delete_all),
-              callback,
-            })
-        );
+            dispatch(showBackdrop(true));
+            try {
+                await processDeletion(watsonObjects, obj => !obj.basemodel.startsWith('gpt') && !obj.basemodel.startsWith('llama'), obj => obj.name, massiveDeleteCollection);
+                await processDeletion(llama3Objects, obj => obj.basemodel.startsWith('llama'), obj => obj.name, massiveDeleteCollection3);
+                await processDeletion(gptObjects, obj => obj.basemodel.startsWith('gpt'), obj => obj.code, data => deleteMassiveAssistant({ ids: data, apikey: gptObjects[0].apikey }));                
+                const dataSelected = [...gptObjects, ...watsonObjects, ...llama3Objects];
+                const processedIds = new Set();        
+                for (const row of dataSelected) {
+                    if (!processedIds.has(row.assistantaiid)) {
+                        processedIds.add(row.assistantaiid);
+                        await dispatch(execute(insAssistantAi({ 
+                            ...row, 
+                            id: row.assistantaiid, 
+                            operation: "DELETE", 
+                            status: "ELIMINADO", 
+                            type: "NINGUNO" 
+                        })));
+                    }
+                }        
+                setWaitSave(true);
+            } catch (error: unknown) {
+                const message = error instanceof Error ? error.message : "Ocurrió un error desconocido";
+                dispatch(showSnackbar({ show: true, severity: "error", message }));
+            } finally {
+                dispatch(showBackdrop(false));
+            }
+        }       
+        dispatch(manageConfirmation({ visible: true, question: t(langKeys.confirmation_delete_all), callback }));
     }
     
     const columnsGenerativeIA = React.useMemo(
