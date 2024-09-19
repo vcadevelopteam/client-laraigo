@@ -43,7 +43,7 @@ import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
-import { useStyles } from 'pages/SignIn';
+// import { useStyles } from 'pages/SignIn';
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
@@ -899,7 +899,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2="" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2 = "" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -1123,7 +1123,7 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small',helperText2="", helperText="" }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small', helperText2 = "", helperText = "" }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
     const classes = useStyles();
@@ -1165,14 +1165,14 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     tagValue.map((option, index) => (
                         disabled ? (
                             <Chip
-                                key={index}                               
+                                key={index}
                                 label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
                                 className={classes.customChip}
-                                style={{ margin: '0.4rem 0.5rem 0.4rem 0', userSelect: 'text'}}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0', userSelect: 'text' }}
                                 onMouseDown={(event) => event.stopPropagation()}
                                 onClick={(event) => event.stopPropagation()}
                             />
-                          ) : (
+                        ) : (
                             <Chip
                                 key={index}
                                 label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
@@ -1180,7 +1180,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                                 className={classes.chip}
                                 style={{ margin: '0.4rem 0.5rem 0.4rem 0' }}
                             />
-                          )                       
+                        )
                     )) : undefined
                 }
                 renderOption={(option, { selected }: any) => (
@@ -1814,7 +1814,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
-    
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
@@ -1866,7 +1866,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                             }}
                             recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
                             exceptEmojis={emojisNoShow.length > 0 ? emojisNoShow?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
-                            // emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
+                        // emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
                 )}
