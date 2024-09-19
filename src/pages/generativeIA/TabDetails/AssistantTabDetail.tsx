@@ -237,6 +237,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                                     data={multiDataAux?.data?.[3]?.data.filter(item => (item.type === 'LARGE LANGUAGE MODEL' || item.type === 'Gen AI')) || []}
                                     variant="outlined"
                                     optionDesc="name"
+                                    disabled={row ? true: false}
                                     optionValue="id"
                                     valueDefault={getValues('intelligentmodelsid')}
                                     onChange={(value) => {
@@ -302,7 +303,8 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                                     }
                                     variant="outlined"
                                     optionDesc="domaindesc"
-                                    optionValue="domainvalue"     
+                                    optionValue="domainvalue"  
+                                    disabled={row ? true: false}   
                                     valueDefault={getValues('basemodel')}
                                     onChange={(value) => {
                                         if(value) {
