@@ -195,7 +195,7 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         overflowX: 'scroll',
         cursor: 'grab',
-    },    
+    },
     normaltext: {
         fontSize: '0.88rem',
         display:'flex',
@@ -389,10 +389,10 @@ interface CustomTitleHelperProps {
     titlestyle?: React.CSSProperties;
 }
 
-export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText, titlestyle }) => {
     const classes = useStyles();
     return (
-        <span className={classes.normaltext}>
+        <span className={classes.subtittles} style={titlestyle}>
             {title}
             {helperText ? (
                 <Tooltip title={helperText} arrow placement="top" >
