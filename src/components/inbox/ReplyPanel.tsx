@@ -6,7 +6,7 @@ import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
 import { useDispatch } from "react-redux";
-import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock, updateInteractionByUUID } from "store/inbox/actions";
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock, updateInteractionByUUID, getInnapropiateWordTicketLst, resetInnapropiateWordTicketLst } from "store/inbox/actions";
 import { uploadFile, resetUploadFile } from "store/main/actions";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import InputBase from "@material-ui/core/InputBase";
@@ -1014,6 +1014,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const groupInteractionList = useSelector((state) => state.inbox.interactionList);
     const [typeHotKey, setTypeHotKey] = useState("");
     const quickReplies = useSelector((state) => state.inbox.quickreplies);
+    const innapropiateWords = useSelector((state) => state.inbox.inappropriateWords);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([]);
     const [propertyCopilotLaraigo, setPropertyCopilotLaraigo] = useState(false);
     const [emojiFavorite, setemojiFavorite] = useState<string[]>([]);
@@ -1035,6 +1036,15 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
     const inputRef = useRef(null);
+
+
+    useEffect(() => {
+        dispatch(getInnapropiateWordTicketLst());
+
+        return () => {
+            dispatch(resetInnapropiateWordTicketLst());
+        };
+    }, [])
 
     const handleInputChange = (e: any) => {
         const lines = e.target.value.split('\n').length;
@@ -1145,6 +1155,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         );
     }, [dispatch, ticketSelected, agentSelected]);
 
+    function findDefaultAnswer(array: any, searchString: string) {
+        const found = array.find(item => searchString.includes(item.description.toLocaleLowerCase()));
+        return found ? found.defaultanswer : "";
+    }
+
     const triggerReplyMessage = () => {
         if (copyEmails.error) return;
         setNumRows(2);
@@ -1248,11 +1263,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                     setFiles([]);
                 }
 
-                const wordlist = textCleaned.split(" ").map((x) => x.toLowerCase());
-
-                const errormessage =
-                    inappropiatewordsList.find((x) => wordlist.includes(x.description.toLowerCase()))?.defaultanswer ||
-                    "";
+                const errormessage = findDefaultAnswer(inappropiatewordsList, textCleaned.toLocaleLowerCase())
+                debugger
 
                 if (textCleaned) {
                     if (!errormessage) {
@@ -1325,7 +1337,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             setemojiNoShow(multiData?.data?.[10]?.data.filter((x) => x.restricted).map((x) => x.emojihex) || []);
             setemojiFavorite(multiData?.data?.[10]?.data.filter((x) => x.favorite).map((x) => x.emojihex) || []);
             setPropertyCopilotLaraigo(multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMECOPILOTLARAIGO")?.data?.[0]?.propertyvalue === "1")
-            setinnappropiatewordsList(multiData?.data?.[11]?.data || []);
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
     }, [multiData]);
@@ -1335,6 +1346,12 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         const favoritequickreplies = quickReplies.data.filter(x=>x.favorite)
         setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
     }, [quickReplies, ticketSelected]);
+
+    useEffect(() => {
+        if(!innapropiateWords.loading && !innapropiateWords.error){
+            setinnappropiatewordsList(innapropiateWords?.data||[])
+        }
+    }, [innapropiateWords]);
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {

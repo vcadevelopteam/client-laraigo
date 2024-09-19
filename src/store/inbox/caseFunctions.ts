@@ -1436,3 +1436,33 @@ export const getDataQuickrepliesReset = (state: IState): IState => ({
     ...state,
     quickreplies: initialState.quickreplies,
 });
+
+export const getDataInnapropiatewords = (state: IState): IState => ({
+    ...state,
+    inappropriateWords: { ...state.inappropriateWords, loading: true, error: false },
+});
+
+export const getDataInnapropiatewordsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    inappropriateWords: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getDataInnapropiatewordsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    inappropriateWords: {
+        ...state.inappropriateWords,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getDataInnapropiatewordsReset = (state: IState): IState => ({
+    ...state,
+    inappropriateWords: initialState.inappropriateWords,
+});

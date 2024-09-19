@@ -78,6 +78,7 @@ export interface IState {
     quickreplies: IListState<Dictionary>;
     searchTerm: string;
     pinnedmessages: any;
+    inappropriateWords: IListState<Dictionary>;
 }
 
 export const initialState: IState = {
@@ -129,7 +130,8 @@ export const initialState: IState = {
     alertTMO: {},
     quickreplies: initialListState,
     searchTerm: "",
-    pinnedmessages: []
+    pinnedmessages: [],
+    inappropriateWords: initialListState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -293,4 +295,9 @@ export default createReducer<IState>(initialState, {
     
     [actionTypes.SET_LIBRARY]: caseFunctions.setLibraryByUser,
     [actionTypes.UPDATE_INTERACTION_UUID]: caseFunctions.updateInteractionByUUID,
+
+    [actionTypes.GET_INNAPROPIATEWORDS]: caseFunctions.getDataInnapropiatewords,
+    [actionTypes.GET_INNAPROPIATEWORDS_SUCCESS]: caseFunctions.getDataInnapropiatewordsSuccess,
+    [actionTypes.GET_INNAPROPIATEWORDS_FAILURE]: caseFunctions.getDataInnapropiatewordsFailure,
+    [actionTypes.GET_INNAPROPIATEWORDS_RESET]: caseFunctions.getDataInnapropiatewordsReset,
 });
