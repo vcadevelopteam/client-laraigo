@@ -1,6 +1,6 @@
 import { DialogZyx, FieldEdit, FieldSelect } from "components";
 import { langKeys } from "lang/keys";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import { execute } from "store/main/actions";
 import { useDispatch } from "react-redux";
@@ -229,6 +229,10 @@ const RegisterClientDialog: React.FC<{
                 valueDefault={row2?.typepartner || ''}
                 data={partnertypeOptions}
                 error={typeof errors?.typepartner?.message === 'string' ? errors?.typepartner?.message : ''}
+                onChange={(value) => {
+                    setValue('typepartner', value?.domainvalue || '');
+                    setComissionPercentage(value?.domainvalue || '');
+                }}
                 optionValue="domainvalue"
                 optionDesc="domaindesc"
             />
