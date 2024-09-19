@@ -6507,6 +6507,12 @@ const translation: LangKeys = {
   modelplaceholder: 'Write something to test your assistant model.',
   uniqueexamplesuserintention: 'Add unique examples that the user could say. (Pro Tip: Add at least 5 unique examples)',
   annotateentities: 'Annotate entities',
+  entitydesctooltop: 'Select or type the entity related to the intent',
+  entitynametooltip2: "Name your entity to match the category of values ​​it will detect",
+  valuesynonymhelper: "Agrega una palabra clave que esté asociado a la entidad",
+  sinonimshelper11: "Add synonyms or validations to refer to the same entity value",
+  dictionary: "Dictionary",
+  annotations: "Annotations",
 };
 
 const enResource: ResourceLanguage = {

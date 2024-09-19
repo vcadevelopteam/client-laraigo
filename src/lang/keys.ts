@@ -6450,6 +6450,12 @@ export const langKeys = {
   modelplaceholder: 'modelplaceholder',
   uniqueexamplesuserintention: 'uniqueexamplesuserintention',
   annotateentities: 'annotateentities',
+  entitydesctooltop: 'entitydesctooltop',
+  entitynametooltip2: "entitynametooltip2",
+  valuesynonymhelper: "valuesynonymhelper",
+  sinonimshelper11: "sinonimshelper11",
+  dictionary: "dictionary",
+  annotations: "annotations",
 };
 
 export type LangKeys = typeof langKeys;

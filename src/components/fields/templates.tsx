@@ -364,6 +364,7 @@ interface TemplateAutocompleteProps extends InputProps {
     limitTags?: number;
     multiline?: boolean;
     orderbylabel?: boolean;
+    freeSolo?: boolean;
 }
 
 interface TemplateAutocompletePropsDisabled extends InputProps {
@@ -920,7 +921,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2="" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2="", freeSolo = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -992,6 +993,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                 filterSelectedOptions
                 style={style}
                 fullWidth
+                freeSolo = {freeSolo}
                 {...fregister}
                 disabled={disabled}
                 value={data?.length > 0 ? value : null}
@@ -999,6 +1001,12 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     if (readOnly) return;
                     setValue(newValue);
                     onChange && onChange(newValue);
+                }}
+                onInputChange={(_, newInputValue) => {
+                    if (freeSolo && !readOnly) {
+                        setValue({ [optionValue]: newInputValue, [optionDesc]: newInputValue });
+                        onChange && onChange({ [optionValue]: newInputValue, [optionDesc]: newInputValue });
+                    }
                 }}
                 getOptionSelected={(option, value) => option[optionValue] === value[optionValue]}
                 onBlur={onBlur}

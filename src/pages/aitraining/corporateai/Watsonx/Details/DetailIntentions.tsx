@@ -2,25 +2,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import { DialogZyx, FieldEdit, IOSSwitch, TemplateBreadcrumbs, TitleDetail } from 'components';
+import { DialogZyx, FieldEdit, FieldSelect, IOSSwitch, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Box, Button, makeStyles, TextField, Tooltip } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Dictionary, IRequestBody } from '@types';
+import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { convertLocalDate } from 'common/helpers';
-import { execute, getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
-import { rasaIntentIns, watsonxModelItemSel } from 'common/helpers/requestBodies';
+import { watsonxIntentDetailSel } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
-import { downloadrasaia, uploadrasaia } from 'store/rasaia/actions';
-import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
-import { ModelTestDrawer } from '../ModelTestDrawer';
-import { getItemsWatson } from 'store/watsonx/actions';
+import { createNewMention, getItemsDetail, insertIntentwatsonx, resetItemsDetail } from 'store/watsonx/actions';
 
 
 interface RowSelected {
@@ -57,33 +53,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const IntentionCell: React.FC<{ row: any, index: number, openModalEntity: (entity: any, index: number) => void }> = ({ row, index, openModalEntity }) => {
-    const wordSeparation = [];
-    let startIndex = 0;
-    const classes = useStyles();
-
-    while (true) {
-        const delimiterIndex = row?.texto.indexOf('[', startIndex);
-
-        if (delimiterIndex === -1) {
-            wordSeparation.push(row?.texto.slice(startIndex));
-            break;
-        }
-
-        wordSeparation.push(row?.texto.slice(startIndex, delimiterIndex));
-        wordSeparation.push('[' + row?.texto.slice(delimiterIndex + '['.length, row?.texto.indexOf("]", delimiterIndex) + 1));
-
-        startIndex = row?.texto.indexOf("]", delimiterIndex) + 1;
-    }
-    return <label>{wordSeparation.map((x: any, i: number) => {
-        if (x.includes('[')) {
-            return <label className={classes.labellink} onClick={() => openModalEntity(row, index)}>{x}</label>
-        } else {
-            return <>{x}</>
-        }
-    })}</label>
-}
-
 export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -91,38 +60,33 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
     const [openModal, setOpenModal] = useState(false);
     const [showEntities, setShowEntities] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    const [intentionIndex, setIntentionIndex] = useState(-1);
+    const [selectedWord, setSelectedWord] = useState<any>(null);
+    const mainResultWatson = useSelector(state => state.watson.items);
+    const selectedSkill = useSelector(state => state.watson.selectedRow);
+    const [createdEntities, setCreatedEntities] = useState<any>([]);
     const [newIntention, setnewIntention] = useState("");
-    const [newEntity, setNewEntity] = useState<Dictionary>({
-        entity: "",
-        description: "",
-        value: "",
-    });
-    const [examples, setexamples] = useState(row?.intent_examples || []);
-    const mainResult = useSelector(state => state.main.mainAux);
+    const [newEntity, setNewEntity] = useState("");
+    const [examples, setexamples] = useState<any>([]);
+    const mainResult = useSelector(state => state.watson.itemsdetail);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const executeResult = useSelector(state => state.main.execute);
-    const selectionKey = "texto"
+    const executeResult = useSelector(state => state.watson.intent);
+    const selectionKey = "value"
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } , watch} = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, watch } = useForm({
         defaultValues: {
-            type: 'NINGUNO',
-            watsonid: row?.watsonid || 0,
-            rasaid: row?.rasaid || 0,
+            watsonid: selectedSkill.watsonid,
+            watsonitemid: row?.watsonitemid || 0,
+            operation: row ? "UPDATE" : "INSERT",
             item_name: row?.item_name || '',
             description: row?.description || '',
-            operation: row ? "EDIT" : "INSERT",
-            status: "ACTIVO",
         }
     });
 
     const item_name_watch = watch("item_name");
 
     React.useEffect(() => {
-        register('type');
         register('watsonid');
-        register('status');
         register('operation');
         register('item_name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description');
@@ -145,30 +109,23 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
     }, [executeResult, waitSave])
 
     useEffect(() => {
-        console.log(showEntities)
-    }, [showEntities])
+        if (!!row?.watsonitemid) {
+            dispatch(getItemsDetail(watsonxIntentDetailSel(row?.watsonitemid)))
+        }
+        return () => {
+            dispatch(resetItemsDetail());
+        }; 
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.loading && !mainResult.error) {
+            setexamples(mainResult.data)
+        }
+    }, [mainResult])
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            let entitiesList: any[] = []
-            examples.forEach((item: any) => {
-                item.entidades.forEach((entidad: any) => {
-                    entitiesList.push(entidad);
-                });
-            });
-            let uniqueEntities: any[] = []
-            let uniqueValues: any[] = []
-            entitiesList.forEach((item: any) => {
-                if (!uniqueEntities.includes(item.entity)) {
-                    uniqueEntities.push(item.entity);
-                }
-                if (!uniqueValues.includes(item.value)) {
-                    uniqueValues.push(item.value);
-                }
-            });
-            let tempexamples = examples
-            tempexamples.forEach((e: any) => delete e.updatedate)
-            dispatch(execute(rasaIntentIns({ ...data, intent_examples: examples, entity_examples: uniqueEntities.length, entities: uniqueEntities.join(","), entity_values: uniqueValues.join(",") })))
+            dispatch(insertIntentwatsonx({...data, detail: examples}))
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -180,58 +137,78 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
         }))
     });
 
-    const addtoTable = () => {
-        if (!!newEntity.entity.trim() && !!newEntity.value.trim()) {
-            let auxExamples = examples
-            auxExamples[intentionIndex].entidades = [newEntity]
-            setexamples(auxExamples)
-            setNewEntity({
-                entity: "",
-                description: "",
-                value: "",
-            });
-            setOpenModal(false)
-        } else {
-            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.errorRasaEntity) }))
-        }
-    }
-
 
     const columns = React.useMemo(
         () => [
             {
                 Header: t(langKeys.userexample),
-                accessor: 'texto',
+                accessor: 'value',
                 width: "auto",
                 NoFilter: true,
                 Cell: (props: any) => {
                     const index = props.cell.row.index;
-                    if(showEntities){
-                        const sentence = props.cell.row.original.texto;
-                        const words = sentence.split(" ");
+                    if (showEntities) {
+                        const sentence = props.cell.row.original.value;
+                        const mentions = props.cell.row.original.mentions
+                        const words = sentence.split(" ").filter((word: string) => word.trim() !== "");
+                        let currentIndex = 0;
                         return (
                             <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
-                                {words.map((word: string, i: number) => (
-                                    <span key={i} style={{ border: "1px dashed black", padding: "2px 5px" }}>
-                                        {word}
-                                    </span>
-                                ))}
+                                {words.map((word: string, i: number) => {
+                                    const wordStart = sentence.indexOf(word, currentIndex);
+                                    const wordEnd = wordStart + word.length;
+                                    currentIndex = wordEnd;
+                                    const mention = mentions?.find((mention:any) =>
+                                        mention.value === word &&
+                                        mention.location[0] === wordStart &&
+                                        mention.location[1] === wordEnd
+                                    );
+
+                                    const isMention = !!mention;
+
+                                    return (
+                                        <span
+                                            key={i}
+                                            style={{
+                                                border: "1px dashed black",
+                                                padding: "2px 5px",
+                                                cursor: "pointer",
+                                                color: isMention ? "#7721ad" : "inherit",
+                                                textDecoration: isMention ? "underline" : "none"
+                                            }}
+                                            onClick={() => {
+                                                if (isMention) {
+                                                    setNewEntity(mention.entity);
+                                                }
+                                                setSelectedWord({
+                                                    value: word,
+                                                    location: [wordStart, wordEnd],
+                                                    sentenceindex: index
+                                                });
+                                                setOpenModal(true);
+                                            }}
+                                        >
+                                            {word}
+                                        </span>
+                                    );
+                                })}
                             </div>
                         );
-                    }else{
+                    } else {
                         return <FieldEdit
-                            style={{ padding: 0 }}       
-                            valueDefault={props.cell.row.original.texto}
+                            style={{ padding: 0 }}
+                            valueDefault={props.cell.row.original.value}
                             onChange={(value) => {
                                 let auxExamples = examples;
                                 auxExamples[index].text = value;
                                 auxExamples[index].createdate = new Date();
+                                auxExamples[index].mentions = []
                                 setexamples(auxExamples)
                             }}
                             size="small"
                         />
                     }
-                    
+
                 }
             },
             {
@@ -257,6 +234,35 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
         ],
         [showEntities]
     );
+
+    function addtoTable() {
+        if (!!newEntity.trim()) {
+            let entityList = (mainResultWatson?.data || []).filter(x => x.type === "entity")
+            const entityExists = !!entityList.filter(x => x.item_name === newEntity).length
+            if (!entityExists) {
+                dispatch(createNewMention({
+                    watsonid: selectedSkill.watsonid,
+                    entity: newEntity,
+                    value: selectedWord.value
+                }))
+                setCreatedEntities([...createdEntities, {
+                    item_name: newEntity
+                }])
+            }
+            const auxexamples = examples;
+            auxexamples[selectedWord.sentenceindex].mentions = [
+                ...(auxexamples[selectedWord.sentenceindex]?.mentions||[]),
+                {
+                    entity: newEntity,
+                    location: selectedWord.location,
+                    value: selectedWord.value
+                }
+            ]
+            setexamples(auxexamples)
+            setNewEntity("")
+            setOpenModal(false)
+        }
+    }
 
     return (
         <div style={{ width: '100%' }}>
@@ -305,7 +311,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                             disabled={!disableSave}
                             error={errors?.item_name?.message}
                             label={t(langKeys.name)}
-                            inputProps={{ maxLength: 128 }} 
+                            inputProps={{ maxLength: 128 }}
                             helperText2={t(langKeys.intentionnametooltip)}
                             onInput={(e: any) => {
                                 if (!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))) {
@@ -316,11 +322,11 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                         <FieldEdit
                             className="col-12"
                             valueDefault={getValues("description")}
-                            onChange={(value) => {setValue('description', value)}}
+                            onChange={(value) => { setValue('description', value) }}
                             variant='outlined'
                             disabled={!disableSave}
                             size="small"
-                            inputProps={{ maxLength: 1024 }} 
+                            inputProps={{ maxLength: 1024 }}
                             error={errors?.item_name?.message}
                             label={t(langKeys.description)}
                             helperText2={t(langKeys.intentiondescriptiontooltip)}
@@ -367,10 +373,9 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                 style={{ backgroundColor: !newIntention ? "#dbdbdc" : "#0078f6", marginTop: 'auto' }}
                                 onClick={() => {
                                     if (newIntention.trim()) {
-                                        setexamples([{ texto: newIntention, entidades: [] }, ...examples])
+                                        setexamples([{ value: newIntention, mentions: [], watsonitemdetailid: 0, status: "ACTIVO" }, ...examples])
                                         if (/\[[^\]]+\]/.test(newIntention)) {
                                             setOpenModal(true)
-                                            setIntentionIndex(0)
                                         }
                                         setnewIntention("")
                                     }
@@ -402,7 +407,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                             color="primary"
                                             startIcon={<ClearIcon color="secondary" />}
                                             style={{ backgroundColor: Object.keys(selectedRows).length === 0 ? "#dbdbdc" : "#FB5F5F" }}
-                                            onClick={() => { setexamples(examples.filter((x: any) => !Object.keys(selectedRows).includes(x.texto))) }}
+                                            onClick={() => { setexamples(examples.filter((x: any) => !Object.keys(selectedRows).includes(x.value))) }}
                                         >{t(langKeys.delete)}</Button>
                                     </div>
                                 )}
@@ -421,47 +426,25 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                     title={t(langKeys.entities)}
                     buttonText1={t(langKeys.cancel)}
                     buttonText2={t(langKeys.save)}
-                    handleClickButton1={() => setOpenModal(false)}
+                    handleClickButton1={() => {setOpenModal(false); setNewEntity("")}}
                     handleClickButton2={addtoTable}
                 >
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.name)}
+                        <FieldSelect
+                            freeSolo={true}
                             className={classes.containerFields}
+                            valueDefault={newEntity}
+                            helperText2={t(langKeys.entitydesctooltop)}
                             onChange={(value) => {
-                                setNewEntity({ ...newEntity, entity: value })
+                                setNewEntity(value?.item_name || "")
                             }}
-                            valueDefault={newEntity.entity}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            className={classes.containerFields}
-                            onChange={(value) => {
-                                setNewEntity({ ...newEntity, description: value })
-                            }}
-                            valueDefault={newEntity.description}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.value)}
-                            className={classes.containerFields}
-                            onChange={(value) => {
-                                setNewEntity({ ...newEntity, value: value })
-                            }}
-                            valueDefault={newEntity.value}
+                            data={[...(mainResultWatson?.data || []).filter(x => x.type === "entity"), ...createdEntities]}
+                            optionDesc="item_name"
+                            optionValue="item_name"
                         />
                     </div>
                 </DialogZyx>
             </form>
         </div>
     );
-}
-
-interface IntentionProps {
-    setExternalViewSelected?: (view: string) => void;
-    arrayBread?: any;
-    data?: any;
 }

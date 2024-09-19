@@ -17,7 +17,7 @@ import { rasaSynonimIns } from 'common/helpers/requestBodies';
 import { downloadrasaia, uploadrasaia } from 'store/rasaia/actions';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { ModelTestDrawer } from './ModelTestDrawer';
-import { getItemsWatson } from 'store/watsonx/actions';
+import { getItemsWatson, resetItemsWatson } from 'store/watsonx/actions';
 import { DetailEntities } from './Details/DetailEntities';
 
 
@@ -105,6 +105,7 @@ export const Entities: React.FC<IntentionProps> = ({ setExternalViewSelected, ar
     useEffect(() => {
         fetchData();
         return () => {
+            dispatch(resetItemsWatson());
             dispatch(resetAllMain());
         };
     }, []);

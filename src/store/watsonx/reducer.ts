@@ -33,11 +33,23 @@ export interface IUpload extends ITemplate {
 export interface IState {
     items: IListStatePaginated<Dictionary> & { key?: string };
     selectedRow: any;
+    createmention: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    intent: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    itemsdetail: IListStatePaginated<Dictionary> & { key?: string };
+    deleteitems: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    entity: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    mentions: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
 }
 
 export const initialState: IState = {
     items: initialListPaginatedState,
     selectedRow: null,
+    createmention: { success: undefined, ...initialListPaginatedState },
+    intent: { success: undefined, ...initialListPaginatedState },
+    itemsdetail: initialListPaginatedState,
+    deleteitems: { success: undefined, ...initialListPaginatedState },
+    entity: { success: undefined, ...initialListPaginatedState },
+    mentions: { success: undefined, ...initialListPaginatedState },
 };
 
 export default createReducer<IState>(initialState, {
@@ -46,6 +58,36 @@ export default createReducer<IState>(initialState, {
     [actionTypes.ITEMS_FAILURE]: caseFunctions.itemsFailure,
     [actionTypes.ITEMS_RESET]: caseFunctions.itemsReset,
 
+    [actionTypes.CREATEMENTION_MAIN]: caseFunctions.createmention,
+    [actionTypes.CREATEMENTION_MAIN_SUCCESS]: caseFunctions.creatementionSuccess,
+    [actionTypes.CREATEMENTION_MAIN_FAILURE]: caseFunctions.creatementionFailure,
+    [actionTypes.CREATEMENTION_MAIN_RESET]: caseFunctions.creatementionReset,
+
+    [actionTypes.INTENT]: caseFunctions.intent,
+    [actionTypes.INTENT_SUCCESS]: caseFunctions.intentSuccess,
+    [actionTypes.INTENT_FAILURE]: caseFunctions.intentFailure,
+    [actionTypes.INTENT_RESET]: caseFunctions.intentReset,
+
+    [actionTypes.ITEMSDETAIL]: caseFunctions.itemsdetail,
+    [actionTypes.ITEMSDETAIL_SUCCESS]: caseFunctions.itemsdetailSuccess,
+    [actionTypes.ITEMSDETAIL_FAILURE]: caseFunctions.itemsdetailFailure,
+    [actionTypes.ITEMSDETAIL_RESET]: caseFunctions.itemsdetailReset,
+
+    [actionTypes.DELETEITEMS]: caseFunctions.deleteitems,
+    [actionTypes.DELETEITEMS_SUCCESS]: caseFunctions.deleteitemsSuccess,
+    [actionTypes.DELETEITEMS_FAILURE]: caseFunctions.deleteitemsFailure,
+    [actionTypes.DELETEITEMS_RESET]: caseFunctions.deleteitemsReset,
+
+    [actionTypes.ENTITY]: caseFunctions.entity,
+    [actionTypes.ENTITY_SUCCESS]: caseFunctions.entitySuccess,
+    [actionTypes.ENTITY_FAILURE]: caseFunctions.entityFailure,
+    [actionTypes.ENTITY_RESET]: caseFunctions.entityReset,
+
     [actionTypes.SETROW]: caseFunctions.setRow,
+
+    [actionTypes.MENTIONS]: caseFunctions.mentions,
+    [actionTypes.MENTIONS_SUCCESS]: caseFunctions.mentionsSuccess,
+    [actionTypes.MENTIONS_FAILURE]: caseFunctions.mentionsFailure,
+    [actionTypes.MENTIONS_RESET]: caseFunctions.mentionsReset,
 
 });

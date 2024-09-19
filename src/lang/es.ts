@@ -6458,6 +6458,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   modelplaceholder: 'Escribe algo para probar tu modelo de asistente.',
   uniqueexamplesuserintention: 'Agregue ejemplos únicos que el usuario podría decir. (Consejo profesional: agregue al menos 5 ejemplos únicos)',
   annotateentities: 'Anotar entidades',
+  entitydesctooltop: 'Selecciona o escribe la entidad relacionada a la intención',
+  entitynametooltip2: "Nombra tu entidad para que coincida con la categoría de valores que detectará",
+  valuesynonymhelper: "Agrega una palabra clave que esté asociado a la entidad",
+  sinonimshelper11: "Añade sinónimos o validaciones para referir al mismo valor de la entidad",
+  dictionary: "Diccionario",
+  annotations: "Anotaciones",
 };
 
 const esResource: ResourceLanguage = {

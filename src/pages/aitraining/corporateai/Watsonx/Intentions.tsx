@@ -17,7 +17,7 @@ import { rasaIntentIns } from 'common/helpers/requestBodies';
 import { downloadrasaia, uploadrasaia } from 'store/rasaia/actions';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { ModelTestDrawer } from './ModelTestDrawer';
-import { getItemsWatson } from 'store/watsonx/actions';
+import { deleteitemswatson, getItemsWatson, resetItemsWatson } from 'store/watsonx/actions';
 import { DetailIntentions } from './Details/DetailIntentions';
 
 
@@ -74,7 +74,7 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     const [waitImport, setWaitImport] = useState(false);
     const trainResult = useSelector(state => state.rasaia.rasaiatrainresult);
     const exportResult = useSelector(state => state.rasaia.rasaiadownloadresult);
-    const multiResult = useSelector(state => state.main.multiData);
+    const deleteItemResult = useSelector(state => state.watson.deleteitems);
 
     const selectionKey = 'watsonitemid';
     const dataModelAi = useSelector(state => state.main.mainAux);
@@ -114,25 +114,26 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     useEffect(() => {
         fetchData();
         return () => {
+            dispatch(resetItemsWatson());
             dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
-            if (!multiResult.loading && !multiResult.error) {
+            if (!deleteItemResult.loading && !deleteItemResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (multiResult.error) {
-                const errormessage = t(multiResult.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                setViewSelected("intentview")
+            } else if (deleteItemResult.error) {
+                const errormessage = t(deleteItemResult.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [multiResult, waitSave])
+    }, [deleteItemResult, waitSave])
 
     useEffect(() => {
         if (waitImport) {
@@ -149,6 +150,7 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
             }
         }
     }, [operationRes, operationRes]);
+
     const columns = React.useMemo(
         () => [
             {
@@ -205,11 +207,11 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     }
     const handleDelete = () => {
         const callback = () => {
-            let allRequestBody: IRequestBody[] = [];
-            Object.keys(selectedRows).forEach(x => {
-                allRequestBody.push(rasaIntentIns({ ...mainResultWatson.data.find(y => y.rasaintentid === parseInt(x)), operation: "DELETE", id: x }));
-            });
-            dispatch(getMultiCollection(allRequestBody))
+            dispatch(deleteitemswatson({
+                watsonid: selectedRow.watsonid,
+                ids: Object.keys(selectedRows).join(),
+                type: "intention"
+            }))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -220,8 +222,6 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
             callback
         }))
     }
-
-
 
     const triggerExportData = () => {
         dispatch(downloadrasaia({ model_uuid: dataModelAi?.data?.[0]?.model_uuid || "", origin: "intent" }))
@@ -248,7 +248,6 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
         let file = files[0];
         if (file) {
             const fd = new FormData();
-            //file.type = "application/x-yaml";
             fd.append('file', file, file.name);
             fd.append('model_uuid', dataModelAi?.data?.[0]?.model_uuid || "");
             fd.append('origin', "intent");

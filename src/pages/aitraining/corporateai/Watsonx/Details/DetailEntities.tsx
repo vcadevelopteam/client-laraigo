@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { FieldEdit, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Box, Button, makeStyles, TextField } from '@material-ui/core';
+import { Box, Button, IconButton, makeStyles, Tab, Tabs, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -14,8 +14,12 @@ import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { execute } from 'store/main/actions';
-import { rasaSynonimIns } from 'common/helpers/requestBodies';
+import { rasaSynonimIns, watsonxIntentDetailSel } from 'common/helpers/requestBodies';
+import { convertLocalDate } from 'common/helpers';
 import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
+import { EntitiesTable } from '../components/EntitiesTable';
+import { getItemsDetail, getMentionwatsonx, insertEntitywatsonx, resetItemsDetail } from 'store/watsonx/actions';
 
 
 interface RowSelected {
@@ -52,38 +56,152 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
+export const SynonymList: React.FC<{ sinonyms: any, setSinonyms: (a: any) => void, variant?: "filled" | "outlined" | "standard" | undefined }> = ({ sinonyms, setSinonyms, variant = "outlined" }) => {
+
+    return <div className='row-zyx' style={{ margin: 0 }}>
+        {sinonyms.map((x: string, i: number) => {
+            return (
+                <div className="col-3" style={{ display: "flex", minWidth: 400, margin: 0 }} key={i}>
+                    <FieldEdit
+                        className="col-12"
+                        rows={1}
+                        valueDefault={x}
+                        onChange={(value) => {
+                            const auxsinonims = [...sinonyms];
+                            auxsinonims[i] = value;
+                            setSinonyms(auxsinonims);
+                        }}
+                        variant={variant}
+                        size="small"
+                    />
+                    {(sinonyms.length === (i + 1)) && (
+                        <IconButton size="small" onClick={() => setSinonyms([...sinonyms, ""])}>
+                            <AddIcon />
+                        </IconButton>
+                    )}
+                    {(sinonyms.length !== (i + 1)) && (
+                        <IconButton size="small" onClick={() => {
+                            const auxsin = [...sinonyms];
+                            auxsin.splice(i, 1);
+                            setSinonyms(auxsin);
+                        }}>
+                            <RemoveIcon />
+                        </IconButton>
+                    )}
+                </div>
+            );
+        })}
+    </div>
+}
+export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const [disableSave, setDisableSave] = useState(!row);
-    const [disableCreate, setDisableCreate] = useState(true);
-    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    const [newExample, setNewExample] = useState("");
-    const [description, setDescription] = useState(row?.description || '');
-    const operationRes = useSelector(state => state.witai.witaioperationresult);
-    const [examples, setexamples] = useState<any>(row?.values?.split(",")?.reduce((acc:any,x:any)=>[...acc,{name:x}],[])||[]);
-    const mainResult = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const selectionKey= "name"
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const [waitSave, setWaitSave] = useState(false);
+    const [disableSave, setDisableSave] = useState(!row);
+    const [selectedRows, setSelectedRows] = useState<any>([]);
+    const [newExample, setNewExample] = useState("");
+    const [sinonyms, setSinonyms] = useState<any>([""]);
+    const [dataMentions, setDataMentions] = useState<any>([]);
+    const [currentTab, setCurrentTab] = useState(0);
+    const [examples, setexamples] = useState<any>(row?.values?.split(",")?.reduce((acc: any, x: any) => [...acc, { name: x }], []) || []);
+    const selectedSkill = useSelector(state => state.watson.selectedRow);
+    const operationRes = useSelector(state => state.watson.entity);
+    const mainResult = useSelector(state => state.watson.itemsdetail);
+    const mentionDataList = useSelector(state => state.watson.mentions);
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, watch } = useForm({
         defaultValues: {
-            type: 'NINGUNO',
-            id: row?.rasasynonymid || 0,
-            rasaid: row?.rasaid || 0,
+            watsonid: selectedSkill.watsonid,
+            watsonitemid: row?.watsonitemid || 0,
+            operation: row ? "UPDATE" : "INSERT",
+            item_name: row?.item_name || '',
             description: row?.description || '',
-            operation: row ? "EDIT" : "INSERT",
-            status: "ACTIVO",
         }
     });
+    const item_name_watch = watch("item_name");
+
+    useEffect(() => {
+        if (!!row?.watsonitemid) {
+            dispatch(getItemsDetail(watsonxIntentDetailSel(row?.watsonitemid)))
+            dispatch(getMentionwatsonx(row.item_name))
+        }
+        return () => {
+            dispatch(resetItemsDetail());
+        };        
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.loading && !mainResult.error) {
+            setexamples(mainResult.data.map(x => ({ ...x, synonyms: JSON.parse(x.synonyms)?.length ? JSON.parse(x.synonyms) : [""] })))
+        }
+    }, [mainResult])
+
+    useEffect(() => {
+        if (!mentionDataList.loading && !mentionDataList.error) {
+            setDataMentions(mentionDataList?.data||[])
+        }
+    }, [mentionDataList])
 
     React.useEffect(() => {
-        register('type');
-        register('id');
-        register('status');
+        register('watsonid');
+        register('watsonitemid');
+        register('description');
         register('operation');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('item_name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.userexample),
+                accessor: 'intention_value',
+                NoFilter: true,
+                sortType: 'string',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const location = JSON.parse(row.location)
+                    const intentionValue = row.intention_value
+                    const start = location[0] ;
+                    const end = location[1] + 1 ;
+                    
+                    const beforeHighlight = intentionValue.slice(0, start);
+                    const highlightedWord = intentionValue.slice(start, end);
+                    const afterHighlight = intentionValue.slice(end);
+                  
+                    return (
+                      <p>
+                        {beforeHighlight}
+                        <span style={{ color: 'purple', textDecoration: 'underline' }}>
+                          {highlightedWord}
+                        </span>
+                        {afterHighlight}
+                      </p>
+                    );
+                }
+            },
+            {
+                Header: t(langKeys.intention),
+                accessor: 'intention',
+                NoFilter: true,
+                sortType: 'string',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => {                    
+                                //setViewSelected("view-2");
+                                //setRowSelected({ row: row, edit: true })
+                            }}
+                        >
+                            #{row.intention}
+                        </label>
+                    )
+                }
+            }
+        ],
+        []
+    )
 
     useEffect(() => {
         if (waitSave) {
@@ -91,7 +209,7 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-                setTimeout(()=>{fetchData && fetchData()},500);
+                setTimeout(() => { fetchData && fetchData() }, 500);
             } else if (operationRes.error) {
                 const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.sinonim).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -100,11 +218,18 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
             }
         }
     }, [operationRes, waitSave])
-    
+
     const onSubmit = handleSubmit((data) => {
+        const cleanedExamples = examples.map((item:any) => {
+            const cleanedSynonyms = item.synonyms.map((syn:any) => syn.trim()).filter((syn:any) => syn !== "");
+
+            return {
+                ...item,
+                synonyms: cleanedSynonyms.length > 0 ? cleanedSynonyms : null
+            };
+        });
         const callback = () => {
-            let examplelist = examples.reduce((acc:any,x:any)=>[...acc,x.name],[])
-            dispatch(execute(rasaSynonimIns({...data, examples: examplelist.length, values: examplelist.join(",")})));
+            dispatch(insertEntitywatsonx({ ...data, detail: cleanedExamples }))
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -116,21 +241,8 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
         }))
     });
 
-    
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.sinonims),
-                accessor: 'name',
-                NoFilter: true,
-                width: "auto",
-            },
-        ],
-        []
-    );
-
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <TemplateBreadcrumbs
                     breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.sinonims) }]}
@@ -141,10 +253,10 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TitleDetail
-                            title={row ? `${row.description}` : `${t(langKeys.new)} ${t(langKeys.sinonim)}`}
+                            title={row ? `${row.description}` : `${t(langKeys.newentity)}`}
                         />
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
                             variant="contained"
                             type="button"
@@ -160,28 +272,25 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                             color="primary"
                             type="submit"
                             startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: disableSave?"#dbdbdc":"#55BD84" }}
+                            style={{ backgroundColor: disableSave ? "#dbdbdc" : "#55BD84" }}
                         >{t(langKeys.save)}
                         </Button>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <div className={classes.containerFields}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.keyword)}</Box>
-                            <TextField
-                                color="primary"
-                                fullWidth
-                                value={description}
-                                error={!!errors?.description?.message}
-                                helperText={errors?.description?.message || null}
-                                onChange={(e) => {
-                                    setValue('description', e.target.value)
-                                    setDescription(e.target.value)
-                                    setDisableCreate(e.target.value==="")
-                                }}
-                            />
-                        </div>
+                        <FieldEdit
+                            className="col-12"
+                            valueDefault={getValues("item_name")}
+                            onChange={(value) => setValue('item_name', value)}
+                            variant='outlined'
+                            size="small"
+                            disabled={!disableSave}
+                            error={errors?.item_name?.message}
+                            label={t(langKeys.name)}
+                            inputProps={{ maxLength: 128 }}
+                            helperText2={t(langKeys.entitynametooltip2)}
+                        />
                     </div>
                     {(disableSave) &&
                         <div className="row-zyx">
@@ -189,73 +298,92 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                                 variant="contained"
                                 type="button"
                                 className='col-3'
-                                disabled={disableCreate}
+                                disabled={!item_name_watch}
                                 color="primary"
-                                style={{ backgroundColor: disableCreate?"#dbdbdc":"#0078f6" }}
+                                style={{ backgroundColor: !item_name_watch ? "#dbdbdc" : "#0078f6" }}
                                 onClick={() => {
-                                    setDisableCreate(true);
                                     setDisableSave(false)
                                 }}
                             >{t(langKeys.create)}</Button>
                         </div>
                     }
-                    
+
                 </div>
                 {!disableSave && (
-                    
+
                     <div className={classes.containerDetail}>
-                        <FieldEdit
-                            label={`${t(langKeys.register)} ${t(langKeys.sinonim)}`}
-                            className="col-12"
-                            rows={1}
-                            valueDefault={newExample}
-                            onChange={(value) => setNewExample(value)}
-                        />
-                        <div style={{paddingTop:"8px", paddingBottom:"8px"}}></div>
+                        <div className='row-zyx'>
+                            <FieldEdit
+                                label={t(langKeys.value)}
+                                className="col-6"
+                                variant='outlined'
+                                size="small"
+                                valueDefault={newExample}
+                                onChange={(value) => setNewExample(value)}
+                                helperText2={t(langKeys.valuesynonymhelper)}
+                            />
+                            <div className='col-6'>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                                    {t(langKeys.sinonims)}
+                                </Box>
+                                <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                                    {t(langKeys.sinonimshelper11)}
+                                </Box>
+                                <SynonymList sinonyms={sinonyms} setSinonyms={setSinonyms} />
+                            </div>
+                        </div>
                         <Button
                             variant="contained"
                             type="button"
                             className='col-3'
-                            disabled={newExample===""}
+                            disabled={newExample === ""}
                             color="primary"
                             startIcon={<AddIcon color="secondary" />}
-                            style={{ backgroundColor: newExample===""?"#dbdbdc":"#0078f6" }}
+                            style={{ backgroundColor: newExample === "" ? "#dbdbdc" : "#0078f6" }}
                             onClick={() => {
-                                setexamples([...examples,{name: newExample}]);
-                                setNewExample("")    
+                                if (!examples.filter((x: any) => x.value === newExample).length) {
+                                    let filteredexamples = sinonyms.filter((synonym: string) => synonym.trim() !== "")
+                                    if (!filteredexamples.length) filteredexamples = [""]
+                                    setexamples([...examples, { value: newExample, watsonitemdetailid: 0, status: "ACTIVO", synonyms: filteredexamples }]);
+                                    setNewExample("")
+                                    setSinonyms([""])
+                                } else {
+                                    dispatch(showSnackbar({ show: true, severity: "error", message: "Ya existe ese valor" }))
+                                }
                             }}
-                        >{t(langKeys.add)}</Button>
-                        
-                        <div style={{ width: '100%' }}>
-                            <TableZyx
-                                columns={columns}
-                                data={examples}
-                                filterGeneral={false}
-                                useSelection={true}
-                                selectionKey={selectionKey}
-                                setSelectedRows={setSelectedRows}
-                                ButtonsElement={() => (
-                                    <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
-                                        <Button
-                                            disabled={Object.keys(selectedRows).length===0}
-                                            variant="contained"
-                                            type="button"
-                                            color="primary"
-                                            startIcon={<ClearIcon color="secondary" />}
-                                            style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                            onClick={() => {setexamples(examples.filter((x:any)=>!Object.keys(selectedRows).includes(x.name)))}}
-                                        >{t(langKeys.delete)}</Button>
-                                    </div>
-                                )}
-                                loading={mainResult.loading}
-                                register={false}
-                                download={false}
-                                pageSizeDefault={20}
-                                initialPageIndex={0}
+                        >{`${t(langKeys.add)} ${t(langKeys.value)}`}</Button>
+
+                        <Tabs
+                            value={currentTab}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            onChange={(e, value) => setCurrentTab(value)}
+                        >
+                            <Tab label={t(langKeys.dictionary)} />
+                            <Tab label={t(langKeys.annotations)} />
+                        </Tabs>
+                        {(currentTab === 0) && <>
+                            <div style={{ display: "flex", justifyContent: "end", width: "100%" }}>
+                                <Button
+                                    disabled={Object.keys(selectedRows).length === 0}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: Object.keys(selectedRows).length === 0 ? "#dbdbdc" : "#FB5F5F" }}
+                                    onClick={() => { setexamples(examples.filter((x: any) => !selectedRows.includes(x.value))) }}
+                                >{t(langKeys.delete)}</Button>
+                            </div>
+                            <div style={{ width: '100%' }}>
+                                <EntitiesTable loading={false} tableData={examples} setTableData={setexamples} selectedRows={selectedRows} setSelectedRows={setSelectedRows} />
+                            </div>
+                        </>}
+                        {(currentTab === 1) && <>
+                            <TableZyx columns={columns} data={dataMentions}
                             />
-                        </div>
+                        </>}
                     </div>
-                    
+
                 )}
             </form>
         </div>
