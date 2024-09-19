@@ -1951,13 +1951,15 @@ const Users: FC = () => {
         if (file) {
             const excel: any = await uploadExcel(file, undefined);
             const firstdatainit = array_trimmer(excel);
+            const channellist = dataChannelsTemp.map(x=>x.communicationchannelid).join().split(",")
             debugger
             const datainit = firstdatainit.map(item => ({
                 ...item,
                 role: String(item.role).replace(/\s+/g, '').replace(/;/g, ','),
                 groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
+                channels: String(item.channels).replace(/\s+/g, '').replace(/;/g, ','),
             }));
-            
+            //dataChannelsTemp
             const data = datainit.filter((f: Dictionary) => {
                 return (
                     (f.company === undefined ||
@@ -2003,8 +2005,13 @@ const Users: FC = () => {
                         (String(f?.role || "")).split(",").every((role: string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
-                        }))
-                    && (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                        })) && 
+                    (f.channels === undefined || f.channels === "" ||
+                        (String(f?.channels || "")).split(",").every((channel: string) => {
+                            const channelid = parseInt(channel.trim(), 10);
+                            return !isNaN(channelid) && channellist?.some((d) => String(d) === String(channelid));
+                        })) && 
+                    (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
                 );
             });
             const messageerrors = datainit
@@ -2070,6 +2077,15 @@ const Users: FC = () => {
                                 .every((role: string) => {
                                     const roleId = parseInt(role.trim(), 10);
                                     return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
+                                })
+                        ) ||
+                        !(
+                            f.channels === undefined || f.channels === "" ||
+                            (String(f?.channels||""))
+                                .split(",")
+                                .every((channel: string) => {
+                                    const channelid = parseInt(channel.trim(), 10);
+                                    return !isNaN(channelid) && channellist?.some((d) => String(d) === String(channelid))
                                 })
                         )
                         || !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))

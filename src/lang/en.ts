@@ -3771,6 +3771,7 @@ const translation: LangKeys = {
   lead_email: 'Email',
   lead_notedate: 'Note date',
   error_estructure_user: 'The user {{email}} was not processed because it has an invalid structure',
+  error_estructure_tipification: 'The classification {{classification}} was not processed because it has an invalid structure',
   lead_notedescription: 'Note',
   lead_phone: 'Phone',
   lead_custom: 'Custom',

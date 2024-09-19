@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker, getCatalogMasterList } from 'common/helpers';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker, getCatalogMasterList, insarrayClassification } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,7 +13,7 @@ import { langKeys } from 'lang/keys';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, setMemoryTable, cleanMemoryTable } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
@@ -145,8 +145,9 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         order: row?.order || "",
         parent: row?.parentid || 0,
     });
-    const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
-    const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
+    const validjobplan = JSON.parse(row?.jobplan||"[]").every((item:any) => 'action' in item && 'type' in item);
+    const [showAddAction, setShowAddAction] = useState(!!JSON.parse(row?.jobplan||"[]").length && validjobplan || false);
+    const [jobplan, setjobplan] = useState<Dictionary[]>((row && row.jobplan && validjobplan) ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -246,7 +247,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1" })));
+            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1", title: data.title.trim() })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -342,7 +343,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         <FieldEdit
                             label={t(langKeys.path)}
                             className="col-6"
-                            valueDefault={row?.path || ""}optionDesc
+                            valueDefault={row?.path || ""}
                             onChange={(value) => setValue('path', value)}
                             error={errors?.path?.message}
                             disabled={true}
@@ -555,17 +556,25 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     );
 }
 
+const IDTIPIFICATION = "IDTIPIFICATION"
+
 const Tipifications: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const [openDialog, setOpenDialog] = useState(false);
+    const [tableData, setTableData] = useState<any>([]);
+
+    const [generalFilter, setGeneralFilter] = useState("");
+    const [invalidImportData, setInvalidImportData] = useState<any>([]);
     const [insertexcel, setinsertexcel] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [cleanImport, setCleanImport] = useState(false);
     const arrayBread = [
         { id: "view-1", name: t(langKeys.classification_plural) },
     ];
@@ -586,11 +595,20 @@ const Tipifications: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(setMemoryTable({
+            id: IDTIPIFICATION
+        }))
         
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
+    useEffect(() => {
+        if(!mainResult.mainData.loading && !mainResult.mainData.error){
+            setTableData(mainResult.mainData.data.map(x=>({...x, type2: x.type==="TIPIFICACION"?"Clasificación":"Categoría", order2: x.type === 'CATEGORIA'? x.order:""})))
+        }
+    }, [mainResult.mainData]);
 
     const columns = React.useMemo(
         () => [
@@ -624,13 +642,7 @@ const Tipifications: FC = () => {
             },
             {
                 Header: t(langKeys.type),
-                accessor: 'type',
-                prefixTranslation: 'type_',
-                NoFilter: true,
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { type } = props.cell.row.original || {};
-                    return (t(`type_${type}`) || "").toUpperCase()
-                }
+                accessor: 'type2',
             },
             {
                 Header: t(langKeys.app_productcatalog),
@@ -644,7 +656,7 @@ const Tipifications: FC = () => {
             },
             {
                 Header: t(langKeys.order),
-                accessor: 'order',
+                accessor: 'order2',
                 NoFilter: true,
                 Cell: (props: CellProps<Dictionary>) => {
                     const row = props.cell.row.original || {};
@@ -680,7 +692,13 @@ const Tipifications: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                if(invalidImportData.length){
+                    const messageerror = invalidImportData.reduce((acc, x) => acc + t(langKeys.error_estructure_tipification, { classification: x.classification }) + `\n`, "")
+                    dispatch(showSnackbar({ show: true, severity: "error", message: messageerror }))
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                }
+                setInvalidImportData([])
                 setinsertexcel(false)
                 fetchData();
                 dispatch(showBackdrop(false));
@@ -727,35 +745,59 @@ const Tipifications: FC = () => {
         const file = files[0];
         if (file) {
             let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
-            data=data.filter((d: Dictionary) => !['', null, undefined].includes(d.classification)                                                                                       
-                    && !['', null, undefined].includes(d.channels)    
-                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + String(d.parent)))
-                );
-                
+            data = data.map((item:any) => ({
+                ...item,
+                classification: (item?.classification|| "").replace(/\s+/g, ''), 
+                channels: !!item.channels?String(item.channels).replace(/\s+/g, '').replace(/;/g, ','):item.channels,
+                type: (item.type.toLowerCase() === "clasificación" || item.type.toLowerCase() === "clasificacion") ? 'TIPIFICACION': ((item.type.toLowerCase() === "categoría" || item.type.toLowerCase() === "categoria")?"CATEGORIA":item.type),
+            }));
+            const invaliddata = data.filter((d: any) => {
+                const channelList = filteredChannels.map((x: any)=>x.domainvalue)
+                const hasValidClassification = d.classification !== '' && d.classification != null;
+                const hasValidChannels = d.type === "TIPIFICACION"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
+                const hasValidType = d.type === "TIPIFICACION" || d.type === "CATEGORIA"
+                const parentExists = ['', null, undefined].includes(d.parent) || 
+                    Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
+                    .includes(String(d.parent));
+            
+                return !hasValidClassification || !hasValidChannels || !parentExists || !hasValidType;
+            });   
+            data=data.filter((d: any) => {
+                const channelList = filteredChannels.map((x: any)=>x.domainvalue)
+                const hasValidClassification = d.classification !== '' && d.classification != null;
+                const hasValidChannels = d.type === "TIPIFICACION"?d.channels !== '' && d.channels != null && d.channels.split(',').every((channel:any) => channelList.includes(channel)):true
+                const hasValidType = d.type === "TIPIFICACION" || d.type === "CATEGORIA"
+                const parentExists = ['', null, undefined].includes(d.parent) || 
+                    Object.keys(mainResult.multiData.data[1].data.reduce((acc, item) => ({ ...acc, [item.classificationid]: item.title }), {0: ''}))
+                    .includes(String(d.parent));
+            
+                return hasValidClassification && hasValidChannels && parentExists && hasValidType;
+            });
+            setInvalidImportData(invaliddata)    
             if (data.length > 0) {
-                dispatch(showBackdrop(true));
-                dispatch(execute({
-                    header: null,
-                    detail: data.map((x: Dictionary) => insClassification({
+                dispatch(execute(insarrayClassification(data.reduce((ad: any[], x: any) => {
+                    ad.push({
                         ...x,
-                        title: x.classification,
+                        title: x.classification.trim(),
                         description: x.description,
-                        communicationchannel: x.channels,
+                        communicationchannel: x.type === "TIPIFICACION"?x.channels:"",
                         jobplan: JSON.stringify([{action: x.action, type: x.type, variable: x.variable, endpoint: x.endpoint, data: x.data}]),
                         tags: x.tag || '',
                         parent: x.parent || 0,
                         operation: "INSERT",
-                        type: 'TIPIFICACION',
-                        oder: '1',
-                        status: x.status || "ACTIVO",
+                        order: x.type === "TIPIFICACION" ? '0':"1",
+                        status: x?.status || "ACTIVO",
                         id: 0,
-                    }))
-                }, true));
+                    })
+                    return ad;
+                }, []))));
+                dispatch(showBackdrop(true));
                 setinsertexcel(true)
                 setWaitSave(true)
             }else{
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_invaliddata) }))
             }
+            setCleanImport(!cleanImport)
         }
     }
 
@@ -792,7 +834,7 @@ const Tipifications: FC = () => {
           {},
           {},
           dataType.reduce((a, d) => ({ ...a, [d.dat]: d.dat }), {}),
-          filteredChannels.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+          filteredChannels.reduce((a:any, d:any) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
           {},
           mainResult.multiData.data[3].data.reduce((a, d) => ({ ...a, [d.classificationid]: d.description }), { 0: '' }),
           mainResult.multiData.data[0].data.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {}),
@@ -822,7 +864,7 @@ const Tipifications: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.tipification, { count: 2 })}
-                        data={mainResult.mainData.data}
+                        data={tableData}
                         loading={mainResult.mainData.loading}
                         download={true}
                         register={true}
@@ -830,6 +872,7 @@ const Tipifications: FC = () => {
                         importCSV={importCSV}
                         handleTemplate={handleTemplate}
                         handleRegister={handleRegister}
+                        cleanImport={cleanImport}
                         ButtonsElement={()=>
                             <>
                                 <Button
@@ -843,6 +886,11 @@ const Tipifications: FC = () => {
                                 </Button>
                             </>
                         }
+                        defaultGlobalFilter={generalFilter}
+                        setOutsideGeneralFilter={setGeneralFilter}
+                        pageSizeDefault={IDTIPIFICATION === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                        initialPageIndex={IDTIPIFICATION === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                        initialStateFilter={IDTIPIFICATION === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                     />
                     <DialogZyx
                         open={openDialog}
