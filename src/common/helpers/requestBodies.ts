@@ -5374,6 +5374,13 @@ export const getUserMessageOutbound = ({startdate, enddate, communicationchannel
         communicationchannelid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });
+export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
+    method: "UPDATE_LANGUAGE_SETTINGS",
+    key: "UPDATE_LANGUAGE_SETTINGS",
+    parameters: {
+        languagesettings: JSON.stringify(languagesettings)
+    }
+});
 export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
     method: "UPDATE_PINNED_MESSAGE",
     key: "UPDATE_PINNED_MESSAGE",
