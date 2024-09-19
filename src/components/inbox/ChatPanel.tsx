@@ -109,7 +109,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             observation: '',
             variables: [],
             buttons: [],
-            headervariables:[]
+            headervariables: []
         }
     });
 
@@ -117,7 +117,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
         control,
         name: 'variables',
     });
-    const { fields:buttons } = useFieldArray({
+    const { fields: buttons } = useFieldArray({
         control,
         name: 'buttons',
     });
@@ -157,7 +157,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 hsmtemplatename: '',
                 variables: [],
                 buttons: [],
-                headervariables:[]
+                headervariables: []
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
@@ -185,22 +185,22 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             const variablesList = value?.body?.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
-            if(value?.header){
+            if (value?.header) {
                 const variablesListHeader = value?.header?.match(/({{)(.*?)(}})/g) || [];
                 const varaiblesCleanedHeader = variablesListHeader.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header||"" })));
-            }else{
-                setValue('headervariables',[])
+                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header || "" })));
+            } else {
+                setValue('headervariables', [])
             }
             if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some(element => element.btn.type === "dynamic")) {
                 const buttonsaux = value?.buttonsgeneric
                 let buttonsFiltered = []
-                buttonsaux.forEach((x,i)=>{
-                    const variablesListbtn  = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
+                buttonsaux.forEach((x, i) => {
+                    const variablesListbtn = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
                     const varaiblesCleanedbtn = variablesListbtn.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                    if(varaiblesCleanedbtn.length){
-                        const btns= varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url||"" }))||[]
-                        buttonsFiltered=[...buttonsFiltered, ...btns]
+                    if (varaiblesCleanedbtn.length) {
+                        const btns = varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url || "" })) || []
+                        buttonsFiltered = [...buttonsFiltered, ...btns]
                     }
                 })
                 setValue('buttons', buttonsFiltered);
@@ -232,7 +232,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 firstname: person.data?.firstname + "",
                 lastname: person.data?.lastname + "",
                 parameters: [...data.variables, ...data.buttons, ...data.headervariables].map((v: any) => ({
-                    type: v?.type||"text",
+                    type: v?.type || "text",
                     text: v.variable !== 'custom' ? (person.data as Dictionary)[v.variable] : v.text,
                     name: v.name
                 }))
@@ -284,11 +284,11 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                     optionDesc="name"
                     optionValue="id"
                 />
-            </div>            
-            {Boolean(fieldsheader.length) &&             
+            </div>
+            {Boolean(fieldsheader.length) &&
                 <FieldView
                     label={t(langKeys.header)}
-                    value={fieldsheader?.[0]?.header||""}
+                    value={fieldsheader?.[0]?.header || ""}
                 />
             }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, marginBottom: 16 }}>
@@ -381,8 +381,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                         <div key={item.id}>
                             <FieldView
-                                label={t(langKeys.button) + ` ${i+1}`}
-                                value={item?.url||""}
+                                label={t(langKeys.button) + ` ${i + 1}`}
+                                value={item?.url || ""}
                             />
                             <FieldSelect
                                 key={"var_" + item.id}
@@ -1104,7 +1104,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
                     onChange={onChangeTipificationLevel1}
                     error={errors?.classificationid1?.message}
                     data={multiData?.data[2] && multiData?.data[2].data.filter(obj => {
-                        const channelsobj = obj.communicationchannel.includes("WHA")? obj.communicationchannel + ",WHAC,WHAD": obj.communicationchannel
+                        const channelsobj = obj.communicationchannel.includes("WHA") ? obj.communicationchannel + ",WHAC,WHAD" : obj.communicationchannel
                         const channelsInMultiData = `${channelsobj}`.split(',').map((channel: string) => channel.trim());
                         return channelsInMultiData.includes(`${ticketSelected?.communicationchanneltype}`);
                     })}
@@ -1399,7 +1399,7 @@ const TicketTags: React.FC<{ classes: any; tags: string }> = ({ classes, tags })
         }
     }, [scrollPosition]);
 
-    
+
     if (uniqueTags.length) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", maxWidth: "25vw", borderLeft: "1px solid lightgrey", flex: 11 }}>
@@ -1607,7 +1607,7 @@ const PinnedMessageMenu: React.FC<{ classes: any }> = ({ classes }) => {
                 onClick={handleTextClick}
                 title={showFullText ? '' : (interactionText.length > 100 ? interactionText : '')}
             >
-                <div style={{  display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f5', padding: 4, borderRadius: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f5', padding: 4, borderRadius: 4 }}>
                     <TackIcon fill="#8F92A1" width={20} height={20} />
                 </div>
                 <div style={{ width: "100%" }}>
@@ -1640,9 +1640,9 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
     const { t } = useTranslation();
-    
+
     const pinnedmessagesSelected = useSelector(state => state.inbox.pinnedmessages);
-    
+
     return (
         <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
@@ -1666,7 +1666,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                {!person.loading && 
+                {!person.loading &&
                     <TicketTags classes={classes} tags={person?.data?.tags || ""} />
                 }
                 <div style={{ marginBottom: 0, borderLeft: person?.data?.tags?.length ? "1px solid lightgrey" : 0, padding: "0 12px", flex: 1, alignItems: "center", justifyContent: "center", display: "flex" }}>

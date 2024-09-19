@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 // import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -615,7 +615,6 @@ const RecordComponent: React.FC<{
                     type: "audio",
                     url: uploadResult?.url || "",
                 });
-                console.log(uploadResult?.url);
                 setStartRecording(false);
             }
         }
@@ -1046,14 +1045,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         };
     }, [])
 
-    const handleInputChange = (e: any) => {
-        const lines = e.target.value.split('\n').length;
-        if (lines <= 6) {
-            setNumRows(lines);
-            setText(e.target.value);
-        }
-    };
-
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
         if (ticketSelected?.status !== "ASIGNADO") {
@@ -1264,7 +1255,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 }
 
                 const errormessage = findDefaultAnswer(inappropiatewordsList, textCleaned.toLocaleLowerCase())
-                debugger
 
                 if (textCleaned) {
                     if (!errormessage) {
@@ -1404,7 +1394,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
         } else if (event.shiftKey) {
-            console.log("");
             return;
         } else if (
             (user?.languagesettings?.sendingmode === "Default" && event.key === 'Enter') || 
@@ -1427,47 +1416,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             if (e.clipboardData.files[0].type.includes("image")) {
                 //uploadFile
                 setfileimage(e.clipboardData.files);
-            }
-        }
-    }
-    const formatText = (c: string) => {
-        const input = inputRef.current.querySelector('textarea');
-        const { value, selectionStart, selectionEnd } = input;
-
-        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
-            if (selectionStart !== selectionEnd) {
-                // Hay texto seleccionado
-                const selectedText = value.slice(selectionStart, selectionEnd);
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionEnd);
-                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
-                    input.focus();
-                }, 0);
-            } else {
-                // No hay texto seleccionado
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionStart);
-                const newValue = `${beforeText}${c}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                    input.focus();
-                }, 0);
-            }
-        } else {
-            if (selectionStart !== selectionEnd) {
-                if (c === "*") {
-
-                    const beforeSelection = text.slice(0, selectionStart);
-                    const selectedText = text.slice(selectionStart, selectionEnd);
-                    const afterSelection = text.slice(selectionEnd);
-
-                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
-                    setText(newText);
-                }
             }
         }
     }
@@ -1780,7 +1728,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 ])
                                             }
                                         />
-
                                         <CopilotLaraigoIcon
                                             classes={classes}
                                             enabled={propertyCopilotLaraigo}
