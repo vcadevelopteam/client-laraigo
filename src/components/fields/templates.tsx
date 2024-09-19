@@ -3,7 +3,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import { AndroidColor, AppStoreColor, BloggerColor, ChannelBlogger, ChatWebColor, EmojiICon, FacebookColor, FormColor, GifIcon, InstagramColor, IosColor, LineColor, LinkedInColor, MailColor, MessengerColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WhatsAppColor, WorkplaceColor, YouTubeColor } from 'icons';
 import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon, Box, Chip } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Picker } from 'emoji-mart';
@@ -11,9 +11,7 @@ import { SearchField } from 'components';
 import { Skeleton } from '@material-ui/lab';
 import { Trans, useTranslation } from 'react-i18next';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
-
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -45,6 +43,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -901,7 +900,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2="" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -915,7 +914,23 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     return;
                 }
                 else {
-                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    let onlyNumbers = true;
+
+                    for (const element of data) {
+                        if (!(/^\d+$/.test(element[optionDesc]) || '')) {
+                            onlyNumbers = false;
+                        }
+                    }
+
+                    let datatmp = null;
+
+                    if (onlyNumbers) {
+                        datatmp = data.sort((a, b) => parseFloat(a[optionDesc] || '0') - parseFloat(b[optionDesc] || '0'));
+                    }
+                    else {
+                        datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    }
+
                     setDataG(datatmp);
                     return;
                 }
@@ -937,11 +952,27 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
         }
     }, [data, valueDefault]);
 
-  
+
     return (
         <div className={className}>
-
-            {(variant === "standard" && !!label) &&
+            {!!helperText2 &&
+                <>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                        {label}
+                        {!!helperText &&
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                                </Tooltip>
+                            </div>
+                        }
+                    </Box>
+                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                        {helperText2}
+                    </Box>
+                </>
+            }
+            {(variant === "standard" && !!label && !helperText2) &&
                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                     {label}
                     {!!helperText &&
@@ -975,7 +1006,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     <TextField
 
                         {...params}
-                        label={variant !== "standard" && label}
+                        label={variant !== "standard" && !helperText2 && label}
                         variant={variant}
                         multiline={multiline}
                         helperText={error || null}
@@ -1093,9 +1124,10 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small' }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small',helperText2="", helperText="" }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
+    const classes = useStyles();
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
@@ -1108,7 +1140,17 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
 
     return (
         <div className={className}>
-            {variant === "standard" &&
+            {!!helperText2 &&
+                <>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                        {label}
+                    </Box>
+                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                        {helperText2}
+                    </Box>
+                </>
+            }
+            {(variant === "standard" && !helperText2) &&
                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             }
             <Autocomplete
@@ -1120,6 +1162,28 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 disableCloseOnSelect
                 loading={loading}
                 value={optionsSelected}
+                renderTags={disabled ? (tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                        disabled ? (
+                            <Chip
+                                key={index}                               
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                className={classes.customChip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0', userSelect: 'text'}}
+                                onMouseDown={(event) => event.stopPropagation()}
+                                onClick={(event) => event.stopPropagation()}
+                            />
+                          ) : (
+                            <Chip
+                                key={index}
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                {...getTagProps({ index })}
+                                className={classes.chip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0' }}
+                            />
+                          )                       
+                    )) : undefined
+                }
                 renderOption={(option, { selected }: any) => (
                     <React.Fragment>
                         <Checkbox
@@ -1141,7 +1205,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label={variant !== "standard" && label}
+                        label={variant !== "standard" && !helperText2 && label}
                         variant={variant}
                         size="small"
                         InputProps={{
@@ -2187,6 +2251,115 @@ export function RadioGroudFieldEdit<T>({
                 })}
             </RadioGroup>
             {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
+        </div>
+    );
+}
+
+const useStyles = makeStyles((theme) => ({
+    titleandcrumbs: {
+        marginBottom: 4,
+        marginTop: 4,
+    },
+    container: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+    },
+    tag: {
+        backgroundColor: '#EBF2F3',
+        borderRadius: '8px',
+        padding: '2px 8px',
+        marginRight: '4px',
+        marginBottom: '4px',
+        whiteSpace: 'nowrap',
+        wordBreak: 'keep-all',
+    },
+    tagcontainer: {
+        display: 'flex',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        width: '300px'
+    },
+}));
+
+export const TagTypeCell: React.FC<{ data: string, separator: string }> = ({ data, separator }) => {
+    const items = data.split(separator).map((item: string) => item.trim()).filter(Boolean);
+    const classes = useStyles();
+
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const tagsWrapperRef = useRef<HTMLDivElement>(null);
+    const [atEnd, setAtEnd] = useState(false);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+
+    useEffect(() => {
+        if (tagsWrapperRef.current) {
+            const isOverflowingContent = tagsWrapperRef.current.scrollWidth > tagsWrapperRef.current.clientWidth;
+            setIsOverflowing(isOverflowingContent);
+            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+        }
+    }, [scrollPosition, items]);
+
+    const handleScroll = (direction: string, event: React.MouseEvent) => {
+        event.stopPropagation();
+
+        const scrollAmount = 100;
+        const newPosition = direction === 'left'
+            ? scrollPosition - scrollAmount
+            : scrollPosition + scrollAmount;
+
+        setScrollPosition(newPosition);
+        if (tagsWrapperRef.current) {
+            tagsWrapperRef.current.scrollLeft = newPosition;
+        }
+
+        const atEndPosition = tagsWrapperRef.current
+            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth
+            : false;
+
+        setAtEnd(atEndPosition);
+    };
+
+    if (!data || items.length === 0) {
+        return null;
+    }
+
+    const shouldShowTags = items.length >= 1;
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', width: '300px', overflow: 'hidden' }}>
+            {isOverflowing && shouldShowTags && (
+                <IconButton
+                    size='small'
+                    disabled={!(scrollPosition > 0)}
+                    onClick={(event) => handleScroll('left', event)}
+                    style={{ padding: 0 }}
+                >
+                    <KeyboardArrowLeft fontSize='small' />
+                </IconButton>
+            )}
+            <div
+                ref={tagsWrapperRef}
+                className={classes.tagcontainer}
+            >
+                {items.map((item: string, index: number) => (
+                    <span
+                        key={index}
+                        className={shouldShowTags && item ? classes.tag : ''}
+                    >
+                        {item}
+                    </span>
+                ))}
+            </div>
+            {isOverflowing && shouldShowTags && (
+                <IconButton
+                    size='small'
+                    disabled={atEnd}
+                    onClick={(event) => handleScroll('right', event)}
+                    style={{ padding: 0 }}
+                >
+                    <KeyboardArrowRight fontSize='small' />
+                </IconButton>
+            )}
         </div>
     );
 }

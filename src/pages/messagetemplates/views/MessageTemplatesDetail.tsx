@@ -67,7 +67,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import React, { FC, Suspense, useCallback, useEffect, useState, useRef, ChangeEvent } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import SaveIcon from "@material-ui/icons/Save";
-import { AddButtonMenu, AddButtonMenuCard, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
+import { AddButtonMenu, AddButtonMenuCard, CustomTextWithHelper, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
 import { PDFRedIcon } from "icons";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
@@ -301,7 +301,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const uploadResult = useSelector((state) => state.main.uploadFile);
     const dataChannel =
         multiData[2] && multiData[2].success
-            ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
+            ? multiData[2].data
+            //? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
             : [];
     const [bodyAlert, setBodyAlert] = useState("");
     const [bodyAttachment, setBodyAttachment] = useState(row?.body || "");
@@ -2547,7 +2548,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             )}
                             <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                                 <span style={{ fontWeight: 'bold' }}>{t(langKeys.channel)}</span>
-                                <span>Seleccione el canal en el que registrarás tu plantilla</span>
+                                <CustomTextWithHelper
+                                    title={'Seleccione el canal en el que registrarás tu plantilla' + ' '}
+                                    helperText={t(langKeys.channel_message_templates_help)}
+                                /> 
                             </div>
                         </div>
                     )}
@@ -2576,7 +2580,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <FieldMultiSelect
                                                 className="col-6"
                                                 data={dataChannel}
-                                                disabled
+                                                disabled={true}
                                                 error={errors?.communicationchannelid?.message}
                                                 optionDesc="communicationchanneldesc"
                                                 optionValue="communicationchannelid"
@@ -2586,7 +2590,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 size="normal"
                                             />
                                         ) : (
-                                            <FieldSelect //acá
+                                            <FieldSelect
                                                 className="col-6"
                                                 data={dataChannel}
                                                 disabled={!isNew || disableInput}
