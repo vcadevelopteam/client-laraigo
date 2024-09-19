@@ -11,7 +11,9 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { EmojiData, Picker } from 'emoji-mart';
+import Picker from '@emoji-mart/react'
+
+// import { EmojiData } from 'emoji-mart';
 import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import WarningIcon from '@material-ui/icons/Warning';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
@@ -1529,7 +1531,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
     }
 
-    const addEmoji = (emoji: EmojiData) => {
+    const addEmoji = (emoji: any) => {
         const currentText = getValues('body');
         const start = currentText.substring(0, cursorPositionAux);
         const end = currentText.substring(cursorPositionAux);
@@ -3447,7 +3449,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </IconButton>
                                             {showEmojiPicker && (
                                                 <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                    <Picker onSelect={addEmoji} />
+                                                    <Picker onEmojiSelect={addEmoji} />
                                                 </div>
                                             )}
                                             <IconButton
