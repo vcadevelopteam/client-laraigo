@@ -201,6 +201,12 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
         }
     }, [llamaResult, waitSaveAssistantDeleteLlama]);
 
+    useEffect(() => {
+        if (viewSelectedTraining === "assistantdetail") {
+            fetchData();
+        }
+    }, [viewSelectedTraining]);
+        
     const handleDeleteSelection = async (dataSelected: Dictionary[]) => {
         const callback = async () => {
             dispatch(showBackdrop(true));  
@@ -376,6 +382,16 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                 width: "auto",
             },
             {
+                Header: t(langKeys.inputtokens),
+                accessor: 'inputtokens',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.outputtokens),
+                accessor: 'outputtokens',
+                width: "auto",
+            },
+            {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 width: "auto",
@@ -389,9 +405,9 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
                     return (
                         <div
                             className={classes.chatContainer}
-                            onClick={(event) => {
+                            onClick={(event) => {                              
                                 event.stopPropagation();
-                                handleChat(row);
+                                handleChat(row);                             
                             }}
                         >
                             <ForumIcon style={{ color: '#7721AD' }}/>
@@ -555,8 +571,9 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
     const functionChange = (change:string) => {
         if(change === "generativeia"){
             setViewSelectedTraining("assistantdetail")
+          
         }else{
-            setViewSelected(change);
+            setViewSelected(change);      
         }
     }
 

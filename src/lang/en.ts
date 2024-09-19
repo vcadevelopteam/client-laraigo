@@ -1557,6 +1557,7 @@ const translation: LangKeys = {
   aboutlaraigo: 'About Laraigo',
   dashboardadd: "Create Dashboard",
   reports: "Reports",
+  of_date: "xxx",
   month_01: "January",
   month_02: "February",
   month_03: "March",
@@ -2601,7 +2602,7 @@ const translation: LangKeys = {
   report_opportunity_datehour: 'Creation date and time',
   report_opportunity_description: 'Opportunity',
   report_opportunity_lastupdate: 'Last update',
-  report_opportunity_dateinopportunity: 'Date in opportunity',
+  report_opportunity_dateinopportunity: 'End opportunity',
   report_opportunity_displayname: 'Customer',
   report_opportunity_phone: 'Phone',
   report_opportunity_email: 'Email',
@@ -2614,6 +2615,10 @@ const translation: LangKeys = {
   report_opportunity_fullname: 'Assigned advisor',
   report_opportunity_products: 'Products',
   report_opportunity_calendarview: 'Calendar View',
+  HIGH: 'High',
+  MEDIUM: 'Medium',
+  LOW: 'Low',
+
 
 
   report_userproductivityhours: 'Hourly agent productivity',
@@ -2651,7 +2656,7 @@ const translation: LangKeys = {
   opportunity_funnel_advisor: "Advisor",
   opportunity_funnel_product: "Product",
   opportunity_funnel_quantity: "Quantity",
-  opportunity_funnel_phase: "Phase",
+  opportunity_funnel_phase: "Phases",
   opportunity_funnel_new: "New",
   opportunity_funnel_qualified: "Qualified",
   opportunity_funnel_proposition: "Proposition",
@@ -3771,6 +3776,7 @@ const translation: LangKeys = {
   lead_email: 'Email',
   lead_notedate: 'Note date',
   error_estructure_user: 'The user {{email}} was not processed because it has an invalid structure',
+  error_estructure_tipification: 'The classification {{classification}} was not processed because it has an invalid structure',
   lead_notedescription: 'Note',
   lead_phone: 'Phone',
   lead_custom: 'Custom',
@@ -6484,15 +6490,14 @@ const translation: LangKeys = {
   topkdescription: 'A low value reduces the probability that the model deviates from the queried topic.',
   repetitionpenalty: 'Repetition Penalty',
   repetitionpenaltydescription: 'It is a factor that is applied to discourage the model from generating repetitive text or phrases. A value of 1 means that there is no penalty.',
-
   invalid: 'Invalid',
   assistantnamedesc: 'Assign a name for the assistant you will register.',
   assistantdescriptiondesc: 'Assign a brief description to the assistant you will register.',
   assistantconnectorsdesc: 'Select the connector linked to your assistant, this is configured in “IA Connectors”.',
   assistantstatussdesc: 'Select the status of your assistant, whether you want it to be active or inactive.',
   assistantbasemodeldesc: 'Select the base model of your assistant, this will be the engine of your answers.',
-
-
+  inputtokens: 'Input Tokens',
+  outputtokens: 'Output Tokens',
 };
 
 const enResource: ResourceLanguage = {

@@ -690,6 +690,7 @@ export const langKeys = {
   advisoricon: "advisoricon",
   typecredit: "typecredit",
   error_estructure_user: "error_estructure_user",
+  error_estructure_tipification: "error_estructure_tipification",
   distributionbycategoryHSMtooltip: "distributionbycategoryHSMtooltip",
   week: "week",
   periodicity: "periodicity",
@@ -803,16 +804,19 @@ export const langKeys = {
   percentage: "percentage",
   new: 'new',
   qualified: 'qualified',
+  Qualified: 'Qualified',
   chatimages: "chatimages",
   paynow: "paynow",
   proposition: 'proposition',
   uniquecontacts: "uniquecontacts",
   won: 'won',
+  Won: 'Won',
   lost: 'lost',
   tradename: "tradename",
   amounttopay: "amounttopay",
   others: "others",
   dateofissue: "dateofissue",
+  of_date: "of_date",
   month_01: "month_01",
   month_02: "month_02",
   month_03: "month_03",
@@ -2278,14 +2282,11 @@ export const langKeys = {
   error_ticket_open: "error_ticket_open",
   error_ticket_doesnt_belong_to_the_user: "error_ticket_doesnt_belong_to_the_user",
   error_supervisor_not_exists: "error_supervisor_not_exists",
-
   no_records: 'no_records',
-
   dateRangeFilterTitle: 'dateRangeFilterTitle',
   apply: 'apply',
   close: 'close',
   closetype: 'closetype',
-
   today: 'today',
   yes: 'yes',
   no: 'no',
@@ -2307,14 +2308,11 @@ export const langKeys = {
   format_transform_date_seconds: 'format_transform_date_seconds',
   format_transform_date_minutes: 'format_transform_date_minutes',
   format_transform_date_hours: 'format_transform_date_hours',
-
   format_transform_time_time: 'format_transform_time_time',
   format_transform_time_seconds: 'format_transform_time_seconds',
   format_transform_time_minutes: 'format_transform_time_minutes',
   format_transform_time_hours: 'format_transform_time_hours',
-
   upload_conversation_plural: 'upload_conversation_plural',
-
   equals: 'equals',
   notequals: 'notequals',
   contains: 'contains',
@@ -2776,7 +2774,9 @@ export const langKeys = {
   report_opportunity_fullname: 'report_opportunity_fullname',
   report_opportunity_products: 'report_opportunity_products',
   report_opportunity_calendarview: 'report_opportunity_calendarview',
-
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
 
   report_ticketvsasesor: 'report_ticketvsasesor',
   report_userproductivityhours: 'report_userproductivityhours',
@@ -6422,21 +6422,20 @@ export const langKeys = {
   channel_column_mt_help: 'channel_column_help',
   onboading_channelcomplete: 'onboading_channelcomplete',
   errorimportdocuments: 'errorimportdocuments',
+  inputtokens: 'inputtokens',
+  outputtokens: 'outputtokens',
   watsonxassistantdescription: 'watsonxassistantdescription',
   updateddate: 'updateddate',
   topk: 'topk',
   topkdescription: 'topkdescription',
   repetitionpenalty: 'repetitionpenalty',
   repetitionpenaltydescription: 'repetitionpenaltydescription',
-
   invalid: 'invalid',
   assistantnamedesc: 'assistantnamedesc',
   assistantdescriptiondesc: 'assistantdescriptiondesc',
   assistantconnectorsdesc: 'assistantconnectorsdesc',
   assistantstatussdesc: 'assistantstatussdesc',
   assistantbasemodeldesc: 'assistantbasemodeldesc',
-
-
 
 };
 
