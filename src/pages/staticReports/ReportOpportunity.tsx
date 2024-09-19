@@ -599,7 +599,6 @@ const OpportunityReport: FC<DetailProps> = ({ allFilters ,calendarEventID, event
     }, [multiData, allFilters]);
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_LEAD_REPORT_SEL") {
-            console.log("Datos obtenidos de la API:", mainAux.data);
             setDetailCustomReport(mainAux);
             setdataGrid(mainAux.data.map((x) => ({
                 ...x,
