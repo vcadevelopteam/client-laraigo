@@ -6419,6 +6419,7 @@ export const langKeys = {
   transcriptionandtranslation: 'transcriptionandtranslation',
   translatelanguage: 'translatelanguage',
   chatsettings: 'chatsettings',
+  errorimportdocuments: 'errorimportdocuments',
   channel_message_templates_help: 'channel_message_templates_help',
   channel_column_mt_help: 'channel_column_help',
   onboading_channelcomplete: 'onboading_channelcomplete',

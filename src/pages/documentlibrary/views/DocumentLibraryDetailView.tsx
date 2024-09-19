@@ -72,9 +72,9 @@ const DocumentLibraryDetailView: React.FC<DocumentLibraryDetailViewProps> = ({ d
         register('type');
         register('id');
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('groups');
+        register('groups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description');
-        register('category');
         register('favorite');
     }, [edit, register]);
 

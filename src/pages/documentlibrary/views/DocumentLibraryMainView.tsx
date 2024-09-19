@@ -47,6 +47,8 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	const [openModalPreview, setOpenModalPreview] = useState<any>(null);
 	const user = useSelector(state => state.login.validateToken.user);
 	const [selectedRows, setSelectedRows] = useState<any>({});
+	const [wrongImportData, setWrongImportData] = useState<any>([]);
+    const [cleanImport, setCleanImport] = useState(false);
 	const [waitUpload, setWaitUpload] = useState(false);
 	const [waitDelete, setWaitDelete] = useState(false);
     const memoryTable = useSelector(state => state.main.memoryTable);
@@ -211,6 +213,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 			{ "# Obligatorio |Grupos que tendran permiso al acceso del archivo. Se puede indicar varios grupos colocando ',' entre cada uno de ellos. Ejemplo: GR01,GR02": "# Obligatorio |Grupos que tendran permiso al acceso del archivo. Se puede indicar varios grupos colocando ',' entre cada uno de ellos. Ejemplo: GR01,GR02" },
 			{ "# Obligatorio |Link donde se encuentra almacenado el archivo que se requiere subir. Ejemplo: https://laraigo.com/wp-content/uploads/2023/11/Laraigo.svg": "# Obligatorio |Link donde se encuentra almacenado el archivo que se requiere subir. Ejemplo: https://laraigo.com/wp-content/uploads/2023/11/Laraigo.svg" },
 			{ "# Obligatorio |Categoría del registro del archivo. Puedes asignarle cualquier categoría. Ejemplo: Saludo": "# Obligatorio |Categoría del registro del archivo. Puedes asignarle cualquier categoría. Ejemplo: Saludo" },
+			{ "# Opcional | Si el documento sera favorito o no, Valores: TRUE o FALSE": "# Opcional | Si el documento sera favorito o no, Valores: TRUE o FALSE" },
 		];
 		const header = [
 			"title",
@@ -218,12 +221,14 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 			"groups",
 			"linkfile",
 			"category",
+			'favorite'
 		];
 		exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
 	};
 	useEffect(() => {
 		if (waitUpload) {
 			if (!importRes.loading && !importRes.error) {
+				setCleanImport(!cleanImport)
 				if (importRes?.data?.[0]?.p_messagetype === "ERROR") {
 					dispatch(
 						showSnackbar({
@@ -234,13 +239,21 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 					);
 
 				} else {
-					dispatch(
-						showSnackbar({
-							show: true,
-							severity: "success",
-							message: t(langKeys.successful_import),
-						})
-					);
+					if(wrongImportData.length){
+						dispatch(
+							showSnackbar({ show: true, severity: "error", message: t(langKeys.errorimportdocuments, {docs: wrongImportData.join(", ")}) })
+						);
+						setWrongImportData([])
+
+					}else{
+						dispatch(
+							showSnackbar({
+								show: true,
+								severity: "success",
+								message: t(langKeys.successful_import),
+							})
+						);
+					}
 				}
 				dispatch(showBackdrop(false));
 				setWaitUpload(false);
@@ -255,6 +268,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 				);
 				dispatch(showBackdrop(false));
 				setWaitUpload(false);
+				setCleanImport(!cleanImport)
 			}
 		}
 	}, [importRes, waitUpload]);
@@ -300,7 +314,6 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 	const isValidData = (element: DocumentLibraryData) => {
 		const groupList = (multiResult?.data?.[0]?.data || []).map(x=>x.domainvalue)
 		const groups = element.groups.split(",") || []
-		
 		return (
 			typeof element.title === 'string' && element.title.length > 0 &&
 			(!element.description || (typeof element.description === 'string' && element.description.length <= 256)) &&
@@ -318,15 +331,16 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
                 ...item,
                 groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
             }));
-            
+			debugger
 			if (data.length > 0) {
-				const error = data.some((element) => !isValidData(element));
-				if (!error) {
-					const dataToSend = data.map((x: any) => ({
+				const badData = data.filter(element => !isValidData(element)).map(element => element.title);
+				if (badData.length<data.length) {
+					setWrongImportData(badData)
+					const dataToSend = data.filter(element => isValidData(element)).map((x: any) => ({
 						...x,
 						id: 0,
 						link: x.linkfile,
-						favorite: false,
+						favorite: x?.favorite?(String(x.favorite).toLocaleLowerCase() === "true"):false,
 						operation: "INSERT",
 						type: "NINGUNO",
 						status: "ACTIVO",
@@ -334,10 +348,12 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 					dispatch(showBackdrop(true));
 					dispatch(execute(documentLibraryInsArray(JSON.stringify(dataToSend))));
 					setWaitUpload(true);
+					
 				} else {
 					dispatch(
-						showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) })
+						showSnackbar({ show: true, severity: "error", message: t(langKeys.errorimportdocuments, {docs: badData.join(", ")}) })
 					);
+					setCleanImport(!cleanImport)
 				}
 			}
 		}
@@ -373,6 +389,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
 				importCSV={handleUpload}
 				defaultGlobalFilter={globalFilter}
 				setOutsideGeneralFilter={setGlobalFilter}
+				cleanImport={cleanImport}
 				pageSizeDefault={IDDOCUMENTLIBRARY === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
 				initialPageIndex={IDDOCUMENTLIBRARY === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
 				initialStateFilter={IDDOCUMENTLIBRARY === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
