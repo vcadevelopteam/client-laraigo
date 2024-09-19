@@ -121,25 +121,25 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
         register('id');
         register('phone', {
             pattern: {
-                value: /^[0-9]{9,}$/,
+                value: /^[0-9]{9,20}$/,
                 message: t(langKeys.invalid_phone)
             }
         });
         register('alternativephone', {
             pattern: {
-                value: /^[0-9]{9,}$/,
+                value: /^[0-9]{9,20}$/,
                 message: t(langKeys.invalid_phone)
             }
         });
         register('email', {
             pattern: {
-                value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                 message: t(langKeys.invalid_email)
             }
         });
         register('alternativeemail', {
             pattern: {
-                value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                 message: t(langKeys.invalid_email)
             }
         });
@@ -364,7 +364,7 @@ const Location: FC = () => {
     const [waitImport, setWaitImport] = useState(false);
     const executeResult = useSelector(state => state.main.execute);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null, distinct: false })
     const user = useSelector(state => state.login.validateToken.user);
 
     const classes = useStyles();
@@ -539,7 +539,9 @@ const Location: FC = () => {
     }, [executeResult, waitImport])
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+        localStorage.setItem('pageSize', pageSize.toString());
+
         dispatch(getCollectionPaginated(getPaginatedLocation({
             take: pageSize,
             skip: pageIndex * pageSize,
