@@ -13,7 +13,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
 import Avatar from "@material-ui/core/Avatar";
-import { getCollectionAux2, uploadFile } from "store/main/actions";
+import { cleanMemoryTable, getCollectionAux2, setMemoryTable, uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
 import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
@@ -1634,6 +1634,8 @@ const DetailUsers: React.FC<DetailProps> = ({
     );
 };
 
+const IDUSER= "IDUSER"
+
 const Users: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -1642,10 +1644,12 @@ const Users: FC = () => {
     const executeRes = useSelector((state) => state.activationuser.saveUser);
     const deleteResult = useSelector((state) => state.activationuser.delUser);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     // const [dataOrganizationsTmp, setdataOrganizationsTmp] = useState<Dictionary[]>([]);
     const [dataChannelsTemp, setdataChannelsTemp] = useState<Dictionary[]>([]);
     const [waitImport, setWaitImport] = useState(false);
     const [waitChanges, setwaitChanges] = useState(false);
+    const [cleanImport, setCleanImport] = useState(false);
     const domains = useSelector((state) => state.person.editableDomains);
     const user = useSelector((state) => state.login.validateToken.user);
     useEffect(() => {
@@ -1839,7 +1843,11 @@ const Users: FC = () => {
             getSecurityRules(),
             getPropertySelByName("VISUALIZACIONBOTSUSUARIOS"),
         ]));
+        dispatch(setMemoryTable({
+            id: IDUSER
+        }))
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -1942,7 +1950,14 @@ const Users: FC = () => {
         const file = files?.item(0);
         if (file) {
             const excel: any = await uploadExcel(file, undefined);
-            const datainit = array_trimmer(excel);
+            const firstdatainit = array_trimmer(excel);
+            debugger
+            const datainit = firstdatainit.map(item => ({
+                ...item,
+                role: String(item.role).replace(/\s+/g, '').replace(/;/g, ','),
+                groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
+            }));
+            
             const data = datainit.filter((f: Dictionary) => {
                 return (
                     (f.company === undefined ||
@@ -1985,7 +2000,7 @@ const Users: FC = () => {
                     (f.balanced === undefined ||
                         ["true", "false"].includes(String(f.balanced))) &&
                     (f.role === undefined ||
-                        (String(f.role) || '').split(",").every((role: string) => {
+                        (String(f?.role || "")).split(",").every((role: string) => {
                             const roleId = parseInt(role.trim(), 10);
                             return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
                         }))
@@ -2050,7 +2065,7 @@ const Users: FC = () => {
                         ) ||
                         !(
                             f.role === undefined ||
-                            (String(f.role) || '')
+                            (String(f?.role||""))
                                 .split(",")
                                 .every((role: string) => {
                                     const roleId = parseInt(role.trim(), 10);
@@ -2084,7 +2099,7 @@ const Users: FC = () => {
                     if (channelError.length === 0) {
                         const table: Dictionary = data.reduce(
                             (a: any, d) => {
-                                const roleids = (String(d?.role) || '').split(",") || []
+                                const roleids = String(d?.role||"").split(",") || []
                                 let roles = domains?.value?.roles?.filter(x => roleids.includes(String(x.roleid))) || []
                                 let type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
                                 let showbots = d.showbots === "true"
@@ -2127,7 +2142,7 @@ const Users: FC = () => {
                                         image: d?.image || "",
                                         detail: {
                                             showbots: Boolean(showbots),
-                                            rolegroups: d.role,
+                                            rolegroups: String(d?.role||""),
                                             orgid: user?.orgid,
                                             bydefault: true,
                                             labels: "",
@@ -2167,9 +2182,11 @@ const Users: FC = () => {
                             })
                         );
                     }
+                    setCleanImport(!cleanImport)
                 }
             } else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: messageerrors }));
+                setCleanImport(!cleanImport)
             }
         }
     };
@@ -2324,7 +2341,11 @@ const Users: FC = () => {
                     loading={mainResult.loading}
                     register={true}
                     hoverShadow={true}
+                    cleanImport={cleanImport}
                     handleRegister={() => checkLimit("REGISTER")}
+                    pageSizeDefault={IDUSER === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDUSER === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDUSER === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                     importCSV={(file) => {
                         setFileToUpload(file);
                         checkLimit("UPLOAD");

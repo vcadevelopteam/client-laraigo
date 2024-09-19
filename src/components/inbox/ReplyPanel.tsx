@@ -124,10 +124,10 @@ const DialogSearchLibrary: React.FC<{
         setGeneralFilter(value ?? "");
         if (value) {
             setLibraryToShow(
-                libraryList.filter((x) => x.category === categoryFilter).filter((x) => x.title.includes(value))
+                libraryList.filter((x) => x.category === categoryFilter || categoryFilter === "").filter((x) => (x.title.toLocaleLowerCase()).includes(value.toLocaleLowerCase()))
             );
         } else {
-            setLibraryToShow(libraryList.filter((x) => x.category === categoryFilter));
+            setLibraryToShow(libraryList.filter((x) => x.category === categoryFilter || categoryFilter === ""));
         }
     };
 
@@ -233,7 +233,9 @@ const DialogSearchLibrary: React.FC<{
                 <div className={classes.containerFiles}>
                     {libraryToShow.map((x) => {
                         const extension = x.link.split(".").pop();
-
+                        if (x.favorite) {
+                            return null;
+                        }
                         return (
                             <div
                                 key={x.documentlibraryid}
