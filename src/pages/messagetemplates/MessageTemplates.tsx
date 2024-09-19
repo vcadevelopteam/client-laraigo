@@ -172,7 +172,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 
                                 
             },
-
             {
                 accessor: "name",
                 Header: t(langKeys.name),
