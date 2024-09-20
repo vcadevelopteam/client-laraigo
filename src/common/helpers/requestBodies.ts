@@ -5438,3 +5438,21 @@ export const getWatsonxMentions = (entity_value: string) => ({
     parameters: { entity_value },
 });
 
+export const watsonxModelConflictSel = ({watsonid, watsonitemdetailid}:Dictionary) => ({
+    method: "UFN_WATSON_CONFLICTS_SEL",
+    key: "UFN_WATSON_CONFLICTS_SEL",
+    parameters: { watsonid, watsonitemdetailid },
+});
+
+export const watsonExportIntents = (watsonid:number) => ({
+    method: "UFN_WATSON_INTENTS_EXPORT",
+    key: "UFN_WATSON_INTENTS_EXPORT",
+    parameters: { watsonid },
+});
+
+export const watsonExportEntities = (watsonid:number) => ({
+    method: "UFN_WATSON_ENTITES_EXPORT",
+    key: "UFN_WATSON_ENTITES_EXPORT",
+    parameters: { watsonid },
+});
+

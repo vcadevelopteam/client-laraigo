@@ -1,6 +1,6 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
@@ -11,14 +11,14 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary, IRequestBody } from '@types';
 import { useDispatch } from 'react-redux';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { convertLocalDate } from 'common/helpers';
+import { array_trimmer, convertLocalDate, exportExcel, normalizeKeys, uploadExcel } from 'common/helpers';
 import {  getMultiCollection, resetAllMain } from 'store/main/actions';
-import { rasaSynonimIns } from 'common/helpers/requestBodies';
-import { downloadrasaia, uploadrasaia } from 'store/rasaia/actions';
+import { rasaSynonimIns, watsonExportEntities } from 'common/helpers/requestBodies';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { ModelTestDrawer } from './ModelTestDrawer';
-import { getItemsWatson, resetItemsWatson } from 'store/watsonx/actions';
-import { DetailEntities } from './Details/DetailEntities';
+import { getExportItemsWatson, getItemsWatson, importItems, resetItemsWatson } from 'store/watsonx/actions';
+import { DetailEntities } from './details/DetailEntities';
+import { DetailIntentions } from './details/DetailIntentions';
 
 
 interface RowSelected {
@@ -62,19 +62,17 @@ export const Entities: React.FC<IntentionProps> = ({ setExternalViewSelected, ar
     const selectedRow = useSelector(state => state.watson.selectedRow);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
-    const [sendTrainCall, setSendTrainCall] = useState(false);
-    const operationRes = useSelector(state => state.rasaia.rasaiauploadresult);
-    const [waitExport, setWaitExport] = useState(false);
+    const exportResult = useSelector(state => state.watson.exportItems);
+    const [waitExportData, setWaitExportData] = useState(false);
+    const operationRes = useSelector(state => state.watson.bulkload);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const multiResult = useSelector(state => state.main.multiData);
-    const dataModelAi = useSelector(state => state.main.mainAux);
+    const [intentionSelected, setIntentionSelected] = useState<RowSelected>({ row: null, edit: false });
     const [openTest, setOpenTest] = useState(false);
     const [tableData, setTableData] = useState<any>([]);
+    const deleteItemResult = useSelector(state => state.watson.deleteitems);
 
-    const [viewSelected, setViewSelected] = useState("view-1");
+    const [viewSelected, setViewSelected] = useState("mainview");
     const [waitImport, setWaitImport] = useState(false);
-    const trainResult = useSelector(state => state.rasaia.rasaiatrainresult);
-    const exportResult = useSelector(state => state.rasaia.rasaiadownloadresult);
 
     const selectionKey = 'watsonitemid';
     const fetchData = () => { dispatch(getItemsWatson(selectedRow?.watsonid)) };
@@ -84,23 +82,6 @@ export const Entities: React.FC<IntentionProps> = ({ setExternalViewSelected, ar
             setTableData((mainResultWatson?.data||[]).filter(x=>x.type === "entity"))
         }
     }, [mainResultWatson]);
-
-    
-    useEffect(() => {
-        if(sendTrainCall){
-            if(!trainResult.loading && !trainResult.error){
-                let message=t(langKeys.bot_training_scheduled)
-                dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
-                fetchData();
-                setSendTrainCall(false);
-                dispatch(showBackdrop(false));
-            }else if(trainResult.error){
-                dispatch(showSnackbar({ show: true, severity: "error", message: trainResult.message + "" }))
-                setSendTrainCall(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [trainResult,sendTrainCall]);
     
     useEffect(() => {
         fetchData();
@@ -112,19 +93,19 @@ export const Entities: React.FC<IntentionProps> = ({ setExternalViewSelected, ar
 
     useEffect(() => {
         if (waitSave) {
-            if (!multiResult.loading && !multiResult.error) {
+            if (!deleteItemResult.loading && !deleteItemResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (multiResult.error) {
-                const errormessage = t(multiResult.code || "error_unexpected_error", { module: t(langKeys.sinonims).toLocaleLowerCase() })
+                setViewSelected("mainview")
+            } else if (deleteItemResult.error) {
+                const errormessage = t(deleteItemResult.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [multiResult, waitSave])
+    }, [deleteItemResult, waitSave])
 
     useEffect(() => {
         if (waitImport) {
@@ -140,8 +121,13 @@ export const Entities: React.FC<IntentionProps> = ({ setExternalViewSelected, ar
                 setWaitImport(false);
             }
         }
-    }, [operationRes, operationRes]);
+    }, [operationRes, waitImport]);
 
+    function triggerExportData(){
+        setWaitExportData(true)
+        dispatch(showBackdrop(true));
+        dispatch(getExportItemsWatson(watsonExportEntities(selectedRow?.watsonid)))
+    }
     const columns = React.useMemo(
         () => [
             {
@@ -204,51 +190,67 @@ export const Entities: React.FC<IntentionProps> = ({ setExternalViewSelected, ar
         }))
     }
 
-    
-    const triggerExportData = () => {
-        dispatch(downloadrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||"", origin: "synonym"}))
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
     useEffect(() => {
-        if (waitExport) {
+        if (waitExportData) {
             if (!exportResult.loading && !exportResult.error) {
+                const transformedData = exportResult.data.map(item => ({
+                    ...item,
+                    synonyms: JSON.parse(item.synonyms).join(",")
+                }));
+                const columnsexport = [
+                    { Header: t(langKeys.entity), accessor: 'item_name' },
+                    { Header: t(langKeys.value), accessor: 'value' },
+                    { Header: t(langKeys.sinonim), accessor: 'synonyms' },
+                ];
+                exportExcel(`${t(langKeys.data)} ${t(langKeys.entities)}`, transformedData, columnsexport);
                 dispatch(showBackdrop(false));
-                setWaitExport(false);
-                window.open(exportResult?.url||"", '_blank');
             } else if (exportResult.error) {
-                const errormessage = t(exportResult.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                const errormessage = t(exportResult.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitExportData(false);
                 dispatch(showBackdrop(false));
-                setWaitExport(false);
             }
         }
-    }, [exportResult, waitExport]);
+    }, [exportResult, waitExportData])
+
+    
 
     const handleUpload = async (files: any[]) => {
         let file = files[0];
         if (file) {
-            const fd = new FormData();
-            //file.type = "application/x-yaml";
-            fd.append('file', file, file.name);
-            fd.append('model_uuid', dataModelAi?.data?.[0]?.model_uuid||"");
-            fd.append('origin', "synonym");
-            fd.append('Content-Type', 'text/yaml');
-            dispatch(showBackdrop(true));
-            setWaitImport(true)
-            dispatch(uploadrasaia(fd))    
+            let excel: any = await uploadExcel(file, undefined);
+            let data: Dictionary[] = array_trimmer(excel);
+            const normalizedArray = data.map(normalizeKeys);
+            const filteredArray = normalizedArray.filter((obj: any) => !!obj.entidad && obj.entidad.length < 128 && obj.valor?.length <= 1024);
+            if (filteredArray.length > 0) {
+                const callback = () => {
+                    dispatch(showBackdrop(true));
+                    setWaitImport(true)
+                    dispatch(importItems({
+                        watsonid: selectedRow?.watsonid,
+                        type: "entity",
+                        data: filteredArray.map((x:any)=> ({value: x.valor, entity: x.entidad, synonyms: x.sinonimos.split(",")}))
+                    }))
+                }
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
+            }
         }
     }
     
-    if (viewSelected==="view-1"){
+    if (viewSelected==="mainview"){
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
                 <div style={{ width: "100%" }}>
                     {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8  }}>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread, { id: "view-1", name: t(langKeys.entities) }]}
+                            breadcrumbs={[...arrayBread, { id: "mainview", name: t(langKeys.entities) }]}
                             handleClick={setExternalViewSelected}
                         />
                         {!openTest && <Button
@@ -302,6 +304,19 @@ export const Entities: React.FC<IntentionProps> = ({ setExternalViewSelected, ar
             <div style={{ width: '100%' }}>
                 <DetailEntities
                     data={rowSelected}
+                    fetchData={fetchData}
+                    setViewSelected={setViewSelected}
+                    setExternalViewSelected={setExternalViewSelected}
+                    setIntentionSelected={setIntentionSelected}
+                    arrayBread={arrayBread}
+                />
+            </div>
+        );
+    }else if (viewSelected==="view-3"){
+        return (
+            <div style={{ width: '100%' }}>
+                <DetailIntentions
+                    data={intentionSelected}
                     fetchData={fetchData}
                     setViewSelected={setViewSelected}
                     setExternalViewSelected={setExternalViewSelected}

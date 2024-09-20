@@ -39,6 +39,10 @@ export interface IState {
     deleteitems: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
     entity: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
     mentions: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    bulkload: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    conflicts: IListStatePaginated<Dictionary> & { key?: string };
+    resolveconflict: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    exportItems: IListStatePaginated<Dictionary> & { key?: string };
 }
 
 export const initialState: IState = {
@@ -50,6 +54,10 @@ export const initialState: IState = {
     deleteitems: { success: undefined, ...initialListPaginatedState },
     entity: { success: undefined, ...initialListPaginatedState },
     mentions: { success: undefined, ...initialListPaginatedState },
+    bulkload: { success: undefined, ...initialListPaginatedState },
+    conflicts: initialListPaginatedState,
+    resolveconflict: { success: undefined, ...initialListPaginatedState },
+    exportItems: initialListPaginatedState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -90,4 +98,23 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MENTIONS_FAILURE]: caseFunctions.mentionsFailure,
     [actionTypes.MENTIONS_RESET]: caseFunctions.mentionsReset,
 
+    [actionTypes.BULKLOAD]: caseFunctions.bulkload,
+    [actionTypes.BULKLOAD_SUCCESS]: caseFunctions.bulkloadSuccess,
+    [actionTypes.BULKLOAD_FAILURE]: caseFunctions.bulkloadFailure,
+    [actionTypes.BULKLOAD_RESET]: caseFunctions.bulkloadReset,
+
+    [actionTypes.CONFLICTS]: caseFunctions.conflicts,
+    [actionTypes.CONFLICTS_SUCCESS]: caseFunctions.conflictsSuccess,
+    [actionTypes.CONFLICTS_FAILURE]: caseFunctions.conflictsFailure,
+    [actionTypes.CONFLICTS_RESET]: caseFunctions.conflictsReset,
+
+    [actionTypes.RESOLVECONFLICT]: caseFunctions.resolveconflict,
+    [actionTypes.RESOLVECONFLICT_SUCCESS]: caseFunctions.resolveconflictSuccess,
+    [actionTypes.RESOLVECONFLICT_FAILURE]: caseFunctions.resolveconflictFailure,
+    [actionTypes.RESOLVECONFLICT_RESET]: caseFunctions.resolveconflictReset,
+
+    [actionTypes.EXPORTITEMS]: caseFunctions.exportItems,
+    [actionTypes.EXPORTITEMS_SUCCESS]: caseFunctions.exportItemsSuccess,
+    [actionTypes.EXPORTITEMS_FAILURE]: caseFunctions.exportItemsFailure,
+    [actionTypes.EXPORTITEMS_RESET]: caseFunctions.exportItemsReset,
 });

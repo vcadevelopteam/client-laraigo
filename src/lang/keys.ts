@@ -6456,6 +6456,12 @@ export const langKeys = {
   sinonimshelper11: "sinonimshelper11",
   dictionary: "dictionary",
   annotations: "annotations",
+  resolveconflicts: "resolveconflicts",
+  conflictresolution: "conflictresolution",
+  conflictresolutionhelper: "conflictresolutionhelper",
+  examplesinconflict: "examplesinconflict",
+  user_example: "user_example",
+  entity: 'entity',
 };
 
 export type LangKeys = typeof langKeys;

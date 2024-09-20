@@ -348,6 +348,8 @@ export const apiUrls = {
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
     WATSONTESTINT: `${BASE_URL}/watson/tryit`,
     WATSONMENTION: `${BASE_URL}/watson/mention`,
+    WATSONBULKLOAD: `${BASE_URL}/watson/bulkload`,
+    WATSONCONFLICTRESOLVE: `${BASE_URL}/watson/conflicts/resolve`,
     WATSONINTENT: `${BASE_URL}/watson/intent`,
     WATSONENTITY: `${BASE_URL}/watson/entity`,
     WATSONITEMDELETE: `${BASE_URL}/watson/item/delete`,

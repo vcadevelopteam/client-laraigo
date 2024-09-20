@@ -1,6 +1,6 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { DialogZyx, FieldEdit, FieldSelect, IOSSwitch, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,9 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import { convertLocalDate } from 'common/helpers';
 import { watsonxIntentDetailSel } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
-import { createNewMention, getItemsDetail, insertIntentwatsonx, resetItemsDetail } from 'store/watsonx/actions';
+import { createNewMention, getConflictsWatson, getItemsDetail, insertIntentwatsonx, resetItemsDetail } from 'store/watsonx/actions';
+import { DialogAddEntity } from '../dialogs/DialogAddEntity';
+import { DialogConflict } from '../dialogs/DialogConflict';
 
 
 interface RowSelected {
@@ -48,16 +50,14 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
-    containerFields: {
-        paddingRight: "16px"
-    },
 }));
 
 export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [disableSave, setDisableSave] = useState(!row);
-    const [openModal, setOpenModal] = useState(false);
+    const [openModalAddEntity, setOpenModalAddEntity] = useState(false);
+    const [openModalConflict, setOpenModalConflict] = useState<any>(null);
     const [showEntities, setShowEntities] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [selectedWord, setSelectedWord] = useState<any>(null);
@@ -95,18 +95,21 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("intentview")
+                const delayFetch = setTimeout(() => {
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
+                    fetchData && fetchData();
+                    dispatch(showBackdrop(false));
+                    setViewSelected("mainview");
+                }, 1000);
+                return () => clearTimeout(delayFetch);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave, fetchData]);
 
     useEffect(() => {
         if (!!row?.watsonitemid) {
@@ -114,7 +117,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
         }
         return () => {
             dispatch(resetItemsDetail());
-        }; 
+        };
     }, [])
 
     useEffect(() => {
@@ -125,7 +128,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(insertIntentwatsonx({...data, detail: examples}))
+            dispatch(insertIntentwatsonx({ ...data, detail: examples }))
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -158,7 +161,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                     const wordStart = sentence.indexOf(word, currentIndex);
                                     const wordEnd = wordStart + word.length;
                                     currentIndex = wordEnd;
-                                    const mention = mentions?.find((mention:any) =>
+                                    const mention = mentions?.find((mention: any) =>
                                         mention.value === word &&
                                         mention.location[0] === wordStart &&
                                         mention.location[1] === wordEnd
@@ -185,7 +188,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                                     location: [wordStart, wordEnd],
                                                     sentenceindex: index
                                                 });
-                                                setOpenModal(true);
+                                                setOpenModalAddEntity(true);
                                             }}
                                         >
                                             {word}
@@ -200,7 +203,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                             valueDefault={props.cell.row.original.value}
                             onChange={(value) => {
                                 let auxExamples = examples;
-                                auxExamples[index].text = value;
+                                auxExamples[index].text = value?.toLowerCase() || "";
                                 auxExamples[index].createdate = new Date();
                                 auxExamples[index].mentions = []
                                 setexamples(auxExamples)
@@ -216,7 +219,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                 accessor: 'createdate',
                 width: "300px",
                 NoFilter: true,
-                Cell: (props) => {
+                Cell: (props: any) => {
                     const createdate = props.cell.row.original?.createdate || new Date();
                     return convertLocalDate(createdate).toLocaleString()
                 }
@@ -224,11 +227,24 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
             {
                 Header: t(langKeys.conflicts),
                 accessor: 'conflicts',
-                width: "150px",
-                type: "number",
+                width: "200px",
                 NoFilter: true,
-                Cell: () => {
-                    return 0
+                Cell: (props: any) => {
+                    const fila = props.cell.row.original;
+                    const conflicts = props.cell.row.original?.conflicts;
+                    if (!!conflicts) {
+                        return <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            onClick={() => {
+                                dispatch(getConflictsWatson({
+                                    watsonid: selectedSkill.watsonid, watsonitemdetailid: fila.watsonitemdetailid
+                                })); setOpenModalConflict({...row, ...fila })
+                            }}
+                        >{t(langKeys.resolveconflicts)}</Button>
+                    }
+                    return ""
                 }
             },
         ],
@@ -251,7 +267,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
             }
             const auxexamples = examples;
             auxexamples[selectedWord.sentenceindex].mentions = [
-                ...(auxexamples[selectedWord.sentenceindex]?.mentions||[]),
+                ...(auxexamples[selectedWord.sentenceindex]?.mentions || []),
                 {
                     entity: newEntity,
                     location: selectedWord.location,
@@ -260,7 +276,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
             ]
             setexamples(auxexamples)
             setNewEntity("")
-            setOpenModal(false)
+            setOpenModalAddEntity(false)
         }
     }
 
@@ -286,7 +302,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("intentview")}
+                            onClick={() => setViewSelected("mainview")}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -360,7 +376,7 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                 valueDefault={newIntention}
                                 variant='outlined'
                                 size="small"
-                                onChange={(value) => setnewIntention(value)}
+                                onChange={(value) => setnewIntention(value.toLowerCase())}
                                 helperText2={t(langKeys.uniqueexamplesuserintention)}
                             />
                             <Button
@@ -373,11 +389,15 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                                 style={{ backgroundColor: !newIntention ? "#dbdbdc" : "#0078f6", marginTop: 'auto' }}
                                 onClick={() => {
                                     if (newIntention.trim()) {
-                                        setexamples([{ value: newIntention, mentions: [], watsonitemdetailid: 0, status: "ACTIVO" }, ...examples])
-                                        if (/\[[^\]]+\]/.test(newIntention)) {
-                                            setOpenModal(true)
+                                        if (!!examples.filter((x: any) => x.value.toLocaleLowerCase() === (newIntention.toLocaleLowerCase())).length) {
+                                            dispatch(showSnackbar({ show: true, severity: "error", message: "Ya existe ese valor" }))
+                                        } else {
+                                            setexamples([{ value: newIntention, mentions: [], watsonitemdetailid: 0, status: "ACTIVO" }, ...examples])
+                                            if (/\[[^\]]+\]/.test(newIntention)) {
+                                                setOpenModalAddEntity(true)
+                                            }
+                                            setnewIntention("")
                                         }
-                                        setnewIntention("")
                                     }
 
                                 }}
@@ -421,29 +441,13 @@ export const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, f
                     </div>
 
                 )}
-                <DialogZyx
-                    open={openModal}
-                    title={t(langKeys.entities)}
-                    buttonText1={t(langKeys.cancel)}
-                    buttonText2={t(langKeys.save)}
-                    handleClickButton1={() => {setOpenModal(false); setNewEntity("")}}
-                    handleClickButton2={addtoTable}
-                >
-                    <div className="row-zyx">
-                        <FieldSelect
-                            freeSolo={true}
-                            className={classes.containerFields}
-                            valueDefault={newEntity}
-                            helperText2={t(langKeys.entitydesctooltop)}
-                            onChange={(value) => {
-                                setNewEntity(value?.item_name || "")
-                            }}
-                            data={[...(mainResultWatson?.data || []).filter(x => x.type === "entity"), ...createdEntities]}
-                            optionDesc="item_name"
-                            optionValue="item_name"
-                        />
-                    </div>
-                </DialogZyx>
+                <DialogAddEntity
+                    openModal={openModalAddEntity} setOpenModal={setOpenModalAddEntity} addtoTable={addtoTable}
+                    setNewEntity={setNewEntity} createdEntities={createdEntities}
+                />
+                <DialogConflict openModal={openModalConflict} setOpenModal={setOpenModalConflict} 
+                    fetchData={()=>dispatch(getItemsDetail(watsonxIntentDetailSel(row?.watsonitemid)))}
+                />
             </form>
         </div>
     );

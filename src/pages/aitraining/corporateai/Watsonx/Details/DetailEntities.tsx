@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { FieldEdit, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Box, Button, IconButton, makeStyles, Tab, Tabs, TextField } from '@material-ui/core';
+import { Box, Button, makeStyles, Tab, Tabs } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -13,13 +13,11 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { execute } from 'store/main/actions';
-import { rasaSynonimIns, watsonxIntentDetailSel } from 'common/helpers/requestBodies';
-import { convertLocalDate } from 'common/helpers';
+import { watsonxIntentDetailSel } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
 import { EntitiesTable } from '../components/EntitiesTable';
 import { getItemsDetail, getMentionwatsonx, insertEntitywatsonx, resetItemsDetail } from 'store/watsonx/actions';
+import { SynonymList } from '../components/SynonymList';
 
 
 interface RowSelected {
@@ -32,7 +30,8 @@ interface DetailProps {
     fetchData?: () => void;
     setViewSelected: (view: string) => void;
     setExternalViewSelected?: (view: string) => void;
-    arrayBread?: any;
+    setIntentionSelected: (view: any) => void;
+    arrayBread: any;
 }
 const useStyles = makeStyles((theme) => ({
     labellink: {
@@ -56,44 +55,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const SynonymList: React.FC<{ sinonyms: any, setSinonyms: (a: any) => void, variant?: "filled" | "outlined" | "standard" | undefined }> = ({ sinonyms, setSinonyms, variant = "outlined" }) => {
-
-    return <div className='row-zyx' style={{ margin: 0 }}>
-        {sinonyms.map((x: string, i: number) => {
-            return (
-                <div className="col-3" style={{ display: "flex", minWidth: 400, margin: 0 }} key={i}>
-                    <FieldEdit
-                        className="col-12"
-                        rows={1}
-                        valueDefault={x}
-                        onChange={(value) => {
-                            const auxsinonims = [...sinonyms];
-                            auxsinonims[i] = value;
-                            setSinonyms(auxsinonims);
-                        }}
-                        variant={variant}
-                        size="small"
-                    />
-                    {(sinonyms.length === (i + 1)) && (
-                        <IconButton size="small" onClick={() => setSinonyms([...sinonyms, ""])}>
-                            <AddIcon />
-                        </IconButton>
-                    )}
-                    {(sinonyms.length !== (i + 1)) && (
-                        <IconButton size="small" onClick={() => {
-                            const auxsin = [...sinonyms];
-                            auxsin.splice(i, 1);
-                            setSinonyms(auxsin);
-                        }}>
-                            <RemoveIcon />
-                        </IconButton>
-                    )}
-                </div>
-            );
-        })}
-    </div>
-}
-export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, setViewSelected, setExternalViewSelected, arrayBread }) => {
+export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, setViewSelected, setExternalViewSelected, arrayBread, setIntentionSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -105,6 +67,7 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
     const [dataMentions, setDataMentions] = useState<any>([]);
     const [currentTab, setCurrentTab] = useState(0);
     const [examples, setexamples] = useState<any>(row?.values?.split(",")?.reduce((acc: any, x: any) => [...acc, { name: x }], []) || []);
+    const mainResultWatson = useSelector(state => state.watson.items);
     const selectedSkill = useSelector(state => state.watson.selectedRow);
     const operationRes = useSelector(state => state.watson.entity);
     const mainResult = useSelector(state => state.watson.itemsdetail);
@@ -189,9 +152,9 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                     return (
                         <label
                             className={classes.labellink}
-                            onClick={() => {                    
-                                //setViewSelected("view-2");
-                                //setRowSelected({ row: row, edit: true })
+                            onClick={() => {          
+                                setViewSelected("view-3");
+                                setIntentionSelected({ row: mainResultWatson.data.filter(x=>x.watsonitemid === row.watsonitemid)[0], edit: true })
                             }}
                         >
                             #{row.intention}
@@ -208,7 +171,7 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
             if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
+                setViewSelected("mainview")
                 setTimeout(() => { fetchData && fetchData() }, 500);
             } else if (operationRes.error) {
                 const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.sinonim).toLocaleLowerCase() })
@@ -263,7 +226,7 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => setViewSelected("mainview")}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -319,7 +282,7 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                                 variant='outlined'
                                 size="small"
                                 valueDefault={newExample}
-                                onChange={(value) => setNewExample(value)}
+                                onChange={(value) => setNewExample(value.toLowerCase())}
                                 helperText2={t(langKeys.valuesynonymhelper)}
                             />
                             <div className='col-6'>
@@ -341,7 +304,7 @@ export const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fet
                             startIcon={<AddIcon color="secondary" />}
                             style={{ backgroundColor: newExample === "" ? "#dbdbdc" : "#0078f6" }}
                             onClick={() => {
-                                if (!examples.filter((x: any) => x.value === newExample).length) {
+                                if (!examples.filter((x: any) => (x.value).toLocaleLowerCase() === newExample.toLocaleLowerCase()).length) {
                                     let filteredexamples = sinonyms.filter((synonym: string) => synonym.trim() !== "")
                                     if (!filteredexamples.length) filteredexamples = [""]
                                     setexamples([...examples, { value: newExample, watsonitemdetailid: 0, status: "ACTIVO", synonyms: filteredexamples }]);

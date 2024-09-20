@@ -265,3 +265,147 @@ export const mentionsReset = (state: IState): IState => ({
     ...state,
     mentions: initialState.intent,
 });
+
+export const bulkload = (state: IState): IState => ({
+    ...state,
+    bulkload: { ...state.bulkload, loading: true, error: false, success: undefined }
+});
+
+export const bulkloadSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        bulkload: {
+            data: action.payload.data || [],
+            key: action.payload.key,
+            count: 0,
+            loading: false,
+            error: false,
+            success: true,
+        }
+    }
+};
+
+export const bulkloadFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    bulkload: {
+        ...state.bulkload,
+        loading: false,
+        key: action.payload.key,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+        success: false,
+    }
+});
+
+export const bulkloadReset = (state: IState): IState => ({
+    ...state,
+    bulkload: initialState.bulkload,
+});
+
+
+export const conflicts = (state: IState): IState => ({
+    ...state,
+    conflicts: { ...state.conflicts, data: [], loading: true, error: false }
+});
+
+export const conflictsSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        conflicts: {
+            key: action.payload.key,
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const conflictsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    conflicts: {
+        ...state.conflicts,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const conflictsReset = (state: IState): IState => ({
+    ...state,
+    conflicts: initialState.conflicts,
+});
+
+export const resolveconflict = (state: IState): IState => ({
+    ...state,
+    resolveconflict: { ...state.resolveconflict, loading: true, error: false, success: undefined }
+});
+
+export const resolveconflictSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        resolveconflict: {
+            data: action.payload.data || [],
+            key: action.payload.key,
+            count: 0,
+            loading: false,
+            error: false,
+            success: true,
+        }
+    }
+};
+
+export const resolveconflictFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    resolveconflict: {
+        ...state.resolveconflict,
+        loading: false,
+        key: action.payload.key,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+        success: false,
+    }
+});
+
+export const resolveconflictReset = (state: IState): IState => ({
+    ...state,
+    resolveconflict: initialState.resolveconflict,
+});
+
+
+export const exportItems = (state: IState): IState => ({
+    ...state,
+    exportItems: { ...state.exportItems, data: [], loading: true, error: false }
+});
+
+export const exportItemsSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        exportItems: {
+            key: action.payload.key,
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const exportItemsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    exportItems: {
+        ...state.exportItems,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const exportItemsReset = (state: IState): IState => ({
+    ...state,
+    exportItems: initialState.exportItems,
+});

@@ -1,7 +1,7 @@
 import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction, IRequestBodyDynamic, Dictionary } from "@types";
 import { CommonService, WatsonService } from "network";
 import actionTypes from "./actionTypes";
-import { getWatsonxMentions, watsonxModelItemSel } from "common/helpers";
+import { getWatsonxMentions, watsonxModelConflictSel, watsonxModelItemSel } from "common/helpers";
 
 
 
@@ -79,6 +79,51 @@ export const getMentionwatsonx = (entity_value: string): IActionCall => ({
         loading: actionTypes.MENTIONS,
         success: actionTypes.MENTIONS_SUCCESS,
         failure: actionTypes.MENTIONS_FAILURE,
+    },
+    type: null,
+});
+
+export const importItems = (requestBody: any): IActionCall => ({
+    callAPI: () => WatsonService.watsonbulkload(requestBody),
+    types: {
+        loading: actionTypes.BULKLOAD,
+        success: actionTypes.BULKLOAD_SUCCESS,
+        failure: actionTypes.BULKLOAD_FAILURE,
+    },
+    type: null,
+});
+
+
+export const getConflictsWatson = (data: Dictionary): IActionCall => ({
+    callAPI: () => CommonService.main(watsonxModelConflictSel(data)),
+    types: {
+        loading: actionTypes.CONFLICTS,
+        success: actionTypes.CONFLICTS_SUCCESS,
+        failure: actionTypes.CONFLICTS_FAILURE,
+    },
+    type: null,
+});
+
+
+export const resetConflictsWatson = (): IActionCall => ({ type: actionTypes.CONFLICTS_RESET });
+
+
+export const conflictResolution = (requestBody: any): IActionCall => ({
+    callAPI: () => WatsonService.watsonconflictresolve(requestBody),
+    types: {
+        loading: actionTypes.BULKLOAD,
+        success: actionTypes.BULKLOAD_SUCCESS,
+        failure: actionTypes.BULKLOAD_FAILURE,
+    },
+    type: null,
+});
+
+export const getExportItemsWatson = (requestBody: any): IActionCall => ({
+    callAPI: () => CommonService.main(requestBody),
+    types: {
+        loading: actionTypes.EXPORTITEMS,
+        success: actionTypes.EXPORTITEMS_SUCCESS,
+        failure: actionTypes.EXPORTITEMS_FAILURE,
     },
     type: null,
 });

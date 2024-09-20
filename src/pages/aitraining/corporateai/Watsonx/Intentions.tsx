@@ -1,6 +1,6 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
@@ -8,17 +8,15 @@ import { langKeys } from 'lang/keys';
 import { Button, makeStyles } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Dictionary, IRequestBody } from '@types';
+import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { convertLocalDate } from 'common/helpers';
-import { getMultiCollection, resetAllMain } from 'store/main/actions';
-import { rasaIntentIns } from 'common/helpers/requestBodies';
-import { downloadrasaia, uploadrasaia } from 'store/rasaia/actions';
+import { array_trimmer, convertLocalDate, exportExcel, normalizeKeys, templateMaker, uploadExcel, watsonExportIntents } from 'common/helpers';
+import { resetAllMain } from 'store/main/actions';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { ModelTestDrawer } from './ModelTestDrawer';
-import { deleteitemswatson, getItemsWatson, resetItemsWatson } from 'store/watsonx/actions';
-import { DetailIntentions } from './Details/DetailIntentions';
+import { deleteitemswatson, getExportItemsWatson, getItemsWatson, importItems, resetItemsWatson } from 'store/watsonx/actions';
+import { DetailIntentions } from './details/DetailIntentions';
 
 
 interface RowSelected {
@@ -60,25 +58,22 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     const { t } = useTranslation();
     const classes = useStyles();
     const mainResultWatson = useSelector(state => state.watson.items);
+    const exportResult = useSelector(state => state.watson.exportItems);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
     const [openTest, setOpenTest] = useState(false);
+    const [waitExportData, setWaitExportData] = useState(false);
     const [tableData, setTableData] = useState<any>([]);
-    const [sendTrainCall, setSendTrainCall] = useState(false);
-    const operationRes = useSelector(state => state.rasaia.rasaiauploadresult);
-    const [waitExport, setWaitExport] = useState(false);
+    const operationRes = useSelector(state => state.watson.bulkload);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const selectedRow = useSelector(state => state.watson.selectedRow);
 
-    const [viewSelected, setViewSelected] = useState("intentview");
+    const [viewSelected, setViewSelected] = useState("mainview");
     const [waitImport, setWaitImport] = useState(false);
-    const trainResult = useSelector(state => state.rasaia.rasaiatrainresult);
-    const exportResult = useSelector(state => state.rasaia.rasaiadownloadresult);
     const deleteItemResult = useSelector(state => state.watson.deleteitems);
 
     const selectionKey = 'watsonitemid';
-    const dataModelAi = useSelector(state => state.main.mainAux);
-    const newArrayBread = [...arrayBread, { id: "intentview", name: t(langKeys.intentions) }];
+    const newArrayBread = [...arrayBread, { id: "mainview", name: t(langKeys.intentions) }];
     const fetchData = () => { dispatch(getItemsWatson(selectedRow?.watsonid)) };
 
     useEffect(() => {
@@ -88,28 +83,13 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     }, [mainResultWatson]);
 
     const functionChange = (change: string) => {
-        if (change === "intentview") {
-            setViewSelected("intentview")
+        if (change === "mainview") {
+            setViewSelected("mainview")
             fetchData()
         } else {
             setExternalViewSelected(change);
         }
     }
-    useEffect(() => {
-        if (sendTrainCall) {
-            if (!trainResult.loading && !trainResult.error) {
-                let message = t(langKeys.bot_training_scheduled)
-                dispatch(showSnackbar({ show: true, severity: "success", message: message }))
-                setSendTrainCall(false);
-                fetchData();
-                dispatch(showBackdrop(false));
-            } else if (trainResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: trainResult.message + "" }))
-                setSendTrainCall(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [trainResult, sendTrainCall]);
 
     useEffect(() => {
         fetchData();
@@ -125,7 +105,7 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
-                setViewSelected("intentview")
+                setViewSelected("mainview")
             } else if (deleteItemResult.error) {
                 const errormessage = t(deleteItemResult.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -134,6 +114,24 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
             }
         }
     }, [deleteItemResult, waitSave])
+
+    useEffect(() => {
+        if (waitExportData) {
+            if (!exportResult.loading && !exportResult.error) {
+                const columnsexport = [
+                    { Header: t(langKeys.intention), accessor: 'item_name' },
+                    { Header: t(langKeys.user_example), accessor: 'value' }
+                ];
+                exportExcel(`${t(langKeys.data)} ${t(langKeys.intention)}`, exportResult.data, columnsexport);
+                dispatch(showBackdrop(false));
+            } else if (exportResult.error) {
+                const errormessage = t(exportResult.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitExportData(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [exportResult, waitExportData])
 
     useEffect(() => {
         if (waitImport) {
@@ -149,7 +147,7 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 setWaitImport(false);
             }
         }
-    }, [operationRes, operationRes]);
+    }, [operationRes, waitImport]);
 
     const columns = React.useMemo(
         () => [
@@ -223,42 +221,39 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
         }))
     }
 
-    const triggerExportData = () => {
-        dispatch(downloadrasaia({ model_uuid: dataModelAi?.data?.[0]?.model_uuid || "", origin: "intent" }))
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
-    useEffect(() => {
-        if (waitExport) {
-            if (!exportResult.loading && !exportResult.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                window.open(exportResult?.url || "", '_blank');
-            } else if (exportResult.error) {
-                const errormessage = t(exportResult.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [exportResult, waitExport]);
-
     const handleUpload = async (files: any[]) => {
         let file = files[0];
         if (file) {
-            const fd = new FormData();
-            fd.append('file', file, file.name);
-            fd.append('model_uuid', dataModelAi?.data?.[0]?.model_uuid || "");
-            fd.append('origin', "intent");
-            fd.append('Content-Type', 'text/yaml');
-            dispatch(showBackdrop(true));
-            setWaitImport(true)
-            dispatch(uploadrasaia(fd))
+            let excel: any = await uploadExcel(file, undefined);
+            let data: Dictionary[] = array_trimmer(excel);
+            const normalizedArray = data.map(normalizeKeys);
+            const filteredArray = normalizedArray.filter((obj: any) => !!obj.intencion && obj.intencion.length < 128 && obj.ejemplo_usuario?.length <= 1024);
+            if (filteredArray.length > 0) {
+                const callback = () => {
+                    dispatch(showBackdrop(true));
+                    setWaitImport(true)
+                    dispatch(importItems({
+                        watsonid: selectedRow?.watsonid,
+                        type: "intention",
+                        data: filteredArray.map((x:any)=> ({example: x.ejemplo_usuario, intent: x.intencion}))
+                    }))
+                }
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
+            }
         }
     }
-
-    if (viewSelected === "intentview") {
+    function triggerExportData(){
+        setWaitExportData(true)
+        dispatch(showBackdrop(true));
+        dispatch(getExportItemsWatson(watsonExportIntents(selectedRow?.watsonid)))
+    }
+    if (viewSelected === "mainview") {
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
@@ -299,11 +294,11 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                                 </div>
                             </div>
                         )}
+                        triggerExportPersonalized={true}
+                        exportPersonalized={triggerExportData}
                         loading={mainResultWatson.loading}
                         register={true}
                         download={true}
-                        triggerExportPersonalized={true}
-                        exportPersonalized={triggerExportData}
                         handleRegister={handleRegister}
                         importCSV={handleUpload}
                         acceptTypeLoad={"application/x-yaml, text/yaml"}

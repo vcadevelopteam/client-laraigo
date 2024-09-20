@@ -6464,6 +6464,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   sinonimshelper11: "Añade sinónimos o validaciones para referir al mismo valor de la entidad",
   dictionary: "Diccionario",
   annotations: "Anotaciones",
+  resolveconflicts: "Resolver conflictos",
+  conflictresolution: "Resolución de conflictos",
+  conflictresolutionhelper: "Los conflictos de intenciones ocurren cuando los ejemplos se comparten entre múltiples intenciones en un único espacio de trabajo.",
+  examplesinconflict: "Ejemplos en conflicto",
+  user_example: "Ejemplo usuario",
+  entity: 'Entidad',
 };
 
 const esResource: ResourceLanguage = {

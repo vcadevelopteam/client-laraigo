@@ -727,11 +727,11 @@ const Tipifications: FC = () => {
         const file = files[0];
         if (file) {
             let data: Dictionary = (await uploadExcel(file, undefined) as Dictionary[])
+            debugger
             data=data.filter((d: Dictionary) => !['', null, undefined].includes(d.classification)                                                                                       
                     && !['', null, undefined].includes(d.channels)    
                     && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + String(d.parent)))
                 );
-                
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({

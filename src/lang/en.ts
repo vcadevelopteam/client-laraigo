@@ -6513,6 +6513,12 @@ const translation: LangKeys = {
   sinonimshelper11: "Add synonyms or validations to refer to the same entity value",
   dictionary: "Dictionary",
   annotations: "Annotations",
+  resolveconflicts: "Resolve conflicts",
+  conflictresolution: "Conflict resolution",
+  conflictresolutionhelper: "Intent conflicts occur when examples are shared between multiple intents in a single workspace.",
+  examplesinconflict: "Examples in conflict",
+  user_example: "User example",
+  entity: 'Entity',
 };
 
 const enResource: ResourceLanguage = {

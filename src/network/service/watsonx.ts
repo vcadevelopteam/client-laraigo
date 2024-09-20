@@ -20,3 +20,10 @@ export function watsondeleteitem(requestBody: any) {
 export function watsonentity(requestBody: any) {
     return APIManager.post(apiUrls.WATSONENTITY, { data: requestBody }, true);
 }
+
+export function watsonbulkload(requestBody: any) {
+    return APIManager.post(apiUrls.WATSONBULKLOAD, { data: requestBody }, true);
+}
+export function watsonconflictresolve(requestBody: any) {
+    return APIManager.post(apiUrls.WATSONCONFLICTRESOLVE, { data: requestBody }, true);
+}
