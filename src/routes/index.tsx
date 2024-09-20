@@ -46,7 +46,7 @@ const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
 const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
 const CustomVariable = lazy(() => import('pages/CustomVariable'));
 const Emojis = lazy(() => import('pages/Emojis'));
-const IATraining = lazy(() => import('pages/LaraigoIA'));
+const AITraining = lazy(() => import('pages/aitraining/AITraining'));
 const CampaignOld = lazy(() => import('pages/campaignold/Campaign'));
 const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
@@ -403,7 +403,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.WAREHOUSE} component={() => (<Layout mainClasses={classes.main}><Warehouse /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><AiConnectors /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
-					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
+					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><AITraining /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORY} component={() => (<Layout mainClasses={classes.main}><Inventory /></Layout>)} />
 					<ProtectRoute exact path={paths.COMPANIES} component={() => (<Layout mainClasses={classes.main}><Company /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORYCONSUMPTION} component={() => (<Layout mainClasses={classes.main}><InventoryConsumption /></Layout>)} />

@@ -5482,3 +5482,47 @@ export const getLeadProductsSel = () => ({
     key: "UFN_LEAD_REPORT_PRODUCT_SEL",
     parameters: {},
 });
+
+
+export const watsonxModelSel = () => ({
+    method: "UFN_WATSON_MODELS_SEL",
+    key: "UFN_WATSON_MODELS_SEL",
+    parameters: { id: 0 },
+});
+
+export const watsonxModelItemSel = (watsonid: number) => ({
+    method: "UFN_WATSON_ITEMS_SEL",
+    key: "UFN_WATSON_ITEMS_SEL",
+    parameters: { watsonid, type: "intention" },
+});
+
+export const watsonxIntentDetailSel = (watsonitemid: number) => ({
+    method: "UFN_WATSON_ITEMS_DETAIL_SEL",
+    key: "UFN_WATSON_ITEMS_DETAIL_SEL",
+    parameters: { watsonitemid },
+});
+
+export const getWatsonxMentions = (entity_value: string) => ({
+    method: "UFN_WATSON_ENTITY_MENTIONS_SEL",
+    key: "UFN_WATSON_ENTITY_MENTIONS_SEL",
+    parameters: { entity_value },
+});
+
+export const watsonxModelConflictSel = ({watsonid, watsonitemdetailid}:Dictionary) => ({
+    method: "UFN_WATSON_CONFLICTS_SEL",
+    key: "UFN_WATSON_CONFLICTS_SEL",
+    parameters: { watsonid, watsonitemdetailid },
+});
+
+export const watsonExportIntents = (watsonid:number) => ({
+    method: "UFN_WATSON_INTENTS_EXPORT",
+    key: "UFN_WATSON_INTENTS_EXPORT",
+    parameters: { watsonid },
+});
+
+export const watsonExportEntities = (watsonid:number) => ({
+    method: "UFN_WATSON_ENTITES_EXPORT",
+    key: "UFN_WATSON_ENTITES_EXPORT",
+    parameters: { watsonid },
+});
+
