@@ -43,6 +43,7 @@ export interface IState {
     conflicts: IListStatePaginated<Dictionary> & { key?: string };
     resolveconflict: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
     exportItems: IListStatePaginated<Dictionary> & { key?: string };
+    sync: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
 }
 
 export const initialState: IState = {
@@ -58,6 +59,7 @@ export const initialState: IState = {
     conflicts: initialListPaginatedState,
     resolveconflict: { success: undefined, ...initialListPaginatedState },
     exportItems: initialListPaginatedState,
+    sync: { success: undefined, ...initialListPaginatedState },
 };
 
 export default createReducer<IState>(initialState, {
@@ -117,4 +119,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EXPORTITEMS_SUCCESS]: caseFunctions.exportItemsSuccess,
     [actionTypes.EXPORTITEMS_FAILURE]: caseFunctions.exportItemsFailure,
     [actionTypes.EXPORTITEMS_RESET]: caseFunctions.exportItemsReset,
+
+    [actionTypes.SYNC]: caseFunctions.sync,
+    [actionTypes.SYNC_SUCCESS]: caseFunctions.syncSuccess,
+    [actionTypes.SYNC_FAILURE]: caseFunctions.syncFailure,
+    [actionTypes.SYNC_RESET]: caseFunctions.syncReset,
 });

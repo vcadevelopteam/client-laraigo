@@ -409,3 +409,41 @@ export const exportItemsReset = (state: IState): IState => ({
     ...state,
     exportItems: initialState.exportItems,
 });
+
+
+export const sync = (state: IState): IState => ({
+    ...state,
+    sync: { ...state.sync, loading: true, error: false, success: undefined }
+});
+
+export const syncSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        sync: {
+            data: action.payload.data || [],
+            key: action.payload.key,
+            count: 0,
+            loading: false,
+            error: false,
+            success: true,
+        }
+    }
+};
+
+export const syncFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    sync: {
+        ...state.sync,
+        loading: false,
+        key: action.payload.key,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+        success: false,
+    }
+});
+
+export const syncReset = (state: IState): IState => ({
+    ...state,
+    sync: initialState.sync,
+});
