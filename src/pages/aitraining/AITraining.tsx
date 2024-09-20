@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { resetAllMain } from 'store/main/actions';
+import { getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
 import { AIGenerative, AIBussiness } from 'icons';
@@ -14,6 +14,7 @@ import WitIA from './corporateai/WITIA';
 import RasaIA from './corporateai/RASA';
 import CorporateIA from './corporateai/CorporateAI';
 import WatsonX from './corporateai/WATSONX';
+import { watsonxModelSel } from 'common/helpers';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -83,6 +84,10 @@ const AITraining: React.FC = () => {
     const [waitSave, setWaitSave] = useState(false);
 
     
+    useEffect(() => {
+        fetchData()
+    }, []);
+
     const functionChange = (change:string) => {
         if(change==="view-0"){
             //empty
@@ -96,6 +101,8 @@ const AITraining: React.FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+    
+    const fetchData = () => dispatch(getCollectionAux(watsonxModelSel()))
 
     useEffect(() => {
         if (waitSave) {

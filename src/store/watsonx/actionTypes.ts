@@ -55,6 +55,11 @@ const actionType = {
     EXPORTITEMS_FAILURE: 'watsonx/EXPORTITEMS_FAILURE',
     EXPORTITEMS_SUCCESS: 'watsonx/EXPORTITEMS_SUCCESS',
     EXPORTITEMS_RESET: 'watsonx/EXPORTITEMS_RESET',
+
+    SYNC: 'watsonx/SYNC',
+    SYNC_FAILURE: 'watsonx/SYNC_FAILURE',
+    SYNC_SUCCESS: 'watsonx/SYNC_SUCCESS',
+    SYNC_RESET: 'watsonx/SYNC_RESET',
 };
 
 export default actionType;

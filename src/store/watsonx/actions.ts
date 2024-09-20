@@ -127,3 +127,13 @@ export const getExportItemsWatson = (requestBody: any): IActionCall => ({
     },
     type: null,
 });
+
+export const watsonxSync = (watsonid: number): IActionCall => ({
+    callAPI: () => WatsonService.watsonsync({watsonid}),
+    types: {
+        loading: actionTypes.SYNC,
+        success: actionTypes.SYNC_SUCCESS,
+        failure: actionTypes.SYNC_FAILURE,
+    },
+    type: null,
+});

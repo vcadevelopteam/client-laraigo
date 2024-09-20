@@ -13,7 +13,7 @@ import TableZyx from 'components/fields/table-simple';
 import { CellProps } from 'react-table';
 import { watsonxModelSel } from 'common/helpers';
 import WatsonxMenu from './Watsonx/WatsonxMenu';
-import { setWatsonRow } from 'store/watsonx/actions';
+import { setWatsonRow, watsonxSync } from 'store/watsonx/actions';
 
 const useStyles = makeStyles((theme) => ({  
     title: {
@@ -45,6 +45,7 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
     const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
     const executeResult = useSelector(state => state.main.execute);
     const mainAux = useSelector(state => state.main.mainAux);
+    const syncStatus = useSelector(state => state.watson.sync);
     const classes = useStyles();
 
     const newArrayBread = [
@@ -53,6 +54,7 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
         { id: "watsonx", name:  "Watsonx Assistant" },
     ];
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSync, setwaitSync] = useState(false);
     
     const columns = React.useMemo(
         () => [            
@@ -65,8 +67,10 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
                     return (
                         <label
                             className={classes.labellink}
-                            onClick={() => {                     
-                                setViewSelectedTraining("view-2");
+                            onClick={() => {   
+                                setwaitSync(true)
+                                dispatch(showBackdrop(true))
+                                dispatch(watsonxSync(row.watsonid))         
                                 dispatch(setWatsonRow({row}))
                             }}
                         >
@@ -138,6 +142,16 @@ const WatsonX: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: strin
             dispatch(resetAllMain());
         };
     }, []);
+
+    useEffect(() => {
+        if(waitSync){
+            if(!syncStatus.loading && !syncStatus.error){
+                setViewSelectedTraining("view-2");
+                setwaitSync(false)
+                dispatch(showBackdrop(false))
+            }
+        }
+    }, [syncStatus, waitSync]);
 
    
     useEffect(() => {

@@ -7,6 +7,7 @@ import { langKeys } from 'lang/keys';
 import {Box, Card, Grid } from '@material-ui/core';
 import { RASATrainingIcon, WitIcon} from 'icons';
 import { BreadCrumb } from '@types';
+import { useSelector } from 'hooks';
 
 const useStyles = makeStyles((theme) => ({   
     title: {
@@ -61,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 const CorporateIA: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: string) => void}> = ({ setViewSelected, arrayBread }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const mainResult = useSelector(state => state.main.mainAux);
 
     const newArrayBread = [
         ...arrayBread,
@@ -146,7 +148,7 @@ const CorporateIA: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: s
                             </Card>
                         </Grid>
 
-                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                        {!!mainResult.data.length && <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
                             <Card style={{ position: 'relative', display:"flex" }}>
                                 <div className={classes.containerInner}>
 
@@ -171,7 +173,7 @@ const CorporateIA: React.FC<{arrayBread: BreadCrumb[], setViewSelected: (view: s
                                     </div>
                                 </div>
                             </Card>
-                        </Grid>
+                        </Grid>}
                     </Grid>
                 </div>
             </div>

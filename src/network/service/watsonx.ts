@@ -27,3 +27,7 @@ export function watsonbulkload(requestBody: any) {
 export function watsonconflictresolve(requestBody: any) {
     return APIManager.post(apiUrls.WATSONCONFLICTRESOLVE, { data: requestBody }, true);
 }
+
+export function watsonsync(requestBody: any) {
+    return APIManager.post(apiUrls.WATSONSYNC, { data: requestBody }, true);
+}
