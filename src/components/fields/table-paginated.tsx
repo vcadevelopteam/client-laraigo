@@ -1024,6 +1024,7 @@ const TableZyx = React.memo(({
                                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                     id="laraigo-upload-csv-file"
                                     type="file"
+                                    value={""}
                                     style={{ display: 'none' }}
                                     onChange={(e) => importCSV(e.target.files)}
                                 />
