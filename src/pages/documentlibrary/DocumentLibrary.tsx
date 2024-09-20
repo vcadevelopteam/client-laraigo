@@ -5,7 +5,7 @@ import { getValuesFromDomain, getDocumentLibrary } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
+import { cleanMemoryTable, getCollection, getMultiCollection, resetAllMain, setMemoryTable } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import DocumentLibraryMainView from './views/DocumentLibraryMainView';
 import DocumentLibraryDetailView from './views/DocumentLibraryDetailView';
@@ -40,8 +40,12 @@ const DocumentLibrary: FC = () => {
             getValuesFromDomain("TIPODOMINIO")
         ]));
 
+        dispatch(setMemoryTable({
+            id: "IDDOCUMENTLIBRARY"
+        }))
         return () => {
             dispatch(resetAllMain());
+            dispatch(cleanMemoryTable());
         };
     }, []);
 

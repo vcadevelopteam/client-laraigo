@@ -203,7 +203,6 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
         if (!mainAux2.loading && !mainAux2.error) {
             if (mainAux2.key === `UFN_TIME_WAITING_SEL_${agent?.userid}`) {
                 const { avgtimewaiting, mintimewaiting, maxtimewaiting } = mainAux2.data.length > 0 ? mainAux2.data[0] : { avgtimewaiting: "00:00:00", maxtimewaiting: "00:00:00", mintimewaiting: "00:00:00" };
-                console.log("avgtimewaiting, mintimewaiting, maxtimewaiting", avgtimewaiting, mintimewaiting, maxtimewaiting)
                 setextraInfo({
                     avgtimewaiting,
                     maxtimewaiting,

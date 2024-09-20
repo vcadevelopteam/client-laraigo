@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import "emoji-mart/css/emoji-mart.css";
+// import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
 import { useDispatch } from "react-redux";
-import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock, updateInteractionByUUID } from "store/inbox/actions";
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock, updateInteractionByUUID, getInnapropiateWordTicketLst, resetInnapropiateWordTicketLst } from "store/inbox/actions";
 import { uploadFile, resetUploadFile } from "store/main/actions";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import InputBase from "@material-ui/core/InputBase";
@@ -47,6 +47,10 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import StopIcon from "@material-ui/icons/Stop";
+import FormatBoldIcon from '@material-ui/icons/FormatBold';
+import FormatItalicIcon from '@material-ui/icons/FormatItalic';
+import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
+import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -74,6 +78,7 @@ const useStylesInteraction = makeStyles(() => ({
     },
     inputPlaceholder: {
         padding: "2rem",
+        paddingRight: "1rem",
         "&::placeholder": {
             fontSize: "1rem",
             fontWeight: 500,
@@ -120,10 +125,10 @@ const DialogSearchLibrary: React.FC<{
         setGeneralFilter(value ?? "");
         if (value) {
             setLibraryToShow(
-                libraryList.filter((x) => x.category === categoryFilter).filter((x) => x.title.includes(value))
+                libraryList.filter((x) => x.category === categoryFilter || categoryFilter === "").filter((x) => (x.title.toLocaleLowerCase()).includes(value.toLocaleLowerCase()))
             );
         } else {
-            setLibraryToShow(libraryList.filter((x) => x.category === categoryFilter));
+            setLibraryToShow(libraryList.filter((x) => x.category === categoryFilter || categoryFilter === ""));
         }
     };
 
@@ -163,7 +168,6 @@ const DialogSearchLibrary: React.FC<{
                     <div style={{ flex: 1 }}>
                         <SearchField
                             style={{ fontSize: "1rem" }}
-                            className="col-8"
                             colorPlaceHolder="#FFF"
                             inputProps={{ className: classes.inputPlaceholder }}
                             handleChangeOther={applyFilter}
@@ -229,7 +233,9 @@ const DialogSearchLibrary: React.FC<{
                 <div className={classes.containerFiles}>
                     {libraryToShow.map((x) => {
                         const extension = x.link.split(".").pop();
-
+                        if (x.favorite) {
+                            return null;
+                        }
                         return (
                             <div
                                 key={x.documentlibraryid}
@@ -609,7 +615,6 @@ const RecordComponent: React.FC<{
                     type: "audio",
                     url: uploadResult?.url || "",
                 });
-                console.log(uploadResult?.url);
                 setStartRecording(false);
             }
         }
@@ -1008,6 +1013,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const groupInteractionList = useSelector((state) => state.inbox.interactionList);
     const [typeHotKey, setTypeHotKey] = useState("");
     const quickReplies = useSelector((state) => state.inbox.quickreplies);
+    const innapropiateWords = useSelector((state) => state.inbox.inappropriateWords);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([]);
     const [propertyCopilotLaraigo, setPropertyCopilotLaraigo] = useState(false);
     const [emojiFavorite, setemojiFavorite] = useState<string[]>([]);
@@ -1029,6 +1035,16 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
     const inputRef = useRef(null);
+
+
+    useEffect(() => {
+        dispatch(getInnapropiateWordTicketLst());
+
+        return () => {
+            dispatch(resetInnapropiateWordTicketLst());
+        };
+    }, [])
+
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
         if (ticketSelected?.status !== "ASIGNADO") {
@@ -1129,6 +1145,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             })
         );
     }, [dispatch, ticketSelected, agentSelected]);
+
+    function findDefaultAnswer(array: any, searchString: string) {
+        const found = array.find(item => searchString.includes(item.description.toLocaleLowerCase()));
+        return found ? found.defaultanswer : "";
+    }
 
     const triggerReplyMessage = () => {
         if (copyEmails.error) return;
@@ -1233,11 +1254,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                     setFiles([]);
                 }
 
-                const wordlist = textCleaned.split(" ").map((x) => x.toLowerCase());
-
-                const errormessage =
-                    inappropiatewordsList.find((x) => wordlist.includes(x.description.toLowerCase()))?.defaultanswer ||
-                    "";
+                const errormessage = findDefaultAnswer(inappropiatewordsList, textCleaned.toLocaleLowerCase())
 
                 if (textCleaned) {
                     if (!errormessage) {
@@ -1310,7 +1327,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             setemojiNoShow(multiData?.data?.[10]?.data.filter((x) => x.restricted).map((x) => x.emojihex) || []);
             setemojiFavorite(multiData?.data?.[10]?.data.filter((x) => x.favorite).map((x) => x.emojihex) || []);
             setPropertyCopilotLaraigo(multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMECOPILOTLARAIGO")?.data?.[0]?.propertyvalue === "1")
-            setinnappropiatewordsList(multiData?.data?.[11]?.data || []);
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
     }, [multiData]);
@@ -1320,6 +1336,12 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         const favoritequickreplies = quickReplies.data.filter(x=>x.favorite)
         setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
     }, [quickReplies, ticketSelected]);
+
+    useEffect(() => {
+        if(!innapropiateWords.loading && !innapropiateWords.error){
+            setinnappropiatewordsList(innapropiateWords?.data||[])
+        }
+    }, [innapropiateWords]);
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
@@ -1372,11 +1394,13 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
         } else if (event.shiftKey) {
-            console.log("");
             return;
-        } else if (event.key === 'Enter') {
+        } else if (
+            (user?.languagesettings?.sendingmode === "Default" && event.key === 'Enter') || 
+            (user?.languagesettings?.sendingmode === "EnterKey" && event.code === 'Enter')
+        ) {
             event.preventDefault();
-            if (text.trim() || files.length > 0) {
+            if ((text.trim() || files.length > 0) && user?.languagesettings?.sendingmode !== "ExecutionButton") {
                 triggerReplyMessage();
             }
         }
@@ -1397,7 +1421,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }
 
     const handleKeyDown = (event: Dictionary) => {
-        if (event.altKey && event.key === 'Enter') {
+        if ((event.altKey || user?.languagesettings?.sendingmode === "ExecutionButton") && event.key === 'Enter') {
             event.preventDefault();
             setText(text + '\n');
         }
@@ -1704,7 +1728,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 ])
                                             }
                                         />
-
                                         <CopilotLaraigoIcon
                                             classes={classes}
                                             enabled={propertyCopilotLaraigo}

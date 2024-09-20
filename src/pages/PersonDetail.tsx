@@ -2206,7 +2206,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
 
     useEffect(() => {
         if (domains.value?.customVariables && person) {
-            console.log(person)
             setTableDataVariables(domains.value.customVariables.map(x => ({ ...x, value: person?.variablecontext?.[x?.variablename] || "" })))
         }
     }, [person, domains]);

@@ -1180,8 +1180,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
     });
 
-    console.log('getValues("buttons")', getValues("buttons"))
-
     useEffect(() => {
         if (row) {
             if (row.fromprovider && row.communicationchanneltype) {
