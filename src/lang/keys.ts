@@ -2283,14 +2283,11 @@ export const langKeys = {
   error_ticket_open: "error_ticket_open",
   error_ticket_doesnt_belong_to_the_user: "error_ticket_doesnt_belong_to_the_user",
   error_supervisor_not_exists: "error_supervisor_not_exists",
-
   no_records: 'no_records',
-
   dateRangeFilterTitle: 'dateRangeFilterTitle',
   apply: 'apply',
   close: 'close',
   closetype: 'closetype',
-
   today: 'today',
   yes: 'yes',
   no: 'no',
@@ -2312,14 +2309,11 @@ export const langKeys = {
   format_transform_date_seconds: 'format_transform_date_seconds',
   format_transform_date_minutes: 'format_transform_date_minutes',
   format_transform_date_hours: 'format_transform_date_hours',
-
   format_transform_time_time: 'format_transform_time_time',
   format_transform_time_seconds: 'format_transform_time_seconds',
   format_transform_time_minutes: 'format_transform_time_minutes',
   format_transform_time_hours: 'format_transform_time_hours',
-
   upload_conversation_plural: 'upload_conversation_plural',
-
   equals: 'equals',
   notequals: 'notequals',
   contains: 'contains',
@@ -6453,7 +6447,6 @@ export const langKeys = {
   skilliddescription: 'skilliddescription',
   skillid_help: 'skillid_help',
   registertime: 'registertime',
-
   conectoriahelper: 'conectoriahelper',
   descriptioniahelper: 'descriptioniahelper',
   channeliahelper: 'channeliahelper',
@@ -6473,6 +6466,18 @@ export const langKeys = {
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
   billingreport_conversationbillable: 'billingreport_conversationbillable',
+  watsonxassistantdescription: 'watsonxassistantdescription',
+  updateddate: 'updateddate',
+  topk: 'topk',
+  topkdescription: 'topkdescription',
+  repetitionpenalty: 'repetitionpenalty',
+  repetitionpenaltydescription: 'repetitionpenaltydescription',
+  invalid: 'invalid',
+  assistantnamedesc: 'assistantnamedesc',
+  assistantdescriptiondesc: 'assistantdescriptiondesc',
+  assistantconnectorsdesc: 'assistantconnectorsdesc',
+  assistantstatussdesc: 'assistantstatussdesc',
+  assistantbasemodeldesc: 'assistantbasemodeldesc',
 };
 
 export type LangKeys = typeof langKeys;

@@ -226,7 +226,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [messages]);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
-    const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
+    const fetchThreadMessages = (threadid: number | undefined) => { if (threadid) { dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})))}};
     
     useEffect(() => {
         if (messages && Array.isArray(messages.data) && messages.data.length > 0) {
