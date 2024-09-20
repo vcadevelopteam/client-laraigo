@@ -3361,7 +3361,6 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
     const [disableOrg, setDisableOrg] = useState(false);
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
-    const [waitExportContinue, setWaitExportContinue] = useState(false);
     const [waitPdf, setWaitPdf] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
 
@@ -3491,13 +3490,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
     };
 
     const triggerExportDataConversation360dialog = () => {
-        dispatch(exportData(billingReportConversationWhatsApp({ ...dataMain, ...{ conversationprovider: '360DIALOG' } }), "sample conversaciones dialog", "excel", true));
-        dispatch(showBackdrop(true));
-        setWaitExportContinue(true);
-    };
-
-    const triggerExportDataConversationGupshup = () => {
-        dispatch(exportData(billingReportConversationWhatsApp({ ...dataMain, ...{ conversationprovider: 'GUPSHUP' } }), "sample conversaciones gupshup", "excel", true));
+        dispatch(exportData(billingReportConversationWhatsApp({ ...dataMain, ...{ conversationprovider: '' } }), "sample conversaciones dialog", "excel", true));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -3948,16 +3941,11 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
     };
 
     useEffect(() => {
-        if (waitExport || waitExportContinue) {
+        if (waitExport) {
             if (!exportResult.loading && !exportResult.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
                 window.open(exportResult.url, "_blank");
-
-                if (waitExportContinue) {
-                    setWaitExportContinue(false);
-                    triggerExportDataConversationGupshup();
-                }
             } else if (exportResult.error) {
                 dispatch(
                     showSnackbar({
@@ -3970,11 +3958,6 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                 );
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-
-                if (waitExportContinue) {
-                    setWaitExportContinue(false);
-                    triggerExportDataConversationGupshup();
-                }
             }
         }
     }, [exportResult, waitExport]);
