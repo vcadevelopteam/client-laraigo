@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, Title, TemplateIcons } from 'components';
 import { array_trimmer, exportExcel, getLocationExport, getPaginatedLocation, locationIns, templateMaker, uploadExcel } from 'common/helpers';
-import { Dictionary, IFetchData } from "@types";
+import {Dictionary, IFetchData, ITransaction} from "@types";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -530,7 +530,7 @@ const Location: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.locations).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
@@ -608,7 +608,8 @@ const Location: FC = () => {
 
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
-        if (file && file.name.split('.')[file.name.split('.').length-1]==="xlsx") {
+
+        if (file && file.name.split('.').pop() === "xlsx") {
 
             let excel: any = await uploadExcel(file, undefined);
             let data: ILocation[] = array_trimmer(excel);
@@ -623,48 +624,47 @@ const Location: FC = () => {
                 (f.latitude === undefined || !isNaN(f.latitude)) &&
                 (f.longitude === undefined || !isNaN(f.longitude))
             );
+
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
-                let table: Dictionary = data.reduce((a: any, d: ILocation) => ({
-                    ...a,
-                    [`location_${d.latitude}_${d.longitude}`]: {
-                        id: 0,
-                        name: d.name || '',
-                        address: d.address || '',
-                        district: d.district || '',
-                        city: d.city|| '',
-                        country: d.country || '',
-                        schedule: d.schedule || '',
-                        phone: d.phone || '',
-                        alternativephone: d.alternativephone || '',
-                        email: d.email || '',
-                        alternativeemail: d.alternativeemail || '',
-                        type: d.type || '',
-                        username: user?.usr,
-                        latitude: d.latitude || 0,
-                        longitude: d.longitude || 0,
-                        status: "ACTIVO",
-                        description: '',
-                        googleurl: `https://www.google.com/maps?q=${d.latitude},${d.longitude}`,
-                        operation: 'INSERT',
-                    }
-                }), {});
-                Object.values(table).forEach((p: ILocation) => {
-                    dispatch(execute({
-                        header: locationIns({ ...p }),
-                        detail: [ ]
-                    }, true));
-                });
-                setWaitImport(true)
-            }
-            else {
+
+                const transaction: ITransaction = {
+                    header: null,
+                    detail: data.map((location: ILocation) => {
+                        return locationIns({
+                            id: 0,
+                            operation: 'INSERT',
+                            name: location.name,
+                            address: location.address,
+                            district: location.district,
+                            city: location.city,
+                            country: location.country,
+                            schedule: location.schedule,
+                            phone: location.phone || "",
+                            alternativephone: location.alternativephone || "",
+                            email: location.email || "",
+                            alternativeemail: location.alternativeemail || "",
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                            googleurl: `https://www.google.com/maps?q=${location.latitude},${location.longitude}`,
+                            description: '',
+                            status: "ACTIVO",
+                            type: location.type,
+                            username: user?.usr
+                        });
+                    })
+                };
+
+                dispatch(execute(transaction, true));
+                setWaitImport(true);
+            } else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
+        } else {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalidformat) }));
         }
-        if(file.name.split('.')[file.name.split('.').length-1]!=="xlsx"){
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalidformat) }))
-        }
-    }
+    };
+
 
     if (viewSelected === "view-1") {
 
