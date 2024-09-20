@@ -14,6 +14,7 @@ import { execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import WarningIcon from '@material-ui/icons/Warning';
+import { watsonxSync } from 'store/watsonx/actions';
 
 
 const languageList = [
@@ -134,7 +135,7 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
     const dataChannels = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataStatus = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
-    const { control, register, handleSubmit, setValue, getValues, formState: { errors }, watch } = useForm<any>({
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, watch } = useForm<any>({
         defaultValues: {
             id: row?.intelligentmodelsconfigurationid || 0,
             description: row?.description || '',
@@ -154,10 +155,13 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
             context: row?.context || "",
             precision: row?.precision || "0",
             status: row?.status || "ACTIVO",
+            provider: row?.provider,
         }
     });
 
     const watchConnectorType = watch("connectortype")
+    const watchProvider = watch("provider")
+    const watchIntelligentmodelsid = watch("intelligentmodelsid")
 
     React.useEffect(() => {
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -174,17 +178,15 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
         register('precision', { validate: (value) => ((value >= 0 && value <= 1) || watchConnectorType !== "Assistant") || t(langKeys.error_between_range, { min: 0, max: 1 }) });
     }, [register, watchConnectorType]);
 
-    React.useEffect(() => {
-        console.log(errors)
-
-    }, [errors, control]);
-
-
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
+                debugger
+                if(!row?.intelligentmodelsconfigurationid && watchProvider === "IBM"){
+                    dispatch(watsonxSync(watchIntelligentmodelsid,true))
+                }
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
@@ -202,6 +204,7 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
             dispatch(execute(insInteligentModelConfiguration(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
+
         }
 
         dispatch(manageConfirmation({
@@ -257,7 +260,10 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
                             label={t(langKeys.conector)}
                             helperText2={t(langKeys.conectoriahelper)}
                             valueDefault={getValues("intelligentmodelsid")}
-                            onChange={(value) => { setValue('intelligentmodelsid', value?.id || ''); setValue("connectortype", value?.type || "") }}
+                            onChange={(value) => { setValue('intelligentmodelsid', value?.id || ''); 
+                                setValue("connectortype", value?.type || "")
+                                setValue("provider", value?.provider || "")
+                             }}
                             data={dataModels}
                             optionDesc="description"
                             optionValue="id"
