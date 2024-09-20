@@ -1392,7 +1392,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             return;
         } else if (
             (user?.languagesettings?.sendingmode === "Default" && event.key === 'Enter') || 
-            (user?.languagesettings?.sendingmode === "EnterKey" && event.code === 'Enter')
+            ((!user?.languagesettings?.sendingmode || user?.languagesettings?.sendingmode === "EnterKey") && event.code === 'Enter')
         ) {
             event.preventDefault();
             if ((text.trim() || files.length > 0) && user?.languagesettings?.sendingmode !== "ExecutionButton") {
