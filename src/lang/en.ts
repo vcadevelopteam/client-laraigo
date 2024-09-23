@@ -6486,6 +6486,19 @@ const translation: LangKeys = {
   errorimportdocuments: 'The documents {{docs}} are not valid registers',
   inputtokens: 'Input Tokens',
   outputtokens: 'Output Tokens',
+  watsonxassistantdescription: 'Train your artificial intelligence service',
+  updateddate: 'Updated Date',
+  topk: 'Top K',
+  topkdescription: 'A low value reduces the probability that the model deviates from the queried topic.',
+  repetitionpenalty: 'Repetition Penalty',
+  repetitionpenaltydescription: 'It is a factor that is applied to discourage the model from generating repetitive text or phrases. A value of 1 means that there is no penalty.',
+  invalid: 'Invalid',
+  assistantnamedesc: 'Assign a name for the assistant you will register.',
+  assistantdescriptiondesc: 'Assign a brief description to the assistant you will register.',
+  assistantconnectorsdesc: 'Select the connector linked to your assistant, this is configured in “IA Connectors”.',
+  assistantstatussdesc: 'Select the status of your assistant, whether you want it to be active or inactive.',
+  assistantbasemodeldesc: 'Select the base model of your assistant, this will be the engine of your answers.',
+
 };
 
 const enResource: ResourceLanguage = {

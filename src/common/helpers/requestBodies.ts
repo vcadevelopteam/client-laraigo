@@ -5141,10 +5141,10 @@ export const assistantAiSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation }: Dictionary) => ({
+export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation, top_k, repetition_penalty, chunk_size, chunk_overlap }: Dictionary) => ({
     method: "UFN_ASSISTANTAI_INS",
     key: "UFN_ASSISTANTAI_INS",
-    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation },
+    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation, top_k, repetition_penalty, chunk_size, chunk_overlap },
 });
 
 export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({

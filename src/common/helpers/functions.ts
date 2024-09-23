@@ -1344,14 +1344,27 @@ export function encrypt(plaintext: string, key: string) {
 }
 
 export function decrypt(ciphertext: string, key: string) {
-    ciphertext = atob(ciphertext);
-    let plaintext = '';
-    for (let i = 0; i < ciphertext.length; i++) {
-        const charCode = ciphertext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-        plaintext += String.fromCharCode(charCode);
+    try {
+        const base64Pattern = /^[A-Za-z0-9+/=]+$/;
+        if (!base64Pattern.test(ciphertext)) {
+            throw new Error('El string no está codificado correctamente en Base64.');
+        }
+
+        ciphertext = atob(ciphertext);
+        
+        let plaintext = '';
+        for (let i = 0; i < ciphertext.length; i++) {
+            const charCode = ciphertext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+            plaintext += String.fromCharCode(charCode);
+        }
+        return plaintext;
+    } catch (error) {
+        console.error('Error al decodificar el ciphertext:', error);
+        return '';
     }
-    return plaintext;
 }
+
+
 
 export function hash256(message: string) {
     const msgBuffer = new TextEncoder().encode(message);
