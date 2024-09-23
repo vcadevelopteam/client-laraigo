@@ -7,8 +7,7 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { ExpandLess, ExpandMore, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton';
+import { FieldMultiSelect } from 'components';
 
 import {
     exportData,
@@ -36,7 +35,7 @@ import {
 } from "common/helpers";
 
 import Button from "@material-ui/core/Button";
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import DetailMessageTemplates from "./views/MessageTemplatesDetail";
@@ -63,8 +62,8 @@ const useStyles = makeStyles(() => ({
         wordBreak: 'keep-all',
     },
     tagcontainer: {
-        display: 'flex', 
-        whiteSpace: 'nowrap', 
+        display: 'flex',
+        whiteSpace: 'nowrap',
         overflow: 'hidden',
         width: '300px'
     },
@@ -82,14 +81,13 @@ type BreadCrumb = {
 }
 interface MessageTemplatesProps {
     arrayBread: BreadCrumb[];
-    setAuxViewSelected: (view: string) => void;  
+    setAuxViewSelected: (view: string) => void;
     dataChannels: Dictionary[];
 }
 
 const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     setAuxViewSelected,
     arrayBread,
-    dataChannels,
 }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -113,13 +111,13 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         pageIndex: 0,
         pageSize: 20,
         sorts: {},
+        distinct: null,
     });
     const [rowSelected, setRowSelected] = useState<RowSelected>({
         edit: false,
         row: null,
     });
 
-    const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
     const [pageCount, setPageCount] = useState(0);
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -129,9 +127,9 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     const [waitDelete, setWaitDelete] = useState(false);
     const [waitSaveExport, setWaitSaveExport] = useState(false);
     const [waitSynchronize, setWaitSynchronize] = useState(false);
-  
+
     const columns = React.useMemo(
-        () => [           
+        () => [
             {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),
@@ -163,14 +161,14 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
                 width: '300px',
-                helpText: t(langKeys.message_templates_channel_help),                
+                helpText: t(langKeys.message_templates_channel_help),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const data = row?.original?.communicationchanneldesc || '';
-                    return <TagTypeCell separator={","} data={data}/>
+                    return <TagTypeCell separator={","} data={data} />
                 },
-                
-                                
+
+
             },
             {
                 accessor: "name",
@@ -457,7 +455,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
 
     useEffect(() => {
         const ids = selectedChannels.map(channel => channel.domaindesc).join(", ");
-        setChannelIds(ids); 
+        setChannelIds(ids);
     }, [selectedChannels]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
@@ -471,7 +469,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                     sorts: sorts,
                     startdate: daterange?.startDate!,
                     take: pageSize,
-                    communicationchannelids: channelIds,                
+                    communicationchannelids: channelIds,
                 })
             )
         );
@@ -570,14 +568,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         }
     }, [mainPaginated.data]);
 
-    useEffect(() => {
-        if (mainResult.multiData.data.length > 0) {
-            if (mainResult.multiData.data[2] && mainResult.multiData.data[2].success) {
-                setCommunicationChannelList(mainResult.multiData.data[2].data || []);
-            }
-        }
-    }, [mainResult.multiData.data]);
-
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -592,7 +582,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         dispatch(synchronizeTemplate());
         dispatch(showBackdrop(true));
         setWaitSynchronize(true);
-    };  
+    };
 
     const handleBulkDelete = (dataSelected: Dictionary[]) => {
         const hasHSMType = dataSelected.some(item => item.type === 'HSM');
@@ -675,7 +665,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         }
     }, [])
     useEffect(() => {
-        if (!multiData.loading){
+        if (!multiData.loading) {
             dispatch(showBackdrop(false));
         }
     }, [multiData])
@@ -696,7 +686,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     const uniqueChannelIdsArray = Array.from(uniqueChannelIds);
     const targetData = multiData.data[3];
     if (targetData && targetData.data) {
-        const filteredData = targetData.data.filter((item: Dictionary) => 
+        const filteredData = targetData.data.filter((item: Dictionary) =>
             uniqueChannelIdsArray.includes(item.communicationchannelid.toString())
         );
         formattedData = filteredData.map((item: Dictionary) => ({
@@ -721,18 +711,18 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 </div>
                 <TablePaginated
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", justifyContent: "space-between", width: `${windowWidth-380}px` }}>
-                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>                               
+                        <div style={{ display: "flex", justifyContent: "space-between", width: `${windowWidth - 380}px` }}>
+                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>
                                 <FieldMultiSelect
                                     variant="outlined"
                                     label={t(langKeys.channels)}
                                     className={classes.fieldsfilter}
-                                    valueDefault={selectedChannels.reduce((acc,x)=> [...acc,x.domaindesc],[]).join(",")}
-                                    onChange={(values) => {setSelectedChannels(values)}}
+                                    valueDefault={selectedChannels.reduce((acc, x) => [...acc, x.domaindesc], []).join(",")}
+                                    onChange={(values) => { setSelectedChannels(values) }}
                                     data={formattedData}
                                     optionDesc="domainvalue"
                                     optionValue="domaindesc"
-                                />                                               
+                                />
                                 <Button
                                     color="primary"
                                     style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -757,8 +747,8 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                                 </Button>
                             </div>
                         </div>
-                       
-                        
+
+
                     )}
                     autotrigger={true}
                     columns={columns}
