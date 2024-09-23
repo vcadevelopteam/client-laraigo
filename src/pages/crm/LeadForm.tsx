@@ -1369,11 +1369,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                 {user!.currencysymbol}
                                             </InputAdornment>
                                         ),
-                                        style: { textAlign: 'right' },
+                                        style: { textAlign: 'left' },
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                     inputProps={{
-                                        style: { textAlign: 'right' },
+                                        style: { textAlign: 'left' },
                                     }}
                                 />
                                 <FieldMultiSelectFreeSolo
@@ -2157,7 +2157,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityFor}>
-                                                {`${t(langKeys.duein)} ${activity.assignto}`}
+                                                {`${t(langKeys.assignedTo)} ${activity.assignto}`}
                                             </span>
                                             <div style={{ width: '0.5em' }} />
                                             <Info style={{ height: 18, width: 18, fill: 'grey' }} />
@@ -3307,7 +3307,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                                     </span>
                                     <div style={{ width: '1em' }} />
                                     <span className={classes.dateTime}>
-                                        {formatDate(item.createdate)}
+                                        {formatDateHour(item.createdate)}
                                     </span>
                                 </div>
                                 {item.description && <ItemDescription item={item} />}
@@ -3401,6 +3401,12 @@ interface Options {
     withTime?: boolean;
     modhours?: number
 }
+
+const formatDateHour = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleString();
+};
 
 const formatDate = (strDate: string = "", options: Options = { withTime: true, modhours: 0 }) => {
     if (!strDate || strDate === '') return '';
