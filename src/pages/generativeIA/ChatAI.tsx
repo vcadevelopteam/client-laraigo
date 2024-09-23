@@ -198,6 +198,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const isLlamaModel = row?.basemodel === 'llama3.1:8b' || row?.basemodel === 'llama3.1:70b'
     const [totalInputTokens, setTotalInputTokens] = useState(0);
     const [totalOutputTokens, setTotalOutputTokens] = useState(0);
+    const [messageAux2, setMessageAux2] = useState("");
+    const [waitSaveAux, setWaitSaveAux] = useState(false);
 
 
     const CustomTooltip = styled(({ className, ...props }) => (
@@ -391,6 +393,19 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     setWaitSaveMessageLlama(false);
                     if (llm3Result.data && llm3Result.data.result) {
                         const outputTokens = llm3Result?.data?.output_tokens || 0;
+                        const inputTokens = llm3Result?.data?.input_tokens || 0;
+                        dispatch(execute(insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: activeThreadId,
+                            assistantaidocumentid: 0,
+                            id: messages?.data?.[messages?.data?.length-1]?.messageaiid,
+                            messagetext: messages?.data?.[messages?.data?.length-1]?.messagetext,
+                            infosource: '',
+                            type: 'USER',
+                            status: 'ACTIVO',
+                            operation: 'UPDATE',
+                            tokencount: inputTokens,
+                        })));
                         dispatch(execute(insMessageAi({
                             assistantaiid: row?.assistantaiid,
                             threadid: activeThreadId,
@@ -621,27 +636,42 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
-                    tokencount: inputTokens,
+                    tokencount: 0,
                 })
             )
         );
         setTotalInputTokens(prevTokens => prevTokens + inputTokens);
-        const message = messageText
-        setMessageText('');
-        fetchThreadMessages(selectedChat?.threadid);
-        dispatch(query3({
-            assistant_name: row?.name,
-            query: message,
-            system_prompt: row?.generalprompt,
-            model: row?.basemodel,
-            thread_id: selectedChat?.code,
-            max_new_tokens: row?.max_tokens,
-            temperature: parseFloat(row?.temperature),
-            top_p: parseFloat(row?.top_p),
-        }))
-        setWaitSaveMessageLlama(true)
-        setActiveThreadId(currentThreadLlamaId);
+        setMessageAux2(messageText)
+        setMessageText('')
+        setWaitSaveAux(true)
     }
+
+    useEffect(() => {
+        if (waitSaveAux) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveAux(false);
+                fetchThreadMessages(selectedChat?.threadid);
+                dispatch(query3({
+                    assistant_name: row?.name,
+                    query: messageAux2,
+                    system_prompt: row?.generalprompt,
+                    model: row?.basemodel,
+                    thread_id: selectedChat?.code,
+                    max_new_tokens: row?.max_tokens,
+                    temperature: parseFloat(row?.temperature),
+                    top_p: parseFloat(row?.top_p),
+                }))
+                setWaitSaveMessageLlama(true)
+                setActiveThreadId(selectedChat?.threadid);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveAux(false);
+            }
+        }
+    }, [executeResult, waitSaveAux]);
 
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
