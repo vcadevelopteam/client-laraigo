@@ -25,6 +25,7 @@ import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
 import { deleteThreadLlama, query } from "store/llama/actions";
 import { deleteThreadLlama3, query3 } from "store/llama3/actions";
+import { threadId } from "worker_threads";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -654,6 +655,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 dispatch(query3({
                     assistant_name: row?.name,
                     query: messageAux2,
+                    threadId: selectedChat?.threadid,
                     system_prompt: row?.generalprompt,
                     model: row?.basemodel,
                     thread_id: selectedChat?.code,
