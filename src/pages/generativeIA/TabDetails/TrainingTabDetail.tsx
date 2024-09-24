@@ -478,7 +478,9 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             dispatch(showBackdrop(true));
             dispatch(addFilesLlama3({
                 urls: fileAttachments.map((item: Dictionary) => item.file_url),
-                collection: row?.name
+                collection: row?.name,
+                chunk_size: row?.chunk_size,
+                chunk_overlap: row?.chunk_overlap,
             }))
             setWaitSaveAddFileLlama(true);
         }

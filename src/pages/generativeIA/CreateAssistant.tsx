@@ -556,7 +556,9 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if(provider === "LaraigoLLM" || provider === "Laraigo") {
                 dispatch(createCollectionDocuments3({
                     urls: cosFile.map((item: Dictionary) => item.file_url),
-                    collection: data.name
+                    collection: data.name,
+                    chunk_size: data?.chunk_size,
+                    chunk_overlap: data?.chunk_overlap,
                 }))
                 setWaitSaveCreateCollection(true)
             } else {
