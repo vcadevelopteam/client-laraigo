@@ -1417,6 +1417,7 @@ export const langKeys = {
   changePassword: 'changePassword',
   status_history: 'status_history',
   status_SENT: 'status_SENT',
+  status_BLOCKED: 'status_BLOCKED',
   "status_NOT SENT": 'status_NOT SENT',
   ready_to_close: 'ready_to_close',
   suspend_ticket: 'suspend_ticket',

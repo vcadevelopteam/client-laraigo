@@ -1478,6 +1478,7 @@ const translation: LangKeys = {
   hsm: 'HSM',
   mail: 'Correo',
   status_SENT: 'Enviado',
+  status_BLOCKED: 'Bloqueado',
   "status_NOT SENT": 'No enviado',
   namespace: 'Espacio de nombre',
   category: 'Categoría',

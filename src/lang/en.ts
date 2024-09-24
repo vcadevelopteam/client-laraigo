@@ -3543,6 +3543,7 @@ const translation: LangKeys = {
   shippingfrom: "Sender",
   oportunitybase: "Consider total opportunities as a basis",
   status_SENT: 'Sent',
+  status_BLOCKED: 'Blocked',
   ticketbase: "Consider the total number of tickets as a base",
   billingcontact: "Billing contact",
   billingcontactmail: "Billing contact mail",
