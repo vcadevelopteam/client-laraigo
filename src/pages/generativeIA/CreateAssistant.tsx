@@ -301,6 +301,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     codeinterpreter: data.codeinterpreter,
                     apikey: encryptedApikey,
                     file_ids: filesIds,
+                    temperature: parseFloat(data.temperature),
+                    top_p: parseFloat(data.top_p)
                 }))
                 setWaitSaveUpdateAssistant(true)    
             } else {
@@ -311,6 +313,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     retrieval: data.retrieval,
                     codeinterpreter: data.codeinterpreter,
                     apikey: encryptedApikey,
+                    temperature: parseFloat(data.temperature),
+                    top_p: parseFloat(data.top_p)
                 }))            
                 setWaitSaveCreateAssistant2(true)        
             }                   
@@ -363,6 +367,8 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                 retrieval: data.retrieval,
                 codeinterpreter: data.codeinterpreter,
                 apikey: encryptedApikey2,
+                temperature: parseFloat(data.temperature),
+                top_p: parseFloat(data.top_p)
             }))
             setWaitSaveCreateAssistant(true)
         };
@@ -556,7 +562,9 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             if(provider === "LaraigoLLM" || provider === "Laraigo") {
                 dispatch(createCollectionDocuments3({
                     urls: cosFile.map((item: Dictionary) => item.file_url),
-                    collection: data.name
+                    collection: data.name,
+                    chunk_size: data?.chunk_size,
+                    chunk_overlap: data?.chunk_overlap,
                 }))
                 setWaitSaveCreateCollection(true)
             } else {
