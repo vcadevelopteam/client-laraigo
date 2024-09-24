@@ -3269,6 +3269,18 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
         }
     }, []);
 
+    //Filtro provisional
+    const filteredHistory = history.reduce((acc, item) => {
+        const existing = acc.find(histItem => histItem.globalid === item.globalid);
+
+        if (!existing || item.description.startsWith("En espera de atención")) {
+            return [...acc.filter(histItem => histItem.globalid !== item.globalid), item];
+        }
+
+        return acc;
+    }, [] as ICrmLeadHistory[]);
+
+
     const ItemDescription = useCallback(({ item }: { item: ICrmLeadHistory }): JSX.Element => {
         switch (item.type) {
             case "CHANGESTATUS": // cambio de fase/columna
@@ -3291,7 +3303,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
     return (
         <Box>
             <Timeline align="left">
-                {history.map((item, i) => (
+                {filteredHistory.map((item, i) => (
                     <TimelineItem key={i} className={classes.timelineItemBefore}>
                         <TimelineSeparator>
                             <TimelineDot className={classes.timelineDot}>
@@ -3302,13 +3314,13 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                         <TimelineContent>
                             <div className={classes.itemRoot}>
                                 <div className={classes.itemHeader}>
-                                    <span className={classes.name}>
-                                        <Trans i18nKey={item.type} />
-                                    </span>
+                <span className={classes.name}>
+                  <Trans i18nKey={item.type} />
+                </span>
                                     <div style={{ width: '1em' }} />
                                     <span className={classes.dateTime}>
-                                        {formatDateHour(item.createdate)}
-                                    </span>
+                  {formatDateHour(item.createdate)}
+                </span>
                                 </div>
                                 {item.description && <ItemDescription item={item} />}
                             </div>
