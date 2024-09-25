@@ -10,6 +10,8 @@ import { SearchField } from 'components';
 import { Skeleton } from '@material-ui/lab';
 import { Trans, useTranslation } from 'react-i18next';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button, { ButtonProps } from '@material-ui/core/Button';
@@ -355,6 +357,7 @@ interface TemplateAutocompleteProps extends InputProps {
     data: Dictionary[],
     optionValue: string;
     optionDesc: string;
+    helperText2: string;
     loading?: boolean;
     triggerOnChangeOnFirst?: boolean;
     readOnly?: boolean;
@@ -423,6 +426,75 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 }}
                 inputProps={inputProps}
                 InputProps={InputProps}
+                inputRef={inputRef}
+            />
+        </div>
+    )
+}
+
+export const FieldEditPassword: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
+    const [value, setValue] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        setValue(valueDefault);
+    }, [valueDefault]);
+
+    const handleTogglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    return (
+        <div className={className}>
+            {(variant === "standard" && !!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
+            }
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth={width === "100%"}
+                label={variant !== "standard" && label}
+                disabled={disabled}
+                type={showPassword ? 'text' : 'password'}
+                style={{ width: width }}
+                value={value}
+                variant={variant}
+                placeholder={placeholder}
+                error={!!error}
+                helperText={error || null}
+                minRows={rows}
+                size={size}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                InputProps={{
+                    ...InputProps,
+                    endAdornment: (
+                        <IconButton
+                            onClick={handleTogglePasswordVisibility}
+                            edge="end"
+                        >
+                            {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+
+                        </IconButton>
+                    )
+                }}
                 inputRef={inputRef}
             />
         </div>

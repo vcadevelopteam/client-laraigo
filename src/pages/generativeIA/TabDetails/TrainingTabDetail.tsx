@@ -398,7 +398,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     useEffect(() => {
         if (waitSaveAddFileLlama) {
-            if(conector?.provider === "LaraigoLLM") {
+            if(conector?.provider === "Laraigo") {
                 if (!llm3Result.loading && !llm3Result.error) {
                     setWaitSaveAddFileLlama(false);
                     fileAttachments.map(async (file) => {
@@ -489,7 +489,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
-                callback: conector?.provider === 'Open AI' ? callback : conector?.provider === 'LaraigoLLM' ? callbackLlm3 : callbackMeta,
+                callback: conector?.provider === 'Open AI' ? callback : conector?.provider === 'Laraigo' ? callbackLlm3 : callbackMeta,
             })
         );
     });

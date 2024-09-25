@@ -17,7 +17,7 @@ const translation: LangKeys = {
   iaservices: 'Servicio IA',
   iaservices_plural: 'Servicios IA',
 
-  iaservice_already_exist: 'El servicio seleccionado ya existe',
+  iaservice_already_exist: 'El .servicio seleccionado ya existe',
   iaservice_must_select: 'Debes seleccionar al menos un servicio',
 
   model_type: 'Tipo de Modelo',
