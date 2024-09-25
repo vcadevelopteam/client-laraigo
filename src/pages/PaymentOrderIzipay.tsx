@@ -284,7 +284,7 @@ export const PaymentOrderIzipay: FC = () => {
                         country: '${(data.usercountry ? (data.usercountry.length > 2 ? null : data.usercountry) : null) || "PE"}',
                         postalCode: '00001',
                         document: '${data.userdocument || "12345678"}',
-                        documentType: '${(data.userdocument ? (data.userdocument.length === 8 ? "DNI" : (data.userdocument.length === 12 ? "CE" : "RUC")) : null) || "DNI"}',
+                        documentType: '${(data.userdocument ? (data.userdocument.length === 8 ? "DNI" : (data.userdocument.length === 11 ? "RUC" : "CE")) : null) || "DNI"}',
                     },
                     "shipping": {
                         "firstName": "",

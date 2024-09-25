@@ -592,7 +592,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 color="primary"
                                 type="submit"
                                 onClick={() => {
-                                    console.log(errors)
                                 }}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
@@ -738,7 +737,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 optionValue="paymentplanid"
                             />}
                     </div>
-                    {!getValues('billbyorg') && (
+                    {getValues('billbyorg') && (
                         <>
                             <div className="row-zyx">
                                 <FieldSelect

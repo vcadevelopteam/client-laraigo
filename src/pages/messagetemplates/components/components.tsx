@@ -195,6 +195,12 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         overflowX: 'scroll',
         cursor: 'grab',
+    },
+    normaltext: {
+        fontSize: '0.88rem',
+        display:'flex',
+        alignItems:'center',
+        gap:'3px',
     }
 }));
 
@@ -387,6 +393,20 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
     const classes = useStyles();
     return (
         <span className={classes.subtittles} style={titlestyle}>
+            {title}
+            {helperText ? (
+                <Tooltip title={helperText} arrow placement="top" >
+                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                </Tooltip>
+            ) : ""}
+        </span>
+    );
+};
+
+export const CustomTextWithHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+    const classes = useStyles();
+    return (
+        <span className={classes.normaltext}>
             {title}
             {helperText ? (
                 <Tooltip title={helperText} arrow placement="top" >
