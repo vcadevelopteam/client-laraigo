@@ -1,19 +1,16 @@
-import 'emoji-mart/css/emoji-mart.css'
-
+// import 'emoji-mart/css/emoji-mart.css'
 import { AndroidColor, AppStoreColor, BloggerColor, ChannelBlogger, ChatWebColor, EmojiICon, FacebookColor, FormColor, GifIcon, InstagramColor, IosColor, LineColor, LinkedInColor, MailColor, MessengerColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WhatsAppColor, WorkplaceColor, YouTubeColor } from 'icons';
 import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon, Box, Chip } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Picker } from 'emoji-mart';
+import Picker from '@emoji-mart/react'
 import { SearchField } from 'components';
 import { Skeleton } from '@material-ui/lab';
 import { Trans, useTranslation } from 'react-i18next';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
-
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -45,7 +42,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
-
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+// import { useStyles } from 'pages/SignIn';
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
@@ -176,7 +174,7 @@ export const Title: React.FC = ({ children }) => {
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string|number, className?: any, styles?: CSSProperties, tooltip?: string, tooltipcontent?:string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick, tooltipcontent }) => (
+export const FieldView: React.FC<{ label: string, value?: string | number, className?: any, styles?: CSSProperties, tooltip?: string, tooltipcontent?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick, tooltipcontent }) => (
     <div className={className}>
         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
             {label}
@@ -184,11 +182,11 @@ export const FieldView: React.FC<{ label: string, value?: string|number, classNa
                 <InfoIcon style={{ padding: "5px 0 0 5px" }} />
             </Tooltip>}
         </Box>
-        {Boolean(tooltipcontent)?
+        {Boolean(tooltipcontent) ?
             <Tooltip title={tooltipcontent} placement="top-start">
                 <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
-            </Tooltip>:
-            <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>            
+            </Tooltip> :
+            <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
         }
     </div>
 )
@@ -484,93 +482,93 @@ export const FieldEditMultiAux: React.FC<InputProps> = ({
     fregister = {},
     inputProps = {},
     variant = "standard"
-  }) => {
+}) => {
     const [value, setValue] = useState("");
-    const [height, setHeight] = useState(100); 
+    const [height, setHeight] = useState(100);
     const resizerRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
     useEffect(() => {
-      setValue(valueDefault || "");
+        setValue(valueDefault || "");
     }, [valueDefault]);
-  
+
     useEffect(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = `${height}px`;
-      }
+        if (textareaRef.current) {
+            textareaRef.current.style.height = `${height}px`;
+        }
     }, [height]);
-  
+
     const handleMouseDown = (e: React.MouseEvent) => {
-      e.preventDefault();
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+        e.preventDefault();
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
     };
-  
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (textareaRef.current) {
-        const newHeight = e.clientY - textareaRef.current.getBoundingClientRect().top;
-        setHeight(newHeight);
-      }
+        if (textareaRef.current) {
+            const newHeight = e.clientY - textareaRef.current.getBoundingClientRect().top;
+            setHeight(newHeight);
+        }
     };
-  
+
     const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
     };
-  
+
     return (
-      <div className={className} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-        <TextField
-          {...fregister}
-          color="primary"
-          fullWidth
-          disabled={disabled}
-          variant={variant}
-          type={type}
-          error={!!error}
-          value={value}
-          multiline
-          minRows={rows}
-          helperText={error || null}
-          onChange={(e) => {
-            if (maxLength === 0 || e.target.value.length <= maxLength) {
-              setValue(e.target.value);
-              onChange && onChange(e.target.value);
-            }
-          }}
-          onBlur={(e) => {
-            onBlur && onBlur(e.target.value);
-          }}
-          inputProps={inputProps}
-          style={{ border: '1px solid #762AA9', resize: 'none' }}
-          inputRef={textareaRef}
-        />
-        {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
-        <div
-          ref={resizerRef}
-          onMouseDown={handleMouseDown}
-          style={{
-            position: 'absolute',
-            bottom: '0',
-            right: '0',
-            cursor: 'row-resize',
-            width: '15px',
-            height: '15px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#F9F9FA',
-            borderTopRightRadius: '4px',
-            borderBottomLeftRadius: '4px',
-            margin: 4
-          }}
-        >
-          <DragHandleIcon style={{ transform: 'rotate(135deg)', color:'#783BA5', height:'17px' }}/>
+        <div className={className} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                variant={variant}
+                type={type}
+                error={!!error}
+                value={value}
+                multiline
+                minRows={rows}
+                helperText={error || null}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                style={{ border: '1px solid #762AA9', resize: 'none' }}
+                inputRef={textareaRef}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
+            <div
+                ref={resizerRef}
+                onMouseDown={handleMouseDown}
+                style={{
+                    position: 'absolute',
+                    bottom: '0',
+                    right: '0',
+                    cursor: 'row-resize',
+                    width: '15px',
+                    height: '15px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#F9F9FA',
+                    borderTopRightRadius: '4px',
+                    borderBottomLeftRadius: '4px',
+                    margin: 4
+                }}
+            >
+                <DragHandleIcon style={{ transform: 'rotate(135deg)', color: '#783BA5', height: '17px' }} />
+            </div>
         </div>
-      </div>
     );
-  };
+};
 
 
 export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false }) => {
@@ -793,7 +791,7 @@ export const SingleLineInput: React.FC<InputProps> = ({ label, className, disabl
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
                 }}
-                inputProps={{...inputProps, maxLength }}
+                inputProps={{ ...inputProps, maxLength }}
                 onInput={onInput}
                 onPaste={onPaste}
                 style={style}
@@ -901,7 +899,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2 = "" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -915,7 +913,23 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     return;
                 }
                 else {
-                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    let onlyNumbers = true;
+
+                    for (const element of data) {
+                        if (!(/^\d+$/.test(element[optionDesc]) || '')) {
+                            onlyNumbers = false;
+                        }
+                    }
+
+                    let datatmp = null;
+
+                    if (onlyNumbers) {
+                        datatmp = data.sort((a, b) => parseFloat(a[optionDesc] || '0') - parseFloat(b[optionDesc] || '0'));
+                    }
+                    else {
+                        datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    }
+
                     setDataG(datatmp);
                     return;
                 }
@@ -937,11 +951,27 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
         }
     }, [data, valueDefault]);
 
-  
+
     return (
         <div className={className}>
-
-            {(variant === "standard" && !!label) &&
+            {!!helperText2 &&
+                <>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                        {label}
+                        {!!helperText &&
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                                </Tooltip>
+                            </div>
+                        }
+                    </Box>
+                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                        {helperText2}
+                    </Box>
+                </>
+            }
+            {(variant === "standard" && !!label && !helperText2) &&
                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                     {label}
                     {!!helperText &&
@@ -975,7 +1005,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     <TextField
 
                         {...params}
-                        label={variant !== "standard" && label}
+                        label={variant !== "standard" && !helperText2 && label}
                         variant={variant}
                         multiline={multiline}
                         helperText={error || null}
@@ -1000,7 +1030,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
 export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', getOptionDisabled }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
-    const [dataG, setDataG] = useState<Dictionary[]>([]);   
+    const [dataG, setDataG] = useState<Dictionary[]>([]);
 
     useEffect(() => {
         if (orderbylabel) {
@@ -1093,9 +1123,10 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small' }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small', helperText2 = "", helperText = "" }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
+    const classes = useStyles();
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
@@ -1108,7 +1139,17 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
 
     return (
         <div className={className}>
-            {variant === "standard" &&
+            {!!helperText2 &&
+                <>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                        {label}
+                    </Box>
+                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                        {helperText2}
+                    </Box>
+                </>
+            }
+            {(variant === "standard" && !helperText2) &&
                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             }
             <Autocomplete
@@ -1120,6 +1161,28 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 disableCloseOnSelect
                 loading={loading}
                 value={optionsSelected}
+                renderTags={disabled ? (tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                        disabled ? (
+                            <Chip
+                                key={index}
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                className={classes.customChip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0', userSelect: 'text' }}
+                                onMouseDown={(event) => event.stopPropagation()}
+                                onClick={(event) => event.stopPropagation()}
+                            />
+                        ) : (
+                            <Chip
+                                key={index}
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                {...getTagProps({ index })}
+                                className={classes.chip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0' }}
+                            />
+                        )
+                    )) : undefined
+                }
                 renderOption={(option, { selected }: any) => (
                     <React.Fragment>
                         <Checkbox
@@ -1141,7 +1204,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label={variant !== "standard" && label}
+                        label={variant !== "standard" && !helperText2 && label}
                         variant={variant}
                         size="small"
                         InputProps={{
@@ -1356,7 +1419,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                     onChange && onChange(values, { action, option });
                 }}
                 size="small"
-                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}     
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
                 options={data}
                 renderInput={(params) => (
                     <TextField
@@ -1484,7 +1547,7 @@ interface TemplateSwitchPropsYesNo extends InputProps {
     disabled?: boolean;
 }
 
-export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style, disabled=false }) => {
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style, disabled = false }) => {
     const [checkedaux, setChecked] = useState(false);
 
     useEffect(() => {
@@ -1610,7 +1673,7 @@ interface FieldCheckboxProps extends InputProps {
     label: string;
 }
 
-export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false, helperText="" }) => {
+export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false, helperText = "" }) => {
     const classes = useCheckboxStyles();
     const [checkedaux, setChecked] = useState(false);
 
@@ -1620,8 +1683,8 @@ export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChang
 
     return (
         <div className={className} style={{ paddingBottom: '3px' }}>
-            
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{display: "flex"}}>
+
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                 {label}
                 {!!helperText &&
                     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1751,6 +1814,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
@@ -1766,26 +1830,43 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                         zIndex: 1201
                     }}>
                         <Picker
-                            onSelect={onSelect}
-                            native={true}
-                            sheetSize={32}
+                            onEmojiSelect={onSelect}
+                            previewPosition="none"
+                            theme="light"
+                            skinTonePosition="none"
+                            noCountryFlags={false}
+                            set="apple"
+                            emojiVersion={12}
                             i18n={{
                                 search: t(langKeys.search),
                                 categories: {
                                     search: t(langKeys.search_result),
                                     recent: t(langKeys.favorites),
+                                    smileys: t(langKeys.emoticons),
                                     people: t(langKeys.emoticons),
+                                    animals: t(langKeys.animals),
                                     nature: t(langKeys.animals),
-                                    foods: t(langKeys.food),
-                                    activity: t(langKeys.activities),
+                                    food: t(langKeys.food),
+                                    activities: t(langKeys.activities),
                                     places: t(langKeys.travel),
                                     objects: t(langKeys.objects),
                                     symbols: t(langKeys.symbols),
                                     flags: t(langKeys.flags),
+                                    // Agrega más categorías si es necesario
+                                },
+                                "skins": {
+                                    "choose": "Elige el tono de piel predeterminado",
+                                    "1": "Sin tono",
+                                    "2": "Claro",
+                                    "3": "Medio-Claro",
+                                    "4": "Medio",
+                                    "5": "Medio-Oscuro",
+                                    "6": "Oscuro"
                                 }
                             }}
                             recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
-                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
+                            exceptEmojis={emojisNoShow.length > 0 ? emojisNoShow?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
+                        // emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
                 )}
@@ -2187,6 +2268,115 @@ export function RadioGroudFieldEdit<T>({
                 })}
             </RadioGroup>
             {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
+        </div>
+    );
+}
+
+const useStyles = makeStyles((theme) => ({
+    titleandcrumbs: {
+        marginBottom: 4,
+        marginTop: 4,
+    },
+    container: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+    },
+    tag: {
+        backgroundColor: '#EBF2F3',
+        borderRadius: '8px',
+        padding: '2px 8px',
+        marginRight: '4px',
+        marginBottom: '4px',
+        whiteSpace: 'nowrap',
+        wordBreak: 'keep-all',
+    },
+    tagcontainer: {
+        display: 'flex',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        width: '300px'
+    },
+}));
+
+export const TagTypeCell: React.FC<{ data: string, separator: string }> = ({ data, separator }) => {
+    const items = data.split(separator).map((item: string) => item.trim()).filter(Boolean);
+    const classes = useStyles();
+
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const tagsWrapperRef = useRef<HTMLDivElement>(null);
+    const [atEnd, setAtEnd] = useState(false);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+
+    useEffect(() => {
+        if (tagsWrapperRef.current) {
+            const isOverflowingContent = tagsWrapperRef.current.scrollWidth > tagsWrapperRef.current.clientWidth;
+            setIsOverflowing(isOverflowingContent);
+            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
+        }
+    }, [scrollPosition, items]);
+
+    const handleScroll = (direction: string, event: React.MouseEvent) => {
+        event.stopPropagation();
+
+        const scrollAmount = 100;
+        const newPosition = direction === 'left'
+            ? scrollPosition - scrollAmount
+            : scrollPosition + scrollAmount;
+
+        setScrollPosition(newPosition);
+        if (tagsWrapperRef.current) {
+            tagsWrapperRef.current.scrollLeft = newPosition;
+        }
+
+        const atEndPosition = tagsWrapperRef.current
+            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth
+            : false;
+
+        setAtEnd(atEndPosition);
+    };
+
+    if (!data || items.length === 0) {
+        return null;
+    }
+
+    const shouldShowTags = items.length >= 1;
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', width: '300px', overflow: 'hidden' }}>
+            {isOverflowing && shouldShowTags && (
+                <IconButton
+                    size='small'
+                    disabled={!(scrollPosition > 0)}
+                    onClick={(event) => handleScroll('left', event)}
+                    style={{ padding: 0 }}
+                >
+                    <KeyboardArrowLeft fontSize='small' />
+                </IconButton>
+            )}
+            <div
+                ref={tagsWrapperRef}
+                className={classes.tagcontainer}
+            >
+                {items.map((item: string, index: number) => (
+                    <span
+                        key={index}
+                        className={shouldShowTags && item ? classes.tag : ''}
+                    >
+                        {item}
+                    </span>
+                ))}
+            </div>
+            {isOverflowing && shouldShowTags && (
+                <IconButton
+                    size='small'
+                    disabled={atEnd}
+                    onClick={(event) => handleScroll('right', event)}
+                    style={{ padding: 0 }}
+                >
+                    <KeyboardArrowRight fontSize='small' />
+                </IconButton>
+            )}
         </div>
     );
 }

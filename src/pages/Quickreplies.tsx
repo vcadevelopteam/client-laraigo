@@ -16,7 +16,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetAllMain, getMultiCollection, execute, getMultiCollectionAux, uploadFile } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, getMultiCollectionAux, uploadFile, setMemoryTable, cleanMemoryTable } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -987,11 +987,13 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     );
 }
 
+const IDQUICKREPLIES="IDQUICKREPLIES"
 const Quickreplies: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const [openDialog, setOpenDialog] = useState(false);
     const classes = useStyles();
@@ -1086,8 +1088,11 @@ const Quickreplies: FC = () => {
     ]));
 
     useEffect(() => {
+        dispatch(setMemoryTable({
+            id: IDQUICKREPLIES
+        }))   
         fetchData();
-        fetchMultiData();
+        fetchMultiData(); 
         return () => {
             dispatch(resetAllMain());
         };
@@ -1107,7 +1112,7 @@ const Quickreplies: FC = () => {
                 }
             }))
         }
-    }, [mainResult])
+    }, [mainResult.mainData])
 
     useEffect(() => {
         if (waitSave) {
@@ -1202,8 +1207,8 @@ const Quickreplies: FC = () => {
                         operation: "INSERT",
                         type: 'NINGUNO',
                         id: 0,
-                        body: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.detail : '',
-                        bodyobject: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.bodyobject || [{ type: "paragraph", children: [{text: x.detail || ''}]}] : {},
+                        body: (x.quickanswertype === 'CORREO ELECTRONICO') ? x.detail : '<div data-reactroot=""><p><span></span></p></div>',
+                        bodyobject: [{ type: "paragraph", children: [{text: (x.quickanswertype === 'CORREO ELECTRONICO')? x.detail || '': ""}]}],
                         quickreply_type: x.quickanswertype || 'CORREO ELECTRONICO',
                         quickreply_priority: '',
                         attachment: ''
@@ -1281,6 +1286,9 @@ const Quickreplies: FC = () => {
                         handleTemplate={handleTemplate}
                         handleRegister={handleRegister}
                         onClickRow={handleEdit}
+                        pageSizeDefault={IDQUICKREPLIES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                        initialPageIndex={IDQUICKREPLIES === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                        initialStateFilter={IDQUICKREPLIES === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                         ButtonsElement={()=>
                             <>
                                 <Button

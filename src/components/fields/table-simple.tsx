@@ -950,6 +950,10 @@ const TableZyx = React.memo(({
     }, [selectedRowIds]);
 
     useEffect(() => {
+        setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
+    }, [globalFilteredRows])
+
+    useEffect(() => {
         if (allRowsSelected) {
             toggleAllRowsSelected(true);
             setAllRowsSelected && setAllRowsSelected(false);

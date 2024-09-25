@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState } from "react"; 
+import React, { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo, AntTab,} from "components";
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore, getCustomVariableSelByTableName, getDomainByDomainNameList} from "common/helpers";
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo, AntTab, } from "components";
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials, getPropertySelByName, getWarehouseSel, selStore, getCustomVariableSelByTableName, getDomainByDomainNameList } from "common/helpers";
 import { getDomainsByTypename } from "store/person/actions";
 import { Dictionary, MultiData } from "@types";
 import TableZyx from "../components/fields/table-simple";
@@ -16,7 +16,7 @@ import Avatar from "@material-ui/core/Avatar";
 import { cleanMemoryTable, getCollectionAux2, setMemoryTable, uploadFile } from "store/main/actions";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import clsx from "clsx";
-import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux} from "store/main/actions";
+import { getCollection, resetAllMain, getMultiCollection, getCollectionAux, resetMainAux, getMultiCollectionAux } from "store/main/actions";
 import { saveUser, delUser } from "store/activationuser/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
@@ -66,7 +66,7 @@ interface ModalProps {
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),       
+        marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: "#fff",
     },
@@ -148,7 +148,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const resFromOrg = useSelector((state) => state.main.multiDataAux);
-  
+
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
     const propertyBots = multiData[12] && multiData[12].success ? multiData[12].data : []
@@ -238,7 +238,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         const indexApplications = resFromOrg.data.findIndex(
             (x: MultiData) => x.key === "UFN_APPS_DATA_SEL" + (index + 1)
         );
-        
+
         const indexStores = resFromOrg.data.findIndex(
             (x: MultiData) => x.key === "UFN_STORE_SEL"
         );
@@ -528,8 +528,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                         helperText={t(langKeys.visualizationBotTooltip)}
                                         className="col-6"
                                         valueDefault={getValues("showbots")}
-                                        onChange={(value) => { 
-                                            setValue('showbots', value); 
+                                        onChange={(value) => {
+                                            setValue('showbots', value);
                                             updatefield("showbots", value);
                                         }} />
                                 }
@@ -1066,20 +1066,19 @@ const DetailUsers: React.FC<DetailProps> = ({
 
     const updateCell = (rowIndex: number, columnId: string, value: string) => {
         setSkipAutoReset(true);
-        debugger
         const auxTableData = tableDataVariables
         auxTableData[rowIndex][columnId] = value
         setTableDataVariables(auxTableData)
         setUpdatingDataTable(!updatingDataTable);
     }
-    
+
     useEffect(() => {
         if (multiData[13]) {
-            const variableDataList = multiData[13].data ||[]
-            setTableDataVariables(variableDataList.map(x=>({...x,value: row?.variablecontext[x.variablename]||""})))
+            const variableDataList = multiData[13].data || []
+            setTableDataVariables(variableDataList.map(x => ({ ...x, value: row?.variablecontext[x.variablename] || "" })))
         }
     }, [multiData]);
-    
+
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
     useEffect(() => {
@@ -1242,8 +1241,9 @@ const DetailUsers: React.FC<DetailProps> = ({
                 dispatch(
                     saveUser(
                         {
-                            header: insUser({ ...data, language: t(langKeys.currentlanguage),
-                                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                            header: insUser({
+                                ...data, language: t(langKeys.currentlanguage),
+                                variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {})
                             }),
                             detail: [
                                 ...dataOrganizations.filter((x) => x && x?.operation).map((x) => x && insOrgUser(x)),
@@ -1308,7 +1308,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                 sortType: 'string',
                 prefixTranslation: 'datatype_',
                 Cell: (props: any) => {
-                    const { variabletype } = props.cell.row.original || {}; 
+                    const { variabletype } = props.cell.row.original || {};
                     return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -1399,7 +1399,7 @@ const DetailUsers: React.FC<DetailProps> = ({
                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                 </Tooltip>
                             </div>
-                        )}/>
+                        )} />
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
@@ -1553,24 +1553,24 @@ const DetailUsers: React.FC<DetailProps> = ({
                     </div>
                 </div>}
                 {pageSelected === 1 &&
-                <div className={classes.containerDetail}>                    
-                    <CustomTableZyxEditable
-                        columns={columns}
-                        data={(tableDataVariables).map(x => ({
-                            ...x,
-                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
-                        }))}
-                        download={false}
-                        //loading={multiData.loading}
-                        register={false}
-                        filterGeneral={false}
-                        updateCell={updateCell}
-                        skipAutoReset={skipAutoReset}
-                    />
-                </div>}
+                    <div className={classes.containerDetail}>
+                        <CustomTableZyxEditable
+                            columns={columns}
+                            data={(tableDataVariables).map(x => ({
+                                ...x,
+                                domainvalues: (domainsCustomTable?.data || []).filter(y => y.domainname === x?.domainname)
+                            }))}
+                            download={false}
+                            //loading={multiData.loading}
+                            register={false}
+                            filterGeneral={false}
+                            updateCell={updateCell}
+                            skipAutoReset={skipAutoReset}
+                        />
+                    </div>}
             </form>
 
-            <div className={classes.containerDetail} style={{display:pageSelected === 0?"":"None"}}>
+            <div className={classes.containerDetail} style={{ display: pageSelected === 0 ? "" : "None" }}>
                 {detailRes.error ? (
                     <h1>ERROR</h1>
                 ) : (
@@ -1635,7 +1635,7 @@ const DetailUsers: React.FC<DetailProps> = ({
     );
 };
 
-const IDUSER= "IDUSER"
+const IDUSER = "IDUSER"
 
 const Users: FC = () => {
     const dispatch = useDispatch();
@@ -1733,12 +1733,12 @@ const Users: FC = () => {
                 NoFilter: true,
                 prefixTranslation: "status_",
                 Cell: (props: CellProps<Dictionary>) => {
-                    if(props.cell.row.original) {
+                    if (props.cell.row.original) {
                         const { status } = props.cell.row.original;
                         return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                     }
                     return null
-                   
+
                 },
             },
             {
@@ -1853,7 +1853,7 @@ const Users: FC = () => {
         };
     }, []);
     useEffect(() => {
-        if(!mainMultiResult.loading && !mainMultiResult.error && mainMultiResult?.data?.[13]?.data){
+        if (!mainMultiResult.loading && !mainMultiResult.error && mainMultiResult?.data?.[13]?.data) {
             dispatch(getCollectionAux2(getDomainByDomainNameList(mainMultiResult?.data?.[13]?.data.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
         }
     }, [mainMultiResult]);
@@ -1952,131 +1952,100 @@ const Users: FC = () => {
         if (file) {
             const excel: any = await uploadExcel(file, undefined);
             const firstdatainit = array_trimmer(excel);
-            debugger
+            const channellist = dataChannelsTemp.map(x => x.communicationchannelid).join().split(",")
             const datainit = firstdatainit.map(item => ({
                 ...item,
-                role: String(item.role).replace(/\s+/g, '').replace(/;/g, ','),
-                groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
+                role: !!item.role ? String(item.role).replace(/\s+/g, '').replace(/;/g, ',') : item.role,
+                groups: !!item.groups ? String(item.groups).replace(/\s+/g, '').replace(/;/g, ',') : item.groups,
+                channels: !!item.channels ? String(item.channels).replace(/\s+/g, '').replace(/;/g, ',') : item.channels,
             }));
-            
             const data = datainit.filter((f: Dictionary) => {
+                const getDomainValues = (key: string, domainList: any[] | undefined) =>
+                    domainList?.reduce((acc: any, d) => ({ ...acc, [d[key]]: d[key] }), {}) || {};
+
+                const domainCompanyValues = getDomainValues('domainvalue', domains.value?.company);
+                const domainDocTypeValues = getDomainValues('domainvalue', domains.value?.docTypes);
+                const domainBillingGroupValues = getDomainValues('domainid', domains.value?.billinggroups);
+                const domainTwoFactorValues = getDomainValues('domainvalue', domains.value?.genericstatus);
+                const domainStatusValues = getDomainValues('domainvalue', domains.value?.userstatus);
+
+                const isInDomain = (value: any, domainValues: any) =>
+                    value === undefined || Object.keys(domainValues).includes(String(value));
+
+                const isBooleanLike = (value: any) => ["true", "false"].includes(String(value));
+
+                const isValidIdList = (value: string | undefined, list: (string | number)[] | undefined) =>
+                    String(value)
+                        .split(",")
+                        .every((id: string) => {
+                            const trimmedId = id.trim();
+                            const idNum = parseInt(trimmedId, 10);
+                            return (
+                                (!isNaN(idNum) && list?.includes(idNum)) ||
+                                list?.includes(trimmedId)
+                            );
+                        });
+
+
                 return (
-                    (f.company === undefined ||
-                        Object.keys(
-                            domains.value?.company?.reduce(
-                                (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                {}
-                            )
-                        ).includes(String(f.company))) &&
-                    (f.doctype === undefined ||
-                        Object.keys(
-                            domains.value?.docTypes?.reduce(
-                                (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                {}
-                            )
-                        ).includes(String(f.doctype))) &&
-                    (f.billinggroup === undefined ||
-                        Object.keys(
-                            domains.value?.billinggroups?.reduce(
-                                (a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }),
-                                {}
-                            )
-                        ).includes(String(f.billinggroup))) &&
-                    (f.twofactorauthentication === undefined ||
-                        Object.keys(
-                            domains.value?.genericstatus?.reduce(
-                                (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                {}
-                            )
-                        ).includes(String(f.twofactorauthentication))) &&
-                    (f.status === undefined ||
-                        Object.keys(
-                            domains.value?.userstatus?.reduce(
-                                (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                {}
-                            )
-                        ).includes(String(f.status))) &&
-                    (f.pwdchangefirstlogin === undefined ||
-                        ["true", "false"].includes(String(f.pwdchangefirstlogin))) &&
-                    (f.balanced === undefined ||
-                        ["true", "false"].includes(String(f.balanced))) &&
-                    (f.role === undefined ||
-                        (String(f?.role || "")).split(",").every((role: string) => {
-                            const roleId = parseInt(role.trim(), 10);
-                            return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
-                        }))
-                    && (f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                    isInDomain(f.company, domainCompanyValues) &&
+                    isInDomain(f.doctype, domainDocTypeValues) &&
+                    isInDomain(f.billinggroup, domainBillingGroupValues) &&
+                    isInDomain(f.twofactorauthentication, domainTwoFactorValues) &&
+                    isInDomain(f.status, domainStatusValues) &&
+                    (f.pwdchangefirstlogin === undefined || isBooleanLike(f.pwdchangefirstlogin)) &&
+                    (f.balanced === undefined || isBooleanLike(f.balanced)) &&
+                    (f.role === undefined || isValidIdList(f.role, domains.value?.roles?.map(d => d.roleid))) &&
+                    (f.channels === undefined || isValidIdList(f.channels, channellist)) &&
+                    (f.showbots === undefined || isBooleanLike(f.showbots)) && f.password
                 );
             });
             const messageerrors = datainit
                 .filter((f: Dictionary) => {
+                    const getDomainValues = (key: string, domainList: any[] | undefined) =>
+                        domainList?.reduce((acc: any, d) => ({ ...acc, [d[key]]: d[key] }), {}) || {};
+
+                    const companyValues = getDomainValues('domainvalue', domains.value?.company);
+                    const docTypeValues = getDomainValues('domainvalue', domains.value?.docTypes);
+                    const billingGroupValues = getDomainValues('domainid', domains.value?.billinggroups);
+                    const twoFactorAuthValues = getDomainValues('domainvalue', domains.value?.genericstatus);
+                    const statusValues = getDomainValues('domainvalue', domains.value?.userstatus);
+                    const roleIds = domains.value?.roles?.map(d => d.roleid);
+                    const channelIds = channellist?.map(String);
+
+                    const isInDomain = (value: any, domainValues: any) =>
+                        value === undefined || Object.keys(domainValues).includes(String(value));
+
+                    const isBooleanLike = (value: any) =>
+                        ["true", "false"].includes(String(value));
+
+
+                    const isValidIdList = (value: string | undefined, list: (string | number)[] | undefined) =>
+                        String(value)
+                            .split(",")
+                            .every((id: string) => {
+                                const trimmedId = id.trim();
+                                const idNum = parseInt(trimmedId, 10);
+                                return (
+                                    (!isNaN(idNum) && list?.includes(idNum)) ||
+                                    list?.includes(trimmedId)
+                                );
+                            });
+
                     return (
-                        !(
-                            f.company === undefined ||
-                            Object.keys(
-                                domains.value?.company?.reduce(
-                                    (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                    {}
-                                )
-                            ).includes(String(f.company))
-                        ) ||
-                        !(
-                            f.doctype === undefined ||
-                            Object.keys(
-                                domains.value?.docTypes?.reduce(
-                                    (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                    {}
-                                )
-                            ).includes(String(f.doctype))
-                        ) ||
-                        !(
-                            f.billinggroup === undefined ||
-                            Object.keys(
-                                domains.value?.billinggroups?.reduce(
-                                    (a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }),
-                                    {}
-                                )
-                            ).includes(String(f.billinggroup))
-                        ) ||
-                        !(
-                            f.twofactorauthentication === undefined ||
-                            Object.keys(
-                                domains.value?.genericstatus?.reduce(
-                                    (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                    {}
-                                )
-                            ).includes(String(f.twofactorauthentication))
-                        ) ||
-                        !(
-                            f.status === undefined ||
-                            Object.keys(
-                                domains.value?.userstatus?.reduce(
-                                    (a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }),
-                                    {}
-                                )
-                            ).includes(String(f.status))
-                        ) ||
-                        !(
-                            f.pwdchangefirstlogin === undefined ||
-                            ["true", "false"].includes(String(f.pwdchangefirstlogin))
-                        ) ||
-                        !(
-                            f.balanced === undefined ||
-                            ["true", "false"].includes(String(f.balanced))
-                        ) ||
-                        !(
-                            f.role === undefined ||
-                            (String(f?.role||""))
-                                .split(",")
-                                .every((role: string) => {
-                                    const roleId = parseInt(role.trim(), 10);
-                                    return !isNaN(roleId) && domains.value?.roles?.some((d) => d.roleid === roleId);
-                                })
-                        )
-                        || !(f.showbots === undefined || ["true", "false"].includes('' + f.showbots))
+                        !isInDomain(f.company, companyValues) ||
+                        !isInDomain(f.doctype, docTypeValues) ||
+                        !isInDomain(f.billinggroup, billingGroupValues) ||
+                        !isInDomain(f.twofactorauthentication, twoFactorAuthValues) ||
+                        !isInDomain(f.status, statusValues) ||
+                        !(f.pwdchangefirstlogin === undefined || isBooleanLike(f.pwdchangefirstlogin)) ||
+                        !(f.balanced === undefined || isBooleanLike(f.balanced)) ||
+                        !(f.role === undefined || isValidIdList(f.role, roleIds)) ||
+                        !(f.channels === undefined || isValidIdList(f.channels, channelIds)) ||
+                        !(f.showbots === undefined || isBooleanLike(f.showbots)) || !f.password
                     );
                 })
-                .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, "");
+                .reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.user || x.email }) + `\n`, "");
 
             setMessageError(messageerrors);
 
@@ -2100,7 +2069,7 @@ const Users: FC = () => {
                     if (channelError.length === 0) {
                         const table: Dictionary = data.reduce(
                             (a: any, d) => {
-                                const roleids = String(d?.role||"").split(",") || []
+                                const roleids = String(d?.role || "").split(",") || []
                                 let roles = domains?.value?.roles?.filter(x => roleids.includes(String(x.roleid))) || []
                                 let type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
                                 let showbots = d.showbots === "true"
@@ -2119,7 +2088,7 @@ const Users: FC = () => {
                                         type = d.balanced === "true" ? "ASESOR" : "SUPERVISOR"
                                         showbots = d.showbots === "true"
                                     }
-                                }                                
+                                }
                                 return ({
                                     ...a,
                                     [`${d.user}_${d.docnum}`]: {
@@ -2138,19 +2107,19 @@ const Users: FC = () => {
                                         operation: "INSERT",
                                         company: d.company,
                                         twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                                        registercode: String(d.registercode),
+                                        registercode: (d.registercode || "") + "",
                                         billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                         image: d?.image || "",
                                         detail: {
                                             showbots: Boolean(showbots),
-                                            rolegroups: String(d?.role||""),
+                                            rolegroups: String(d?.role || ""),
                                             orgid: user?.orgid,
                                             bydefault: true,
                                             labels: "",
                                             warehouseid: "0",
                                             groups: d?.groups?.replace(/\s+/g, '') || null,
                                             storeid: "0",
-                                            channels: d?.channels? String(d?.channels).replace(/\s+/g, ''): "",
+                                            channels: d?.channels ? String(d?.channels).replace(/\s+/g, '') : "",
                                             status: "DESCONECTADO",
                                             type: type,
                                             supervisor: "",

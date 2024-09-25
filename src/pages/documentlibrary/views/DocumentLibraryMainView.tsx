@@ -331,7 +331,7 @@ const DocumentLibraryMainView: FC<DocumentLibraryMainViewProps> = ({ setViewSele
                 ...item,
                 groups: String(item.groups).replace(/\s+/g, '').replace(/;/g, ','),
             }));
-			debugger
+			
 			if (data.length > 0) {
 				const badData = data.filter(element => !isValidData(element)).map(element => element.title);
 				if (badData.length<data.length) {

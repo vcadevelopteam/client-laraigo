@@ -990,6 +990,14 @@ export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, sta
     }
 })
 
+export const getPaginatedMessageTemplate1 = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelids }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL1",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS1",
+    parameters: {
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, communicationchannelids,
+    }
+})
+
 export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelid }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",
@@ -3895,6 +3903,15 @@ export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) =
     },
 });
 
+export const getAudit = ({ startdate, enddate }: Dictionary) => ({
+    method: "UFN_AUDIT_SEL",
+    parameters: { 
+        startdate, 
+        enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    },
+});
+
 export const getInvoiceReportSummary = ({ year, currency = '', location = '' }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_INVOICE_SUMMARY_SEL",
     key: "UFN_REPORT_INVOICE_SUMMARY_SEL",
@@ -5365,8 +5382,48 @@ export const getUserMessageOutbound = ({startdate, enddate, communicationchannel
         communicationchannelid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });
+export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
+    method: "UPDATE_LANGUAGE_SETTINGS",
+    key: "UPDATE_LANGUAGE_SETTINGS",
+    parameters: {
+        languagesettings: JSON.stringify(languagesettings)
+    }
+});
 export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
     method: "UPDATE_PINNED_MESSAGE",
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },
+});
+
+export const insarrayClassification = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});
+export const conversationAttachmentHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    parameters: { personid },
+});
+export const conversationClassificationHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    key: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    parameters: { personid },
+});
+export const conversationOrderHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    parameters: { personid },
+});
+export const conversationOportunityHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    key: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    parameters: { personid },
+});
+
+export const conversationSDHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    key: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    parameters: { personid },
 });

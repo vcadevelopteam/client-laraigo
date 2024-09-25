@@ -592,7 +592,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 color="primary"
                                 type="submit"
                                 onClick={() => {
-                                    console.log(errors)
                                 }}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
@@ -771,7 +770,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     onChange={(value) => {
                                         setValue("doctype", value?.domainvalue || "");
                                         setValue("docnum","")
-                                        debugger
                                     }}
                                     error={errors?.doctype?.message}
                                     data={docTypes}
