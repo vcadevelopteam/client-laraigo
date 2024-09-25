@@ -25,7 +25,6 @@ import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
 import { deleteThreadLlama, query } from "store/llama/actions";
 import { deleteThreadLlama3, query3 } from "store/llama3/actions";
-import { threadId } from "worker_threads";
 
 const useStyles = makeStyles((theme) => ({
     container: {
