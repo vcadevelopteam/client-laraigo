@@ -662,6 +662,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     max_new_tokens: row?.max_tokens,
                     temperature: parseFloat(row?.temperature),
                     top_p: parseFloat(row?.top_p),
+                    top_k: parseFloat(row?.top_k),
+                    repetition_penalty: parseFloat(row?.repetition_penalty),
                 }))
                 setWaitSaveMessageLlama(true)
                 setActiveThreadId(selectedChat?.threadid);
