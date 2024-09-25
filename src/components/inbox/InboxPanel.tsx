@@ -101,6 +101,7 @@ const useStyles = makeStyles((theme) => ({
         padding: `0 ${theme.spacing(1)}px`,
         backgroundColor: theme.palette.primary.main,
         borderRadius: '6px',
+        flex: '1 1 45%', // Ocupa el 50% del contenedor
         color: '#FFF',
         cursor: 'pointer',
         '&:hover': {
@@ -121,6 +122,23 @@ const useStyles = makeStyles((theme) => ({
         padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
         position: 'relative',
         maxWidth: 480,
+        backgroundColor: '#FFF',
+        boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
+    },
+    interactionTextMailHtml: {
+        whiteSpace: 'break-spaces',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        fontSize: '14px',
+        lineHeight: 2,
+        color: '#2E2C34',
+        wordBreak: 'break-word',
+        width: 'fit-content',
+        borderRadius: 12,
+        borderBottomLeftRadius: 0,
+        padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
+        position: 'relative',
+        maxWidth: 'fit-content',
         backgroundColor: '#FFF',
         boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
     },
@@ -293,11 +311,18 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'normal',
         fontWeight: 'normal',
         display: 'flex',
-        
         gap: theme.spacing(.5),
+    },
+    containerQuickReply2: {
+        whiteSpace: 'break-spaces',
+        flexWrap: 'wrap',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        display: 'flex',
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
+        gap: theme.spacing(.5),
     },
     headerQuickReply: {
         fontSize: 14,

@@ -156,6 +156,7 @@ const dataCampaignType = [
     { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS' },
     { key: 'CALL', value: 'call', rif: 'starsWith', rifvalue: 'VOX' },
     { key: 'MAIL', value: 'mail', rif: 'starsWith', rifvalue: 'MAI' },
+    { key: 'HTML', value: 'HTML', rif: 'starsWith', rifvalue: 'HTML' },
 ];
 
 type FormFields = {
@@ -213,7 +214,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataGroup = [...multiData[2] && multiData[2].success ? multiData[2].data : []];
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
-    const [openModal, setOpenModal] = useState(false);
     const [previousSource, ] = useState('INTERNAL');
     const initialBatchjson = { date: '', time: '', quantity: 1 };
 
@@ -522,17 +522,25 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const filterMessageTemplate = () => {
-        if (getValues('type') === "MAIL") {
-            const mailTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
-            const htmlTemplate = filterPipe(dataMessageTemplate, 'type', 'HTML');
-
-            return [...mailTemplate, ...htmlTemplate];
+        const type = getValues('type');
+        const communicationChannelId = getValues('communicationchannelid');   
+        let filteredTemplates;
+    
+        if (type === "MAIL" || type === "HTML" || type === 'SMS') {
+            filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);
+        } else {
+            filteredTemplates = filterPipe(dataMessageTemplate, 'type', type);    
+            if (communicationChannelId) {
+                filteredTemplates = filteredTemplates.filter(template => {
+                    const templateChannelIds = template.communicationchannelid.split(',').map((id: Dictionary) => id.trim());
+                    return templateChannelIds.some((id: Dictionary) => id.trim() === String(communicationChannelId).trim());
+                });
+            }
         }
-        else {
-            return filterPipe(dataMessageTemplate, 'type', getValues('type'));
-        }
-    }
-
+    
+        return filteredTemplates;
+    }    
+        
     const onChangeMessageTemplateId = async (data: Dictionary) => {
         setValue('messagetemplateid', data?.id || 0);
         setIdAux(data?.id || 0);      
@@ -930,7 +938,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                        
                     </div>
                     : null}
-                {['SMS', 'MAIL'].includes(getValues('type')) ?
+                {['SMS', 'MAIL', 'HTML'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
                             <FormControl className="col-6" >                     

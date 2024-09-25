@@ -87,6 +87,8 @@ export interface TableConfig {
   useFooter?: boolean;
   ExtraMenuOptions?: ReactElement;
   cleanImport?: Boolean
+  defaultGlobalFilter?: string;
+  setOutsideGeneralFilter?: (param: string)=>void; 
 }
 
 export interface Pagination {

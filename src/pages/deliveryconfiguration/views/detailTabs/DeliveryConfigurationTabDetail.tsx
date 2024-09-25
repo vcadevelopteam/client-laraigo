@@ -129,6 +129,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [selectedRow, setSelectedRow] = useState<RowSelected>({
         row2: null,
@@ -187,11 +188,15 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
             setWaitSave(false);
           }
         }
-      }, [executeResult, waitSave]);
+    }, [executeResult, waitSave]);
+
+    <TitleDetail
+    title={user?.corpdesc}
+/>
 
     const columns = React.useMemo(
         () => [
-          {
+        {
             accessor: 'deliveryvehicleid',
             NoFilter: true,
             disableGlobalFilter: true,
@@ -207,10 +212,10 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                     />
                 )
             }
-          },
+          },        
           {
             Header: t(langKeys.organization),
-            accessor: "createdate",
+            accessor: "orgdesc",
             width: "auto",
           },
           {

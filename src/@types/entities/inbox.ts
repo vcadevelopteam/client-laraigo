@@ -84,12 +84,17 @@ export interface IDeleteTicketParams {
     ticketnum: string;
     status: string;
     usergroup: string;
+    communicationchannelid: string;
     orgid: number;
     isanswered: boolean;
     userid: number;
     closedTicket?: boolean;
 }
 
+export interface IVariablesSyncParams {
+    conversationid: number;
+    variables: Record<string, string>;
+}
 export interface IConnectAgentParams {
     isconnected: boolean;
     userid: number;

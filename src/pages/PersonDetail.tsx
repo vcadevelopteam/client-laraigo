@@ -448,6 +448,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                 {...field}
                                                 fullWidth
                                                 defaultCountry={"pe"}
+                                                enableLongNumbers={true}
                                                 countryCodeEditable={false}
                                                 placeholder={t(langKeys.phone)}
                                                 onChange={(value: any) => {
@@ -496,6 +497,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                 {...field}
                                                 fullWidth
                                                 defaultCountry={"pe"}
+                                                enableLongNumbers={true}
                                                 countryCodeEditable={false}
                                                 placeholder={t(langKeys.alternativePhone)}
                                                 onChange={(value: any) => {
@@ -1123,7 +1125,7 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
 }
 
 interface CustomVariableTabProps {
-    setTableData: (x:Dictionary[])=>void;
+    setTableData: (x: Dictionary[]) => void;
     tableData: Dictionary[];
 }
 
@@ -1143,7 +1145,7 @@ const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData
         setUpdatingDataTable(!updatingDataTable);
     }
     useEffect(() => {
-        if(!domains.loading && !domains.error && domains.value?.customVariables){
+        if (!domains.loading && !domains.error && domains.value?.customVariables) {
             dispatch(getCollectionAux2(getDomainByDomainNameList(domains.value?.customVariables?.filter(item => item.domainname !== "").map(item => item.domainname).join(","))));
         }
     }, [domains]);
@@ -1173,7 +1175,7 @@ const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData
                 sortType: 'string',
                 prefixTranslation: 'datatype_',
                 Cell: (props: any) => {
-                    const { variabletype } = props.cell.row.original || {}; 
+                    const { variabletype } = props.cell.row.original || {};
                     return (t(`datatype_${variabletype}`.toLowerCase()) || "").toUpperCase()
                 }
             },
@@ -1189,12 +1191,12 @@ const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData
         ],
         []
     )
-    return (        
+    return (
         <CustomTableZyxEditable
             columns={columns}
             data={(tableData).map(x => ({
                 ...x,
-                domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
+                domainvalues: (domainsCustomTable?.data || []).filter(y => y.domainname === x?.domainname)
             }))}
             download={false}
             loading={domainsCustomTable.loading && domains.loading}
@@ -1836,7 +1838,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
             variables: [],
             buttons: [],
-            headervariables:[]
+            headervariables: []
         }
     });
 
@@ -1844,7 +1846,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         control,
         name: 'variables',
     });
-    const { fields:buttons } = useFieldArray({
+    const { fields: buttons } = useFieldArray({
         control,
         name: 'buttons',
     });
@@ -1886,7 +1888,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 hsmtemplatename: '',
                 variables: [],
                 buttons: [],
-                headervariables:[],
+                headervariables: [],
                 communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
                 communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
             })
@@ -1918,22 +1920,22 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
-            if(value?.header){
+            if (value?.header) {
                 const variablesListHeader = value?.header?.match(/({{)(.*?)(}})/g) || [];
                 const varaiblesCleanedHeader = variablesListHeader.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header||"" })));
-            }else{
-                setValue('headervariables',[])
+                setValue('headervariables', varaiblesCleanedHeader.map((x: string) => ({ name: x, text: '', type: 'header', header: value?.header || "" })));
+            } else {
+                setValue('headervariables', [])
             }
             if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some(element => element.btn.type === "dynamic")) {
                 const buttonsaux = value?.buttonsgeneric
                 let buttonsFiltered = []
-                buttonsaux.forEach((x,i)=>{
-                    const variablesListbtn  = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
+                buttonsaux.forEach((x, i) => {
+                    const variablesListbtn = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
                     const varaiblesCleanedbtn = variablesListbtn.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-                    if(varaiblesCleanedbtn.length){
-                        const btns= varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url||"" }))||[]
-                        buttonsFiltered=[...buttonsFiltered, ...btns]
+                    if (varaiblesCleanedbtn.length) {
+                        const btns = varaiblesCleanedbtn?.map((y: string) => ({ name: y, text: '', type: 'url', url: x?.btn?.url || "" })) || []
+                        buttonsFiltered = [...buttonsFiltered, ...btns]
                     }
                 })
                 setValue('buttons', buttonsFiltered);
@@ -1954,7 +1956,6 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
             return
         }
-        debugger
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
@@ -1970,7 +1971,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 email: person.email || "",
                 lastname: person.lastname,
                 parameters: [...data.variables, ...data.buttons, ...data.headervariables].map((v: any) => ({
-                    type: v?.type||"text",
+                    type: v?.type || "text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
                     name: v.name
                 }))
@@ -2027,11 +2028,11 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                     optionDesc="name"
                     optionValue="id"
                 />
-            </div>  
-            {Boolean(fieldsheader.length) &&             
+            </div>
+            {Boolean(fieldsheader.length) &&
                 <FieldView
                     label={t(langKeys.header)}
-                    value={fieldsheader?.[0]?.header||""}
+                    value={fieldsheader?.[0]?.header || ""}
                 />
             }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16, marginBottom: 16 }}>
@@ -2135,8 +2136,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                         <div key={item.id}>
                             <FieldView
-                                label={t(langKeys.button) + ` ${i+1}`}
-                                value={item?.url||""}
+                                label={t(langKeys.button) + ` ${i + 1}`}
+                                value={item?.url || ""}
                             />
                             <FieldSelect
                                 key={"var_" + item.id}
@@ -2178,7 +2179,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         </DialogZyx>)
 }
 
-const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ person, setrefresh }) => {
+const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ person, setrefresh }) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const { t } = useTranslation();
@@ -2205,8 +2206,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
 
     useEffect(() => {
         if (domains.value?.customVariables && person) {
-            console.log(person)
-            setTableDataVariables(domains.value.customVariables.map(x=>({...x,value: person?.variablecontext?.[x?.variablename]||""})))
+            setTableDataVariables(domains.value.customVariables.map(x => ({ ...x, value: person?.variablecontext?.[x?.variablename] || "" })))
         }
     }, [person, domains]);
 
@@ -2352,8 +2352,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
     const editperson = () => {
         dispatch(showBackdrop(true));
         dispatch(editPerson(payloadTemp.parameters.personid ? payloadTemp : {
-            header: editPersonBody({ ...person, ...valuestosend,
-                variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+            header: editPersonBody({
+                ...person, ...valuestosend,
+                variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {})
             }),
             detail: []
         }, !payloadTemp.parameters.personid));
@@ -2367,8 +2368,9 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
         if (allOk) {
             const values = getValues();
             const callback = () => {
-                const payload = editPersonBody({...values, 
-                    variablecontext: tableDataVariables.filter(x=>x.value).reduce((acc,x)=>({...acc, [x.variablename]:x.value}),{})
+                const payload = editPersonBody({
+                    ...values,
+                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {})
                 });
                 setpayloadTemp(payload)
                 setvaluestosend(values)
@@ -2665,7 +2667,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a:boolean)=>void }> = ({ per
                         <AuditTab person={person} />
                     </TabPanel>
                     <TabPanel value="5" index={tabIndex}>
-                        <CustomVariableTab tableData={tableDataVariables} setTableData={setTableDataVariables}/>
+                        <CustomVariableTab tableData={tableDataVariables} setTableData={setTableDataVariables} />
                     </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
@@ -2846,7 +2848,7 @@ const PersonDetail: FC = () => {
     return (
         <>
             {!!person &&
-                <PersonDetail2 person={person} setrefresh={setrefresh}/>
+                <PersonDetail2 person={person} setrefresh={setrefresh} />
             }
         </>
     );

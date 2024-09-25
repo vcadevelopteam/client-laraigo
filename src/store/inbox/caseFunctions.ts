@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary, IVariablesSyncParams } from "@types";
 import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
 import { keys } from 'common/constants';
@@ -98,7 +98,9 @@ const cleanLogsReassignedTask = (interactions: IInteraction[], returnHidden: boo
 export const getAgents = (state: IState): IState => ({
     ...initialState,
     holdingBySupervisor: state.holdingBySupervisor,
+    botBySupervisor: state.botBySupervisor,
     userGroup: state.userGroup,
+    channels: state.channels,
     role: state.role,
     wsConnected: state.wsConnected,
     userConnected: state.userConnected,
@@ -483,9 +485,16 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3 && !!state.userGroup) {
-        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
-            return state;
+    if (state.role.split(",").includes("SUPERVISOR") && data.newConversation) {
+        const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
+        if (property === "GRUPO") {
+            if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
+                return state;
+            }
+        } else if (property === "CANAL") {
+            if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
+                return state;
+            }
         }
     }
     let newticketList = [...state.ticketList.data];
@@ -707,6 +716,20 @@ export const resetShowModal = (state: IState): IState => ({
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
+
+    if (state.role.split(",").includes("SUPERVISOR")) {
+        const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
+        if (property === "GRUPO") {
+            if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
+                return state;
+            }
+        } else if (property === "CANAL") {
+            if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
+                return state;
+            }
+        }
+    }
+    
     if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && !!state.userGroup) {
         if (!state.userGroup.split(",").includes(data.usergroup || "")) {
             return state;
@@ -797,6 +820,32 @@ export const personSawChat = (state: IState, action: IAction): IState => {
             data: newticketList
         },
     };
+}
+
+export const variablesSync = (state: IState, action: IAction): IState => {
+    const data: IVariablesSyncParams = action.payload;
+    
+    const { ticketSelected } = state;
+    if (ticketSelected?.conversationid === data.conversationid) {
+        const vv = { ...state.person.data?.variablecontext };
+        Object.keys(data.variables).forEach(x => {
+            vv[x] = data.variables[x]
+        })
+        
+        return {
+            ...state,
+            person: {
+                ...state.person,
+                data: {
+                    ...state.person.data!!,
+                    variablecontext : vv
+
+                }
+            }
+        }
+    } else {
+        return state;
+    }
 }
 
 
@@ -1339,8 +1388,10 @@ export const resetForceddesconection = (state: IState): IState => ({
 export const setDataUser = (state: IState, action: IAction): IState => ({
     ...state,
     holdingBySupervisor: action.payload.holdingBySupervisor,
+    botBySupervisor: action.payload.botBySupervisor,
     userGroup: action.payload.userGroup,
-    role: action.payload.role
+    role: action.payload.role,
+    channels: action.payload.channels,
 });
 
 
@@ -1384,4 +1435,34 @@ export const getDataQuickrepliesFailure = (state: IState, action: IAction): ISta
 export const getDataQuickrepliesReset = (state: IState): IState => ({
     ...state,
     quickreplies: initialState.quickreplies,
+});
+
+export const getDataInnapropiatewords = (state: IState): IState => ({
+    ...state,
+    inappropriateWords: { ...state.inappropriateWords, loading: true, error: false },
+});
+
+export const getDataInnapropiatewordsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    inappropriateWords: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getDataInnapropiatewordsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    inappropriateWords: {
+        ...state.inappropriateWords,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getDataInnapropiatewordsReset = (state: IState): IState => ({
+    ...state,
+    inappropriateWords: initialState.inappropriateWords,
 });

@@ -806,10 +806,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname, olddomainname }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext={} }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext={}, paymentplanid=0 }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext, paymentplanid }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite, body, bodyobject, quickreply_type, quickreply_priority, attachment }: Dictionary): IRequestBody => ({
@@ -990,6 +990,14 @@ export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, sta
     }
 })
 
+export const getPaginatedMessageTemplate1 = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelids }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL1",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS1",
+    parameters: {
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, communicationchannelids,
+    }
+})
+
 export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelid }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",
@@ -1050,6 +1058,8 @@ export const insMessageTemplate = (
         providerquality,
         providerstatus,
         operation,
+        categorychange,
+        firstbuttons, 
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1089,9 +1099,12 @@ export const insMessageTemplate = (
             providerquality,
             providerstatus,
             operation,
+            categorychange,
+            firstbuttons, 
             buttons: []
         }
-    });
+    }
+);
 
 export const insMessageTemplateOld = (
     {
@@ -3296,13 +3309,14 @@ export const getRecordHSMList = ({ startdate, enddate }: Dictionary): IRequestBo
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const getRecordHSMReport = ({ name, from, date }: Dictionary): IRequestBody => ({
+export const getRecordHSMReport = ({ name, from, date, campaignname }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_SENTMESSAGES_REPORT",
     key: "UFN_REPORT_SENTMESSAGES_REPORT",
     parameters: {
         date,
         name,
         from,
+        campaignname,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
@@ -3886,6 +3900,15 @@ export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) =
     parameters: {
         conversationid,
         holdtime
+    },
+});
+
+export const getAudit = ({ startdate, enddate }: Dictionary) => ({
+    method: "UFN_AUDIT_SEL",
+    parameters: { 
+        startdate, 
+        enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     },
 });
 
@@ -5359,8 +5382,48 @@ export const getUserMessageOutbound = ({startdate, enddate, communicationchannel
         communicationchannelid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });
+export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
+    method: "UPDATE_LANGUAGE_SETTINGS",
+    key: "UPDATE_LANGUAGE_SETTINGS",
+    parameters: {
+        languagesettings: JSON.stringify(languagesettings)
+    }
+});
 export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
     method: "UPDATE_PINNED_MESSAGE",
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },
+});
+
+export const insarrayClassification = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});
+export const conversationAttachmentHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    parameters: { personid },
+});
+export const conversationClassificationHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    key: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    parameters: { personid },
+});
+export const conversationOrderHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    parameters: { personid },
+});
+export const conversationOportunityHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    key: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    parameters: { personid },
+});
+
+export const conversationSDHistorySel = (personid:number) => ({
+    method: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    key: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    parameters: { personid },
 });

@@ -1066,7 +1066,6 @@ const DetailUsers: React.FC<DetailProps> = ({
 
     const updateCell = (rowIndex: number, columnId: string, value: string) => {
         setSkipAutoReset(true);
-        debugger
         const auxTableData = tableDataVariables
         auxTableData[rowIndex][columnId] = value
         setTableDataVariables(auxTableData)
@@ -2001,7 +2000,6 @@ const Users: FC = () => {
                     (f.showbots === undefined || isBooleanLike(f.showbots)) && f.password
                 );
             });
-            debugger
             const messageerrors = datainit
                 .filter((f: Dictionary) => {
                     const getDomainValues = (key: string, domainList: any[] | undefined) =>
@@ -2109,7 +2107,7 @@ const Users: FC = () => {
                                         operation: "INSERT",
                                         company: d.company,
                                         twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                                        registercode: String(d.registercode),
+                                        registercode: (d.registercode || "") + "",
                                         billinggroupid: parseInt(RegExp(/\d+/).exec(String(d?.billinggroup))?.[0] ?? "0"),
                                         image: d?.image || "",
                                         detail: {

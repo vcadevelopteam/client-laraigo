@@ -160,7 +160,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                     error={errors?.variabletype?.message}
                     data={[
                         {domaindesc: "ENTEROS", domainvalue:"number"},
-                        {domaindesc: "LETRAS", domainvalue:"string"},
+                        {domaindesc: "ALFANUMÉRICO", domainvalue:"string"},
                         {domaindesc: "FECHA Y HORA", domainvalue:"datetime-local"},
                         {domaindesc: "DOMINIO", domainvalue:"domain"},
                     ]}

@@ -25,7 +25,7 @@ import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 const isIncremental = window.location.href.includes("incremental")
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import useColumnWidths from "./componentes/useColumnWidths";
+import useColumnWidths from "./components/useColumnWidths";
 
 interface dataBackend {
     columnid: number,

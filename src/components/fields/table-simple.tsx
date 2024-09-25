@@ -402,6 +402,8 @@ const TableZyx = React.memo(({
     ExtraMenuOptions,
     acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv",
     cleanImport,
+    defaultGlobalFilter,
+    setOutsideGeneralFilter
 }: TableConfig) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -812,6 +814,7 @@ const TableZyx = React.memo(({
         []
     );
 
+
     const {
         getTableProps,
         getTableBodyProps,
@@ -839,7 +842,8 @@ const TableZyx = React.memo(({
         initialState: { 
             pageSize: pageSizeDefault, 
             selectedRowIds: initialSelectedRows || {}, 
-            filters: initialStateFilter || []         
+            filters: initialStateFilter || [],
+            globalFilter: defaultGlobalFilter || "",         
         },
         defaultColumn,
         getRowId: (row, relativeIndex: number, parent?: Row<Dictionary>) => selectionKey
@@ -899,6 +903,13 @@ const TableZyx = React.memo(({
     )
     const fileInputRef = useRef(null);
 
+    function setIsFiltering(param: string){
+        setGlobalFilter(param)
+        if(filterGeneral && setOutsideGeneralFilter){
+            setOutsideGeneralFilter(param)
+        }
+    }
+
     const handleCheckboxChange = (columnId: any) => {
         const updatedVisibility = {
             ...columnVisibility,
@@ -923,21 +934,10 @@ const TableZyx = React.memo(({
     }, [columnVisibility, allColumns]);
 
     useEffect(() => {
-        setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
-    }, [globalFilteredRows])
-
-    useEffect(() => {
-        if (initialStateFilter) {
-            if (initial) {
-                gotoPage(initialPageIndex);
-                setInitial(false)
-            } else {
-                dispatch(setMemoryTable({
-                    page: 0
-                }));
-            }
+        if(pageIndex === 0 && initialPageIndex){
+            gotoPage(initialPageIndex);
         }
-    }, [data])
+    }, [data, pageIndex])
 
     useEffect(() => {
         if (fetchData) {
@@ -948,6 +948,10 @@ const TableZyx = React.memo(({
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
     }, [selectedRowIds]);
+
+    useEffect(() => {
+        setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
+    }, [globalFilteredRows])
 
     useEffect(() => {
         if (allRowsSelected) {
@@ -1220,7 +1224,8 @@ const TableZyx = React.memo(({
                         <SearchField
                             disabled={loading}
                             colorPlaceHolder='#FFF'
-                            handleChangeOther={setGlobalFilter}
+                            handleChangeOther={setIsFiltering}
+                            defaultGlobalFilter={defaultGlobalFilter}
                             lazy
                         />
                     </div>

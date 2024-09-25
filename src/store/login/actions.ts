@@ -76,3 +76,7 @@ export const cleanValidateToken = (): IActionCall => {
     removeAuthorizationToken()
     return { type: actionTypes.CLEAN_VALIDATETOKEN };
 };
+
+export const updateLocalLanguage = (value: String): IActionCall => {
+    return { type: actionTypes.UPDATE_LANGUAGE, payload: { value } };
+};
