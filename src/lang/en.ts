@@ -446,7 +446,6 @@ const translation: LangKeys = {
   newcorporation: "New Corporation",
   neworganization: "New organization",
   newiaservice: "New configuration",
-  newiaservice: "New configuration",
   services_plural: "Services",
   additional_information: 'Additional Information',
   productivitybyhour: 'Tickets served per hour',
