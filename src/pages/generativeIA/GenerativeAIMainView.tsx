@@ -229,8 +229,6 @@ const GenerativeAIMainView: React.FC<GenerativeAIMainViewProps> = ({
             });
             setWaitSave(true);
         }
-        console.log('ibm borrando', dataSelected[0].apikey)
-
 
         dispatch(
             manageConfirmation({

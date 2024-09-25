@@ -654,6 +654,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 dispatch(query3({
                     assistant_name: row?.name,
                     query: messageAux2,
+                    threadId: selectedChat?.threadid,
                     system_prompt: row?.generalprompt,
                     model: row?.basemodel,
                     thread_id: selectedChat?.code,
