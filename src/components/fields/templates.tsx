@@ -1,19 +1,16 @@
-import 'emoji-mart/css/emoji-mart.css'
-
+// import 'emoji-mart/css/emoji-mart.css'
 import { AndroidColor, AppStoreColor, BloggerColor, ChannelBlogger, ChatWebColor, EmojiICon, FacebookColor, FormColor, GifIcon, InstagramColor, IosColor, LineColor, LinkedInColor, MailColor, MessengerColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WhatsAppColor, WorkplaceColor, YouTubeColor } from 'icons';
 import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon, Box, Chip } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Picker } from 'emoji-mart';
+import Picker from '@emoji-mart/react'
 import { SearchField } from 'components';
 import { Skeleton } from '@material-ui/lab';
 import { Trans, useTranslation } from 'react-i18next';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
-
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -45,7 +42,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
-
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+// import { useStyles } from 'pages/SignIn';
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
@@ -935,7 +933,23 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     return;
                 }
                 else {
-                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    let onlyNumbers = true;
+
+                    for (const element of data) {
+                        if (!(/^\d+$/.test(element[optionDesc]) || '')) {
+                            onlyNumbers = false;
+                        }
+                    }
+
+                    let datatmp = null;
+
+                    if (onlyNumbers) {
+                        datatmp = data.sort((a, b) => parseFloat(a[optionDesc] || '0') - parseFloat(b[optionDesc] || '0'));
+                    }
+                    else {
+                        datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    }
+
                     setDataG(datatmp);
                     return;
                 }
@@ -1139,6 +1153,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small',helperText2="", helperText="" }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
+    const classes = useStyles();
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
@@ -1173,6 +1188,28 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 disableCloseOnSelect
                 loading={loading}
                 value={optionsSelected}
+                renderTags={disabled ? (tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                        disabled ? (
+                            <Chip
+                                key={index}
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                className={classes.customChip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0', userSelect: 'text' }}
+                                onMouseDown={(event) => event.stopPropagation()}
+                                onClick={(event) => event.stopPropagation()}
+                            />
+                        ) : (
+                            <Chip
+                                key={index}
+                                label={uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')}
+                                {...getTagProps({ index })}
+                                className={classes.chip}
+                                style={{ margin: '0.4rem 0.5rem 0.4rem 0' }}
+                            />
+                        )
+                    )) : undefined
+                }
                 renderOption={(option, { selected }: any) => (
                     <React.Fragment>
                         <Checkbox
@@ -1804,6 +1841,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
@@ -1819,26 +1857,43 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                         zIndex: 1201
                     }}>
                         <Picker
-                            onSelect={onSelect}
-                            native={true}
-                            sheetSize={32}
+                            onEmojiSelect={onSelect}
+                            previewPosition="none"
+                            theme="light"
+                            skinTonePosition="none"
+                            noCountryFlags={false}
+                            set="apple"
+                            emojiVersion={12}
                             i18n={{
                                 search: t(langKeys.search),
                                 categories: {
                                     search: t(langKeys.search_result),
                                     recent: t(langKeys.favorites),
+                                    smileys: t(langKeys.emoticons),
                                     people: t(langKeys.emoticons),
+                                    animals: t(langKeys.animals),
                                     nature: t(langKeys.animals),
-                                    foods: t(langKeys.food),
-                                    activity: t(langKeys.activities),
+                                    food: t(langKeys.food),
+                                    activities: t(langKeys.activities),
                                     places: t(langKeys.travel),
                                     objects: t(langKeys.objects),
                                     symbols: t(langKeys.symbols),
                                     flags: t(langKeys.flags),
+                                    // Agrega más categorías si es necesario
+                                },
+                                "skins": {
+                                    "choose": "Elige el tono de piel predeterminado",
+                                    "1": "Sin tono",
+                                    "2": "Claro",
+                                    "3": "Medio-Claro",
+                                    "4": "Medio",
+                                    "5": "Medio-Oscuro",
+                                    "6": "Oscuro"
                                 }
                             }}
                             recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
-                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
+                            exceptEmojis={emojisNoShow.length > 0 ? emojisNoShow?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
+                        // emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
                 )}
@@ -2243,8 +2298,6 @@ export function RadioGroudFieldEdit<T>({
         </div>
     );
 }
-
-
 
 const useStyles = makeStyles((theme) => ({
     titleandcrumbs: {

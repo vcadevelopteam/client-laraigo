@@ -309,7 +309,6 @@ const CustomTableZyxEditable = React.memo(({
         
         const onChangeFieldSelect = (e: any) => {
             setValue(e.domainvalue)
-            console.log(e.domainvalue)
         }
         
         // We'll only update the external data when the input is blurred
