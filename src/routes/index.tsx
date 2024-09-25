@@ -28,7 +28,7 @@ const Groupconfig = lazy(() => import('pages/GroupConfig'));
 const Whitelist = lazy(() => import('pages/Whitelist'));
 const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
 const ReassignmentRules = lazy(() => import('pages/ReassignmentRules'));
-const IntelligentModels = lazy(() => import('pages/IntelligentModels'));
+const AiConnectors = lazy(() => import('pages/aiconnectors/AiConnectors'));
 const IAConfiguration = lazy(() => import('pages/iaconfiguration/IAConfiguration'));
 const SLA = lazy(() => import('pages/SLA'));
 const Domains = lazy(() => import('pages/Domains'));
@@ -61,7 +61,7 @@ const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
 const Tickets = lazy(() => import('pages/Tickets'));
-const UserSettings = lazy(() => import('pages/UserSettings'));
+const UserSettings = lazy(() => import('pages/accountconfiguration/UserSettings'));
 const Invoice = lazy(() => import('pages/Invoice'));
 const KPIManager = lazy(() => import('pages/KPIManager'));
 const GetLocations = lazy(() => import('pages/GetLocations'));
@@ -362,7 +362,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.USERSETTINGS} component={() => <Layout mainClasses={classes.main}><UserSettings /></Layout>} />
 					<ProtectRoute exact path={paths.INAPPROPRIATEWORDS} component={() => <Layout mainClasses={classes.main}><InappropriateWords /></Layout>} />
 					<ProtectRoute exact path={paths.REASSIGNMENTRULES} component={() => <Layout mainClasses={classes.main}><ReassignmentRules /></Layout>} />
-					<ProtectRoute exact path={paths.INTELLIGENTMODELS} component={() => <Layout mainClasses={classes.main}><IntelligentModels /></Layout>} />
+					<ProtectRoute exact path={paths.INTELLIGENTMODELS} component={() => <Layout mainClasses={classes.main}><AiConnectors /></Layout>} />
 					<ProtectRoute exact path={paths.SLA} component={() => <Layout mainClasses={classes.main}><SLA /></Layout>} />
 					<ProtectRoute exact path={paths.TIPIFICATIONS} component={() => <Layout mainClasses={classes.main}><Tipifications /></Layout>} />
 					<ProtectRoute exact path={paths.INPUTVALIDATION} component={() => <Layout mainClasses={classes.main}><InputValidation /></Layout>} />
@@ -399,7 +399,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.POSTCREATOR} component={() => (<Layout mainClasses={classes.main}><PostCreator /></Layout>)} />
 					<ProtectRoute exact path={paths.PRODUCTMASTER} component={() => (<Layout mainClasses={classes.main}><ProductMaster /></Layout>)} />
 					<ProtectRoute exact path={paths.WAREHOUSE} component={() => (<Layout mainClasses={classes.main}><Warehouse /></Layout>)} />
-					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><IntelligentModels /></Layout>)} />
+					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><AiConnectors /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
 					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><AITraining /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORY} component={() => (<Layout mainClasses={classes.main}><Inventory /></Layout>)} />

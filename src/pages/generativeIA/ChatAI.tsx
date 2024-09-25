@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, styled } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { execute, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
 import { langKeys } from "lang/keys";
-import { Button, IconButton, Paper, Typography } from "@material-ui/core";
+import { Button, IconButton, Paper, Tooltip, Typography } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -54,9 +54,13 @@ const useStyles = makeStyles((theme) => ({
         bottom: 0,
         height: 'fit-content',
         padding: theme.spacing(2),
+        paddingRight: 0,
         display: 'flex',
         justifyContent: 'center',
-    },
+        alignItems: 'center', 
+        position: 'relative',
+        width: '100%',
+    },     
     buttonscontainer: {
         display: 'flex',
         marginBottom: '2rem',
@@ -146,7 +150,11 @@ const useStyles = makeStyles((theme) => ({
         width: 131,
         backgroundColor: '#ffff',
         color: '#7721AD',
-    },
+    },    
+    tooltipToken: {
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+    }
 }));
 
 interface ChatAIProps {
@@ -183,9 +191,35 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [waitSaveMessageAux, setWaitSaveMessageLlamaAux] = useState(false);
     const [waitSaveThreadDeleteLlama, setWaitSaveThreadDeleteLlama] = useState(false)
     const [date, setDate] = useState('');
-    const endOfMessagesRef = useRef(null);
+    const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
-    const textFieldRef = useRef(null);
+    const textFieldRef = useRef<HTMLInputElement | null>(null);
+        
+    const isLlamaModel = row?.basemodel === 'llama3.1:8b' || row?.basemodel === 'llama3.1:70b'
+    const [totalInputTokens, setTotalInputTokens] = useState(0);
+    const [totalOutputTokens, setTotalOutputTokens] = useState(0);
+    const [messageAux2, setMessageAux2] = useState("");
+    const [waitSaveAux, setWaitSaveAux] = useState(false);
+
+
+    const CustomTooltip = styled(({ className, ...props }) => (
+        <Tooltip {...props} classes={{ popper: className }} />
+    ))(({ theme }) => ({
+        '& .MuiTooltip-tooltip': {
+            backgroundColor: '#fff', 
+            color: '#000', 
+            boxShadow: theme.shadows[1],
+            fontSize: 12,
+            padding: '10px 15px', 
+            borderRadius: '6px',
+            minWidth: '6rem',
+            maxWidth: 'none',
+            wordWrap: 'break-word',
+        },
+        '& .MuiTooltip-arrow': {
+            color: '#fff',
+        },
+    }));    
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
@@ -194,7 +228,30 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     }, [messages]);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
-    const fetchThreadMessages = (threadid: number) => dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})));
+    const fetchThreadMessages = (threadid: number | undefined) => { if (threadid) { dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})))}};    
+        
+    useEffect(() => {
+        if (messages && Array.isArray(messages.data) && messages.data.length > 0) {
+            let totalInput = 0;
+            let totalOutput = 0;    
+            const latestInputTokens = llm3Result?.data?.input_tokens || 0;
+            const latestQuery = llm3Result?.data?.query || '';    
+            messages.data.forEach((message: Dictionary) => {
+                if (message.type === 'USER') {
+                    if (message.messagetext.trim() === latestQuery.trim() && latestInputTokens > 0) {
+                        message.tokencount = latestInputTokens;  
+                        totalInput += latestInputTokens;
+                    } else {
+                        totalInput += message.tokencount;
+                    }
+                } else if (message.type === 'BOT') {
+                    totalOutput += message.tokencount;
+                }
+            });    
+            setTotalInputTokens(totalInput);
+            setTotalOutputTokens(totalOutput);
+        }
+    }, [messages, llm3Result?.data]);  
 
     useEffect(() => {
         fetchThreadsByAssistant();
@@ -335,6 +392,20 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 if (!llm3Result.loading && !llm3Result.error) {
                     setWaitSaveMessageLlama(false);
                     if (llm3Result.data && llm3Result.data.result) {
+                        const outputTokens = llm3Result?.data?.output_tokens || 0;
+                        const inputTokens = llm3Result?.data?.input_tokens || 0;
+                        dispatch(execute(insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: activeThreadId,
+                            assistantaidocumentid: 0,
+                            id: messages?.data?.[messages?.data?.length-1]?.messageaiid,
+                            messagetext: messages?.data?.[messages?.data?.length-1]?.messagetext,
+                            infosource: '',
+                            type: 'USER',
+                            status: 'ACTIVO',
+                            operation: 'UPDATE',
+                            tokencount: inputTokens,
+                        })));
                         dispatch(execute(insMessageAi({
                             assistantaiid: row?.assistantaiid,
                             threadid: activeThreadId,
@@ -345,6 +416,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             type: 'BOT',
                             status: 'ACTIVO',
                             operation: 'INSERT',
+                            tokencount: outputTokens,
                         })));
                         setWaitSaveMessageLlamaAux(true);
                     } else {
@@ -363,6 +435,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 if (!llamaResult.loading && !llamaResult.error) {
                     setWaitSaveMessageLlama(false);
                     if (llamaResult.data && llamaResult.data.result) {
+                        const outputTokens = llm3Result?.data?.output_tokens || 0;
                         dispatch(execute(insMessageAi({
                             assistantaiid: row?.assistantaiid,
                             threadid: activeThreadId,
@@ -373,6 +446,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             type: 'BOT',
                             status: 'ACTIVO',
                             operation: 'INSERT',
+                            tokencount: outputTokens,
                         })));
                         setWaitSaveMessageLlamaAux(true);
                     } else {
@@ -439,6 +513,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessage = async () => {
         setIsLoading(true);
         const currentThreadId = selectedChat?.threadid;
+        const inputTokens = totalInputTokens;
         dispatch(
             execute(
                 insMessageAi({
@@ -451,6 +526,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: inputTokens,
                 })
             )
         );
@@ -504,6 +580,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         if (waitSaveMessage) {
             if (!executeThreads.loading && !executeThreads.error) {
                 setWaitSaveMessage(false);
+                const outputTokens = llm3Result?.data?.output_tokens || 0;
                 dispatch(execute(insMessageAi({
                     assistantaiid: row?.assistantaiid,
                     threadid: activeThreadId,
@@ -514,6 +591,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'BOT',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: outputTokens,
                 })))
                 setWaitSaveMessage3(true)
             } else if (executeThreads.error) {
@@ -545,6 +623,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessageLLM3 = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
+        const inputTokens = totalInputTokens;
         dispatch(
             execute(
                 insMessageAi({
@@ -557,29 +636,50 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: 0,
                 })
             )
         );
-        const message = messageText
-        setMessageText('');
-        fetchThreadMessages(selectedChat?.threadid);
-        dispatch(query3({
-            assistant_name: row?.name,
-            query: message,
-            system_prompt: row?.generalprompt,
-            model: row?.basemodel,
-            thread_id: selectedChat?.code,
-            max_new_tokens: row?.max_tokens,
-            temperature: parseFloat(row?.temperature),
-            top_p: parseFloat(row?.top_p),
-        }))
-        setWaitSaveMessageLlama(true)
-        setActiveThreadId(currentThreadLlamaId);
+        setTotalInputTokens(prevTokens => prevTokens + inputTokens);
+        setMessageAux2(messageText)
+        setMessageText('')
+        setWaitSaveAux(true)
     }
+
+    useEffect(() => {
+        if (waitSaveAux) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSaveAux(false);
+                fetchThreadMessages(selectedChat?.threadid);
+                dispatch(query3({
+                    assistant_name: row?.name,
+                    query: messageAux2,
+                    threadId: selectedChat?.threadid,
+                    system_prompt: row?.generalprompt,
+                    model: row?.basemodel,
+                    thread_id: selectedChat?.code,
+                    max_new_tokens: row?.max_tokens,
+                    temperature: parseFloat(row?.temperature),
+                    top_p: parseFloat(row?.top_p),
+                    top_k: parseFloat(row?.top_k),
+                    repetition_penalty: parseFloat(row?.repetition_penalty),
+                }))
+                setWaitSaveMessageLlama(true)
+                setActiveThreadId(selectedChat?.threadid);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setWaitSaveAux(false);
+            }
+        }
+    }, [executeResult, waitSaveAux]);
 
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
+        const inputTokens = totalInputTokens;
         dispatch(
             execute(
                 insMessageAi({
@@ -592,6 +692,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'USER',
                     status: 'ACTIVO',
                     operation: 'INSERT',
+                    tokencount: inputTokens,
                 })
             )
         );
@@ -792,7 +893,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                                 <div className={classes.messageText}>
                                                     <div className={classes.messageAvatar}>
                                                        {message.type==='USER'?( <Avatar
-                                                            src={user?.image + "" || undefined}
+                                                            src={String(user?.image) + "" || undefined}
                                                             alt="User Avatar"
                                                         />):(<LaraigoChatProfileIcon/>)}
                                                     </div>
@@ -827,8 +928,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     )}
 
                 </div>
+
                 <div className={classes.chatInputContainer}>
-                    <div style={{ width: '700px' }}>
+                    <div style={{ maxWidth: '800px', width: '100%' }}>
                         <FieldEdit
                             label={t(langKeys.typeamessage)}
                             variant="outlined"
@@ -840,12 +942,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 maxRows: 7,
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <IconButton                                           
+                                        <IconButton
                                             className={classes.sendicon}
                                             onClick={handleSendMessageGeneral}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
-                                          <SendMesageIcon color="secondary" />
+                                            <SendMesageIcon color="secondary" />
                                         </IconButton>
                                     </InputAdornment>
                                 ),
@@ -853,6 +955,34 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             inputRef={textFieldRef}
                         />
                     </div>
+                    {isLlamaModel && (
+                        <>
+                             <CustomTooltip
+                                title={
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                        <div style={{ textAlign: 'left', marginRight: '10px' }}> 
+                                            <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
+                                            <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <Typography variant="body2">
+                                                <strong>{messages?.data?.length === 0 ? 0 : totalInputTokens}</strong>
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                <strong>{messages?.data?.length === 0 ? 0 : totalOutputTokens}</strong>
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                }
+                                arrow={false}
+                                placement="top"
+                            >
+                                <div style={{ position: 'absolute', right: '2rem', alignSelf: 'center', padding: '0 1rem 0 0', cursor: 'pointer' }}>
+                                    <p><strong>{messages?.data?.length === 0 ? 0 : totalInputTokens+totalOutputTokens}</strong> tokens</p>
+                                </div>
+                            </CustomTooltip>                      
+                        </>
+                    )}
                 </div>
             </div>
         </div>

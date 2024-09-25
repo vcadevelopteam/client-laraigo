@@ -10,6 +10,7 @@ import { Dictionary } from "@types";
 import { FieldErrors } from "react-hook-form";
 import { FormControlLabel, Tooltip } from "@material-ui/core";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+type FieldType = "code" | "apikey" | "status" | "type" | "name" | "description" | "id" | "language" | "basemodel" | "prompt" | "negativeprompt" | "temperature" | "retrieval" | "codeinterpreter" | "intelligentmodelsid" | `decoding_method.${string}`
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -23,6 +24,35 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         marginLeft: 5
     },
+    buttonsContainer: {
+        display: 'flex',
+        backgroundColor: '#DFD6C6',
+        padding: '0px 5px 5px 10px',
+        overflowX: 'hidden',
+        maxWidth: 640,
+        width: 'fit-content',
+        borderRadius: '0px 0px 5px 5px',
+    },
+    combinedContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        overflowX: 'scroll',
+        cursor: 'grab',
+    },
+    customFieldPackageContainer: {
+        marginBottom: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    warningContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0.5rem',
+        backgroundColor: '#FFEBEB',
+        color: '#FF7575',
+        borderRadius: '4px',
+        width: 'fit-content',
+    } 
 }));
 
 interface RowSelected {
@@ -31,22 +61,24 @@ interface RowSelected {
 }
 interface AssistantTabDetailProps {
     data: RowSelected
-    setValue: any
-    getValues: any,
+    setValue: (field: FieldType, value: unknown) => void
+    getValues: (field?: FieldType) => unknown
     errors: FieldErrors
     setProvider: (provider: string) => void
     firstData: Dictionary
     setFirstData: (data: Dictionary) => void
+    setSelectedProvider: (provider: string) => void
 }
 
 const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
-    data:{row, edit},
+    data:{row},
     setValue,
     getValues,
     errors,
     setProvider,
     firstData,
     setFirstData,
+    setSelectedProvider
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -56,7 +88,10 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [isCodeInterpreter, setIsCodeInterpreter] = useState(row?.codeinterpreter || false);
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
-    
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const intelligentmodelsid = getValues('intelligentmodelsid');
+    const selectedProvider = multiDataAux?.data?.[3]?.data.find(item => item.id === intelligentmodelsid)?.provider || '';
+
     const retrievalbasemodels = [
         {
             "domainid": 437605,
@@ -94,7 +129,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
             "domaindesc": "gpt-4o-mini-2024-07-18",
             "bydefault": null
         }
-    ];
+    ]
 
     const llama3basemodels = [
         {
@@ -130,115 +165,192 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
+    useEffect(() => {
+        function handleResize() {
+            setWindowWidth(window.innerWidth);
+        }
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    React.useEffect(() => {
+        if (selectedProvider) {
+            setSelectedProvider(selectedProvider);
+        }
+    }, [selectedProvider, setSelectedProvider]);
+
     return (
         <div className={classes.containerDetail}>
-            <div className="row-zyx" style={{marginBottom: 0}}>
-                <FieldEdit
-                    className="col-6"
-                    label={t(langKeys.name)}
-                    valueDefault={getValues('name')}
-                    onChange={(value) => {
-                        setValue('name', value)
-                        setFirstData({...firstData, name: value})
-                    }}
-                    error={errors?.name?.message}
-                    type="text"
-                    maxLength={60}                                    
-                />
-                <FieldEdit
-                    className="col-6"
-                    label={t(langKeys.description)}
-                    valueDefault={getValues('description')}
-                    onChange={(value) => {
-                        setValue('description', value)
-                        setFirstData({...firstData, description: value})
-                    }}
-                    error={errors?.description?.message}
-                    type="text"
-                    maxLength={640}                                    
-                />
-                <FieldSelect
-                    className="col-6"
-                    data={multiDataAux?.data?.[3]?.data.filter(item => item.type === 'LARGE LANGUAGE MODEL') || []}
-                    label={t(langKeys.conector)}
-                    valueDefault={getValues('intelligentmodelsid')}
-                    onChange={(value) => {
-                        if(value) {
-                            setValue('intelligentmodelsid', value.id)
-                            setValue('apikey', value.apikey)
-                            setValue('basemodel', '')
-                            setConector(value)
-                            setProvider(value.provider)
-                            setFirstData({...firstData, intelligentmodelsid: value.id, basemodel: ''})
-                        } else {
-                            setValue('intelligentmodelsid', 0)
-                            setValue('apikey', '')
-                            setValue('basemodel', '')
-                            setConector({})
-                            setProvider('')
-                            setFirstData({...firstData, intelligentmodelsid: 0, basemodel: ''})
-                        }
-                    }}
-                    error={errors?.intelligentmodelsid?.message}
-                    optionDesc="name"
-                    optionValue="id"
-                />
-                <FieldSelect
-                    className="col-6"
-                    label={t(langKeys.status)}
-                    data={(multiDataAux?.data?.[0]?.data||[])}
-                    valueDefault={getValues('status')}
-                    onChange={(value) => setValue('status', value.domainvalue)}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
-                />
-                <FieldSelect
-                    label={t(langKeys.basemodel)}
-                    data={
-                        conector?.provider === 'Open AI' ? retrievalbasemodels :
-                        conector?.provider === 'Meta' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('meta')) :
-                        conector?.provider === 'Mistral' ? multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral')) :
-                        conector?.provider === 'LaraigoLLM' ? llama3basemodels : []
-                    }
-                    valueDefault={getValues('basemodel')}
-                    onChange={(value) => {
-                        if(value) {
-                            setValue('basemodel', value.domainvalue)
-                            setFirstData({...firstData, basemodel: value.domainvalue})
-                        } else {
-                            setValue('basemodel', '')
-                            setFirstData({...firstData, basemodel: ''})
-                        }
-                    }}
-                    error={errors?.basemodel?.message}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
-                    className="col-6"
-                />
-                {conector?.provider === 'Open AI' ? (
-                    <FormControlLabel style={{margin: 0}}
-                        control={
-                            <>
-                                <IOSSwitch
-                                    checked={isCodeInterpreter}
-                                    onChange={(event) => {
-                                        setIsCodeInterpreter(event.target.checked)
-                                        setValue('codeinterpreter', event.target.checked)
+            <div className="row-zyx" style={{marginBottom: 0}}>     
+
+                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap'}}>      
+                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.name)}</span>
+                        <span>{t(langKeys.assistantnamedesc)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
+                                <FieldEdit
+                                    label={''}
+                                    onChange={(value) => {
+                                        setValue("name", value)
+                                        setFirstData({...firstData, name: value})
                                     }}
-                                    color='primary'
+                                    valueDefault={getValues("name")}
+                                    type="text"
+                                    maxLength={60} 
+                                    variant="outlined"
+                                    error={errors?.name?.message}                            
                                 />
-                                <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
-                                <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
-                                    <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
-                                </Tooltip>
-                            </>
-                        }                  
-                        className="col-5"
-                        label=""
-                    />
-                ) : (
-                    <div className="col-6"></div>
-                )}
+                            </div>                                   
+                        </div>
+                    </div>
+                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.description)}</span>
+                        <span>{t(langKeys.assistantdescriptiondesc)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
+                                <FieldEdit
+                                    label={''}
+                                    onChange={(value) => {
+                                        setValue("description", value)
+                                        setFirstData({...firstData, description: value})
+                                    }}
+                                    valueDefault={getValues("description")}
+                                    type="text"
+                                    maxLength={640}                                    
+                                    variant="outlined"
+                                    error={errors?.description?.message}                            
+                                />
+                            </div>                                   
+                        </div>
+                    </div>
+                </div>      
+
+                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap' }}>      
+                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.connectors)}</span>
+                        <span>{t(langKeys.assistantconnectorsdesc)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                        
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
+                                <FieldSelect
+                                    data={multiDataAux?.data?.[3]?.data.filter(item => (item.type === 'LARGE LANGUAGE MODEL' || item.type === 'Gen AI')) || []}
+                                    variant="outlined"
+                                    optionDesc="name"
+                                    disabled={row ? true: false}
+                                    optionValue="id"
+                                    valueDefault={getValues('intelligentmodelsid')}
+                                    onChange={(value) => {
+                                        if(value) {
+                                            setValue('intelligentmodelsid', value.id)
+                                            setValue('apikey', value.apikey)
+                                            setValue('basemodel', '')
+                                            setConector(value)
+                                            setProvider(value.provider)
+                                            setFirstData({...firstData, intelligentmodelsid: value.id, basemodel: ''})
+                                        } else {
+                                            setValue('intelligentmodelsid', 0)
+                                            setValue('apikey', '')
+                                            setValue('basemodel', '')
+                                            setConector({})
+                                            setProvider('')
+                                            setFirstData({...firstData, intelligentmodelsid: 0, basemodel: ''})
+                                        }
+                                    }}
+                                    error={errors?.intelligentmodelsid?.message}                                    
+                                />
+                            </div>                                   
+                        
+                        </div>
+                    </div>          
+                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
+                        <span>{t(langKeys.assistantstatussdesc)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
+                                <FieldSelect
+                                    data={(multiDataAux?.data?.[0]?.data||[])}
+                                    variant="outlined"
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                    onChange={(value) => {                                       
+                                        setValue('status', value.domainvalue);
+                                    }}
+                                    valueDefault={getValues('status')}
+                                    error={errors?.status?.message}
+                                />
+                            </div>                                   
+                        
+                        </div>
+                    </div>          
+                </div>    
+
+                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>      
+                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.basemodel)}</span>
+                        <span>{t(langKeys.assistantbasemodeldesc)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                        
+                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
+                                <FieldSelect
+                                    data={
+                                        conector?.provider === 'OpenAI' || conector?.provider === 'Open AI' ? retrievalbasemodels :
+                                        conector?.provider === 'Laraigo' || conector?.provider === 'LaraigoLLM' ? llama3basemodels : 
+                                        conector?.provider === 'IBM' ? 
+                                            multiDataAux?.data?.[2]?.data
+                                            .filter(item => item.domainvalue.startsWith('meta'))
+                                            .concat(multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral'))) : []                       
+                                    }
+                                    variant="outlined"
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"  
+                                    disabled={row ? true: false}   
+                                    valueDefault={getValues('basemodel')}
+                                    onChange={(value) => {
+                                        if(value) {
+                                            setValue('basemodel', value.domainvalue)
+                                            setFirstData({...firstData, basemodel: value.domainvalue})
+                                        } else {
+                                            setValue('basemodel', '')
+                                            setFirstData({...firstData, basemodel: ''})
+                                        }
+                                    }}
+                                    error={errors?.basemodel?.message}                                                                 
+                                />
+                            </div>                                   
+                        
+                        </div>
+                    </div>          
+                    <div className={classes.customFieldPackageContainer} style={{ margin: '4rem 0' }}>
+                        {conector?.provider === 'Open AI' ? (
+                            <FormControlLabel style={{margin: 0}}
+                                control={
+                                    <>
+                                        <IOSSwitch
+                                            checked={isCodeInterpreter}
+                                            onChange={(event) => {
+                                                setIsCodeInterpreter(event.target.checked)
+                                                setValue('codeinterpreter', event.target.checked)
+                                            }}
+                                            color='primary'
+                                        />
+                                        <span style={{marginLeft:'0.6rem'}}>{t(langKeys.codeinterpreter)}</span>
+                                        <Tooltip title={t(langKeys.codeinterpreterdescription)} arrow placement="top" >
+                                            <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
+                                        </Tooltip>
+                                    </>
+                                }                  
+                                className="col-5"
+                                label=""
+                            />
+                        ) : (
+                            <div className="col-6"></div>
+                        )}
+                    </div>          
+                </div>                  
+              
+               
+                
             </div>
         </div>
     );

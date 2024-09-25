@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Button, IconButton, Menu, MenuItem, Tooltip, makeStyles } from "@material-ui/core";
@@ -11,10 +11,12 @@ import { PictureAsPdf as PdfIcon, Description as DocIcon, InsertDriveFile as Exc
 import ReplyIcon from '@material-ui/icons/Reply';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
+import WarningIcon from '@material-ui/icons/Warning';
 import ListIcon from '@material-ui/icons/List';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ClearIcon from "@material-ui/icons/Clear";
 import NoImage from '../../../icons/noimage.jpg'
+import { FieldSelect } from "components";
 
 const useStyles = makeStyles(() => ({
     main: {
@@ -195,7 +197,27 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         overflowX: 'scroll',
         cursor: 'grab',
-    }
+    },
+    normaltext: {
+        fontSize: '0.88rem',
+        display:'flex',
+        alignItems:'center',
+        gap:'3px',
+    },
+    customFieldPackageContainer: {
+        marginBottom: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    warningContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0.5rem',
+        backgroundColor: '#FFEBEB',
+        color: '#FF7575',
+        borderRadius: '4px',
+        width: 'fit-content',
+    }   
 }));
 
 interface TemplateIconsProps {
@@ -387,6 +409,20 @@ export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, hel
     const classes = useStyles();
     return (
         <span className={classes.subtittles} style={titlestyle}>
+            {title}
+            {helperText ? (
+                <Tooltip title={helperText} arrow placement="top" >
+                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                </Tooltip>
+            ) : ""}
+        </span>
+    );
+};
+
+export const CustomTextWithHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+    const classes = useStyles();
+    return (
+        <span className={classes.normaltext}>
             {title}
             {helperText ? (
                 <Tooltip title={helperText} arrow placement="top" >
@@ -664,7 +700,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
         if (!isDragging) return;
         e.preventDefault();
         const x = e.pageX - containerRef.current.offsetLeft;
-        const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
+        const walk = (x - startX) * 2;
         containerRef.current.scrollLeft = scrollLeft - walk;
         containerRef2.current.scrollLeft = scrollLeft - walk;
     };
@@ -678,7 +714,7 @@ export const MessagePreviewCarousel: React.FC<MessagePreviewCarouselProps> = ({ 
     const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
         if (!isDragging) return;
         const x = e.touches[0].pageX - containerRef.current.offsetLeft;
-        const walk = (x - startX) * 2; // Ajusta el factor de desplazamiento si es necesario
+        const walk = (x - startX) * 2;
         containerRef.current.scrollLeft = scrollLeft - walk;
         containerRef2.current.scrollLeft = scrollLeft - walk;
     };

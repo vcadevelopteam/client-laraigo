@@ -990,6 +990,14 @@ export const getPaginatedMessageTemplate = ({ enddate, filters, skip, sorts, sta
     }
 })
 
+export const getPaginatedMessageTemplate1 = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelids }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL1",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS1",
+    parameters: {
+        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take, communicationchannelids,
+    }
+})
+
 export const getPaginatedMessageTemplateOld = ({ enddate, filters, skip, sorts, startdate, take, communicationchannelid }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_MESSAGETEMPLATE_SEL_OLD",
     methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS_OLD",
@@ -5134,10 +5142,10 @@ export const assistantAiSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation }: Dictionary) => ({
+export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation, top_k, repetition_penalty, chunk_size, chunk_overlap }: Dictionary) => ({
     method: "UFN_ASSISTANTAI_INS",
     key: "UFN_ASSISTANTAI_INS",
-    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation },
+    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation, top_k, repetition_penalty, chunk_size, chunk_overlap },
 });
 
 export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({
@@ -5170,10 +5178,10 @@ export const messageAiSel = ({ assistantaiid, threadid }: Dictionary) => ({
     parameters: { assistantaiid, threadid },
 });
 
-export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation }: Dictionary) => ({
+export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation, tokencount }: Dictionary) => ({
     method: "UFN_MESSAGEAI_INS",
     key: "UFN_MESSAGEAI_INS",
-    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation },
+    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation, tokencount },
 });
 
 export const updateAssistantAiDocumentTraining = (assistantaiid: number, documentsid: string) => ({
@@ -5377,10 +5385,24 @@ export const getUserMessageOutbound = ({startdate, enddate, communicationchannel
         communicationchannelid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, },
 });
+export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
+    method: "UPDATE_LANGUAGE_SETTINGS",
+    key: "UPDATE_LANGUAGE_SETTINGS",
+    parameters: {
+        languagesettings: JSON.stringify(languagesettings)
+    }
+});
 export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
     method: "UPDATE_PINNED_MESSAGE",
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },
+});
+
+export const insarrayClassification = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
 });
 export const conversationAttachmentHistorySel = (personid:number) => ({
     method: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",

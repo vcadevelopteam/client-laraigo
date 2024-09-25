@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary, ILibrary } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getTicketsClosed as getTicketClosedRequestBody } from 'common/helpers';
+import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply, getTicketsClosed as getTicketClosedRequestBody, getInappropriateWordsLst } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -353,3 +353,15 @@ export const resetQuickreplies = (): IActionCall => ({ type: actionTypes.GET_QUI
 export const setSearchTerm = (payload: any): IActionCall => ({ type: actionTypes.SET_SEARCHTERM, payload });
 
 export const setPinnedComments = (payload: any): IActionCall => ({ type: actionTypes.SET_PINNEDCOMMENTS, payload });
+
+export const getInnapropiateWordTicketLst = (): IActionCall => ({
+    callAPI: () => CommonService.main(getInappropriateWordsLst()),
+    types: {
+        loading: actionTypes.GET_INNAPROPIATEWORDS,
+        success: actionTypes.GET_INNAPROPIATEWORDS_SUCCESS,
+        failure: actionTypes.GET_INNAPROPIATEWORDS_FAILURE,
+    },
+    type: null,
+});
+
+export const resetInnapropiateWordTicketLst = (): IActionCall => ({ type: actionTypes.GET_INNAPROPIATEWORDS_RESET });
