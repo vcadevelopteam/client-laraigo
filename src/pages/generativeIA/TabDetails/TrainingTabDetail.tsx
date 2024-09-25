@@ -821,7 +821,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                         </span>                                
                                     </div>
                                 </div>
-        
+                                <div className={classes.parameterDesc}><span className={classes.text}>Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.</span></div>
                                 <div className={classes.block20}/>
                                 <div className={classes.parameterContainer}>
                                     <span className={classes.detailTitle}>{'Tamaño del chunk'}</span>
@@ -837,7 +837,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                             error={errors?.chunk_size?.message}
                                         />
                                 </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que puede contener el fragmento de la base de conocimiento subida que se le comparte al asistente, ya que cuando los documentos se incorporan a la base de conocimiento, estos se dividen en partes mas pequeñas con cierta suposición.'}</span></div>
+                                <div className={classes.parameterDesc}><span className={classes.text}>{'Cantidad de caracteres para cada fragmento del documento a subir a la base de conocimientos. Cuando los documentos se agrega a la base de conocimientos, estos se dividen en fragmentos (chunks).'}</span></div>
                                 <div className={classes.block20}/>
                                 <div className={classes.parameterContainer}>
                                     <span className={classes.detailTitle}>{'Superposición del chunk'}</span>
@@ -853,7 +853,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                         error={errors?.chunk_overlap?.message}
                                     />
                                 </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chuck adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>
+                                <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chunks adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>
                             </div>
                         </div>
                     )

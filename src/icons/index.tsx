@@ -306,7 +306,6 @@ export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IAne
 export { ReactComponent as IARouteIcon } from './IA_route.svg';
 export { ReactComponent as CopilotIconEsp } from './IAESP.svg';
 export { ReactComponent as CopilotIconEng } from './IAENG.svg';
-export { ReactComponent as SendToBlockIcon } from './SendToBlock.svg';
 export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
 export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
 export { ReactComponent as IAEntrenamientoIcon } from './Ai_laraigo_new.svg';

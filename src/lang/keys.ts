@@ -6495,6 +6495,8 @@ export const langKeys = {
   examplesinconflict: "examplesinconflict",
   user_example: "user_example",
   entity: 'entity',
+  projectid: 'projectid',
+  projectiddesc: 'projectiddesc',
 };
 
 export type LangKeys = typeof langKeys;

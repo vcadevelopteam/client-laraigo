@@ -6559,6 +6559,8 @@ const translation: LangKeys = {
   examplesinconflict: "Examples in conflict",
   user_example: "User example",
   entity: 'Entity',
+  projectid: 'Project ID',
+  projectiddesc: "Registers the project ID provided by IBM Watson",
 };
 
 const enResource: ResourceLanguage = {
