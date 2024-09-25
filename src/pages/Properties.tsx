@@ -62,22 +62,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IDPROPERTIES = 'IDPROPERTIES';
+
 const Properties: FC = () => {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
     const [categoryFilter, setCategoryFilter] = useState('');
     const [levelFilter, setLevelFilter] = useState('');
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState('view-1');
     const [waitSave, setWaitSave] = useState(false);
-    const memoryTable = useSelector(state => state.main.memoryTable);
     const [dataProperties, setDataProperties] = useState<Dictionary[]>([])
+    const [generalFilter, setGeneralFilter] = useState("");
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
     const multiResult = useSelector(state => state.main.multiData);
     const user = useSelector(state => state.login.validateToken.user);
 
-    const classes = useStyles();
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
     const arrayBread = [
         { id: "view-1", name: t(langKeys.property_plural) },
     ];
@@ -223,6 +225,8 @@ const Properties: FC = () => {
                     loading={mainResult.loading}
                     register={(user?.roledesc ?? "").split(",").some(v => ['SUPERADMIN'].includes(v))}
                     handleRegister={handleRegister}
+                    defaultGlobalFilter={generalFilter}
+                    setOutsideGeneralFilter={setGeneralFilter}
                     pageSizeDefault={IDPROPERTIES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
                     initialPageIndex={IDPROPERTIES === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
                     initialStateFilter={IDPROPERTIES === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}

@@ -18,7 +18,7 @@ import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain, setMemoryTable, cleanMemoryTable } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 
 interface RowSelected {
@@ -468,6 +468,8 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     );
 }
 
+const IDDOMAIN = "IDDOMAIN"
+
 const Domains: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -476,7 +478,9 @@ const Domains: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [generalFilter, setGeneralFilter] = useState("");
     const user = useSelector(state => state.login.validateToken.user);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const superadmin = (user?.roledesc ?? "").split(",").some(v => ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
 
     const arrayBread = [
@@ -495,13 +499,17 @@ const Domains: FC = () => {
                 width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original || {};
+                    console.log(user?.roledesc.includes("SUPERADMIN"))
+                    if(user?.roledesc.includes("SUPERADMIN")){
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
-                    )
+                    )}else{
+                        return <div></div>
+                    }
                 }
             },
             {
@@ -551,8 +559,12 @@ const Domains: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPODOMINIO")
         ]));
+        dispatch(setMemoryTable({
+            id: IDDOMAIN
+        }))
 
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -619,6 +631,11 @@ const Domains: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={superadmin}
                     handleRegister={handleRegister}
+                    defaultGlobalFilter={generalFilter}
+                    setOutsideGeneralFilter={setGeneralFilter}
+                    pageSizeDefault={IDDOMAIN === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDDOMAIN === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDDOMAIN === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         )

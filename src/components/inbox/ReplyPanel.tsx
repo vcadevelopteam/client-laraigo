@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import "emoji-mart/css/emoji-mart.css";
+// import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CodeSnippetIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -78,6 +78,7 @@ const useStylesInteraction = makeStyles(() => ({
     },
     inputPlaceholder: {
         padding: "2rem",
+        paddingRight: "1rem",
         "&::placeholder": {
             fontSize: "1rem",
             fontWeight: 500,
@@ -124,10 +125,10 @@ const DialogSearchLibrary: React.FC<{
         setGeneralFilter(value ?? "");
         if (value) {
             setLibraryToShow(
-                libraryList.filter((x) => x.category === categoryFilter).filter((x) => x.title.includes(value))
+                libraryList.filter((x) => x.category === categoryFilter || categoryFilter === "").filter((x) => (x.title.toLocaleLowerCase()).includes(value.toLocaleLowerCase()))
             );
         } else {
-            setLibraryToShow(libraryList.filter((x) => x.category === categoryFilter));
+            setLibraryToShow(libraryList.filter((x) => x.category === categoryFilter || categoryFilter === ""));
         }
     };
 
@@ -167,7 +168,6 @@ const DialogSearchLibrary: React.FC<{
                     <div style={{ flex: 1 }}>
                         <SearchField
                             style={{ fontSize: "1rem" }}
-                            className="col-8"
                             colorPlaceHolder="#FFF"
                             inputProps={{ className: classes.inputPlaceholder }}
                             handleChangeOther={applyFilter}
@@ -233,7 +233,9 @@ const DialogSearchLibrary: React.FC<{
                 <div className={classes.containerFiles}>
                     {libraryToShow.map((x) => {
                         const extension = x.link.split(".").pop();
-
+                        if (x.favorite) {
+                            return null;
+                        }
                         return (
                             <div
                                 key={x.documentlibraryid}
@@ -459,15 +461,20 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
     const handleClickAway = () => setOpen(false);
 
     useEffect(() => {
-        setquickRepliesToShow(quickReplies.data.filter((x) => !!x.favorite));
-    }, [quickReplies]);
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)
+        
+        setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
+    }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
         if (search === "") {
-            setquickRepliesToShow(quickReplies.data.filter((x) => !!x.favorite));
+            setquickRepliesToShow(quickreplyFiltered.filter((x) => !!x.favorite));
         } else {
             setquickRepliesToShow(
-                quickReplies.data.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
+                quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
             );
         }
     }, [search, quickReplies]);
@@ -494,7 +501,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex"}}>
                 <Tooltip title={t(langKeys.send_quickreply)} arrow placement="top">
                     <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 </Tooltip>
@@ -506,7 +513,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
                             zIndex: 1201,
                         }}
                     >
-                        <div className={classes.containerQuickReply}>
+                        <div className={classes.containerQuickReply2}>
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
@@ -608,7 +615,6 @@ const RecordComponent: React.FC<{
                     type: "audio",
                     url: uploadResult?.url || "",
                 });
-                console.log(uploadResult?.url);
                 setStartRecording(false);
             }
         }
@@ -884,7 +890,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                             zIndex: 1201,
                         }}
                     >
-                        <div className={classes.containerQuickReply}>
+                        <div className={classes.containerQuickReply2}>
                             <div>
                                 {!showSearch ? (
                                     <div className={classes.headerQuickReply}>
@@ -1038,14 +1044,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             dispatch(resetInnapropiateWordTicketLst());
         };
     }, [])
-
-    const handleInputChange = (e: any) => {
-        const lines = e.target.value.split('\n').length;
-        if (lines <= 6) {
-            setNumRows(lines);
-            setText(e.target.value);
-        }
-    };
 
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
@@ -1257,7 +1255,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 }
 
                 const errormessage = findDefaultAnswer(inappropiatewordsList, textCleaned.toLocaleLowerCase())
-                debugger
 
                 if (textCleaned) {
                     if (!errormessage) {
@@ -1334,9 +1331,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     }, [multiData]);
 
-    useEffect(() => {
-        setquickRepliesToShow(quickReplies?.data?.filter((x) => x.favorite) || []);
-    }, [quickReplies]);
+    useEffect(() => {        
+        const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+        const favoritequickreplies = quickReplies.data.filter(x=>x.favorite)
+        setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
+    }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
         if(!innapropiateWords.loading && !innapropiateWords.error){
@@ -1346,13 +1345,15 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
+            const ismail = ticketSelected?.communicationchanneltype === "MAIL"
+            const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
             setTypeHotKey("quickreply");
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
-            if (textToSearch === "") setquickRepliesToShow(quickReplies.data.filter((x) => x.favorite));
+            if (textToSearch === "") setquickRepliesToShow(quickreplyFiltered.filter((x) => x.favorite));
             else
                 setquickRepliesToShow(
-                    quickReplies.data.filter((x) => x.description.toLowerCase().includes(textToSearch.toLowerCase()))
+                    quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(textToSearch.toLowerCase()))
                 );
         } else if (text.substring(0, 2).toLowerCase() === "\\r") {
             setTypeHotKey("richresponse");
@@ -1393,11 +1394,13 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
         } else if (event.shiftKey) {
-            console.log("");
             return;
-        } else if (event.key === 'Enter') {
+        } else if (
+            (user?.languagesettings?.sendingmode === "Default" && event.key === 'Enter') || 
+            ((!user?.languagesettings?.sendingmode || user?.languagesettings?.sendingmode === "EnterKey") && event.code === 'Enter')
+        ) {
             event.preventDefault();
-            if (text.trim() || files.length > 0) {
+            if ((text.trim() || files.length > 0) && user?.languagesettings?.sendingmode !== "ExecutionButton") {
                 triggerReplyMessage();
             }
         }
@@ -1416,50 +1419,9 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-    const formatText = (c: string) => {
-        const input = inputRef.current.querySelector('textarea');
-        const { value, selectionStart, selectionEnd } = input;
-
-        if (ticketSelected?.communicationchanneltype.includes("WHA")) {
-            if (selectionStart !== selectionEnd) {
-                // Hay texto seleccionado
-                const selectedText = value.slice(selectionStart, selectionEnd);
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionEnd);
-                const newValue = `${beforeText}${c}${selectedText}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionEnd + 1);
-                    input.focus();
-                }, 0);
-            } else {
-                // No hay texto seleccionado
-                const beforeText = value.slice(0, selectionStart);
-                const afterText = value.slice(selectionStart);
-                const newValue = `${beforeText}${c}${c}${afterText}`;
-                setText(newValue);
-                setTimeout(() => {
-                    input.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                    input.focus();
-                }, 0);
-            }
-        } else {
-            if (selectionStart !== selectionEnd) {
-                if (c === "*") {
-
-                    const beforeSelection = text.slice(0, selectionStart);
-                    const selectedText = text.slice(selectionStart, selectionEnd);
-                    const afterSelection = text.slice(selectionEnd);
-
-                    const newText = `${beforeSelection}<span style="font-weight: bold;">${selectedText}</span>${afterSelection}`;
-                    setText(newText);
-                }
-            }
-        }
-    }
 
     const handleKeyDown = (event: Dictionary) => {
-        if (event.altKey && event.key === 'Enter') {
+        if ((event.altKey || user?.languagesettings?.sendingmode === "ExecutionButton") && event.key === 'Enter') {
             event.preventDefault();
             setText(text + '\n');
         }
@@ -1500,7 +1462,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         positionEditable="top"
                                         spellCheck
                                         onKeyPress={handleKeyPress}
-                                        quickReplies={quickReplies.data}
+                                        quickReplies={quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO")}
                                         refresh={refresh}
                                         placeholder="Send your message..."
                                         emojiNoShow={emojiNoShow}
@@ -1664,7 +1626,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 multiline
                                                 onKeyDown={handleKeyDown}
                                                 minRows={1}
-                                                maxRows={5}
+                                                maxRows={6}
                                                 inputProps={{
                                                     'aria-label': 'naked',
                                                     style: {
@@ -1766,60 +1728,12 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 ])
                                             }
                                         />
-
                                         <CopilotLaraigoIcon
                                             classes={classes}
                                             enabled={propertyCopilotLaraigo}
                                         />
-                                    </div>
+                                    </div>                                 
 
-                                    <div style={{ display: 'flex', gap: '0.7rem' }}>
-                                        {/* <span>
-                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("*")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        {ticketSelected?.communicationchanneltype.includes("WHA") && <span>
-                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("_")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>}
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("~")
-                                                }} size='small'>
-                                                    {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 24, height: 24 }} />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span>
-                                        <span>
-                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
-                                                <IconButton onClick={() => {
-                                                    formatText("```")
-                                                }} size='small'>
-                                                    <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </span> */}
-                                    </div>
                                 </div>
                             )}
                             <BottomGoToUnder />

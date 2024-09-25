@@ -268,3 +268,18 @@ export const changePwdFirstLogin = (state: IState, action: IAction): IState => (
     },
     ignorePwdchangefirstloginValidation: action.payload.ignorePwdchangefirstloginValidation,
 });
+
+
+export const updateLanguage = (state: IState, action: IAction): IState => {
+    return ({
+        ...state,
+        validateToken: {
+            ...state.validateToken,
+            user: {
+                ...(state.validateToken.user || {} as IUser),
+                languagesettings: JSON.parse(action.payload.value),
+            },
+        },
+
+    })
+}

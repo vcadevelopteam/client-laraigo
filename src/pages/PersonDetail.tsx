@@ -1956,7 +1956,6 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
             return
         }
-        debugger
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
@@ -2207,7 +2206,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
 
     useEffect(() => {
         if (domains.value?.customVariables && person) {
-            console.log(person)
             setTableDataVariables(domains.value.customVariables.map(x => ({ ...x, value: person?.variablecontext?.[x?.variablename] || "" })))
         }
     }, [person, domains]);

@@ -184,7 +184,14 @@ export const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         marginTop: "1.8rem",
         marginBottom: "1.8rem",
-    }
+    },
+    chip: {
+        '& .MuiChip-deleteIcon': {
+            display: 'none',
+            marginRight: '1rem',
+            cursor:'pointer'
+        },
+    },
 }));
 
 const opentermsofservice = () => {
@@ -314,7 +321,7 @@ const SignIn = () => {
             window.open("https://laraigo.com/en/#pricetable", "_blank");
         }
         else {
-            window.open("sign-up/BASIC", "_blank");
+            window.open("sign-up/BASICO", "_blank");
         }
     }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, MouseEventHandler } from 'react';
+import React, { useEffect, useState, MouseEventHandler, useRef } from 'react';
 import Table from '@material-ui/core/Table';
 import { Divider, FormControlLabel, Grid, ListItemIcon, Paper, Popper, Radio, TableSortLabel, Typography } from '@material-ui/core'
 import Button from '@material-ui/core/Button';
@@ -401,6 +401,7 @@ const TableZyx = React.memo(({
     groupedBy,
     ExtraMenuOptions,
     acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv",
+    cleanImport,
     defaultGlobalFilter,
     setOutsideGeneralFilter
 }: TableConfig) => {
@@ -900,6 +901,7 @@ const TableZyx = React.memo(({
             })
         }
     )
+    const fileInputRef = useRef(null);
 
     function setIsFiltering(param: string){
         setGlobalFilter(param)
@@ -932,17 +934,10 @@ const TableZyx = React.memo(({
     }, [columnVisibility, allColumns]);
 
     useEffect(() => {
-        if (initialStateFilter) {
-            if (initial) {
-                gotoPage(initialPageIndex);
-                setInitial(false)
-            } else {
-                dispatch(setMemoryTable({
-                    page: 0
-                }));
-            }
+        if(pageIndex === 0 && initialPageIndex){
+            gotoPage(initialPageIndex);
         }
-    }, [data])
+    }, [data, pageIndex])
 
     useEffect(() => {
         if (fetchData) {
@@ -955,11 +950,21 @@ const TableZyx = React.memo(({
     }, [selectedRowIds]);
 
     useEffect(() => {
+        setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
+    }, [globalFilteredRows])
+
+    useEffect(() => {
         if (allRowsSelected) {
             toggleAllRowsSelected(true);
             setAllRowsSelected && setAllRowsSelected(false);
         }
     }, [allRowsSelected])
+    
+    useEffect(() => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    }, [cleanImport])
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
@@ -1040,7 +1045,9 @@ const TableZyx = React.memo(({
                                 id="laraigo-upload-csv-file"
                                 type="file"
                                 style={{ display: 'none' }}
-                                onChange={(e) => importCSV(e.target.files)}
+                                onChange={(e) => {
+                                    importCSV(e.target.files)}}
+                                ref={fileInputRef}
                             />
                             <label htmlFor="laraigo-upload-csv-file">
                                 <Button

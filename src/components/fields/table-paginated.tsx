@@ -612,7 +612,6 @@ const TableZyx = React.memo(({
             })
         }
     )
-
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
             return { ...prev, filters, pageIndex: 0, trigger: true }
@@ -1017,8 +1016,8 @@ const TableZyx = React.memo(({
                                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                     id="laraigo-upload-csv-file"
                                     type="file"
-                                    style={{ display: 'none' }}
-                                    onChange={(e) => importCSV(e.target.files)}
+                                    style={{ display: 'none' }}    
+                                    onChange={(e) => {importCSV(e.target.files)}}
                                 />
                                 <label htmlFor="laraigo-upload-csv-file">
                                     <Button

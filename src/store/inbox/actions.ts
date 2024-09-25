@@ -321,7 +321,7 @@ export const disconnectSocket = (): IActionCall => ({ type: actionTypes.WS_DISCO
 
 export const newTicketCall = (payload: any): IActionCall => ({ type: actionTypes.NEW_TICKET_CALL, payload });
 
-export const setDataUser = (payload: { holdingBySupervisor: "CANAL" | "GRUPO", userGroup: string, role: string }): IActionCall => ({ type: actionTypes.SET_DATA_USER, payload });
+export const setDataUser = (payload: { holdingBySupervisor: "CANAL" | "GRUPO" | "TODO", botBySupervisor: "CANAL" | "GRUPO" | "TODO", userGroup: string, channels: string, role: string }): IActionCall => ({ type: actionTypes.SET_DATA_USER, payload });
 
 export const updateClassificationPerson = (payload: boolean): IActionCall => ({ type: actionTypes.UPDATE_CLASSIFICATION_PERSON, payload });
 

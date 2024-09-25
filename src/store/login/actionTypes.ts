@@ -27,6 +27,8 @@ const actionType = {
     NEW_NOTIFICATION: 'login/NEW_NOTIFICATION',
     UPDATE_CONNECTION: 'login/UPDATE_CONNECTION',
     CLEAN_VALIDATETOKEN: 'login/CLEAN_VALIDATETOKEN',
+
+    UPDATE_LANGUAGE: 'login/UPDATE_LANGUAGE'
 };
 
 export default actionType;

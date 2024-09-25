@@ -195,6 +195,12 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         overflowX: 'scroll',
         cursor: 'grab',
+    },
+    normaltext: {
+        fontSize: '0.88rem',
+        display:'flex',
+        alignItems:'center',
+        gap:'3px',
     }
 }));
 
@@ -380,12 +386,27 @@ export const AddButtonMenuCard: React.FC<TemplateIconsProps> = ({
 interface CustomTitleHelperProps {
     title: string;
     helperText?: string;
+    titlestyle?: React.CSSProperties;
 }
 
-export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+export const CustomTitleHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText, titlestyle }) => {
     const classes = useStyles();
     return (
-        <span className={classes.subtittles}>
+        <span className={classes.subtittles} style={titlestyle}>
+            {title}
+            {helperText ? (
+                <Tooltip title={helperText} arrow placement="top" >
+                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                </Tooltip>
+            ) : ""}
+        </span>
+    );
+};
+
+export const CustomTextWithHelper: React.FC<CustomTitleHelperProps> = ({ title, helperText }) => {
+    const classes = useStyles();
+    return (
+        <span className={classes.normaltext}>
             {title}
             {helperText ? (
                 <Tooltip title={helperText} arrow placement="top" >
@@ -406,17 +427,21 @@ interface MessagePreviewMultimediaProps {
     buttonstext: string[];
     buttonslink: Dictionary[];
     isNew: boolean;
+    buttonsGeneral: Dictionary[];
 }
 
-export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink, isNew }) => {
+export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink, buttonsGeneral, isNew }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [showAllButtons, setShowAllButtons] = useState(false)
-    const combinedButtons = [
+    const combinedButtons = buttonsGeneral?.[0]?.name === "quickreply" ? [
         ...buttonstext.map(text => ({ type: 'text', text: text })),
+        ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text }))
+    ] : [
         ...buttonslink.map((btn) => ({ type: btn.type, text: btn.text })),
+        ...buttonstext.map(text => ({ type: 'text', text: text }))
     ];
-
+    
     const parseFormattedText = (text: string) => {
         const monospace = /```(.*?)```/g;
         text = text.replace(monospace, '<code>$1</code>');
