@@ -11,7 +11,9 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { EmojiData, Picker } from 'emoji-mart';
+import Picker from '@emoji-mart/react'
+
+// import { EmojiData } from 'emoji-mart';
 import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import WarningIcon from '@material-ui/icons/Warning';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
@@ -67,7 +69,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import React, { FC, Suspense, useCallback, useEffect, useState, useRef, ChangeEvent } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import SaveIcon from "@material-ui/icons/Save";
-import { AddButtonMenu, AddButtonMenuCard, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
+import { AddButtonMenu, AddButtonMenuCard, CustomTextWithHelper, CustomTitleHelper, MessagePreviewAuthentication, MessagePreviewCarousel, MessagePreviewMultimedia } from "../components/components";
 import { PDFRedIcon } from "icons";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
@@ -301,7 +303,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const uploadResult = useSelector((state) => state.main.uploadFile);
     const dataChannel =
         multiData[2] && multiData[2].success
-            ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
+            ? multiData[2].data
+            //? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
             : [];
     const [bodyAlert, setBodyAlert] = useState("");
     const [bodyAttachment, setBodyAttachment] = useState(row?.body || "");
@@ -1528,7 +1531,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         }
     }
 
-    const addEmoji = (emoji: EmojiData) => {
+    const addEmoji = (emoji: any) => {
         const currentText = getValues('body');
         const start = currentText.substring(0, cursorPositionAux);
         const end = currentText.substring(cursorPositionAux);
@@ -2311,7 +2314,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             </div>
                         )}
 
-                        {(isNew && getValues('type')) && (
+                        {(isNew && getValues('type') === 'HSM' && (
                             <div className="col-8" style={{ display: 'flex' }}>
                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     <CustomTitleHelper
@@ -2322,7 +2325,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <span>{t(langKeys.categorychangetext)}</span>
                                 </div>
                             </div>
-                        )}
+                        ))}
 
 
                     </div>
@@ -2374,7 +2377,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 size="small"
                             />
                         )}
-                        {(isNew && getValues('type')) && (
+                        {(isNew && getValues('type') === 'HSM' && (
                             <>
                                <FieldSelect
                                     className={`col-3 ${showError ? classes.errorBorder : ''}`}
@@ -2392,9 +2395,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         {t(langKeys.field_required)}
                                     </p>
                                 )}
-                            </>                          
-                           
-                        )}
+                            </>                         
+                        ))}
                     </div>
                     {getValues("type") === 'HSM' && (
                         <>
@@ -2548,7 +2550,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             )}
                             <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                                 <span style={{ fontWeight: 'bold' }}>{t(langKeys.channel)}</span>
-                                <span>Seleccione el canal en el que registrarás tu plantilla</span>
+                                <CustomTextWithHelper
+                                    title={'Seleccione el canal en el que registrarás tu plantilla' + ' '}
+                                    helperText={t(langKeys.channel_message_templates_help)}
+                                /> 
                             </div>
                         </div>
                     )}
@@ -2577,7 +2582,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <FieldMultiSelect
                                                 className="col-6"
                                                 data={dataChannel}
-                                                disabled
+                                                disabled={true}
                                                 error={errors?.communicationchannelid?.message}
                                                 optionDesc="communicationchanneldesc"
                                                 optionValue="communicationchannelid"
@@ -2587,7 +2592,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                 size="normal"
                                             />
                                         ) : (
-                                            <FieldSelect //acá
+                                            <FieldSelect
                                                 className="col-6"
                                                 data={dataChannel}
                                                 disabled={!isNew || disableInput}
@@ -3444,7 +3449,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </IconButton>
                                             {showEmojiPicker && (
                                                 <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                    <Picker onSelect={addEmoji} />
+                                                    <Picker onEmojiSelect={addEmoji} />
                                                 </div>
                                             )}
                                             <IconButton

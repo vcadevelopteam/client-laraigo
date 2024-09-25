@@ -401,9 +401,9 @@ const TableZyx = React.memo(({
     groupedBy,
     ExtraMenuOptions,
     acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv",
-    defaultGlobalFilter,
-    setOutsideGeneralFilter,
     cleanImport,
+    defaultGlobalFilter,
+    setOutsideGeneralFilter
 }: TableConfig) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -934,17 +934,10 @@ const TableZyx = React.memo(({
     }, [columnVisibility, allColumns]);
 
     useEffect(() => {
-        if (initialStateFilter) {
-            if (initial) {
-                gotoPage(initialPageIndex);
-                setInitial(false)
-            } else {
-                dispatch(setMemoryTable({
-                    page: 0
-                }));
-            }
+        if(pageIndex === 0 && initialPageIndex){
+            gotoPage(initialPageIndex);
         }
-    }, [data])
+    }, [data, pageIndex])
 
     useEffect(() => {
         if (fetchData) {
@@ -955,6 +948,10 @@ const TableZyx = React.memo(({
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
     }, [selectedRowIds]);
+
+    useEffect(() => {
+        setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
+    }, [globalFilteredRows])
 
     useEffect(() => {
         if (allRowsSelected) {

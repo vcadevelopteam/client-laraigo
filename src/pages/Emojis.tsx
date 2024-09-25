@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchField from "components/fields/SearchField";
 import { emojis } from "common/constants/emojis";
-import { LaraigoAnimalIcon, LaraigoBanderaIcon, LaraigoCaraIcon, LaraigoCarroIcon, LaraigoComidaIcon, LaraigoDeporteIcon, LaraigoFocoIcon, LaraigoHashtagIcon, LaraigoRecienteIcon,LaraigoBlockedIcon } from "icons";
+import { LaraigoAnimalIcon, LaraigoBanderaIcon, LaraigoCaraIcon, LaraigoCarroIcon, LaraigoComidaIcon, LaraigoDeporteIcon, LaraigoFocoIcon, LaraigoHashtagIcon, LaraigoRecienteIcon, LaraigoBlockedIcon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import { useDispatch } from "react-redux";
@@ -42,6 +42,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+function validateText(X: string, Y: string) {
+    const regex = new RegExp(`^(?:${Y}|.* ${Y})`, 'i');
+    return regex.test(X);
+}
+
 const Emojis: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -54,7 +59,7 @@ const Emojis: FC = () => {
     const [category, setCategory] = useState('FAVORITES');
     const [searchValue, setSearchValue] = useState('');
 
-    const fetchData = () => {setGetEmojiList(true);dispatch(getCollection(getEmojiAllSel()))};
+    const fetchData = () => { setGetEmojiList(true); dispatch(getCollection(getEmojiAllSel())) };
 
 
     const handleFiend = (searchValue: string) => {
@@ -66,34 +71,35 @@ const Emojis: FC = () => {
             if (searchValue === null || searchValue.trim().length === 0) {
                 switch (category) {
                     case 'FAVORITES': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.favorite === true);
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.favorite === true);
                     }
                     case 'RESTRICTED': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true);
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.restricted === true);
                     }
                     default: {
-                        return emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
+                        return emoji?.categorydesc === category;
                     }
                 }
             } else {
                 switch (category) {
                     case 'FAVORITES': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.favorite === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.favorite === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
                     }
                     case 'RESTRICTED': {
-                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                        return emojiResult.find(x => x.emojihex === emoji?.emojihex && x?.restricted === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
                     }
                     default: {
+                        let foundonstring = [...emoji.keywords, emoji.description.toLowerCase(), emoji.description].some(str => str.startsWith(searchValue.toLowerCase()))
                         //return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
-                        return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
+                        return (foundonstring || validateText(emoji?.description, searchValue)) // && emoji?.categorydesc === category;
                     }
                 }
             }
         }), [category, searchValue, emojis, emojiResult]);
 
     useEffect(() => {
-        if(getEmojiList){
-            if(!mainResult.mainData.loading){
+        if (getEmojiList) {
+            if (!mainResult.mainData.loading) {
                 setGetEmojiList(false)
                 dispatch(showBackdrop(false));
             }
@@ -144,7 +150,7 @@ const Emojis: FC = () => {
                     {
                         filteredEmojis.map((emoji: Dictionary) =>
                             <Emoji
-                                key={"menuEmoji_" + emoji?.emojidec}
+                                key={"menuEmoji_" + emoji?.emojihex}
                                 emoji={emoji}
                                 fetchData={fetchData}
                                 category={category}
@@ -158,7 +164,7 @@ const Emojis: FC = () => {
     )
 }
 
-const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => void, setSearchValue: (searchValue: any) => any, setcleanfilter: (cleanfilter: any) => any }> = React.memo(({ groups, setCategory, setSearchValue,setcleanfilter }) => {
+const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => void, setSearchValue: (searchValue: any) => any, setcleanfilter: (cleanfilter: any) => any }> = React.memo(({ groups, setCategory, setSearchValue, setcleanfilter }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState(0);
 
@@ -184,50 +190,50 @@ const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => voi
             style={{ paddingBottom: 12 }}
         >
             <Tab
-                label={t(langKeys.favorites)} icon={<LaraigoRecienteIcon style={{width:25}}/>}
+                label={t(langKeys.favorites)} icon={<LaraigoRecienteIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("FAVORITES")}
             />
             <Tab
-                label={t(langKeys.restricted)} icon={<LaraigoBlockedIcon style={{width:25}}/>}
+                label={t(langKeys.restricted)} icon={<LaraigoBlockedIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("RESTRICTED")}
             />
             <Tab
-                label={t(langKeys.smileys)} icon={<LaraigoCaraIcon style={{width:25}}/>}
+                label={t(langKeys.smileys)} icon={<LaraigoCaraIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("SMILEYS")}
             />
             <Tab
-                label={t(langKeys.animals)} icon={<LaraigoAnimalIcon style={{width:25}}/>}
+                label={t(langKeys.animals)} icon={<LaraigoAnimalIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("ANIMAL")}
             />
             <Tab
-                label={t(langKeys.food)} icon={<LaraigoComidaIcon style={{width:25}}/>}
+                label={t(langKeys.food)} icon={<LaraigoComidaIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("FOOD")}
             />
             <Tab
-                label={t(langKeys.activities)} icon={<LaraigoDeporteIcon style={{width:25}}/>}
+                label={t(langKeys.activities)} icon={<LaraigoDeporteIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("ACTIVITY")}
             />
             <Tab
-                label={t(langKeys.travel)} icon={<LaraigoCarroIcon style={{width:25}}/>}
+                label={t(langKeys.travel)} icon={<LaraigoCarroIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("TRAVEL")}
             />
             <Tab
-                label={t(langKeys.objects)} icon={<LaraigoFocoIcon style={{width:25}}/>}
+                label={t(langKeys.objects)} icon={<LaraigoFocoIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("OBJECT")}
             />
             <Tab
-                label={t(langKeys.symbols)} icon={<LaraigoHashtagIcon style={{width:25}}/>}
+                label={t(langKeys.symbols)} icon={<LaraigoHashtagIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("SYMBOL")}
             />
             <Tab
-                label={t(langKeys.flags)} icon={<LaraigoBanderaIcon style={{width:25}}/>}
+                label={t(langKeys.flags)} icon={<LaraigoBanderaIcon style={{ width: 25 }} />}
                 onClick={() => handleTabClick("FLAG")}
             />
         </Tabs>
     )
 })
 
-const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category:string }> = React.memo(({ emoji, fetchData,category }) => {
+const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category: string }> = React.memo(({ emoji, fetchData, category }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -240,15 +246,15 @@ const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category:string }> =
     };
 
     useEffect(() => {
-        if(sendIns){
-            if(!executeEmoji.loading){
+        if (sendIns) {
+            if (!executeEmoji.loading) {
                 setSendIns(false);
                 fetchData();
             }
         }
     }, [executeEmoji]);
 
-    const handleExecution = (favorite: boolean,restricted: boolean) => {
+    const handleExecution = (favorite: boolean, restricted: boolean) => {
         setAnchorEl(null);
 
         const callback = () => {
@@ -276,44 +282,49 @@ const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category:string }> =
 
     return (
         <>
-            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.description} arrow>
+            <Tooltip key={'tooltip_' + emoji?.emojihex} title={emoji?.description} arrow>
                 <Button
                     aria-controls="simple-menu" aria-haspopup="true"
                     onContextMenu={handleClick}
-                    key={'button_' + emoji?.emojidec}
+                    key={'button_' + emoji?.emojihex}
                     style={{ padding: 0, minWidth: 50 }}>
                     <label
-                        key={'label_' + emoji?.emojidec}
+                        key={'label_' + emoji?.emojihex}
                         style={{ fontSize: 30 }}>{emoji?.emojichar}
                     </label>
                 </Button>
             </Tooltip>
             <Menu
-                key={"simple-menu_" + emoji?.emojidec}
+                key={"simple-menu_" + emoji?.emojihex}
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleOnClose}
             >
-                <MenuItem key={"menu_item_x_" + emoji?.emojidec} style={{textAlign: "center"}}>{emoji?.description}</MenuItem>
-                {category==="FAVORITES" &&
-                <>
-                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removefavorites)}</MenuItem>
-                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
-                </>
-                }
-                {category==="RESTRICTED"&&
-                 <>
-                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removerestricted)}</MenuItem>
-                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
-                 </>
-                }
-                {(category!=="RESTRICTED" && category!=="FAVORITES") &&
-                <>
-                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
-                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
-                </>
-                    
-                }
+                <MenuItem key={"menu_item_x_" + emoji?.emojihex} style={{ textAlign: "center" }}>{emoji?.description}</MenuItem>
+                <MenuItem
+                    key={`menu_item_1_${emoji?.emojihex}`}
+                    onClick={() => handleExecution(
+                        category === "RESTRICTED",
+                        category === "FAVORITES" || category !== "RESTRICTED"
+                    )}
+                >
+                    {category === "RESTRICTED"
+                        ? t(langKeys.emoji_favorites)
+                        : t(langKeys.emoji_removefavorites)
+                    }
+                </MenuItem>
+                <MenuItem
+                    key={`menu_item_2_${emoji?.emojihex}`}
+                    onClick={() => handleExecution(
+                        category !== "RESTRICTED",
+                        category === "RESTRICTED" || category !== "FAVORITES"
+                    )}
+                >
+                    {category === "RESTRICTED"
+                        ? t(langKeys.emoji_removerestricted)
+                        : t(langKeys.emoji_restricted)
+                    }
+                </MenuItem>
             </Menu>
         </>
     )

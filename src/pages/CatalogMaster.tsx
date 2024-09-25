@@ -106,14 +106,14 @@ const CatalogMaster: FC = () => {
                 NoFilter: true,
                 prefixTranslation: 'type_domain_mastercatalog_',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;                  
+                    const { row } = props.cell;
                     if (row && row.original && row.original.catalogtype) {
-                      const { catalogtype } = row.original;
-                      return (t(`type_domain_mastercatalog_${catalogtype}`.toLowerCase()) || "").toUpperCase();
+                        const { catalogtype } = row.original;
+                        return (t(`type_domain_mastercatalog_${catalogtype}`.toLowerCase()) || "").toUpperCase();
                     } else {
-                      return ""; 
+                        return "";
                     }
-                }                  
+                }
             },
             {
                 accessor: 'businessid',
@@ -131,15 +131,14 @@ const CatalogMaster: FC = () => {
                 NoFilter: true,
                 prefixTranslation: 'status_',
                 Cell: (props: CellProps<Dictionary>) => {
-                    const { row } = props.cell;                  
+                    const { row } = props.cell;
                     if (row && row.original && row.original.status) {
-                      const { status } = row.original;
-                      return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                        const { status } = row.original;
+                        return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                     } else {
-                      return ""; 
+                        return "";
                     }
                 }
-                  
             }
         ],
         []
@@ -318,10 +317,8 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const user = useSelector(state => state.login.validateToken.user);
-    const useradmin = (user?.roledesc ?? "").split(",").some(v => ["ADMINISTRADOR", "ADMINISTRADOR P"].includes(v));
     const domainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const domainCatalogType = multiData[1] && multiData[1].success ? (useradmin ? multiData[1].data.filter(x => x.domainvalue === "BOT") : multiData[1].data) : [];
+    const domainCatalogType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const resultBusinessList = useSelector(state => state.catalog.requestCatalogBusinessList);
     const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
 

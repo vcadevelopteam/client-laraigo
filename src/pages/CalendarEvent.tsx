@@ -482,6 +482,7 @@ export const CalendarEvent: FC = () => {
                 { name: "eventlink", text: event?.eventlink },
                 { name: "eventcode", text: eventcode },
                 { name: "monthdate", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
+                { name: "eventformatdate", text: daySelected?.dateString },
                 { name: "hourstart", text: timeSelected?.localstarthour },
                 { name: "hourend", text: timeSelected?.localendhour },
                 { name: "personname", text: data.name },

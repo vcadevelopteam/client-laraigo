@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -464,7 +464,7 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
         { id: "view-4", name: t(langKeys.changeplan) }
     ];
 
-    function changePlan(nameplan: "BASIC" | "PRO" | "ADVANCED" | "PREMIUM") {
+    function changePlan(nameplan: "BASICO" | "PROFESIONAL" | "AVANZADO" | "PROFESIONAL") {
         if (nameplan !== user?.plan)
             setPlan(nameplan)
     }
@@ -531,64 +531,64 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
                     <TableContainer >
                         <Table className={classes.table} size="small" aria-label="a dense table">
                             <TableBody>
-                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("BASIC")} className={clsx({
-                                    [classes.planSelected]: user?.plan === "BASIC"
+                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("BASICO")} className={clsx({
+                                    [classes.planSelected]: user?.plan === "BASICO"
                                 })}>
                                     <TableCell component="th" scope="row">
                                         <Radio
                                             color="primary"
-                                            checked={plan === "BASIC"}
+                                            checked={plan === "BASICO"}
                                         />
                                     </TableCell>
-                                    <TableCell component="th" scope="row" className={classes.nameplan}>BASIC</TableCell>
+                                    <TableCell component="th" scope="row" className={classes.nameplan}>BASICO</TableCell>
                                     <TableCell component="th" scope="row">
                                         <b>{t(langKeys.basicdesc1)}</b>
                                         <div>{t(langKeys.basicdesc2)}</div>
                                     </TableCell>
                                     <TableCell component="th" scope="row">$24</TableCell>
                                 </TableRow>
-                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("PRO")} className={clsx({
-                                    [classes.planSelected]: user?.plan === "PRO"
+                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("PROFESIONAL")} className={clsx({
+                                    [classes.planSelected]: user?.plan === "PROFESIONAL"
                                 })}>
                                     <TableCell component="th" scope="row">
                                         <Radio
                                             color="primary"
-                                            checked={plan === "PRO"}
+                                            checked={plan === "PROFESIONAL"}
                                         />
                                     </TableCell>
-                                    <TableCell component="th" scope="row" className={classes.nameplan}>PRO</TableCell>
+                                    <TableCell component="th" scope="row" className={classes.nameplan}>PROFESIONAL</TableCell>
                                     <TableCell component="th" scope="row">
                                         <b>{t(langKeys.prodesc1)}</b>
                                         <div>{t(langKeys.prodesc2)}</div>
                                     </TableCell>
                                     <TableCell component="th" scope="row">$59</TableCell>
                                 </TableRow>
-                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("ADVANCED")} className={clsx({
-                                    [classes.planSelected]: user?.plan === "ADVANCED"
+                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("AVANZADO")} className={clsx({
+                                    [classes.planSelected]: user?.plan === "AVANZADO"
                                 })}>
                                     <TableCell component="th" scope="row">
                                         <Radio
                                             color="primary"
-                                            checked={plan === "ADVANCED"}
+                                            checked={plan === "AVANZADO"}
                                         />
                                     </TableCell>
-                                    <TableCell component="th" scope="row" className={classes.nameplan}>ADVANCED</TableCell>
+                                    <TableCell component="th" scope="row" className={classes.nameplan}>AVANZADO</TableCell>
                                     <TableCell component="th" scope="row">
                                         <b>{t(langKeys.advanceddesc1)}</b>
                                         <div>{t(langKeys.advanceddesc2)}</div>
                                     </TableCell>
                                     <TableCell component="th" scope="row">$139</TableCell>
                                 </TableRow>
-                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("PREMIUM")} className={clsx({
-                                    [classes.planSelected]: user?.plan === "PREMIUM"
+                                <TableRow style={{ cursor: 'pointer' }} onClick={() => changePlan("PROFESIONAL")} className={clsx({
+                                    [classes.planSelected]: user?.plan === "PROFESIONAL"
                                 })}>
                                     <TableCell component="th" scope="row">
                                         <Radio
                                             color="primary"
-                                            checked={plan === "PREMIUM"}
+                                            checked={plan === "PROFESIONAL"}
                                         />
                                     </TableCell>
-                                    <TableCell component="th" scope="row" className={classes.nameplan}>PREMIUM</TableCell>
+                                    <TableCell component="th" scope="row" className={classes.nameplan}>PROFESIONAL</TableCell>
                                     <TableCell component="th" scope="row">
                                         <b>{t(langKeys.premiumdesc1)}</b>
                                         <div>{t(langKeys.premiumdesc2)}</div>

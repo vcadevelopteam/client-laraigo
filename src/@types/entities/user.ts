@@ -50,10 +50,10 @@ type ValueArray = [number, number, number, number, number, string, number];
 export type IApplicationsRecord = Record<string, ValueArray>;
 
 interface ILanguageSettings {
-    language: string;
-    spellingcheck: string;
-    translatelanguage: string;
-    messagesendingmode: string;
+    languagereview: string;
+    gramaticalactivation: string;
+    languagetranslation: string;
+    sendingmode: string;
 }
 export interface IUser {
     email: string;

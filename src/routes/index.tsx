@@ -61,7 +61,7 @@ const BillingSetups = lazy(() => import('pages/BillingSetups'));
 const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
 const Tickets = lazy(() => import('pages/Tickets'));
-const UserSettings = lazy(() => import('pages/UserSettings'));
+const UserSettings = lazy(() => import('pages/accountconfiguration/UserSettings'));
 const Invoice = lazy(() => import('pages/Invoice'));
 const KPIManager = lazy(() => import('pages/KPIManager'));
 const GetLocations = lazy(() => import('pages/GetLocations'));
@@ -156,6 +156,8 @@ const cleanPath = (pathx: string) => {
 		return "/dashboard";
 	} else if (pathx.includes('servicedesk')) {
 		return "/servicedesk";
+	} else if (pathx.includes('orders')) {
+		return "/orders";
 	}
 	return pathx
 }
@@ -170,7 +172,6 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ component: Component, ...rest }) 
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
-
 	const dispatch = useDispatch();
 	const existToken = getAccessToken();
 

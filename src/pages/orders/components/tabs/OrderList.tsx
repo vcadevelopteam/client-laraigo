@@ -32,14 +32,14 @@ interface MultiData {
 
 interface OrderListProps {
     row: Dictionary | null;
-    multiData: MultiData[];
+    multiData: any;
+    hideamount?: Boolean;
 }
 
-const OrderList: React.FC<OrderListProps> = ({ row, multiData }) => {
+const OrderList: React.FC<OrderListProps> = ({ row, multiData, hideamount = false }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
-    const dataOrders = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataOrders = multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : [];
 
     const columns = React.useMemo(
         () => [           
@@ -114,13 +114,13 @@ const OrderList: React.FC<OrderListProps> = ({ row, multiData }) => {
                     columns={columns}
                     data={dataOrders}
                     download={false}
-                    loading={mainResult.multiData.loading}
+                    loading={multiData.loading}
                     toolsFooter={true}
                     filterGeneral={false}                        
                 />
-                <div className={classes.amountDiv}>
+                {!hideamount && <div className={classes.amountDiv}>
                     <div className={classes.amountText}>{t(langKeys.totalamount)}: {row?.currency === "PEN" ? "S/ " : "$ "}{formatNumber(dataOrders.reduce((acc, x) => acc + x.amount, 0))}</div>
-                </div>
+                </div>}
             </div>
         </>
     );
