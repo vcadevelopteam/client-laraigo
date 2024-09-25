@@ -109,11 +109,11 @@ export const Person: FC = () => {
         },
         {
             Header: t(langKeys.name),
-            accessor: 'name',
+            accessor: 'firstname',
         },
         {
-            Header: t(langKeys.personType),
-            accessor: 'persontype',
+            Header: t(langKeys.lastname),
+            accessor: 'lastname',
         },
         {
             Header: t(langKeys.phone),
@@ -124,19 +124,12 @@ export const Person: FC = () => {
             accessor: 'email',
         },
         {
-            Header: t(langKeys.lastContactDate),
-            accessor: 'lastcontact',
-            type: 'date',
-            sortType: 'datetime',
-            Cell: (props: any) => {
-                const row = props.cell.row.original;
-                     return row && row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : "";
-            }
-            
+            Header: t(langKeys.documenttype),
+            accessor: 'documenttype',
         },
         {
-            Header: t(langKeys.lastuser),
-            accessor: 'lastuser',
+            Header: t(langKeys.documentnumber),
+            accessor: 'documentnumber',
         },
         {
             Header: t(langKeys.lead),
@@ -177,6 +170,18 @@ export const Person: FC = () => {
             }            
         },
         {
+            Header: t(langKeys.persongroup),
+            accessor: 'groups',
+        },
+        {
+            Header: t(langKeys.personType),
+            accessor: 'persontype',
+        },
+        {
+            Header: t(langKeys.type),
+            accessor: 'type',
+        },
+        {
             Header: t(langKeys.status),
             accessor: 'status',
             prefixTranslation: 'status_',
@@ -196,38 +201,16 @@ export const Person: FC = () => {
             
         },
         {
-            Header: t(langKeys.address),
-            accessor: 'address',
+            Header: t(langKeys.updatedby),
+            accessor: 'changeby',
         },
         {
-            Header: t(langKeys.healthprofessional),
-            accessor: 'healthprofessional',
+            Header: t(langKeys.updatedate),
+            accessor: 'changedate',
         },
         {
-            Header: t(langKeys.referralchannel),
-            accessor: 'referralchannel',
-        },
-        {
-            Header: t(langKeys.comments),
-            accessor: 'datenote',
-            Cell: (props: any) => {
-                const { cell } = props;                
-                if (!cell || !cell.row) {
-                    return null;
-                }            
-                const { original } = cell.row;            
-                if (!original) {
-                    return null;
-                }            
-                const { datenote, note, dateactivity, leadactivity } = original;            
-                return (
-                    <div>
-                        {datenote && <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>}
-                        {dateactivity && <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>}
-                    </div>
-                );
-            }
-            
+            Header: `Id persona`,
+            accessor: 'personid',
         },
     ]), [t, setPeopleSelected]);
 

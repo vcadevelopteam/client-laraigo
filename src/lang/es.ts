@@ -6483,6 +6483,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   errorimportdocuments: 'Los documentos {{docs}} no son registros válidos',
   billingreport_conversationbillable: 'Conversaciones WhatsApp Facturables',
+  cellphone: 'Celular',
+  alternativeCellphone: 'Celular alternativo',
+  birthdate: 'Fecha de nacimiento',
+  persongroup: 'Grupo persona',
+  updatedby: 'Actualizado por',
+  updatedate: 'Fecha de actualización',
 };
 
 const esResource: ResourceLanguage = {

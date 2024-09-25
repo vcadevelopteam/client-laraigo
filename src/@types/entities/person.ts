@@ -28,6 +28,7 @@ export interface IPerson {
     documentnumber: string; // edit
     firstname: string;
     lastname: string;
+    nickname?: string;
     imageurldef?: string;
     sex: string; // edit
     gender?: string;

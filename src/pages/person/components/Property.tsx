@@ -18,8 +18,8 @@ const usePropertyStyles = makeStyles(theme => ({
     },
     propTitle: {
         fontWeight: 400,
-        fontSize: 14,
-        color: '#8F92A1',
+        fontSize: 16,
+        color: 'black',
     },
     propSubtitle: {
         color: theme.palette.text.primary,

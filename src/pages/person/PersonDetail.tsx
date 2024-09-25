@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, FieldView, GetIcon } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne, getDomainByDomainNameList } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
-import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, Breadcrumbs, Link, InputBase, Tooltip } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, Breadcrumbs, Link, InputBase, Tooltip, Paper } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, SearchIcon, CallRecordIcon } from 'icons';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -1523,6 +1523,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             documentnumber: person?.documentnumber || '',
             firstname: person?.firstname || '',
             lastname: person?.lastname || '',
+            nickname: person?.nickname || '',
             sex: person?.sex || '',
             gender: person?.gender || '',
             civilstatus: person?.civilstatus || '',
@@ -1558,6 +1559,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                 person.documentnumber = '';
                 person.firstname = '';
                 person.lastname = '';
+                person.nickname = '';
                 person.sex = '';
                 person.gender = '';
                 person.civilstatus = '';
@@ -1571,6 +1573,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
 
                 register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('nickname');
                 register('documentnumber', {
                     validate: {
                         validationDNI: (value) => getValues("documenttype") === "DNI" ? (value.length === 8 || t(langKeys.validationDNI) + "") : true,
@@ -2064,6 +2067,8 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                     trigger("firstname")
                     setValue("lastname", newPerson.lastname)
                     trigger("lastname")
+                    setValue("nickname", newPerson.nickname)
+                    trigger("nickname")
                     setValue("documenttype", newPerson.documenttype)
                     trigger("documenttype")
                     setValue("documentnumber", newPerson.documentnumber)

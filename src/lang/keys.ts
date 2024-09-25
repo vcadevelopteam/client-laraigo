@@ -6474,6 +6474,12 @@ export const langKeys = {
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
   billingreport_conversationbillable: 'billingreport_conversationbillable',
+  cellphone: 'cellphone',
+  alternativeCellphone: 'alternativeCellphone',
+  birthdate: 'birthdate',
+  persongroup: 'persongroup',
+  updatedby: 'updatedby',
+  updatedate: 'updatedate',
 };
 
 export type LangKeys = typeof langKeys;

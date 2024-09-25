@@ -58,17 +58,13 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
             };
         }
     }, [dispatch, person]);
-    
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Grid container>
                         <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
-                            <FieldEdit
-                                size="small"
-                                variant="outlined"
-                            />
                             <Property
                                 title={<Trans i18nKey={langKeys.firstname} />}
                                 subtitle={(
@@ -80,12 +76,12 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                             setValue('firstname', e.target.value)
                                             trigger("firstname")
                                         }}
-                                        style={{backgroundColor: "white"}}
+                                        size="small"
+                                        variant="outlined"
                                         error={errors?.firstname?.message ? true : false}
                                         helperText={errors?.firstname?.message || null}
                                     />
                                 )}
-
                                 m={1}
                             />
                         </Grid>
@@ -95,8 +91,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                 subtitle={(
                                     <TextField
                                         fullWidth
-                                        variant="outlined"
                                         size="small"
+                                        variant="outlined"
                                         defaultValue={getValues("lastname")}
                                         value={getValues("lastname")}
                                         onChange={e => {
@@ -112,10 +108,56 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
+                                title={"Nickname"}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        variant="outlined"
+                                        defaultValue={getValues("nickname")}
+                                        value={getValues("nickname")}
+                                        onChange={e => {
+                                            setValue('nickname', e.target.value)
+                                            trigger("nickname")
+                                        }}
+                                        error={errors?.nickname?.message ? true : false}
+                                        helperText={errors?.nickname?.message || null}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.civilStatus} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}
+                                        valueDefault={getValues("civilstatus")}
+                                        onChange={(value) => {
+                                            setValue('civilstatus', value?.domainvalue || "");
+                                            setValue('civilstatusdesc', value?.domaindesc || "")
+                                        }}
+                                        size="small"
+                                        variant="outlined"
+                                        loading={domains.loading}
+                                        data={domains.value?.civilStatuses || []}
+                                        prefixTranslation="type_civilstatus_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
                                 title={<Trans i18nKey={langKeys.documenttype} />}
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
+                                        size="small"
+                                        variant="outlined"
                                         valueDefault={getValues("documenttype")}
                                         onChange={(value) => {
                                             setValue('documenttype', value?.domainvalue || "");
@@ -136,8 +178,9 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                 subtitle={(
                                     <TextField
                                         fullWidth
+                                        size="small"
+                                        variant="outlined"
                                         type='number'
-                                        placeholder={t(langKeys.docNumber)}
                                         defaultValue={getValues("documentnumber")}
                                         value={getValues("documentnumber")}
                                         onChange={e => {
@@ -153,47 +196,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.personType} />}
-                                subtitle={(
-                                    <FieldSelect
-                                        uset={true}
-                                        valueDefault={getValues("persontype")}
-                                        onChange={(value) => {
-                                            setValue('persontype', value?.domainvalue || "");
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.personTypes || []}
-                                        prefixTranslation="type_persontype_"
-                                        optionValue="domainvalue"
-                                        optionDesc="domainvalue"
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.type} />}
-                                subtitle={(
-                                    <FieldSelect
-                                        uset={true}
-                                        valueDefault={person.type}
-                                        onChange={(value) => {
-                                            setValue('type', value?.domainvalue || "");
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.personGenTypes || []}
-                                        prefixTranslation="type_personlevel_"
-                                        optionValue="domainvalue"
-                                        optionDesc="domaindesc"
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.phone} />}
+                                title={<Trans i18nKey={langKeys.cellphone} />}
                                 subtitle={(
                                     <Controller
                                         name="phone"
@@ -202,6 +205,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                             <CssPhonemui
                                                 {...field}
                                                 fullWidth
+                                                size="small"
+                                                variant="outlined"
                                                 defaultCountry={"pe"}
                                                 enableLongNumbers={true}
                                                 countryCodeEditable={false}
@@ -242,7 +247,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.alternativePhone} />}
+                                title={<Trans i18nKey={langKeys.alternativeCellphone} />}
                                 subtitle={(
                                     <Controller
                                         name="alternativephone"
@@ -251,6 +256,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                             <CssPhonemui
                                                 {...field}
                                                 fullWidth
+                                                size="small"
+                                                variant="outlined"
                                                 defaultCountry={"pe"}
                                                 enableLongNumbers={true}
                                                 countryCodeEditable={false}
@@ -291,7 +298,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                 subtitle={(
                                     <TextField
                                         fullWidth
-                                        placeholder={t(langKeys.email)}
+                                        size="small"
+                                        variant="outlined"
                                         defaultValue={getValues("email")}
                                         value={getValues("email")}
                                         onChange={e => {
@@ -312,7 +320,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                 subtitle={(
                                     <TextField
                                         fullWidth
-                                        placeholder={t(langKeys.alternativeEmail)}
+                                        size="small"
+                                        variant="outlined"
                                         defaultValue={getValues("alternativeemail")}
                                         value={getValues("alternativeemail")}
                                         onChange={e => {
@@ -328,18 +337,22 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.birthday} />}
+                                title={"Sexo"}
                                 subtitle={(
-                                    <TextField
-                                        type="date"
-                                        fullWidth
-                                        placeholder={t(langKeys.birthday)}
-                                        defaultValue={getValues("birthday")}
-                                        value={getValues("birthday")}
-                                        onChange={e => {
-                                            setValue('birthday', e?.target?.value || null)
-                                            trigger("birthday")
+                                    <FieldSelect
+                                        uset={true}
+                                        size="small"
+                                        variant="outlined"
+                                        valueDefault={getValues("sex")}
+                                        onChange={(value) => {
+                                            setValue('gender', value?.domainvalue || "");
+                                            setValue('genderdesc', value?.domaindesc || "")
                                         }}
+                                        loading={domains.loading}
+                                        data={domains.value?.genders || []}
+                                        prefixTranslation="type_gender_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -351,6 +364,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
+                                        size="small"
+                                        variant="outlined"
                                         valueDefault={getValues("gender")}
                                         onChange={(value) => {
                                             setValue('gender', value?.domainvalue || "");
@@ -368,6 +383,46 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
+                                title={<Trans i18nKey={langKeys.birthdate} />}
+                                subtitle={(
+                                    <TextField
+                                        type="date"
+                                        fullWidth
+                                        size="small"
+                                        variant="outlined"
+                                        defaultValue={getValues("birthday")}
+                                        value={getValues("birthday")}
+                                        onChange={e => {
+                                            setValue('birthday', e?.target?.value || null)
+                                            trigger("birthday")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={"Edad"}
+                                subtitle={(
+                                    <TextField
+                                        type="number"
+                                        fullWidth
+                                        size="small"
+                                        variant="outlined"
+                                        defaultValue={getValues("birthday")}
+                                        value={getValues("birthday")}
+                                        onChange={e => {
+                                            setValue('birthday', e?.target?.value || null)
+                                            trigger("birthday")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
                                 title={<Trans i18nKey={langKeys.educationLevel} />}
                                 subtitle={(
                                     <FieldSelect
@@ -377,30 +432,11 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                             setValue('educationlevel', value?.domainvalue || "");
                                             setValue('educationleveldesc', value?.domaindesc || "")
                                         }}
+                                        size="small"
+                                        variant="outlined"
                                         loading={domains.loading}
                                         data={domains.value?.educationLevels || []}
                                         prefixTranslation="type_educationlevel_"
-                                        optionValue="domainvalue"
-                                        optionDesc="domainvalue"
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.civilStatus} />}
-                                subtitle={(
-                                    <FieldSelect
-                                        uset={true}
-                                        valueDefault={getValues("civilstatus")}
-                                        onChange={(value) => {
-                                            setValue('civilstatus', value?.domainvalue || "");
-                                            setValue('civilstatusdesc', value?.domaindesc || "")
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.civilStatuses || []}
-                                        prefixTranslation="type_civilstatus_"
                                         optionValue="domainvalue"
                                         optionDesc="domainvalue"
                                     />
@@ -419,6 +455,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                             setValue('occupation', value?.domainvalue || "");
                                             setValue('occupationdesc', value?.domaindesc || "")
                                         }}
+                                        size="small"
+                                        variant="outlined"
                                         loading={domains.loading}
                                         data={domains.value?.occupations || []}
                                         prefixTranslation="type_ocupation_"
@@ -435,7 +473,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                     subtitle={(
                                         <TextField
                                             fullWidth
-                                            placeholder={t(langKeys.occupation)}
+                                            size="small"
+                                            variant="outlined"
                                             defaultValue={getValues("occupation")}
                                             value={getValues("occupation")}
                                             onChange={e => {
@@ -450,10 +489,76 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                             </Grid>}
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
+                                title={<Trans i18nKey={langKeys.personType} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}
+                                        size="small"
+                                        variant="outlined"
+                                        valueDefault={getValues("persontype")}
+                                        onChange={(value) => {
+                                            setValue('persontype', value?.domainvalue || "");
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.personTypes || []}
+                                        prefixTranslation="type_persontype_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.type} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}
+                                        valueDefault={person.type}
+                                        size="small"
+                                        variant="outlined"
+                                        onChange={(value) => {
+                                            setValue('type', value?.domainvalue || "");
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.personGenTypes || []}
+                                        prefixTranslation="type_personlevel_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domaindesc"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={"Salario"}
+                                subtitle={(
+                                    <FieldSelect
+                                        valueDefault={getValues("groups")}
+                                        size="small"
+                                        variant="outlined"
+                                        onChange={(value) => {
+                                            setValue('groups', value?.domainvalue || "");
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.groups || []}
+                                        optionValue="domainvalue"
+                                        optionDesc="domaindesc"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
                                 title={<Trans i18nKey={langKeys.group} count={2} />}
                                 subtitle={(
                                     <FieldSelect
                                         valueDefault={getValues("groups")}
+                                        size="small"
+                                        variant="outlined"
                                         onChange={(value) => {
                                             setValue('groups', value?.domainvalue || "");
                                         }}
@@ -472,7 +577,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                 subtitle={(
                                     <TextField
                                         fullWidth
-                                        placeholder={t(langKeys.address)}
+                                        size="small"
+                                        variant="outlined"
                                         defaultValue={getValues("address")}
                                         value={getValues("address")}
                                         onChange={e => {
@@ -490,7 +596,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                                 subtitle={(
                                     <TextField
                                         fullWidth
-                                        placeholder={t(langKeys.district)}
+                                        size="small"
+                                        variant="outlined"
                                         defaultValue={getValues("district")}
                                         value={getValues("district")}
                                         onChange={e => {

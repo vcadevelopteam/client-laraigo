@@ -6531,6 +6531,12 @@ const translation: LangKeys = {
   registertime: 'Register Time',
 
   billingreport_conversationbillable: 'Billable WhatsApp Conversations',
+  cellphone: 'Cellphone',
+  alternativeCellphone: 'Alternative cellphone',
+  birthdate: 'Birth date',
+  persongroup: 'Person group',
+  updatedby: 'Updated by',
+  updatedate: 'Update date',
 };
 
 const enResource: ResourceLanguage = {
