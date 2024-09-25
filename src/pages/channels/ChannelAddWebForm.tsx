@@ -840,8 +840,9 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
     const defFields = useRef<FieldTemplate[]>(
         (form.getValues("form") || []).map((x) => {
+            const ff = x.field === "BUSINESS" ? `${x.field}NAME` : x.field;
             return {
-                ...templates[`${x.field}_FIELD`],
+                ...templates[`${ff}_FIELD`],
                 data: x,
             } as FieldTemplate;
         })

@@ -66,7 +66,7 @@ interface MultiData {
 }
 
 interface HistoryProps {
-  multiData: MultiData[];
+  multiData: any;
 }
 
 interface HistoryItem {
@@ -82,7 +82,7 @@ interface HistoryItem {
 const History: React.FC<HistoryProps> = ({ multiData }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const datahistory = multiData[1] && multiData[1].success ? multiData[1].data : [];
+  const datahistory = multiData?.data?.[1] && multiData?.data?.[1].success ? multiData?.data?.[1].data : [];
 
   return (
     <div className={classes.containerDetail}>

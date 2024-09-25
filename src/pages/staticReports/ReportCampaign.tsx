@@ -22,9 +22,9 @@ import { FieldErrors } from "react-hook-form";
 interface DetailProps {
     setViewSelected?: (view: string) => void;
     externalUse?: boolean;
-    setValue: Dictionary
-    getValues: Dictionary,
-    errors: FieldErrors
+    // setValue: Dictionary
+    // getValues: Dictionary,
+    // errors: FieldErrors
 }
 
 const arrayBread = [
