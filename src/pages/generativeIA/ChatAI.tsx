@@ -200,7 +200,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const [totalOutputTokens, setTotalOutputTokens] = useState(0);
     const [messageAux2, setMessageAux2] = useState("");
     const [waitSaveAux, setWaitSaveAux] = useState(false);
-
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
 
     const CustomTooltip = styled(({ className, ...props }) => (
         <Tooltip {...props} classes={{ popper: className }} />
@@ -229,7 +230,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number | undefined) => { if (threadid) { dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})))}};    
-        
+    
     useEffect(() => {
         if (messages && Array.isArray(messages.data) && messages.data.length > 0) {
             let totalInput = 0;
@@ -709,6 +710,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
             decoding_method: row?.decoding_method ? row.decoding_method : "sample",
+            project_id: conector?.modelid,
         }))
         setWaitSaveMessageLlama(true)
         setActiveThreadId(currentThreadLlamaId);
@@ -930,7 +932,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 </div>
 
                 <div className={classes.chatInputContainer}>
-                    <div style={{ maxWidth: '800px', width: '100%' }}>
+                    <div style={{ flex: 1, maxWidth: '800px', width: '100%', backgroundColor: 'white' }}>
                         <FieldEdit
                             label={t(langKeys.typeamessage)}
                             variant="outlined"
@@ -943,11 +945,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
+                                            size="small"
                                             className={classes.sendicon}
                                             onClick={handleSendMessageGeneral}
                                             disabled={!selectedChat || messageText.trim() === '' || isLoading}
                                         >
-                                            <SendMesageIcon color="secondary" />
+                                            <SendMesageIcon color="primary" />
                                         </IconButton>
                                     </InputAdornment>
                                 ),
@@ -955,34 +958,30 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             inputRef={textFieldRef}
                         />
                     </div>
-                    {isLlamaModel && (
-                        <>
-                             <CustomTooltip
-                                title={
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <div style={{ textAlign: 'left', marginRight: '10px' }}> 
-                                            <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
-                                            <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
-                                        </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <Typography variant="body2">
-                                                <strong>{messages?.data?.length === 0 ? 0 : totalInputTokens}</strong>
-                                            </Typography>
-                                            <Typography variant="body2">
-                                                <strong>{messages?.data?.length === 0 ? 0 : totalOutputTokens}</strong>
-                                            </Typography>
-                                        </div>
-                                    </div>
-                                }
-                                arrow={false}
-                                placement="top"
-                            >
-                                <div style={{ position: 'absolute', right: '2rem', alignSelf: 'center', padding: '0 1rem 0 0', cursor: 'pointer' }}>
-                                    <p><strong>{messages?.data?.length === 0 ? 0 : totalInputTokens+totalOutputTokens}</strong> tokens</p>
+                    <CustomTooltip
+                        title={
+                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                <div style={{ textAlign: 'left', marginRight: '10px' }}> 
+                                    <Typography variant="body2" style={{ marginRight: '8px' }}>In</Typography>
+                                    <Typography variant="body2" style={{ marginRight: '8px' }}>Out</Typography>
                                 </div>
-                            </CustomTooltip>                      
-                        </>
-                    )}
+                                <div style={{ textAlign: 'right' }}>
+                                    <Typography variant="body2">
+                                        <strong>{messages?.data?.length === 0 ? 0 : totalInputTokens}</strong>
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        <strong>{messages?.data?.length === 0 ? 0 : totalOutputTokens}</strong>
+                                    </Typography>
+                                </div>
+                            </div>
+                        }
+                        arrow={false}
+                        placement="top"
+                    >
+                        <div style={{ cursor: 'pointer', marginLeft: 10 }}>
+                            <p><strong>{messages?.data?.length === 0 ? 0 : totalInputTokens+totalOutputTokens}</strong> tokens</p>
+                        </div>
+                    </CustomTooltip>
                 </div>
             </div>
         </div>
