@@ -103,7 +103,7 @@ export const Person: FC = () => {
                             setTypeTemplate("MAIL");
                         }}
                     />
-                    
+
                 )
             }
         },
@@ -143,14 +143,14 @@ export const Person: FC = () => {
                 { key: t(langKeys.lost), value: "4,Lost" },
             ],
             Cell: (props: any) => {
-                const { row } = props.cell;                
+                const { row } = props.cell;
                 if (!row || !row.original) {
                     return null;
-                }            
-                const { phasejson } = row.original;            
+                }
+                const { phasejson } = row.original;
                 if (!phasejson) {
                     return null;
-                }            
+                }
                 return (
                     <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
                         {Object.entries(phasejson).sort(([aKey], [bKey]) => {
@@ -167,11 +167,15 @@ export const Person: FC = () => {
                         ))}
                     </div>
                 );
-            }            
+            }
         },
         {
             Header: t(langKeys.persongroup),
             accessor: 'groups',
+        },
+        {
+            Header: t(langKeys.lastattentiongroup),
+            accessor: 'lastattentiongroup',
         },
         {
             Header: t(langKeys.personType),
@@ -186,19 +190,19 @@ export const Person: FC = () => {
             accessor: 'status',
             prefixTranslation: 'status_',
             Cell: (props: CellProps<Dictionary>) => {
-                const { cell } = props;                
+                const { cell } = props;
                 if (!cell || !cell.row) {
                     return null;
-                }            
-                const { original } = cell.row;            
+                }
+                const { original } = cell.row;
                 if (!original) {
                     return null;
-                }            
+                }
                 const { status, locked } = original;
                 if (locked) return (t(`status_BLOCKED`.toLowerCase()) || "").toUpperCase();
                 return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
             }
-            
+
         },
         {
             Header: t(langKeys.updatedby),
@@ -207,6 +211,23 @@ export const Person: FC = () => {
         {
             Header: t(langKeys.updatedate),
             accessor: 'changedate',
+            type: 'date',
+            sortType: 'datetime',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return convertLocalDate(row.changedate).toLocaleString();
+            }
+        },
+        {
+            Header: t(langKeys.lastContactDate),
+            accessor: 'lastcontact',
+            type: 'date',
+            sortType: 'datetime',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return row && row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : "";
+            }
+
         },
         {
             Header: `Id persona`,
@@ -233,18 +254,18 @@ export const Person: FC = () => {
     }, [personList]);
 
     useEffect(() => {
-        if(personList.loading) {
+        if (personList.loading) {
             setDisableLockUnlockButtons({
                 lock: true,
                 unlock: true
             })
-        }else{
-            if(Object.keys(selectedRows).length === 0){
+        } else {
+            if (Object.keys(selectedRows).length === 0) {
                 setDisableLockUnlockButtons({
                     lock: true,
                     unlock: true
                 })
-            }else{
+            } else {
                 setDisableLockUnlockButtons({
                     lock: !peopleSelected.some(person => !person.locked),
                     unlock: false

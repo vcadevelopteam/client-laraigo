@@ -6489,6 +6489,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   persongroup: 'Grupo persona',
   updatedby: 'Actualizado por',
   updatedate: 'Fecha de actualización',
+  lastattentiongroup: 'Último grupo de atención',
+  personaldata: 'Datos personales',
 };
 
 const esResource: ResourceLanguage = {

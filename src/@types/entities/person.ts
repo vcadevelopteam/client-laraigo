@@ -68,6 +68,7 @@ export interface IPerson {
     usergroup?: string;
     pinnedmessages?: any;
     tags?: string;
+    age?: number;
 }
 
 export interface IPersonCommunicationChannel {

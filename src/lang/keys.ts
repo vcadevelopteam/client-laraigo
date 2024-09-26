@@ -6480,6 +6480,8 @@ export const langKeys = {
   persongroup: 'persongroup',
   updatedby: 'updatedby',
   updatedate: 'updatedate',
+  lastattentiongroup: 'lastattentiongroup',
+  personaldata: 'personaldata',
 };
 
 export type LangKeys = typeof langKeys;

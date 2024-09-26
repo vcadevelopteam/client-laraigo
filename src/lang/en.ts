@@ -6537,6 +6537,8 @@ const translation: LangKeys = {
   persongroup: 'Person group',
   updatedby: 'Updated by',
   updatedate: 'Update date',
+  lastattentiongroup: 'Last attention group',
+  personaldata: 'Personal data',
 };
 
 const enResource: ResourceLanguage = {

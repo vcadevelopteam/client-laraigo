@@ -38,6 +38,7 @@ import SmsIcon from '@material-ui/icons/Sms';
 import CustomTableZyxEditable from 'components/fields/customtable-editable';
 import { Property } from './components/Property';
 import { GeneralInformationTab } from './components/GeneralInformationTab';
+import { TabPanel } from './components/TabPanel';
 
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
@@ -63,28 +64,6 @@ const Photo: FC<PhotoProps> = ({ src, radius }) => {
         return <AccountCircle className={classes.accountPhoto} style={{ width, height }} />;
     }
     return <Avatar alt={src} src={src} className={classes.accountPhoto} style={{ width, height }} />;
-}
-
-
-interface TabPanelProps {
-    value: string;
-    index: string;
-}
-
-const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`wrapped-tabpanel-${value}`}
-            aria-labelledby={`wrapped-tab-${value}`}
-            style={{ display: value === index ? 'block' : 'none', overflowY: 'auto' }}
-        >
-            <Box p={3}>
-                {children}
-            </Box>
-        </div>
-    );
 }
 
 const useChannelItemStyles = makeStyles(theme => ({
@@ -1095,6 +1074,11 @@ const usePersonDetailStyles = makeStyles(theme => ({
         flexDirection: 'column',
         overflowY: 'auto',
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    },
 }));
 
 interface DialogSendTemplateProps {
@@ -1960,7 +1944,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                     <TabPanel value="5" index={tabIndex}>
                         <CustomVariableTab tableData={tableDataVariables} setTableData={setTableDataVariables} />
                     </TabPanel>
-                    {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
                 {!!person.personid &&
@@ -2127,6 +2110,7 @@ const PersonDetail: FC = () => {
     useEffect(() => {
         if (waitLoading && !executeResult.loading) {
             if (!executeResult.error && executeResult.data.length) {
+                debugger
                 setperson(executeResult.data[0]);
                 dispatch(showBackdrop(false));
                 setWaitLoading(false);
@@ -2140,9 +2124,7 @@ const PersonDetail: FC = () => {
 
     return (
         <>
-            {!!person &&
-                <PersonDetail2 person={person} setrefresh={setrefresh} />
-            }
+            <PersonDetail2 person={person} setrefresh={setrefresh} />
         </>
     );
 }
