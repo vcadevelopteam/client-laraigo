@@ -331,14 +331,12 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 </div>
                             </div>
                         }
-                    </div>    
-
+                    </div>
                     {getValues('type') && getValues('provider') && (
                         <div className='row-zyx' style={{ borderBottom: '1px solid black', padding: '15px 0 10px 0' }}>
                             <span style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.serviceregistration)}</span>
                         </div>
-                    )}                   
-
+                    )}
                     {((getValues('type') === 'Assistant' && getValues('provider') === 'Rasa') || (getValues('type') === 'Assistant' && getValues('provider') === 'IBM')) && (
                         <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>  
                             <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
@@ -365,13 +363,12 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 </div>
                             </div>     
                         </div>
-                    )}         
-                    
+                    )}
                     {getValues('type') && getValues('provider') && !(getValues('type') === 'Assistant' && getValues('provider') === 'IBM') && (
                         <>                     
                             <div style={{ display: 'flex', width: '100%', gap:'1rem' }}>                       
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Api Key'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'API Key'}</span>
                                     <span>{t(langKeys.apikeydescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
@@ -397,7 +394,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
                                     <span>{t(langKeys.statusdescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                                    
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0}}>
                                             <FieldSelect
                                                 data={statusData}
@@ -421,8 +417,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     
                                     </div>
                                 </div>
-                            </div>                    
-                        
+                            </div>
                             <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.name)}</span>
@@ -443,7 +438,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                         </div>                                   
                                     </div>
                                 </div>
-
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.description)}</span>
                                     <span>{t(langKeys.descriptiondescription)}</span>
@@ -463,14 +457,36 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                     </div>
                                 </div>
                             </div>
+                            {getValues('provider') === 'IBM' && (
+                                <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>                       
+                                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.projectid)}</span>
+                                        <span>{t(langKeys.projectiddesc)}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
+                                            <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
+                                                <FieldEdit
+                                                    label={''}
+                                                    onChange={(value) => {
+                                                        setValue("modelid", value)
+                                                        clearErrors('modelid')
+                                                    }}
+                                                    valueDefault={getValues("modelid")}
+                                                    maxLength={512}
+                                                    variant="outlined"
+                                                    error={errors?.modelid?.message}
+                                                />
+                                            </div>                                   
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </>
                     )}
-
                     {getValues('type') === 'Assistant' && getValues('provider') === 'IBM' && (
                         <>                                                
                             <div style={{ display: 'flex', width: '100%', gap:'3rem' }}>   
                                 <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'Api Key'}</span>
+                                    <span style={{ fontWeight: 'bold', fontSize: 18 }}>{'API Key'}</span>
                                     <span>{t(langKeys.apikeydescription)}</span>
                                     <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
                                         <div className="row-zyx" style={{ width: '45vw', marginBottom: 0 }}>
