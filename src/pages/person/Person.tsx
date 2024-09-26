@@ -613,6 +613,7 @@ export const Person: FC = () => {
                     if (filterChannelsType !== '') filterParams.append('channelTypes', filterChannelsType);
                     history.push({ search: filterParams.toString() });
                 }}
+                fillterAllDate={true}
                 initialEndDate={params.endDate}
                 initialStartDate={params.startDate}
                 initialFilters={params.filters}

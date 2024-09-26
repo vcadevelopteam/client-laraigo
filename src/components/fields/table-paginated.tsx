@@ -491,6 +491,7 @@ const TableZyx = React.memo(({
     groupedBy,
     showHideColumns,
     ExtraMenuOptions,
+    fillterAllDate=false,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, distinct: "", pageIndex: initialPageIndex });
@@ -953,6 +954,7 @@ const TableZyx = React.memo(({
                     {filterrange && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             <DateRangePicker
+                                fillterAllDate={fillterAllDate}
                                 open={openDateRangeModal}
                                 setOpen={setOpenDateRangeModal}
                                 range={dateRange}
