@@ -343,9 +343,9 @@ interface InputProps {
     inputProps?: any;
     InputProps?: Partial<OutlinedInputProps>;
     size?: "small" | "medium" | undefined;
-    width?: number | "string";
-    helperText?: "string";
-    helperText2?: "string";
+    width?: number | string;
+    helperText?: string;
+    helperText2?: string;
     placeholder?: string;
     resize?: string;
     onInput?: any;
@@ -392,19 +392,21 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
         <div className={className}>
             {!!helperText2 &&
                 <>
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                         {label}
                         {!!helperText &&
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                                     <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                                 </Tooltip>
                             </div>
                         }
                     </Box>
-                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
-                        {helperText2}
-                    </Box>
+                    {helperText2 !== "enable" &&
+                        <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                            {helperText2}
+                        </Box>
+                    }
                 </>
             }
             {(variant === "standard" && !!label && !helperText2) &&
@@ -412,7 +414,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                            <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                                 <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                             </Tooltip>
                         </div>
@@ -470,7 +472,7 @@ export const FieldEditPassword: React.FC<InputProps> = ({ width = "100%", label,
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                            <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                                 <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                             </Tooltip>
                         </div>
@@ -1048,19 +1050,21 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
         <div className={className}>
             {!!helperText2 &&
                 <>
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                         {label}
                         {!!helperText &&
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                                     <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                                 </Tooltip>
                             </div>
                         }
                     </Box>
-                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
-                        {helperText2}
-                    </Box>
+                    {helperText2 !== "enable" &&
+                        <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                            {helperText2}
+                        </Box>
+                    }
                 </>
             }
             {(variant === "standard" && !!label && !helperText2) &&
@@ -1068,7 +1072,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                            <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                                 <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                             </Tooltip>
                         </div>
@@ -1169,7 +1173,7 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                            <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                                 <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                             </Tooltip>
                         </div>
@@ -1240,12 +1244,14 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
         <div className={className}>
             {!!helperText2 &&
                 <>
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                         {label}
                     </Box>
-                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
-                        {helperText2}
-                    </Box>
+                    {helperText2 !== "enable" &&
+                        <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                            {helperText2}
+                        </Box>
+                    }
                 </>
             }
             {(variant === "standard" && !helperText2) &&
@@ -1679,7 +1685,7 @@ export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ classN
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                            <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                                 <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                             </Tooltip>
                         </div>
@@ -1787,7 +1793,7 @@ export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChang
                 {label}
                 {!!helperText &&
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                        <Tooltip title={<div style={{ fontSize: 1 }}>{helperText}</div>} arrow placement="top" >
                             <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
                         </Tooltip>
                     </div>

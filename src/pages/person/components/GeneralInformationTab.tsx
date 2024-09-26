@@ -5,12 +5,11 @@ import { IObjectState, IPerson, IPersonDomains } from "@types";
 import { UseFormGetValues } from "react-hook-form";
 import { FC, useEffect, useState } from "react";
 import clsx from 'clsx';
-import { TabPanel } from "./TabPanel";
 import { PersonalDataTab } from "./PersonalDataTab";
-import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getReferrerListByPerson, resetGetReferrerListByPerson } from "store/person/actions";
 import { getReferrerByPersonBody } from "common/helpers";
+import { ExtraDataTab } from "./ExtraDataTab";
 
 interface GeneralInformationTabProps {
     person: IPerson;
@@ -63,7 +62,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
         }
     }, [dispatch, person]);
 
-    return <div>
+    return <>
         <AppBar position="static" elevation={0}>
             <Tabs
                 value={tabIndex}
@@ -79,18 +78,18 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                 {!!person.personid &&
                     <Tab
                         className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
-                        label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
+                        label={<div><Trans i18nKey={langKeys.addressbook} /></div>}
                         value="1"
                     />
                 }
                 <Tab
                     className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                    label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                    label={<Trans i18nKey={langKeys.extradata} count={2} />}
                     value="2"
                 />
             </Tabs>
         </AppBar>
-        <TabPanel value="0" index={tabIndex}>
+        {tabIndex === "0" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
             <PersonalDataTab
                 getValues={getValues}
                 setValue={setValue}
@@ -102,10 +101,35 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                 extraTriggers={extraTriggers}
                 setExtraTriggers={setExtraTriggers}
             />
-        </TabPanel>
-        <TabPanel value="1" index={tabIndex}>
-        </TabPanel>
-        <TabPanel value="2" index={tabIndex}>
-        </TabPanel>
-    </div>
+        </div>
+        }
+        {tabIndex === "2" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
+            <PersonalDataTab
+                getValues={getValues}
+                setValue={setValue}
+                person={person}
+                trigger={trigger}
+                domains={domains}
+                errors={errors}
+                control={control}
+                extraTriggers={extraTriggers}
+                setExtraTriggers={setExtraTriggers}
+            />
+        </div>
+        }
+        {tabIndex === "3" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
+            <ExtraDataTab
+                getValues={getValues}
+                setValue={setValue}
+                person={person}
+                trigger={trigger}
+                domains={domains}
+                errors={errors}
+                control={control}
+                extraTriggers={extraTriggers}
+                setExtraTriggers={setExtraTriggers}
+            />
+        </div>
+        }
+    </>
 }

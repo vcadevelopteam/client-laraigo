@@ -6491,6 +6491,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   updatedate: 'Fecha de actualización',
   lastattentiongroup: 'Último grupo de atención',
   personaldata: 'Datos personales',
+  validationphoneemail: 'Debe existir un correo o un celular',
+  addressbook: 'Libreta de direcciones',
+  extradata: 'Datos extra',
+  referringpersonname: 'Usuario referente',
+  referringpersonid: 'Id usuario referente',
+  personid: 'Identificador persona',
+  termsandconditions: 'Términos y condiciones',
 };
 
 const esResource: ResourceLanguage = {

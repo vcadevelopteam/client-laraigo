@@ -52,6 +52,8 @@ export interface IPerson {
     longitude?: string;
     referringpersonid: number;
     referringpersonname?: string;
+    termsandconditions?: boolean;
+    clientnumber?: number;
     // displayname: string;
     variablecontext: Dictionary;
     locked?: boolean;
@@ -69,6 +71,7 @@ export interface IPerson {
     pinnedmessages?: any;
     tags?: string;
     age?: number;
+    salary?: number;
 }
 
 export interface IPersonCommunicationChannel {

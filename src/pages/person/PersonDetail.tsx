@@ -1487,7 +1487,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
         }
     }, [person, domains]);
 
-    const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
+    const { setValue, getValues, trigger, register, control, formState: { errors }, watch } = useForm<any>({
         defaultValues: {
             ...person,
             corpdesc: user?.corpdesc || '',
@@ -1518,8 +1518,12 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             healthprofessional: person?.healthprofessional || '',
             referralchannel: person?.referralchannel || '',
             referringpersonid: person?.referringpersonid || 0,
+            salary: person?.salary || 0,
+            age: person?.age || 0,
         } || {},
     });
+    const watchEmail=watch("email");
+    const watchPhone=watch("phone");
 
     useEffect(() => {
         if (!person) {
@@ -1554,46 +1558,51 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                 person.healthprofessional = '';
                 person.referralchannel = '';
                 person.referringpersonid = 0;
-
-                register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('nickname');
-                register('documentnumber', {
-                    validate: {
-                        validationDNI: (value) => getValues("documenttype") === "DNI" ? (value.length === 8 || t(langKeys.validationDNI) + "") : true,
-                        validationRUC: (value) => getValues("documenttype") === "RUC" ? (value.length === 11 || t(langKeys.validationRUC) + "") : true,
-                        validationCE: (value) => getValues("documenttype") === "CE" ? (value.length <= 12 || t(langKeys.validationCE) + "") : true,
-                    }
-                });
-                register('email', {
-                    validate: {
-                        isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
-                    }
-                });
-                register('alternativeemail', {
-                    validate: {
-                        isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
-                    }
-                });
-                register('phone', {
-                    validate: {
-                        isperuphone: (value) => (value?.startsWith("+51") ? (value.length === 12 || t(langKeys.validationphone) + "") : true)
-                    }
-                });
-                register('allternativephone', {
-                    validate: {
-                        isperuphone: (value) => (value?.startsWith("+51") ? (value.length === 12 || t(langKeys.validationphone) + "") : true)
-                    }
-                });
+                person.age = 0;
+                person.salary = 0;
             }
             dispatch(getDomainsByTypename());
         }
-
         return () => {
             dispatch(resetGetDomainsByTypename());
             dispatch(resetEditPerson());
         };
     }, [history, person, dispatch]);
+
+    useEffect(() => {
+        register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+        register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+        register('nickname');
+        register('documentnumber', {
+            validate: {
+                validationDNI: (value) => getValues("documenttype") === "DNI" ? (value.length === 8 || t(langKeys.validationDNI) + "") : true,
+                validationRUC: (value) => getValues("documenttype") === "RUC" ? (value.length === 11 || t(langKeys.validationRUC) + "") : true,
+                validationCE: (value) => getValues("documenttype") === "CE" ? (value.length <= 12 || t(langKeys.validationCE) + "") : true,
+            }
+        });
+        register('email', {
+            validate: {
+                checkphone:(value) => (!!watchPhone?true: !!value?true: t(langKeys.validationphoneemail)), 
+                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + ""),
+            }
+        });
+        register('alternativeemail', {
+            validate: {
+                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
+            }
+        });
+        register('phone', {
+            validate: {
+                checkemail:(value) => (!!watchEmail?true: !!value?true: t(langKeys.validationphoneemail)), 
+                isperuphone: (value) => (value?.startsWith("+51") ? (value.length === 12 || t(langKeys.validationphone) + "") : true)
+            }
+        });
+        register('allternativephone', {
+            validate: {
+                isperuphone: (value) => (value?.startsWith("+51") ? (value.length === 12 || t(langKeys.validationphone) + "") : true)
+            }
+        });
+    }, [history, person, dispatch, watchEmail, watchPhone]);
 
     useEffect(() => {
         if (domains.loading) return;
@@ -1747,7 +1756,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        // history.push(paths.PERSON);
                         history.goBack();
                     }}
                 >

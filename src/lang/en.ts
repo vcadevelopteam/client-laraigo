@@ -6539,6 +6539,13 @@ const translation: LangKeys = {
   updatedate: 'Update date',
   lastattentiongroup: 'Last attention group',
   personaldata: 'Personal data',
+  validationphoneemail: 'There must be an email or cell phone',
+  addressbook: 'Address book',
+  extradata: 'Extra data',
+  referringpersonname: 'Referring username',
+  referringpersonid: 'Referring user ID',
+  personid: 'Person Id',
+  termsandconditions: 'Terms and conditions',
 };
 
 const enResource: ResourceLanguage = {

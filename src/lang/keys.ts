@@ -6482,6 +6482,13 @@ export const langKeys = {
   updatedate: 'updatedate',
   lastattentiongroup: 'lastattentiongroup',
   personaldata: 'personaldata',
+  validationphoneemail: 'validationphoneemail',
+  addressbook: 'addressbook',
+  extradata: 'extradata',
+  referringpersonname: 'referringpersonname',
+  referringpersonid: 'referringpersonid',
+  personid: 'personid',
+  termsandconditions: 'termsandconditions',
 };
 
 export type LangKeys = typeof langKeys;
