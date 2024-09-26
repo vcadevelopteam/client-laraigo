@@ -10,6 +10,8 @@ import { SearchField } from 'components';
 import { Skeleton } from '@material-ui/lab';
 import { Trans, useTranslation } from 'react-i18next';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button, { ButtonProps } from '@material-ui/core/Button';
@@ -343,6 +345,7 @@ interface InputProps {
     size?: "small" | "medium" | undefined;
     width?: number | "string";
     helperText?: "string";
+    helperText2?: "string";
     placeholder?: string;
     resize?: string;
     onInput?: any;
@@ -355,12 +358,14 @@ interface TemplateAutocompleteProps extends InputProps {
     data: Dictionary[],
     optionValue: string;
     optionDesc: string;
+    helperText2: string;
     loading?: boolean;
     triggerOnChangeOnFirst?: boolean;
     readOnly?: boolean;
     limitTags?: number;
     multiline?: boolean;
     orderbylabel?: boolean;
+    freeSolo?: boolean;
 }
 
 interface TemplateAutocompletePropsDisabled extends InputProps {
@@ -376,7 +381,7 @@ interface TemplateAutocompletePropsDisabled extends InputProps {
     getOptionDisabled?: Dictionary;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null, helperText2 = "" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -385,7 +390,24 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
 
     return (
         <div className={className}>
-            {(variant === "standard" && !!label) &&
+            {!!helperText2 &&
+                <>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                        {label}
+                        {!!helperText &&
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                                </Tooltip>
+                            </div>
+                        }
+                    </Box>
+                    <Box lineHeight="18px" fontSize={12} mb={.5} style={{ display: "flex", color: "#aaaaaa" }}>
+                        {helperText2}
+                    </Box>
+                </>
+            }
+            {(variant === "standard" && !!label && !helperText2) &&
                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                     {label}
                     {!!helperText &&
@@ -401,7 +423,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 {...fregister}
                 color="primary"
                 fullWidth={width === "100%"}
-                label={variant !== "standard" && label}
+                label={(variant !== "standard" && !helperText2) && label}
                 disabled={disabled}
                 type={type}
                 style={{ width: width }}
@@ -429,7 +451,76 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
     )
 }
 
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard" }) => {
+export const FieldEditPassword: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
+    const [value, setValue] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        setValue(valueDefault);
+    }, [valueDefault]);
+
+    const handleTogglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    return (
+        <div className={className}>
+            {(variant === "standard" && !!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
+            }
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth={width === "100%"}
+                label={variant !== "standard" && label}
+                disabled={disabled}
+                type={showPassword ? 'text' : 'password'}
+                style={{ width: width }}
+                value={value}
+                variant={variant}
+                placeholder={placeholder}
+                error={!!error}
+                helperText={error || null}
+                minRows={rows}
+                size={size}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                InputProps={{
+                    ...InputProps,
+                    endAdornment: (
+                        <IconButton
+                            onClick={handleTogglePasswordVisibility}
+                            edge="end"
+                        >
+                            {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+
+                        </IconButton>
+                    )
+                }}
+                inputRef={inputRef}
+            />
+        </div>
+    )
+}
+
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard", placeholder = "" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -449,6 +540,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 error={!!error}
                 value={value}
                 multiline
+                placeholder={placeholder}
                 minRows={rows}
                 helperText={error || null}
                 onChange={(e) => {
@@ -899,7 +991,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     return <TelegramColor />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2 = "" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false, helperText = "", size = 'small', onBlur, helperText2="", freeSolo = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -987,6 +1079,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                 filterSelectedOptions
                 style={style}
                 fullWidth
+                freeSolo = {freeSolo}
                 {...fregister}
                 disabled={disabled}
                 value={data?.length > 0 ? value : null}
@@ -994,6 +1087,12 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     if (readOnly) return;
                     setValue(newValue);
                     onChange && onChange(newValue);
+                }}
+                onInputChange={(_, newInputValue) => {
+                    if (freeSolo && !readOnly) {
+                        setValue({ [optionValue]: newInputValue, [optionDesc]: newInputValue });
+                        onChange && onChange({ [optionValue]: newInputValue, [optionDesc]: newInputValue });
+                    }
                 }}
                 getOptionSelected={(option, value) => option[optionValue] === value[optionValue]}
                 onBlur={onBlur}
@@ -1123,7 +1222,7 @@ export const FieldSelectDisabled: React.FC<TemplateAutocompletePropsDisabled> = 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small', helperText2 = "", helperText = "" }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1, size = 'small',helperText2="", helperText="" }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
     const classes = useStyles();
