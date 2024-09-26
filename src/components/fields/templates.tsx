@@ -358,7 +358,7 @@ interface TemplateAutocompleteProps extends InputProps {
     data: Dictionary[],
     optionValue: string;
     optionDesc: string;
-    helperText2: string;
+    helperText2?: string;
     loading?: boolean;
     triggerOnChangeOnFirst?: boolean;
     readOnly?: boolean;
