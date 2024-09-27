@@ -1258,7 +1258,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             referralchannel: person?.referralchannel || '',
             referringpersonid: person?.referringpersonid || 0,
             salary: person?.salary || 0,
-            age: person?.age || 0,
+            age: person?.birthday? Math.floor((Number(new Date()) - new Date(person.birthday).getTime()) / 3.15576e+10): person?.age || 0,
         } || {},
     });
     const watchEmail=watch("email");
@@ -1454,6 +1454,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             }
         }
     }, [executeResult, waitLock]);
+
     useEffect(() => {
         if (waitValidation) {
             if (!executeResult.loading && !executeResult.error) {
@@ -1583,7 +1584,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={(e) => {
                             e.preventDefault();
-                            // history.push(paths.PERSON);
                             history.goBack();
                         }}
                     >
@@ -1702,14 +1702,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                         <Property
                             icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.phone} />}
-                            // subtitle={(
-                            //     <TextField
-                            //         fullWidth
-                            //         placeholder={t(langKeys.phone)}
-                            //         defaultValue={getValues("phone")}
-                            //         onChange={e => setValue('phone', e.target.value)}
-                            //     />
-                            // )}
                             subtitle={person.phone}
                             mt={1}
                             mb={1}
@@ -1717,30 +1709,12 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                         <Property
                             icon={<EMailInboxIcon />}
                             title={<Trans i18nKey={langKeys.email} />}
-                            // subtitle={(
-                            //     <TextField
-                            //         fullWidth
-                            //         placeholder={t(langKeys.email)}
-                            //         defaultValue={getValues("email")}
-                            //         onChange={e => setValue('email', e.target.value)}
-                            //     />
-                            // )}
                             subtitle={person.email}
                             mt={1}
                             mb={1} />
                         <Property
                             icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.documenttype} />}
-                            // subtitle={(
-                            //     <DomainSelectField
-                            //         defaultValue={getValues("documenttype")}
-                            //         onChange={(value) => {
-                            //             setValue('documenttype', value);
-                            //         }}
-                            //         loading={domains.loading}
-                            //         data={domains.value?.docTypes || []}
-                            //     />
-                            // )}
                             subtitle={person.documenttype}
                             mt={1}
                             mb={1}
@@ -1748,14 +1722,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                         <Property
                             icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.docNumber} />}
-                            // subtitle={(
-                            //     <TextField
-                            //         fullWidth
-                            //         placeholder={t(langKeys.docNumber)}
-                            //         defaultValue={getValues("documentnumber")}
-                            //         onChange={e => setValue('documentnumber', e.target.value)}
-                            //     />
-                            // )}
                             subtitle={person.documentnumber}
                             mt={1}
                             mb={1}
@@ -1763,17 +1729,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                         <Property
                             icon={<GenderIcon />}
                             title={<Trans i18nKey={langKeys.gender} />}
-                            // subtitle={(
-                            //     <DomainSelectField
-                            //         defaultValue={getValues("gender")}
-                            //         onChange={(value, desc) => {
-                            //             setValue('gender', value);
-                            //             setValue('genderdesc', desc)
-                            //         }}
-                            //         loading={domains.loading}
-                            //         data={domains.value?.genders || []}
-                            //     />
-                            // )}
                             subtitle={person.gender}
                             mt={1}
                             mb={1}
@@ -1857,7 +1812,6 @@ const PersonDetail: FC = () => {
     useEffect(() => {
         if (waitLoading && !executeResult.loading) {
             if (!executeResult.error && executeResult.data.length) {
-                debugger
                 setperson(executeResult.data[0]);
                 dispatch(showBackdrop(false));
                 setWaitLoading(false);

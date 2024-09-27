@@ -66,7 +66,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
         <AppBar position="static" elevation={0}>
             <Tabs
                 value={tabIndex}
-                onChange={(x, i: string) => {setTabIndex(i)}}
+                onChange={(x, i: string) => { setTabIndex(i) }}
                 className={classes.tabs}
                 TabIndicatorProps={{ style: { display: 'none' } }}
             >
@@ -75,14 +75,11 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                     label={<div><Trans i18nKey={langKeys.personaldata} /></div>}
                     value="0"
                 />
-                {!!person.personid &&
-                    <Tab
-                        className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
-                        label={<div><Trans i18nKey={langKeys.addressbook} /></div>}
-                        value="1"
-                    />
-                }
                 <Tab
+                    className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
+                    label={<div><Trans i18nKey={langKeys.addressbook} /></div>}
+                    value="1"
+                /><Tab
                     className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
                     label={<Trans i18nKey={langKeys.extradata} count={2} />}
                     value="2"
@@ -93,7 +90,6 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
             <PersonalDataTab
                 getValues={getValues}
                 setValue={setValue}
-                person={person}
                 trigger={trigger}
                 domains={domains}
                 errors={errors}
@@ -103,11 +99,10 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
             />
         </div>
         }
-        {tabIndex === "1" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
+        <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
             <PersonalDataTab
                 getValues={getValues}
                 setValue={setValue}
-                person={person}
                 trigger={trigger}
                 domains={domains}
                 errors={errors}
@@ -116,20 +111,12 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                 setExtraTriggers={setExtraTriggers}
             />
         </div>
-        }
-        {tabIndex === "2" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
+        <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
             <ExtraDataTab
                 getValues={getValues}
                 setValue={setValue}
-                person={person}
                 trigger={trigger}
-                domains={domains}
-                errors={errors}
-                control={control}
-                extraTriggers={extraTriggers}
-                setExtraTriggers={setExtraTriggers}
             />
         </div>
-        }
     </>
 }

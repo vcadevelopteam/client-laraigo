@@ -1,29 +1,18 @@
-import { Grid, IconButton, InputAdornment, makeStyles, styled, TextField } from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
-import { Property } from "./Property";
-import { FieldEdit, FieldSelect } from "components";
-import PhoneIcon from '@material-ui/icons/Phone';
+import { useTranslation } from "react-i18next";
+import { FieldEdit } from "components";
 import { IObjectState, IPerson, IPersonDomains } from "@types";
-import { Controller, UseFormGetValues } from "react-hook-form";
+import { UseFormGetValues } from "react-hook-form";
 import { FC } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import { showSnackbar } from "store/popus/actions";
-import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
-import MuiPhoneNumber from 'material-ui-phone-number';
 
 
 interface ExtraDataTabProps {
-    person: IPerson;
     getValues: UseFormGetValues<IPerson>;
     setValue: any;
     trigger: any;
-    domains: IObjectState<IPersonDomains>;
-    errors: any;
-    control: any;
-    extraTriggers: any;
-    setExtraTriggers: (trig: any) => void;
 }
 const useStyles = makeStyles(theme => ({
     fieldStyle: {
@@ -31,27 +20,9 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const CssPhonemui = styled(MuiPhoneNumber)({
-    '& label.Mui-focused': {
-        color: '#7721ad',
-    },
-    '& .MuiInput-underline:after': {
-        borderBottomColor: '#7721ad',
-    },
-    '& .MuiOutlinedInput-root': {
-        '&.Mui-focused fieldset': {
-            borderColor: '#7721ad',
-        },
-    },
-});
-
-export const ExtraDataTab: FC<ExtraDataTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control, extraTriggers, setExtraTriggers }) => {
-    const dispatch = useDispatch();
+export const ExtraDataTab: FC<ExtraDataTabProps> = ({ getValues, trigger, setValue }) => {
     const { t } = useTranslation();
     const classes = useStyles()
-    const voxiConnection = useSelector(state => state.voximplant.connection);
-    const userConnected = useSelector(state => state.inbox.userConnected);
-    const ocupationProperty = domains?.value?.ocupationProperty?.[0]?.propertyvalue || "DOMINIO"
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto', }}>
@@ -66,7 +37,6 @@ export const ExtraDataTab: FC<ExtraDataTabProps> = ({ person, getValues, trigger
                                 helperText2="enable"
                                 onChange={value => {
                                     setValue('referringpersonname', value)
-                                    trigger("referringpersonname")
                                 }}
                                 size="small"
                                 variant="outlined"

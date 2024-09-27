@@ -15,7 +15,6 @@ import MuiPhoneNumber from 'material-ui-phone-number';
 
 
 interface PersonalDataTabProps {
-    person: IPerson;
     getValues: UseFormGetValues<IPerson>;
     setValue: any;
     trigger: any;
@@ -45,7 +44,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
     },
 });
 
-export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control, extraTriggers, setExtraTriggers }) => {
+export const PersonalDataTab: FC<PersonalDataTabProps> = ({ getValues, trigger, setValue, domains, errors, control, extraTriggers, setExtraTriggers }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useStyles()
@@ -66,7 +65,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                 helperText2="enable"
                                 onChange={value => {
                                     setValue('firstname', value)
-                                    trigger("firstname")
                                 }}
                                 size="small"
                                 variant="outlined"
@@ -81,7 +79,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                 helperText2="enable"
                                 onChange={value => {
                                     setValue('lastname', value)
-                                    trigger("lastname")
                                 }}
                                 size="small"
                                 variant="outlined"
@@ -96,7 +93,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                 helperText2="enable"
                                 onChange={value => {
                                     setValue('nickname', value)
-                                    trigger("nickname")
                                 }}
                                 size="small"
                                 variant="outlined"
@@ -262,7 +258,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                 onChange={value => {
                                     setValue('email', value)
                                     setExtraTriggers({ ...extraTriggers, email: value || "" })
-                                    trigger("email")
                                 }}
                                 size="small"
                                 variant="outlined"
@@ -277,7 +272,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                 helperText2="enable"
                                 onChange={value => {
                                     setValue('alternativeemail', value)
-                                    trigger("alternativeemail")
                                 }}
                                 size="small"
                                 variant="outlined"
@@ -327,7 +321,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                     const age = Math.floor((Number(new Date()) - new Date(value).getTime()) / 3.15576e+10)
                                     setValue('age', age)
                                     setValue('birthday', value)
-                                    trigger("birthday")
                                     trigger("age")
                                 }}
                                 size="small"
@@ -343,7 +336,8 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                 type="number"
                                 onChange={value => {
                                     setValue('age', value)
-                                    trigger("age")
+                                    setValue('birthday', "")
+                                    trigger("birthday")
                                 }}
                                 size="small"
                                 variant="outlined"
@@ -399,7 +393,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                     onChange={value => {
                                         setValue('occupation', value)
                                         setValue('occupationdesc', value)
-                                        trigger("occupation")
                                     }}
                                     size="small"
                                     variant="outlined"
@@ -450,7 +443,6 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ person, getValues, t
                                 type="number"
                                 onChange={value => {
                                     setValue('salary', value)
-                                    trigger("salary")
                                 }}
                                 size="small"
                                 variant="outlined"
