@@ -143,7 +143,15 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         {
             "domainvalue": "llama3.1:8b",
             "domaindesc": "llama3.1:8b",
-        }
+        },
+        {
+            "domainvalue": "llama3.2:1b",
+            "domaindesc": "llama3.2:1b",
+        },
+        {
+            "domainvalue": "llama3.2:3b",
+            "domaindesc": "llama3.2:3b",
+        }        
     ]
 
     useEffect(() => {
