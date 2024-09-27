@@ -688,7 +688,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         if (user) {
             const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data || []
             const grouprules = rules.map(item => item.assignedgroup)
-            let groups = user?.properties.limit_reassign_group ? (user?.groups?.split(",") || []) : [];
+            let groups = [];
             if (grouprules.length && propertyGrupoDelegacion) {
                 groups = grouprules
             }
@@ -706,12 +706,15 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     }, [user, multiData, multiDataAux, propertyAsesorReassign])
 
     useEffect(() => {
-        console.log(watchNewUserGroup)
         if(propertyGrupoDelegacion){
-            setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && x.groups.includes(watchNewUserGroup)))
+            if(watchNewUserGroup){
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && x.groups.includes(watchNewUserGroup)))
+            }else{
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => !usableGroups.length || usableGroups.includes(group))))
+            }
         }else{
             if (propertyAsesorReassign) {
-                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => !!usableGroups.length || usableGroups.includes(group))))
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => !usableGroups.length || usableGroups.includes(group))))
             }
             else {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO"))
