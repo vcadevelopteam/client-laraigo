@@ -418,21 +418,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             } else {
                 if (!llamaResult.loading && !llamaResult.error) {
                     setWaitSaveMessageLlama(false);
-                    const currentDateTime = getCurrentDateTime();
-                    setMessageList((prevMessages) => [...prevMessages, {
-                        assistantaiid: row?.assistantaiid,
-                        threadid: activeThreadId,
-                        assistantaidocumentid: 0,
-                        id: 0,
-                        messagetext: messageAux,
-                        infosource: '',
-                        type: 'USER',
-                        status: 'ACTIVO',
-                        operation: 'INSERT',
-                        tokencount: llamaResult.data.input_tokens,
-                        createdate: currentDateTime,
-                        changedate: currentDateTime,
-                    }])
+                    setMessageList((prevMessages) => [ ...prevMessages.slice(0, -1), { ...prevMessages[prevMessages.length - 1], tokencount: llamaResult.data.input_tokens}]);                   
                     dispatch(
                         execute(
                             insMessageAi({
@@ -540,7 +526,22 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
 
     const handleSendMessage = async () => {
         setIsLoading(true);
-        const currentThreadId = selectedChat?.threadid;     
+        const currentThreadId = selectedChat?.threadid;
+        const currentDateTime = getCurrentDateTime();
+        setMessageList((prevMessages) => [...prevMessages, {
+            assistantaiid: row?.assistantaiid,
+            threadid: selectedChat?.threadid,
+            assistantaidocumentid: 0,
+            id: 0,
+            messagetext: messageText,
+            infosource: '',
+            type: 'USER',
+            status: 'ACTIVO',
+            operation: 'INSERT',
+            tokencount: 0,
+            createdate: currentDateTime,
+            changedate: currentDateTime,
+        }])
         dispatch(sendMessages({
             text: messageText,
             assistant_id: row?.code,
@@ -558,21 +559,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         if (waitSaveMessage2) {
             if (!executeThreads.loading && !executeThreads.error) {
                 setWaitSaveMessage2(false);
-                const currentDateTime = getCurrentDateTime();
-                setMessageList((prevMessages) => [...prevMessages, {
-                    assistantaiid: row?.assistantaiid,
-                    threadid: selectedChat?.threadid,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: messageAux,
-                    infosource: '',
-                    type: 'USER',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                    tokencount: executeThreads.data.input_tokens,
-                    createdate: currentDateTime,
-                    changedate: currentDateTime,
-                }])
+                setMessageList((prevMessages) => [ ...prevMessages.slice(0, -1), { ...prevMessages[prevMessages.length - 1], tokencount: executeThreads.data.input_tokens}]);
                 dispatch(
                     execute(
                         insMessageAi({
@@ -652,6 +639,21 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessageLLM3 = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
+        const currentDateTime = getCurrentDateTime();
+        setMessageList((prevMessages) => [...prevMessages, {
+            assistantaiid: row?.assistantaiid,
+            threadid: currentThreadLlamaId,
+            assistantaidocumentid: 0,
+            id: 0,
+            messagetext: messageText,
+            infosource: '',
+            type: 'USER',
+            status: 'ACTIVO',
+            operation: 'INSERT',
+            tokencount: 0,
+            createdate: currentDateTime,
+            changedate: currentDateTime,
+        }])
         dispatch(query3({
             assistant_name: row?.name,
             query: messageText,
@@ -675,21 +677,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         if (waitSaveAux) {
             if (!llm3Result.loading && !llm3Result.error) {
                 setWaitSaveAux(false);
-                const currentDateTime = getCurrentDateTime();
-                setMessageList((prevMessages) => [...prevMessages, {
-                    assistantaiid: row?.assistantaiid,
-                    threadid: activeThreadId,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: messageAux2,
-                    infosource: '',
-                    type: 'USER',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                    tokencount: llm3Result.data.input_tokens,
-                    createdate: currentDateTime,
-                    changedate: currentDateTime,
-                }])
+                setMessageList((prevMessages) => [ ...prevMessages.slice(0, -1), { ...prevMessages[prevMessages.length - 1], tokencount: llm3Result.data.input_tokens}]);               
                 dispatch(
                     execute(
                         insMessageAi({
@@ -725,6 +713,21 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
+        const currentDateTime = getCurrentDateTime();
+        setMessageList((prevMessages) => [...prevMessages, {
+            assistantaiid: row?.assistantaiid,
+            threadid: currentThreadLlamaId,
+            assistantaidocumentid: 0,
+            id: 0,
+            messagetext: messageText,
+            infosource: '',
+            type: 'USER',
+            status: 'ACTIVO',
+            operation: 'INSERT',
+            tokencount: 0,
+            createdate: currentDateTime,
+            changedate: currentDateTime,
+        }])
         dispatch(query({
             assistant_name: row?.name,
             query: messageText,
