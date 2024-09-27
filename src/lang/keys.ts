@@ -3771,6 +3771,7 @@ export const langKeys = {
   app_privacy: "app_privacy",
 
   lead_activitydate: 'lead_activitydate',
+  activity_information: 'activity_information',
   lead_activitydescription: 'lead_activitydescription',
   lead_asesorname: 'lead_asesorname',
   lead_contact_name: 'lead_contact_name',
