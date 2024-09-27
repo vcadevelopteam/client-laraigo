@@ -32,7 +32,7 @@ jobs:
     - name: Log in to IBM Cloud
       run: |
         ibmcloud login --apikey ${{ secrets.IBM_API_KEY }} -r us-south
-        ibmcloud resource target --resource-group default
+        ibmcloud target -g default # Corrected command
 
     - name: Sync build folder to IBM Cloud Object Storage
       run: |
