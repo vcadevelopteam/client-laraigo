@@ -252,7 +252,7 @@ const InfoTab: React.FC = () => {
             validate: {
                 isperuphone: (value) => {
                     const isNumeric = /^\d+$/.test(value); // Valida si el valor solo contiene números
-                    const isCorrectLength = value?.startsWith("51") ? value.length === 12 : true;
+                    const isCorrectLength = value?.startsWith("51") ? value.length === 11 : true;
                     return ((isNumeric && isCorrectLength) || value === "") || t(langKeys.validationphone) + "";
                 }
             }
