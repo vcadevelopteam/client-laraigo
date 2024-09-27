@@ -611,28 +611,29 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
-                           
-                            <div className={classes.decodingContainer}>
-                                <span className={classes.detailTitle}>Decoding</span>
-                                <div style={{display: 'flex', gap: 5}}>
-                                    <span className={classes.text}>Greedy</span>
-                                    <IOSSwitch
-                                        checked={getValues("decoding_method") === "sample"}
-                                        style={{color: '#078548'}}
-                                        onChange={() => {
-                                            if(getValues("decoding_method") === "sample") {
-                                                setValue("decoding_method", "greedy")
-                                                trigger("decoding_method")
-                                            }
-                                            else {
-                                                setValue("decoding_method", "sample")
-                                                trigger("decoding_method")
-                                            }
-                                        }}
-                                    />
-                                    <span className={classes.text}>Sampling</span>
+                            {provider?.trim().toLowerCase() !== 'laraigo' && provider?.trim().toLowerCase() !== 'openai' && (
+                                <div className={classes.decodingContainer}>
+                                    <span className={classes.detailTitle}>Decoding</span>
+                                    <div style={{display: 'flex', gap: 5}}>
+                                        <span className={classes.text}>Greedy</span>
+                                        <IOSSwitch
+                                            checked={getValues("decoding_method") === "sample"}
+                                            style={{color: '#078548'}}
+                                            onChange={() => {
+                                                if(getValues("decoding_method") === "sample") {
+                                                    setValue("decoding_method", "greedy")
+                                                    trigger("decoding_method")
+                                                }
+                                                else {
+                                                    setValue("decoding_method", "sample")
+                                                    trigger("decoding_method")
+                                                }
+                                            }}
+                                        />
+                                        <span className={classes.text}>Sampling</span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             <div>
                                 <div className={classes.parameterContainer}>
                                     <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
@@ -648,7 +649,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     />
                                 </div>
                                 <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
-                                { (getValues("decoding_method")?.trim().toLowerCase() === 'sample' || provider?.trim().toLowerCase() === 'laraigo') && (
+                                {(getValues("decoding_method")?.trim().toLowerCase() === 'sample' || provider?.trim().toLowerCase() === 'laraigo') && (
                                     <>                                  
                                         <div className={classes.block20}/>
                                         <div className={classes.parameterContainer}>
