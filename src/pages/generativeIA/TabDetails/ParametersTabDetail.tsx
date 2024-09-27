@@ -662,7 +662,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 size="small"
                                                 width={80}
                                                 valueDefault={getValues('temperature')}
-                                                onChange={(value) => setValue('temperature', value)}
+                                                inputProps={{
+                                                    min: 0,
+                                                    max: 2,
+                                                    step: 0.10,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 0) {
+                                                        setValue('temperature', 0);
+                                                    } else if (numericValue > 2) {
+                                                        setValue('temperature', 2);
+                                                    } else {
+                                                        setValue('temperature', numericValue);
+                                                    }
+                                                    trigger('temperature');
+                                                }}
                                                 error={errors?.temperature?.message}
                                             />
                                         </div>
@@ -679,7 +694,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 size="small"
                                                 width={80}
                                                 valueDefault={getValues('top_p')}
-                                                onChange={(value) => setValue('top_p', value)}
+                                                inputProps={{
+                                                    min: 0,
+                                                    max: 1,
+                                                    step: 0.10,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 0) {
+                                                        setValue('top_p', 0);
+                                                    } else if (numericValue > 1) {
+                                                        setValue('top_p', 1);
+                                                    } else {
+                                                        setValue('top_p', numericValue);
+                                                    }
+                                                    trigger('top_p');
+                                                }}
                                                 error={errors?.top_p?.message}
                                             />
                                         </div>
@@ -696,7 +726,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 size="small"
                                                 width={80}
                                                 valueDefault={getValues('top_k')}
-                                                onChange={(value) => setValue('top_k', value)}
+                                                inputProps={{
+                                                    min: 1,
+                                                    max: 100,
+                                                    step: 1,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 1) {
+                                                        setValue('top_k', 1);
+                                                    } else if (numericValue > 100) {
+                                                        setValue('top_k', 100);
+                                                    } else {
+                                                        setValue('top_k', numericValue);
+                                                    }
+                                                    trigger('top_k');
+                                                }}
                                                 error={errors?.top_k?.message}
                                             />
                                         </div>
@@ -717,7 +762,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 size="small"
                                                 width={80}
                                                 valueDefault={getValues('repetition_penalty')}
-                                                onChange={(value) => setValue('repetition_penalty', value)}
+                                                inputProps={{
+                                                    min: 1,
+                                                    max: 2,
+                                                    step: 0.10,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 1) {
+                                                        setValue('repetition_penalty', 1);
+                                                    } else if (numericValue > 2) {
+                                                        setValue('repetition_penalty', 2);
+                                                    } else {
+                                                        setValue('repetition_penalty', numericValue);
+                                                    }
+                                                    trigger('repetition_penalty');
+                                                }}
                                                 error={errors?.repetition_penalty?.message}
                                             />
                                         </div>
@@ -944,7 +1004,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             size="small"
                                             width={80}
                                             valueDefault={selectedCardData?.temperature}
-                                            onChange={(value) => setValue('temperature', value)}
+                                            inputProps={{
+                                                min: 0,
+                                                max: 2,
+                                                step: 0.10,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 0) {
+                                                    setValue('temperature', 0);
+                                                } else if (numericValue > 2) {
+                                                    setValue('temperature', 2);
+                                                } else {
+                                                    setValue('temperature', numericValue);
+                                                }
+                                                trigger('temperature');
+                                            }}
                                             error={errors?.temperature?.message}
                                         />
                                     </div>
@@ -961,7 +1036,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             size="small"
                                             width={80}
                                             valueDefault={selectedCardData?.top_p}
-                                            onChange={(value) => setValue('top_p', value)}
+                                            inputProps={{
+                                                min: 0,
+                                                max: 1,
+                                                step: 0.10,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 0) {
+                                                    setValue('top_p', 0);
+                                                } else if (numericValue > 1) {
+                                                    setValue('top_p', 1);
+                                                } else {
+                                                    setValue('top_p', numericValue);
+                                                }
+                                                trigger('top_p');
+                                            }}
                                             error={errors?.top_p?.message}
                                         />
                                     </div>
@@ -978,7 +1068,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             size="small"
                                             width={80}
                                             valueDefault={selectedCardData?.top_k}
-                                            onChange={(value) => setValue('top_k', value)}
+                                            inputProps={{
+                                                min: 1,
+                                                max: 100,
+                                                step: 1,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 1) {
+                                                    setValue('top_k', 1);
+                                                } else if (numericValue > 100) {
+                                                    setValue('top_k', 100);
+                                                } else {
+                                                    setValue('top_k', numericValue);
+                                                }
+                                                trigger('top_k');
+                                            }}
                                             error={errors?.top_k?.message}
                                         />
                                     </div>
@@ -999,7 +1104,22 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                             size="small"
                                             width={80}
                                             valueDefault={selectedCardData?.repetition_penalty}
-                                            onChange={(value) => setValue('repetition_penalty', value)}
+                                            inputProps={{
+                                                min: 1,
+                                                max: 2,
+                                                step: 0.10,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 1) {
+                                                    setValue('repetition_penalty', 1);
+                                                } else if (numericValue > 2) {
+                                                    setValue('repetition_penalty', 2);
+                                                } else {
+                                                    setValue('repetition_penalty', numericValue);
+                                                }
+                                                trigger('repetition_penalty');
+                                            }}
                                             error={errors?.repetition_penalty?.message}
                                         />
                                     </div>
