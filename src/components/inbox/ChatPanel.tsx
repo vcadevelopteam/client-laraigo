@@ -614,13 +614,14 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
     const interactionBaseList = useSelector(state => state.inbox.interactionBaseList);
 
-    const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<{
+    const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors }, watch } = useForm<{
         newUserId: number;
         newUserGroup: string;
         observation: string;
         token: string;
     }>();
 
+    const watchNewUserGroup = watch("newUserGroup")
 
     useEffect(() => {
         if (waitReassign) {
@@ -687,7 +688,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         if (user) {
             const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data || []
             const grouprules = rules.map(item => item.assignedgroup)
-            let groups = user?.properties.limit_reassign_group ? (user?.groups?.split(",") || []) : [];
+            let groups = [];
             if (grouprules.length && propertyGrupoDelegacion) {
                 groups = grouprules
             }
@@ -705,14 +706,21 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     }, [user, multiData, multiDataAux, propertyAsesorReassign])
 
     useEffect(() => {
-        const group = getValues('newUserGroup')
-        if (propertyAsesorReassign) {
-            setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => usableGroups.length > 0 || usableGroups.includes(group))))
+        if(propertyGrupoDelegacion){
+            if(watchNewUserGroup){
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && x.groups.includes(watchNewUserGroup)))
+            }else{
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => !usableGroups.length || usableGroups.includes(group))))
+            }
+        }else{
+            if (propertyAsesorReassign) {
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => !usableGroups.length || usableGroups.includes(group))))
+            }
+            else {
+                setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO"))
+            }
         }
-        else {
-            setAgentList([])
-        }
-    }, [propertyAsesorReassign, userToReassign, getValues('newUserGroup'), usableGroups])
+    }, [propertyAsesorReassign,propertyGrupoDelegacion, userToReassign, watchNewUserGroup, usableGroups])
 
     return (
         <DialogZyx
@@ -1181,7 +1189,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         const dataasesorsuspende = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.data;
         const reassignAsesor = multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.data;
         setPropertyGrupoDelegacion(user?.roledesc?.includes("ASESOR") ? multiData?.data?.find(x => x.key === "UFN_PROPERTY_SELBYNAMEGRUPODELEGACION")?.data?.[0]?.propertyvalue === "1" : true)
-        debugger
         if (dataasesorsuspende && reassignAsesor && multiData) {
             if (user?.roledesc?.includes("ASESOR")) {
                 if (user?.groups) {
