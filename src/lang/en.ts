@@ -3772,6 +3772,7 @@ const translation: LangKeys = {
   app_privacy: "Privacy",
 
   lead_activitydate: 'Activity date',
+  activity_information: 'Advisor assigned to this activity',
   lead_activitydescription: 'Activity',
   lead_asesorname: 'Agent name',
   lead_contact_name: 'Contact name',
