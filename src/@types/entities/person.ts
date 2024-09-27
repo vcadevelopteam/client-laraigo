@@ -53,6 +53,14 @@ export interface IPerson {
     referringpersonid: number;
     referringpersonname?: string;
     termsandconditions?: boolean;
+    blacklist?: any;
+    eventname?: any;
+    eventdate?: any;
+    eventtime?: any;
+    eventcode?: any;
+    eventlink?: any;
+    eventlinkcode?: any;
+    contact?: string;
     clientnumber?: number;
     // displayname: string;
     variablecontext: Dictionary;

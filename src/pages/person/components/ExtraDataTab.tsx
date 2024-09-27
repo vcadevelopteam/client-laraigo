@@ -119,24 +119,117 @@ export const ExtraDataTab: FC<ExtraDataTabProps> = ({ person, getValues, trigger
                                 variant="outlined"
                             />
                         </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <FieldSelect
-                                uset={true}
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
                                 className={classes.fieldStyle}
-                                label={t(langKeys.civilStatus)}
-                                valueDefault={getValues("civilstatus")}
-                                onChange={(value) => {
-                                    setValue('civilstatus', value?.domainvalue || "");
-                                    setValue('civilstatusdesc', value?.domaindesc || "")
+                                label={t(langKeys.healthprofessional)}
+                                valueDefault={getValues("healthprofessional")}
+                                helperText2="enable"
+                                onChange={value => {
+                                    setValue('healthprofessional', value)
+                                    trigger("healthprofessional")
                                 }}
                                 size="small"
                                 variant="outlined"
-                                loading={domains.loading}
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.blacklist)}
+                                valueDefault={getValues("blacklist")}
                                 helperText2="enable"
-                                data={domains.value?.civilStatuses || []}
-                                prefixTranslation="type_civilstatus_"
-                                optionValue="domainvalue"
-                                optionDesc="domainvalue"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.eventnameperson)}
+                                valueDefault={getValues("eventname")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.eventdate)}
+                                valueDefault={getValues("eventdate")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.eventtime)}
+                                valueDefault={getValues("eventtime")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.eventcode)}
+                                valueDefault={getValues("eventcode")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.eventlink)}
+                                valueDefault={getValues("eventlink")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.eventlinkcode)}
+                                valueDefault={getValues("eventlinkcode")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.contactbussiness)}
+                                valueDefault={getValues("contact")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
+                                label={t(langKeys.referralchannel)}
+                                valueDefault={getValues("referralchannel")}
+                                helperText2="enable"
+                                disabled
+                                size="small"
+                                variant="outlined"
                             />
                         </Grid>
                     </Grid>

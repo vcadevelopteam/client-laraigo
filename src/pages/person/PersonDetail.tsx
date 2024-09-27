@@ -3,11 +3,10 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, FieldView, GetIcon } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne, getDomainByDomainNameList } from 'common/helpers';
-import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
+import { Dictionary, IPerson, IPersonConversation } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, Breadcrumbs, Link, InputBase, Tooltip, Paper } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, SearchIcon, CallRecordIcon } from 'icons';
-import PhoneIcon from '@material-ui/icons/Phone';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -18,19 +17,17 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
-import { getChannelListByPerson, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson } from 'store/person/actions';
+import { getChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { useFieldArray, useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { execute, getCollectionAux2 } from 'store/main/actions';
 import Rating from '@material-ui/lab/Rating';
 import TableZyx from '../../components/fields/table-simple';
-import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import DialogLinkPerson from 'components/inbox/PersonLinked';
 import { WhatsappIcon } from 'icons';
 import LinkIcon from '@material-ui/icons/Link';
-import LinkOffIcon from '@material-ui/icons/LinkOff';
 import { sendHSM } from 'store/inbox/actions';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import MailIcon from '@material-ui/icons/Mail';
@@ -39,6 +36,7 @@ import CustomTableZyxEditable from 'components/fields/customtable-editable';
 import { Property } from './components/Property';
 import { GeneralInformationTab } from './components/GeneralInformationTab';
 import { TabPanel } from './components/TabPanel';
+import { CommunicationChannelsTab } from './components/CommunicationChannelsTab';
 
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
@@ -66,267 +64,8 @@ const Photo: FC<PhotoProps> = ({ src, radius }) => {
     return <Avatar alt={src} src={src} className={classes.accountPhoto} style={{ width, height }} />;
 }
 
-const useChannelItemStyles = makeStyles(theme => ({
-    root: {
-        border: '#EBEAED solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    contentContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        flexGrow: 1,
-    },
-    propTitle: {
-        fontWeight: 400,
-        fontSize: 14,
-        color: '#8F92A1',
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    itemLabel: {
-        color: '#8F92A1',
-        fontSize: 14,
-        fontWeight: 400,
-        margin: 0,
-    },
-    itemText: {
-        color: theme.palette.text.primary,
-        fontSize: 15,
-        fontWeight: 400,
-        margin: '6px 0',
-    },
-    subtitle: {
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '0.5em',
-        alignItems: 'center',
-    },
-    propSubtitle: {
-        color: theme.palette.text.primary,
-        fontWeight: 400,
-        fontSize: 15,
-        margin: 0,
-        width: '100%',
-    },
-    buttonphone: {
-        padding: 0,
-        '&:hover': {
-            color: "#7721ad",
-        },
-    }
-}));
 
-interface ChannelItemProps {
-    channel: IPersonChannel;
-}
 
-const nameschannel: { [x: string]: string } = {
-    "ANDR": "T_ANDROID",
-    "APPL": "T_IOS",
-    "APPS": "T_APP_STORE",
-    "CHATZ": "T_CHAT_WEB",
-    "CHAZ": "T_CHAT_WEB",
-    "FACEBOOKWORPLACE": "T_WORKPLACE_MESSENGER",
-    "FBDM": "T_FACEBOOK_MESSENGER",
-    "FBMS": "T_FACEBOOK_MESSENGER",
-    "FBWA": "T_FACEBOOK_WALL",
-    "FBWM": "T_WORKPLACE_WALL",
-    "FBWP": "T_WORKPLACE_MESSENGER",
-    "FORM": "T_WEB_FORM",
-    "GOBU": "T_MY_BUSINESS",
-    "INDM": "T_INSTAGRAM_DIRECT",
-    "INMS": "T_INSTAGRAM_DIRECT",
-    "INST": "T_INSTAGRAM_WALL",
-    "LINE": "T_LINE",
-    "LNKD": "T_LINKEDIN",
-    "MAII": "T_MAIL",
-    "MAIL": "T_MAIL",
-    "PLAY": "T_PLAY_STORE",
-    "SMS": "T_SMS",
-    "SMSI": "T_SMS",
-    "TEAM": "T_TEAMS",
-    "TELE": "T_TELEGRAM",
-    "TKTA": "T_TIKTOK",
-    "TKTK": "T_TIKTOK",
-    "TKTT": "T_TIKTOK",
-    "TWDM": "T_TWITTER_MESSENGER",
-    "TWIT": "T_TWITTER_WALL",
-    "TWMS": "T_TWITTER_MESSENGER",
-    "VOXI": "T_VOICE",
-    "WEBM": "T_CHAT_WEB",
-    "WHAC": "T_WHATSAPP",
-    "WHAD": "T_WHATSAPP",
-    "WHAG": "T_WHATSAPP",
-    "WHAM": "T_WHATSAPP",
-    "WHAP": "T_WHATSAPP",
-    "WHAT": "T_WHATSAPP",
-    "YOUA": "T_YOUTUBE",
-    "YOUT": "T_YOUTUBE",
-};
-
-const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
-    const { t } = useTranslation();
-    const classes = useChannelItemStyles();
-    const dispatch = useDispatch();
-    const voxiConnection = useSelector(state => state.voximplant.connection);
-    const callOnLine = useSelector(state => state.voximplant.callOnLine);
-    const userConnected = useSelector(state => state.inbox.userConnected);
-    const [waitUnLink, setWaitUnLink] = useState(false);
-    const unLinkRes = useSelector(state => state.main.execute);
-
-    const personIdentifier = useMemo(() => {
-        if (!channel) return '';
-        const index = channel.personcommunicationchannel.lastIndexOf('_');
-        return channel.personcommunicationchannel.substring(0, index);
-    }, [channel]);
-
-    useEffect(() => {
-        if (waitUnLink) {
-            if (!unLinkRes.loading && !unLinkRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: "Vinculación correcta" }))
-                setWaitUnLink(false);
-                dispatch(getChannelListByPerson(getChannelListByPersonBody(channel.personid)));
-            } else if (unLinkRes.error) {
-                const message = t(unLinkRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message }))
-                dispatch(showBackdrop(false));
-                setWaitUnLink(false);
-            }
-        }
-    }, [unLinkRes, waitUnLink])
-    
-    return (
-        <div className={classes.root}>
-            {channel.originpersonid && (
-                <div style={{ textAlign: "right" }}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        disabled={unLinkRes.loading}
-                        startIcon={<LinkOffIcon color="secondary" />}
-                        onClick={() => {
-                            dispatch(execute(unLinkPerson({
-                                personid: channel.personid,
-                                personcommunicationchannel: channel.personcommunicationchannel
-                            })))
-                            setWaitUnLink(true)
-                        }}
-                    >
-                        {"Desvincular"}
-                    </Button>
-                </div>
-            )}
-            <Grid container direction="row">
-                <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.communicationchannel} />}
-                        subtitle={(
-                            <div className={classes.subtitle}>
-                                <span>{
-                                    (nameschannel[channel.type] || '').includes("T_")
-                                        ? t((langKeys as any)[nameschannel[channel.type]])
-                                        : nameschannel[channel.type]}</span>
-                                <GetIcon channelType={channel.type} color='black' />
-                            </div>
-                        )}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.displayname} />}
-                        subtitle={channel.displayname}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-
-                    <Box>
-                        <div className={classes.contentContainer}>
-                            <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
-                            <div style={{ height: 4 }} />
-                            <div style={{ display: "flex" }}>
-                                {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
-                                    <IconButton
-                                        className={classes.buttonphone}
-                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}
-                                    >
-                                        <PhoneIcon style={{ width: "20px", height: "20px" }} />
-                                    </IconButton>
-                                }
-                                <div className={classes.propSubtitle}>{channel.personcommunicationchannelowner || "-"}</div>
-                            </div>
-                        </div>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
-                        subtitle={personIdentifier}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.firstConnection} />}
-                        subtitle={channel.firstcontact}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.lastConnection} />}
-                        subtitle={channel.lastcontact}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.conversation} count={2} />}
-                        subtitle={channel.conversations || '0'}
-                        m={1}
-                    />
-                </Grid>
-            </Grid>
-        </div>
-    );
-}
-
-interface ChannelTabProps {
-    person: IPerson;
-    getValues: UseFormGetValues<IPerson>;
-    setValue: UseFormSetValue<IPerson>;
-    domains: IObjectState<IPersonDomains>;
-}
-
-const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
-    const dispatch = useDispatch();
-    const channelList = useSelector(state => state.person.personChannelList);
-
-    useEffect(() => {
-        if (person.personid && person.personid !== 0) {
-            dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
-            return () => {
-                dispatch(resetGetChannelListByPerson());
-            };
-        }
-    }, [dispatch, person]);
-
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ height: 12 }} />
-            {channelList.data.map((e, i) => <ChannelItem channel={e} key={`channel_item_${i}`} />)}
-        </div>
-    );
-}
 
 interface AuditTabProps {
     person: IPerson;

@@ -6546,6 +6546,13 @@ const translation: LangKeys = {
   referringpersonid: 'Referring user ID',
   personid: 'Person Id',
   termsandconditions: 'Terms and conditions',
+  eventnameperson: 'Name of the scheduled event',
+  eventdate: 'Scheduled event date',
+  eventtime: 'Scheduled event time',
+  eventcodeperson: 'Scheduled event code',
+  eventlinkperson: 'Url of the scheduled event',
+  eventlinkcode: 'URL code of the scheduled event',
+  contactbussiness: 'Company contact',
 };
 
 const enResource: ResourceLanguage = {

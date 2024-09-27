@@ -6498,6 +6498,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   referringpersonid: 'Id usuario referente',
   personid: 'Identificador persona',
   termsandconditions: 'Términos y condiciones',
+  eventnameperson: 'Nombre del evento agendado',
+  eventdate: 'Fecha del evento agendado',
+  eventtime: 'Hora del evento agendado',
+  eventcodeperson: 'Código del evento agendado',
+  eventlinkperson: 'Url del evento agendado',
+  eventlinkcode: 'Código url del evento agendado',
+  contactbussiness: 'Contacto de la empresa',
 };
 
 const esResource: ResourceLanguage = {

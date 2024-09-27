@@ -66,7 +66,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
         <AppBar position="static" elevation={0}>
             <Tabs
                 value={tabIndex}
-                onChange={(_, i: string) => setTabIndex(i)}
+                onChange={(x, i: string) => {setTabIndex(i)}}
                 className={classes.tabs}
                 TabIndicatorProps={{ style: { display: 'none' } }}
             >
@@ -103,7 +103,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
             />
         </div>
         }
-        {tabIndex === "2" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
+        {tabIndex === "1" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
             <PersonalDataTab
                 getValues={getValues}
                 setValue={setValue}
@@ -117,7 +117,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
             />
         </div>
         }
-        {tabIndex === "3" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
+        {tabIndex === "2" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
             <ExtraDataTab
                 getValues={getValues}
                 setValue={setValue}

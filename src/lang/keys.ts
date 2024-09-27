@@ -6489,6 +6489,13 @@ export const langKeys = {
   referringpersonid: 'referringpersonid',
   personid: 'personid',
   termsandconditions: 'termsandconditions',
+  eventnameperson: 'eventnameperson',
+  eventdate: 'eventdate',
+  eventtime: 'eventtime',
+  eventcodeperson: 'eventcodeperson',
+  eventlinkperson: 'eventlinkperson',
+  eventlinkcode: 'eventlinkcode',
+  contactbussiness: 'contactbussiness',
 };
 
 export type LangKeys = typeof langKeys;
