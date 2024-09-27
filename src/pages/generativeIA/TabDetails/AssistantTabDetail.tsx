@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '1rem',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
     },
     warningContainer: {
         display: 'flex',
@@ -52,7 +53,10 @@ const useStyles = makeStyles((theme) => ({
         color: '#FF7575',
         borderRadius: '4px',
         width: 'fit-content',
-    } 
+    },
+    marginB10: {
+        marginBottom: 10,
+    },
 }));
 
 interface RowSelected {
@@ -181,148 +185,111 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
 
     return (
         <div className={classes.containerDetail}>
-            <div className="row-zyx" style={{marginBottom: 0}}>     
-
-                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap'}}>      
-                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+            <div className="row-zyx" style={{marginBottom: 0}}>
+                <div className="col-6">
+                    <div className={classes.customFieldPackageContainer}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.name)}</span>
-                        <span>{t(langKeys.assistantnamedesc)}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
-                                <FieldEdit
-                                    label={''}
-                                    onChange={(value) => {
-                                        setValue("name", value)
-                                        setFirstData({...firstData, name: value})
-                                    }}
-                                    valueDefault={getValues("name")}
-                                    type="text"
-                                    maxLength={60} 
-                                    variant="outlined"
-                                    error={errors?.name?.message}                            
-                                />
-                            </div>                                   
-                        </div>
+                        <span className={classes.marginB10}>{t(langKeys.assistantnamedesc)}</span>
+                        <FieldEdit
+                            size="small"
+                            label={''}
+                            onChange={(value) => {
+                                setValue("name", value)
+                                setFirstData({...firstData, name: value})
+                            }}
+                            valueDefault={getValues("name")}
+                            type="text"
+                            maxLength={60} 
+                            variant="outlined"
+                            error={errors?.name?.message}                            
+                        />
                     </div>
-                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                </div>
+                <div className="col-6">
+                    <div className={classes.customFieldPackageContainer}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.description)}</span>
-                        <span>{t(langKeys.assistantdescriptiondesc)}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
-                                <FieldEdit
-                                    label={''}
-                                    onChange={(value) => {
-                                        setValue("description", value)
-                                        setFirstData({...firstData, description: value})
-                                    }}
-                                    valueDefault={getValues("description")}
-                                    type="text"
-                                    maxLength={640}                                    
-                                    variant="outlined"
-                                    error={errors?.description?.message}                            
-                                />
-                            </div>                                   
-                        </div>
+                        <span className={classes.marginB10}>{t(langKeys.assistantdescriptiondesc)}</span>
+                        <FieldEdit
+                            label={''}
+                            size="small"
+                            onChange={(value) => {
+                                setValue("description", value)
+                                setFirstData({...firstData, description: value})
+                            }}
+                            valueDefault={getValues("description")}
+                            type="text"
+                            maxLength={640}                                    
+                            variant="outlined"
+                            error={errors?.description?.message}                            
+                        />
                     </div>
-                </div>      
-
-                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap' }}>      
-                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                </div>
+                <div className="col-6">
+                    <div className={classes.customFieldPackageContainer}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.connectors)}</span>
-                        <span>{t(langKeys.assistantconnectorsdesc)}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                        
-                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
-                                <FieldSelect
-                                    data={multiDataAux?.data?.[3]?.data.filter(item => (item.type === 'LARGE LANGUAGE MODEL' || item.type === 'Gen AI')) || []}
-                                    variant="outlined"
-                                    optionDesc="name"
-                                    disabled={row ? true: false}
-                                    optionValue="id"
-                                    valueDefault={getValues('intelligentmodelsid')}
-                                    onChange={(value) => {
-                                        if(value) {
-                                            setValue('intelligentmodelsid', value.id)
-                                            setValue('apikey', value.apikey)
-                                            setValue('basemodel', '')
-                                            setConector(value)
-                                            setProvider(value.provider)
-                                            setFirstData({...firstData, intelligentmodelsid: value.id, basemodel: ''})
-                                        } else {
-                                            setValue('intelligentmodelsid', 0)
-                                            setValue('apikey', '')
-                                            setValue('basemodel', '')
-                                            setConector({})
-                                            setProvider('')
-                                            setFirstData({...firstData, intelligentmodelsid: 0, basemodel: ''})
-                                        }
-                                    }}
-                                    error={errors?.intelligentmodelsid?.message}                                    
-                                />
-                            </div>                                   
-                        
-                        </div>
-                    </div>          
-                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
-                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
-                        <span>{t(langKeys.assistantstatussdesc)}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
-                                <FieldSelect
-                                    data={(multiDataAux?.data?.[0]?.data||[])}
-                                    variant="outlined"
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
-                                    onChange={(value) => {                                       
-                                        setValue('status', value.domainvalue);
-                                    }}
-                                    valueDefault={getValues('status')}
-                                    error={errors?.status?.message}
-                                />
-                            </div>                                   
-                        
-                        </div>
-                    </div>          
-                </div>    
-
-                <div style={{ display: 'flex', width: '100%', gap:'1.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>      
-                    <div className={classes.customFieldPackageContainer} style={{ marginBottom: '1rem' }}>
+                        <span className={classes.marginB10}>{t(langKeys.assistantconnectorsdesc)}</span>
+                        <FieldSelect
+                            data={multiDataAux?.data?.[3]?.data.filter(item => (item.type === 'LARGE LANGUAGE MODEL' || item.type === 'Gen AI')) || []}
+                            variant="outlined"
+                            optionDesc="name"
+                            disabled={row ? true: false}
+                            optionValue="id"
+                            valueDefault={getValues('intelligentmodelsid')}
+                            onChange={(value) => {
+                                if(value) {
+                                    setValue('intelligentmodelsid', value.id)
+                                    setValue('apikey', value.apikey)
+                                    setValue('basemodel', '')
+                                    setConector(value)
+                                    setProvider(value.provider)
+                                    setFirstData({...firstData, intelligentmodelsid: value.id, basemodel: ''})
+                                } else {
+                                    setValue('intelligentmodelsid', 0)
+                                    setValue('apikey', '')
+                                    setValue('basemodel', '')
+                                    setConector({})
+                                    setProvider('')
+                                    setFirstData({...firstData, intelligentmodelsid: 0, basemodel: ''})
+                                }
+                            }}
+                            error={errors?.intelligentmodelsid?.message}                                    
+                        />
+                    </div>
+                </div>
+                <div className="col-6">
+                <div className={classes.customFieldPackageContainer}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.basemodel)}</span>
-                        <span>{t(langKeys.assistantbasemodeldesc)}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem' }}>
-                        
-                            <div className="row-zyx" style={{ minWidth: windowWidth > 1609 ? '45vw' : '80vw', marginBottom: 0 }}>
-                                <FieldSelect
-                                    data={
-                                        conector?.provider === 'OpenAI' || conector?.provider === 'Open AI' ? retrievalbasemodels :
-                                        conector?.provider === 'Laraigo' || conector?.provider === 'LaraigoLLM' ? llama3basemodels : 
-                                        conector?.provider === 'IBM' ? 
-                                            multiDataAux?.data?.[2]?.data
-                                            .filter(item => item.domainvalue.startsWith('meta'))
-                                            .concat(multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral'))) : []                       
-                                    }
-                                    variant="outlined"
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"  
-                                    disabled={row ? true: false}   
-                                    valueDefault={getValues('basemodel')}
-                                    onChange={(value) => {
-                                        if(value) {
-                                            setValue('basemodel', value.domainvalue)
-                                            setFirstData({...firstData, basemodel: value.domainvalue})
-                                        } else {
-                                            setValue('basemodel', '')
-                                            setFirstData({...firstData, basemodel: ''})
-                                        }
-                                    }}
-                                    error={errors?.basemodel?.message}                                                                 
-                                />
-                            </div>                                   
-                        
-                        </div>
-                    </div>          
-                    <div className={classes.customFieldPackageContainer} style={{ margin: '4rem 0' }}>
-                        {conector?.provider === 'Open AI' ? (
+                        <span className={classes.marginB10}>{t(langKeys.assistantbasemodeldesc)}</span>
+                        <FieldSelect
+                            data={
+                                conector?.provider === 'OpenAI' || conector?.provider === 'Open AI' ? retrievalbasemodels :
+                                conector?.provider === 'Laraigo' || conector?.provider === 'LaraigoLLM' ? llama3basemodels : 
+                                conector?.provider === 'IBM' ? 
+                                    multiDataAux?.data?.[2]?.data
+                                    .filter(item => item.domainvalue.startsWith('meta'))
+                                    .concat(multiDataAux?.data?.[2]?.data.filter(item => item.domainvalue.startsWith('mistral'))) : []                       
+                            }
+                            variant="outlined"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"  
+                            disabled={row ? true: false}   
+                            valueDefault={getValues('basemodel')}
+                            onChange={(value) => {
+                                if(value) {
+                                    setValue('basemodel', value.domainvalue)
+                                    setFirstData({...firstData, basemodel: value.domainvalue})
+                                } else {
+                                    setValue('basemodel', '')
+                                    setFirstData({...firstData, basemodel: ''})
+                                }
+                            }}
+                            error={errors?.basemodel?.message}                                                                 
+                        />
+                    </div>
+                </div>
+                <div className="col-6">
+                    {conector?.provider === 'OpenAI' || conector?.provider === 'Open AI' ? (
+                        <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
                             <FormControlLabel style={{margin: 0}}
                                 control={
                                     <>
@@ -339,18 +306,14 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                                             <InfoRoundedIcon color="action" className={classes.iconHelpText}/>
                                         </Tooltip>
                                     </>
-                                }                  
-                                className="col-5"
+                                }
                                 label=""
                             />
-                        ) : (
-                            <div className="col-6"></div>
-                        )}
-                    </div>          
-                </div>                  
-              
-               
-                
+                        </div>
+                    ) : (
+                        <div></div>
+                    )}
+                </div>
             </div>
         </div>
     );
