@@ -19,8 +19,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": ".src",
-    "jsx": "react-jsx"
+    "baseUrl": "./src",  // Corregido
+    "jsx": "react-jsx",
+    "paths": {
+      "components/*": ["components/*"]  // Agregado, si estás usando alias
+    }
   },
   "include": [
     "src"
