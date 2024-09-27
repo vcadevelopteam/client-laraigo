@@ -540,22 +540,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
 
     const handleSendMessage = async () => {
         setIsLoading(true);
-        const currentThreadId = selectedChat?.threadid;
-        const currentDateTime = getCurrentDateTime();
-        setMessageList((prevMessages) => [...prevMessages, {
-            assistantaiid: row?.assistantaiid,
-            threadid: currentThreadId,
-            assistantaidocumentid: 0,
-            id: 0,
-            messagetext: messageText,
-            infosource: '',
-            type: 'USER',
-            status: 'ACTIVO',
-            operation: 'INSERT',
-            tokencount: 0,
-            createdate: currentDateTime,
-            changedate: currentDateTime,
-        }])
+        const currentThreadId = selectedChat?.threadid;     
         dispatch(sendMessages({
             text: messageText,
             assistant_id: row?.code,
@@ -573,6 +558,21 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         if (waitSaveMessage2) {
             if (!executeThreads.loading && !executeThreads.error) {
                 setWaitSaveMessage2(false);
+                const currentDateTime = getCurrentDateTime();
+                setMessageList((prevMessages) => [...prevMessages, {
+                    assistantaiid: row?.assistantaiid,
+                    threadid: selectedChat?.threadid,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: messageAux,
+                    infosource: '',
+                    type: 'USER',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                    tokencount: executeThreads.data.input_tokens,
+                    createdate: currentDateTime,
+                    changedate: currentDateTime,
+                }])
                 dispatch(
                     execute(
                         insMessageAi({
@@ -585,12 +585,13 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                             type: 'USER',
                             status: 'ACTIVO',
                             operation: 'INSERT',
-                            tokencount: 0,
+                            tokencount: executeThreads.data.input_tokens,
                         })
                     )
                 );
                 setAuxMessage({
-                    text: executeThreads.data.response
+                    text: executeThreads.data.response,
+                    tokens: executeThreads.data.output_tokens
                 })
                 setMessageAux('')
                 setWaitSaveMessage(true)
@@ -619,7 +620,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'BOT',
                     status: 'ACTIVO',
                     operation: 'INSERT',
-                    tokencount: 0,
+                    tokencount: auxMessage.tokens,
                     createdate: currentDateTime,
                     changedate: currentDateTime,
                 }])
@@ -633,7 +634,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                     type: 'BOT',
                     status: 'ACTIVO',
                     operation: 'INSERT',
-                    tokencount: 0,
+                    tokencount: auxMessage.tokens,
                 })))
                 setAuxMessage({})
                 setIsLoading(false);

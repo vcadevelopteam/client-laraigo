@@ -953,7 +953,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
-                            {provider?.trim().toLowerCase() !== 'laraigo' && (
+                            {provider?.trim().toLowerCase() !== 'laraigo' && provider?.trim().toLowerCase() !== 'openai' && (
                                 <div className={classes.decodingContainer}>
                                     <span className={classes.detailTitle}>Decoding</span>
                                     <div style={{display: 'flex', gap: 5}}>

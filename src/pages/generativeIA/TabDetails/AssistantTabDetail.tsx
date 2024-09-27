@@ -257,24 +257,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                     </div>
                 </div>
                 <div className="col-6">
-                    <div className={classes.customFieldPackageContainer}>
-                        <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.status)}</span>
-                        <span className={classes.marginB10}>{t(langKeys.assistantstatussdesc)}</span>
-                        <FieldSelect
-                            data={(multiDataAux?.data?.[0]?.data||[])}
-                            variant="outlined"
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            onChange={(value) => {                                       
-                                setValue('status', value.domainvalue);
-                            }}
-                            valueDefault={getValues('status')}
-                            error={errors?.status?.message}
-                        />
-                    </div>
-                </div>
-                <div className="col-6">
-                    <div className={classes.customFieldPackageContainer}>
+                <div className={classes.customFieldPackageContainer}>
                         <span style={{ fontWeight: 'bold', fontSize: 18 }}>{t(langKeys.basemodel)}</span>
                         <span className={classes.marginB10}>{t(langKeys.assistantbasemodeldesc)}</span>
                         <FieldSelect
