@@ -2160,7 +2160,9 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                                 {`${t(langKeys.assignedTo)} ${activity.assignto}`}
                                             </span>
                                             <div style={{ width: '0.5em' }} />
-                                            <Info style={{ height: 18, width: 18, fill: 'grey' }} />
+                                            <Tooltip title={t(langKeys.activity_information)} arrow placement="top">
+                                                <Info style={{ height: 18, width: 18, fill: 'grey' }} />
+                                            </Tooltip>
                                         </div>
                                         {!readOnly && <div style={{ height: 4 }} />}
                                         {(!readOnly && leadId !== 0) && (

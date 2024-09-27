@@ -3559,6 +3559,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   app_privacy: "Privacidad",
 
   lead_activitydate: 'Fecha actividad',
+  activity_information: 'Asesor asignado a esta actividad',
   lead_activitydescription: 'Actividad',
   lead_asesorname: 'Nombre asesor',
   lead_contact_name: 'Nombre contacto',
