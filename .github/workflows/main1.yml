@@ -21,6 +21,10 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Create .env file
+      run: |
+        echo "VITE_ENV=DEVELOP" >> .env
+
     - name: Build project
       run: npm run build
 
