@@ -128,8 +128,8 @@ export const getExportItemsWatson = (requestBody: any): IActionCall => ({
     type: null,
 });
 
-export const watsonxSync = (watsonid: number): IActionCall => ({
-    callAPI: () => WatsonService.watsonsync({watsonid}),
+export const watsonxSync = (watsonid: number, isconfig:boolean=false): IActionCall => ({
+    callAPI: () => WatsonService.watsonsync({watsonid: !isconfig?watsonid: null, intelligentmodelsid: isconfig?watsonid: null}),
     types: {
         loading: actionTypes.SYNC,
         success: actionTypes.SYNC_SUCCESS,
