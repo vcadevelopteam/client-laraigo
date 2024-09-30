@@ -452,7 +452,6 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
     )
 }
 
-
 export const FieldEditPassword: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
     const [value, setValue] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -521,7 +520,6 @@ export const FieldEditPassword: React.FC<InputProps> = ({ width = "100%", label,
         </div>
     )
 }
-
 
 export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard", placeholder = "" }) => {
     const [value, setvalue] = useState("");
