@@ -12,7 +12,7 @@ import { default as DashboardProductivity } from './DashboardProductivity';
 import { default as DashboardOperationalPush } from './DashboardOperationalPush';
 import { default as DashboardTagRanking } from './DashboardTagRanking';
 import { default as DashboardDisconnections } from './DashboardDisconnections';
-import DashboardAssesorProductivity from './DashBoardAssesorProductivity';
+import DashboardAssesorProductivity from './DashboardAssesorProductivity';
 import { SearchField, TemplateBreadcrumbs } from 'components';
 import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
