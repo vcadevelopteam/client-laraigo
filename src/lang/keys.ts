@@ -6463,6 +6463,8 @@ export const langKeys = {
   contextAIHelper: 'contextAIHelper',
   languagemodel: 'languagemodel',
   languagemodelhelper: 'languagemodelhelper',
+  languagemodel: 'languagemodel',
+  languagemodelhelper: 'languagemodelhelper',
   translationai: 'translationai',
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
