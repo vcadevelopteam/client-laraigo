@@ -30,7 +30,8 @@ import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 
 import { Dictionary, TableConfig } from '@types'
-import { OnlyCheckbox, SearchField } from 'components';
+import { SearchField } from 'components';
+import { OnlyCheckbox } from 'components/fields/templates';
 import { DownloadIcon } from 'icons';
 
 import {
