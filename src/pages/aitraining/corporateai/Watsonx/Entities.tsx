@@ -17,8 +17,8 @@ import { rasaSynonimIns, watsonExportEntities } from 'common/helpers/requestBodi
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { ModelTestDrawer } from './ModelTestDrawer';
 import { getExportItemsWatson, getItemsWatson, importItems, resetItemsWatson } from 'store/watsonx/actions';
-import { DetailEntities } from './details/DetailEntities';
-import { DetailIntentions } from './details/DetailIntentions';
+import { DetailEntities } from './Details/DetailEntities';
+import { DetailIntentions } from './Details/DetailIntentions';
 
 
 interface RowSelected {

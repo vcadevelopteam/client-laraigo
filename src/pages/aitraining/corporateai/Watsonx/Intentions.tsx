@@ -16,7 +16,7 @@ import { resetAllMain } from 'store/main/actions';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import { ModelTestDrawer } from './ModelTestDrawer';
 import { deleteitemswatson, getExportItemsWatson, getItemsWatson, importItems, resetItemsWatson } from 'store/watsonx/actions';
-import { DetailIntentions } from './details/DetailIntentions';
+import { DetailIntentions } from './Details/DetailIntentions';
 
 
 interface RowSelected {
