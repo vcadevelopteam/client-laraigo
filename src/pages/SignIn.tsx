@@ -251,7 +251,7 @@ type ISamlAuthResponse = {
 
 const SignIn = () => {
     const { t } = useTranslation();
-
+    console.log("log test deploying with github action")
     const dispatch = useDispatch();
     const isCustomDomain = !notCustomUrl.some(url => window.location.href.includes(url));
 
