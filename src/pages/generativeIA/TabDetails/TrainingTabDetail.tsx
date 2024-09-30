@@ -489,7 +489,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
-                callback: conector?.provider === 'Open AI' ? callback : conector?.provider === 'Laraigo' ? callbackLlm3 : callbackMeta,
+                callback: (conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? callback : conector?.provider === 'Laraigo' ? callbackLlm3 : callbackMeta,
             })
         );
     });
@@ -738,10 +738,10 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const handleRemoveAttachment = (index: number) => {
         setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
-
+    
     const handleUploadGeneral = () => {        
         if(edit) {
-            if(conector?.provider === 'Open AI') {
+            if(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') {
                 if(fileAttachments.some((attachment) => attachment.file_name.endsWith('.xlsx'))) {
                     if(row?.codeinterpreter) {
                         handleUpload()
@@ -781,7 +781,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                          <div className={classes.cardContent}>
                                              <UploadFileIcon className={classes.logo} />
                                              <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                             <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
+                                             <div className={classes.cardText}>{(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
                                          </div>
                                      </Card>
                                  </Grid>
@@ -807,7 +807,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                             <div className={classes.cardContent}>
                                                 <UploadFileIcon className={classes.logo} />
                                                 <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                                <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
+                                                <div className={classes.cardText}>{(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
                                             </div>
                                         </Card>
                                     </Grid>

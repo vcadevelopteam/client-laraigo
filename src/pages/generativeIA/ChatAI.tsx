@@ -25,6 +25,7 @@ import { LaraigoChatProfileIcon, SendMesageIcon } from "icons";
 import { createThread, deleteThread, sendMessages } from "store/gpt/actions";
 import { deleteThreadLlama, query } from "store/llama/actions";
 import { deleteThreadLlama3, query3 } from "store/llama3/actions";
+import { text } from "stream/consumers";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -81,11 +82,6 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         marginBottom: '15px',
     },
-    threadNameContainer: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
     threadNameInput: {
         display:'flex',
         flexDirection:'row'
@@ -94,11 +90,12 @@ const useStyles = makeStyles((theme) => ({
         display:'flex',
         flexDirection:'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        padding: '10px 0px',
     },
     chatIcon: {
         color: '#757377',
-        paddingLeft: 2,
-        marginRight: '0.5rem',
+        margin: '0px 5px',
         width: 24,
     },
     messageContainer: {
@@ -154,7 +151,12 @@ const useStyles = makeStyles((theme) => ({
     tooltipToken: {
         backgroundColor: 'transparent',
         boxShadow: 'none',
-    }
+    },
+    threadEdit: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
 }));
 
 interface ChatAIProps {
@@ -167,14 +169,11 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
-    const [waitSave, setWaitSave] = useState(false);
     const [waitSaveCreateThread, setWaitSaveCreateThread] = useState(false);
     const [waitSaveThread, setWaitSaveThread] = useState(false);
     const [waitSaveThreadDelete, setWaitSaveThreadDelete] = useState(false);
     const [waitSaveMessage, setWaitSaveMessage] = useState(false);
-    const [waitSaveMessage1, setWaitSaveMessage1] = useState(false);
     const [waitSaveMessage2, setWaitSaveMessage2] = useState(false);
-    const [waitSaveMessage3, setWaitSaveMessage3] = useState(false);
     const [waitSaveMessageLlama, setWaitSaveMessageLlama] = useState(false);
     const executeResult = useSelector((state) => state.main.execute);
     const executeThreads = useSelector((state) => state.gpt.gptResult);
@@ -194,14 +193,14 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
     const textFieldRef = useRef<HTMLInputElement | null>(null);
-        
-    const isLlamaModel = row?.basemodel === 'llama3.1:8b' || row?.basemodel === 'llama3.1:70b'
     const [totalInputTokens, setTotalInputTokens] = useState(0);
     const [totalOutputTokens, setTotalOutputTokens] = useState(0);
     const [messageAux2, setMessageAux2] = useState("");
     const [waitSaveAux, setWaitSaveAux] = useState(false);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
+    const [messagesList, setMessageList] = useState<Dictionary[]>([])
+    const [auxMessage, setAuxMessage] = useState<Dictionary>({});
 
     const CustomTooltip = styled(({ className, ...props }) => (
         <Tooltip {...props} classes={{ popper: className }} />
@@ -220,31 +219,41 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         '& .MuiTooltip-arrow': {
             color: '#fff',
         },
-    }));    
+    }));
+
+    const getCurrentDateTime = () => {
+        const date = new Date();
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+        const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+        return formattedDate;
+    };
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
             endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
         }
+    }, [messages, messagesList]);
+
+    useEffect(() => {
+        setMessageList(messages.data)
     }, [messages]);
 
     const fetchThreadsByAssistant = () => dispatch(getCollectionAux(threadSel({assistantaiid: row?.assistantaiid, id: 0, all: true})));
     const fetchThreadMessages = (threadid: number | undefined) => { if (threadid) { dispatch(getCollectionAux2(messageAiSel({assistantaiid: row?.assistantaiid, threadid: threadid})))}};    
     
     useEffect(() => {
-        if (messages && Array.isArray(messages.data) && messages.data.length > 0) {
+        if (messagesList && messagesList.length > 0) {
             let totalInput = 0;
-            let totalOutput = 0;    
-            const latestInputTokens = llm3Result?.data?.input_tokens || 0;
-            const latestQuery = llm3Result?.data?.query || '';    
-            messages.data.forEach((message: Dictionary) => {
+            let totalOutput = 0;
+            messagesList.forEach((message: Dictionary) => {
                 if (message.type === 'USER') {
-                    if (message.messagetext.trim() === latestQuery.trim() && latestInputTokens > 0) {
-                        message.tokencount = latestInputTokens;  
-                        totalInput += latestInputTokens;
-                    } else {
-                        totalInput += message.tokencount;
-                    }
+                    totalInput += message.tokencount;
                 } else if (message.type === 'BOT') {
                     totalOutput += message.tokencount;
                 }
@@ -252,7 +261,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             setTotalInputTokens(totalInput);
             setTotalOutputTokens(totalOutput);
         }
-    }, [messages, llm3Result?.data]);  
+    }, [messagesList]);  
 
     useEffect(() => {
         fetchThreadsByAssistant();
@@ -279,29 +288,6 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         register('status');
         register('operation');
     }, [register, setValue]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_update),
-                    })
-                );
-                fetchThreadsByAssistant()
-                dispatch(showBackdrop(false));
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
 
     useEffect(() => {
         if (waitSaveCreateThread) {
@@ -390,42 +376,39 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     useEffect(() => {
         if (waitSaveMessageLlama) {
             if(row?.basemodel.startsWith('llama')) {
-                if (!llm3Result.loading && !llm3Result.error) {
+                if (!executeResult.loading && !executeResult.error) {
                     setWaitSaveMessageLlama(false);
-                    if (llm3Result.data && llm3Result.data.result) {
-                        const outputTokens = llm3Result?.data?.output_tokens || 0;
-                        const inputTokens = llm3Result?.data?.input_tokens || 0;
-                        dispatch(execute(insMessageAi({
-                            assistantaiid: row?.assistantaiid,
-                            threadid: activeThreadId,
-                            assistantaidocumentid: 0,
-                            id: messages?.data?.[messages?.data?.length-1]?.messageaiid,
-                            messagetext: messages?.data?.[messages?.data?.length-1]?.messagetext,
-                            infosource: '',
-                            type: 'USER',
-                            status: 'ACTIVO',
-                            operation: 'UPDATE',
-                            tokencount: inputTokens,
-                        })));
-                        dispatch(execute(insMessageAi({
-                            assistantaiid: row?.assistantaiid,
-                            threadid: activeThreadId,
-                            assistantaidocumentid: 0,
-                            id: 0,
-                            messagetext: llm3Result.data.result,
-                            infosource: '',
-                            type: 'BOT',
-                            status: 'ACTIVO',
-                            operation: 'INSERT',
-                            tokencount: outputTokens,
-                        })));
-                        setWaitSaveMessageLlamaAux(true);
-                    } else {
-                        dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
-                        setIsLoading(false);
-                    }
-                } else if (llm3Result.error) {
-                    const errormessage = t(llm3Result.code || "error_unexpected_error", {
+                    const currentDateTime = getCurrentDateTime();
+                    setMessageList((prevMessages) => [...prevMessages, {
+                        assistantaiid: row?.assistantaiid,
+                        threadid: activeThreadId,
+                        assistantaidocumentid: 0,
+                        id: 0,
+                        messagetext: auxMessage.text,
+                        infosource: '',
+                        type: 'BOT',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                        tokencount: auxMessage.tokens,
+                        createdate: currentDateTime,
+                        changedate: currentDateTime,
+                    }])
+                    dispatch(execute(insMessageAi({
+                        assistantaiid: row?.assistantaiid,
+                        threadid: activeThreadId,
+                        assistantaidocumentid: 0,
+                        id: 0,
+                        messagetext: auxMessage.text,
+                        infosource: '',
+                        type: 'BOT',
+                        status: 'ACTIVO',
+                        operation: 'INSERT',
+                        tokencount: auxMessage.tokens,
+                    })));
+                    setAuxMessage({})
+                    setIsLoading(false);
+                } else if (executeResult.error) {
+                    const errormessage = t(executeResult.code || "error_unexpected_error", {
                         module: t(langKeys.domain).toLocaleLowerCase(),
                     });
                     dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
@@ -435,25 +418,28 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             } else {
                 if (!llamaResult.loading && !llamaResult.error) {
                     setWaitSaveMessageLlama(false);
-                    if (llamaResult.data && llamaResult.data.result) {
-                        const outputTokens = llm3Result?.data?.output_tokens || 0;
-                        dispatch(execute(insMessageAi({
-                            assistantaiid: row?.assistantaiid,
-                            threadid: activeThreadId,
-                            assistantaidocumentid: 0,
-                            id: 0,
-                            messagetext: llamaResult.data.result,
-                            infosource: '',
-                            type: 'BOT',
-                            status: 'ACTIVO',
-                            operation: 'INSERT',
-                            tokencount: outputTokens,
-                        })));
-                        setWaitSaveMessageLlamaAux(true);
-                    } else {
-                        dispatch(showSnackbar({ show: true, severity: "error", message: "LLaMA result data is invalid." }));
-                        setIsLoading(false);
-                    }
+                    setMessageList((prevMessages) => [ ...prevMessages.slice(0, -1), { ...prevMessages[prevMessages.length - 1], tokencount: llamaResult.data.input_tokens}]);                   
+                    dispatch(
+                        execute(
+                            insMessageAi({
+                                assistantaiid: row?.assistantaiid,
+                                threadid: activeThreadId,
+                                assistantaidocumentid: 0,
+                                id: 0,
+                                messagetext: messageAux,
+                                infosource: '',
+                                type: 'USER',
+                                status: 'ACTIVO',
+                                operation: 'INSERT',
+                                tokencount: llamaResult.data.input_tokens,
+                            })
+                        )
+                    );
+                    setAuxMessage({
+                        text: llamaResult.data.result,
+                        tokens: llamaResult.data.output_tokens,
+                    })
+                    setWaitSaveMessageLlamaAux(true);
                 } else if (llamaResult.error) {
                     const errormessage = t(llamaResult.code || "error_unexpected_error", {
                         module: t(langKeys.domain).toLocaleLowerCase(),
@@ -464,20 +450,47 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 }
             }
         }
-    }, [llamaResult, llm3Result, waitSaveMessageLlama]);
+    }, [llamaResult, executeResult, waitSaveMessageLlama]);
     
-
     useEffect(() => {
         if (waitSaveMessageAux) {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSaveMessageLlamaAux(false);
+                dispatch(execute(insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: activeThreadId,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: auxMessage.text,
+                    infosource: '',
+                    type: 'BOT',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                    tokencount: auxMessage.tokens,
+                })));
+                const currentDateTime = getCurrentDateTime();
+                setMessageList((prevMessages) => [...prevMessages, {
+                    assistantaiid: row?.assistantaiid,
+                    threadid: activeThreadId,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: auxMessage.text,
+                    infosource: '',
+                    type: 'BOT',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                    tokencount: auxMessage.tokens,
+                    createdate: currentDateTime,
+                    changedate: currentDateTime,
+                }])
+                setAuxMessage({})
                 setIsLoading(false);
-                fetchThreadMessages(selectedChat?.threadid);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setIsLoading(false);
                 setWaitSaveMessageLlamaAux(false);
             }
         }
@@ -514,195 +527,210 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const handleSendMessage = async () => {
         setIsLoading(true);
         const currentThreadId = selectedChat?.threadid;
-        const inputTokens = totalInputTokens;
-        dispatch(
-            execute(
-                insMessageAi({
-                    assistantaiid: row?.assistantaiid,
-                    threadid: currentThreadId,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: messageText,
-                    infosource: '',
-                    type: 'USER',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                    tokencount: inputTokens,
-                })
-            )
-        );
+        const currentDateTime = getCurrentDateTime();
+        setMessageList((prevMessages) => [...prevMessages, {
+            assistantaiid: row?.assistantaiid,
+            threadid: selectedChat?.threadid,
+            assistantaidocumentid: 0,
+            id: 0,
+            messagetext: messageText,
+            infosource: '',
+            type: 'USER',
+            status: 'ACTIVO',
+            operation: 'INSERT',
+            tokencount: 0,
+            createdate: currentDateTime,
+            changedate: currentDateTime,
+        }])
+        dispatch(sendMessages({
+            text: messageText,
+            assistant_id: row?.code,
+            thread_id: selectedChat?.code,
+            sources: false,
+            apikey: row?.apikey,
+        }))
         setMessageAux(messageText);
         setMessageText('');
-        setWaitSaveMessage1(true);    
         setActiveThreadId(currentThreadId);
+        setWaitSaveMessage2(true);
     };
-    
-
-    useEffect(() => {
-        if (waitSaveMessage1) {
-            if (!executeResult.loading && !executeResult.error) {
-                setWaitSaveMessage1(false);
-                fetchThreadMessages(selectedChat?.threadid);
-                setWaitSaveMessage2(true)
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSaveMessage1(false);
-            }
-        }
-    }, [executeResult, waitSaveMessage1]);
 
     useEffect(() => {
         if (waitSaveMessage2) {
-            if (!messages.loading && !messages.error) {
+            if (!executeThreads.loading && !executeThreads.error) {
                 setWaitSaveMessage2(false);
-                dispatch(sendMessages({
-                    text: messageAux,
-                    assistant_id: row?.code,
-                    thread_id: selectedChat?.code,
-                    sources: false,
-                    apikey: row?.apikey,
-                }))
+                setMessageList((prevMessages) => [ ...prevMessages.slice(0, -1), { ...prevMessages[prevMessages.length - 1], tokencount: executeThreads.data.input_tokens}]);
+                dispatch(
+                    execute(
+                        insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: selectedChat?.threadid,
+                            assistantaidocumentid: 0,
+                            id: 0,
+                            messagetext: messageAux,
+                            infosource: '',
+                            type: 'USER',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                            tokencount: executeThreads.data.input_tokens,
+                        })
+                    )
+                );
+                setAuxMessage({
+                    text: executeThreads.data.response,
+                    tokens: executeThreads.data.output_tokens
+                })
                 setMessageAux('')
                 setWaitSaveMessage(true)
-            } else if (messages.error) {
-                const errormessage = t(messages.code || "error_unexpected_error", {
-                    module: t(langKeys.domain).toLocaleLowerCase(),
-                });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSaveMessage2(false);
-            }
-        }
-    }, [messages, waitSaveMessage2]);
-
-    useEffect(() => {
-        if (waitSaveMessage) {
-            if (!executeThreads.loading && !executeThreads.error) {
-                setWaitSaveMessage(false);
-                const outputTokens = llm3Result?.data?.output_tokens || 0;
-                dispatch(execute(insMessageAi({
-                    assistantaiid: row?.assistantaiid,
-                    threadid: activeThreadId,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: executeThreads.data.response,
-                    infosource: '',
-                    type: 'BOT',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                    tokencount: outputTokens,
-                })))
-                setWaitSaveMessage3(true)
             } else if (executeThreads.error) {
                 const errormessage = t(executeThreads.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSaveMessage(false);
+                setWaitSaveMessage2(false);
             }
         }
-    }, [executeThreads, waitSaveMessage]);
+    }, [executeThreads, waitSaveMessage2]);
 
     useEffect(() => {
-        if (waitSaveMessage3) {
+        if (waitSaveMessage) {
             if (!executeResult.loading && !executeResult.error) {
-                setWaitSaveMessage3(false);
-                fetchThreadMessages(selectedChat?.threadid);
+                setWaitSaveMessage(false);
+                const currentDateTime = getCurrentDateTime();
+                setMessageList((prevMessages) => [...prevMessages, {
+                    assistantaiid: row?.assistantaiid,
+                    threadid: activeThreadId,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: auxMessage.text,
+                    infosource: '',
+                    type: 'BOT',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                    tokencount: auxMessage.tokens,
+                    createdate: currentDateTime,
+                    changedate: currentDateTime,
+                }])
+                dispatch(execute(insMessageAi({
+                    assistantaiid: row?.assistantaiid,
+                    threadid: activeThreadId,
+                    assistantaidocumentid: 0,
+                    id: 0,
+                    messagetext: auxMessage.text,
+                    infosource: '',
+                    type: 'BOT',
+                    status: 'ACTIVO',
+                    operation: 'INSERT',
+                    tokencount: auxMessage.tokens,
+                })))
+                setAuxMessage({})
                 setIsLoading(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                setWaitSaveMessage3(false);
+                setWaitSaveMessage(false);
+                setIsLoading(false);
             }
         }
-    }, [executeResult, waitSaveMessage3]);
+    }, [executeResult, waitSaveMessage]);
 
     const handleSendMessageLLM3 = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
-        const inputTokens = totalInputTokens;
-        dispatch(
-            execute(
-                insMessageAi({
-                    assistantaiid: row?.assistantaiid,
-                    threadid: currentThreadLlamaId,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: messageText,
-                    infosource: '',
-                    type: 'USER',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                    tokencount: 0,
-                })
-            )
-        );
-        setTotalInputTokens(prevTokens => prevTokens + inputTokens);
+        const currentDateTime = getCurrentDateTime();
+        setMessageList((prevMessages) => [...prevMessages, {
+            assistantaiid: row?.assistantaiid,
+            threadid: currentThreadLlamaId,
+            assistantaidocumentid: 0,
+            id: 0,
+            messagetext: messageText,
+            infosource: '',
+            type: 'USER',
+            status: 'ACTIVO',
+            operation: 'INSERT',
+            tokencount: 0,
+            createdate: currentDateTime,
+            changedate: currentDateTime,
+        }])
+        dispatch(query3({
+            assistant_name: row?.name,
+            query: messageText,
+            threadid: currentThreadLlamaId,
+            system_prompt: row?.generalprompt,
+            model: row?.basemodel,
+            thread_id: selectedChat?.code,
+            max_new_tokens: row?.max_tokens,
+            temperature: parseFloat(row?.temperature),
+            top_p: parseFloat(row?.top_p),
+            top_k: parseFloat(row?.top_k),
+            repetition_penalty: parseFloat(row?.repetition_penalty),
+        }))
         setMessageAux2(messageText)
         setMessageText('')
+        setActiveThreadId(selectedChat?.threadid);
         setWaitSaveAux(true)
     }
 
     useEffect(() => {
         if (waitSaveAux) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!llm3Result.loading && !llm3Result.error) {
                 setWaitSaveAux(false);
-                fetchThreadMessages(selectedChat?.threadid);
-                dispatch(query3({
-                    assistant_name: row?.name,
-                    query: messageAux2,
-                    threadId: selectedChat?.threadid,
-                    system_prompt: row?.generalprompt,
-                    model: row?.basemodel,
-                    thread_id: selectedChat?.code,
-                    max_new_tokens: row?.max_tokens,
-                    temperature: parseFloat(row?.temperature),
-                    top_p: parseFloat(row?.top_p),
-                    top_k: parseFloat(row?.top_k),
-                    repetition_penalty: parseFloat(row?.repetition_penalty),
-                }))
+                setMessageList((prevMessages) => [ ...prevMessages.slice(0, -1), { ...prevMessages[prevMessages.length - 1], tokencount: llm3Result.data.input_tokens}]);               
+                dispatch(
+                    execute(
+                        insMessageAi({
+                            assistantaiid: row?.assistantaiid,
+                            threadid: activeThreadId,
+                            assistantaidocumentid: 0,
+                            id: 0,
+                            messagetext: messageAux2,
+                            infosource: '',
+                            type: 'USER',
+                            status: 'ACTIVO',
+                            operation: 'INSERT',
+                            tokencount: llm3Result.data.input_tokens,
+                        })
+                    )
+                );
+                setAuxMessage({
+                    text: llm3Result.data.result,
+                    tokens: llm3Result.data.output_tokens
+                })
                 setWaitSaveMessageLlama(true)
-                setActiveThreadId(selectedChat?.threadid);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", {
+            } else if (llm3Result.error) {
+                const errormessage = t(llm3Result.code || "error_unexpected_error", {
                     module: t(langKeys.domain).toLocaleLowerCase(),
                 });
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                setIsLoading(false)
                 setWaitSaveAux(false);
             }
         }
-    }, [executeResult, waitSaveAux]);
+    }, [llm3Result, waitSaveAux]);
 
     const handleSendMessageLlama = async () => {
         setIsLoading(true);
         const currentThreadLlamaId = selectedChat?.threadid;
-        const inputTokens = totalInputTokens;
-        dispatch(
-            execute(
-                insMessageAi({
-                    assistantaiid: row?.assistantaiid,
-                    threadid: currentThreadLlamaId,
-                    assistantaidocumentid: 0,
-                    id: 0,
-                    messagetext: messageText,
-                    infosource: '',
-                    type: 'USER',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                    tokencount: inputTokens,
-                })
-            )
-        );
-        const message = messageText
-        setMessageText('');
-        fetchThreadMessages(selectedChat?.threadid);
+        const currentDateTime = getCurrentDateTime();
+        setMessageList((prevMessages) => [...prevMessages, {
+            assistantaiid: row?.assistantaiid,
+            threadid: currentThreadLlamaId,
+            assistantaidocumentid: 0,
+            id: 0,
+            messagetext: messageText,
+            infosource: '',
+            type: 'USER',
+            status: 'ACTIVO',
+            operation: 'INSERT',
+            tokencount: 0,
+            createdate: currentDateTime,
+            changedate: currentDateTime,
+        }])
         dispatch(query({
             assistant_name: row?.name,
-            query: message,
+            query: messageText,
             system_prompt: row?.generalprompt,
             model: row?.basemodel,
             thread_id: selectedChat?.code,
@@ -710,10 +738,12 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
             decoding_method: row?.decoding_method ? row.decoding_method : "sample",
-            project_id: conector?.modelid,
+            ...(conector?.modelid !== '' && { project_id: conector?.modelid }),
         }))
-        setWaitSaveMessageLlama(true)
+        setMessageAux(messageText)
+        setMessageText('');
         setActiveThreadId(currentThreadLlamaId);
+        setWaitSaveMessageLlama(true)
     };
 
     useEffect(() => {
@@ -837,43 +867,39 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                         </Button>
                     </div>
                 </div>
-                <div style={{overflowY: 'auto', flex: 1, width: 'fit-content'}}>
+                <div style={{overflowY: 'auto', width: '100%'}}>
                     {dataThreads.data.filter(chat => chat.type === 'THREAD').map((chat) => (
                         <div key={chat.threadid} onClick={() => handleChatClick(chat)} className={classes.threadContainer}>
-                            <div className={classes.threadNameContainer}>
-                                {selectedChatForEdit === chat.threadid ? (
-                                    <>
-                                        <div className={classes.threadNameInput}>
-                                            <FieldEdit
-                                                valueDefault={getValues('description')}
-                                                onChange={(value) => setValue('description', value)}
-                                                error={errors?.description?.message}
-                                            />
-                                        </div>
-                                        <div style={{marginLeft:'10px'}}>
-                                            <IconButton onClick={() => handleCloseEdit()}>
-                                                <ClearIcon style={{ color: '#757377'}}/>
-                                            </IconButton>
-                                            <IconButton onClick={() => handleSaveEdit()}>
-                                                <CheckIcon style={{ color: '#757377' }}/>
-                                            </IconButton>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className={classes.threadName} style={{ backgroundColor: chat.threadid === selectedChat?.threadid ? '#EEEEEE': ''}}>
-                                            <ChatBubbleIcon className={classes.chatIcon}/>
-                                            <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description}</Typography>
-                                            <IconButton onClick={() => handleEditChat(chat)} style={{paddingRight: 0, width: 36}}>
-                                                <EditIcon style={{ color: '#757377' }}/>
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDeleteChat(chat)} style={{paddingRight: 0, width: 36}}>
-                                                <DeleteIcon style={{ color: '#757377' }}/>
-                                            </IconButton>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                            {selectedChatForEdit === chat.threadid ? (
+                                <div className={classes.threadEdit}>
+                                    <div className={classes.threadNameInput}>
+                                        <FieldEdit
+                                            valueDefault={getValues('description')}
+                                            onChange={(value) => setValue('description', value)}
+                                            error={errors?.description?.message}
+                                        />
+                                    </div>
+                                    <div style={{marginLeft:'10px'}}>
+                                        <IconButton onClick={() => handleCloseEdit()}>
+                                            <ClearIcon style={{ color: '#757377'}}/>
+                                        </IconButton>
+                                        <IconButton onClick={() => handleSaveEdit()}>
+                                            <CheckIcon style={{ color: '#757377' }}/>
+                                        </IconButton>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className={classes.threadName} style={{ backgroundColor: chat.threadid === selectedChat?.threadid ? '#EEEEEE': ''}}>
+                                    <ChatBubbleIcon className={classes.chatIcon}/>
+                                    <Typography style={{ fontSize: '1rem', width: 182 }}>{chat.description}</Typography>
+                                    <IconButton size="small" onClick={() => handleEditChat(chat)}>
+                                        <EditIcon style={{ color: '#757377' }}/>
+                                    </IconButton>
+                                    <IconButton size="small" onClick={() => handleDeleteChat(chat)}>
+                                        <DeleteIcon style={{ color: '#757377' }}/>
+                                    </IconButton>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -882,9 +908,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                 <div className={classes.chatMessages}>
                     {selectedChat && (
                         <>
-                            {messages.data && messages.data.length > 0 ? (
+                            {messagesList && messagesList?.length > 0 ? (
                                 <>
-                                    {messages.data.map((message, index) => (
+                                    {messagesList?.map((message, index) => (
                                         <div key={message.messageaiid} className={classes.messageContainer} style={{ backgroundColor: message.type !== 'USER' ? '' : 'white' }}>
                                             <div className={classes.messageContainer2}>
                                                 <div className={classes.messageDate}>
@@ -906,7 +932,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {index === messages.data.length - 1 && (
+                                            {index === messagesList?.length - 1 && (
                                                 <div ref={endOfMessagesRef}></div>
                                             )}
                                         </div>
@@ -967,10 +993,10 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
                                     <Typography variant="body2">
-                                        <strong>{messages?.data?.length === 0 ? 0 : totalInputTokens}</strong>
+                                        <strong>{messagesList?.length === 0 ? 0 : totalInputTokens}</strong>
                                     </Typography>
                                     <Typography variant="body2">
-                                        <strong>{messages?.data?.length === 0 ? 0 : totalOutputTokens}</strong>
+                                        <strong>{messagesList?.length === 0 ? 0 : totalOutputTokens}</strong>
                                     </Typography>
                                 </div>
                             </div>
@@ -979,7 +1005,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
                         placement="top"
                     >
                         <div style={{ cursor: 'pointer', marginLeft: 10 }}>
-                            <p><strong>{messages?.data?.length === 0 ? 0 : totalInputTokens+totalOutputTokens}</strong> tokens</p>
+                            <p><strong>{messagesList?.length === 0 ? 0 : totalInputTokens+totalOutputTokens}</strong> tokens</p>
                         </div>
                     </CustomTooltip>
                 </div>
