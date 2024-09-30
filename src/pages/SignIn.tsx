@@ -293,7 +293,7 @@ type ISamlAuthResponse = {
 
 const SignIn = () => {
     const { t } = useTranslation();
-
+    
     const dispatch = useDispatch();
     const isCustomDomain = !notCustomUrl.some(url => window.location.href.includes(url));
 
