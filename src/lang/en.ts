@@ -6552,12 +6552,15 @@ const translation: LangKeys = {
   conflictresolutionhelper: "Intent conflicts occur when examples are shared between multiple intents in a single workspace.",
   examplesinconflict: "Examples in conflict",
   user_example: "User example",
-  entity: 'Entity',  invalid: 'Invalid',
+  entity: 'Entity',  
+  invalid: 'Invalid',
   assistantnamedesc: 'Assign a name for the assistant you will register.',
   assistantdescriptiondesc: 'Assign a brief description to the assistant you will register.',
   assistantconnectorsdesc: 'Select the connector linked to your assistant, this is configured in “IA Connectors”.',
   assistantstatussdesc: 'Select the status of your assistant, whether you want it to be active or inactive.',
   assistantbasemodeldesc: 'Select the base model of your assistant, this will be the engine of your answers.', 
+  projectid: 'Project ID',
+  projectiddesc: "Registers the project ID provided by IBM Watson",
 };
 
 const enResource: ResourceLanguage = {
