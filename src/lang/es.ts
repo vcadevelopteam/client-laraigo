@@ -6512,6 +6512,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   examplesinconflict: "Ejemplos en conflicto",
   user_example: "Ejemplo usuario",
   entity: 'Entidad',
+  projectid: 'Project ID',
+  projectiddesc: 'Registra el ID del proyecto proporcionado por IBM Watson',
 };
 
 const esResource: ResourceLanguage = {
