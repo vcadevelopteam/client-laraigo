@@ -6505,6 +6505,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   eventlinkperson: 'Url del evento agendado',
   eventlinkcode: 'Código url del evento agendado',
   contactbussiness: 'Contacto de la empresa',
+  region: 'Región',
+  addressreference: 'Referencia de dirección',
+  addressnumber: 'Número de dirección',
 };
 
 const esResource: ResourceLanguage = {

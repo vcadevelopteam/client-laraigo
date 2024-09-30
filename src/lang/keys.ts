@@ -6496,6 +6496,11 @@ export const langKeys = {
   eventlinkperson: 'eventlinkperson',
   eventlinkcode: 'eventlinkcode',
   contactbussiness: 'contactbussiness',
+  region: 'region',
+  addressreference: 'addressreference',
+  addressnumber: 'addressnumber',
+  floor_number: 'floor_number',
+  ubigeocode: 'ubigeocode',
 };
 
 export type LangKeys = typeof langKeys;

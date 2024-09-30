@@ -6553,6 +6553,9 @@ const translation: LangKeys = {
   eventlinkperson: 'Url of the scheduled event',
   eventlinkcode: 'URL code of the scheduled event',
   contactbussiness: 'Company contact',
+  region: 'Region',
+  addressreference: 'Address reference',
+  addressnumber: 'Address number',
 };
 
 const enResource: ResourceLanguage = {
