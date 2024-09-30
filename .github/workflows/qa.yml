@@ -1,4 +1,4 @@
-name: Deploy to IBM Cloud Object Storage
+name: Deploy to TESTING
 
 on:
   push:
