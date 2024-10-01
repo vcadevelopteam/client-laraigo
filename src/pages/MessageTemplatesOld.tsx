@@ -812,7 +812,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             buttons: row ? row.buttons || [] : [],
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
-            communicationchannelid: row?.communicationchannelid || 0,
+            communicationchannelid: (parseInt((row?.communicationchannelid || "").split(",")[0])) || 0,
             communicationchanneltype: row?.communicationchanneltype || "",
             description: row?.description || "",
             exampleparameters: row?.exampleparameters || "",

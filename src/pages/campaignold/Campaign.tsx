@@ -238,9 +238,10 @@ export const Campaign: FC = () => {
                         return null;
                     }
                 
-                    const { id, status, startdate, enddate } = row.original;
+                    const { id, status, startdate, enddate, communicationchannel } = row.original;
                 
                     if (
+                        communicationchannel &&
                         dateToLocalDate(startdate, 'date') <= todayDate() &&
                         todayDate() <= dateToLocalDate(enddate, 'date')
                     ) {
