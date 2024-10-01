@@ -382,6 +382,7 @@ const paths = {
         path: '/conversation/:token',
         resolve: (token: string) => `/conversation/${token}`
     },
+    LINKREGISTER: '/linkregister',
 };
 
 export default paths;

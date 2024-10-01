@@ -6530,6 +6530,12 @@ const translation: LangKeys = {
   registertime: 'Register Time',
 
   billingreport_conversationbillable: 'Billable WhatsApp Conversations',
+  linkregister: 'Link Register',
+  validity: 'Validity',
+  linknamedesc: 'Assign a name to your link',
+  addlinkdesc: 'Enter the URL of your link',
+  linkstartdatedesc: 'Enter a starting date for the validity of your link',
+  linkenddatedesc: 'Enter an end date for the validity of your link',
 };
 
 const enResource: ResourceLanguage = {
