@@ -283,3 +283,22 @@ export const updateLanguage = (state: IState, action: IAction): IState => {
 
     })
 }
+
+export const updateListOrgs = (state: IState, action: IAction): IState => {
+    const orgs = (state.validateToken.user?.organizations || []);
+    const orgExisted = orgs.some(x => x.orgid === action.payload.org.orgid)
+    return ({
+        ...state,
+        validateToken: {
+            ...state.validateToken,
+            user: {
+                ...(state.validateToken.user || {} as IUser),
+                organizations: orgExisted ? (orgs).map(x => x.orgid === action.payload.org.orgid ? action.payload.org : x) : [
+                    ...(orgs),
+                    action.payload.org
+                ]
+            },
+        },
+
+    })
+}
