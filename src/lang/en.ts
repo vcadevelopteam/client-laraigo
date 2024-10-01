@@ -6536,6 +6536,8 @@ const translation: LangKeys = {
   addlinkdesc: 'Enter the URL of your link',
   linkstartdatedesc: 'Enter a starting date for the validity of your link',
   linkenddatedesc: 'Enter an end date for the validity of your link',
+  useregisteredlinkscount: 'Use registered link for click count',
+  selectregisteredlink: 'Select a registered link',
 };
 
 const enResource: ResourceLanguage = {

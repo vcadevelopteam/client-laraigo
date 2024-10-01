@@ -6488,6 +6488,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   addlinkdesc: 'Ingresa el URL de tu enlace',
   linkstartdatedesc: 'Ingresa una fecha inicial para la vigencia de tu enlace',
   linkenddatedesc: 'Ingresa una fecha final para la vigencia de tu enlace',
+  useregisteredlinkscount: 'Usar enlace registrado para conteo de clicks',
+  selectregisteredlink: 'Seleccione un enlace registrado',
 };
 
 const esResource: ResourceLanguage = {

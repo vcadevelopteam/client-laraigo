@@ -6479,6 +6479,8 @@ export const langKeys = {
   addlinkdesc: 'addlinkdesc',
   linkstartdatedesc: 'linkstartdatedesc',
   linkenddatedesc: 'linkenddatedesc',
+  useregisteredlinkscount: 'useregisteredlinkscount',
+  selectregisteredlink: 'selectregisteredlink',
 };
 
 export type LangKeys = typeof langKeys;

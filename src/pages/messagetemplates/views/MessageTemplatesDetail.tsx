@@ -340,6 +340,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const noop = () => {""};
     const [categoryChange, setCategoryChange] = useState('ACTIVADO');
     const [showError, setShowError] = useState(false);
+    const [registeredLinks, setRegisteredLinks] = useState(false)
     const [buttonsGeneral, setButtonsGeneral] = useState<Dictionary[]>(
         row?.firstbuttons === "quickreply" ? [
             { id: 1, name: "quickreply",items: [] },
@@ -2951,7 +2952,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                         <Draggable key={`btn-${i}`} draggableId={`btn-${i}`} index={i} isDragDisabled={!isNew}>
                                                                                                                             {(provided) => (
                                                                                                                                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                                                                                                                                    <div style={{ display: 'flex', padding: '20px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
+                                                                                                                                    <div style={{ display: 'flex', padding: 15, backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, alignItems: 'center', gap: 5 }}>
                                                                                                                                         <DragIndicatorIcon />
                                                                                                                                         <div style={{ flex: 1 }}>
                                                                                                                                             <FieldEditAdvancedAux
@@ -3013,79 +3014,138 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                         <>
                                                                                                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                                                                                                                 <DragIndicatorIcon />
-                                                                                                                                                <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
-                                                                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0, display: 'flex' }}>
-                                                                                                                                                        <SingleLineInput
-                                                                                                                                                            className='col-4'
-                                                                                                                                                            label={t(langKeys.buttontext)}
-                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
-                                                                                                                                                            onInput={(e) => handleActionButtonText(e, i)}
-                                                                                                                                                            onChange={(e) => handleActionButtonText(e, i)}
-                                                                                                                                                            valueDefault={btn?.btn?.text || ""}
-                                                                                                                                                            maxLength={25}
-                                                                                                                                                            rows={1}
-                                                                                                                                                            inputProps={{
-                                                                                                                                                                rows: 1,
-                                                                                                                                                                maxRows: 1
-                                                                                                                                                            }}
-                                                                                                                                                            fregister={{
-                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.text`, {
-                                                                                                                                                                    validate: (value) =>
-                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                                                                }),
-                                                                                                                                                            }}
-                                                                                                                                                            disabled={!isNew}
-                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                                                                        />
-                                                                                                                                                        <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
-                                                                                                                                                            <span>{t(langKeys.urltype)}</span>
-                                                                                                                                                            <FieldSelect
-                                                                                                                                                                data={dataURLType}
-                                                                                                                                                                error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
-                                                                                                                                                                onChange={(value) => onChangeButton(i, "type", value?.value)}
-                                                                                                                                                                optionDesc="text"
-                                                                                                                                                                optionValue="value"
-                                                                                                                                                                valueDefault={btn?.btn?.type || ""}
-                                                                                                                                                                variant="outlined"
-                                                                                                                                                                fregister={{
-                                                                                                                                                                    ...register(`buttonsgeneric.${i}.btn.type`, {
-                                                                                                                                                                        validate: (value) =>
-                                                                                                                                                                            (value && value.length) || t(langKeys.field_required),
-                                                                                                                                                                    }),
+                                                                                                                                                <div style={{ display: 'flex', padding: '10px 10px 0px 10px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                                                                    <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
+                                                                                                                                                        <div style={{marginBottom: 10}}>
+                                                                                                                                                            <Checkbox
+                                                                                                                                                                color="primary"
+                                                                                                                                                                checked={registeredLinks}
+                                                                                                                                                                onChange={() => {
+                                                                                                                                                                    setRegisteredLinks(!registeredLinks)
                                                                                                                                                                 }}
-                                                                                                                                                                disabled={!isNew}
-                                                                                                                                                                size="normal"
                                                                                                                                                             />
+                                                                                                                                                            <span>{t(langKeys.useregisteredlinkscount)}</span>
                                                                                                                                                         </div>
-                                                                                                                                                        <SingleLineInput
-                                                                                                                                                            className='col-4'
-                                                                                                                                                            label={t(langKeys.urlwebsite)}
-                                                                                                                                                            error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
-                                                                                                                                                            onInput={(e) => handleActionButtonUrl(e, i)}
-                                                                                                                                                            onChange={(e) => handleActionButtonUrl(e, i)}
-                                                                                                                                                            valueDefault={btn?.btn?.url || ""}
-                                                                                                                                                            rows={1}
-                                                                                                                                                            inputProps={{
-                                                                                                                                                                rows: 1,
-                                                                                                                                                                maxRows: 1
-                                                                                                                                                            }}
-                                                                                                                                                            maxLength={2000}
-                                                                                                                                                            fregister={{
-                                                                                                                                                                ...register(`buttonsgeneric.${i}.btn.url`, {
-                                                                                                                                                                    validate: (value) =>
-                                                                                                                                                                        (value && value.length) || t(langKeys.field_required),
-                                                                                                                                                                }),
-                                                                                                                                                            }}
-                                                                                                                                                            disabled={!isNew}
-                                                                                                                                                            style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
-                                                                                                                                                        />
-                                                                                                                                                        {btn?.btn?.type === 'dynamic' && (
-                                                                                                                                                            <div className="col-1" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                                                                                                                                                                <span>{'{{'}1{'}}'}</span>
-                                                                                                                                                                <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
-                                                                                                                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                                                                                                                                                                </Tooltip>
-                                                                                                                                                            </div>
+                                                                                                                                                        {!registeredLinks ? (
+                                                                                                                                                            <>
+                                                                                                                                                                <SingleLineInput
+                                                                                                                                                                    className='col-4'
+                                                                                                                                                                    label={t(langKeys.buttontext)}
+                                                                                                                                                                    error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                                                                    onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                                    onChange={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                                    valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                                    maxLength={25}
+                                                                                                                                                                    rows={1}
+                                                                                                                                                                    inputProps={{
+                                                                                                                                                                        rows: 1,
+                                                                                                                                                                        maxRows: 1
+                                                                                                                                                                    }}
+                                                                                                                                                                    fregister={{
+                                                                                                                                                                        ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                                                                            validate: (value) =>
+                                                                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                        }),
+                                                                                                                                                                    }}
+                                                                                                                                                                    disabled={!isNew}
+                                                                                                                                                                    style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px'}}
+                                                                                                                                                                />
+                                                                                                                                                                <div className={btn?.btn?.type === 'dynamic' ? 'col-3' : 'col-4'}>
+                                                                                                                                                                    <span>{t(langKeys.urltype)}</span>
+                                                                                                                                                                    <FieldSelect
+                                                                                                                                                                        data={dataURLType}
+                                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
+                                                                                                                                                                        onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                                                                        optionDesc="text"
+                                                                                                                                                                        optionValue="value"
+                                                                                                                                                                        valueDefault={btn?.btn?.type || ""}
+                                                                                                                                                                        variant="outlined"
+                                                                                                                                                                        fregister={{
+                                                                                                                                                                            ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                                                                                validate: (value) =>
+                                                                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                            }),
+                                                                                                                                                                        }}
+                                                                                                                                                                        disabled={!isNew}
+                                                                                                                                                                        size="normal"
+                                                                                                                                                                    />
+                                                                                                                                                                </div>
+                                                                                                                                                                <SingleLineInput
+                                                                                                                                                                    className='col-4'
+                                                                                                                                                                    label={t(langKeys.urlwebsite)}
+                                                                                                                                                                    error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
+                                                                                                                                                                    onInput={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                                                                    onChange={(e) => handleActionButtonUrl(e, i)}
+                                                                                                                                                                    valueDefault={btn?.btn?.url || ""}
+                                                                                                                                                                    rows={1}
+                                                                                                                                                                    inputProps={{
+                                                                                                                                                                        rows: 1,
+                                                                                                                                                                        maxRows: 1
+                                                                                                                                                                    }}
+                                                                                                                                                                    maxLength={2000}
+                                                                                                                                                                    fregister={{
+                                                                                                                                                                        ...register(`buttonsgeneric.${i}.btn.url`, {
+                                                                                                                                                                            validate: (value) =>
+                                                                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                        }),
+                                                                                                                                                                    }}
+                                                                                                                                                                    disabled={!isNew}
+                                                                                                                                                                    style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px' }}
+                                                                                                                                                                />
+                                                                                                                                                                {btn?.btn?.type === 'dynamic' && (
+                                                                                                                                                                    <div className="col-1" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                                                                                                                                                        <span>{'{{'}1{'}}'}</span>
+                                                                                                                                                                        <Tooltip title={t(langKeys.dynamicbuttontext)} placement="top">
+                                                                                                                                                                            <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                                                                                                                        </Tooltip>
+                                                                                                                                                                    </div>
+                                                                                                                                                                )}
+                                                                                                                                                            </>
+                                                                                                                                                        ) : (
+                                                                                                                                                            <>
+                                                                                                                                                                <SingleLineInput
+                                                                                                                                                                    className='col-4'
+                                                                                                                                                                    label={t(langKeys.buttontext)}
+                                                                                                                                                                    error={errors?.buttonsgeneric?.[i]?.btn?.text?.message}
+                                                                                                                                                                    onInput={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                                    onChange={(e) => handleActionButtonText(e, i)}
+                                                                                                                                                                    valueDefault={btn?.btn?.text || ""}
+                                                                                                                                                                    maxLength={25}
+                                                                                                                                                                    rows={1}
+                                                                                                                                                                    inputProps={{
+                                                                                                                                                                        rows: 1,
+                                                                                                                                                                        maxRows: 1
+                                                                                                                                                                    }}
+                                                                                                                                                                    fregister={{
+                                                                                                                                                                        ...register(`buttonsgeneric.${i}.btn.text`, {
+                                                                                                                                                                            validate: (value) =>
+                                                                                                                                                                                (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                        }),
+                                                                                                                                                                    }}
+                                                                                                                                                                    disabled={!isNew}
+                                                                                                                                                                    style={{ border: '1px solid #BFBFBF', borderRadius: '4px', padding: '8px'}}
+                                                                                                                                                                />
+                                                                                                                                                                <div className='col-8'>
+                                                                                                                                                                    <div style={{marginBottom: 4}}>{t(langKeys.selectregisteredlink)}</div>
+                                                                                                                                                                    <FieldSelect
+                                                                                                                                                                        data={[]}
+                                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
+                                                                                                                                                                        onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                                                                                                                                        optionDesc="text"
+                                                                                                                                                                        optionValue="value"
+                                                                                                                                                                        valueDefault={btn?.btn?.type || ""}
+                                                                                                                                                                        variant="outlined"
+                                                                                                                                                                        fregister={{
+                                                                                                                                                                            ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                                                                                validate: (value) =>
+                                                                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                            }),
+                                                                                                                                                                        }}
+                                                                                                                                                                        disabled={!isNew}
+                                                                                                                                                                        size="normal"
+                                                                                                                                                                    />
+                                                                                                                                                                </div>
+                                                                                                                                                            </>
                                                                                                                                                         )}
                                                                                                                                                     </div>
                                                                                                                                                 </div>
@@ -3123,7 +3183,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                     ) : (
                                                                                                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                                                                                                             <DragIndicatorIcon />
-                                                                                                                                            <div style={{ display: 'flex', padding: '20px 15px 5px 15px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
+                                                                                                                                            <div style={{ display: 'flex', padding: '15px 10px 0px 10px', backgroundColor: '#F8F8F8', border: '1px solid #ADADAD', borderRadius: 5, flex: 1, gap: 7 }}>
                                                                                                                                                 <div className="row-zyx" style={{ width: '100%', marginBottom: 0 }}>
                                                                                                                                                     <SingleLineInput
                                                                                                                                                         className='col-4'
