@@ -77,7 +77,7 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
             {
                 Header: t(langKeys.type_service),
                 accessor: 'type',
-                type: "select",
+                type: "select",                
                 listSelectFilter: [
                     { key: "Gen AI", value: "Gen AI" },
                     { key: "Assistant", value: "Assistant" },
@@ -91,8 +91,7 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                     } else {
                         return value;
                     }
-                },
-                width: '200px'                
+                }                
             },                     
             {
                 Header: t(langKeys.provider),
@@ -158,7 +157,7 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                     { key: "DESACTIVO", value: "DESACTIVO" },                
                 ],
                 prefixTranslation: 'status_',
-                width: 'auto'                         
+                width: 'auto',
             },
         ],
         []

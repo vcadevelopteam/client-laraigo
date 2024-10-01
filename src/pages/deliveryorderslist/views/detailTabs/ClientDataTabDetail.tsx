@@ -131,7 +131,7 @@ const ClientDataTabDetail: React.FC<InventoryTabDetailProps> = ({ row }) => {
                     label={t(langKeys.address)}
                     disabled={true}
                     className="col-4"
-                    valueDefault={row?.payment_fiscal_address}
+                    valueDefault={row?.person_address}
                 />
             </div>
         </div>

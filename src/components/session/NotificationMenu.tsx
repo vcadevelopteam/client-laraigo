@@ -3,7 +3,7 @@ import { LeadActivityNotification } from "@types";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { BellNotificationIcon } from "icons";
-import { FC, MouseEventHandler, useState } from "react";
+import React, { FC, MouseEventHandler, useState } from "react";
 import { useHistory } from "react-router";
 import clsx from 'clsx';
 import Avatar from '@material-ui/core/Avatar';
@@ -41,7 +41,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         title: {
             fontWeight: 'bold',
             whiteSpace: "initial",
-            width:"calc(100% - 40px)"
+            width: "calc(100% - 40px)"
         },
         date: {
             fontSize: 11,
@@ -55,7 +55,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
         description: {
             whiteSpace: "initial",
-            width:"calc(100% - 40px)"
+            width: "calc(100% - 40px)"
         },
     }),
 );
@@ -63,14 +63,13 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
 interface NotificaionMenuItemProps {
     title: React.ReactNode;
     description: React.ReactNode;
-    // notification: LeadActivityNotification,
     image: string;
     user: string;
     date: React.ReactNode;
     onClick?: MouseEventHandler<HTMLLIElement>;
 }
 
-const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, onClick, user, image }) => {
+const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, onClick, user }) => {
     const classes = useNotificaionStyles();
 
     return (
@@ -83,7 +82,7 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                         </Avatar>
                     </Tooltip>
                 </div>
-                <div style={{width:"calc(100% - 40px)"}}>
+                <div style={{ width: "calc(100% - 40px)" }}>
                     <div className={classes.date}>{date}</div>
                     <div className={classes.textOneLine}>
                         <div className={classes.title}>{title}</div>
@@ -174,7 +173,21 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                 }}
             >
                 <div style={{ fontWeight: 'bold', marginLeft: 10, fontSize: 20 }}>{"Notifications"}</div>
-                {notifications.sort((a, b) => (a.duedate < b.duedate)? 1 : -1).map((e, i) => {
+                {notifications.sort((a, b) => (a.duedate < b.duedate) ? 1 : -1).map((e, i) => {
+                    if (e.notificationtype === "BALANCEALERT") {
+                        const not = e as LeadActivityNotification;
+                        return (
+                            <NotificaionMenuItem
+                                key={i}
+                                user={""}
+                                image={""}
+                                title={not.description}
+                                description={""}
+                                date={formatDate(not.duedate)}
+                            />
+                        );
+                    }
+
                     if (e.notificationtype === "LEADACTIVITY") {
                         const not = e as LeadActivityNotification;
                         return (
@@ -193,7 +206,7 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                         );
                     }
 
-                    return <div style={{ display: 'none' }} />;
+                    return <div key={i} style={{ display: 'none' }} />;
                 })}
             </Menu>
         </Box>

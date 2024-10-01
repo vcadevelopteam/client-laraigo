@@ -47,29 +47,28 @@ interface NewOrderTabDetailProps {
   getValues: any,
   setValue: any
   setStoreAreaCoordinates: (value: any) => void
+  storeAreaCoordinates: Dictionary[];
+  coverageError: boolean;
+  setCoverageError: (value: booelan) => void;
 }
 
-const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, row, setValue, getValues, setStoreAreaCoordinates}) => {
+const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, row, setValue, getValues, setStoreAreaCoordinates, storeAreaCoordinates, coverageError, setCoverageError}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [inStore, setInStore] = useState(row?.warehouseinstore || false);
     const multiData = useSelector(state => state.main.multiData);
-
     function handleSwitchChange (event: React.ChangeEvent<HTMLInputElement>) {
         setValue('warehouseinstore', event.target.checked)
         setInStore(event.target.checked)
     }
-
-
-    const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>(row?.coveragearea?.slice(0,-1) || [{ latitude: 0, longitude: 0 }]);  
-
+    const [coordinates, setCoordinates] = useState<Array<{ latitude: number; longitude: number }>>(row?.coveragearea?.slice(0,-1) || [{ latitude: -12.046371661493636, longitude: -77.0427417755127 }]);  
     useEffect(() => {
         setDuplicatedCoord(coordinates[0]);
         setStoreAreaCoordinates([...coordinates, duplicatedCoord]);
     }, [coordinates]);
 
     const handleAddCoordinate = () => {
-        setCoordinates((prevCoordinates) => [...prevCoordinates, { latitude: 0, longitude: 0 }]);
+        setCoordinates((prevCoordinates) => [...prevCoordinates, { latitude: coordinates[0].latitude + 0.01, longitude: coordinates[0].longitude + 0.01 }]);
     };
     const handleDeleteCoordinate = (index: number) => {
         setCoordinates((prevCoordinates) => prevCoordinates.filter((_, i) => i !== index));
@@ -77,13 +76,16 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
     const handleCoordinatesChange = (newCoordinates: Array<{ latitude: number; longitude: number }>) => {
         setCoordinates(newCoordinates);
     }; 
-
     const [duplicatedCoord, setDuplicatedCoord] = useState<{ latitude: number; longitude: number } | null>(row?.coveragearea?.[row?.coveragearea?.length-1] || null);
-    console.log(duplicatedCoord)
- 
+    const [warehouse, setWarehouse] = useState(row?.warehouseid || 0)
+    
     useEffect(() => {
         setStoreAreaCoordinates([...coordinates, duplicatedCoord]);
     }, [duplicatedCoord]);
+
+    useEffect(() => {
+        setCoverageError(false);
+    }, [storeAreaCoordinates]);
 
     return (
         <div className={classes.containerDetail}>
@@ -126,16 +128,26 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
                     optionValue="domainvalue"
                     optionDesc="domaindesc"
                 />
-                <FieldSelect
-                    label={t(langKeys.warehouse)}
-                    className="col-6"
-                    valueDefault={getValues('warehouseid')}
-                    data={multiData?.data?.[0]?.data || []}
-                    onChange={(value) => setValue('warehouseid', value?.warehouseid)}
-                    error={typeof errors?.warehouseid?.message === 'string' ? errors?.warehouseid?.message : ''}
-                    optionValue="warehouseid"
-                    optionDesc="name"
-                />
+                {!inStore && (
+                    <FieldSelect
+                        label={t(langKeys.warehouse)}
+                        className="col-6"
+                        valueDefault={getValues('warehouseid')}
+                        data={multiData?.data?.[0]?.data || []}
+                        onChange={(value) => {
+                            if(value) {
+                                setValue('warehouseid', value?.warehouseid)
+                                setWarehouse(value?.warehouseid)
+                            } else {
+                                setValue('warehouseid', 0)
+                                setWarehouse(0)
+                            }
+                        }}
+                        error={typeof errors?.warehouseid?.message === 'string' ? errors?.warehouseid?.message : ''}
+                        optionValue="warehouseid"
+                        optionDesc="name"
+                    />
+                )}
                 <FormControlLabel 
                     style={{paddingLeft:"10px"}}
                     control={
@@ -143,37 +155,39 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
                             checked={inStore}
                             onChange={(event) => handleSwitchChange(event)}
                             color='primary'
+                            disabled={warehouse !== 0}
                         />}
                     label={t(langKeys.instorewarehouse)}
                     className="col-5"
-                />        
-
+                />
                 <div /*agregacion mapa*/>
                     <Typography className={classes.subtitle}>{t(langKeys.coveragearea)}</Typography>
                     <div className="row-zyx" style={{ justifyContent: 'center' }}>
-                    <GoogleMaps 
-                        coordinates={coordinates} 
-                        onCoordinatesChange={handleCoordinatesChange} 
-                    />
+                        <GoogleMaps 
+                            coordinates={coordinates} 
+                            onCoordinatesChange={handleCoordinatesChange} 
+                        />
                     </div>
                     <Typography className={classes.mapFooter}>{t(langKeys.address_found_in_geolocator)}</Typography>
                     <div style={{ textAlign: "right" }}>    
-                    <Button
-                        className={classes.addbutton}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<AddIcon color="secondary" />}
-                        onClick={handleAddCoordinate}
-                    >
-                        {t(langKeys.add) + " " + t(langKeys.coordinate)}
-                    </Button>
+                        <Button
+                            className={classes.addbutton}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<AddIcon color="secondary" />}
+                            onClick={handleAddCoordinate}
+                        >
+                            {t(langKeys.add) + " " + t(langKeys.coordinate)}
+                        </Button>
                     </div>
-
+                    {coverageError && (
+                        <div style={{color: 'red', textAlign: 'center', marginBottom: 20}}>Se necesitan por lo menos 3 puntos para formar una zona de cobertura</div>
+                    )}
                     {coordinates.map((coord, index) => (
                         <div key={index} className="row-zyx">
                             <div className="col-1">
-                                <IconButton onClick={() => handleDeleteCoordinate(index)}>
+                                <IconButton onClick={() => handleDeleteCoordinate(index)} disabled={coordinates.length === 1}>
                                     <DeleteIcon />
                                 </IconButton>
                             </div>
@@ -207,7 +221,6 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
                             </div>
                         </div>
                     ))}
-    
                     {coordinates.length > 0 && (
                         <div className="row-zyx">
                             <div className="col-1">
@@ -245,8 +258,6 @@ const NewStoreCoverageTabDetail: React.FC<NewOrderTabDetailProps> = ({ errors, r
                             </div>
                         </div>
                     )}
-
-
                 </div>          
             </div>
         </div>

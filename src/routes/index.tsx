@@ -29,12 +29,13 @@ const Whitelist = lazy(() => import('pages/Whitelist'));
 const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
 const ReassignmentRules = lazy(() => import('pages/ReassignmentRules'));
 const AiConnectors = lazy(() => import('pages/aiconnectors/AiConnectors'));
-const IAConfiguration = lazy(() => import('pages/Iaservices'));
+const IAConfiguration = lazy(() => import('pages/iaconfiguration/IAConfiguration'));
 const SLA = lazy(() => import('pages/SLA'));
 const Domains = lazy(() => import('pages/Domains'));
 const Reports = lazy(() => import('pages/Reports'));
 const Person = lazy(() => import('pages/Person'));
 const PersonDetail = lazy(() => import('pages/PersonDetail'));
+const MetaChannels = lazy(() => import('pages/MetaChannels'));
 const Supervisor = lazy(() => import('pages/Supervisor'));
 const MessageInbox = lazy(() => import('pages/MessageInbox'));
 const AdvancedTemplatesCampaigns = lazy(() => import('pages/AdvancedTemplatesCampaigns'));
@@ -370,6 +371,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.WHITELIST} component={() => <Layout mainClasses={classes.main}><Whitelist /></Layout>} />
 					<ProtectRoute exact path={paths.PERSON} component={() => <Layout mainClasses={classes.main}><Person /></Layout>} />
 					<ProtectRoute exact path={paths.PERSON_DETAIL.path} component={() => <Layout mainClasses={classes.main}><PersonDetail /></Layout>} />
+					<ProtectRoute exact path={paths.METACHANNELS} component={() => <Layout mainClasses={classes.main}><MetaChannels /></Layout>} />
 					<ProtectRoute exact path={paths.ADVANCEDTEMPLATESCAMPAIGNS} component={() => <Layout mainClasses={classes.main}><AdvancedTemplatesCampaigns /></Layout>} />
 					<ProtectRoute exact path={paths.MESSAGETEMPLATE} component={() => <Layout mainClasses={classes.main}><MessageTemplatesOld /></Layout>} />
 					<ProtectRoute exact path={paths.INTEGRATIONMANAGER} component={() => <Layout mainClasses={classes.main}><IntegrationManager /></Layout>} />

@@ -203,7 +203,7 @@ const useStyles = makeStyles(() => ({
         display:'flex',
         alignItems:'center',
         gap:'3px',
-    },
+    },  
     customFieldPackageContainer: {
         marginBottom: '1rem',
         display: 'flex',
@@ -264,6 +264,7 @@ export const AddButtonMenu: React.FC<TemplateIconsProps> = ({
         e.stopPropagation();
         setAnchorEl(null);
     };
+
     return (
         <div className={classes.main}>
             <Button
@@ -444,6 +445,7 @@ interface MessagePreviewMultimediaProps {
     buttonslink: Dictionary[];
     isNew: boolean;
     buttonsGeneral: Dictionary[];
+    isNew: boolean;
 }
 
 export const MessagePreviewMultimedia: React.FC<MessagePreviewMultimediaProps> = ({ headerType, header, headervariables, body, bodyvariables, footer, buttonstext, buttonslink, buttonsGeneral, isNew }) => {
