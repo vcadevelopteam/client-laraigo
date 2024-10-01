@@ -61,4 +61,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CLEAN_VALIDATETOKEN]: caseFunctions.cleanValidateToken,
 
     [actionTypes.UPDATE_LANGUAGE]: caseFunctions.updateLanguage,
+    [actionTypes.NEW_UPDATE_ORG]: caseFunctions.updateListOrgs,
 });
