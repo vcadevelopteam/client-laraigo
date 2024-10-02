@@ -45,6 +45,8 @@ import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+import {emojiReactions} from "../../pages/postcreator/emojis/EmojisArray";
+import "../../pages/postcreator/emojis/customStyles.css";
 // import { useStyles } from 'pages/SignIn';
 
 interface TemplateIconsProps {
@@ -679,28 +681,7 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
             {(emoji || hashtag) && <div style={{ display: 'flex', width: '100%', alignItems: 'right', alignContent: 'right', justifyContent: 'flex-end', marginLeft: '6px' }}>
                 {emoji && <QuickReactions
-                    reactionsArray={[
-                        {
-                            id: "laughing",
-                            name: "Laughing",
-                            content: "😂",
-                        },
-                        {
-                            id: "crying",
-                            name: "Crying",
-                            content: "😢",
-                        },
-                        {
-                            id: "thinking",
-                            name: "Thinking",
-                            content: "🤔",
-                        },
-                        {
-                            id: "screaming",
-                            name: "Screaming",
-                            content: "😱",
-                        },
-                    ]}
+                    reactionsArray={emojiReactions}
                     isVisible={isVisible}
                     onClose={() => setIsVisible(false)}
                     onClickReaction={(reaction) => {
@@ -721,6 +702,7 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
                     }
                     placement={'left'}
                     header={'Emojis'}
+                    selectionContainerClassName="custom-reactions"
                 />}
                 {hashtag && <button
                     type='button'
@@ -2373,8 +2355,6 @@ export function RadioGroudFieldEdit<T>({
         </div>
     );
 }
-
-
 
 const useStyles = makeStyles((theme) => ({
     titleandcrumbs: {
