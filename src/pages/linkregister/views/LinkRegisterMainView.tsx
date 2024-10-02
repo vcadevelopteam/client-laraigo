@@ -15,7 +15,7 @@ import { useSelector } from "hooks";
 import { CellProps } from "react-table";
 import { Button, makeStyles } from "@material-ui/core";
 import Delete from "@material-ui/icons/Delete";
-import TableZyx from "components/fields/table-paginated";
+import TableZyx from "components/fields/table-simple";
 
 const useStyles = makeStyles(() => ({
 	main: {
@@ -23,9 +23,16 @@ const useStyles = makeStyles(() => ({
 		display: "flex",
 		flexDirection: "column",
 		flex: 1,
-	}
+	},
+	title: {
+		fontWeight: 'bold',
+		fontSize: 22,
+		marginBottom: 8
+	},
 }));
+
 const selectionKey = 'linkregisterid';
+
 interface RowSelected {
 	row: Dictionary | null;
 	edit: boolean;
@@ -132,7 +139,7 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 				width: "auto",
 				Cell: (props: any) => {
                     const { createdate } = props.cell.row.original;
-					const dateOnly = createdate.split(' ')[0];
+					const dateOnly = createdate?.split(' ')[0];
                     return (dateOnly || '');
                 },
 			},
@@ -147,7 +154,7 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 				width: "auto",
 				Cell: (props: any) => {
                     const { changedate } = props.cell.row.original;
-					const dateOnly = changedate.split(' ')[0];
+					const dateOnly = changedate?.split(' ')[0];
                     return (dateOnly || '');
                 },
 			},
@@ -174,20 +181,19 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 			<div style={{marginBottom: 5}}>
 				<TemplateBreadcrumbs breadcrumbs={arrayBread}/>
 			</div>
+			<div className={classes.title}>{t(langKeys.linkregister)}</div>
 			<TableZyx
 				ButtonsElement={
-					<div style={{ display: "flex", justifyContent: "space-between" }}>
-						<div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-							<Button
-								color="primary"
-                                disabled={main.loading || Object.keys(selectedRows).length <= 0}
-								onClick={() => handleDeleteSelection(rowWithDataSelected)}
-								startIcon={<Delete style={{ color: "white" }} />}
-								variant="contained"
-							>
-								{t(langKeys.delete)}
-							</Button>
-						</div>
+					<div style={{ display: "flex", justifyContent: 'end' }}>
+						<Button
+							color="primary"
+							disabled={main.loading || Object.keys(selectedRows).length <= 0}
+							onClick={() => handleDeleteSelection(rowWithDataSelected)}
+							startIcon={<Delete style={{ color: "white" }} />}
+							variant="contained"
+						>
+							{t(langKeys.delete)}
+						</Button>
 					</div>
 				}
 				useSelection={true}
@@ -198,10 +204,9 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 				loading={main.loading}
 				download={true}
 				exportPersonalized={handleDownload}
-				filterGeneral={true}
+				filterGeneral={false}
 				handleRegister={handleRegister}
 				onClickRow={handleEdit}
-				titlemodule={t(langKeys.linkregister)}
 				register={true}
 			/>
 		</div>
