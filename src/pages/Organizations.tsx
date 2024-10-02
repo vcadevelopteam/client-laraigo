@@ -96,7 +96,12 @@ const useStyles = makeStyles((theme) => ({
     },
     section: {
         fontWeight: "bold"
-    }
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    },
 }));
 
 const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency, arrayBread }) => {
@@ -600,8 +605,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 variant="contained"
                                 color="primary"
                                 type="submit"
-                                onClick={() => {
-                                }}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                             >{t(langKeys.save)}
@@ -736,15 +739,15 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             optionValue="description"
                         />
                         {getValues('billbyorg') && <FieldSelect
-                                label={t(langKeys.billingplan)}
-                                className="col-6"
-                                valueDefault={getValues("paymentplanid")}
-                                onChange={(value) => setValue("paymentplanid", value?.paymentplanid || 0)}
-                                data={dataPaymentPlan}
-                                error={errors?.paymentplanid?.message}
-                                optionDesc="plan"
-                                optionValue="paymentplanid"
-                            />}
+                            label={t(langKeys.billingplan)}
+                            className="col-6"
+                            valueDefault={getValues("paymentplanid")}
+                            onChange={(value) => setValue("paymentplanid", value?.paymentplanid || 0)}
+                            data={dataPaymentPlan}
+                            error={errors?.paymentplanid?.message}
+                            optionDesc="plan"
+                            optionValue="paymentplanid"
+                        />}
                     </div>
                     {getValues('billbyorg') && (
                         <>
@@ -778,7 +781,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     valueDefault={doctype}
                                     onChange={(value) => {
                                         setValue("doctype", value?.domainvalue || "");
-                                        setValue("docnum","")
+                                        setValue("docnum", "")
                                     }}
                                     error={errors?.doctype?.message}
                                     data={docTypes}
@@ -788,7 +791,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
                                     className="col-6"
-                                    type={(doctype !== "0")?'number':"text"}
+                                    type={(doctype !== "0") ? 'number' : "text"}
                                     valueDefault={getValues('docnum')}
                                     onChange={(value: any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
