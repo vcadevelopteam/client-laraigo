@@ -6,6 +6,8 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useTranslation } from "react-i18next";
 import CalendarZyx, { DayProp } from "components/fields/Calendar";
+import ClearIcon from "@material-ui/icons/Clear";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles(() => ({
     rowZyx: {
@@ -60,6 +62,13 @@ const useStyles = makeStyles(() => ({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+    },
+    button: {
+        display: "flex", 
+        gap: "10px", 
+        alignItems: "center", 
+        justifyContent: "end",
+        marginTop: 20,
     },
 }));
 
@@ -242,10 +251,6 @@ const NonWorkingDaysDialog: React.FC<{
             open={openModal}
             title={t(langKeys.nonworkingdaysregister)}
             maxWidth="lg"
-            buttonText0={t(langKeys.back)}
-            handleClickButton0={closeModal}
-            buttonText1={t(langKeys.save)}
-            handleClickButton1={onMainSubmit}
         >
             <div className={`${classes.rowZyx} row-zyx`}>
                 <div className={`${classes.col6} col-6`}>
@@ -455,6 +460,28 @@ const NonWorkingDaysDialog: React.FC<{
                             )}
                         </div>
                     </div>
+                </div>
+                <div className={classes.button}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={closeModal}
+                    >
+                        {t(langKeys.back)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="button"                    
+                        onClick={onMainSubmit}
+                        startIcon={<SaveIcon color="secondary" />}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        {t(langKeys.save)}
+                    </Button>
                 </div>
             </div>
         </DialogZyx>

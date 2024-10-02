@@ -15,6 +15,7 @@ export * as PostHistoryService from './service/posthistory';
 export * as CatalogService from './service/catalog';
 export * as PaymentService from './service/payment';
 export * as RasaService from './service/rasa';
+export * as WatsonService from './service/watsonx';
 export * as GptService from './service/gpt';
 export * as DeliveryService from './service/delivery';
 

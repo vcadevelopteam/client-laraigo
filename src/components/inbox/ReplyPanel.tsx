@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 // import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CodeSnippetIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -51,6 +51,7 @@ import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
 import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
+import { formatTextToUnicode, removeUnicodeStyle } from "common/helpers";
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -462,8 +463,8 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
 
     useEffect(() => {
         const ismail = ticketSelected?.communicationchanneltype === "MAIL"
-        const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)
-        
+        const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)        
+
         setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
     }, [quickReplies, ticketSelected]);
 
@@ -1338,12 +1339,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
-        if(!innapropiateWords.loading && !innapropiateWords.error){
-            setinnappropiatewordsList(innapropiateWords?.data||[])
-        }
-    }, [innapropiateWords]);
-
-    useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
             const ismail = ticketSelected?.communicationchanneltype === "MAIL"
             const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
@@ -1389,7 +1384,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         setText(myquickreply);
     };
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {     
         if (event.ctrlKey && event.code === 'Enter') {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
@@ -1404,7 +1399,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 triggerReplyMessage();
             }
         }
-    };
+    };    
 
     const handleSelectionChange = (event: Dictionary) => {
         setLastSelection(event?.target?.selectionEnd ?? 0);
@@ -1420,6 +1415,52 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         }
     }
 
+    const toggleTextStyle = (style) => {
+        const input = inputRef.current.querySelector('textarea');
+        const { value, selectionStart, selectionEnd } = input;
+        const selectedText = value.slice(selectionStart, selectionEnd);
+        const beforeText = value.slice(0, selectionStart);
+        const afterText = value.slice(selectionEnd);
+    
+        let newText = selectedText;
+    
+        if (selectedText) {
+            const textWithStyle = formatTextToUnicode({ text: selectedText, [style]: true });
+            let textWithoutStyle = removeUnicodeStyle(selectedText);    
+    
+            if (style === 'underline' || style === 'strikethrough') {
+                const regex = new RegExp(`[\\u0332\\u0336]`, 'g');
+                textWithoutStyle = selectedText.replace(regex, '');
+                if (selectedText === textWithoutStyle) {
+                    newText = textWithStyle;
+                } else {
+                    newText = textWithoutStyle;
+                }
+            } else {
+                if (selectedText === textWithStyle) {
+                    newText = textWithoutStyle;
+                } else {
+                    newText = textWithStyle;
+                }
+            }
+    
+            const newValue = `${beforeText}${newText}${afterText}`;
+            setText(newValue);
+    
+            const selectionLengthDiff = newText.length - selectedText.length;
+            const newSelectionStart = selectionStart;
+            const newSelectionEnd = selectionEnd + selectionLengthDiff;
+    
+            setTimeout(() => {
+                input.setSelectionRange(newSelectionStart, newSelectionEnd);
+                input.focus();
+            }, 0);
+        } else {
+            const newValue = value; 
+            setText(newValue);
+        }
+    };
+    
     const handleKeyDown = (event: Dictionary) => {
         if ((event.altKey || user?.languagesettings?.sendingmode === "ExecutionButton") && event.key === 'Enter') {
             event.preventDefault();
@@ -1733,6 +1774,42 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             enabled={propertyCopilotLaraigo}
                                         />
                                     </div>                                 
+
+                                    <div style={{ display: 'flex', gap: '0.7rem' }}>
+                                        <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('bold')} size='small'>
+                                            {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('italic')} size='small'>
+                                            {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                            </IconButton>
+                                        </Tooltip>
+                                        {ticketSelected?.communicationchanneltype.includes("WHA") && (
+                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
+                                                <IconButton onClick={() => toggleTextStyle('underline')} size='small'>
+                                                {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('strikethrough')} size='small'>
+                                            {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                            <IconButton onClick={() => toggleTextStyle('monospaced')} size='small'>
+                                                <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </div>
+
+
+
+
+
+
 
                                 </div>
                             )}

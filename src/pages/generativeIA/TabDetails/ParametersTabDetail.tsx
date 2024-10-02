@@ -161,6 +161,8 @@ interface CardDataType {
     max_tokens: number;
     temperature: number;
     top_p: number;
+    top_k: number;
+    repetition_penalty: number;
 }
 interface RowSelected {
     row: Dictionary | null;
@@ -170,10 +172,11 @@ interface RowSelected {
 interface ParametersTabDetailProps {
     data: RowSelected
     setValue: any
-    getValues: any,
+    getValues: any
     errors: FieldErrors
-    setValidatePrompt: (data: string) => void,
-    trigger: any,
+    setValidatePrompt: (data: string) => void
+    trigger: any
+    provider: string
 }
 
 const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
@@ -182,7 +185,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     getValues,
     errors,
     setValidatePrompt,
-    trigger
+    trigger,
+    provider
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -194,14 +198,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
     const [unansweredQueries, setUnansweredQueries] = useState<string | null>(row?.querywithoutanswer || null);
     const [selectedCardData, setSelectedCardData] = useState<CardDataType | null>(null);
     const [selectedOption, setSelectedOption] = useState('');
+    const personalityKey = `personality_${(getValues('type') as string).toLowerCase()}`;
 
     useEffect(() => {
-        const defaultValue = getValues('querywithoutanswer');
+        const defaultValue = getValues('querywithoutanswer') as string;
         setSelectedOption(defaultValue);
-    }, []);
+    }, []);    
 
-    const handleSelectChange = (value: any) => {
-        console.log('Selected option:', value);
+    const handleSelectChange = (value: Dictionary) => {
         setSelectedOption(value?.domainvalue || '');
     };
     
@@ -306,7 +310,7 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         {
             title: t(langKeys.help_desk_clerk),
             description: t(langKeys.help_desk_clerk_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -315,12 +319,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 500,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetition_penalty: 1,
             type: 'TABLE',
         },
         {
             title: t(langKeys.customer_service),
             description: t(langKeys.customer_service_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -329,12 +335,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetition_penalty: 1,
             type: 'CLIENT',
         },
         {
             title: t(langKeys.sales_expert),
             description: t(langKeys.sales_expert_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -343,12 +351,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetition_penalty: 1,
             type: 'SALES',
         },
         {
             title: t(langKeys.technical_support),
             description: t(langKeys.technical_support_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -357,12 +367,14 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 700,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetition_penalty: 1,
             type: 'TECH',
         },
         {
             title: t(langKeys.ai_base),
             description: t(langKeys.ai_base_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
             querywithoutanswer: 'Sin reacción',
             response: '',
@@ -371,20 +383,24 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetition_penalty: 1,
             type: 'AI',
         },
         {
             title: t(langKeys.custom_mode),
             description: t(langKeys.custom_mode_description),
-            language: 'Español',
+            language: 'Todos',
             organizationName: '',
-            querywithoutanswer: 'Mejor Sugerencia',
+            querywithoutanswer: 'Sin reacción',
             response: '',
             prompt: '',
             negativeprompt: '',
             max_tokens: 300,
             temperature: 1,
             top_p: 1,
+            top_k: 20,
+            repetition_penalty: 1,
             type: 'PERSONALIZED',
         },
     ];
@@ -400,6 +416,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('temperature', cardData[cardIndex].temperature)
         setValue('max_tokens', cardData[cardIndex].max_tokens)
         setValue('top_p', cardData[cardIndex].top_p)
+        setValue('top_k', cardData[cardIndex].top_k)
+        setValue('repetition_penalty', cardData[cardIndex].repetition_penalty)
         setValue('type', cardData[cardIndex].type)
         setValidatePrompt(cardData[cardIndex].prompt)
         setViewSelected('detail');
@@ -416,6 +434,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
         setValue('temperature', 0)
         setValue('max_tokens', 0)
         setValue('top_p', 0)
+        setValue('top_k', 0)
+        setValue('repetition_penalty', 0)
         setValue('type', '')
         setValidatePrompt('')
         setViewSelected('main');
@@ -468,8 +488,8 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                         </div>
                         <div className={classes.block10}/>
                         <span className={classes.title}>
-                            {t(langKeys[`personality_${(getValues('type')).toLowerCase()}`])}
-                        </span>
+                        {personalityKey in langKeys ? t(langKeys[personalityKey as keyof typeof langKeys]) : ''}
+                    </span>
                     </div>
                     <div style={{display: 'flex', gap: 10}}>
                         <div style={{flex: 2, display: 'flex', flexDirection: 'column'}}>
@@ -591,27 +611,29 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
-                            <div className={classes.decodingContainer}>
-                                <span className={classes.detailTitle}>Decoding</span>
-                                <div style={{display: 'flex', gap: 5}}>
-                                    <span className={classes.text}>Greedy</span>
-                                    <IOSSwitch
-                                        checked={getValues("decoding_method") === "sample"}
-                                        style={{color: '#078548'}}
-                                        onChange={() => {
-                                            if(getValues("decoding_method") === "sample") {
-                                                setValue("decoding_method", "greedy")
-                                                trigger("decoding_method")
-                                            }
-                                            else {
-                                                setValue("decoding_method", "sample")
-                                                trigger("decoding_method")
-                                            }
-                                        }}
-                                    />
-                                    <span className={classes.text}>Sampling</span>
+                            {provider?.trim().toLowerCase() !== 'laraigo' && provider?.trim().toLowerCase() !== 'openai' && (
+                                <div className={classes.decodingContainer}>
+                                    <span className={classes.detailTitle}>Decoding</span>
+                                    <div style={{display: 'flex', gap: 5}}>
+                                        <span className={classes.text}>Greedy</span>
+                                        <IOSSwitch
+                                            checked={getValues("decoding_method") === "sample"}
+                                            style={{color: '#078548'}}
+                                            onChange={() => {
+                                                if(getValues("decoding_method") === "sample") {
+                                                    setValue("decoding_method", "greedy")
+                                                    trigger("decoding_method")
+                                                }
+                                                else {
+                                                    setValue("decoding_method", "sample")
+                                                    trigger("decoding_method")
+                                                }
+                                            }}
+                                        />
+                                        <span className={classes.text}>Sampling</span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             <div>
                                 <div className={classes.parameterContainer}>
                                     <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
@@ -627,40 +649,142 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                     />
                                 </div>
                                 <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <span>0 - 2.0</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <FieldEdit
-                                        type="number"
-                                        variant="outlined"
-                                        size="small"
-                                        width={80}
-                                        valueDefault={getValues('temperature')}
-                                        onChange={(value) => setValue('temperature', value)}
-                                        error={errors?.temperature?.message}
-                                    />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <span>0 - 1.0</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <FieldEdit
-                                        type="number"
-                                        variant="outlined"
-                                        size="small"
-                                        width={80}
-                                        valueDefault={getValues('top_p')}
-                                        onChange={(value) => setValue('top_p', value)}
-                                        error={errors?.top_p?.message}
-                                    />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                                {(getValues("decoding_method")?.trim().toLowerCase() === 'sample' || provider?.trim().toLowerCase() === 'laraigo') && (
+                                    <>                                  
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>0 - 2.0</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={getValues('temperature')}
+                                                inputProps={{
+                                                    min: 0,
+                                                    max: 2,
+                                                    step: 0.10,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 0) {
+                                                        setValue('temperature', 0);
+                                                    } else if (numericValue > 2) {
+                                                        setValue('temperature', 2);
+                                                    } else {
+                                                        setValue('temperature', numericValue);
+                                                    }
+                                                    trigger('temperature');
+                                                }}
+                                                error={errors?.temperature?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>0 - 1.0</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={getValues('top_p')}
+                                                inputProps={{
+                                                    min: 0,
+                                                    max: 1,
+                                                    step: 0.10,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 0) {
+                                                        setValue('top_p', 0);
+                                                    } else if (numericValue > 1) {
+                                                        setValue('top_p', 1);
+                                                    } else {
+                                                        setValue('top_p', numericValue);
+                                                    }
+                                                    trigger('top_p');
+                                                }}
+                                                error={errors?.top_p?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>1 - 100</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={getValues('top_k')}
+                                                inputProps={{
+                                                    min: 1,
+                                                    max: 100,
+                                                    step: 1,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 1) {
+                                                        setValue('top_k', 1);
+                                                    } else if (numericValue > 100) {
+                                                        setValue('top_k', 100);
+                                                    } else {
+                                                        setValue('top_k', numericValue);
+                                                    }
+                                                    trigger('top_k');
+                                                }}
+                                                error={errors?.top_k?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>                                       
+                                    </>
+                                )}
+                                {provider?.trim().toLowerCase() !== 'openai' && (
+                                    <>
+                                        <div className={classes.block20}/>
+                                        <div className={classes.parameterContainer}>
+                                            <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <span>1 - 2</span>
+                                            <div className={classes.widthBlock10}/>
+                                            <FieldEdit
+                                                type="number"
+                                                variant="outlined"
+                                                size="small"
+                                                width={80}
+                                                valueDefault={getValues('repetition_penalty')}
+                                                inputProps={{
+                                                    min: 1,
+                                                    max: 2,
+                                                    step: 0.10,
+                                                }}
+                                                onChange={(value) => {
+                                                    const numericValue = parseFloat(value);
+                                                    if (numericValue < 1) {
+                                                        setValue('repetition_penalty', 1);
+                                                    } else if (numericValue > 2) {
+                                                        setValue('repetition_penalty', 2);
+                                                    } else {
+                                                        setValue('repetition_penalty', numericValue);
+                                                    }
+                                                    trigger('repetition_penalty');
+                                                }}
+                                                error={errors?.repetition_penalty?.message}
+                                            />
+                                        </div>
+                                        <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -754,7 +878,6 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                                 <FieldSelect                                                   
                                                     data={filteredData}
                                                     onChange={(value) => {
-                                                        console.log('onChange value:', value);
                                                         handleSelectChange(value);
                                                         if(value?.domainvalue) {
                                                             setUnansweredQueries(value.domainvalue);
@@ -831,27 +954,29 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                             </div>
                         </div>
                         <div style={{flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#F9F9FA', padding: 10}}>
-                            <div className={classes.decodingContainer}>
-                                <span className={classes.detailTitle}>Decoding</span>
-                                <div style={{display: 'flex', gap: 5}}>
-                                    <span className={classes.text}>Greedy</span>
-                                    <IOSSwitch
-                                        checked={getValues("decoding_method") === "sample"}
-                                        style={{color: '#078548'}}
-                                        onChange={() => {
-                                            if(getValues("decoding_method") === "sample") {
-                                                setValue("decoding_method", "greedy")
-                                                trigger("decoding_method")
-                                            }
-                                            else {
-                                                setValue("decoding_method", "sample")
-                                                trigger("decoding_method")
-                                            }
-                                        }}
-                                    />
-                                    <span className={classes.text}>Sampling</span>
+                            {provider?.trim().toLowerCase() !== 'laraigo' && provider?.trim().toLowerCase() !== 'openai' && (
+                                <div className={classes.decodingContainer}>
+                                    <span className={classes.detailTitle}>Decoding</span>
+                                    <div style={{display: 'flex', gap: 5}}>
+                                        <span className={classes.text}>Greedy</span>
+                                        <IOSSwitch
+                                            checked={getValues("decoding_method") === "sample"}
+                                            style={{color: '#078548'}}
+                                            onChange={() => {
+                                                if(getValues("decoding_method") === "sample") {
+                                                    setValue("decoding_method", "greedy")
+                                                    trigger("decoding_method")
+                                                }
+                                                else {
+                                                    setValue("decoding_method", "sample")
+                                                    trigger("decoding_method")
+                                                }
+                                            }}
+                                        />
+                                        <span className={classes.text}>Sampling</span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             <div className={classes.parameterContainer}>
                                 <span className={classes.detailTitle}>{t(langKeys.maxtokens)}</span>
                                 <div className={classes.widthBlock10}/>
@@ -866,40 +991,142 @@ const ParametersTabDetail: React.FC<ParametersTabDetailProps> = ({
                                 />
                             </div>
                             <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.maxtokensdesc)}</span></div>
-                            <div className={classes.block20}/>
-                            <div className={classes.parameterContainer}>
-                                <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
-                                <div className={classes.widthBlock10}/>
-                                <span>0 - 2.0</span>
-                                <div className={classes.widthBlock10}/>
-                                <FieldEdit
-                                    type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    width={80}
-                                    valueDefault={selectedCardData?.temperature}
-                                    onChange={(value) => setValue('temperature', value)}
-                                    error={errors?.temperature?.message}
-                                />
-                            </div>
-                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
-                            <div className={classes.block20}/>
-                            <div className={classes.parameterContainer}>
-                                <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
-                                <div className={classes.widthBlock10}/>
-                                <span>0 - 1.0</span>
-                                <div className={classes.widthBlock10}/>
-                                <FieldEdit
-                                    type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    width={80}
-                                    valueDefault={selectedCardData?.top_p}
-                                    onChange={(value) => setValue('top_p', value)}
-                                    error={errors?.top_p?.message}
-                                />
-                            </div>
-                            <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                            { (getValues("decoding_method")?.trim().toLowerCase() === 'sample' || provider?.trim().toLowerCase() === 'laraigo') && (
+                                <>      
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.temperature)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>0 - 2.0</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.temperature}
+                                            inputProps={{
+                                                min: 0,
+                                                max: 2,
+                                                step: 0.10,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 0) {
+                                                    setValue('temperature', 0);
+                                                } else if (numericValue > 2) {
+                                                    setValue('temperature', 2);
+                                                } else {
+                                                    setValue('temperature', numericValue);
+                                                }
+                                                trigger('temperature');
+                                            }}
+                                            error={errors?.temperature?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.temperaturedesc)}</span></div>
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.topp)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>0 - 1.0</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.top_p}
+                                            inputProps={{
+                                                min: 0,
+                                                max: 1,
+                                                step: 0.10,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 0) {
+                                                    setValue('top_p', 0);
+                                                } else if (numericValue > 1) {
+                                                    setValue('top_p', 1);
+                                                } else {
+                                                    setValue('top_p', numericValue);
+                                                }
+                                                trigger('top_p');
+                                            }}
+                                            error={errors?.top_p?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.toppdesc)}</span></div>
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.topk)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>1 - 100</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.top_k}
+                                            inputProps={{
+                                                min: 1,
+                                                max: 100,
+                                                step: 1,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 1) {
+                                                    setValue('top_k', 1);
+                                                } else if (numericValue > 100) {
+                                                    setValue('top_k', 100);
+                                                } else {
+                                                    setValue('top_k', numericValue);
+                                                }
+                                                trigger('top_k');
+                                            }}
+                                            error={errors?.top_k?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.topkdescription)}</span></div>                                   
+                                </>
+                            )}
+                            {provider?.trim().toLowerCase() !== 'openai' && (
+                                <>
+                                    <div className={classes.block20}/>
+                                    <div className={classes.parameterContainer}>
+                                        <span className={classes.detailTitle}>{t(langKeys.repetitionpenalty)}</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <span>1 - 2</span>
+                                        <div className={classes.widthBlock10}/>
+                                        <FieldEdit
+                                            type="number"
+                                            variant="outlined"
+                                            size="small"
+                                            width={80}
+                                            valueDefault={selectedCardData?.repetition_penalty}
+                                            inputProps={{
+                                                min: 1,
+                                                max: 2,
+                                                step: 0.10,
+                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = parseFloat(value);
+                                                if (numericValue < 1) {
+                                                    setValue('repetition_penalty', 1);
+                                                } else if (numericValue > 2) {
+                                                    setValue('repetition_penalty', 2);
+                                                } else {
+                                                    setValue('repetition_penalty', numericValue);
+                                                }
+                                                trigger('repetition_penalty');
+                                            }}
+                                            error={errors?.repetition_penalty?.message}
+                                        />
+                                    </div>
+                                    <div className={classes.parameterDesc}><span className={classes.text}>{t(langKeys.repetitionpenaltydescription)}</span></div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

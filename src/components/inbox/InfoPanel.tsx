@@ -222,9 +222,21 @@ const InfoTab: React.FC = () => {
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname');
         register('name');
-        register('documenttype');
+        register('documentnumber', {
+            validate: {
+                validationDNI: (value) => getValues("documenttype") === "DNI" ? (value.length === 8 || t(langKeys.validationDNI) + "") : true,
+                validationRUC: (value) => getValues("documenttype") === "RUC" ? (value.length === 11 || t(langKeys.validationRUC) + "") : true,
+                validationCE: (value) => getValues("documenttype") === "CE" ? (value.length <= 12 || t(langKeys.validationCE) + "") : true,
+            }
+        });
+        register('lastname');
+        register('name');
+        register('documenttype', {
+            validate: {
+                validationDNI: (value) => getValues("documentnumber") === "" ? (t(langKeys.required) + "") : true,
+            }
+        });
         register('persontype');
-        register('email');
         register('observation');
         register('phone');
         register('documentnumber');
@@ -309,7 +321,7 @@ const InfoTab: React.FC = () => {
                             maxLength={50}
                         />
                         <FieldSelect
-                            onChange={(value) => setValue('documenttype', value?.domainvalue)}
+                            onChange={(value) => setValue('documenttype', value?.domainvalue || "")}
                             label={t(langKeys.documenttype)}
                             loading={multiData.loading}
                             data={multiData.data[0]?.data || []}
@@ -358,6 +370,9 @@ const InfoTab: React.FC = () => {
                             label={t(langKeys.birthday)}
                             onChange={(value) => setValue('birthday', value)}
                             valueDefault={getValues('birthday')}
+                            inputProps={{
+                                max: new Date().toISOString().split('T')[0]
+                            }}
                             type="date"
                             error={errors?.birthday?.message}
                         />
