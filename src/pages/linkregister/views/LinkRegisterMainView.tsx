@@ -29,6 +29,10 @@ const useStyles = makeStyles(() => ({
 		fontSize: 22,
 		marginBottom: 8
 	},
+	buttonStyle: {
+		display: "flex",
+		justifyContent: 'end'
+	},
 }));
 
 const selectionKey = 'linkregisterid';
@@ -184,7 +188,7 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 			<div className={classes.title}>{t(langKeys.linkregister)}</div>
 			<TableZyx
 				ButtonsElement={
-					<div style={{ display: "flex", justifyContent: 'end' }}>
+					<div className={classes.buttonStyle}>
 						<Button
 							color="primary"
 							disabled={main.loading || Object.keys(selectedRows).length <= 0}

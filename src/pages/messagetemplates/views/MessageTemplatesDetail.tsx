@@ -340,7 +340,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const noop = () => {""};
     const [categoryChange, setCategoryChange] = useState('ACTIVADO');
     const [showError, setShowError] = useState(false);
-    const [registeredLinks, setRegisteredLinks] = useState(false)
     const [buttonsGeneral, setButtonsGeneral] = useState<Dictionary[]>(
         row?.firstbuttons === "quickreply" ? [
             { id: 1, name: "quickreply",items: [] },
@@ -1121,7 +1120,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const onClickAddButton = async () => {
         if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => { return btn.type === 'URL' }).length < 2) {
-            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'URL', btn: { text: "", type: "", url: "", variables: [''] } }]);
+            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'URL', click_counter: false, btn: { text: "", type: "", url: "", variables: [''] } }]);
         }
         trigger("buttonsgeneric");
     };
@@ -1735,7 +1734,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         e.target.value = val;
         trigger('buttonsquickreply')
     }
-
+    
     const handleActionButtonText = (e, index: number) => {
         let val = e.target.value.replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]/g, "");
         if (val.length > 25) {
@@ -3019,25 +3018,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                         <div style={{marginBottom: 10}}>
                                                                                                                                                             <Checkbox
                                                                                                                                                                 color="primary"
-                                                                                                                                                                checked={registeredLinks}
+                                                                                                                                                                checked={btn?.click_counter}
                                                                                                                                                                 onChange={() => {
-                                                                                                                                                                    if(registeredLinks) {
-                                                                                                                                                                        setRegisteredLinks(false)
-                                                                                                                                                                        onChangeButton(i, "type", "")
-                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.url`, "");
-                                                                                                                                                                        trigger('buttonsgeneric')
-                                                                                                                                                                    } else {
-                                                                                                                                                                        setRegisteredLinks(true)
-                                                                                                                                                                        onChangeButton(i, "type", 'dynamic')
+                                                                                                                                                                    if(btn?.click_counter) {
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.click_counter`, false);
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.url`, "");
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.text`, "");
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.type`, "");
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.variables`, [""]);
+                                                                                                                                                                        trigger('buttonsgeneric')
+                                                                                                                                                                    } else {
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.click_counter`, true);
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.url`, "");
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.text`, "");
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.type`, "dynamic");
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.variables`, [""]);
                                                                                                                                                                         trigger('buttonsgeneric')
                                                                                                                                                                     }
                                                                                                                                                                 }}
                                                                                                                                                             />
                                                                                                                                                             <span>{t(langKeys.useregisteredlinkscount)}</span>
                                                                                                                                                         </div>
-                                                                                                                                                        {!registeredLinks ? (
+                                                                                                                                                        {!btn?.click_counter ? (
                                                                                                                                                             <>
                                                                                                                                                                 <SingleLineInput
                                                                                                                                                                     className='col-4'
@@ -3143,10 +3145,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                         error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
                                                                                                                                                                         onChange={(value) => {
                                                                                                                                                                             if(value) {
-                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.url`, value?.url);
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.url`, `https://redirect.laraigo.com/DEV?params={1}&to=${value?.url}`);
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.variables`, [`https://redirect.laraigo.com/DEV?params={853-542}&to=${value?.url}`]);
                                                                                                                                                                                 trigger('buttonsgeneric')
                                                                                                                                                                             } else {
                                                                                                                                                                                 setValue(`buttonsgeneric.${i}.btn.url`, "");
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.variables`, [""]);
                                                                                                                                                                                 trigger('buttonsgeneric')
                                                                                                                                                                             }
                                                                                                                                                                         }}
@@ -3172,7 +3176,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                     <CloseIcon />
                                                                                                                                                 </IconButton>
                                                                                                                                             </div>
-                                                                                                                                            {(btn?.btn?.type === 'dynamic' && !registeredLinks) && (
+                                                                                                                                            {(btn?.btn?.type === 'dynamic' && !btn?.click_counter) && (
                                                                                                                                                 <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
                                                                                                                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                                                                                                                                                         <span>{'{{'}1{'}}'}</span>
