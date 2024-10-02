@@ -489,14 +489,11 @@ export const apiUrls = {
     SAML_LOGIN: `${BASE_URL}/auth/idps/saml20/sso/login`,
 
     LLAMA3_CREATE_COLLECTION: `${BASE_URL}/llama3/create_collection`,
-    LLAMA3_CREATE_COLLECTION_DOCUMENT: `${BASE_URL}/llama3/create_collection_document`,
     LLAMA3_CREATE_COLLECTION_DOCUMENTS: `${BASE_URL}/llama3/create_collection_documents`,
-    LLAMA3_DELETE_COLLECTION: `${BASE_URL}/llama3/delete_collection`,
     LLAMA3_MASSIVE_DELETE_COLLECTION: `${BASE_URL}/llama3/massive_delete`,
     LLAMA3_EDIT_COLLECTION: `${BASE_URL}/llama3/edit_collection`,
-    LLAMA3_ADD_FILE: `${BASE_URL}/llama3/add_file`,
     LLAMA3_ADD_FILES: `${BASE_URL}/llama3/add_files`,
     LLAMA3_DELETE_FILE: `${BASE_URL}/llama3/delete_file`,
-    LLAMA3_QUERY: `${BASE_URL}/llama3/llama3_query`,
     LLAMA3_DELETE_THREAD: `${BASE_URL}/llama3/delete_thread`,
+    LLAMA3_QUERY: `${BASE_URL}/llama3/llama3_query`,
 };
