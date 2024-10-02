@@ -2,11 +2,11 @@ import React from 'react';
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { Dictionary, IFetchData } from "@types";
-import { getCollectionPaginated, getMultiCollectionAux } from "store/main/actions";
-import { useTranslation } from "react-i18next";
+import { Dictionary } from "@types";
+import { getCollection } from "store/main/actions";
 import LinkRegisterMainView from './views/LinkRegisterMainView';
 import LinkRegisterDetail from './views/LinkRegisterDetail';
+import { registeredLinksSel } from 'common/helpers';
 
 interface RowSelected {
 	row: Dictionary | null;
@@ -14,7 +14,6 @@ interface RowSelected {
 }
 
 const LinkRegister: FC = () => {
-	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const mainResult = useSelector((state) => state.main);
 	const [viewSelected, setViewSelected] = useState("main-view");
@@ -22,43 +21,15 @@ const LinkRegister: FC = () => {
 		row: null,
 		edit: false,
 	});
-	const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
-        daterange: null,
-        filters: {},
-        pageIndex: 0,
-        pageSize: 20,
-        sorts: {},
-        distinct: null,
-    });
 
 	function redirectFunc(view: string) {
 		setViewSelected(view);
 	}
 
-	/*const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
-        dispatch(
-            getCollectionPaginated(
-                getPaginatedMessageTemplate1({
-                    enddate: daterange?.endDate!,
-                    filters: filters,
-                    skip: pageIndex * pageSize,
-                    sorts: sorts,
-                    startdate: daterange?.startDate!,
-                    take: pageSize,
-                    communicationchannelids: channelIds,
-                })
-            )
-        );
-    };*/
+	const fetchData = () => dispatch(getCollection(registeredLinksSel()));
 
 	useEffect(() => {
-		//fetchData(fetchDataAux)
-		dispatch(
-			getMultiCollectionAux([
-
-			])
-		);
+		fetchData()
 	}, []);
 
 	if (viewSelected === "main-view") {
@@ -69,6 +40,7 @@ const LinkRegister: FC = () => {
 			<LinkRegisterMainView
 				setViewSelected={setViewSelected}
 				setRowSelected={setRowSelected}
+				fetchData={fetchData}
 			/>
 		);
 	} else
@@ -76,6 +48,7 @@ const LinkRegister: FC = () => {
 			<LinkRegisterDetail
 				data={rowSelected}
 				setViewSelected={redirectFunc}
+				fetchData={fetchData}
 			/>
 		);
 };

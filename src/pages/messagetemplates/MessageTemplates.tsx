@@ -29,6 +29,7 @@ import {
     getMessageTemplateExport,
     getPaginatedMessageTemplate1,
     getValuesFromDomain,
+    registeredLinksSel,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
 
@@ -438,6 +439,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
                 getChannelsByOrg(),
+                registeredLinksSel(),
             ])
         );
 
@@ -730,8 +732,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                                 </Button>
                             </div>
                         </div>
-
-
                     )}
                     autotrigger={true}
                     columns={columns}

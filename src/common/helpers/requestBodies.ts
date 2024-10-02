@@ -5427,3 +5427,15 @@ export const conversationSDHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
 });
+
+export const registeredLinksSel = () => ({
+    method: "UFN_LINKREGISTER_SEL",
+    key: "UFN_LINKREGISTER_SEL",
+    parameters: {},
+});
+
+export const registeredLinksIns = ({ linkregisterid, operation, description, url, status, startdate, enddate }: Dictionary) => ({
+    method: "UFN_LINKREGISTER_INS",
+    key: "UFN_LINKREGISTER_INS",
+    parameters: { linkregisterid, operation, description, url, status, startdate, enddate },
+});

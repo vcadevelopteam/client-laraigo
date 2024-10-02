@@ -3021,7 +3021,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                 color="primary"
                                                                                                                                                                 checked={registeredLinks}
                                                                                                                                                                 onChange={() => {
-                                                                                                                                                                    setRegisteredLinks(!registeredLinks)
+                                                                                                                                                                    if(registeredLinks) {
+                                                                                                                                                                        setRegisteredLinks(false)
+                                                                                                                                                                        onChangeButton(i, "type", "")
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.url`, "");
+                                                                                                                                                                        trigger('buttonsgeneric')
+                                                                                                                                                                    } else {
+                                                                                                                                                                        setRegisteredLinks(true)
+                                                                                                                                                                        onChangeButton(i, "type", 'dynamic')
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.url`, "");
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.btn.text`, "");
+                                                                                                                                                                        trigger('buttonsgeneric')
+                                                                                                                                                                    }
                                                                                                                                                                 }}
                                                                                                                                                             />
                                                                                                                                                             <span>{t(langKeys.useregisteredlinkscount)}</span>
@@ -3128,15 +3139,23 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                 <div className='col-8'>
                                                                                                                                                                     <div style={{marginBottom: 4}}>{t(langKeys.selectregisteredlink)}</div>
                                                                                                                                                                     <FieldSelect
-                                                                                                                                                                        data={[]}
-                                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.type?.message}
-                                                                                                                                                                        onChange={(value) => onChangeButton(i, "type", value?.value)}
-                                                                                                                                                                        optionDesc="text"
-                                                                                                                                                                        optionValue="value"
-                                                                                                                                                                        valueDefault={btn?.btn?.type || ""}
+                                                                                                                                                                        data={multiData?.[4]?.data || []}
+                                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
+                                                                                                                                                                        onChange={(value) => {
+                                                                                                                                                                            if(value) {
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.url`, value?.url);
+                                                                                                                                                                                trigger('buttonsgeneric')
+                                                                                                                                                                            } else {
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.url`, "");
+                                                                                                                                                                                trigger('buttonsgeneric')
+                                                                                                                                                                            }
+                                                                                                                                                                        }}
+                                                                                                                                                                        optionDesc="description"
+                                                                                                                                                                        optionValue="linkregisterid"
+                                                                                                                                                                        valueDefault={btn?.btn?.url || ""}
                                                                                                                                                                         variant="outlined"
                                                                                                                                                                         fregister={{
-                                                                                                                                                                            ...register(`buttonsgeneric.${i}.btn.type`, {
+                                                                                                                                                                            ...register(`buttonsgeneric.${i}.btn.url`, {
                                                                                                                                                                                 validate: (value) =>
                                                                                                                                                                                     (value && value.length) || t(langKeys.field_required),
                                                                                                                                                                             }),
@@ -3153,7 +3172,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                     <CloseIcon />
                                                                                                                                                 </IconButton>
                                                                                                                                             </div>
-                                                                                                                                            {btn?.btn?.type === 'dynamic' && (
+                                                                                                                                            {(btn?.btn?.type === 'dynamic' && !registeredLinks) && (
                                                                                                                                                 <div style={{ marginTop: 20, backgroundColor: '#F1F1F1', padding: 15, display: 'flex', flexDirection: 'column' }}>
                                                                                                                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                                                                                                                                                         <span>{'{{'}1{'}}'}</span>

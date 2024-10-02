@@ -8,6 +8,11 @@ import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
+import { execute } from 'store/main/actions';
+import { registeredLinksIns } from 'common/helpers';
+import { useSelector } from 'hooks';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -66,6 +71,9 @@ const useStyles = makeStyles((theme) => ({
 const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelected, fetchData }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
 
     const arrayBread = [
         { id: "crm", name: t(langKeys.app_crm) },
@@ -75,27 +83,59 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
     
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row ? row.partnerid : 0,
-            name: row?.name || "",
+            linkregisterid: row ? row.linkregisterid : 0,
+            description: row?.description || "",
             url: row?.url || "",
             startdate: row?.startdate || '',
             enddate: row?.enddate || '',
             status: row?.status || 'ACTIVO',
-            type: row?.type || '',
             operation: row ? "UPDATE" : "INSERT",
         }
     });
 
     React.useEffect(() => {
-        register('id');
+        register('linkregisterid');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('url', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('startdate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('enddate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status');
-        register('type');
         register('operation');
     }, [register, setValue]);
 
+    const onMainSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(registeredLinksIns(data)));
+            setWaitSave(true);
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                setWaitSave(false);
+                fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("main-view");
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.product).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
     return (
         <>
-            <form onSubmit={()=>{}} className={classes.mainComponent}>
+            <form onSubmit={onMainSubmit} className={classes.mainComponent}>
                 <div className={classes.header}>
                     <div>
                         <TemplateBreadcrumbs
@@ -133,6 +173,9 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
                             <FieldEdit
                                 size="small"
                                 label={''}
+                                valueDefault={getValues('description')}
+                                onChange={(value) => setValue('description', value)}
+                                error={typeof errors?.description?.message === 'string' ? errors?.description?.message : ''}
                                 type="text"
                                 maxLength={60}
                                 variant="outlined"
@@ -146,6 +189,9 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
                             <FieldEdit
                                 size="small"
                                 label={''}
+                                valueDefault={getValues('startdate')}
+                                onChange={(value) => setValue('startdate', value)}
+                                error={typeof errors?.startdate?.message === 'string' ? errors?.startdate?.message : ''}
                                 type="date"
                                 maxLength={60}
                                 variant="outlined"
@@ -160,6 +206,9 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
                                 size="small"
                                 label={''}
                                 type="text"
+                                valueDefault={getValues('url')}
+                                onChange={(value) => setValue('url', value)}
+                                error={typeof errors?.url?.message === 'string' ? errors?.url?.message : ''}
                                 maxLength={60}
                                 variant="outlined"
                             />
@@ -172,6 +221,9 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
                             <FieldEdit
                                 size="small"
                                 label={''}
+                                valueDefault={getValues('enddate')}
+                                onChange={(value) => setValue('enddate', value)}
+                                error={typeof errors?.enddate?.message === 'string' ? errors?.enddate?.message : ''}
                                 type="date"
                                 maxLength={60}
                                 variant="outlined"
