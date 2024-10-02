@@ -79,6 +79,7 @@ export interface IPerson {
     pinnedmessages?: any;
     tags?: string;
     age?: number;
+    address_book?: any;
     salary?: number;
 }
 

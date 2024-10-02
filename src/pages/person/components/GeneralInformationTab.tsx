@@ -9,6 +9,7 @@ import { PersonalDataTab } from "./PersonalDataTab";
 import { useDispatch } from "react-redux";
 import { getReferrerListByPerson, resetGetReferrerListByPerson } from "store/person/actions";
 import { getReferrerByPersonBody } from "common/helpers";
+import { LocationTab } from "./LocationTab";
 import { ExtraDataTab } from "./ExtraDataTab";
 
 interface GeneralInformationTabProps {
@@ -20,6 +21,8 @@ interface GeneralInformationTabProps {
     errors: any;
     control: any;
     extraTriggers: any;
+    watch: any;
+    addressbook: any;
     setExtraTriggers: (trig: any) => void;
 }
 
@@ -47,12 +50,11 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control, extraTriggers, setExtraTriggers }) => {
+export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person,addressbook, getValues, trigger, setValue, domains, errors, control, extraTriggers, watch, setExtraTriggers }) => {
 
     const [tabIndex, setTabIndex] = useState('0');
     const classes = useStyles();
     const dispatch = useDispatch();
-
     useEffect(() => {
         if (person.referringpersonid) {
             dispatch(getReferrerListByPerson(getReferrerByPersonBody(person.referringpersonid)));
@@ -63,7 +65,7 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
     }, [dispatch, person]);
 
     return <>
-        <AppBar position="static" elevation={0}>
+        <AppBar position="static" elevation={0} style={{width: "100%"}}>
             <Tabs
                 value={tabIndex}
                 onChange={(x, i: string) => { setTabIndex(i) }}
@@ -79,7 +81,8 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
                     className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
                     label={<div><Trans i18nKey={langKeys.addressbook} /></div>}
                     value="1"
-                /><Tab
+                />
+                <Tab
                     className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
                     label={<Trans i18nKey={langKeys.extradata} count={2} />}
                     value="2"
@@ -99,24 +102,19 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, 
             />
         </div>
         }
-        <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
-            <PersonalDataTab
-                getValues={getValues}
+        {tabIndex === "1" && <div style={{  overflowY: 'auto' }}>
+            <LocationTab
                 setValue={setValue}
-                trigger={trigger}
-                domains={domains}
-                errors={errors}
-                control={control}
-                extraTriggers={extraTriggers}
-                setExtraTriggers={setExtraTriggers}
+                watch={watch}
+                addressbook={addressbook}
             />
-        </div>
-        <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
+        </div>}
+        {tabIndex === "2" && <div style={{ height: 'calc(97% - 5px)', overflowY: 'auto' }}>
             <ExtraDataTab
                 getValues={getValues}
                 setValue={setValue}
                 trigger={trigger}
             />
-        </div>
+        </div>}
     </>
 }

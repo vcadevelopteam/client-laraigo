@@ -15,7 +15,7 @@ export const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
             aria-labelledby={`wrapped-tab-${value}`}
             style={{ display: value === index ? 'flex' : 'none', overflowY: 'auto' }}
         >
-            <Box p={3}  style={{padding: "24px 0"}}>
+            <Box p={3}  style={{padding: "24px 0", width: "100%"}}>
                 {children}
             </Box>
         </div>

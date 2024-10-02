@@ -3,9 +3,10 @@ import { FC } from "react";
 
 interface PropertyProps extends Omit<BoxProps, 'title'> {
     icon?: React.ReactNode;
-    title: React.ReactNode;
+    title?: React.ReactNode;
     subtitle?: React.ReactNode;
     isLink?: Boolean;
+    classesAlt?: any;
 }
 
 const usePropertyStyles = makeStyles(theme => ({
@@ -55,15 +56,15 @@ const usePropertyStyles = makeStyles(theme => ({
     },
 }));
 
-export const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink = false, ...boxProps }) => {
-    const classes = usePropertyStyles();
+export const Property: FC<PropertyProps> = ({ icon, title="", subtitle, isLink = false, classesAlt = null,...boxProps }) => {
+    const classes = classesAlt || usePropertyStyles();
 
     return (
         <Box className={classes.propertyRoot} {...boxProps}>
             {icon && <div className={classes.leadingContainer}>{icon}</div>}
             {icon && <div style={{ width: 8, minWidth: 8 }} />}
             <div className={classes.contentContainer}>
-                <label className={classes.propTitle}>{title}</label>
+                { !!title && <label className={classes.propTitle}>{title}</label>}
                 <div style={{ height: 4 }} />
                 <div className={isLink ? classes.propSubtitleTicket : classes.propSubtitle}>{subtitle || "-"}</div>
             </div>

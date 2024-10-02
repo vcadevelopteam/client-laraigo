@@ -2720,6 +2720,7 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
+        age: String(person.age),
         phone: person?.phone?.replaceAll('+', '') || "",
     },
 });

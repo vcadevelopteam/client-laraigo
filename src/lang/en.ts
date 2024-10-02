@@ -311,8 +311,8 @@ const translation: LangKeys = {
   contact: 'Contact',
   contact_plural: 'Contacts',
 
-  lastConnection: 'Last connection',
-  firstConnection: 'First connection',
+  lastConnection: 'Last connection date',
+  firstConnection: 'First connection date',
   ticketCreatedOn: 'Ticket Created On',
 
   company: 'Company',
@@ -6556,6 +6556,8 @@ const translation: LangKeys = {
   region: 'Region',
   addressreference: 'Address reference',
   addressnumber: 'Address number',
+  mainaddress: 'Main address',
+  additionaladdress: 'Additional address',
 };
 
 const enResource: ResourceLanguage = {

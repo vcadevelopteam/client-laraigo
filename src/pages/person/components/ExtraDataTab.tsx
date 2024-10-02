@@ -2,11 +2,9 @@ import { Grid, makeStyles } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit } from "components";
-import { IObjectState, IPerson, IPersonDomains } from "@types";
+import { IPerson } from "@types";
 import { UseFormGetValues } from "react-hook-form";
 import { FC } from "react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "hooks";
 
 
 interface ExtraDataTabProps {

@@ -6501,6 +6501,8 @@ export const langKeys = {
   addressnumber: 'addressnumber',
   floor_number: 'floor_number',
   ubigeocode: 'ubigeocode',
+  mainaddress: 'mainaddress',
+  additionaladdress: 'additionaladdress',
 };
 
 export type LangKeys = typeof langKeys;

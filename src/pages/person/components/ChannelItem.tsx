@@ -14,9 +14,15 @@ import { Property } from "./Property";
 import { GetIcon } from "components";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 import { PhoneIcon } from "icons";
+import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import CallIcon from '@material-ui/icons/Call';
+import ForumIcon from '@material-ui/icons/Forum';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
 
 interface ChannelItemProps {
     channel: IPersonChannel;
+    person: any;
 }
 
 const useChannelItemStyles = makeStyles(theme => ({
@@ -26,6 +32,10 @@ const useChannelItemStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
+        paddingLeft: theme.spacing(3),
+        display: "flex",
+        alignItems: "center"
+
     },
     contentContainer: {
         display: 'flex',
@@ -73,7 +83,31 @@ const useChannelItemStyles = makeStyles(theme => ({
         '&:hover': {
             color: "#7721ad",
         },
-    }
+    }, propertyRoot: {
+        display: 'flex',
+        flexDirection: 'row',
+        stroke: '#8F92A1',
+        alignItems: 'center',
+        overflowWrap: 'anywhere',
+    },
+    leadingContainer: {
+        height: 24,
+        width: 24,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        stroke: '#8F92A1',
+        fill: '#8F92A1',
+    },
+    propSubtitleTicket: {
+        fontWeight: 400,
+        fontSize: 15,
+        margin: 0,
+        width: '100%',
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
 }));
 
 
@@ -122,7 +156,7 @@ const nameschannel: { [x: string]: string } = {
     "YOUT": "T_YOUTUBE",
 };
 
-export const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
+export const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
     const { t } = useTranslation();
     const classes = useChannelItemStyles();
     const dispatch = useDispatch();
@@ -175,60 +209,65 @@ export const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     </Button>
                 </div>
             )}
-            <Grid container direction="row">
-                <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.communicationchannel} />}
-                        subtitle={(
+            <GetIcon channelType={channel.type} width={120} height={120} color='#8F92A1' />
+            <div>
+                <Box className={classes.propertyRoot}>
+                    <div className={classes.contentContainer}>
+                        <label className={classes.propTitle}>{<Trans i18nKey={langKeys.communicationchannel} />}</label>
+                        <div style={{ height: 4 }} />
+                        <div className={classes.propSubtitle}>
                             <div className={classes.subtitle}>
                                 <span>{
                                     (nameschannel[channel.type] || '').includes("T_")
                                         ? t((langKeys as any)[nameschannel[channel.type]])
                                         : nameschannel[channel.type]}</span>
-                                <GetIcon channelType={channel.type} color='black' />
                             </div>
-                        )}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.displayname} />}
-                        subtitle={channel.displayname}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <div className={classes.subtitle}>
+                                {channel.displayname}
+                            </div>
+                        </div>
+                    </div>
+                </Box>
+            </div>
+            <div>
 
-                    <Box>
-                        <div className={classes.contentContainer}>
-                            <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
-                            <div style={{ height: 4 }} />
+            </div>
+            <Grid container direction="row">
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                    <Property
+                        icon={<LibraryAddIcon style={{ color: "#8F92A1" }} />}
+                        title={<Trans i18nKey={langKeys.firstConnection} />}
+                        subtitle={channel.firstcontact}
+                        m={1}
+                        classesAlt={classes}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                    <Property
+                        icon={<PersonOutlineIcon style={{ color: "#8F92A1" }} />}
+                        title={<Trans i18nKey={langKeys.fullname} />}
+                        subtitle={
                             <div style={{ display: "flex" }}>
-                                {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
+                                {(false && (!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && (channel.type.includes("WHA") || channel.type.includes("VOXI")))) &&
                                     <IconButton
-                                        className={classes.buttonphone}
-                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}
+                                    className={classes.buttonphone}
+                                    onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>
                                 }
                                 <div className={classes.propSubtitle}>{channel.personcommunicationchannelowner || "-"}</div>
-                            </div>
-                        </div>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
-                        subtitle={personIdentifier}
+                            </div>}
                         m={1}
-                    />
+                        classesAlt={classes}
+                        />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
-                        title={<Trans i18nKey={langKeys.firstConnection} />}
-                        subtitle={channel.firstcontact}
+                        icon={<CallIcon style={{ color: "#8F92A1" }} />}
+                        title={<Trans i18nKey={langKeys.cellphone} />}
+                        subtitle={personIdentifier}
+                        classesAlt={classes}
                         m={1}
                     />
                 </Grid>
@@ -236,13 +275,26 @@ export const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     <Property
                         title={<Trans i18nKey={langKeys.lastConnection} />}
                         subtitle={channel.lastcontact}
+                        icon={<LibraryAddIcon style={{ color: "#8F92A1" }} />}
+                        classesAlt={classes}
                         m={1}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
-                        title={<Trans i18nKey={langKeys.conversation} count={2} />}
+                        icon={<ForumIcon style={{ color: "#8F92A1" }} />}
+                        title={<Trans i18nKey={langKeys.conversationquantity} />}
                         subtitle={channel.conversations || '0'}
+                        classesAlt={classes}
+                        m={1}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                    <Property
+                        icon={<RecentActorsIcon style={{ color: "#8F92A1" }} />}
+                        title={<Trans i18nKey={langKeys.document} />}
+                        subtitle={person.documentnumber || '0'}
+                        classesAlt={classes}
                         m={1}
                     />
                 </Grid>

@@ -30,7 +30,7 @@ export const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ height: 12 }} />
-            {channelList.data.map((e, i) => <ChannelItem channel={e} key={`channel_item_${i}`} />)}
+            {channelList.data.map((e, i) => <ChannelItem person={person} channel={e} key={`channel_item_${i}`} />)}
         </div>
     );
 }
