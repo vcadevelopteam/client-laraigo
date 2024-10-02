@@ -33,8 +33,8 @@ const IAConfiguration = lazy(() => import('pages/iaconfiguration/IAConfiguration
 const SLA = lazy(() => import('pages/SLA'));
 const Domains = lazy(() => import('pages/Domains'));
 const Reports = lazy(() => import('pages/Reports'));
-const Person = lazy(() => import('pages/Person'));
-const PersonDetail = lazy(() => import('pages/PersonDetail'));
+const Person = lazy(() => import('pages/person/Person'));
+const PersonDetail = lazy(() => import('pages/person/PersonDetail'));
 const MetaChannels = lazy(() => import('pages/MetaChannels'));
 const Supervisor = lazy(() => import('pages/Supervisor'));
 const MessageInbox = lazy(() => import('pages/MessageInbox'));

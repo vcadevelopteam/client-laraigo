@@ -91,6 +91,7 @@ export interface TableConfig {
   useFooter?: boolean;
   ExtraMenuOptions?: ReactElement;
   cleanImport?: Boolean
+  fillterAllDate?: Boolean
   defaultGlobalFilter?: string;
   setOutsideGeneralFilter?: (param: string)=>void; 
 }
