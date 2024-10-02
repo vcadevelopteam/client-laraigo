@@ -1,0 +1,7 @@
+.custom-reactions {
+    display: grid;
+    max-height: 100%;
+    overflow-y: auto;
+    padding-bottom: 25px;
+
+}
