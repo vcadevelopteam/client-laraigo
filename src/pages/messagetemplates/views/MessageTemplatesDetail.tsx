@@ -1120,7 +1120,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const onClickAddButton = async () => {
         if (getValues("buttonsgeneric") && getValues("buttonsgeneric").filter((btn: Dictionary) => { return btn.type === 'URL' }).length < 2) {
-            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'URL', click_counter: false, btn: { text: "", type: "", url: "", variables: [''] } }]);
+            setValue("buttonsgeneric", [...getValues("buttonsgeneric"), { type: 'URL', click_counter: false, link_id: 0, btn: { text: "", type: "", url: "", variables: [''] } }]);
         }
         trigger("buttonsgeneric");
     };
@@ -3022,6 +3022,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                 onChange={() => {
                                                                                                                                                                     if(btn?.click_counter) {
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.click_counter`, false);
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.link_id`, 0);
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.url`, "");
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.text`, "");
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.type`, "");
@@ -3029,6 +3030,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                         trigger('buttonsgeneric')
                                                                                                                                                                     } else {
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.click_counter`, true);
+                                                                                                                                                                        setValue(`buttonsgeneric.${i}.link_id`, 0);
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.url`, "");
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.text`, "");
                                                                                                                                                                         setValue(`buttonsgeneric.${i}.btn.type`, "dynamic");
@@ -3142,26 +3144,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                     <div style={{marginBottom: 4}}>{t(langKeys.selectregisteredlink)}</div>
                                                                                                                                                                     <FieldSelect
                                                                                                                                                                         data={multiData?.[4]?.data || []}
-                                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.btn?.url?.message}
+                                                                                                                                                                        error={errors?.buttonsgeneric?.[i]?.link_id?.message}
                                                                                                                                                                         onChange={(value) => {
                                                                                                                                                                             if(value) {
                                                                                                                                                                                 setValue(`buttonsgeneric.${i}.btn.url`, `https://redirect.laraigo.com/DEV?params={1}&to=${value?.url}`);
                                                                                                                                                                                 setValue(`buttonsgeneric.${i}.btn.variables`, [`https://redirect.laraigo.com/DEV?params={853-542}&to=${value?.url}`]);
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.link_id`, value.linkregisterid)
                                                                                                                                                                                 trigger('buttonsgeneric')
                                                                                                                                                                             } else {
                                                                                                                                                                                 setValue(`buttonsgeneric.${i}.btn.url`, "");
                                                                                                                                                                                 setValue(`buttonsgeneric.${i}.btn.variables`, [""]);
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.link_id`, 0)
                                                                                                                                                                                 trigger('buttonsgeneric')
                                                                                                                                                                             }
                                                                                                                                                                         }}
                                                                                                                                                                         optionDesc="description"
                                                                                                                                                                         optionValue="linkregisterid"
-                                                                                                                                                                        valueDefault={btn?.btn?.url || ""}
+                                                                                                                                                                        valueDefault={btn?.btn?.link_id || ""}
                                                                                                                                                                         variant="outlined"
                                                                                                                                                                         fregister={{
-                                                                                                                                                                            ...register(`buttonsgeneric.${i}.btn.url`, {
+                                                                                                                                                                            ...register(`buttonsgeneric.${i}.link_id`, {
                                                                                                                                                                                 validate: (value) =>
-                                                                                                                                                                                    (value && value.length) || t(langKeys.field_required),
+                                                                                                                                                                                    (value && value > 0) || t(langKeys.field_required),
                                                                                                                                                                             }),
                                                                                                                                                                         }}
                                                                                                                                                                         disabled={!isNew}
