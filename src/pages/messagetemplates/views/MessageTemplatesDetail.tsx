@@ -3018,6 +3018,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                         <div style={{marginBottom: 10}}>
                                                                                                                                                             <Checkbox
                                                                                                                                                                 color="primary"
+                                                                                                                                                                disabled={!isNew}
                                                                                                                                                                 checked={btn?.click_counter}
                                                                                                                                                                 onChange={() => {
                                                                                                                                                                     if(btn?.click_counter) {
@@ -3147,8 +3148,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                         error={errors?.buttonsgeneric?.[i]?.link_id?.message}
                                                                                                                                                                         onChange={(value) => {
                                                                                                                                                                             if(value) {
-                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.url`, `https://redirect.laraigo.com/DEV?params={1}&to=${value?.url}`);
-                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.variables`, [`https://redirect.laraigo.com/DEV?params={853-542}&to=${value?.url}`]);
+                                                                                                                                                                                const origin = window.location.origin.startsWith('https://localhost') ? "https://dev.laraigo.com" : window.location.origin;
+
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.url`, `${origin}/redirect?to=${value?.url}&params={{1}}`);
+                                                                                                                                                                                setValue(`buttonsgeneric.${i}.btn.variables`, [`${origin}/redirect?to=${value?.url}&params=1-2-3-3-1-3`]);
                                                                                                                                                                                 setValue(`buttonsgeneric.${i}.link_id`, value.linkregisterid)
                                                                                                                                                                                 trigger('buttonsgeneric')
                                                                                                                                                                             } else {
@@ -3160,7 +3163,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                         }}
                                                                                                                                                                         optionDesc="description"
                                                                                                                                                                         optionValue="linkregisterid"
-                                                                                                                                                                        valueDefault={btn?.btn?.link_id || ""}
+                                                                                                                                                                        valueDefault={btn?.link_id || ""}
                                                                                                                                                                         variant="outlined"
                                                                                                                                                                         fregister={{
                                                                                                                                                                             ...register(`buttonsgeneric.${i}.link_id`, {
