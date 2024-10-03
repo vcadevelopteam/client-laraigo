@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { FieldMultiSelect } from 'components';
 
 import {
     exportData,
