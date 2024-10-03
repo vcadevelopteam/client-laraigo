@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, Title, TemplateIcons } from 'components';
+import {TemplateBreadcrumbs, TitleDetail, FieldEdit, Title, TemplateIcons, PhoneFieldEdit} from 'components';
 import { array_trimmer, exportExcel, getLocationExport, getPaginatedLocation, locationIns, templateMaker, uploadExcel } from 'common/helpers';
 import {Dictionary, IFetchData, ITransaction} from "@types";
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -22,6 +22,9 @@ import ClearIcon from '@material-ui/icons/Clear';
 import TablePaginated from 'components/fields/table-paginated';
 import MapLocation from './MapLocation.jsx'
 import { CellProps } from 'recharts';
+import {IconButton, InputAdornment} from "@material-ui/core";
+import {setModalCall, setPhoneNumber} from "../store/voximplant/actions";
+import PhoneIcon from "@material-ui/icons/Phone";
 
 interface RowSelected {
     row: Dictionary | null,
@@ -121,13 +124,13 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
         register('id');
         register('phone', {
             pattern: {
-                value: /^[0-9]{9,20}$/,
+                value: /^\+?[0-9]{9,20}$/,
                 message: t(langKeys.invalid_phone)
             }
         });
         register('alternativephone', {
             pattern: {
-                value: /^[0-9]{9,20}$/,
+                value: /^\+?[0-9]{9,20}$/,
                 message: t(langKeys.invalid_phone)
             }
         });
@@ -267,22 +270,22 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             valueDefault={directionData.address}
                             error={errors?.address?.message}
                         />
-                        <FieldEdit
+                        <PhoneFieldEdit
                             label={t(langKeys.phone)}
-                            className="col-6"
-                            type="number"
+                            name="phone"
+                            defaultCountry={user!.countrycode.toLowerCase()}
                             onChange={(value) => setValue('phone', value)}
-                            valueDefault={row ? (row.phone || "") : ""}
+                            className="col-6"
                             error={errors?.phone?.message}
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        <PhoneFieldEdit
                             label={t(langKeys.alternativephone)}
-                            className="col-6"
-                            type="number"
+                            name="phone"
+                            defaultCountry={user!.countrycode.toLowerCase()}
                             onChange={(value) => setValue('alternativephone', value)}
-                            valueDefault={row ? (row.alternativephone || "") : ""}
+                            className="col-6"
                             error={errors?.alternativephone?.message}
                         />
                         <FieldEdit
@@ -672,43 +675,43 @@ const Location: FC = () => {
 
 
             <div style={{ height: '100%', width: 'inherit' }}>
-            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
-                <div style={{ flexGrow: 1 }} >
-                    <Title><Trans i18nKey={langKeys.locations} count={2} /></Title>
+                <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
+                    <div style={{ flexGrow: 1 }} >
+                        <Title><Trans i18nKey={langKeys.locations} count={2} /></Title>
+                    </div>
                 </div>
+                <TablePaginated
+                    columns={columns}
+                    data={mainPaginated.data}
+                    pageCount={pageCount}
+                    totalrow={totalrow}
+                    filterGeneral={true}
+                    loading={mainPaginated.loading}
+                    download={true}
+                    exportPersonalized={triggerExportData}
+                    fetchData={fetchData}
+                    onClickRow={(row)=>{setRowSelected({ row: row, edit: false });setViewSelected("view-2")}}
+                    register={true}
+                    initialPageIndex={fetchDataAux.pageIndex}
+                    ButtonsElement={() => (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            startIcon={<ListAltIcon color="secondary" />}
+                            onClick={handleTemplate}
+                            style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
+                        >
+                            <Trans i18nKey={langKeys.template} />
+                        </Button>
+                    )}
+                    importCSV={handleUpload}
+                    handleRegister={() => {
+                        setRowSelected({ row: null, edit: false })
+                        setViewSelected("view-2");
+                    }}
+                />
             </div>
-            <TablePaginated
-                columns={columns}
-                data={mainPaginated.data}
-                pageCount={pageCount}
-                totalrow={totalrow}
-                filterGeneral={true}
-                loading={mainPaginated.loading}
-                download={true}
-                exportPersonalized={triggerExportData}
-                fetchData={fetchData}
-                onClickRow={(row)=>{setRowSelected({ row: row, edit: false });setViewSelected("view-2")}}
-                register={true}
-                initialPageIndex={fetchDataAux.pageIndex}
-                ButtonsElement={() => (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading}
-                        startIcon={<ListAltIcon color="secondary" />}
-                        onClick={handleTemplate}
-                        style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
-                    >
-                        <Trans i18nKey={langKeys.template} />
-                    </Button>
-                )}
-                importCSV={handleUpload}
-                handleRegister={() => {
-                    setRowSelected({ row: null, edit: false })
-                    setViewSelected("view-2");
-                }}
-            />
-        </div>
         )
     }
     else if (viewSelected === "view-2") {
