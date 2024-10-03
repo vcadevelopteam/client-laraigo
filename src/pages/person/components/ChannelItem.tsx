@@ -284,7 +284,7 @@ export const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                     <Property
                         icon={<ForumIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.conversationquantity} />}
-                        subtitle={channel.conversations || '0'}
+                        subtitle={(channel.conversations || 0) > 0 ? channel.firstcontact : ""}
                         classesAlt={classes}
                         m={1}
                     />
