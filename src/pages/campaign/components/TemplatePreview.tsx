@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
+import DescriptionIcon from '@material-ui/icons/Description';
+import SlideshowIcon from '@material-ui/icons/Slideshow';
+import GridOnIcon from '@material-ui/icons/GridOn';
+import TextFieldsIcon from '@material-ui/icons/TextFields';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ReplyIcon from '@material-ui/icons/Reply';
@@ -106,7 +110,6 @@ const useStyles = makeStyles((theme) => ({
     },
     icon: {
         marginRight: '10px',
-        color:'#DF3636',
     },
     fileName: {
         whiteSpace: 'nowrap',
@@ -197,30 +200,56 @@ const useStyles = makeStyles((theme) => ({
 interface PdfAttachmentProps {
     url: string;
 }
+
 const PdfAttachment: React.FC<PdfAttachmentProps> = ({ url }) => {
     const classes = useStyles();
 
-    const getFileName = (url: string) => {
-        if (!url) return 'Archivo PDF';
-        const matches = url.match(/\/([^/?#]+\.pdf)(?:[?#]|$)/i);
-        return matches && matches[1] ? matches[1] : 'Archivo PDF';
+    const decodeUrl = (url: string) => decodeURIComponent(url);
+
+    const getFileNameFromUrl = (url: string) => {
+        const decodedUrl = decodeUrl(url);
+        const match = decodedUrl.match(/\/([^/?#]+)(?:[?#]|$)/i);
+        return match ? match[1] : 'Archivo Desconocido';
     };
 
-    const getTruncatedFileName = (fileName: string, maxLength: number) => {
-        const extension = ".pdf";
-        if (fileName.length <= maxLength) {
-            return fileName;
-        }
-        const truncated = fileName.slice(0, maxLength - extension.length - 3) + "...";
-        return truncated + extension;
+    const getFileExtensionFromUrl = (url: string) => {
+        const decodedUrl = decodeUrl(url);
+        const match = decodedUrl.match(/\.([0-9a-z]+)(?:[?#]|$)/i);
+        return match ? match[1].toLowerCase() : null;
     };
 
-    const fileName = getFileName(url);
-    const truncatedFileName = getTruncatedFileName(fileName, 30);
+    const truncateFileName = (fileName: string, maxLength: number, extension: string | null) => {
+        const extensionLength = extension?.length || 0;
+        if (fileName.length <= maxLength) return fileName;
+
+        const truncated = `${fileName.slice(0, maxLength - extensionLength - 3)}...`;
+        return `${truncated}${extension ? `.${extension}` : ''}`;
+    };
+
+    const fileTypesConfig: Record<string, { backgroundColor: string, IconComponent: React.ElementType, iconColor: string }> = {
+        pdf: { backgroundColor: '#F5D9D9', IconComponent: PictureAsPdfIcon, iconColor: '#DF3636' },
+        docx: { backgroundColor: '#D9E8F5', IconComponent: DescriptionIcon, iconColor: '#000080' },
+        doc: { backgroundColor: '#D9E8F5', IconComponent: DescriptionIcon, iconColor: '#000080' },
+        ppt: { backgroundColor: '#FDE7BC', IconComponent: SlideshowIcon, iconColor: '#FFA500' },
+        pptx: { backgroundColor: '#FDE7BC', IconComponent: SlideshowIcon, iconColor: '#FFA500' },
+        txt: { backgroundColor: '#E4E4E4', IconComponent: TextFieldsIcon, iconColor: '#000000' },
+        xls: { backgroundColor: '#E1EFD9', IconComponent: GridOnIcon, iconColor: '#006400' },
+        xlsx: { backgroundColor: '#E1EFD9', IconComponent: GridOnIcon, iconColor: '#006400' },
+    };
+
+    const extension = getFileExtensionFromUrl(url);
+    const config = fileTypesConfig[extension || ''] || null;
+
+    if (!config) {
+        return <div className={classes.container} style={{ background: 'white' }}>El archivo seleccionado no es soportado.</div>;
+    }
+
+    const fileName = getFileNameFromUrl(url);
+    const truncatedFileName = truncateFileName(fileName, 30, extension);
 
     return (
-        <div className={classes.container}>
-            <PictureAsPdfIcon className={classes.icon} />
+        <div className={classes.container} style={{ background: config.backgroundColor }}>
+            <config.IconComponent className={classes.icon} style={{ color: config.iconColor }} />
             <span className={classes.fileName}>{truncatedFileName}</span>
         </div>
     );
@@ -408,6 +437,7 @@ const replaceVariables = (
     return transformTextStyles(transformedText);
 };
 
+
 const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     selectedTemplate,
     bodyVariableValues,
@@ -501,7 +531,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                                 {selectedTemplate?.category === "MARKETING" || selectedTemplate?.category === "UTILITY" || selectedTemplate?.type === "SMS" ? (
                                     <div>
                                         {selectedTemplate?.headertype === "DOCUMENT" ? (
-                                            <PdfAttachment url={selectedTemplate.header} />
+                                            <PdfAttachment url={videoHeaderValue || selectedTemplate.header} />
                                         ) : selectedTemplate?.headertype === "MULTIMEDIA" ? (
                                             <iframe
                                                 src={selectedTemplate.header || "https://d36ai2hkxl16us.cloudfront.net/thoughtindustries/image/upload/a_exif,c_fill,w_750/v1/course-uploads/7a95ec5e-b843-4247-bc86-c6e2676404fd/15ax1uzck54z-NuxeoGeneric.png"}
