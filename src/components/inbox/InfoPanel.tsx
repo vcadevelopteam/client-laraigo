@@ -238,10 +238,25 @@ const InfoTab: React.FC = () => {
         });
         register('persontype');
         register('observation');
-        register('phone');
-        register('documentnumber');
-        register('alternativeemail');
-        register('alternativephone');
+        // register('email', {
+        //     validate: {
+        //         isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
+        //     }
+        // });
+        register('alternativeemail', {
+            validate: {
+                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
+            }
+        });
+        register('alternativephone', {
+            validate: {
+                isperuphone: (value) => {
+                    const isNumeric = /^\d+$/.test(value); // Valida si el valor solo contiene números
+                    const isCorrectLength = value?.startsWith("51") ? value.length === 11 : true;
+                    return ((isNumeric && isCorrectLength) || value === "") || t(langKeys.validationphone) + "";
+                }
+            }
+        });
         register('birthday');
         register('gender');
         register('occupation');
