@@ -692,13 +692,13 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 groups = grouprules
             }
             setUsableGroups(groups)
-            
+
             setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
-            
+
             if (propertyAsesorReassign && !propertyGrupoDelegacion) {
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
-                    return agentGroups.some((group:any) => grouprules.includes(group.trim()));
+                    return agentGroups.some((group: any) => grouprules.includes(group.trim()));
                 }))
             }
         }
@@ -1506,7 +1506,10 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
 
     return (
         <div style={{ backgroundColor: 'white', border: '1px solid #e1e1e1', borderRadius: 16, paddingLeft: 4, paddingRight: 4, display: 'flex', alignItems: 'center' }}>
-            <IconButton size="small" onClick={() => setShowSearcher(false)}>
+            <IconButton size="small" onClick={() => {
+                setShowSearcher(false)
+                dispatch(setSearchTerm(""))
+            }}>
                 <CloseIcon style={{ color: '#8F92A1' }} />
             </IconButton>
             <InputBase
