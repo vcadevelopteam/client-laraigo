@@ -167,7 +167,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             salary: person?.salary || 0,
             latitude: person?.latitude || 0,
             longitude: person?.longitude || 0,
-            address_book : JSON.parse(person?.address_book ||"[]") || [],
+            address_book : typeof person?.address_book === 'string' ? JSON.parse(person.address_book) : (person?.address_book || []),
             age: person?.birthday? Math.floor((Number(new Date()) - new Date(person.birthday).getTime()) / 3.15576e+10): person?.age || 0,
         } || {},
     });
