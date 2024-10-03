@@ -20,7 +20,8 @@ interface RowSelected {
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData: () => void
+    fetchData: () => void;
+    handleStart: (id: number) => void;
 }
 export interface FrameProps {
     page: number,
