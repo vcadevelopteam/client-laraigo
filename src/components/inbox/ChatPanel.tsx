@@ -708,6 +708,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
                     return agentGroups.some((group: any) => grouprules.includes(group.trim()));
+                    return agentGroups.some((group: any) => grouprules.includes(group.trim()));
                 }))
             }
         }
