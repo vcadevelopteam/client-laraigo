@@ -10,6 +10,10 @@ export interface MultiData {
   key?: string;
 }
 
+export interface BreadCrumb {
+  id: string
+  name: string
+}
 export interface TableConfig {
   columns: any;
   data: Dictionary[];
@@ -87,6 +91,7 @@ export interface TableConfig {
   useFooter?: boolean;
   ExtraMenuOptions?: ReactElement;
   cleanImport?: Boolean
+  fillterAllDate?: Boolean
   defaultGlobalFilter?: string;
   setOutsideGeneralFilter?: (param: string)=>void; 
 }

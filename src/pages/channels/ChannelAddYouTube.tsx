@@ -8,7 +8,7 @@ import { IChannel } from "@types";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { listYouTube } from "store/google/actions";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
@@ -18,10 +18,12 @@ import GoogleLogInFrame from "./GoogleLogInFrame";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
+import { updateMetachannels } from "common/helpers";
 
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -150,9 +152,9 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                             show: true,
                             message: t(
                                 exchangeCodeResult.msg ??
-                                    exchangeCodeResult.message ??
-                                    exchangeCodeResult.code ??
-                                    "error_unexpected_error"
+                                exchangeCodeResult.message ??
+                                exchangeCodeResult.code ??
+                                "error_unexpected_error"
                             ),
                         })
                     );
@@ -184,9 +186,9 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                             show: true,
                             message: t(
                                 listYouTubeResult.msg ??
-                                    listYouTubeResult.message ??
-                                    listYouTubeResult.code ??
-                                    "error_unexpected_error"
+                                listYouTubeResult.message ??
+                                listYouTubeResult.code ??
+                                "error_unexpected_error"
                             ),
                         })
                     );
@@ -203,8 +205,13 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setSetins(false);
-                setWaitSave(false);
-                setViewSelected("enable-virtual-assistant")
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                    updateMetachannels(10);
+                } else {
+                    setWaitSave(false);
+                    setViewSelected("enable-virtual-assistant");
+                }
             } else if (!executeResult) {
                 dispatch(
                     showSnackbar({
@@ -245,9 +252,14 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                             key={"mainview"}
                             onClick={(e) => {
                                 e.preventDefault();
-                                channel?.status === "INACTIVO"
-                                    ? history.push(paths.CHANNELS, whatsAppData)
-                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+
+                                if (whatsAppData?.onboarding) {
+                                    history.push(paths.METACHANNELS, whatsAppData);
+                                } else {
+                                    channel?.status === "INACTIVO"
+                                        ? history.push(paths.CHANNELS, whatsAppData)
+                                        : history.push(paths.CHANNELS_ADD, whatsAppData);
+                                }
                             }}
                         >
                             {t(langKeys.previoustext)}
@@ -309,7 +321,29 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                         key={"mainview"}
                         onClick={(e) => {
                             e.preventDefault();
-                            setViewSelected("view1");
+                            if (whatsAppData?.onboarding) {
+                                dispatch(manageConfirmation({
+                                    visible: true,
+                                    title: t(langKeys.confirmation),
+                                    question: t(langKeys.channelconfigsave),
+                                    callback: () => {
+                                        if (channelreg || mainResult.loading || nextbutton) {
+                                            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.onboading_channelcomplete) }));
+                                        } else {
+                                            finishreg();
+                                        }
+                                    },
+                                    callbackcancel: () => {
+                                        history.push(paths.METACHANNELS, whatsAppData);
+                                    },
+                                    textCancel: t(langKeys.decline),
+                                    textConfirm: t(langKeys.accept),
+                                    isBold: true,
+                                    showClose: true,
+                                }))
+                            } else {
+                                setViewSelected("view1");
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}
@@ -355,9 +389,9 @@ export const ChannelAddYouTube: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             </div>
         )
-    } else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (

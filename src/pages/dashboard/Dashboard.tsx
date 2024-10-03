@@ -25,6 +25,7 @@ import DashboardKPIMonthly from './DashboardKPIMonthly';
 const isIncremental = window.location.href.includes("incremental")
 import productivity_advisors from 'icons/reports_productivity_advisors.svg';
 import { Dictionary } from "@types";
+import DashboardOpportunityFunnel from "./DashboardOpportunityFunnel";
 
 
 
@@ -384,6 +385,25 @@ const Dashboard: React.FC<ItemProps> = ({ row, allFilters }) => {
                                 </CardActionArea>
                             </Card>
                         </Grid>}
+                        {t(langKeys.opportunity_funnel).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelected("dashboardopportunityfunnel")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image={'https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20SOPORTE/edcd2a86-977e-4fa2-9fcd-ef5d04f8fcd6/dashboard01.png'}
+                                        title={t(langKeys.opportunity_funnel)}
+                                        style={{ objectFit: 'contain'}}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.opportunity_funnel)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>}
 
                         {allDashboardsToShow.map((e:any, i:number) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
@@ -524,7 +544,24 @@ const Dashboard: React.FC<ItemProps> = ({ row, allFilters }) => {
                 </div>
             </Fragment>
         )
-    }    
+    }
+    else if(viewSelected === "dashboardopportunityfunnel"){
+        return(
+
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread, {id: 'dashboardopportunityfunnel', name: t(langKeys.opportunity_funnel) }]}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardOpportunityFunnel
+                        row={row}
+                        allFilters={allFilters}
+                    />
+                </div>
+            </Fragment>
+        )
+    }
     else{
         return (
             <div>error</div>

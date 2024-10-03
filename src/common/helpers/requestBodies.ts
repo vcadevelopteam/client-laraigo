@@ -240,7 +240,7 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
     parameters: { type, classificationid }
 });
 
-export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS", variablecontext={}  }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS", variablecontext = {} }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language, variablecontext }
@@ -713,15 +713,15 @@ export const getCustomVariableSel = (): IRequestBody => ({
     key: "UFN_CUSTOM_VARIABLE_APPLICATION_SEL",
     parameters: {}
 })
-export const getCustomVariableSelByTableName = (tablename:string, customvariableapplicationid:number=0): IRequestBody => ({
+export const getCustomVariableSelByTableName = (tablename: string, customvariableapplicationid: number = 0): IRequestBody => ({
     method: "UFN_CUSTOM_VARIABLE_SEL",
     key: "UFN_CUSTOM_VARIABLE_SEL",
-    parameters: {tablename, customvariableapplicationid}
+    parameters: { tablename, customvariableapplicationid }
 })
-export const insCustomVariable = ({id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname=""}:Dictionary): IRequestBody => ({
+export const insCustomVariable = ({ id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname = "" }: Dictionary): IRequestBody => ({
     method: "UFN_CUSTOM_VARIABLE_INS",
     key: "UFN_CUSTOM_VARIABLE_INS",
-    parameters: {id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname}
+    parameters: { id, customvariableapplicationid, variablename, description, variabletype, status, operation, domainname }
 })
 
 export const getDocumentLibrary = (): IRequestBody => ({
@@ -1060,6 +1060,7 @@ export const insMessageTemplate = (
         operation,
         categorychange,
         firstbuttons, 
+        
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1217,8 +1218,8 @@ export const insIntegrationManager = ({
     operation,
     results,
     orgid,
-    code_table= {},
-    person_table={}
+    code_table = {},
+    person_table = {}
 }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
     parameters: {
@@ -1474,7 +1475,7 @@ export const insarrayInventoryCost = (table: Dictionary[]): IRequestBody => ({
     }
 });
 
-export const getInsertChatwebChannel = (id: number, name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
+export const getInsertChatwebChannel = (id: number, name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string, onboarding?: boolean): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         id: id || 0,
@@ -1493,6 +1494,7 @@ export const getInsertChatwebChannel = (id: number, name: string, auto: boolean,
         voximplantrecording: '',
         voximplantholdtone: "",
         voximplantcallsupervision: false,
+        onboarding: onboarding ? true : false,
     },
     type: typechannel || "CHATWEB",
     service,
@@ -1548,7 +1550,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
 export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     key: "UFN_CAMPAIGN_LST",
-    parameters: {       
+    parameters: {
         startdate: startdate || null,
         enddate: enddate || null,
         offset: (new Date().getTimezoneOffset() / 60) * -1
@@ -1558,7 +1560,7 @@ export const getCampaignLst = (startdate: any, enddate: any): IRequestBody => ({
 export const getCampaignOldLst = (startdate: any, enddate: any): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST_OLD",
     key: "UFN_CAMPAIGN_LST_OLD",
-    parameters: {       
+    parameters: {
         startdate: startdate || null,
         enddate: enddate || null,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
@@ -1603,7 +1605,7 @@ export const insCampaign = ({
     fields,
     operation,
     carouseljson,
-    variableshidden, 
+    variableshidden,
     selectedColumns
 }: Dictionary, membercount: number = 0): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
@@ -1673,7 +1675,7 @@ export const insCampaignOld = ({
     fields,
     operation,
     carouseljson,
-    variableshidden, 
+    variableshidden,
     selectedColumns
 }: Dictionary, membercount: number = 0): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS_OLD",
@@ -1969,7 +1971,7 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const getHSMShipping= ({ startdate, enddate, communicationchannelid, userSid }: Dictionary): IRequestBody => ({
+export const getHSMShipping = ({ startdate, enddate, communicationchannelid, userSid }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
     key: "UFN_REPORT_SENTMESSAGES_BY_TEMPLATE",
     parameters: {
@@ -1980,7 +1982,7 @@ export const getHSMShipping= ({ startdate, enddate, communicationchannelid, user
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const getHSMShippingDetail= ({ startdate, enddate, communicationchannelid, messagetemplateid,usersid }: Dictionary): IRequestBody => ({
+export const getHSMShippingDetail = ({ startdate, enddate, communicationchannelid, messagetemplateid, usersid }: Dictionary): IRequestBody => ({
     method: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
     key: "UFN_DETAIL_SENTMESSAGES_BY_TEMPLATE",
     parameters: {
@@ -2049,7 +2051,7 @@ export const getCampaignMemberStatus = (campaignid: number, campaignmemberid: nu
     method: "UFN_CAMPAIGNMEMBER_STATUS",
     parameters: {
         campaignid,
-        campaignmemberid, 
+        campaignmemberid,
         status
     },
 });
@@ -2079,7 +2081,7 @@ export const getIntelligentModels = (): IRequestBody => ({
     parameters: {}
 });
 
-export const insInteligentModelConfiguration = ({ channels, id, operation, description, type, status, color, icontype, services }: Dictionary): IRequestBody => ({
+export const insInteligentModelConfiguration = ({ channels,model, translation, context, precision, language,originanalysis, id, operation, description, type, status, color, icontype,firstinteraccion, intelligentmodelsid, connectortype }: Dictionary): IRequestBody => ({
     method: 'UFN_INTELLIGENTMODELSCONFIGURATION_INS',
     key: "UFN_INTELLIGENTMODELSCONFIGURATION_INS",
     parameters: {
@@ -2091,7 +2093,10 @@ export const insInteligentModelConfiguration = ({ channels, id, operation, descr
         status,
         color,
         icontype,
-        parameters: services
+        intelligentmodelsid,
+        connectortype,
+        firstinteraccion,
+        originanalysis,model, translation, language, context, precision
     }
 });
 export const gerencialTMOsel = ({ startdate, enddate, channel, group, company, closedby = "ASESOR,BOT", min = "", max = "", target = 0, skipdown = 0, skipup = 0, bd = true }: Dictionary): IRequestBody => ({
@@ -2720,6 +2725,7 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
+        age: String(person.age),
         phone: person?.phone?.replaceAll('+', '') || "",
     },
 });
@@ -2866,7 +2872,7 @@ export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody =
     }
 });
 
-export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email, phase,variablecontext  }: Dictionary): IRequestBody => ({
+export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email, phase, variablecontext }: Dictionary): IRequestBody => ({
     method: 'UFN_LEAD_INS',
     key: "UFN_LEAD_INS",
     parameters: {
@@ -3523,17 +3529,17 @@ export const getColumnsOrigin = (tablename: string): IRequestBody => ({
     key: "UFN_REPORT_PERSONALIZED_COLUMNS_SEL",
     parameters: { tablename },
 });
-export const getBillingMessagingSel = ({ year, month }: Dictionary): IRequestBody => ({
+export const getBillingMessagingSel = ({ year, month, countrycode }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGMESSAGING_SEL",
     key: "UFN_BILLINGMESSAGING_SEL",
-    parameters: { year, month }
+    parameters: { year, month, countrycode }
 })
 
 
-export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, username, operation, countrycode, plancurrency, minimumquantitysms, fixedfeesms, minimumquantitymail, fixedfeemail, priceperchatweb, vcacomissionperchatweb, minimumquantitychatweb, fixedfeechatweb, priceperfacebook, vcacomissionperfacebook, minimumquantityfacebook, fixedfeefacebook, pricepermybusiness, vcacomissionpermybusiness, minimumquantitymybusiness, fixedfeemybusiness, priceperinstagram, vcacomissionperinstagram, minimumquantityinstagram, fixedfeeinstagram, priceperinstagramdm, vcacomissionperinstagramdm, minimumquantityinstagramdm, fixedfeeinstagramdm, pricepermessenger, vcacomissionpermessenger, minimumquantitymessenger, fixedfeemessenger, pricepertelegram, vcacomissionpertelegram, minimumquantitytelegram, fixedfeetelegram, pricepertiktok, vcacomissionpertiktok, minimumquantitytiktok, fixedfeetiktok, pricepervoice, vcacomissionpervoice, minimumquantityvoice, fixedfeevoice, pricepertwitter, vcacomissionpertwitter, minimumquantitytwitter, fixedfeetwitter, priceperyoutube, vcacomissionperyoutube, minimumquantityyoutube, fixedfeeyoutube }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGMESSAGING_INS",
     key: "UFN_BILLINGMESSAGING_INS",
-    parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }
+    parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, username, operation, countrycode, plancurrency, minimumquantitysms, fixedfeesms, minimumquantitymail, fixedfeemail, priceperchatweb, vcacomissionperchatweb, minimumquantitychatweb, fixedfeechatweb, priceperfacebook, vcacomissionperfacebook, minimumquantityfacebook, fixedfeefacebook, pricepermybusiness, vcacomissionpermybusiness, minimumquantitymybusiness, fixedfeemybusiness, priceperinstagram, vcacomissionperinstagram, minimumquantityinstagram, fixedfeeinstagram, priceperinstagramdm, vcacomissionperinstagramdm, minimumquantityinstagramdm, fixedfeeinstagramdm, pricepermessenger, vcacomissionpermessenger, minimumquantitymessenger, fixedfeemessenger, pricepertelegram, vcacomissionpertelegram, minimumquantitytelegram, fixedfeetelegram, pricepertiktok, vcacomissionpertiktok, minimumquantitytiktok, fixedfeetiktok, pricepervoice, vcacomissionpervoice, minimumquantityvoice, fixedfeevoice, pricepertwitter, vcacomissionpertwitter, minimumquantitytwitter, fixedfeetwitter, priceperyoutube, vcacomissionperyoutube, minimumquantityyoutube, fixedfeeyoutube }
 })
 
 export const invoiceRefresh = ({ corpid, orgid, invoiceid, year, month }: Dictionary): IRequestBody => ({
@@ -5139,10 +5145,10 @@ export const assistantAiSel = ({ id, all }: Dictionary) => ({
     parameters: { id, all },
 });
 
-export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation }: Dictionary) => ({
+export const insAssistantAi = ({ id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation, top_k, repetition_penalty, chunk_size, chunk_overlap }: Dictionary) => ({
     method: "UFN_ASSISTANTAI_INS",
     key: "UFN_ASSISTANTAI_INS",
-    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation },
+    parameters: { id, code, name, description, basemodel, language, organizationname, intelligentmodelsid, querywithoutanswer, response, prompt, negativeprompt, generalprompt, temperature, max_tokens, top_p, apikey, retrieval, codeinterpreter, type, status, decoding_method, operation, top_k, repetition_penalty, chunk_size, chunk_overlap },
 });
 
 export const assistantAiDocumentSel = ({ assistantaiid, id, all }: Dictionary) => ({
@@ -5175,10 +5181,10 @@ export const messageAiSel = ({ assistantaiid, threadid }: Dictionary) => ({
     parameters: { assistantaiid, threadid },
 });
 
-export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation }: Dictionary) => ({
+export const insMessageAi = ({ assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation, tokencount }: Dictionary) => ({
     method: "UFN_MESSAGEAI_INS",
     key: "UFN_MESSAGEAI_INS",
-    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation },
+    parameters: { assistantaiid, threadid, assistantaidocumentid, id, messagetext, infosource, type, status, operation, tokencount },
 });
 
 export const updateAssistantAiDocumentTraining = (assistantaiid: number, documentsid: string) => ({
@@ -5348,58 +5354,57 @@ export const getDomainByDomainName = (domainname: string) => ({
     key: "UFN_DOMAIN_BY_DOMAINNAME",
     parameters: { domainname },
 });
-export const getDomainByDomainNameList = (domainnamelist:string) => ({
+export const getDomainByDomainNameList = (domainnamelist: string) => ({
     method: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
     key: "UFN_DOMAIN_VALUE_SEL_BY_LIST",
     parameters: { domainnamelist },
 });
-export const editCalendarBooking = ({calendarbookingid,personmail,personname,notes,comments}:Dictionary) => ({
+export const editCalendarBooking = ({ calendarbookingid, personmail, personname, notes, comments }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_EDIT",
     key: "UFN_CALENDARBOOKING_EDIT",
-    parameters: { calendarbookingid,personmail,personname,notes,comments },
+    parameters: { calendarbookingid, personmail, personname, notes, comments },
 });
-export const integrationManagerBulkloadIns = ({integrationmanagerid, table, type}:Dictionary) => ({
+export const integrationManagerBulkloadIns = ({ integrationmanagerid, table, type }: Dictionary) => ({
     method: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
     key: "UFN_INTEGRATIONMANAGER_BULKLOAD_INS",
     parameters: { integrationmanagerid, table, type },
 });
-export const integrationManagerCodePersonSel = ({integrationmanagerid, type}:Dictionary) => ({
+export const integrationManagerCodePersonSel = ({ integrationmanagerid, type }: Dictionary) => ({
     method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_SEL",
     parameters: { integrationmanagerid, type },
 });
-export const integrationManagerCodePersonDel = ({integrationmanagerid, type, ids}:Dictionary) => ({
+export const integrationManagerCodePersonDel = ({ integrationmanagerid, type, ids }: Dictionary) => ({
     method: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     key: "UFN_INTEGRATIONMANAGER_CODE_PERSON_DELETE",
     parameters: { integrationmanagerid, type, ids },
 });
-export const getUserMessageOutbound = ({startdate, enddate, communicationchannelid}:Dictionary) => ({
+export const getUserMessageOutbound = ({ startdate, enddate, communicationchannelid }: Dictionary) => ({
     method: "UFN_USER_MESSAGE_OUTBOUND",
     key: "UFN_USER_MESSAGE_OUTBOUND",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         communicationchannelid,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, },
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
 });
-export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
-    method: "UPDATE_LANGUAGE_SETTINGS",
-    key: "UPDATE_LANGUAGE_SETTINGS",
+export const getDashboardFunnelDataSel = ({startdate, enddate, channel, userid, leadproduct}:Dictionary) => ({
+    method: "UFN_LEAD_FUNNEL_SEL",
+    key: "UFN_LEAD_FUNNEL_SEL",
     parameters: {
-        languagesettings: JSON.stringify(languagesettings)
-    }
+        startdate,
+        enddate,
+        channel,
+        userid,
+        leadproduct,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
 });
-export const modifyPinnedMessage = ({conversationid, interactionid, interactiontext, operation}:Dictionary) => ({
+export const modifyPinnedMessage = ({ conversationid, interactionid, interactiontext, operation }: Dictionary) => ({
     method: "UPDATE_PINNED_MESSAGE",
     key: "UPDATE_PINNED_MESSAGE",
     parameters: { conversationid, interactionid, interactiontext, operation },
-});
-
-export const insarrayClassification = (table: Dictionary[]): IRequestBody => ({
-    method: "UFN_CLASSIFICATION_INS_ARRAY",
-    parameters: {
-        table: JSON.stringify(table)
-    }
 });
 export const conversationAttachmentHistorySel = (personid:number) => ({
     method: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
@@ -5427,3 +5432,98 @@ export const conversationSDHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
 });
+export const prepareAttentionOrder = (orderids: string) => ({
+    method: "UFN_ORDER_PREPARE",
+    key: "UFN_ORDER_PREPARE",
+    parameters: { orderids },
+})
+
+export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
+    method: "UPDATE_LANGUAGE_SETTINGS",
+    key: "UPDATE_LANGUAGE_SETTINGS",
+    parameters: {
+        languagesettings: JSON.stringify(languagesettings)
+    }
+});
+
+export const getLeadsReportSel = ({communicationchannel, startdate, enddate}:Dictionary) => ({
+    method: "UFN_LEAD_REPORT_SEL",
+    key: "UFN_LEAD_REPORT_SEL",
+    parameters: {
+        communicationchannel,
+        startdate,
+        enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+})
+
+export const getLeadReportGraphicSel = ({communicationchannel, startdate, enddate, column,summarization  }:Dictionary): IRequestBody => ({
+    method: "UFN_LEAD_REPORT_GRAPHIC_SEL",
+    key: "UFN_LEAD_REPORT_GRAPHIC_SEL",
+    parameters: {
+        filters: {}, sorts: {}, communicationchannel, startdate, enddate, column, summarization,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const insarrayClassification = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});
+export const iaservicesBulkDel = (ids:string) => ({
+    method: "UFN_INTELLIGENTMODELSCONFIGURATION_MASSIVE_DEL",
+    key: "UFN_INTELLIGENTMODELSCONFIGURATION_MASSIVE_DEL",
+    parameters: { ids },
+});
+
+export const getLeadProductsSel = () => ({
+    method: "UFN_LEAD_REPORT_PRODUCT_SEL",
+    key: "UFN_LEAD_REPORT_PRODUCT_SEL",
+    parameters: {},
+});
+
+
+export const watsonxModelSel = () => ({
+    method: "UFN_WATSON_MODELS_SEL",
+    key: "UFN_WATSON_MODELS_SEL",
+    parameters: { id: 0 },
+});
+
+export const watsonxModelItemSel = (watsonid: number) => ({
+    method: "UFN_WATSON_ITEMS_SEL",
+    key: "UFN_WATSON_ITEMS_SEL",
+    parameters: { watsonid, type: "intention" },
+});
+
+export const watsonxIntentDetailSel = (watsonitemid: number) => ({
+    method: "UFN_WATSON_ITEMS_DETAIL_SEL",
+    key: "UFN_WATSON_ITEMS_DETAIL_SEL",
+    parameters: { watsonitemid },
+});
+
+export const getWatsonxMentions = (entity_value: string) => ({
+    method: "UFN_WATSON_ENTITY_MENTIONS_SEL",
+    key: "UFN_WATSON_ENTITY_MENTIONS_SEL",
+    parameters: { entity_value },
+});
+
+export const watsonxModelConflictSel = ({watsonid, watsonitemdetailid}:Dictionary) => ({
+    method: "UFN_WATSON_CONFLICTS_SEL",
+    key: "UFN_WATSON_CONFLICTS_SEL",
+    parameters: { watsonid, watsonitemdetailid },
+});
+
+export const watsonExportIntents = (watsonid:number) => ({
+    method: "UFN_WATSON_INTENTS_EXPORT",
+    key: "UFN_WATSON_INTENTS_EXPORT",
+    parameters: { watsonid },
+});
+
+export const watsonExportEntities = (watsonid:number) => ({
+    method: "UFN_WATSON_ENTITES_EXPORT",
+    key: "UFN_WATSON_ENTITES_EXPORT",
+    parameters: { watsonid },
+});
+

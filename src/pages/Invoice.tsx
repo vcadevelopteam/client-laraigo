@@ -153,6 +153,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import PartnerPeriodReport from "./PartnerPeriodReport";
 import { CellProps } from "recharts";
+import { useLocation } from "react-router-dom";
 
 interface RowSelected {
     edit: boolean;
@@ -1688,7 +1689,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 }
 
                 if (dataArtificialInsert.length > 0) {
-                    console.log("test");
                     dispatch(
                         execute(
                             {
@@ -1705,7 +1705,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         )
                     );
                 } else {
-                    console.log("test");
                     dispatch(execute(billingPeriodUpd(data)));
                 }
 
@@ -9603,7 +9602,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                 type: "number",
                 Cell: (props: any) => {
                     const { amount } = props.cell.row.original || {};
-                    return formatNumber(amount || 0);
+                    return formatNumberFourDecimals(amount || 0);
                 },
             },
             {
@@ -9613,7 +9612,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                 type: "number",
                 Cell: (props: any) => {
                     const { balance } = props.cell.row.original || {};
-                    return formatNumber(balance || 0);
+                    return formatNumberFourDecimals(balance || 0);
                 },
             },
             {
@@ -9817,11 +9816,23 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [paymentDisabled, setPaymentDisabled] = useState(false);
     const [paymentTax, setPaymentTax] = useState(0);
     const [paymentType, setPaymentType] = useState("FAVORITE");
+    const [priceHsmService, setPriceHsmService] = useState(0);
     const [priceHsmUtility, setPriceHsmUtility] = useState(0);
     const [priceHsmAuthentication, setPriceHsmAuthentication] = useState(0);
     const [priceHsmMarketing, setPriceHsmMarketing] = useState(0);
     const [priceMail, setPriceMail] = useState(0);
     const [priceSms, setPriceSms] = useState(0);
+    const [priceChatWeb, setPriceChatWeb] = useState(0);
+    const [priceFacebook, setPriceFacebook] = useState(0);
+    const [priceMyBusiness, setPriceMyBusiness] = useState(0);
+    const [priceInstagram, setPriceInstagram] = useState(0);
+    const [priceInstagramDirect, setPriceInstagramDirect] = useState(0);
+    const [priceMessenger, setPriceMessenger] = useState(0);
+    const [priceTelegram, setPriceTelegram] = useState(0);
+    const [priceTikTok, setPriceTikTok] = useState(0);
+    const [priceVoice, setPriceVoice] = useState(0);
+    const [priceTwitter, setPriceTwitter] = useState(0);
+    const [priceYouTube, setPriceYouTube] = useState(0);
     const [publicKey, setPublicKey] = useState("");
     const [purchaseOrder, setPurchaseOrder] = useState("");
     const [purchaseOrderError, setPurchaseOrderError] = useState("");
@@ -10056,6 +10067,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     useEffect(() => {
         if (!messagingList.loading) {
             if (messagingList.data) {
+                setPriceHsmService(messagingList.data[0].clientstartfee || 0);
                 setPriceHsmUtility(
                     (messagingList.data[0].companystartutilityfee || 0) + (messagingList.data[0].vcacomission || 0)
                 );
@@ -10070,6 +10082,17 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                 setPriceMail(
                     (messagingList.data[0].pricepermail || 0) + (messagingList.data[0].vcacomissionpermail || 0)
                 );
+                setPriceChatWeb((messagingList.data[0].priceperchatweb || 0) + (messagingList.data[0].vcacomissionperchatweb || 0));
+                setPriceFacebook((messagingList.data[0].priceperfacebook || 0) + (messagingList.data[0].vcacomissionperfacebook || 0));
+                setPriceMyBusiness((messagingList.data[0].pricepermybusiness || 0) + (messagingList.data[0].vcacomissionpermybusiness || 0));
+                setPriceInstagram((messagingList.data[0].priceperinstagram || 0) + (messagingList.data[0].vcacomissionperinstagram || 0));
+                setPriceInstagramDirect((messagingList.data[0].priceperinstagramdm || 0) + (messagingList.data[0].vcacomissionperinstagramdm || 0));
+                setPriceMessenger((messagingList.data[0].pricepermessenger || 0) + (messagingList.data[0].vcacomissionpermessenger || 0));
+                setPriceTelegram((messagingList.data[0].pricepertelegram || 0) + (messagingList.data[0].vcacomissionpertelegram || 0));
+                setPriceTikTok((messagingList.data[0].pricepertiktok || 0) + (messagingList.data[0].vcacomissionpertiktok || 0));
+                setPriceVoice((messagingList.data[0].pricepervoice || 0) + (messagingList.data[0].vcacomissionpervoice || 0));
+                setPriceTwitter((messagingList.data[0].pricepertwitter || 0) + (messagingList.data[0].vcacomissionpertwitter || 0));
+                setPriceYouTube((messagingList.data[0].priceperyoutube || 0) + (messagingList.data[0].vcacomissionperyoutube || 0));
             }
         }
     }, [messagingList]);
@@ -10811,20 +10834,88 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 />
                                 <FieldView
                                     className="col-4"
-                                    label={t(langKeys.pricemessagehsm)}
-                                    value={"$" + formatNumberFourDecimals(priceHsmUtility || 0)}
+                                    label={t(langKeys.pricemessagehsmservice)}
+                                    value={"$" + formatNumberFourDecimals(priceHsmService || 0)}
                                 />
                             </div>
                             <div className="row-zyx">
                                 <FieldView
                                     className="col-4"
-                                    label={t(langKeys.pricemessagehsm)}
-                                    value={"$" + formatNumberFourDecimals(priceHsmAuthentication || 0)}
+                                    label={t(langKeys.pricemessagehsmutility)}
+                                    value={"$" + formatNumberFourDecimals(priceHsmUtility || 0)}
                                 />
                                 <FieldView
                                     className="col-4"
-                                    label={t(langKeys.pricemessagehsm)}
+                                    label={t(langKeys.pricemessagehsmmarketing)}
                                     value={"$" + formatNumberFourDecimals(priceHsmMarketing || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagehsmauthentication)}
+                                    value={"$" + formatNumberFourDecimals(priceHsmAuthentication || 0)}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagechatweb)}
+                                    value={"$" + formatNumberFourDecimals(priceChatWeb || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagefacebook)}
+                                    value={"$" + formatNumberFourDecimals(priceFacebook || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagemybusiness)}
+                                    value={"$" + formatNumberFourDecimals(priceMyBusiness || 0)}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessageinstagram)}
+                                    value={"$" + formatNumberFourDecimals(priceInstagram || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessageinstagramdm)}
+                                    value={"$" + formatNumberFourDecimals(priceInstagramDirect || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagemessenger)}
+                                    value={"$" + formatNumberFourDecimals(priceMessenger || 0)}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagetelegram)}
+                                    value={"$" + formatNumberFourDecimals(priceTelegram || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagetiktok)}
+                                    value={"$" + formatNumberFourDecimals(priceTikTok || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagevoice)}
+                                    value={"$" + formatNumberFourDecimals(priceVoice || 0)}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagetwitter)}
+                                    value={"$" + formatNumberFourDecimals(priceTwitter || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessageyoutube)}
+                                    value={"$" + formatNumberFourDecimals(priceYouTube || 0)}
                                 />
                             </div>
                             <div className="row-zyx">
@@ -11669,9 +11760,14 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
         </div>
     );
 };
+const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+}
 
 const Invoice: FC = () => {
     const dispatch = useDispatch();
+    const query = useQuery();
+    const recharge = query.get('recharge');
 
     const { t } = useTranslation();
 
@@ -11682,7 +11778,7 @@ const Invoice: FC = () => {
     const [dataOrg, setDataOrg] = useState<any>([]);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [dataPlan, setDataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(0);
+    const [pageSelected, setPageSelected] = useState(!!recharge ? 5 : 0);
     const [sentFirstInfo, setSentFirstInfo] = useState(false);
 
     const [customSearch, setCustomSearch] = useState({

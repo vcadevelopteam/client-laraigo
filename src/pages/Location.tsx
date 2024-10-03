@@ -555,7 +555,7 @@ const Location: FC = () => {
         })))
     };
 
-    
+
     useEffect(() => {
         fetchData(fetchDataAux)
     }, [])

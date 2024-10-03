@@ -491,6 +491,7 @@ const TableZyx = React.memo(({
     groupedBy,
     showHideColumns,
     ExtraMenuOptions,
+    fillterAllDate=false,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, distinct: "", pageIndex: initialPageIndex });
@@ -818,6 +819,13 @@ const TableZyx = React.memo(({
         localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
     }, [columnVisibility]);
 
+    useEffect(() => {
+        const storedPageSize = localStorage.getItem('pageSize');
+        if (storedPageSize) {
+            setPageSize(Number(storedPageSize));
+        }
+    }, []);
+
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
@@ -953,6 +961,7 @@ const TableZyx = React.memo(({
                     {filterrange && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             <DateRangePicker
+                                fillterAllDate={fillterAllDate}
                                 open={openDateRangeModal}
                                 setOpen={setOpenDateRangeModal}
                                 range={dateRange}
@@ -1016,6 +1025,7 @@ const TableZyx = React.memo(({
                                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                     id="laraigo-upload-csv-file"
                                     type="file"
+                                    value={""}
                                     style={{ display: 'none' }}    
                                     onChange={(e) => {importCSV(e.target.files)}}
                                 />

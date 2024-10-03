@@ -12,11 +12,14 @@ export interface ISnackBar {
 }
 export interface IQuestion {
     visible: boolean;
+    title?: string;
     question: string;
     textConfirm?: string;
     textCancel?: string;
     callback?: (() => void) | null;
     callbackcancel?: (() => void) | null;
+    isBold?: boolean;
+    showClose?: boolean;
 }
 
 export interface ILightBox {

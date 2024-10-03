@@ -11,6 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { useDispatch } from "react-redux";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { Dictionary } from "@types";
+import ClearIcon from "@material-ui/icons/Clear";
 
 const useStyles = makeStyles(() => ({
     submotiveButton: {
@@ -59,6 +60,13 @@ const useStyles = makeStyles(() => ({
     actionButtons: {
         marginRight: 20, 
         marginLeft: 20
+    },
+    button: {
+        display: "flex", 
+        gap: "10px", 
+        alignItems: "center", 
+        justifyContent: "end",
+        marginTop: 20,
     },
 }));
 
@@ -224,8 +232,6 @@ const MotiveDialog = ({
             open={openModal}
             title={`${t(langKeys.ticket_reason)}s ${t(langKeys.undelivered)} / ${t(langKeys.CANCELED)}`}
             maxWidth="md"
-            buttonText0={t(langKeys.back)}
-            handleClickButton0={handleCloseModal}
         >
             <div>
                 <div className={classes.motiveForm}>
@@ -302,6 +308,18 @@ const MotiveDialog = ({
                             ))}
                         </div>
                     )}
+                </div>
+                <div className={classes.button}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={handleCloseModal}
+                    >
+                        {t(langKeys.back)}
+                    </Button>
                 </div>
             </div>
         </DialogZyx>

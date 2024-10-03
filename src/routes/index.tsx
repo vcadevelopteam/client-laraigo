@@ -28,13 +28,14 @@ const Groupconfig = lazy(() => import('pages/GroupConfig'));
 const Whitelist = lazy(() => import('pages/Whitelist'));
 const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
 const ReassignmentRules = lazy(() => import('pages/ReassignmentRules'));
-const IntelligentModels = lazy(() => import('pages/IntelligentModels'));
-const IAConfiguration = lazy(() => import('pages/Iaservices'));
+const AiConnectors = lazy(() => import('pages/aiconnectors/AiConnectors'));
+const IAConfiguration = lazy(() => import('pages/iaconfiguration/IAConfiguration'));
 const SLA = lazy(() => import('pages/SLA'));
 const Domains = lazy(() => import('pages/Domains'));
 const Reports = lazy(() => import('pages/Reports'));
-const Person = lazy(() => import('pages/Person'));
-const PersonDetail = lazy(() => import('pages/PersonDetail'));
+const Person = lazy(() => import('pages/person/Person'));
+const PersonDetail = lazy(() => import('pages/person/PersonDetail'));
+const MetaChannels = lazy(() => import('pages/MetaChannels'));
 const Supervisor = lazy(() => import('pages/Supervisor'));
 const MessageInbox = lazy(() => import('pages/MessageInbox'));
 const AdvancedTemplatesCampaigns = lazy(() => import('pages/AdvancedTemplatesCampaigns'));
@@ -45,7 +46,7 @@ const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
 const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
 const CustomVariable = lazy(() => import('pages/CustomVariable'));
 const Emojis = lazy(() => import('pages/Emojis'));
-const IATraining = lazy(() => import('pages/LaraigoIA'));
+const AITraining = lazy(() => import('pages/aitraining/AITraining'));
 const CampaignOld = lazy(() => import('pages/campaignold/Campaign'));
 const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
@@ -362,7 +363,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.USERSETTINGS} component={() => <Layout mainClasses={classes.main}><UserSettings /></Layout>} />
 					<ProtectRoute exact path={paths.INAPPROPRIATEWORDS} component={() => <Layout mainClasses={classes.main}><InappropriateWords /></Layout>} />
 					<ProtectRoute exact path={paths.REASSIGNMENTRULES} component={() => <Layout mainClasses={classes.main}><ReassignmentRules /></Layout>} />
-					<ProtectRoute exact path={paths.INTELLIGENTMODELS} component={() => <Layout mainClasses={classes.main}><IntelligentModels /></Layout>} />
+					<ProtectRoute exact path={paths.INTELLIGENTMODELS} component={() => <Layout mainClasses={classes.main}><AiConnectors /></Layout>} />
 					<ProtectRoute exact path={paths.SLA} component={() => <Layout mainClasses={classes.main}><SLA /></Layout>} />
 					<ProtectRoute exact path={paths.TIPIFICATIONS} component={() => <Layout mainClasses={classes.main}><Tipifications /></Layout>} />
 					<ProtectRoute exact path={paths.INPUTVALIDATION} component={() => <Layout mainClasses={classes.main}><InputValidation /></Layout>} />
@@ -370,6 +371,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.WHITELIST} component={() => <Layout mainClasses={classes.main}><Whitelist /></Layout>} />
 					<ProtectRoute exact path={paths.PERSON} component={() => <Layout mainClasses={classes.main}><Person /></Layout>} />
 					<ProtectRoute exact path={paths.PERSON_DETAIL.path} component={() => <Layout mainClasses={classes.main}><PersonDetail /></Layout>} />
+					<ProtectRoute exact path={paths.METACHANNELS} component={() => <Layout mainClasses={classes.main}><MetaChannels /></Layout>} />
 					<ProtectRoute exact path={paths.ADVANCEDTEMPLATESCAMPAIGNS} component={() => <Layout mainClasses={classes.main}><AdvancedTemplatesCampaigns /></Layout>} />
 					<ProtectRoute exact path={paths.MESSAGETEMPLATE} component={() => <Layout mainClasses={classes.main}><MessageTemplatesOld /></Layout>} />
 					<ProtectRoute exact path={paths.INTEGRATIONMANAGER} component={() => <Layout mainClasses={classes.main}><IntegrationManager /></Layout>} />
@@ -399,9 +401,9 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.POSTCREATOR} component={() => (<Layout mainClasses={classes.main}><PostCreator /></Layout>)} />
 					<ProtectRoute exact path={paths.PRODUCTMASTER} component={() => (<Layout mainClasses={classes.main}><ProductMaster /></Layout>)} />
 					<ProtectRoute exact path={paths.WAREHOUSE} component={() => (<Layout mainClasses={classes.main}><Warehouse /></Layout>)} />
-					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><IntelligentModels /></Layout>)} />
+					<ProtectRoute exact path={paths.IACONECTORS} component={() => (<Layout mainClasses={classes.main}><AiConnectors /></Layout>)} />
 					<ProtectRoute exact path={paths.IACONFIGURATION} component={() => (<Layout mainClasses={classes.main}><IAConfiguration /></Layout>)} />
-					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><IATraining /></Layout>)} />
+					<ProtectRoute exact path={paths.IATRAINING} component={() => (<Layout mainClasses={classes.main}><AITraining /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORY} component={() => (<Layout mainClasses={classes.main}><Inventory /></Layout>)} />
 					<ProtectRoute exact path={paths.COMPANIES} component={() => (<Layout mainClasses={classes.main}><Company /></Layout>)} />
 					<ProtectRoute exact path={paths.INVENTORYCONSUMPTION} component={() => (<Layout mainClasses={classes.main}><InventoryConsumption /></Layout>)} />
