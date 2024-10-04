@@ -6541,6 +6541,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   addressnumber: 'Número de dirección',
   mainaddress: 'Dirección principal',
   additionaladdress: 'Dirección adicional',
+  linkregister: 'Registro de Enlaces',
+  validity: 'Vigencia',
+  linknamedesc: 'Asigna un nombre a tu enlace',
+  addlinkdesc: 'Ingresa el URL de tu enlace',
+  linkstartdatedesc: 'Ingresa una fecha inicial para la vigencia de tu enlace',
+  linkenddatedesc: 'Ingresa una fecha final para la vigencia de tu enlace',
+  useregisteredlinkscount: 'Usar enlace registrado para conteo de clicks',
+  selectregisteredlink: 'Seleccione un enlace registrado',
 };
 
 const esResource: ResourceLanguage = {

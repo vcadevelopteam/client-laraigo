@@ -6464,8 +6464,6 @@ export const langKeys = {
   contextAIHelper: 'contextAIHelper',
   languagemodel: 'languagemodel',
   languagemodelhelper: 'languagemodelhelper',
-  languagemodel: 'languagemodel',
-  languagemodelhelper: 'languagemodelhelper',
   translationai: 'translationai',
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
@@ -6530,6 +6528,14 @@ export const langKeys = {
   ubigeocode: 'ubigeocode',
   mainaddress: 'mainaddress',
   additionaladdress: 'additionaladdress',
+  linkregister: 'linkregister',
+  validity: 'validity',
+  linknamedesc: 'linknamedesc',
+  addlinkdesc: 'addlinkdesc',
+  linkstartdatedesc: 'linkstartdatedesc',
+  linkenddatedesc: 'linkenddatedesc',
+  useregisteredlinkscount: 'useregisteredlinkscount',
+  selectregisteredlink: 'selectregisteredlink',
 };
 
 export type LangKeys = typeof langKeys;

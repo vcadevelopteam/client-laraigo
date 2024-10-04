@@ -6590,6 +6590,14 @@ const translation: LangKeys = {
   addressnumber: 'Address number',
   mainaddress: 'Main address',
   additionaladdress: 'Additional address',
+  linkregister: 'Link Register',
+  validity: 'Validity',
+  linknamedesc: 'Assign a name to your link',
+  addlinkdesc: 'Enter the URL of your link',
+  linkstartdatedesc: 'Enter a starting date for the validity of your link',
+  linkenddatedesc: 'Enter an end date for the validity of your link',
+  useregisteredlinkscount: 'Use registered link for click count',
+  selectregisteredlink: 'Select a registered link',
 };
 
 const enResource: ResourceLanguage = {
