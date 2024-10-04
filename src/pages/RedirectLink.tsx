@@ -39,6 +39,7 @@ export const RedirectLink: FC = () => {
             historyid: parseInt(historyId),
             type: type === '1' ? 'CAMPAIGN' : 'HSM',
             link_id: parseInt(linkId),
+            username: "outside_user"
         })
         const timer = setTimeout(() => {
             window.location.href = urlToOpen;
