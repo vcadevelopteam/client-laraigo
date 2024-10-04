@@ -383,6 +383,7 @@ const paths = {
         resolve: (token: string) => `/conversation/${token}`
     },
     LINKREGISTER: '/linkregister',
+    LINKREDIRECT: '/redirect',
 };
 
 export default paths;
