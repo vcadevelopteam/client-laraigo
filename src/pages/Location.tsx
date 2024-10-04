@@ -275,6 +275,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             name="phone"
                             defaultCountry={user!.countrycode.toLowerCase()}
                             onChange={(value) => setValue('phone', value)}
+                            value={row ? (row.phone || "") : ""}
                             className="col-6"
                             error={errors?.phone?.message}
                         />
@@ -285,6 +286,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             name="phone"
                             defaultCountry={user!.countrycode.toLowerCase()}
                             onChange={(value) => setValue('alternativephone', value)}
+                            value={row ? (row.phone || "") : ""}
                             className="col-6"
                             error={errors?.alternativephone?.message}
                         />
