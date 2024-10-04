@@ -184,8 +184,17 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     }, [directionData])
 
     const onSubmit = handleSubmit((data) => {
+
+        const phoneWithoutPlus = data.phone.startsWith('+') ? data.phone.slice(1) : data.phone;
+        const altPhoneWithoutPlus = data.alternativephone.startsWith('+') ? data.alternativephone.slice(1) : data.alternativephone;
+
+        const dataToSubmit = {
+            ...data,
+            phone: phoneWithoutPlus,
+            alternativephone: altPhoneWithoutPlus,
+        };
         const callback = () => {
-            dispatch(execute(locationIns(data)));
+            dispatch(execute(locationIns(dataToSubmit)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -286,7 +295,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             name="phone"
                             defaultCountry={user!.countrycode.toLowerCase()}
                             onChange={(value) => setValue('alternativephone', value)}
-                            value={row ? (row.phone || "") : ""}
+                            value={row ? (row.alternativephone || "") : ""}
                             className="col-6"
                             error={errors?.alternativephone?.message}
                         />
@@ -629,6 +638,16 @@ const Location: FC = () => {
                 (f.latitude === undefined || !isNaN(f.latitude)) &&
                 (f.longitude === undefined || !isNaN(f.longitude))
             );
+
+            data = data.map(location => {
+                if (location.phone.startsWith('+')) {
+                    location.phone = location.phone.slice(1);
+                }
+                if (location.alternativephone && location.alternativephone.startsWith('+')) {
+                    location.alternativephone = location.alternativephone.slice(1);
+                }
+                return location;
+            });
 
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
