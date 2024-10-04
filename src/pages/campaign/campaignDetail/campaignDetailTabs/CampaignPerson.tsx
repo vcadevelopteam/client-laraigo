@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import { DialogZyx3Opt } from 'components';
 import { Dictionary, ICampaign, IFetchData, MultiData, SelectedColumns } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
-import TableZyx from '../../components/fields/table-simple';
+import TableZyx from '../../../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -12,12 +12,12 @@ import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convert
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
-import { FrameProps } from './CampaignDetail';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DescriptionIcon from '@material-ui/icons/Description';
 import DeleteIcon from '@material-ui/icons/Delete';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { FrameProps } from '../CDComponents';
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,

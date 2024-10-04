@@ -30,7 +30,7 @@ export interface CampaignProps {
     setAuxViewSelected: (view: string) => void;  
 }
 
-export const campaignStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
     
     containerDetail: {
         marginTop: theme.spacing(2),

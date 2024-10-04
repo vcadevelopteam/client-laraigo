@@ -9,9 +9,9 @@ import { useForm } from 'react-hook-form';
 import { FormControl } from '@material-ui/core';
 import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
-import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
-import TemplatePreview from './components/TemplatePreview';
+import TemplatePreview from '../../components/TemplatePreview';
+import { FrameProps } from '../CDComponents';
 
 interface DetailProps {
     row: Dictionary | null,

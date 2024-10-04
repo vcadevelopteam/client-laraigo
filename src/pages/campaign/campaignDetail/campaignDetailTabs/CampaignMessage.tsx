@@ -3,12 +3,12 @@ import { FieldEdit, FieldSelectDisabled } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { FrameProps } from './CampaignDetail';
+import { FrameProps } from '../CampaignDetail';
 import { FormControl } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import AddIcon from '@material-ui/icons/Add';
-import TemplatePreview from './components/TemplatePreview';
+import TemplatePreview from '../../components/TemplatePreview';
 import DeleteIcon from '@material-ui/icons/Delete';
 interface DetailProps {
     row: Dictionary | null,
@@ -28,6 +28,7 @@ interface DetailProps {
     templateAux: Dictionary;
     jsonPersons: Dictionary;
     detectionChangeSource: boolean;
+    dataButtons: Dictionary[];
 }
 
 const useStyles = makeStyles((theme) => ({

@@ -9,7 +9,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { CampaignDetail } from '../CampaignDetail';
+import { CampaignDetail } from '../campaignDetail/CampaignDetail';
 import { Blacklist } from '../Blacklist';
 import { CampaignReport } from '../../staticReports/ReportCampaign';
 import { Box,  Divider, IconButton, ListItemIcon, Typography } from '@material-ui/core';
@@ -29,12 +29,12 @@ import BlockIcon from '@material-ui/icons/Block';
 import { getDateCleaned } from 'common/helpers';
 import CommentIcon from '@material-ui/icons/Comment';
 import { DownloadIcon } from 'icons';
-import { campaignStyles, CampaignProps, RowSelected, IconOptions, columnsCampaignMainViewExcel } from './Components';
+import { useStyles, CampaignProps, RowSelected, IconOptions, columnsCampaignMainViewExcel } from './CMVComponents';
 
 const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) => {
     
     const dispatch = useDispatch();
-    const classes = campaignStyles();
+    const classes = useStyles();
     const { t } = useTranslation();
     const selectionKey = "id";
     const isOpenSeButtons = true;
