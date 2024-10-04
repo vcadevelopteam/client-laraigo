@@ -6478,10 +6478,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   translationai: 'Traducción',
   translationaihelper: 'Activa o desactiva la traducción del idioma detectado por el idioma seleccionado en la configuración de la cuenta.',
   languageaihelper: 'Selecciona el idioma que por defecto traducirá el modelo de lenguaje del idioma detectado.',
-
-
   errorimportdocuments: 'Los documentos {{docs}} no son registros válidos',
   billingreport_conversationbillable: 'Conversaciones WhatsApp Facturables',
+
+  campaignsreport: 'Reporte Campañas',
+  runtime_campaign: 'Hora de Ejecución',
+  campaignscheduledon: 'Campaña ya programada el',
+  at: 'a las',
 };
 
 const esResource: ResourceLanguage = {

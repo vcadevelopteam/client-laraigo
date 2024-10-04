@@ -63,6 +63,17 @@ export const campaignStyles = makeStyles((theme) => ({
     },
 }));
 
+export const columnsCampaignMainViewExcel : ColumnTmp[] = [
+    { Header: 'Campaña', accessor: 'title' },
+    { Header: 'Descripción', accessor: 'description' },
+    { Header: 'Canal', accessor: 'communicationchannel' },
+    { Header: 'Fecha de Inicio', accessor: 'startdate' },
+    { Header: 'Fecha de Fin', accessor: 'enddate' },
+    { Header: 'Estado', accessor: 'status' },
+    { Header: 'Fecha y hora de ejecución', accessor: 'datetimestart' },
+    { Header: 'Tipo de ejecución', accessor: 'executiontype' },
+];
+
 export const IconOptions: React.FC<{ disabled?: boolean, onHandlerDelete?: (e?: Dictionary) => void }> = ({ onHandlerDelete }) => {
     
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)

@@ -29,7 +29,7 @@ import BlockIcon from '@material-ui/icons/Block';
 import { getDateCleaned } from 'common/helpers';
 import CommentIcon from '@material-ui/icons/Comment';
 import { DownloadIcon } from 'icons';
-import { campaignStyles, CampaignProps, RowSelected, ColumnTmp, IconOptions } from './Components';
+import { campaignStyles, CampaignProps, RowSelected, IconOptions, columnsCampaignMainViewExcel } from './Components';
 
 const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) => {
     
@@ -38,33 +38,21 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
     const { t } = useTranslation();
     const selectionKey = "id";
     const isOpenSeButtons = true;
-    
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const auxResult = useSelector(state => state.main.mainAux);
-
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waits, setWaits] = useState({ save: false, stop: false, start: false, status: false });
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [anchorElSeButtons, setAnchorElSeButtons] = React.useState<null | HTMLElement>(null);
+    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const open = Boolean(anchorElSeButtons);
 
     const newArrayBread = [
         ...arrayBread,
         { id: "campaigns", name: t(langKeys.campaign_plural) }
-    ];
-
-    const columnsExcel : ColumnTmp[] = [
-        { Header: 'Campaña', accessor: 'title' },
-        { Header: 'Descripción', accessor: 'description' },
-        { Header: 'Canal', accessor: 'communicationchannel' },
-        { Header: 'Fecha de Inicio', accessor: 'startdate' },
-        { Header: 'Fecha de Fin', accessor: 'enddate' },
-        { Header: 'Estado', accessor: 'status' },
-        { Header: 'Fecha y hora de ejecución', accessor: 'datetimestart' },
-        { Header: 'Tipo de ejecución', accessor: 'executiontype' },
     ];
 
     const functionChange = (change:string) => {
@@ -74,6 +62,21 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
             setAuxViewSelected(change);
         }
     }
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+    const [dateRange, setdateRange] = useState<Range>({
+        startDate: new Date(new Date().setDate(1)),
+        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        key: "selection",
+    });
+
+    const fetchData = () => dispatch(getCollection(getCampaignLst(
+        dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
+        dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : "",
+    )))
 
     const modifiedData = useMemo(() => {
         return mainResult.mainData.data.map((item: Dictionary) => ({
@@ -94,11 +97,6 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
             dispatch(getCollectionAux(getCampaignStart(id)));
             setWaits(waits => ({ ...waits, start: true }));
         }
-    }
-
-    const handleRegister = () => {
-        setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
     }
 
     const handleEdit = (row: Dictionary) => {
@@ -180,19 +178,14 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
                 return formattedItem;
             });
 
-            exportExcel('CampañasReport', csvData, columnsExcel);
+            exportExcel(t(langKeys.campaignsreport), csvData, columnsCampaignMainViewExcel);
         }
     };
 
     const toggleSeButtons = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, open?: boolean) => {
         if (open && event) { setAnchorElSeButtons(event.currentTarget)} 
         else { setAnchorElSeButtons(null) }
-    };      
-
-    const fetchData = () => dispatch(getCollection(getCampaignLst(
-        dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
-        dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : "",
-    )))
+    };
 
     const AdditionalButtons = () => {
         return (
@@ -213,7 +206,6 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
                                         onSelect={setdateRange}
                                     >
                                         <Button
-                                            disabled={detailCustomReport.loading}
                                             style={{ border: "1px solid #bfbfc0", borderRadius: 4, color: "rgb(143, 146, 161)" }}
                                             startIcon={<CalendarIcon />}
                                             onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
@@ -319,12 +311,10 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
                                                 <ListItemIcon>
                                                     <CommentIcon fontSize="small" style={{ fill: 'grey', height: '23px' }} />
                                                 </ListItemIcon>
-                                                <Typography variant="inherit">Reporte</Typography>
+                                                <Typography variant="inherit">{t(langKeys.report)}</Typography>
                                             </MenuItem>
                                         </a>
                                     </Menu>
-
-                                   
                                 </div>
                             </div>
                         </Box>
@@ -421,24 +411,11 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
             if (anchorElSeButtons && !anchorElSeButtons.contains(event.target as Node)) {
                 toggleSeButtons(null, false);
             }
-        };    
+        };
         document.addEventListener('mousedown', handleClickOutside);
+        return () => { document.removeEventListener('mousedown', handleClickOutside) };
+    }, [anchorElSeButtons]);   
 
-        return () => { document.removeEventListener('mousedown', handleClickOutside);};}, [anchorElSeButtons]);    
-
-        const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-
-        const detailCustomReport = {
-            loading: false,
-            data: [],
-        };        
-
-        const [dateRange, setdateRange] = useState<Range>({
-            startDate: new Date(new Date().setDate(1)),
-            endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-            key: "selection",
-        }
-    );
 
     const columns = React.useMemo(
         () => [
@@ -509,10 +486,9 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
                     const status = row && row.original && row.original.status;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                 }
-                
             },
             {
-                Header: 'Fecha de Ejecución',
+                Header: t(langKeys.rundate),
                 accessor: 'datestart',             
                 width: '200px',
                 type: 'date',
@@ -524,7 +500,7 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
                 }                
             },
             {
-                Header: 'Hora de Ejecución',
+                Header: t(langKeys.runtime_campaign),
                 accessor: 'hourstart',             
                 width: 'auto'                         
             },
@@ -619,7 +595,7 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
                                 color="primary"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    dispatch(showSnackbar({ show: true, severity: "success", message: `Campaña ya programada el ${datestart}, a las ${hourstart}`}));
+                                    dispatch(showSnackbar({ show: true, severity: "success", message: `${t(langKeys.campaignscheduledon)} ${datestart}, ${t(langKeys.at)} ${hourstart}`}));
                                 }}
                                 style={{ backgroundColor: "#EFE4B0" }}
                             >

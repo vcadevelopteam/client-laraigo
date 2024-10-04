@@ -6528,8 +6528,13 @@ const translation: LangKeys = {
   translationaihelper: 'Turn detected language translation on or off for the language selected in your account settings.',
   languageaihelper: 'Select the language that will translate the language model of the detected language by default.',
   registertime: 'Register Time',
-
   billingreport_conversationbillable: 'Billable WhatsApp Conversations',
+
+  campaignsreport: 'Campaigns Report',
+  runtime_campaign: 'Runtime',
+  campaignscheduledon: 'Campaign already scheduled on',
+  at: 'at',
+  
 };
 
 const enResource: ResourceLanguage = {
