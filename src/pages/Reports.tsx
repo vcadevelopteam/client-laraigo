@@ -54,6 +54,7 @@ import { CellProps } from 'react-table';
 import InputRetryReport from './staticReports/ReportInputRetry';
 import { ReportHSMShipping } from './staticReports/ReportHSMShipping';
 import ReportAudit from './staticReports/ReportAudit';
+import { CampaignLinksReport } from './staticReports/ReportCampaignLinks';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1362,6 +1363,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'CAMPAIGNLINKS':
+                return (
+                    <Grid item key={"campaignlinks"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card>
+                            <CardActionArea onClick={() => handleSelectedString("campaignwithlinks")} className={classes.cardstyle}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
+                                    title={t(langKeys.campaignwithlinks)}
+                                />
+                                <CardContent style={{ paddingBottom: 0 }}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t(langKeys.campaignwithlinks)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1756,7 +1778,17 @@ const Reports: FC = () => {
                 />
             </div>
         )
-    } else if (viewSelected === "reportcompliancesla") {
+    } else if (viewSelected === "campaignwithlinks") {
+        return (
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={getArrayBread(t(langKeys.campaignwithlinks), t(langKeys.report_plural))}
+                    handleClick={handleSelectedString}
+                />
+                <CampaignLinksReport />
+            </div>
+        )
+    }else if (viewSelected === "reportcompliancesla") {
         return (
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <TemplateBreadcrumbs

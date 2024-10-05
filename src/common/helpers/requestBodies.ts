@@ -5439,3 +5439,14 @@ export const registeredLinksIns = ({ linkregisterid, operation, description, url
     key: "UFN_LINKREGISTER_INS",
     parameters: { linkregisterid, operation, description, url, status, startdate, enddate },
 });
+
+export const reportCampaignLinksSel = ({startdate, enddate, communicationchannelid}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+    }
+});

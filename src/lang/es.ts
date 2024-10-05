@@ -6490,6 +6490,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   linkenddatedesc: 'Ingresa una fecha final para la vigencia de tu enlace',
   useregisteredlinkscount: 'Usar enlace registrado para conteo de clicks',
   selectregisteredlink: 'Seleccione un enlace registrado',
+  clicksonlink: 'Clicks en Enlace',
+  clickonlink: 'Click en Enlace',
+  campaignwithlinks: 'Campaña con Enlaces',
+  clicksonlinkpercent: '% Click en Enlace',
 };
 
 const esResource: ResourceLanguage = {

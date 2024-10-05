@@ -6538,6 +6538,10 @@ const translation: LangKeys = {
   linkenddatedesc: 'Enter an end date for the validity of your link',
   useregisteredlinkscount: 'Use registered link for click count',
   selectregisteredlink: 'Select a registered link',
+  clicksonlink: 'Clicks on Link',
+  clickonlink: 'Click on Link',
+  campaignwithlinks: 'Campaign with Links',
+  clicksonlinkpercent: '% Click on Link',
 };
 
 const enResource: ResourceLanguage = {

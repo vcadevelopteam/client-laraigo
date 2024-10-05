@@ -6481,6 +6481,10 @@ export const langKeys = {
   linkenddatedesc: 'linkenddatedesc',
   useregisteredlinkscount: 'useregisteredlinkscount',
   selectregisteredlink: 'selectregisteredlink',
+  clicksonlink: 'clicksonlink',
+  clickonlink: 'clickonlink',
+  campaignwithlinks: 'campaignwithlinks',
+  clicksonlinkpercent: 'clicksonlinkpercent',
 };
 
 export type LangKeys = typeof langKeys;
