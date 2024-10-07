@@ -437,6 +437,12 @@ export const RichText: FC<RichTextProps> = ({
     const open = Boolean(anchorEl);
     const id = open ? 'transitions-popper' : undefined;
     
+    useEffect(() => {
+        const editableDiv = document.querySelector('[data-slate-editor="true"]');
+        if (editableDiv) {
+            editableDiv.setAttribute("spellcheck", "true"); // Forzar spellcheck a true
+        }
+    }, []);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(anchorEl ? null : event.currentTarget);
