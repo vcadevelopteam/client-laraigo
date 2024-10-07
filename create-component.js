@@ -23,15 +23,15 @@ function createComponent(componentName) {
     fs.mkdirSync(baseDir, { recursive: true });
 
     const componentFilePath = path.join(baseDir, `${componentName}.tsx`);
-    const modelFilePath = path.join(baseDir, 'model.ts');
-    const typeFilePath = path.join(baseDir, 'type.ts');
+    const formFilePath = path.join(baseDir, 'forms.ts');
+    const typeFilePath = path.join(baseDir, 'types.ts');
     const stylesFilePath = path.join(baseDir, 'styles.ts');
     
     const componentsDir = path.join(baseDir, 'components');
     const hooksDir = path.join(baseDir, 'hooks');
     
     fs.writeFileSync(componentFilePath, `import React from 'react';\n\nconst ${componentName}: React.FC<unknown> = () => {\n    return (\n        <div>\n            <h1>${componentName} Component</h1>\n        </div>\n    );\n};\n\nexport default ${componentName};\n`);
-    fs.writeFileSync(modelFilePath, '// Model file for ' + componentName + '\n');
+    fs.writeFileSync(formFilePath, '// Form file for ' + componentName + '\n');
     fs.writeFileSync(typeFilePath, '// Type definitions for ' + componentName + '\n');
     fs.writeFileSync(stylesFilePath, '// Styles definitions for ' + componentName + '\n');
     
