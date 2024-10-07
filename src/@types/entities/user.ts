@@ -95,6 +95,7 @@ export interface IUser {
     iconurl?: string;
     samlAuth?: boolean;
     languagesettings?: ILanguageSettings;    
+    uiconfig?: any
     // notifications: Notification[];
 }
 

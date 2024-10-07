@@ -6558,6 +6558,9 @@ const translation: LangKeys = {
   addressnumber: 'Address number',
   mainaddress: 'Main address',
   additionaladdress: 'Additional address',
+  occupationdesc: 'Occupation',
+  civilstatus: 'Civil status',
+  salary: 'Salary',
 };
 
 const enResource: ResourceLanguage = {

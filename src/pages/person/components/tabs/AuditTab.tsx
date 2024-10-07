@@ -1,7 +1,5 @@
-import { Grid, makeStyles } from "@material-ui/core";
-import { IPerson } from "@types";
+import { Grid } from "@material-ui/core";
 import { FC } from "react";
-import { Property } from "./Property";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
@@ -13,97 +11,11 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import WebOutlinedIcon from '@material-ui/icons/WebOutlined';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
 import PaymentOutlinedIcon from '@material-ui/icons/PaymentOutlined';
+import { Property } from "../index";
+import { useChannelItemStyles } from "pages/person/styles";
+import { SimpleTabProps } from "pages/person/model";
 
-interface AuditTabProps {
-    person: IPerson;
-}
-
-const useChannelItemStyles = makeStyles(theme => ({
-    root: {
-        border: '#EBEAED solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-        paddingLeft: theme.spacing(3),
-        display: "flex",
-        alignItems: "center"
-
-    },
-    contentContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        flexGrow: 1,
-    },
-    propTitle: {
-        fontWeight: 400,
-        fontSize: 14,
-        color: '#8F92A1',
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    itemLabel: {
-        color: '#8F92A1',
-        fontSize: 14,
-        fontWeight: 400,
-        margin: 0,
-    },
-    itemText: {
-        color: theme.palette.text.primary,
-        fontSize: 15,
-        fontWeight: 400,
-        margin: '6px 0',
-    },
-    subtitle: {
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '0.5em',
-        alignItems: 'center',
-    },
-    propSubtitle: {
-        color: theme.palette.text.primary,
-        fontWeight: 400,
-        fontSize: 15,
-        margin: 0,
-        width: '100%',
-    },
-    buttonphone: {
-        padding: 0,
-        '&:hover': {
-            color: "#7721ad",
-        },
-    }, propertyRoot: {
-        display: 'flex',
-        flexDirection: 'row',
-        stroke: '#8F92A1',
-        alignItems: 'center',
-        overflowWrap: 'anywhere',
-    },
-    leadingContainer: {
-        height: 40,
-        width: 40,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        stroke: '#8F92A1',
-        fill: '#8F92A1',
-    },
-    propSubtitleTicket: {
-        fontWeight: 400,
-        fontSize: 15,
-        margin: 0,
-        width: '100%',
-        color: '#7721ad',
-        textDecoration: 'underline',
-        cursor: 'pointer'
-    },
-}));
-
-export const AuditTab: FC<AuditTabProps> = ({ person }) => {
+const AuditTab: FC<SimpleTabProps> = ({ person }) => {
     const classes = useChannelItemStyles();
     return (
         <Grid container direction="row" style={{ border: "solid grey 1px", borderRadius: 15 }}>
@@ -230,3 +142,4 @@ export const AuditTab: FC<AuditTabProps> = ({ person }) => {
         </Grid>
     );
 }
+export default AuditTab;

@@ -1,19 +1,14 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, makeStyles } from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FC } from "react";
-import { Location } from "./Location";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
+import {Location} from '../index'
+import { LocationTabProps } from "pages/person/model";
 
-interface LocationTabProps {
-    setValue: any;
-    watch: any;
-    addressbook: any;
-}
-
-export const LocationTab: FC<LocationTabProps> = ({ setValue, watch, addressbook }) => {
+const LocationTab: FC<LocationTabProps> = ({ setValue, watch, addressbook }) => {
     const { t } = useTranslation();
 
     return (
@@ -90,3 +85,4 @@ export const LocationTab: FC<LocationTabProps> = ({ setValue, watch, addressbook
         </div>
     );
 }
+export default LocationTab;

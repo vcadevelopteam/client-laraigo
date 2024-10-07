@@ -1,9 +1,9 @@
 import { Rating } from "@material-ui/lab";
-import { IPerson } from "@types";
 import { convertLocalDate, getOpportunitiesByPersonBody } from "common/helpers";
 import TableZyx from "components/fields/table-simple";
 import { useSelector } from "hooks";
 import { langKeys } from "lang/keys";
+import { SimpleTabProps } from "pages/person/model";
 import { FC, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -12,11 +12,7 @@ import { getLeadsByPerson, resetGetLeadsByPerson } from "store/person/actions";
 
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
-interface OpportunitiesTabProps {
-    person: IPerson;
-}
-
-export const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
+const OpportunitiesTab: FC<SimpleTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const leads = useSelector(state => state.person.personLeadList);
     const { t } = useTranslation();
@@ -141,3 +137,5 @@ export const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
         />
     );
 }
+
+export default OpportunitiesTab;

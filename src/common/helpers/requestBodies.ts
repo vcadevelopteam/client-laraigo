@@ -5428,3 +5428,9 @@ export const conversationSDHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
 });
+
+export const updateSidePersonView = (config: any) => ({
+    method: "UFN_ORG_UICONFIG_INS",
+    key: "UFN_ORG_UICONFIG_INS",
+    parameters: { name: "person", config: JSON.stringify(config.map((item: any, index: number) => ({ size: item.size.toString(), field: item.field, order: index + 1 }))),  },
+});
