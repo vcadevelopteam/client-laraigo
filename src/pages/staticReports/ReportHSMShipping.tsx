@@ -258,9 +258,13 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
             },
             {
                 Header: t(langKeys.clicksonlink),
-                accessor: 'click',
+                accessor: 'clickurl',
                 showGroupedBy: true,
                 showColumn: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { clickurl } = props.cell.row.original;
+                    return clickurl === 0 ? 'Fail' : 'Ok'
+                }
             },
             {
                 Header: "Log",
@@ -470,7 +474,7 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 Header: t(langKeys.clicksonlink),
                 type: 'number',
                 sortType: 'number',
-                accessor: 'clicks',
+                accessor: 'clickurl',
                 showGroupedBy: true,
                 showColumn: true,
             },

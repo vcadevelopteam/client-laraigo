@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { dictToArrayKV, getCampaignReportExport, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksSel } from 'common/helpers';
+import { dictToArrayKV, exportExcel, getCampaignReportExport, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import { exportData, getCollection, getCollectionAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -68,7 +68,6 @@ const useStyles = makeStyles(() => ({
 
 const dataReportType = {
     default: 'default',
-    proactive: 'proactive'
 }
 
 const selectionKey = 'campaignid';
@@ -147,13 +146,18 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                 },
             },
             {
-                Header: t(langKeys.executiontype_campaign),
+                Header: t(langKeys.executiontype),
                 accessor: 'executiontype',
                 width: "auto",
-            },                
+            },
             {
                 Header: t(langKeys.executingUser),
                 accessor: 'executed_by',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.executingUserProfile),
+                accessor: 'executedprofile_by',
                 width: "auto",
             },
             {
@@ -214,92 +218,12 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
         communicationchannelid: selectedChannel,
     })));
 
-    const triggerExportData = () => {
+    const handleDownload = () => {
         if (Object.keys(selectedRows).length === 0) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
             return null;
         }
-        if (!reportType) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_type_selected)}));
-            return null;
-        }
-        
-        if (reportType === dataReportType.default) {
-            dispatch(exportData(getCampaignReportExport(
-                Object.keys(selectedRows).reduce((ad: any[], d: any) => {
-                    ad.push({
-                        campaignid: d.split('_')[0],
-                        rundate: d.split('_')[1]
-                    })
-                    return ad;
-                }, [])),
-                `${t(langKeys.report)}`,
-                'excel',
-                true,
-                [
-                    {key: 'templatetype', alias: t(langKeys.templatetype)},
-                    {key: 'date', alias: t(langKeys.date)},
-                    {key: 'campaign', alias: t(langKeys.campaign)},
-                    {key: 'description', alias: t(langKeys.description)},
-                    {key: 'ticketnum', alias: t(langKeys.ticket)},
-                    {key: 'group', alias: t(langKeys.group)},
-                    {key: 'userid', alias: t(langKeys.userid)},
-                    {key: 'agent', alias: t(langKeys.agent)},
-                    {key: 'contact', alias: t(langKeys.contact)},
-                    {key: 'template', alias: t(langKeys.templatename)},
-                    {key: 'rundate', alias: t(langKeys.rundate)},
-                    {key: 'runtime', alias: t(langKeys.runtime)},
-                    {key: 'executionuser', alias: t(langKeys.executingUser)},
-                    {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
-                    {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
-                    {key: 'classification', alias: t(langKeys.classification)},
-                    {key: 'conversationid', alias: t(langKeys.conversationid)},
-                    {key: 'status', alias: t(langKeys.status)},
-                    {key: 'log', alias: t(langKeys.log)},
-                ]
-            ));
-            dispatch(showBackdrop(true));
-            setWaitExport(true);
-        }
-        else if (reportType === dataReportType.proactive) {
-            dispatch(exportData(getCampaignReportProactiveExport(
-                Object.keys(selectedRows).reduce((ad: any[], d: any) => {
-                    ad.push({
-                        campaignid: d.split('_')[0],
-                        rundate: d.split('_')[1]
-                    })
-                    return ad;
-                }, [])),
-                `${t(langKeys.report)}`,
-                'excel',
-                true,
-                [
-                    {key: 'templatetype', alias: t(langKeys.templatetype)},
-                    {key: 'date', alias: t(langKeys.date)},
-                    {key: 'campaign', alias: t(langKeys.campaign)},
-                    {key: 'description', alias: t(langKeys.description)},
-                    {key: 'ticketnum', alias: t(langKeys.ticket)},
-                    {key: 'group', alias: t(langKeys.group)},
-                    {key: 'userid', alias: t(langKeys.userid)},
-                    {key: 'agent', alias: t(langKeys.agent)},
-                    {key: 'contact', alias: t(langKeys.contact)},
-                    {key: 'template', alias: t(langKeys.templatename)},
-                    {key: 'rundate', alias: t(langKeys.rundate)},
-                    {key: 'runtime', alias: t(langKeys.runtime)},
-                    {key: 'executionuser', alias: t(langKeys.executingUser)},
-                    {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
-                    {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
-                    {key: 'classification', alias: t(langKeys.classification)},
-                    {key: 'conversationid', alias: t(langKeys.conversationid)},
-                    {key: 'status', alias: t(langKeys.status)},
-                    {key: 'log', alias: t(langKeys.log)},
-                ]
-            ));
-            dispatch(showBackdrop(true));
-            setWaitExport(true);
-        }
+        exportExcel('Reporte campañas con enlaces', rowWithDataSelected, columns)
     };
 
     useEffect(() => {
@@ -320,7 +244,7 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                 setWaitExport(false);
             }
         }
-    }, [resExportData, waitExport]);  
+    }, [resExportData, waitExport]);
 
     const channelTypeList = filterChannel.data || [];
     const channelTypeFilteredList = new Set();
@@ -397,7 +321,7 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                         className={classes.button}
                         color="primary"
                         disabled={main.loading}
-                        onClick={() => triggerExportData()}                         
+                        onClick={() => handleDownload()}                         
                         startIcon={<DownloadIcon />}
                         variant="contained"
                     >
