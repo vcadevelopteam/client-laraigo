@@ -15,7 +15,7 @@ export const login = (state: IState): IState => ({
 
 export const loginSuccess = (state: IState, action: IAction): IState => {
     saveAuthorizationToken(action.payload.data.token);
-    localStorage.removeItem(keys.HIDE_LOGS)
+    // localStorage.removeItem(keys.HIDE_LOGS)
     return {
         ...state,
         login: {
@@ -278,6 +278,25 @@ export const updateLanguage = (state: IState, action: IAction): IState => {
             user: {
                 ...(state.validateToken.user || {} as IUser),
                 languagesettings: JSON.parse(action.payload.value),
+            },
+        },
+
+    })
+}
+
+export const updateListOrgs = (state: IState, action: IAction): IState => {
+    const orgs = (state.validateToken.user?.organizations || []);
+    const orgExisted = orgs.some(x => x.orgid === action.payload.org.orgid)
+    return ({
+        ...state,
+        validateToken: {
+            ...state.validateToken,
+            user: {
+                ...(state.validateToken.user || {} as IUser),
+                organizations: orgExisted ? (orgs).map(x => x.orgid === action.payload.org.orgid ? action.payload.org : x) : [
+                    ...(orgs),
+                    action.payload.org
+                ]
             },
         },
 

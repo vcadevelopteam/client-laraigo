@@ -6,9 +6,13 @@ import { Dictionary } from "@types";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Button } from "@material-ui/core";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { CellProps } from "react-table";
 import TableZyx from "components/fields/table-simple";
+import CheckIcon from '@material-ui/icons/Check';
+import { useDispatch } from "react-redux";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { execute } from "store/main/actions";
+import { prepareAttentionOrder } from "common/helpers";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -42,6 +46,9 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({ setViewSelected, 
     const main = useSelector((state) => state.main.mainData);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const dispatch = useDispatch();
+    const [waitSavePrepare, setWaitSavePrepared] = useState(false);
+    const executeResult = useSelector((state) => state.main.execute);
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
@@ -160,6 +167,59 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({ setViewSelected, 
         ],
         []
     );
+    
+    const prepareOrder = () => {
+        const allScheduled = rowWithDataSelected.every((row: Dictionary) => row.orderstatus === 'scheduled');
+        if(allScheduled && Object.keys(selectedRows).length !== 0) {
+            const uniqueOrderNumbers = Array.from(new Set(rowWithDataSelected.map((row: Dictionary) => row.orderid)));
+            const orderNumbersString = uniqueOrderNumbers.join(',');
+            dispatch(showBackdrop(true));
+            dispatch(execute(prepareAttentionOrder(orderNumbersString)));
+            setWaitSavePrepared(true);
+        } else {
+            if(Object.keys(selectedRows).length !== 0) {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.prepareorderserror),
+                    })
+                );
+            } else {
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "error",
+                        message: t(langKeys.mustselectorders),
+                    })
+                );
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (waitSavePrepare) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSavePrepared(false);
+                dispatch(
+                    showSnackbar({
+                        show: true,
+                        severity: "success",
+                        message: t(langKeys.successful_update),
+                    })
+                );
+                fetchData()
+                dispatch(showBackdrop(false));
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", {
+                    module: t(langKeys.domain).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                dispatch(showBackdrop(false));
+                setWaitSavePrepared(false);
+            }
+        }
+    }, [executeResult, waitSavePrepare]);
 
     return (
         <div className={classes.container}>
@@ -181,9 +241,9 @@ const AttentionOrdersMainView: FC<InventoryMainViewProps> = ({ setViewSelected, 
 						<Button
 							variant="contained"
 							color="primary"
-							disabled={main.loading || Object.keys(selectedRows).length === 0}
-							startIcon={<CheckCircleIcon color="secondary" />}
+							startIcon={<CheckIcon/>}
 							style={{ backgroundColor: "#55BD84" }}
+                            onClick={prepareOrder}
 						>
 							<Trans i18nKey={langKeys.prepare} />
 						</Button>

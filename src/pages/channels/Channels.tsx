@@ -242,7 +242,7 @@ export const Channels: FC = () => {
                 NoFilter: true,
                 width: "1%",
                 Cell: (props: { cell: { row: { original: IChannel } } }) => {
-                    const row = props.cell.row.original || {}; 
+                    const row = props.cell.row.original || {};
                     return (
                         <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
                     );
@@ -274,7 +274,7 @@ export const Channels: FC = () => {
                 NoFilter: true,
                 prefixTranslation: "status_",
                 Cell: (props: { cell: { row: { original: IChannel } } }) => {
-                    const row = props.cell.row.original || {}; 
+                    const row = props.cell.row.original || {};
                     return <span>{(t(`status_${row.status}`.toLowerCase()) || "").toUpperCase()}</span>;
                 },
             },
@@ -284,7 +284,7 @@ export const Channels: FC = () => {
                 NoFilter: true,
                 isComponent: true,
                 Cell: (props: { cell: { row: { original: { haveflow: boolean; }; }; }; }) => {
-                    const { haveflow } = props.cell.row.original || {}; 
+                    const { haveflow } = props.cell.row.original || {};
                     if (haveflow) {
                         return <div></div>
                     } else {

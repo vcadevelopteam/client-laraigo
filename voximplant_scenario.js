@@ -350,7 +350,7 @@ function handleInboundCall(e) {
         call = e.call; // Call del cliente
         callerid = e.callerid;
         site = SITE_MASK || e.destination;
-        variables = { ...(variables || {}), origin: "INBOUND", phone: callerid };
+        variables = { ...(variables || {}), origin: "INBOUND" };
         // Add event listeners
         e.call.addEventListener(CallEvents.Connected, handleCallConnected);
         // e.call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);

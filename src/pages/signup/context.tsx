@@ -67,6 +67,9 @@ export interface RouteParams {
     token: string;
 }
 
+export interface RechargeData {
+    rechargeamount: number | null;
+}
 export interface ListChannels {
     android: boolean;
     apple: boolean;
@@ -319,13 +322,15 @@ export interface Channels {
 }
 
 export interface MainData {
-    activechannels: ListChannels;
+    activechannels: ListChannels | null;
     cardmonth: string;
+    cardname: string;
     cardnumber: string;
     cardsecuritycode: string;
     cardyear: string;
     contactaddress: string;
     contactcountry: string;
+    citybillingid: number;
     contactcountryname: string;
     contactcurrency: string;
     contactdocumentnumber: string;
@@ -338,6 +343,10 @@ export interface MainData {
     loginpassword: string;
     loginpasswordrepeat: string;
     loginusername: string;
+    iscompany: boolean;
+    companyname: string;
+    companydocument: string;
+    recharge: RechargeData
 }
 
 const defaultListChannels: ListChannels = {
@@ -459,13 +468,15 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
     const form = useForm<MainData>({
         defaultValues: {
-            activechannels: listChannels,
+            activechannels: null,
             cardmonth: "",
+            cardname: "",
             cardnumber: "",
             cardsecuritycode: "",
             cardyear: "",
             contactaddress: "",
             contactcountry: "",
+            citybillingid: 0,
             contactcountryname: "",
             contactcurrency: "",
             contactdocumentnumber: "",
@@ -478,6 +489,12 @@ export const SubscriptionProvider: FC = ({ children }) => {
             loginpassword: "",
             loginpasswordrepeat: "",
             loginusername: "",
+            iscompany: true,
+            companyname: "",
+            companydocument: "",
+            recharge: {
+                rechargeamount: null
+            },
         },
     });
 
@@ -618,7 +635,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         const { ...mainData } = data;
 
         const submitInformation = {
-            channel: listChannels,
             key: "UFN_CREATEZYXMEACCOUNT_INS",
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             card: {
@@ -626,11 +642,18 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 cardnumber: (mainData.cardnumber || "").replace(/\D/g, ""),
                 cardsecuritycode: mainData.cardsecuritycode,
                 cardyear: mainData.cardyear,
+                cardname: mainData.cardname,
             },
             parameters: {
                 ...mainData,
                 contactaddress: mainData.contactaddress,
+                companydocument: mainData.companydocument,
+                companyname: mainData.companyname,
+                recharge: {
+                    rechargeamount: mainData.recharge.rechargeamount
+                },
                 contactcountry: mainData.contactcountry,
+                citybillingid: mainData.citybillingid,
                 contactcountryname: mainData.contactcountryname,
                 contactcurrency: mainData.contactcurrency,
                 contactdocumentnumber: mainData.contactdocumentnumber,
@@ -645,6 +668,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 loginusername: mainData.loginusername,
                 paymentplan: planData.data[0].plan,
                 paymentplanid: planData.data[0].paymentplanid,
+                iscompany: mainData.iscompany,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
             },
@@ -724,6 +748,9 @@ interface PlanData {
         plan: string;
         planCost: number;
         provider: string;
+        cityList: any;
+        descriptionen: string;
+        descriptiones: string;
     } | null;
 }
 
@@ -749,6 +776,9 @@ export function usePlanData(): PlanData {
                 plan: match.params.token,
                 planCost: planData.data[0]?.plancost || 0,
                 provider: planData.data[0]?.providerwhatsapp || "",
+                cityList: planData.data[0]?.cityList || [],
+                descriptionen: planData.data[0]?.descriptionen || "",
+                descriptiones: planData.data[0]?.descriptiones || "",
             },
         };
     }, [planData, match.params.token]);

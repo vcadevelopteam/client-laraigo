@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { FieldMultiSelect } from 'components';
 
 import {
     exportData,
@@ -19,6 +18,7 @@ import {
 } from "store/main/actions";
 
 import {
+    FieldMultiSelect,
     TagTypeCell,
     TemplateBreadcrumbs,
 } from "components";
@@ -27,6 +27,7 @@ import {
     dateToLocalDate,
     getChannelsByOrg,
     getMessageTemplateExport,
+    getMessageTemplateLst,
     getPaginatedMessageTemplate1,
     getValuesFromDomain,
     selCommunicationChannelWhatsApp,
@@ -438,6 +439,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
                 getChannelsByOrg(),
+                getMessageTemplateLst("")
             ])
         );
 
@@ -669,10 +671,24 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
 
 
     let formattedData: { domaindesc: string; domainvalue: string }[] = [];
-    const targetData = multiData.data[3];
+    const templateData = multiData.data[4]?.data || [];
+    const uniqueChannelIds = new Set<string>();
 
+    templateData.forEach((item: Dictionary) => {
+        if (item.communicationchannelid) {
+            item.communicationchannelid.split(',').forEach((id: string) => {
+                uniqueChannelIds.add(id.trim());
+            });
+        }
+    });
+
+    const uniqueChannelIdsArray = Array.from(uniqueChannelIds);
+    const targetData = multiData.data[3];
     if (targetData && targetData.data) {
-        formattedData = targetData.data.map((item: any) => ({
+        const filteredData = targetData.data.filter((item: Dictionary) =>
+            uniqueChannelIdsArray.includes(item.communicationchannelid.toString())
+        );
+        formattedData = filteredData.map((item: Dictionary) => ({
             domaindesc: item.communicationchannelid.toString(),
             domainvalue: item.description,
         }));
