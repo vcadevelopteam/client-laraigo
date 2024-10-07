@@ -1,5 +1,4 @@
 import { Box, Button, Grid, IconButton, makeStyles } from "@material-ui/core";
-import { IPersonChannel } from "@types";
 import { getChannelListByPersonBody, unLinkPerson } from "common/helpers";
 import { useSelector } from "hooks";
 import { langKeys } from "lang/keys";
@@ -10,7 +9,7 @@ import { getChannelListByPerson } from "store/person/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import LinkOffIcon from '@material-ui/icons/LinkOff';
 import { execute } from "store/main/actions";
-import { Property } from "./Property";
+import { Property } from "./index";
 import { GetIcon } from "components";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 import { PhoneIcon } from "icons";
@@ -19,98 +18,8 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import CallIcon from '@material-ui/icons/Call';
 import ForumIcon from '@material-ui/icons/Forum';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
-
-interface ChannelItemProps {
-    channel: IPersonChannel;
-    person: any;
-}
-
-const useChannelItemStyles = makeStyles(theme => ({
-    root: {
-        border: '#EBEAED solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-        paddingLeft: theme.spacing(3),
-        display: "flex",
-        alignItems: "center"
-
-    },
-    contentContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        flexGrow: 1,
-    },
-    propTitle: {
-        fontWeight: 400,
-        fontSize: 14,
-        color: '#8F92A1',
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    itemLabel: {
-        color: '#8F92A1',
-        fontSize: 14,
-        fontWeight: 400,
-        margin: 0,
-    },
-    itemText: {
-        color: theme.palette.text.primary,
-        fontSize: 15,
-        fontWeight: 400,
-        margin: '6px 0',
-    },
-    subtitle: {
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '0.5em',
-        alignItems: 'center',
-    },
-    propSubtitle: {
-        color: theme.palette.text.primary,
-        fontWeight: 400,
-        fontSize: 15,
-        margin: 0,
-        width: '100%',
-    },
-    buttonphone: {
-        padding: 0,
-        '&:hover': {
-            color: "#7721ad",
-        },
-    }, propertyRoot: {
-        display: 'flex',
-        flexDirection: 'row',
-        stroke: '#8F92A1',
-        alignItems: 'center',
-        overflowWrap: 'anywhere',
-    },
-    leadingContainer: {
-        height: 24,
-        width: 24,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        stroke: '#8F92A1',
-        fill: '#8F92A1',
-    },
-    propSubtitleTicket: {
-        fontWeight: 400,
-        fontSize: 15,
-        margin: 0,
-        width: '100%',
-        color: '#7721ad',
-        textDecoration: 'underline',
-        cursor: 'pointer'
-    },
-}));
-
-
+import { ChannelItemProps } from "../model";
+import { useChannelItemStyles } from "../styles";
 
 const nameschannel: { [x: string]: string } = {
     "ANDR": "T_ANDROID",
@@ -156,7 +65,7 @@ const nameschannel: { [x: string]: string } = {
     "YOUT": "T_YOUTUBE",
 };
 
-export const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
+const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
     const { t } = useTranslation();
     const classes = useChannelItemStyles();
     const dispatch = useDispatch();
@@ -284,7 +193,7 @@ export const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                     <Property
                         icon={<ForumIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.conversationquantity} />}
-                        subtitle={channel.conversations || '0'}
+                        subtitle={(channel.conversations || 0) > 0 ? channel.firstcontact : ""}
                         classesAlt={classes}
                         m={1}
                     />
@@ -302,3 +211,5 @@ export const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
         </div>
     );
 }
+
+export default ChannelItem;

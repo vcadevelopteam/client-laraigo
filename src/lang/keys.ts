@@ -6531,6 +6531,9 @@ export const langKeys = {
   ubigeocode: 'ubigeocode',
   mainaddress: 'mainaddress',
   additionaladdress: 'additionaladdress',
+  occupationdesc: 'occupationdesc',
+  civilstatus: 'civilstatus',
+  salary: 'salary',
 };
 
 export type LangKeys = typeof langKeys;

@@ -8,54 +8,12 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { getTicketListByPerson, resetGetTicketListByPerson } from "store/person/actions";
 import { showSnackbar } from "store/popus/actions";
-import { ConversationItem } from "./ConversationItem";
 import { FieldEdit, FieldSelect } from "components";
+import { ConversationItem } from "../index";
+import { useConversationsTabStyles } from "pages/person/styles";
+import { SimpleTabProps } from "pages/person/model";
 
-const useConversationsTabStyles = makeStyles(theme => ({
-    root: {
-        height: '100%',
-    },
-    root2: {
-        padding: '2px 4px',
-        display: 'flex',
-        alignItems: 'center',
-        height: 35,
-        border: '1px solid #EBEAED',
-        backgroundColor: '#F9F9FA',
-    },
-    containerFilterGeneral: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        backgroundColor: '#f9f9fa',
-        padding: `${theme.spacing(2)}px`,
-    },
-    containerSearch: {
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '50%',
-        },
-    },
-    iconButton: {
-        padding: 4,
-    },
-    input: {
-        marginLeft: theme.spacing(1),
-        flex: 1,
-    },
-    inputPlaceholder: {
-        '&::placeholder': {
-            fontSize: 14,
-            fontWeight: 500,
-            color: '#84818A',
-        },
-    },
-}));
-
-interface ConversationsTabProps {
-    person: IPerson;
-}
-
-export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
+const ConversationsTab: FC<SimpleTabProps> = ({ person }) => {
     const { t } = useTranslation();
     const classes = useConversationsTabStyles();
     const dispatch = useDispatch();
@@ -87,7 +45,7 @@ export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
     }, [page, person, dispatch]);
 
     useEffect(() => {
-        const uniqueChannelTypes = [...new Set(list.map(item => item.channeltype))];
+        const uniqueChannelTypes = Array.from(new Set(list.map(item => item.channeltype)));
 
         const newList = uniqueChannelTypes.map(channel => ({
             val: channel,
@@ -142,8 +100,8 @@ export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             return el.ticketnum.includes(filters.ticketnum) &&
                 el.asesorfinal.toLowerCase().includes(filters.asesorfinal.toLowerCase()) &&
                 (filters.channeltype === "all" || el.channeldesc.toLowerCase().includes(filters.channeltype.toLowerCase())) &&
-                el.fechainicio.includes(filters?.fechainicio||"") &&
-                el.fechafin.includes(filters?.fechafin||"")
+                el.fechainicio.includes(filters?.fechainicio || "") &&
+                el.fechafin.includes(filters?.fechafin || "")
         });
         setfilteredList(newArray)
     }, [filters]);
@@ -170,9 +128,9 @@ export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2} style={{ justifyContent: "start", alignItems: "center", display: "flex" }}>
-                    <FieldEdit 
+                    <FieldEdit
                         label="Ticket #"
-                        style={{paddingRight: 20}}
+                        style={{ paddingRight: 20 }}
                         valueDefault={filters.ticketnum}
                         onChange={(e) => {
                             setFilters((prev) => ({
@@ -183,9 +141,9 @@ export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2} style={{ justifyContent: "start", alignItems: "center", display: "flex" }}>
-                    <FieldEdit 
+                    <FieldEdit
                         label={t(langKeys.agent)}
-                        style={{paddingRight: 20}}
+                        style={{ paddingRight: 20 }}
                         valueDefault={filters.asesorfinal}
                         onChange={(e) => {
                             setFilters((prev) => ({
@@ -196,9 +154,9 @@ export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2} style={{ justifyContent: "start", alignItems: "center", display: "flex" }}>
-                    <FieldEdit 
+                    <FieldEdit
                         label={t(langKeys.startdate)}
-                        style={{paddingRight: 20}}
+                        style={{ paddingRight: 20 }}
                         type="date"
                         valueDefault={filters.fechainicio}
                         onChange={(e) => {
@@ -210,9 +168,9 @@ export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2} style={{ justifyContent: "start", alignItems: "center", display: "flex" }}>
-                    <FieldEdit 
+                    <FieldEdit
                         label={t(langKeys.enddate)}
-                        style={{paddingRight: 20}}
+                        style={{ paddingRight: 20 }}
                         type="date"
                         valueDefault={filters.fechafin}
                         onChange={(e) => {
@@ -242,3 +200,5 @@ export const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
         </div>
     );
 }
+
+export default ConversationsTab;

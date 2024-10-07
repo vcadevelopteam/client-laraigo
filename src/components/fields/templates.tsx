@@ -2294,7 +2294,7 @@ interface PhoneFieldEditProps extends Omit<MaterialUiPhoneNumberProps, 'error'> 
     error?: string;
 }
 
-export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, className, ...props }) => {
+export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, className, style, ...props }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={0.5} color="textPrimary">

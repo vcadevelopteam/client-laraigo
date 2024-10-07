@@ -1,59 +1,19 @@
-import { AppBar, makeStyles, Tab, Tabs } from "@material-ui/core";
+import { AppBar, Tab, Tabs } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
-import { IObjectState, IPerson, IPersonDomains } from "@types";
-import { UseFormGetValues } from "react-hook-form";
 import { FC, useEffect, useState } from "react";
 import clsx from 'clsx';
-import { PersonalDataTab } from "./PersonalDataTab";
 import { useDispatch } from "react-redux";
 import { getReferrerListByPerson, resetGetReferrerListByPerson } from "store/person/actions";
 import { getReferrerByPersonBody } from "common/helpers";
-import { LocationTab } from "./LocationTab";
-import { ExtraDataTab } from "./ExtraDataTab";
+import { ExtraDataTab, LocationTab, PersonalDataTab } from "../index";
+import { useGeneralInformationTabStyles } from "pages/person/styles";
+import { GeneralInformationTabProps } from "pages/person/model";
 
-interface GeneralInformationTabProps {
-    person: IPerson;
-    getValues: UseFormGetValues<IPerson>;
-    setValue: any;
-    trigger: any;
-    domains: IObjectState<IPersonDomains>;
-    errors: any;
-    control: any;
-    extraTriggers: any;
-    watch: any;
-    addressbook: any;
-    setExtraTriggers: (trig: any) => void;
-}
-
-const useStyles = makeStyles(theme => ({
-    tabs: {
-        backgroundColor: '#EBEAED',
-        color: '#989898',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 'inherit',
-    },
-    tab: {
-        color: theme.palette.text.primary,
-        backgroundColor: '#EBEAED',
-        flexGrow: 1,
-        maxWidth: 'unset',
-    },
-    activetab: {
-        backgroundColor: 'white',
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: 500,
-    },
-}));
-
-export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person,addressbook, getValues, trigger, setValue, domains, errors, control, extraTriggers, watch, setExtraTriggers }) => {
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person,addressbook, getValues, trigger, setValue, domains, errors, control, extraTriggers, watch, setExtraTriggers }) => {
 
     const [tabIndex, setTabIndex] = useState('0');
-    const classes = useStyles();
+    const classes = useGeneralInformationTabStyles();
     const dispatch = useDispatch();
     useEffect(() => {
         if (person.referringpersonid) {
@@ -118,3 +78,5 @@ export const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person,a
         </div>}
     </>
 }
+
+export default GeneralInformationTab;

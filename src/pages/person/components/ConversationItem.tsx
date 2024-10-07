@@ -1,5 +1,5 @@
 import { Collapse, Grid, IconButton, makeStyles, Tooltip } from "@material-ui/core";
-import { Dictionary, IPersonConversation } from "@types";
+import { Dictionary } from "@types";
 import DialogInteractions from "components/inbox/DialogInteractions";
 import { useSelector } from "hooks";
 import { CallRecordIcon } from "icons";
@@ -9,54 +9,13 @@ import { FC, useCallback, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { showSnackbar } from "store/popus/actions";
-import { Property } from "./Property";
+import { Property } from "./index";
 import { GetIcon } from "components";
 import { ArrowDropDown } from "@material-ui/icons";
+import { ConversationItemProps } from "../model";
+import { useConversationsItemStyles } from "../styles";
 
-interface ConversationItemProps {
-    conversation: IPersonConversation;
-    person: Dictionary;
-}
-
-const useConversationsItemStyles = makeStyles(theme => ({
-    root: {
-        border: '#EBEAED solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(2),
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    collapseContainer: {
-        marginTop: theme.spacing(1),
-        display: 'flex',
-        flexDirection: 'column',
-        fontSize: 14,
-        fontWeight: 400,
-    },
-    infoLabel: {
-        fontWeight: 500,
-        fontSize: 14,
-    },
-    totalTime: {
-        fontWeight: 700,
-        fontSize: 16,
-    },
-    icon: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    containerstyle: {
-        padding: "10px 0"
-    }
-}));
-
-
-export const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) => {
+const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) => {
     const classes = useConversationsItemStyles();
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
@@ -253,3 +212,5 @@ export const ConversationItem: FC<ConversationItemProps> = ({ conversation, pers
         </div>
     );
 }
+
+export default ConversationItem;

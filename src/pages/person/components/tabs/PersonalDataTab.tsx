@@ -1,53 +1,20 @@
-import { Grid, IconButton, InputAdornment, makeStyles, styled, TextField } from "@material-ui/core";
+import { Grid, IconButton, InputAdornment } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { Property } from "./Property";
-import { FieldEdit, FieldSelect } from "components";
+import { FieldEdit, FieldSelect, PhoneFieldEdit } from "components";
 import PhoneIcon from '@material-ui/icons/Phone';
-import { IObjectState, IPerson, IPersonDomains } from "@types";
-import { Controller, UseFormGetValues } from "react-hook-form";
 import { FC } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showSnackbar } from "store/popus/actions";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
-import MuiPhoneNumber from 'material-ui-phone-number';
+import { PersonalDataTabProps } from "pages/person/model";
+import { useExtraDataTabStyles } from "pages/person/styles";
 
-
-interface PersonalDataTabProps {
-    getValues: UseFormGetValues<IPerson>;
-    setValue: any;
-    trigger: any;
-    domains: IObjectState<IPersonDomains>;
-    errors: any;
-    control: any;
-    extraTriggers: any;
-    setExtraTriggers: (trig: any) => void;
-}
-const useStyles = makeStyles(theme => ({
-    fieldStyle: {
-        margin: 12
-    },
-}));
-
-const CssPhonemui = styled(MuiPhoneNumber)({
-    '& label.Mui-focused': {
-        color: '#7721ad',
-    },
-    '& .MuiInput-underline:after': {
-        borderBottomColor: '#7721ad',
-    },
-    '& .MuiOutlinedInput-root': {
-        '&.Mui-focused fieldset': {
-            borderColor: '#7721ad',
-        },
-    },
-});
-
-export const PersonalDataTab: FC<PersonalDataTabProps> = ({ getValues, trigger, setValue, domains, errors, control, extraTriggers, setExtraTriggers }) => {
+const PersonalDataTab: FC<PersonalDataTabProps> = ({ getValues, trigger, setValue, domains, errors, control, extraTriggers, setExtraTriggers }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const classes = useStyles()
+    const classes = useExtraDataTabStyles()
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
     const ocupationProperty = domains?.value?.ocupationProperty?.[0]?.propertyvalue || "DOMINIO"
@@ -152,101 +119,77 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ getValues, trigger, 
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.cellphone} />}
-                                subtitle={(
-                                    <Controller
-                                        name="phone"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <CssPhonemui
-                                                {...field}
-                                                fullWidth
-                                                size="small"
-                                                variant="outlined"
-                                                defaultCountry={"pe"}
-                                                enableLongNumbers={true}
-                                                countryCodeEditable={false}
-                                                placeholder={t(langKeys.phone)}
-                                                onChange={(value: any) => {
-                                                    setValue('personcommunicationchannel', value || "")
-                                                    setValue('personcommunicationchannelowner', value || "")
-                                                    setValue('channeltype', value?.domainvalue);
-                                                    setValue('phone', value || "");
-                                                    setExtraTriggers({ ...extraTriggers, phone: value?.replace("+", '') || "" })
-                                                }}
-                                                error={!!errors?.phone}
-                                                helperText={errors?.phone?.message}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                        <InputAdornment position="end">
-                                                            {(!voxiConnection.error && userConnected) &&
-                                                                <IconButton size="small" onClick={() => {
-                                                                    if (voxiConnection.error) {
-                                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
-                                                                    } else {
-                                                                        dispatch(setModalCall(true))
-                                                                        dispatch(setPhoneNumber(getValues("phone")))
-                                                                    }
-                                                                }}>
-                                                                    <PhoneIcon />
-                                                                </IconButton>
-                                                            }
-                                                        </InputAdornment>
-                                                    )
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                )}
-                                m={1}
+                            <PhoneFieldEdit
+                                style={{ margin: "0 10px" }}
+                                size="small"
+                                variant="outlined"
+                                label={<Trans style={{ fontSize: 16, marginLeft: 10 }} i18nKey={langKeys.cellphone} />}
+                                onChange={(value: any) => {
+                                    setValue('personcommunicationchannel', value || "")
+                                    setValue('personcommunicationchannelowner', value || "")
+                                    setValue('channeltype', value?.domainvalue);
+                                    setValue('phone', value || "");
+                                    setExtraTriggers({ ...extraTriggers, phone: value?.replace("+", '') || "" })
+                                }}
+                                defaultCountry={"pe"}
+                                value={getValues("phone")}
+                                enableLongNumbers={true}
+                                countryCodeEditable={false}
+                                placeholder={t(langKeys.phone)}
+                                error={errors?.phone?.message}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            {(!voxiConnection.error && userConnected) &&
+                                                <IconButton size="small" onClick={() => {
+                                                    if (voxiConnection.error) {
+                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
+                                                    } else {
+                                                        dispatch(setModalCall(true))
+                                                        dispatch(setPhoneNumber(getValues("phone")))
+                                                    }
+                                                }}>
+                                                    <PhoneIcon />
+                                                </IconButton>
+                                            }
+                                        </InputAdornment>
+                                    )
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.alternativeCellphone} />}
-                                subtitle={(
-                                    <Controller
-                                        name="alternativephone"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <CssPhonemui
-                                                {...field}
-                                                fullWidth
-                                                size="small"
-                                                variant="outlined"
-                                                defaultCountry={"pe"}
-                                                enableLongNumbers={true}
-                                                countryCodeEditable={false}
-                                                placeholder={t(langKeys.alternativePhone)}
-                                                onChange={(value: any) => {
-                                                    setValue('alternativephone', value || "");
-                                                }}
-                                                error={!!errors?.alternativephone}
-                                                helperText={errors?.alternativephone?.message}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                        <InputAdornment position="end">
-                                                            {(!voxiConnection.error && userConnected) &&
-                                                                <IconButton size="small" onClick={() => {
-                                                                    if (voxiConnection.error) {
-                                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
-                                                                    } else {
-                                                                        dispatch(setModalCall(true))
-                                                                        dispatch(setPhoneNumber(getValues("alternativephone")))
-                                                                    }
-                                                                }}>
-                                                                    <PhoneIcon />
-                                                                </IconButton>
-                                                            }
-                                                        </InputAdornment>
-                                                    )
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                )}
-                                m={1}
+                            <PhoneFieldEdit
+                                style={{ margin: "0 10px" }}
+                                size="small"
+                                variant="outlined"
+                                label={<Trans style={{ fontSize: 16, marginLeft: 10 }} i18nKey={langKeys.alternativeCellphone} />}
+                                onChange={(value: any) => {
+                                    setValue('alternativephone', value || "");
+                                }}
+                                defaultCountry={"pe"}
+                                value={getValues("alternativephone")}
+                                enableLongNumbers={true}
+                                countryCodeEditable={false}
+                                placeholder={t(langKeys.alternativephone)}
+                                error={errors?.alternativephone?.message}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            {(!voxiConnection.error && userConnected) &&
+                                                <IconButton size="small" onClick={() => {
+                                                    if (voxiConnection.error) {
+                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
+                                                    } else {
+                                                        dispatch(setModalCall(true))
+                                                        dispatch(setPhoneNumber(getValues("alternativephone")))
+                                                    }
+                                                }}>
+                                                    <PhoneIcon />
+                                                </IconButton>
+                                            }
+                                        </InputAdornment>
+                                    )
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -454,3 +397,5 @@ export const PersonalDataTab: FC<PersonalDataTabProps> = ({ getValues, trigger, 
         </div>
     );
 }
+
+export default PersonalDataTab;

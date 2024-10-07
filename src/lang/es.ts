@@ -6542,6 +6542,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   addressnumber: 'Número de dirección',
   mainaddress: 'Dirección principal',
   additionaladdress: 'Dirección adicional',
+  occupationdesc: 'Ocupación',
+  civilstatus: 'Estado civil',
+  salary: 'Salario',
 };
 
 const esResource: ResourceLanguage = {

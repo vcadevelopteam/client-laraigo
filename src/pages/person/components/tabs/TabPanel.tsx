@@ -1,12 +1,8 @@
 import { Box } from "@material-ui/core";
 import { FC } from "react";
+import { TabPanelProps } from "pages/person/model";
 
-interface TabPanelProps {
-    value: string;
-    index: string;
-}
-
-export const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
+const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
     return (
         <div
             role="tabpanel"
@@ -21,3 +17,5 @@ export const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
         </div>
     );
 }
+
+export default TabPanel;

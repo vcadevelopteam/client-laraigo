@@ -3,10 +3,8 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getChannelListByPersonBody, editPersonBody, insPersonUpdateLocked, personInsValidation, getPersonOne } from 'common/helpers';
 import { Dictionary, IPerson } from "@types";
-import { Avatar, Divider, Button, makeStyles, AppBar, Tabs, Tab, Breadcrumbs, Link, Tooltip, } from '@material-ui/core';
+import { Divider, Button, makeStyles, AppBar, Tabs, Tab, Breadcrumbs, Link, Tooltip, } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon } from 'icons';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
@@ -25,72 +23,8 @@ import LinkIcon from '@material-ui/icons/Link';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
-import { Property } from './components/Property';
-import { GeneralInformationTab } from './components/GeneralInformationTab';
-import { TabPanel } from './components/TabPanel';
-import { CommunicationChannelsTab } from './components/CommunicationChannelsTab';
-import { ConversationsTab } from './components/ConversationsTab';
-import { OpportunitiesTab } from './components/OpportunitiesTab';
-import { AuditTab } from './components/AuditTab';
-import { DialogSendTemplateDetail } from './modals/DialogSendTemplateDetail';
-import { CustomVariableTab } from './components/CustomVariableTab';
-import { SideOverview } from './components/SideOverview';
-
-
-
-
-const usePersonDetailStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: "100%",
-        width: 'inherit',
-        // overflowY: 'hidden',
-    },
-    rootContent: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'stretch',
-        flexGrow: 1,
-        overflowY: 'hidden',
-    },
-    tabs: {
-        backgroundColor: '#EBEAED',
-        color: '#989898',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 'inherit',
-    },
-    tab: {
-        color: theme.palette.text.primary,
-        backgroundColor: '#EBEAED',
-        flexGrow: 1,
-        maxWidth: 'unset',
-    },
-    activetab: {
-        backgroundColor: 'white',
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: 500,
-    },
-    profile: {
-        color: theme.palette.text.primary,
-        maxWidth: 343,
-        width: 343,
-        minWidth: 343,
-        padding: theme.spacing(2),
-        display: 'flex',
-        flexDirection: 'column',
-        overflowY: 'auto',
-    },
-    iconHelpText: {
-        width: 15,
-        height: 15,
-        cursor: 'pointer',
-    },
-}));
+import { GeneralInformationTab, TabPanel, CommunicationChannelsTab, ConversationsTab, OpportunitiesTab, DialogSendTemplateDetail, CustomVariableTab, SideOverview, AuditTab } from './index';
+import { usePersonDetailStyles } from '../styles';
 
 const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ person, setrefresh }) => {
     const dispatch = useDispatch();
@@ -167,14 +101,14 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             salary: person?.salary || 0,
             latitude: person?.latitude || 0,
             longitude: person?.longitude || 0,
-            address_book : typeof person?.address_book === 'string' ? JSON.parse(person.address_book) : (person?.address_book || []),
-            age: person?.birthday? Math.floor((Number(new Date()) - new Date(person.birthday).getTime()) / 3.15576e+10): person?.age || 0,
-        } || {},
+            address_book: typeof person?.address_book === 'string' ? JSON.parse(person.address_book) : (person?.address_book || []),
+            age: person?.birthday ? Math.floor((Number(new Date()) - new Date(person.birthday).getTime()) / 3.15576e+10) : person?.age || 0,
+        },
     });
-    const generalWatch=watch()
-    const watchEmail=watch("email");
-    const watchPhone=watch("phone");
-    const watchadressbook=watch("address_book");
+    const generalWatch = watch()
+    const watchEmail = watch("email");
+    const watchPhone = watch("phone");
+    const watchadressbook = watch("address_book");
 
     useEffect(() => {
         if (!person) {
@@ -233,7 +167,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
         });
         register('email', {
             validate: {
-                checkphone:(value) => (!!watchPhone?true: !!value?true: t(langKeys.validationphoneemail)), 
+                checkphone: (value) => (!!watchPhone ? true : !!value ? true : t(langKeys.validationphoneemail)),
                 isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + ""),
             }
         });
@@ -244,7 +178,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
         });
         register('phone', {
             validate: {
-                checkemail:(value) => (!!watchEmail?true: !!value?true: t(langKeys.validationphoneemail)), 
+                checkemail: (value) => (!!watchEmail ? true : !!value ? true : t(langKeys.validationphoneemail)),
                 isperuphone: (value) => (value?.startsWith("+51") ? (value.length === 12 || t(langKeys.validationphone) + "") : true)
             }
         });
@@ -308,6 +242,8 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
         const allOk = await trigger();
         if (allOk) {
             const values = getValues();
+            debugger
+            console.log(values)
             const callback = () => {
                 const payload = editPersonBody({
                     ...values,
@@ -609,7 +545,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                 </div>
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
                 {!!person.personid &&
-                    <SideOverview person={person} classes={classes}/>
+                    <SideOverview person={generalWatch} classes={classes} setValue={setValue} />
                 }
             </div>
             <DialogLinkPerson

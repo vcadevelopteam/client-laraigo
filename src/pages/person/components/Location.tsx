@@ -4,33 +4,11 @@ import { langKeys } from "lang/keys";
 import MapLocation from "pages/MapLocation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DetailLocationProps } from "../model";
+import { useLocationStyles } from "../styles";
 
-interface DetailLocationProps {
-    row: any;
-    setValue: any;
-}
-
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
-    },
-    labellink: {
-        color: '#7721ad',
-        textDecoration: 'underline',
-        cursor: 'pointer'
-    },
-}));
-
-export const Location: React.FC<DetailLocationProps> = ({ row, setValue }) => {
-    const classes = useStyles();
+const Location: React.FC<DetailLocationProps> = ({ row, setValue }) => {
+    const classes = useLocationStyles();
     const { t } = useTranslation();
     const [directionData, setDirectionData] = useState({
         movedmarker: false,
@@ -182,3 +160,5 @@ export const Location: React.FC<DetailLocationProps> = ({ row, setValue }) => {
         </div>
     );
 }
+
+export default Location;

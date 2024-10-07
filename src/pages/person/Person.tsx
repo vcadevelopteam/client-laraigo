@@ -23,8 +23,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 import { CellProps } from 'react-table';
-import { DialogSendTemplate } from './modals/DialogSendTemplate';
-import { TemplateIcons } from './components/TemplateIcons';
+import { DialogSendTemplate, TemplateIcons } from './components/index';
 
 const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().substring(0, 10)
 
