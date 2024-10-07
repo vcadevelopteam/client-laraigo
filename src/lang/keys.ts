@@ -6536,6 +6536,9 @@ export const langKeys = {
   linkenddatedesc: 'linkenddatedesc',
   useregisteredlinkscount: 'useregisteredlinkscount',
   selectregisteredlink: 'selectregisteredlink',
+  occupationdesc: 'occupationdesc',
+  civilstatus: 'civilstatus',
+  salary: 'salary',
 };
 
 export type LangKeys = typeof langKeys;

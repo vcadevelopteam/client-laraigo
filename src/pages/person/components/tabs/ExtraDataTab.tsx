@@ -1,26 +1,14 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit } from "components";
-import { IPerson } from "@types";
-import { UseFormGetValues } from "react-hook-form";
 import { FC } from "react";
+import { ExtraDataTabProps } from "pages/person/model";
+import { useExtraDataTabStyles } from "pages/person/styles";
 
-
-interface ExtraDataTabProps {
-    getValues: UseFormGetValues<IPerson>;
-    setValue: any;
-    trigger: any;
-}
-const useStyles = makeStyles(theme => ({
-    fieldStyle: {
-        margin: 12
-    },
-}));
-
-export const ExtraDataTab: FC<ExtraDataTabProps> = ({ getValues, trigger, setValue }) => {
+const ExtraDataTab: FC<ExtraDataTabProps> = ({ getValues, trigger, setValue }) => {
     const { t } = useTranslation();
-    const classes = useStyles()
+    const classes = useExtraDataTabStyles()
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto', }}>
@@ -206,3 +194,5 @@ export const ExtraDataTab: FC<ExtraDataTabProps> = ({ getValues, trigger, setVal
         </div>
     );
 }
+
+export default ExtraDataTab;

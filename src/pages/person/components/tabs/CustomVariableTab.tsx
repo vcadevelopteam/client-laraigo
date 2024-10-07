@@ -1,19 +1,14 @@
-import { Dictionary } from "@types";
 import { getDomainByDomainNameList } from "common/helpers";
 import CustomTableZyxEditable from "components/fields/customtable-editable";
 import { useSelector } from "hooks";
 import { langKeys } from "lang/keys";
+import { CustomVariableTabProps } from "pages/person/model";
 import { FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { getCollectionAux2 } from "store/main/actions";
 
-interface CustomVariableTabProps {
-    setTableData: (x: Dictionary[]) => void;
-    tableData: Dictionary[];
-}
-
-export const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData }) => {
+const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTableData }) => {
     const dispatch = useDispatch();
     const domains = useSelector(state => state.person.editableDomains);
     const { t } = useTranslation();
@@ -91,3 +86,5 @@ export const CustomVariableTab: FC<CustomVariableTabProps> = ({ tableData, setTa
         />
     );
 }
+
+export default CustomVariableTab;

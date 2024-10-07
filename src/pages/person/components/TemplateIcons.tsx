@@ -8,12 +8,9 @@ import { IconButton, MenuItem } from '@material-ui/core';
 import { SmsIcon, WhatsappIcon } from 'icons';
 import { langKeys } from 'lang/keys';
 import MailIcon from '@material-ui/icons/Mail';
+import { TemplateIconsProps } from '../model';
 
-export const TemplateIcons: FC<{
-    sendHSM?: (data: any) => void;
-    sendSMS: (data: any) => void;
-    sendMAIL: (data: any) => void;
-}> = ({ sendHSM, sendSMS, sendMAIL }) => {
+const TemplateIcons: FC<TemplateIconsProps> = ({ sendHSM, sendSMS, sendMAIL }) => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const handleClose = (e: any) => {
@@ -85,3 +82,4 @@ export const TemplateIcons: FC<{
         </div>
     )
 }
+export default TemplateIcons;

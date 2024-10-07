@@ -1,27 +1,19 @@
+import { Box } from "@material-ui/core";
 import { Dictionary, IPerson } from "@types";
+import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, FieldView } from "components";
 import { useSelector } from "hooks";
 import { langKeys } from "lang/keys";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { DialogSendTemplateProps } from "pages/person/model";
+import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
+import { sendHSM } from "store/inbox/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { sendHSM } from 'store/inbox/actions';
-import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, FieldView } from "components";
-import { Box } from "@material-ui/core";
 
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
 
-interface DialogSendTemplateProps {
-    setOpenModal: (param: any) => void;
-    openModal: boolean;
-    persons: IPerson[];
-    type: "HSM" | "MAIL" | "SMS";
-    onSubmitTrigger: () => void;
-}
-
-
-export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type, onSubmitTrigger }) => {
+const DialogSendTemplateDetail: FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
@@ -40,7 +32,7 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
             default: return '-';
         }
     }, [type]);
-
+    
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
@@ -74,7 +66,6 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
-                onSubmitTrigger()
             } else if (sendingRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
@@ -102,10 +93,10 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
                 communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
                 communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
             })
-            register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('hsmtemplateid', { validate: (value:any) => ((value && value > 0) || t(langKeys.field_required)) });
 
             if (type === "HSM") {
-                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+                register('communicationchannelid', { validate: (value:any) => ((value && value > 0) || t(langKeys.field_required)) });
             } else {
                 register('communicationchannelid');
             }
@@ -137,10 +128,10 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
             } else {
                 setValue('headervariables', [])
             }
-            if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some((element: any) => element.btn.type === "dynamic")) {
+            if (value?.buttonsgeneric?.length && value?.buttonsgeneric.some((element:any) => element.btn.type === "dynamic")) {
                 const buttonsaux = value?.buttonsgeneric
-                let buttonsFiltered: any = []
-                buttonsaux.forEach((x: any, i: number) => {
+                let buttonsFiltered:any[] = []
+                buttonsaux.forEach((x:any) => {
                     const variablesListbtn = x?.btn?.url?.match(/({{)(.*?)(}})/g) || [];
                     const varaiblesCleanedbtn = variablesListbtn.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
                     if (varaiblesCleanedbtn.length) {
@@ -161,7 +152,7 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
             setValue('hsmtemplateid', 0);
         }
     }
-    const onSubmit = handleSubmit((data) => {
+    const onSubmit = handleSubmit((data:any) => {
         if (personWithData.length === 0) {
             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
             return
@@ -176,7 +167,7 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
             shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
-                phone: person.phonewhatsapp || "",
+                phone: person.phone?.replace("+", '') || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
@@ -210,9 +201,6 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
-            <div style={{ marginBottom: 8 }}>
-                {persons.length} {t(langKeys.persons_selected)}, {personWithData.length} {t(langKeys.with)} {type === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
-            </div>
             {type === "HSM" && (
                 <div className="row-zyx">
                     <FieldSelect
@@ -341,6 +329,7 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
                         }
                     </div>
                 ))}
+
                 {Boolean(buttons.length) && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
                     {t(langKeys.buttons)}
                 </Box>}
@@ -390,3 +379,5 @@ export const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenM
             </div>
         </DialogZyx>)
 }
+
+export default DialogSendTemplateDetail;

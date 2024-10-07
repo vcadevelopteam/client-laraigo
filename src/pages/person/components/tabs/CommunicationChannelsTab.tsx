@@ -1,20 +1,12 @@
-import { IObjectState, IPerson, IPersonDomains } from "@types";
 import { getChannelListByPersonBody } from "common/helpers";
 import { useSelector } from "hooks";
 import { FC, useEffect } from "react";
-import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { getChannelListByPerson, resetGetChannelListByPerson } from "store/person/actions";
-import { ChannelItem } from "./ChannelItem";
+import { ChannelItem } from "../index";
+import { ChannelTabProps } from "pages/person/model";
 
-interface ChannelTabProps {
-    person: IPerson;
-    getValues: UseFormGetValues<IPerson>;
-    setValue: UseFormSetValue<IPerson>;
-    domains: IObjectState<IPersonDomains>;
-}
-
-export const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
+const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const channelList = useSelector(state => state.person.personChannelList);
 
@@ -34,3 +26,5 @@ export const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
         </div>
     );
 }
+
+export default CommunicationChannelsTab;

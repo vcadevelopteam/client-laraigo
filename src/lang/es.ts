@@ -6549,6 +6549,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   linkenddatedesc: 'Ingresa una fecha final para la vigencia de tu enlace',
   useregisteredlinkscount: 'Usar enlace registrado para conteo de clicks',
   selectregisteredlink: 'Seleccione un enlace registrado',
+  occupationdesc: 'Ocupación',
+  civilstatus: 'Estado civil',
+  salary: 'Salario',
 };
 
 const esResource: ResourceLanguage = {

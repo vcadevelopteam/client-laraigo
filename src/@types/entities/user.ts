@@ -103,8 +103,9 @@ export interface IUser {
     iconurl?: string;
     balance: Balance;
     samlAuth?: boolean;
-    languagesettings?: ILanguageSettings;
-    //notifications: Notification[];
+    languagesettings?: ILanguageSettings;    
+    uiconfig?: any
+    // notifications: Notification[];
 }
 
 export interface NotificationZyx {
