@@ -1780,13 +1780,7 @@ const Reports: FC = () => {
         )
     } else if (viewSelected === "campaignwithlinks") {
         return (
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <TemplateBreadcrumbs
-                    breadcrumbs={getArrayBread(t(langKeys.campaignwithlinks), t(langKeys.report_plural))}
-                    handleClick={handleSelectedString}
-                />
-                <CampaignLinksReport />
-            </div>
+            <CampaignLinksReport setViewSelected={handleSelectedString}/>
         )
     }else if (viewSelected === "reportcompliancesla") {
         return (

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksSel } from 'common/helpers';
-import { Dictionary, IFetchData } from "@types";
-import { exportData, getCollection, getCollectionAux, getCollectionPaginated, resetCollectionPaginated } from 'store/main/actions';
+import { dictToArrayKV, getCampaignReportExport, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksSel } from 'common/helpers';
+import { Dictionary } from "@types";
+import { exportData, getCollection, getCollectionAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { FieldSelect, DateRangePicker } from 'components';
+import { FieldSelect, DateRangePicker, TemplateBreadcrumbs } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -14,7 +14,6 @@ import { Button} from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
-import { CellProps } from 'react-table';
 import TableZyx from 'components/fields/table-paginated';
 
 interface DetailProps {
@@ -22,7 +21,7 @@ interface DetailProps {
 }
 
 const useStyles = makeStyles(() => ({
-      select: {
+    select: {
         width: '200px'
     },   
     itemDate: {        
@@ -41,7 +40,30 @@ const useStyles = makeStyles(() => ({
     },
     filterComponent: {
         width: '180px'
-      },
+    },
+    main: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1
+    },
+    header: {
+        display: 'flex',
+        background: 'white',
+        padding: '16px 16px 0px 16px'
+    },
+    leftHeader: {
+        textAlign: 'left',
+        display: 'flex',
+        gap: '0.5rem',
+        marginRight: 'auto'
+    },
+    rightHeader: {
+        textAlign: 'right',
+        display:'flex',
+        marginRight:'0.5rem',
+        gap:'0.5rem'
+    },
 }));
 
 const dataReportType = {
@@ -49,7 +71,7 @@ const dataReportType = {
     proactive: 'proactive'
 }
 
-const selectionKey = 'id';
+const selectionKey = 'campaignid';
 
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),
@@ -73,188 +95,118 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
 
 	useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
-            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.linkregisterid === parseInt(x)) || p.find((y) => y.linkregisterid === parseInt(x)) || {}))
+            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.campaignid === parseInt(x)) || p.find((y) => y.campaignid === parseInt(x)) || {}))
         }
     }, [selectedRows])
-    
-    const cell = (props: CellProps<Dictionary>) => {
-        const column = props.cell.column;
-        const row = props.cell.row.original;
-        return (
-            <div>             
-                {column.sortType === "datetime" && !!row[column.id] 
-                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                })
-                : row[column.id]}
-            </div>
-        )
-    }
-
-    const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
   
     const columns = React.useMemo(
         () => [                    
             {
                 Header: t(langKeys.campaign),
-                accessor: 'campaign',
-                showGroupedBy: true,                 
-                Cell: cell
+                accessor: 'title',
+                width: "auto",
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description',
-                showGroupedBy: true,             
-                Cell: cell
+                accessor: 'campaigndescription',
+                width: "auto",
             },
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
-                showGroupedBy: true,                            
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.templatename),
-                accessor: 'templatename',
-                showGroupedBy: true,                 
-                Cell: cell
+                accessor: 'template_name',
+                width: "auto",
             },
             {
                 Header: t(langKeys.bond),
-                accessor: 'link',
-                showGroupedBy: true,                 
-                Cell: cell
+                accessor: 'urlname',
+                width: "auto",
             },
             {
                 Header: t(langKeys.url),
                 accessor: 'url',
-                showGroupedBy: true,                 
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
-                showGroupedBy: true,                 
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
-                type: 'date',
-                sortType: 'datetime',                
-                Cell: cell  
+                width: "auto",
+				Cell: (props: any) => {
+                    const { rundate } = props.cell.row.original;
+					const dateOnly = rundate?.split(' ')[0];
+                    return (dateOnly || '');
+                },
             },
             {
                 Header: t(langKeys.executiontype_campaign),
                 accessor: 'executiontype',
-                NoFilter: false,
-                showGroupedBy: true, 
-                showColumn: true,     
-                prefixTranslation: 'executiontype',
-                Cell: cell  
+                width: "auto",
             },                
             {
                 Header: t(langKeys.executingUser),
-                accessor: 'executionuser',
-                NoFilter: false,
-                showGroupedBy: true, 
-                showColumn: true,   
-                prefixTranslation: 'executionuser',
-                Cell: cell  
-            },
-            {
-                Header: t(langKeys.executingUserProfile),
-                accessor: 'executionuserprofile',
-                NoFilter: false,
-                showGroupedBy: true, 
-                showColumn: true,   
-                prefixTranslation: 'executionuserprofile',
-                Cell: cell  
+                accessor: 'executed_by',
+                width: "auto",
             },
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.success),
-                accessor: 'success',
+                accessor: 'total_satisfactory',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.success_percent),
-                accessor: 'successp',
+                accessor: 'percentage_satisfactory',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.failed),
-                accessor: 'fail',
+                accessor: 'total_failed',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.failed_percent),
-                accessor: 'failp',
+                accessor: 'percentage_failed',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.clicksonlink),
-                accessor: 'clicks',
+                accessor: 'total_clickurl',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.clicksonlinkpercent),
-                accessor: 'clicksp',
+                accessor: 'percentage_clickurl',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
             {
                 Header: t(langKeys.attended),
-                accessor: 'attended',
+                accessor: 'total_attended',
                 type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
-            },
-            {
-                Header: t(langKeys.locked),
-                accessor: 'locked',
-                type: 'number',
-                sortType: 'number',
-                showColumn: true,
-                Cell: cell
+                width: "auto",
             },
         ],
         []
     );
-
-    React.useEffect(() => {
-        setColumnOrder(columns.map(column => column.accessor));
-    }, [columns]);
 
     const fetchData = () => dispatch(getCollection(reportCampaignLinksSel({
         startdate: dateRangeCreateDate.startDate,
@@ -351,10 +303,8 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
     };
 
     useEffect(() => {
-        dispatch(resetCollectionPaginated());
         fetchData();
         fetchFiltersChannels();
-        return () => {dispatch(resetCollectionPaginated())};
     }, []);
 
     useEffect(() => {
@@ -386,85 +336,84 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
    
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.report_plural) },
+        { id: "linkregister", name: t(langKeys.campaignwithlinks) },
+    ];
+    
     return (
-        <div style={{ width: '100%' }}>
-            <div style={{position: 'relative', height:'100%'}}>
-                <div style={{ width: 'calc(100% - 60px)', display: 'flex', background:'white', padding:'1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>
-                    <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
-                        <DateRangePicker
-                            open={openDateRangeCreateDateModal}
-                            setOpen={setOpenDateRangeCreateDateModal}
-                            range={dateRangeCreateDate}
-                            onSelect={setDateRangeCreateDate}
-                        >
-                            <Button
-                                className={classes.itemDate}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                            >
-                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                            </Button>
-                        </DateRangePicker>
-                        <FieldSelect
-                            label={t(langKeys.channel)}
-                            variant="outlined"                       
-                            className={classes.filterComponent}                        
-                            data={uniqueTypdescList || []}        
-                            valueDefault={uniqueTypdescList}
-                            onChange={(value) => setSelectedChannel(value?.communicationchannelid||0)}           
-                            optionDesc="typedesc"
-                            optionValue="typedesc"
-                        />
+        <div className={classes.main}>
+            <TemplateBreadcrumbs breadcrumbs={arrayBread} handleClick={setViewSelected}/>
+            <div className={classes.header}>
+                <div className={classes.leftHeader}>
+                    <DateRangePicker
+                        open={openDateRangeCreateDateModal}
+                        setOpen={setOpenDateRangeCreateDateModal}
+                        range={dateRangeCreateDate}
+                        onSelect={setDateRangeCreateDate}
+                    >
                         <Button
-                            disabled={main.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={() => fetchData()}
+                            className={classes.itemDate}
+                            startIcon={<CalendarIcon />}
+                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                         >
-                            {t(langKeys.search)}
+                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                         </Button>
-                    </div>
-                    <div style={{textAlign: 'right', display:'flex', marginRight:'0.5rem', gap:'0.5rem'}}>
-                        <FieldSelect
-                            uset={true}
-                            variant="outlined"
-                            label={t(langKeys.reporttype)}
-                            className={classes.select}
-                            valueDefault={reportType}
-                            onChange={(value) => setReportType(value?.key)}
-                            data={dictToArrayKV(dataReportType)}
-                            optionDesc="value"
-                            optionValue="key"
-                        />
-                        <Button
-                            className={classes.button}
-                            color="primary"
-                            disabled={main.loading}
-                            onClick={() => triggerExportData()}                         
-                            startIcon={<DownloadIcon />}
-                            variant="contained"
-                        >
-                            {`${t(langKeys.download)}`}
-                        </Button>
-                    </div>
+                    </DateRangePicker>
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        variant="outlined"                       
+                        className={classes.filterComponent}                        
+                        data={uniqueTypdescList || []}        
+                        valueDefault={uniqueTypdescList}
+                        onChange={(value) => setSelectedChannel(value?.communicationchannelid||0)}           
+                        optionDesc="typedesc"
+                        optionValue="typedesc"
+                    />
+                    <Button
+                        disabled={main.loading}
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                        style={{ width: 120, backgroundColor: "#55BD84" }}
+                        onClick={() => fetchData()}
+                    >
+                        {t(langKeys.search)}
+                    </Button>
                 </div>
-                <TableZyx
-                    columns={columns}
-                    data={main.data}
-                    loading={main.loading}
-                    fetchData={fetchData}
-                    showHideColumns={true}
-                    groupedBy={true}
-                    download={false}
-                    hoverShadow={false}
-                    exportPersonalized={triggerExportData}
-                    useSelection={true}
-                    selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
-                />
+                <div className={classes.rightHeader}>
+                    <FieldSelect
+                        uset={true}
+                        variant="outlined"
+                        label={t(langKeys.reporttype)}
+                        className={classes.select}
+                        valueDefault={reportType}
+                        onChange={(value) => setReportType(value?.key)}
+                        data={dictToArrayKV(dataReportType)}
+                        optionDesc="value"
+                        optionValue="key"
+                    />
+                    <Button
+                        className={classes.button}
+                        color="primary"
+                        disabled={main.loading}
+                        onClick={() => triggerExportData()}                         
+                        startIcon={<DownloadIcon />}
+                        variant="contained"
+                    >
+                        {`${t(langKeys.download)}`}
+                    </Button>
+                </div>
             </div>
+            <TableZyx
+                columns={columns}
+                filterGeneral={false}
+                data={main.data}
+				loading={main.loading}
+                useSelection={true}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+            />
         </div>
     )
 }
