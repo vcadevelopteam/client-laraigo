@@ -640,11 +640,14 @@ const Location: FC = () => {
             );
 
             data = data.map(location => {
-                if (location.phone.startsWith('+')) {
-                    location.phone = location.phone.slice(1);
+                const phone = location.phone ? String(location.phone) : '';
+                const alternativephone = location.alternativephone ? String(location.alternativephone) : '';
+
+                if (phone.startsWith('+')) {
+                    location.phone = phone.slice(1);
                 }
-                if (location.alternativephone && location.alternativephone.startsWith('+')) {
-                    location.alternativephone = location.alternativephone.slice(1);
+                if (alternativephone.startsWith('+')) {
+                    location.alternativephone = alternativephone.slice(1);
                 }
                 return location;
             });
