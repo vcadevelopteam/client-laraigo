@@ -680,30 +680,16 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
         <div className={className}>
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
             {(emoji || hashtag) && <div style={{ display: 'flex', width: '100%', alignItems: 'right', alignContent: 'right', justifyContent: 'flex-end', marginLeft: '6px' }}>
-                {emoji && <QuickReactions
-                    reactionsArray={emojiReactions}
-                    isVisible={isVisible}
-                    onClose={() => setIsVisible(false)}
-                    onClickReaction={(reaction) => {
-                        if (maxLength === 0 || `${value}${reaction.content}`.length <= maxLength) {
-                            setvalue(`${value}${reaction.content}`);
-                            onChange && onChange(`${value}${reaction.content}`);
-                        }
-                    }}
-                    trigger={
-                        <button
-                            type='button'
-                            onClick={() => {
-                                setIsVisible(!isVisible);
-                            }}
-                            style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d710976d-8894-4f37-935b-f4dc102bc294/Emoji.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
-                        >
-                        </button>
-                    }
-                    placement={'left'}
-                    header={'Emojis'}
-                    selectionContainerClassName="custom-reactions"
-                />}
+                {emoji && (
+                    <EmojiPickerZyx
+                        onSelect={(emoji) => {
+                            if (maxLength === 0 || `${value}${emoji.native}`.length <= maxLength) {
+                                setvalue(`${value}${emoji.native}`);
+                                onChange && onChange(`${value}${emoji.native}`);
+                            }
+                        }}
+                    />
+                )}
                 {hashtag && <button
                     type='button'
                     onClick={() => {
@@ -1895,9 +1881,19 @@ const emojiPickerStyle = makeStyles({
 export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, style, icon, bottom = 50 }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
-    const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
+
+    const handleClick = (event: React.MouseEvent) => {
+        const { pageX, pageY } = event;
+        setPosition({
+            top: pageY + 20,
+            left: pageX,
+        });
+        setOpen((prev) => !prev);
+    };
+
+    const [position, setPosition] = React.useState({ top: 0, left: 0 });
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
@@ -1911,6 +1907,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                     <div style={{
                         position: 'absolute',
                         bottom: bottom,
+                        top: position.top,
                         zIndex: 1201
                     }}>
                         <Picker
