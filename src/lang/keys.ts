@@ -6539,6 +6539,10 @@ export const langKeys = {
   occupationdesc: 'occupationdesc',
   civilstatus: 'civilstatus',
   salary: 'salary',
+  clicksonlink: 'clicksonlink',
+  clickonlink: 'clickonlink',
+  campaignwithlinks: 'campaignwithlinks',
+  clicksonlinkpercent: 'clicksonlinkpercent',
 };
 
 export type LangKeys = typeof langKeys;

@@ -257,6 +257,16 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 showColumn: true,
             },
             {
+                Header: t(langKeys.clicksonlink),
+                accessor: 'clickurl',
+                showGroupedBy: true,
+                showColumn: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { clickurl } = props.cell.row.original;
+                    return clickurl === 0 ? 'Fail' : 'Ok'
+                }
+            },
+            {
                 Header: "Log",
                 accessor: 'log',
                 showGroupedBy: true,
@@ -457,6 +467,14 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 type: 'number',
                 sortType: 'number',
                 accessor: 'answered',
+                showGroupedBy: true,
+                showColumn: true,
+            },
+            {
+                Header: t(langKeys.clicksonlink),
+                type: 'number',
+                sortType: 'number',
+                accessor: 'clickurl',
                 showGroupedBy: true,
                 showColumn: true,
             },

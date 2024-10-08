@@ -6601,6 +6601,10 @@ const translation: LangKeys = {
   occupationdesc: 'Occupation',
   civilstatus: 'Civil status',
   salary: 'Salary',
+  clicksonlink: 'Clicks on Link',
+  clickonlink: 'Click on Link',
+  campaignwithlinks: 'Campaign with Links',
+  clicksonlinkpercent: '% Click on Link',
 };
 
 const enResource: ResourceLanguage = {

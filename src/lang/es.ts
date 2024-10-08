@@ -6552,6 +6552,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   occupationdesc: 'Ocupación',
   civilstatus: 'Estado civil',
   salary: 'Salario',
+  clicksonlink: 'Clicks en Enlace',
+  clickonlink: 'Click en Enlace',
+  campaignwithlinks: 'Campaña con Enlaces',
+  clicksonlinkpercent: '% Click en Enlace',
 };
 
 const esResource: ResourceLanguage = {
