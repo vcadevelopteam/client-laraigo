@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { dictToArrayKV, exportExcel, getCampaignReportExport, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksSel } from 'common/helpers';
+import { dictToArrayKV, exportExcel, getCampaignReportExport, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksDetailSel, reportCampaignLinksSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import { exportData, getCollection, getCollectionAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -70,7 +70,7 @@ const dataReportType = {
     default: 'default',
 }
 
-const selectionKey = 'campaignid';
+const selectionKey = 'identifier';
 
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),
@@ -83,6 +83,7 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 	const main = useSelector((state) => state.main.mainData);
+    const mainAux = useSelector((state) => state.main.mainAux);
     const resExportData = useSelector(state => state.main.exportData);
     const [waitExport, setWaitExport] = useState(false);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -94,10 +95,10 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
 
 	useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
-            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.campaignid === parseInt(x)) || p.find((y) => y.campaignid === parseInt(x)) || {}))
+            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.identifier === x) || p.find((y) => y.identifier === x) || {}))
         }
     }, [selectedRows])
-  
+    
     const columns = React.useMemo(
         () => [                    
             {
@@ -219,11 +220,24 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
     })));
 
     const handleDownload = () => {
+        const mappedData = rowWithDataSelected.map(item => ({
+            rundate: item.rundate,
+            messagetemplateid: item.messagetemplateid,
+            campaignname: item.title
+        }));
+
+        dispatch(getCollectionAux(reportCampaignLinksDetailSel({
+            startdate: dateRangeCreateDate.startDate,
+            enddate: dateRangeCreateDate.endDate,
+            communicationchannelid: selectedChannel,
+            identifiers: mappedData,
+        })))
+
         if (Object.keys(selectedRows).length === 0) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
             return null;
         }
-        exportExcel('Reporte campañas con enlaces', rowWithDataSelected, columns)
+        //exportExcel('Reporte campañas con enlaces', rowWithDataSelected, columns)
     };
 
     useEffect(() => {

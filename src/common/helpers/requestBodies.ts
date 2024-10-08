@@ -5450,3 +5450,15 @@ export const reportCampaignLinksSel = ({startdate, enddate, communicationchannel
         communicationchannelid: communicationchannelid || 0,
     }
 });
+
+export const reportCampaignLinksDetailSel = ({startdate, enddate, communicationchannelid, identifiers}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+        identifiers: identifiers,
+    }
+});
