@@ -6532,6 +6532,22 @@ const translation: LangKeys = {
   registertime: 'Register Time',
 
   billingreport_conversationbillable: 'Billable WhatsApp Conversations',
+
+  linkregister: 'Link Register',
+  validity: 'Validity',
+  linknamedesc: 'Assign a name to your link',
+  addlinkdesc: 'Enter the URL of your link',
+  linkstartdatedesc: 'Enter a starting date for the validity of your link',
+  linkenddatedesc: 'Enter an end date for the validity of your link',
+  useregisteredlinkscount: 'Use registered link for click count',
+  selectregisteredlink: 'Select a registered link',
+  clicksonlink: 'Clicks on Link',
+  clickonlink: 'Click on Link',
+  campaignwithlinks: 'Campaign with Links',
+  clicksonlinkpercent: '% Click on Link',
+  clickurldate: 'Date of click on Link',
+  executeddate: 'Execution Date',
+
   watsonxassistantdescription: 'Train your artificial intelligence service',
   updateddate: 'Updated Date',
   topk: 'Top K',
