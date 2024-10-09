@@ -45,13 +45,13 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
     const [openModalInvoiceShare, setOpenModalInvoiceShare] = useState(false);
     const [waitSave3, setWaitSave3] = useState(false);
     const productsData = useSelector(state => state.main.mainAux2);
-
+    
     const generateInvoicePdf = () => {
         dispatch(showBackdrop(true));
         fetchProducts(rows?.[0]?.orderid)
         setWaitSave3(true);
     }
-
+    
     useEffect(() => {
         if (waitSave3) {
             if (!productsData.loading && !productsData.error) {
@@ -91,7 +91,7 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
         if (waitPdf) {
             if (!culqiReportResult.loading && !culqiReportResult.error) {
                 dispatch(showBackdrop(false));
-                setWaitPdf(false);
+                setWaitPdf(false);  
                 if (culqiReportResult.datacard) {
                     setPdfRender(culqiReportResult.datacard);
                     setOpenModalInvoiceA4(true)
@@ -125,7 +125,7 @@ const ElectronicTicketAndInvoiceDialog: React.FC<{
                     <Trans i18nKey={t(langKeys.receipt) + " - " + t(langKeys.billingfield_billinga4)} />
                 </Button>
             </div>
-            {config?.shareinvoiced && (
+            {(config?.shareinvoiced && (config?.wspi || config?.emaili)) && (
                 <div className={classes.buttonspace}>
                     <Button
                         variant="contained"

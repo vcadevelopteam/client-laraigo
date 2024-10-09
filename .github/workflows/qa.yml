@@ -1,0 +1,48 @@
+name: Deploy to TESTING
+
+on:
+  push:
+    branches:
+      - qa
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14.21.3' # Usa la versión de Node.js requerida
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Create .env file
+      run: |
+        echo "VITE_ENV=TESTING" >> .env
+
+    - name: Build project
+      run: npm run build
+
+    - name: Set up AWS CLI
+      run: |
+        sudo apt-get install awscli
+
+    - name: Create AWS config directory
+      run: mkdir -p /home/runner/.aws
+
+    - name: Configure AWS CLI
+      run: |
+        echo "[default]" > /home/runner/.aws/config
+        echo "region = us-south" >> /home/runner/.aws/config
+        echo "[default]" > /home/runner/.aws/credentials
+        echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> /home/runner/.aws/credentials
+        echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> /home/runner/.aws/credentials
+
+    - name: Sync build folder to IBM Cloud Object Storage
+      run: |
+        aws --endpoint-url https://s3.us-south.cloud-object-storage.appdomain.cloud s3 cp ./build/ s3://test-laraigo/ --recursive

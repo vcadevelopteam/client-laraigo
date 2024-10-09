@@ -435,9 +435,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }      
     }, [multiData]);
 
-    // console.log('template actual: ', templateToUse)
-    // console.log('campaña actual: ', multiData[4])
-    
     const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
         if(row && !detectionChangeSource){
             const key = selectedOption.key;
@@ -1621,7 +1618,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>                               
-                                {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
+                                {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO' || templateToUse.headertype === 'DOCUMENT') && (
                                     row && !detectionChangeSource  ? (
                                     (() => {
                                         const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};

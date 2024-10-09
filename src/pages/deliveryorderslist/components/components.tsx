@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Button, Menu, MenuItem, makeStyles } from "@material-ui/core";
-import LocalShippingIcon from "@material-ui/icons/LocalShipping";
+import { TipificationIcon } from "icons";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -89,7 +89,7 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
                 className={classes.button}
                 variant="contained"
                 color="primary"
-                startIcon={<LocalShippingIcon color="secondary" />}
+                startIcon={<TipificationIcon color="secondary" />}
                 onClick={handleClickTyping}
                 style={{backgroundColor: '#55BD84'}}
             >
@@ -113,11 +113,6 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({
                 {schedulesth && (
                     <MenuItem onClick={handleMenuItemSchedulesth}>
                         <Trans i18nKey={langKeys.schedulesth} />
-                    </MenuItem>
-                )}
-                {prepare && (
-                    <MenuItem onClick={handleMenuItemPrepare}>
-                        <Trans i18nKey={langKeys.prepare} />
                     </MenuItem>
                 )}
                 {dispatch && (

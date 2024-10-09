@@ -134,10 +134,8 @@ export const PostCreatorPublish: FC<{ setViewSelected: (id: string) => void }> =
     useEffect(() => {
         if (waitLoad) {
             if (!mainResult.loading && !mainResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                 dispatch(showBackdrop(false));
                 setWaitLoad(false);
-
                 setDataChannel(mainResult.data || []);
             } else if (mainResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }));
@@ -145,7 +143,8 @@ export const PostCreatorPublish: FC<{ setViewSelected: (id: string) => void }> =
                 setWaitLoad(false);
             }
         }
-    }, [mainResult, waitLoad])
+    }, [mainResult, waitLoad]);
+
 
     return (
         <React.Fragment>
@@ -1103,28 +1102,29 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
 
     const handleInsert = (type: string) => {
         setInsertMode(type);
-
-        if (!modalDate || !modalTime) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.posthistory_missingdatetime) }));
-            return;
-        }
-
+        const currentDate = new Date();
         const callback = () => {
-            dispatch(schedulePost({ data: modalData, date: modalDate, time: modalTime, type: type, publication: 'POST' }));
+            dispatch(schedulePost({
+                data: modalData,
+                date: currentDate,
+                time: currentDate,
+                type: type,
+                publication: 'POST'
+            }));
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
-
+        };
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
             callback
-        }))
-    }
+        }));
+    };
 
     useEffect(() => {
         if (waitSave) {
             if (!resultSchedule.loading && !resultSchedule.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 onTrigger(insertMode === 'DRAFT' ? '2' : '1');
@@ -1150,10 +1150,16 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
             showClose={true}
         >
             <div className={classes.containerDetail}>
-                <h4 style={{ marginTop: '2px' }}>{modalType === "DRAFT" ? t(langKeys.postcreator_publish_draft_description) : (modalType === "PROGRAM" ? t(langKeys.postcreator_publish_program_description) : t(langKeys.postcreator_publish_confirm_description))}</h4>
+                {modalType !== "PUBLISH" && (
+                    <h4 style={{ marginTop: '2px' }}>
+                        {modalType === "DRAFT"
+                            ? t(langKeys.postcreator_publish_draft_description)
+                            : t(langKeys.postcreator_publish_program_description)}
+                    </h4>
+                )}
                 <div className="row-zyx">
-                    {modalData?.channeldata?.map(function (channel: any) {
-                        return <div style={{ width: '100%', flex: '50%' }}>
+                    {modalData?.channeldata?.map((channel: any) => (
+                        <div key={channel.communicationchannelid} style={{ width: '100%', flex: '50%' }}>
                             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
                                 {channel.type === 'FBWA' && <FacebookColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'FBWM' && <WorkplaceMessengerIcon style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
@@ -1166,46 +1172,44 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
                                 <span>{channel.communicationchanneldesc}</span>
                             </div>
                         </div>
-                    })}
+                    ))}
                 </div>
-                <div className="row-zyx">
-                    <React.Fragment>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
-                            <KeyboardDatePicker
-                                className="col-6"
-                                format="d MMMM yyyy"
-                                invalidDateMessage={t(langKeys.invalid_date_format)}
-                                label={t(langKeys.date)}
-                                value={modalDate}
-                                onChange={(e: any) => {
-                                    setModalDate(e);
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
-                            <KeyboardTimePicker
-                                ampm={false}
-                                className="col-6"
-                                error={false}
-                                format="HH:mm:ss"
-                                label={t(langKeys.time)}
-                                value={modalTime}
-                                views={['hours', 'minutes', 'seconds']}
-                                onChange={(e: any) => {
-                                    setModalTime(e);
-                                }}
-                                keyboardIcon={<Timelapse />}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </React.Fragment>
-                </div>
+
+                {modalType === "PROGRAM" && (
+                    <div className="row-zyx">
+                        <React.Fragment>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
+                                <KeyboardDatePicker
+                                    className="col-6"
+                                    format="d MMMM yyyy"
+                                    invalidDateMessage={t(langKeys.invalid_date_format)}
+                                    label={t(langKeys.date)}
+                                    value={modalDate}
+                                    onChange={(e: any) => setModalDate(e)}
+                                />
+                            </MuiPickersUtilsProvider>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
+                                <KeyboardTimePicker
+                                    ampm={false}
+                                    className="col-6"
+                                    error={false}
+                                    format="HH:mm:ss"
+                                    label={t(langKeys.time)}
+                                    value={modalTime}
+                                    views={['hours', 'minutes', 'seconds']}
+                                    onChange={(e: any) => setModalTime(e)}
+                                    keyboardIcon={<Timelapse />}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </React.Fragment>
+                    </div>
+                )}
+
                 <div className="row-zyx">
                     <h3 style={{ marginBottom: '2px' }}>{modalData?.texttitle}</h3>
                     <h4 style={{ marginTop: '2px' }}>{modalData?.textbody}</h4>
                 </div>
             </div>
         </DialogZyx>
-    )
+    );
 }
-
-export default PostCreatorPublish;
