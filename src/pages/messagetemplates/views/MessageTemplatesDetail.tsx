@@ -3144,7 +3144,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                 <div className='col-8'>
                                                                                                                                                                     <div style={{marginBottom: 4}}>{t(langKeys.selectregisteredlink)}</div>
                                                                                                                                                                     <FieldSelect
-                                                                                                                                                                        data={multiData?.[4]?.data || []}
+                                                                                                                                                                        data={multiData?.[5]?.data || []}
                                                                                                                                                                         error={errors?.buttonsgeneric?.[i]?.link_id?.message}
                                                                                                                                                                         onChange={(value) => {
                                                                                                                                                                             if(value) {
