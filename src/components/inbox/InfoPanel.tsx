@@ -35,6 +35,10 @@ import DetailOrdersModal from 'pages/orders/components/DetailOrdersModal';
 import { Rating } from '@material-ui/lab';
 import LeadFormModal from 'pages/crm/LeadFormModal';
 import ServiceDeskLeadFormModal from 'pages/servicedesk/ServiceDeskLeadFormModal';
+import { transformPersonToItemsFormat } from 'pages/person/components/SideOverview';
+import { Property } from 'pages/person/components';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -151,7 +155,21 @@ const InfoClient: React.FC = () => {
     const dispatch = useDispatch();
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
     const [showLinkPerson, setShowLinkPerson] = useState(false)
+    const [displayAll, setdisplayAll] = useState(false)
     const person = useSelector(state => state.inbox.person.data);
+    const user = useSelector(state => state.login.validateToken.user);
+    const itemsInfo = transformPersonToItemsFormat(user?.uiconfig?.person || [])
+    const getVisibleItems = () => {
+      let sizeSum = 0;
+      return itemsInfo.filter((item: any) => {
+        if (sizeSum + item.size <= 4 || displayAll) {
+          sizeSum += item.size;
+          return true;
+        }
+        return false;
+      });
+    };
+    const visibleItems = getVisibleItems();  
 
     return (
         <>
@@ -179,20 +197,40 @@ const InfoClient: React.FC = () => {
                         >{t(langKeys.link)}
                         </Button>
                     </div>
-                    <div className={classes.containerName}>
-                        <PhoneIcon className={classes.propIcon} />
-                        <div style={{ flex: 1 }}>
-                            <div className={classes.label}>{t(langKeys.phone)}</div>
-                            <div>{person?.phone}</div>
+                    {visibleItems.map((x: any, index: number) => {
+                        return (
+                            <div
+                                key={`dataindex-${index}`}
+                                style={{
+                                    width: x.size === 2 ? "100%" : "calc(50% - 8px)",
+                                    flexBasis: x.size === 2 ? "100%" : "calc(50% - 8px)",
+                                    flexGrow: 1,
+                                }}
+                            >
+                                <Property
+                                    icon={x.icon}
+                                    title={t(x.field)}
+                                    subtitle={(person?.[x.field]||"")}
+                                    mt={1}
+                                    mb={1}
+                                />
+                            </div>
+                        );
+                    })}
+                    {itemsInfo.length > visibleItems.length && (
+                        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                            <IconButton onClick={() => setdisplayAll(!displayAll)} >
+                                <ExpandMoreIcon />
+                            </IconButton>
                         </div>
-                    </div>
-                    <div className={classes.containerName}>
-                        <EMailInboxIcon className={classes.propIcon} />
-                        <div style={{ flex: 1 }}>
-                            <div className={classes.label}>{t(langKeys.email)}</div>
-                            <div>{person?.email}</div>
+                    )}
+                    {displayAll && (
+                        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                            <IconButton onClick={() => setdisplayAll(!displayAll)} >
+                                <ExpandLessIcon />
+                            </IconButton>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
             <DialogLinkPerson
@@ -222,14 +260,41 @@ const InfoTab: React.FC = () => {
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname');
         register('name');
-        register('documenttype');
+        register('documentnumber', {
+            validate: {
+                validationDNI: (value) => getValues("documenttype") === "DNI" ? (value.length === 8 || t(langKeys.validationDNI) + "") : true,
+                validationRUC: (value) => getValues("documenttype") === "RUC" ? (value.length === 11 || t(langKeys.validationRUC) + "") : true,
+                validationCE: (value) => getValues("documenttype") === "CE" ? (value.length <= 12 || t(langKeys.validationCE) + "") : true,
+            }
+        });
+        register('lastname');
+        register('name');
+        register('documenttype', {
+            validate: {
+                validationDNI: (value) => !getValues("documentnumber") || (!!value || (t(langKeys.required) + "")),
+            }
+        });
         register('persontype');
-        register('email');
         register('observation');
-        register('phone');
-        register('documentnumber');
-        register('alternativeemail');
-        register('alternativephone');
+        // register('email', {
+        //     validate: {
+        //         isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
+        //     }
+        // });
+        register('alternativeemail', {
+            validate: {
+                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "")
+            }
+        });
+        register('alternativephone', {
+            validate: {
+                isperuphone: (value) => {
+                    const isNumeric = /^\d+$/.test(value); // Valida si el valor solo contiene números
+                    const isCorrectLength = value?.startsWith("51") ? value.length === 11 : true;
+                    return ((isNumeric && isCorrectLength) || value === "") || t(langKeys.validationphone) + "";
+                }
+            }
+        });
         register('birthday');
         register('gender');
         register('occupation');
@@ -309,7 +374,7 @@ const InfoTab: React.FC = () => {
                             maxLength={50}
                         />
                         <FieldSelect
-                            onChange={(value) => setValue('documenttype', value?.domainvalue)}
+                            onChange={(value) => setValue('documenttype', value?.domainvalue || "")}
                             label={t(langKeys.documenttype)}
                             loading={multiData.loading}
                             data={multiData.data[0]?.data || []}
@@ -358,6 +423,9 @@ const InfoTab: React.FC = () => {
                             label={t(langKeys.birthday)}
                             onChange={(value) => setValue('birthday', value)}
                             valueDefault={getValues('birthday')}
+                            inputProps={{
+                                max: new Date().toISOString().split('T')[0]
+                            }}
                             type="date"
                             error={errors?.birthday?.message}
                         />
@@ -1191,7 +1259,7 @@ const LeadsList: React.FC<{ leads: any, handleClickOpen: (x: any) => void }> = (
                 >
                     <SubdirectoryArrowRightIcon style={{ color: "grey" }} />
                     <div style={{ width: "100%" }}>
-                        <div style={{display: "flex", justifyContent: "space-between", fontSize: "1rem", alignItems: "center"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1rem", alignItems: "center" }}>
                             <div>{x.columndesc}</div>
                             <div>
                                 <Rating
@@ -1201,13 +1269,13 @@ const LeadsList: React.FC<{ leads: any, handleClickOpen: (x: any) => void }> = (
                                     defaultValue={x.priority === 'LOW' ? 1 : x.priority === 'MEDIUM' ? 2 : x.priority === 'HIGH' ? 3 : 1}
                                     readOnly
                                 />
-                            </div>                        
+                            </div>
                         </div>
                         <div style={{ display: "flex", fontSize: "1.2rem" }}>
                             {x.description}
                         </div>
                         <div style={{ display: "flex", fontSize: "0.8rem", color: "grey" }}>
-                            {t(langKeys.expectedRevenue) + ": " + (Number(x?.expected_revenue||0)).toFixed(2)}
+                            {t(langKeys.expectedRevenue) + ": " + (Number(x?.expected_revenue || 0)).toFixed(2)}
                         </div>
                     </div>
                 </div>
@@ -1312,8 +1380,8 @@ const Leads: React.FC = () => {
             {openModalDetail && <LeadFormModal
                 openModal={openModalDetail}
                 setOpenModal={setOpenModalDetail}
-                leadId={rowSelectedDetail?.oportunityid||0}
-                phase={rowSelectedDetail?.columndesc||""}
+                leadId={rowSelectedDetail?.oportunityid || 0}
+                phase={rowSelectedDetail?.columndesc || ""}
             />}
         </div>
     )
@@ -1334,7 +1402,7 @@ const SDList: React.FC<{ service: any, handleClickOpen: (x: any) => void }> = ({
                     <SubdirectoryArrowRightIcon style={{ color: "grey" }} />
                     <div style={{ width: "100%" }}>
                         <div className={classes.titlePreviewTicket}>
-                            <ServiceDeskIcon height={20} style={{fill: "grey"}} />
+                            <ServiceDeskIcon height={20} style={{ fill: "grey" }} />
                             <div>{x.sd_request}</div>
                         </div>
                         <div style={{ display: "flex" }}>
@@ -1449,7 +1517,7 @@ const ServiceDesk: React.FC = () => {
             {openModalDetail && <ServiceDeskLeadFormModal
                 openModal={openModalDetail}
                 setOpenModal={setOpenModalDetail}
-                leadId={rowSelectedDetail?.oportunityid||0}
+                leadId={rowSelectedDetail?.oportunityid || 0}
             />}
         </div>
     )

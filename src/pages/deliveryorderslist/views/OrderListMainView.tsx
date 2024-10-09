@@ -7,9 +7,6 @@ import { TitleDetail, TemplateIcons, IOSSwitch, TemplateBreadcrumbs } from "comp
 import TableZyx from "components/fields/table-simple";
 import { Button, FormControlLabel } from "@material-ui/core";
 import { useSelector } from "hooks";
-import PrintIcon from "@material-ui/icons/Print";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import ReceiptIcon from "@material-ui/icons/Receipt";
 import { showSnackbar, showBackdrop } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import UndeliveredDialog from "../dialogs/UndeliveredDialog";
@@ -23,8 +20,9 @@ import { CellProps } from "react-table";
 import { ExtrasMenu } from "../components/components";
 import { reportPdf } from "store/culqi/actions";
 import { execute, getCollectionAux2 } from "store/main/actions";
-import { orderLineSel, ordersByConfigRoutingLogic, updateOrderOnlyStatus } from "common/helpers";
+import { orderLineSel, updateOrderOnlyStatus } from "common/helpers";
 import { deliveryRouting } from "store/delivery/actions";
+import { DeliveryTicketIcon, PrintIcon, RoutingLogicIcon } from "icons";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -137,16 +135,27 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     const scheduleOrder = () => {
         const allNew = rowWithDataSelected.every(row => row.orderstatus === 'new');
-        if(allNew && Object.keys(selectedRows).length !== 0) setOpenModalManualScheduling(true)
+        const allNotImmediate = rowWithDataSelected.every(row => row.schedulingtype !== 'immediate');
+        if(allNew && allNotImmediate && Object.keys(selectedRows).length !== 0) setOpenModalManualScheduling(true)
         else {
             if(Object.keys(selectedRows).length !== 0) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.scheduleerror),
-                    })
-                );
+                if(!allNotImmediate) {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.immediateorderserror),
+                        })
+                    );
+                } else {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.scheduleerror),
+                        })
+                    );
+                }
             } else {
                 dispatch(
                     showSnackbar({
@@ -414,7 +423,8 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
 
     const applyRoutingLogic = () => {
         const allPrepared = rowWithDataSelected.every(row => row.orderstatus === 'prepared');
-        if (allPrepared && Object.keys(selectedRows).length !== 0) {
+        const allWithoutCode = rowWithDataSelected.every(row => row.code === null);
+        if (allPrepared && allWithoutCode && Object.keys(selectedRows).length !== 0) {
             dispatch(showBackdrop(true));
             dispatch(deliveryRouting({
                 listorderid: rowWithDataSelected.map(row => row.orderid).join(',')
@@ -422,13 +432,23 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
             setWaitSave(true);
         } else {
             if(Object.keys(selectedRows).length !== 0) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.routinglogicstatuserror),
-                    })
-                );
+                if(allPrepared) {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.routinglogicerror2),
+                        })
+                    );
+                } else {
+                    dispatch(
+                        showSnackbar({
+                            show: true,
+                            severity: "error",
+                            message: t(langKeys.routinglogicstatuserror),
+                        })
+                    );
+                }
             } else {
                 dispatch(
                     showSnackbar({
@@ -551,6 +571,10 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                 Header: t(langKeys.totalamount),
                 accessor: "amount",
                 width: "auto",
+                Cell: (props: any) => {
+                    const { amount } = props.cell.row.original;
+                    return (amount?.toFixed(2) || 0);
+                }
             },
             {
                 Header: t(langKeys.orderstatus),
@@ -728,7 +752,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 className={classes.button}
                                 color="primary"
                                 disabled={main.loading}
-                                startIcon={<LocationOnIcon color="secondary" />}
+                                startIcon={<RoutingLogicIcon fill="white"/>}
                                 style={{backgroundColor: '#55BD84'}}
                                 onClick={applyRoutingLogic}
                             >
@@ -751,7 +775,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                             variant="contained"
                             color="primary"
                             disabled={main.loading}
-                            startIcon={<PrintIcon color="secondary" />}
+                            startIcon={<PrintIcon fill="white" />}
                             className={classes.button}
                             style={{backgroundColor: '#55BD84'}}
                             onClick={() => {
@@ -765,7 +789,7 @@ const OrderListMainView: React.FC<InventoryTabDetailProps> = ({
                                 variant="contained"
                                 color="primary"
                                 disabled={main.loading || Object.keys(selectedRows).length === 0 || Object.keys(selectedRows).length > 1}
-                                startIcon={<ReceiptIcon color="secondary" />}
+                                startIcon={<DeliveryTicketIcon fill="white" />}
                                 className={classes.button}
                                 style={{backgroundColor: '#55BD84'}}
                                 onClick={() => {

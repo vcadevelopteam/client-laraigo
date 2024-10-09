@@ -24,6 +24,7 @@ import React, { FC, useEffect, useState } from "react";
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles((theme) => ({
@@ -590,9 +591,14 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            channel?.status === "INACTIVO"
-                                ? history.push(paths.CHANNELS, whatsAppData)
-                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+
+                            if (whatsAppData?.onboarding) {
+                                history.push(paths.METACHANNELS, whatsAppData);
+                            } else {
+                                channel?.status === "INACTIVO"
+                                    ? history.push(paths.CHANNELS, whatsAppData)
+                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}
@@ -848,9 +854,9 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             </div>
         )
-    } else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (
@@ -948,7 +954,12 @@ export const ChannelAddPhone: FC<{ edit: boolean }> = ({ edit }) => {
                                 href="/"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    history.push(paths.CHANNELS);
+
+                                    if (whatsAppData?.onboarding) {
+                                        history.push(paths.METACHANNELS, whatsAppData);
+                                    } else {
+                                        history.push(paths.CHANNELS);
+                                    }
                                 }}
                             >
                                 {t(langKeys.previoustext)}

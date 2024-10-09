@@ -75,10 +75,19 @@ const Popus: React.FC = () => {
                 aria-labelledby="alert-dialog-slide-title"
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>{t(langKeys.confirmation)}</DialogTitle>
+                <DialogTitle>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
+                            {popus.question.title || t(langKeys.confirmation)}
+                        </div>
+                        {popus.question.showClose && <div onClick={() => { popus.question.callbackcancel && popus.question.callbackcancel(); manageConfirmationTmp() }} style={{ display: 'flex', overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}>
+                            <b>X</b>
+                        </div>}
+                    </div>
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText color="textPrimary">
-                        <div style={{ whiteSpace: "pre-wrap" }}>
+                        <div style={{ whiteSpace: "pre-wrap", fontWeight: popus.question.isBold ? "bold" : "normal" }}>
                             {popus.question.question}
                         </div>
                     </DialogContentText>
