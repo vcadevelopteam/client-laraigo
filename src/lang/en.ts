@@ -6605,6 +6605,8 @@ const translation: LangKeys = {
   clickonlink: 'Click on Link',
   campaignwithlinks: 'Campaign with Links',
   clicksonlinkpercent: '% Click on Link',
+  clickurldate: 'Date of click on Link',
+  executeddate: 'Execution Date',
 };
 
 const enResource: ResourceLanguage = {

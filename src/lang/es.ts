@@ -6556,6 +6556,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   clickonlink: 'Click en Enlace',
   campaignwithlinks: 'Campaña con Enlaces',
   clicksonlinkpercent: '% Click en Enlace',
+  clickurldate: 'Fecha de click en Enlace',
+  executeddate: 'Fecha de Ejecución',
 };
 
 const esResource: ResourceLanguage = {

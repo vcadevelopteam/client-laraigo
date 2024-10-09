@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { dictToArrayKV, exportExcel, getCampaignReportExport, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksSel } from 'common/helpers';
+import { dictToArrayKV, exportExcel, getCampaignReportExport, getCampaignReportProactiveExport, getCommChannelLst, getDateCleaned, reportCampaignLinksDetailSel, reportCampaignLinksSel, selCommunicationChannelWhatsApp } from 'common/helpers';
 import { Dictionary } from "@types";
-import { exportData, getCollection, getCollectionAux } from 'store/main/actions';
+import { exportData, getCollection, getCollectionAux, getCollectionAux2 } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { FieldSelect, DateRangePicker, TemplateBreadcrumbs } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
@@ -70,7 +70,7 @@ const dataReportType = {
     default: 'default',
 }
 
-const selectionKey = 'campaignid';
+const selectionKey = 'identifier';
 
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),
@@ -83,7 +83,7 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 	const main = useSelector((state) => state.main.mainData);
-    const resExportData = useSelector(state => state.main.exportData);
+    const mainAux2 = useSelector((state) => state.main.mainAux2);
     const [waitExport, setWaitExport] = useState(false);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [reportType, setReportType] = useState<string>('default');
@@ -94,10 +94,10 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
 
 	useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
-            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.campaignid === parseInt(x)) || p.find((y) => y.campaignid === parseInt(x)) || {}))
+            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => main?.data.find(y => y.identifier === x) || p.find((y) => y.identifier === x) || {}))
         }
     }, [selectedRows])
-  
+    
     const columns = React.useMemo(
         () => [                    
             {
@@ -218,47 +218,112 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
         communicationchannelid: selectedChannel,
     })));
 
+    const columnsToExport = React.useMemo(
+        () => [                    
+            {
+                Header: t(langKeys.campaign),
+                accessor: 'campaignname',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.templatename),
+                accessor: 'templatename',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.messagetemplate),
+                accessor: 'messagetemplateid',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.channel),
+                accessor: 'communicationchannel',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.rundate),
+                accessor: 'rundate',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.url),
+                accessor: 'urlname',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.executeddate),
+                accessor: 'executedate',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.success),
+                accessor: 'succes',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.attended),
+                accessor: 'attendedd',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.clickonlink),
+                accessor: 'clickurl',
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.clickurldate),
+                accessor: 'clickurldate',
+                width: "auto",
+            },
+        ],
+        []
+    );
+
     const handleDownload = () => {
         if (Object.keys(selectedRows).length === 0) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
             return null;
         }
-        exportExcel('Reporte campañas con enlaces', rowWithDataSelected, columns)
+
+        const mappedData = rowWithDataSelected.map(item => ({
+            rundate: item.rundate,
+            messagetemplateid: item.messagetemplateid,
+            campaignname: item.title
+        }));
+
+        dispatch(getCollectionAux2(reportCampaignLinksDetailSel({
+            startdate: dateRangeCreateDate.startDate,
+            enddate: dateRangeCreateDate.endDate,
+            communicationchannelid: selectedChannel,
+            identifiers: mappedData,
+        })))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
     };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!mainAux2.loading && !mainAux2.error) {
+                exportExcel('Reporte campañas con enlaces', mainAux2.data, columnsToExport)
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            } else if (mainAux2.error) {
+                const errormessage = t(mainAux2.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [mainAux2, waitExport]);
 
     useEffect(() => {
         fetchData();
         fetchFiltersChannels();
     }, []);
 
-    useEffect(() => {
-        if (waitExport) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitExport(false);
-            }
-        }
-    }, [resExportData, waitExport]);
-
-    const channelTypeList = filterChannel.data || [];
-    const channelTypeFilteredList = new Set();
-    const [selectedChannel, setSelectedChannel] = useState("");
-
-    const uniqueTypdescList = channelTypeList.filter(item => {
-        if (channelTypeFilteredList.has(item.type)) {
-            return false; 
-        }
-        channelTypeFilteredList.add(item.type);
-        return true;
-    });
+    const [selectedChannel, setSelectedChannel] = useState(0);
    
-    const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
+    const fetchFiltersChannels = () => dispatch(getCollectionAux(selCommunicationChannelWhatsApp()))
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.report_plural) },
@@ -288,11 +353,10 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                         label={t(langKeys.channel)}
                         variant="outlined"                       
                         className={classes.filterComponent}                        
-                        data={uniqueTypdescList || []}        
-                        valueDefault={uniqueTypdescList}
+                        data={filterChannel.data || []}
                         onChange={(value) => setSelectedChannel(value?.communicationchannelid||0)}           
-                        optionDesc="typedesc"
-                        optionValue="typedesc"
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
                     />
                     <Button
                         disabled={main.loading}
