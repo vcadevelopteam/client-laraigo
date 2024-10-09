@@ -440,7 +440,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
                 getChannelsByOrg(),
-                getMessageTemplateLst("")
+                getMessageTemplateLst(""),
                 registeredLinksSel(),
             ])
         );
