@@ -6485,6 +6485,8 @@ export const langKeys = {
   clickonlink: 'clickonlink',
   campaignwithlinks: 'campaignwithlinks',
   clicksonlinkpercent: 'clicksonlinkpercent',
+  clickurldate: 'clickurldate',
+  executeddate: 'executeddate',
 };
 
 export type LangKeys = typeof langKeys;

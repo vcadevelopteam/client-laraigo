@@ -5459,6 +5459,6 @@ export const reportCampaignLinksDetailSel = ({startdate, enddate, communicationc
         enddate: enddate || null,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         communicationchannelid: communicationchannelid || 0,
-        identifiers: identifiers,
+        identifiers: JSON.stringify(identifiers),
     }
 });
