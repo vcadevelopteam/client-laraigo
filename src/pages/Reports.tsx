@@ -1364,7 +1364,7 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
-                case 'CRM':
+            case 'CRM':
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
@@ -1385,7 +1385,7 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
-                case 'CAMPAIGNLINKS':
+            case 'CAMPAIGNLINKS':
                 return (
                     <Grid item key={"campaignlinks"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card>
