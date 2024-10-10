@@ -433,6 +433,7 @@ const translation: LangKeys = {
   AIservices: 'Servicios IA',
   systemvariables: 'Sistema',
   odoovariables: 'Odoo',
+  invalidurl: 'URL inválida',
 
   quantity: 'Cantidad',
   quantity_plural: "Cantidades",

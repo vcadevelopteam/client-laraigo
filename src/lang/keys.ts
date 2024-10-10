@@ -1195,6 +1195,7 @@ export const langKeys = {
   AIservices: 'AIservices',
   systemvariables: 'systemvariables',
   odoovariables: 'odoovariables',
+  invalidurl: 'invalidurl',
 
   channel: 'channel',
   channel_plural: 'channel_plural',
