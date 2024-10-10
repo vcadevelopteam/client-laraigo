@@ -1,7 +1,7 @@
 import { Grid, IconButton, InputAdornment } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, PhoneFieldEdit } from "components";
+import { FieldEdit, FieldMultiSelect, FieldSelect, PhoneFieldEdit } from "components";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { FC } from "react";
 import { useDispatch } from "react-redux";
@@ -391,6 +391,23 @@ const PersonalDataTab: FC<PersonalDataTabProps> = ({ getValues, trigger, setValu
                                 }}
                                 size="small"
                                 variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <FieldMultiSelect
+                                label={t(langKeys.persongroup)}
+                                helperText2="enable"
+                                className={classes.fieldStyle}
+                                uset={true}
+                                valueDefault={getValues("groups")}
+                                size="small"
+                                variant="outlined"
+                                onChange={(value) => {
+                                    setValue('groups', value.map((o: any) => o.domainvalue).join() );
+                                }}
+                                data={domains.value?.groups || []}
+                                optionValue="domainvalue"
+                                optionDesc="domainvalue"
                             />
                         </Grid>
                     </Grid>
