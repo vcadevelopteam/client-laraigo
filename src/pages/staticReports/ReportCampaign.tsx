@@ -237,6 +237,14 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 Cell: cell
             },
             {
+                Header: t(langKeys.clicksonlink),
+                accessor: 'clickurl',
+                type: 'number',
+                sortType: 'number',
+                showColumn: true,
+                Cell: cell
+            },
+            {
                 Header: t(langKeys.blacklisted),
                 accessor: 'blacklisted',
                 type: 'number',
@@ -308,7 +316,8 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'executionuser', alias: t(langKeys.executingUser)},
                     {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},   
+                    {key: 'clickurl', alias: t(langKeys.clicksonlink)},                 
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
@@ -346,7 +355,8 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'executionuser', alias: t(langKeys.executingUser)},
                     {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},                   
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
+                    {key: 'clickurl', alias: t(langKeys.clicksonlink)}, 
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},

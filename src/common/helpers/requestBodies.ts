@@ -5427,3 +5427,38 @@ export const conversationSDHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
 });
+
+export const registeredLinksSel = () => ({
+    method: "UFN_LINKREGISTER_SEL",
+    key: "UFN_LINKREGISTER_SEL",
+    parameters: {},
+});
+
+export const registeredLinksIns = ({ linkregisterid, operation, description, url, status, startdate, enddate }: Dictionary) => ({
+    method: "UFN_LINKREGISTER_INS",
+    key: "UFN_LINKREGISTER_INS",
+    parameters: { linkregisterid, operation, description, url, status, startdate, enddate },
+});
+
+export const reportCampaignLinksSel = ({startdate, enddate, communicationchannelid}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+    }
+});
+
+export const reportCampaignLinksDetailSel = ({startdate, enddate, communicationchannelid, identifiers}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+        identifiers: JSON.stringify(identifiers),
+    }
+});

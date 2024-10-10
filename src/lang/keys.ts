@@ -6473,6 +6473,22 @@ export const langKeys = {
   translationaihelper: 'translationaihelper',
   languageaihelper: 'languageaihelper',
   billingreport_conversationbillable: 'billingreport_conversationbillable',
+
+  linkregister: 'linkregister',
+  validity: 'validity',
+  linknamedesc: 'linknamedesc',
+  addlinkdesc: 'addlinkdesc',
+  linkstartdatedesc: 'linkstartdatedesc',
+  linkenddatedesc: 'linkenddatedesc',
+  useregisteredlinkscount: 'useregisteredlinkscount',
+  selectregisteredlink: 'selectregisteredlink',
+  clicksonlink: 'clicksonlink',
+  clickonlink: 'clickonlink',
+  campaignwithlinks: 'campaignwithlinks',
+  clicksonlinkpercent: 'clicksonlinkpercent',
+  clickurldate: 'clickurldate',
+  executeddate: 'executeddate',
+  invalidurl: 'invalidurl',
 };
 
 export type LangKeys = typeof langKeys;

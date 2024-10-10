@@ -1,4 +1,4 @@
-const ENV = import.meta.env.VITE_ENV || 'TESTING';
+const ENV = import.meta.env.VITE_ENV || 'DEVELOP';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
@@ -491,4 +491,6 @@ export const apiUrls = {
     LLAMA3_DELETE_FILE: `${BASE_URL}/llama3/delete_file`,
     LLAMA3_QUERY: `${BASE_URL}/llama3/llama3_query`,
     LLAMA3_DELETE_THREAD: `${BASE_URL}/llama3/delete_thread`,
+
+    LINK_COUNT: `${BASE_URL}/linkcount/openlink`,
 };
