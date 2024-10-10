@@ -433,6 +433,7 @@ const translation: LangKeys = {
   AIservices: 'Servicios IA',
   systemvariables: 'Sistema',
   odoovariables: 'Odoo',
+  invalidurl: 'URL inválida',
 
   quantity: 'Cantidad',
   quantity_plural: "Cantidades",
@@ -6496,7 +6497,6 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   clicksonlinkpercent: '% Click en Enlace',
   clickurldate: 'Fecha de click en Enlace',
   executeddate: 'Fecha de Ejecución',
-  invalidurl: 'URL inválida',
 };
 
 const esResource: ResourceLanguage = {

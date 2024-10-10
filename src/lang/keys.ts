@@ -1195,6 +1195,7 @@ export const langKeys = {
   AIservices: 'AIservices',
   systemvariables: 'systemvariables',
   odoovariables: 'odoovariables',
+  invalidurl: 'invalidurl',
 
   channel: 'channel',
   channel_plural: 'channel_plural',
@@ -6487,8 +6488,7 @@ export const langKeys = {
   campaignwithlinks: 'campaignwithlinks',
   clicksonlinkpercent: 'clicksonlinkpercent',
   clickurldate: 'clickurldate',
-  executeddate: 'executeddate',
-  invalidurl: 'invalidurl',
+  executeddate: 'executeddate', 
 };
 
 export type LangKeys = typeof langKeys;

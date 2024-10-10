@@ -258,6 +258,7 @@ const translation: LangKeys = {
   period: "Period",
   interval: 'Intervalo',
   odoovariables: 'Odoo',
+  invalidurl: 'Invalid URL',
   percentage: "Percentage",
   dateoffirstreplytoadviser: "Date of first reply to adviser",
   timeoffirstreplytoadviser: "Time of first reply to adviser",
@@ -6544,7 +6545,6 @@ const translation: LangKeys = {
   clicksonlinkpercent: '% Click on Link',
   clickurldate: 'Date of click on Link',
   executeddate: 'Execution Date',
-  invalidurl: 'Invalid URL',
 };
 
 const enResource: ResourceLanguage = {
