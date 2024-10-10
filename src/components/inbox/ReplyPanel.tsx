@@ -463,8 +463,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
 
     useEffect(() => {
         const ismail = ticketSelected?.communicationchanneltype === "MAIL"
-        const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)        
-
+        const favoritequickreplies = quickReplies.data.filter(x => Boolean(x.favorite))
         setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
     }, [quickReplies, ticketSelected]);
 
@@ -472,7 +471,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
         const ismail = ticketSelected?.communicationchanneltype === "MAIL"
         const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
         if (search === "") {
-            setquickRepliesToShow(quickreplyFiltered.filter((x) => !!x.favorite));
+            setquickRepliesToShow(quickreplyFiltered.filter((x) => Boolean(x.favorite)));
         } else {
             setquickRepliesToShow(
                 quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
@@ -599,9 +598,9 @@ const RecordComponent: React.FC<{
                 const myElement = document.querySelector(".audio-recorder");
                 const childNodes = myElement?.childNodes;
                 if (childNodes) {
-                    if (childNodes[0]) childNodes[0].style.display = "none";
-                    if (childNodes[3]) childNodes[3].style.display = "none";
-                    if (childNodes[4]) childNodes[4].style.display = "none";
+                    if (childNodes[0] && childNodes[0] instanceof HTMLElement) (childNodes[0] as HTMLElement).style.display = "none";
+                    if (childNodes[3] && childNodes[3] instanceof HTMLElement) (childNodes[3] as HTMLElement).style.display = "none";
+                    if (childNodes[4] && childNodes[4] instanceof HTMLElement) (childNodes[4] as HTMLElement).style.display = "none";
                 }
             }
         }
@@ -744,7 +743,7 @@ const RecordAudioIcon: React.FC<{
     startRecording: boolean;
     setStartRecording: (param: boolean) => void;
     setRecord: (param: IFile | null) => void;
-}> = ({ classes, startRecording, setStartRecording, setRecord }) => {
+}> = ({ classes, startRecording, setStartRecording }) => {
     const { t } = useTranslation();
     const handleClick = () => {
         setStartRecording(!startRecording);
@@ -1373,8 +1372,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             .replace("{{user_group}}", ticketSelected?.usergroup || "");
 
         variablesList.forEach((x: any) => {
-            let variableData = variablecontext?.[x.substring(2, x.length - 2)];
-            if (!!variableData) {
+            const variableData = variablecontext?.[x.substring(2, x.length - 2)];
+            if (variableData) {
                 myquickreply = myquickreply.replaceAll(x, variableData.Value);
             } else {
                 myquickreply = myquickreply.replaceAll(x, "");
@@ -1414,7 +1413,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             }
         }
     }
-
     const toggleTextStyle = (style) => {
         const input = inputRef.current.querySelector('textarea');
         const { value, selectionStart, selectionEnd } = input;
@@ -1626,7 +1624,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         className={clsx(classes.iconSend, {
                                             [classes.iconSendDisabled]: !(
                                                 text ||
-                                                files.filter((x) => !!x.url).length > 0 ||
+                                                files.filter((x) => Boolean(x.url)).length > 0 ||
                                                 record
                                             ),
                                         })}
