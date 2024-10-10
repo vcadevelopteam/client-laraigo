@@ -186,6 +186,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
     const endOfMessagesRef = useRef(null);
     const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
     const textFieldRef = useRef(null);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [conector, setConector] = useState(row ? multiDataAux?.data?.[3]?.data?.find(item => item.id === row?.intelligentmodelsid) : {});
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
@@ -572,6 +574,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             max_new_tokens: row?.max_tokens,
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
+            top_k: parseFloat(row?.top_k),
+            repetition_penalty: parseFloat(row?.repetition_penalty),
         }))
         setWaitSaveMessageLlama(true)
         setActiveThreadId(currentThreadLlamaId);
@@ -608,6 +612,9 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
             decoding_method: row?.decoding_method ? row.decoding_method : "sample",
+            repetition_penalty: parseFloat(row?.repetition_penalty),
+            top_k: parseFloat(row?.top_k),
+            ...(conector?.modelid !== '' && { project_id: conector?.modelid }),
         }))
         setWaitSaveMessageLlama(true)
         setActiveThreadId(currentThreadLlamaId);
