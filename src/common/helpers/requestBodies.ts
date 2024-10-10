@@ -5433,6 +5433,47 @@ export const conversationSDHistorySel = (personid: number) => ({
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },
 });
+
+export const registeredLinksSel = () => ({
+    method: "UFN_LINKREGISTER_SEL",
+    key: "UFN_LINKREGISTER_SEL",
+    parameters: {},
+});
+
+export const registeredLinksIns = ({ linkregisterid, operation, description, url, status, startdate, enddate }: Dictionary) => ({
+    method: "UFN_LINKREGISTER_INS",
+    key: "UFN_LINKREGISTER_INS",
+    parameters: { linkregisterid, operation, description, url, status, startdate, enddate },
+});
+
+export const reportCampaignLinksSel = ({startdate, enddate, communicationchannelid}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+    }
+});
+
+export const reportCampaignLinksDetailSel = ({startdate, enddate, communicationchannelid, identifiers}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+        identifiers: JSON.stringify(identifiers),
+    }
+});
+
+export const updateSidePersonView = (config: any) => ({
+    method: "UFN_ORG_UICONFIG_INS",
+    key: "UFN_ORG_UICONFIG_INS",
+    parameters: { name: "person", config: JSON.stringify(config.map((item: any, index: number) => ({ size: item.size.toString(), field: item.field, order: index + 1 }))),  },
+});
 export const prepareAttentionOrder = (orderids: string) => ({
     method: "UFN_ORDER_PREPARE",
     key: "UFN_ORDER_PREPARE",
@@ -5526,45 +5567,4 @@ export const watsonExportEntities = (watsonid:number) => ({
     method: "UFN_WATSON_ENTITES_EXPORT",
     key: "UFN_WATSON_ENTITES_EXPORT",
     parameters: { watsonid },
-});
-
-export const registeredLinksSel = () => ({
-    method: "UFN_LINKREGISTER_SEL",
-    key: "UFN_LINKREGISTER_SEL",
-    parameters: {},
-});
-
-export const registeredLinksIns = ({ linkregisterid, operation, description, url, status, startdate, enddate }: Dictionary) => ({
-    method: "UFN_LINKREGISTER_INS",
-    key: "UFN_LINKREGISTER_INS",
-    parameters: { linkregisterid, operation, description, url, status, startdate, enddate },
-});
-
-export const updateSidePersonView = (config: any) => ({
-    method: "UFN_ORG_UICONFIG_INS",
-    key: "UFN_ORG_UICONFIG_INS",
-    parameters: { name: "person", config: JSON.stringify(config.map((item: any, index: number) => ({ size: item.size.toString(), field: item.field, order: index + 1 }))),  },
-});
-
-export const reportCampaignLinksSel = ({startdate, enddate, communicationchannelid}: Dictionary) => ({
-    method: "UFN_REPORTCAMPAIGNLINKS_SEL",
-    key: "UFN_REPORTCAMPAIGNLINKS_SEL",
-    parameters: {       
-        startdate: startdate || null,
-        enddate: enddate || null,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
-        communicationchannelid: communicationchannelid || 0,
-    }
-});
-
-export const reportCampaignLinksDetailSel = ({startdate, enddate, communicationchannelid, identifiers}: Dictionary) => ({
-    method: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
-    key: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
-    parameters: {       
-        startdate: startdate || null,
-        enddate: enddate || null,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
-        communicationchannelid: communicationchannelid || 0,
-        identifiers: JSON.stringify(identifiers),
-    }
 });
