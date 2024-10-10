@@ -244,6 +244,11 @@ const MessageTemplatesOld: FC = () => {
             {
                 accessor: "language",
                 Header: t(langKeys.language),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const { language } = row?.original || {};
+                    return language.toUpperCase();
+                }
             },
             {
                 accessor: "templatetype",
@@ -526,8 +531,8 @@ const MessageTemplatesOld: FC = () => {
         dispatch(showBackdrop(true));
         setWaitSaveExport(true);
     };
-    
-    
+
+
 
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
@@ -807,7 +812,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             buttons: row ? row.buttons || [] : [],
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
-            communicationchannelid: row?.communicationchannelid || 0,
+            communicationchannelid: (parseInt((row?.communicationchannelid || "").split(",")[0])) || 0,
             communicationchanneltype: row?.communicationchanneltype || "",
             description: row?.description || "",
             exampleparameters: row?.exampleparameters || "",
@@ -1620,15 +1625,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         {!isProvider && (
                             <FieldSelect
                                 className="col-6"
-                                data={dataLanguage}
+                                data={dataExternalLanguage}
                                 disabled={disableInput}
                                 error={errors?.language?.message}
                                 label={t(langKeys.language)}
                                 onChange={(value) => setValue("language", value?.domainvalue)}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                optionDesc="description"
+                                optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("language")}
+                                valueDefault={getValues("language")?.toUpperCase()}
                             />
                         )}
                     </div>
@@ -2045,21 +2050,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     )}
                 </div>}
                 {pageSelected === 1 &&
-                <div className={classes.containerDetail}>                    
-                    <CustomTableZyxEditable
-                        columns={columns}
-                        download={false}
-                        data={(tableDataVariables).map(x => ({
-                            ...x,
-                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
-                        }))}
-                        //loading={multiData.loading}
-                        register={false}
-                        filterGeneral={false}
-                        updateCell={updateCell}
-                        skipAutoReset={skipAutoReset}
-                    />
-                </div>}
+                    <div className={classes.containerDetail}>
+                        <CustomTableZyxEditable
+                            columns={columns}
+                            download={false}
+                            data={(tableDataVariables).map(x => ({
+                                ...x,
+                                domainvalues: (domainsCustomTable?.data || []).filter(y => y.domainname === x?.domainname)
+                            }))}
+                            //loading={multiData.loading}
+                            register={false}
+                            filterGeneral={false}
+                            updateCell={updateCell}
+                            skipAutoReset={skipAutoReset}
+                        />
+                    </div>}
             </form>
         </div>
     );

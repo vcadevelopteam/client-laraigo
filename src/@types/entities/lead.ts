@@ -374,3 +374,9 @@ export interface ISDLeadSel {
     offset?: any;
 	all?: boolean;
 }
+
+export interface IProduct {
+    productid: string;
+    title: string;
+    productids?: string[];
+}

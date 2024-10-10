@@ -321,9 +321,10 @@ const Campaign: React.FC<CampaignProps> = ({
                         return null;
                     }
                 
-                    const { id, status, startdate, enddate,executiontype, datestart, hourstart  } = row.original;
+                    const { id, status, startdate, enddate,executiontype, datestart, hourstart, communicationchannel  } = row.original;
                 
                     if (
+                        communicationchannel &&
                         dateToLocalDate(startdate, 'date') <= todayDate() &&
                         todayDate() <= dateToLocalDate(enddate, 'date') && executiontype ==="MANUAL"
                     ) {

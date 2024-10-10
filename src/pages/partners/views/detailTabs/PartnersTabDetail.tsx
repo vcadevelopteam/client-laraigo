@@ -64,11 +64,17 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
         });
     }, [countryList]);
 
-    const handleCountryChange = (value: string) => {
-        setValue('country', value);
-        console.log(getValues('country'));
-    
-        if (value === 'PE') {
+    const handleCountryChange = (value: any) => {
+        const selectedCountry = value ? value.code : '';
+        setSunatCountry(selectedCountry);
+        setValue('country', selectedCountry);
+
+        if (!selectedCountry) {
+            setValue('documenttype', '');
+            setDocType('');
+            setValue('documentnumber', '');
+            setDocNumber('');
+        } else if (selectedCountry === 'PE') {
           setValue('documenttype', 'RUC');
           setDocType('RUC')
           setDocNumber(0)
@@ -88,8 +94,7 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     label={t(langKeys.country)}
                     valueDefault={sunatCountry}
                     onChange={(value) => {
-                        setSunatCountry(value.description)
-                        handleCountryChange(value.code)
+                        handleCountryChange(value);
                     }}
                     className="col-6"
                     data={countries}
@@ -119,11 +124,29 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                     type='number'
                     valueDefault={docNumber}
                     className="col-6"
-                    error={typeof errors?.documentnumber?.message === 'string' ? errors?.documentnumber?.message : ''}
+                    error={
+                        docType === 'RUC' && docNumber.length < 11
+                            ? t(langKeys.rucvalidation)
+                            : typeof errors?.documentnumber?.message === 'string'
+                                ? errors?.documentnumber?.message
+                                : ''
+                    }
                     maxLength={docType === 'RUC' ? 11 : undefined}
                     onChange={(value) => {
-                        setValue('documentnumber', value)
-                        setDocNumber(value)
+                        if (docType === 'RUC') {
+                            if (value.length > 11) {
+                                setValue('documentnumber', value.slice(0, 11));
+                                setDocNumber(value.slice(0, 11));
+                            } else if (value.length < 11) {
+                                setDocNumber(value);
+                            } else {
+                                setValue('documentnumber', value);
+                                setDocNumber(value);
+                            }
+                        } else {
+                            setValue('documentnumber', value);
+                            setDocNumber(value);
+                        }
                     }}
                 />
                 <FieldEdit
@@ -192,34 +215,37 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                 />
                 <FormControlLabel
                     control={
-                    <IOSSwitch
-                        checked={isEnterprise}
-                        onChange={(event) => {
-                            setIsEnterprise(event.target.checked)
-                            setValue('enterprisepartner', event.target.checked)
-                            setValue('priceperbag', '0')
-                            setValue('numbercontactsbag', 0)
-                            setValue('puadditionalcontacts', 0)
-                        }}
-                        color='primary'
-                    />}
+                        <IOSSwitch
+                            checked={isEnterprise}
+                            onChange={(event) => {
+                                setIsEnterprise(event.target.checked)
+                                setValue('enterprisepartner', event.target.checked)
+
+                                if (!event.target.checked) {
+                                    // Reset fields related to enterprise plans
+                                    setValue('priceperbag', '0');
+                                    setValue('numbercontactsbag', 0);
+                                    setValue('puadditionalcontacts', '0');
+                                    setValue('typecalculation', '');
+                                    setValue('montlyplancost', 0);
+                                    setValue('numberplancontacts', 0);
+                                }
+                            }}
+                            color='primary'
+                        />}
                     label={t(langKeys.isenterprise)}
                     className="col-12"
                 />
-                { isEnterprise && (
+
+                {isEnterprise && (
                     <>
                         <FieldEdit
                             label={t(langKeys.monthlyplancost)}
                             type='number'
                             valueDefault={montlyplancost}
                             onChange={(value) => {
-                                if(value < 0) {
-                                    setMontlyPlancost(value * -1)
-                                    setValue('montlyplancost', value * -1)
-                                } else {
-                                    setMontlyPlancost(value)
-                                    setValue('montlyplancost', value)
-                                }
+                                setMontlyPlancost(value < 0 ? value * -1 : value)
+                                setValue('montlyplancost', value < 0 ? value * -1 : value)
                             }}
                             className="col-6"
                             error={typeof errors?.montlyplancost?.message === 'string' ? errors?.montlyplancost?.message : ''}
@@ -229,13 +255,8 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                             type='number'
                             valueDefault={contactsperplan}
                             onChange={(value) => {
-                                if(value < 0) {
-                                    setContactsPerPlan(value * -1)
-                                    setValue('numberplancontacts', value * -1)
-                                } else {
-                                    setContactsPerPlan(value)
-                                    setValue('numberplancontacts', value)
-                                }
+                                setContactsPerPlan(value < 0 ? value * -1 : value)
+                                setValue('numberplancontacts', value < 0 ? value * -1 : value)
                             }}
                             className="col-6"
                             error={typeof errors?.numberplancontacts?.message === 'string' ? errors?.numberplancontacts?.message : ''}
@@ -248,10 +269,10 @@ const PartnersTabDetail: React.FC<PartnersTabDetailProps> = ({
                                 setValue('typecalculation', value.domainvalue)
                                 setValue('priceperbag', '0')
                                 setValue('numbercontactsbag', 0)
-                                setValue('puadditionalcontacts', 0)
+                                setValue('puadditionalcontacts', '0')
                             }}
                             className="col-6"
-                            data={(multiDataAux?.data?.[4]?.data||[])}
+                            data={(multiDataAux?.data?.[4]?.data || [])}
                             error={typeof errors?.typecalculation?.message === 'string' ? errors?.typecalculation?.message : ''}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
