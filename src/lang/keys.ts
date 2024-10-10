@@ -6506,6 +6506,7 @@ export const langKeys = {
   occupationdesc: 'occupationdesc',
   civilstatus: 'civilstatus',
   salary: 'salary',
+  all2: 'all2',
 };
 
 export type LangKeys = typeof langKeys;

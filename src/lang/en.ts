@@ -6561,6 +6561,7 @@ const translation: LangKeys = {
   occupationdesc: 'Occupation',
   civilstatus: 'Civil status',
   salary: 'Salary',
+  all2: 'All',
 };
 
 const enResource: ResourceLanguage = {

@@ -6513,6 +6513,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   occupationdesc: 'Ocupación',
   civilstatus: 'Estado civil',
   salary: 'Salario',
+  all2: 'Todo',
 };
 
 const esResource: ResourceLanguage = {
