@@ -13,7 +13,10 @@ const Location: React.FC<DetailLocationProps> = ({ row, setValue, editmass = nul
         country: row?.country||"",
         city: row?.city||"",
         district: row?.district||"",
-        address: row?.address||"",
+        street: row?.address||"",
+        streetNumber: row?.addressnumber||"",
+        province: row?.province||"",
+        department: row?.region||"",
         lat: row?.latitude||0,
         lng: row?.longitude||0,
         movedmarker: false,
@@ -29,7 +32,10 @@ const Location: React.FC<DetailLocationProps> = ({ row, setValue, editmass = nul
             setValue("country",directionData.country)
             setValue("city",directionData.city)
             setValue("district",directionData.district)
-            setValue("address",directionData.address)
+            setValue("address",directionData.street)
+            setValue("addressnumber",directionData.streetNumber)
+            setValue("province",directionData.province)
+            setValue("region",directionData.department)
         }
     }, [directionData]);
 
