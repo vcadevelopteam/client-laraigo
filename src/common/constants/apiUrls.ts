@@ -1,5 +1,4 @@
 const ENV = import.meta.env.VITE_ENV || 'DEVELOP';
-const ENV = import.meta.env.VITE_ENV || 'DEVELOP';
 
 const APIS_URL: Record<string, Record<string, string | boolean>> = {
     DEVELOP: {
