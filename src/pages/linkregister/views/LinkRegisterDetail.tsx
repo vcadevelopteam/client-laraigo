@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ClearIcon from '@material-ui/icons/Clear';
-import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { FieldEdit, TemplateBreadcrumbs } from 'components';
@@ -103,7 +101,7 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
                 }
                 const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-]*)*\/?$/;
                 if (!urlRegex.test(value)) {
-                    return `${t(langKeys.url)} ${t(langKeys.invalid)}`;
+                    return t(langKeys.invalidurl);
                 }
                 return true;
             }

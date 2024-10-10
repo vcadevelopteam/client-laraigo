@@ -258,6 +258,7 @@ const translation: LangKeys = {
   period: "Period",
   interval: 'Intervalo',
   odoovariables: 'Odoo',
+  invalidurl: 'Invalid URL',
   percentage: "Percentage",
   dateoffirstreplytoadviser: "Date of first reply to adviser",
   timeoffirstreplytoadviser: "Time of first reply to adviser",
