@@ -296,7 +296,7 @@ const InfoTab: React.FC = () => {
             }
         });
         register('birthday');
-        register('gender');
+        register('sex');
         register('occupation');
         register('civilstatus');
         register('educationlevel');
@@ -430,16 +430,16 @@ const InfoTab: React.FC = () => {
                             error={errors?.birthday?.message}
                         />
                         <FieldSelect
-                            onChange={(value) => setValue('gender', value?.domainvalue)}
-                            label={t(langKeys.gender)}
+                            onChange={(value) => setValue('sex', value?.domainvalue)}
+                            label={t(langKeys.sex)}
                             loading={multiData.loading}
                             data={multiData.data[1]?.data || []}
                             optionValue="domainvalue"
                             optionDesc="domainvalue"
-                            valueDefault={getValues('gender')}
+                            valueDefault={getValues('sex')}
                             uset={true}
                             prefixTranslation="type_gender_"
-                            error={errors?.gender?.message}
+                            error={errors?.sex?.message}
                         />
                         <FieldSelect
                             onChange={(value) => setValue('educationlevel', value?.domainvalue)}
@@ -597,8 +597,8 @@ const InfoTab: React.FC = () => {
                 </div>}
                 {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.gender)}</div>
-                        <div>{(person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())) || "-"}</div>
+                        <div className={classes.label}>{t(langKeys.sex)}</div>
+                        <div>{(person?.sex && t("type_gender_" + person?.sex.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
                 {<div className={classes.containerName}>

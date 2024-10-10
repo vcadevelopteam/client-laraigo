@@ -119,7 +119,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                 </div>
             )}
             <GetIcon channelType={channel.type} width={120} height={120} color='#8F92A1' />
-            <div>
+            <div style={{paddingLeft: 15}}>
                 <Box className={classes.propertyRoot}>
                     <div className={classes.contentContainer}>
                         <label className={classes.propTitle}>{<Trans i18nKey={langKeys.communicationchannel} />}</label>
@@ -132,7 +132,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                                         : nameschannel[channel.type]}</span>
                             </div>
                             <div className={classes.subtitle}>
-                                {channel.displayname}
+                                ({channel.personcommunicationchannelowner})
                             </div>
                         </div>
                     </div>
@@ -165,7 +165,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>
                                 }
-                                <div className={classes.propSubtitle}>{channel.personcommunicationchannelowner || "-"}</div>
+                                <div className={classes.propSubtitle}>{channel.displayname || "-"}</div>
                             </div>}
                         m={1}
                         classesAlt={classes}
@@ -193,7 +193,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                     <Property
                         icon={<ForumIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.conversationquantity} />}
-                        subtitle={(channel.conversations || 0) > 0 ? channel.firstcontact : ""}
+                        subtitle={(channel.conversations || 0) > 0 ? channel.conversations : ""}
                         classesAlt={classes}
                         m={1}
                     />

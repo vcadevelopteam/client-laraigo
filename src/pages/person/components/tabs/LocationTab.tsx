@@ -5,15 +5,18 @@ import { FC } from "react";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import {Location} from '../index'
+import { Location } from '../index'
 import { LocationTabProps } from "pages/person/model";
+import { useDispatch } from "react-redux";
+import { manageConfirmation } from "store/popus/actions";
 
 const LocationTab: FC<LocationTabProps> = ({ setValue, watch, addressbook }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto', marginTop: 20 }}>
-            <div style={{ justifyContent: "end", display: "flex", marginRight: 8, marginBottom: 8 }}>
+            {!(watch.address_book.length >= 10) && <div style={{ justifyContent: "end", display: "flex", marginRight: 8, marginBottom: 8 }}>
                 <Button
                     variant="text"
                     color="secondary"
@@ -38,7 +41,7 @@ const LocationTab: FC<LocationTabProps> = ({ setValue, watch, addressbook }) => 
                 >
                     {t(langKeys.add) + " " + t(langKeys.address)}
                 </Button>
-            </div>
+            </div>}
             <div>
                 <Accordion defaultExpanded={true} style={{ marginBottom: '8px' }}>
                     <AccordionSummary
@@ -55,7 +58,14 @@ const LocationTab: FC<LocationTabProps> = ({ setValue, watch, addressbook }) => 
                 {addressbook.map((x: any, i: number) => {
                     const editValue = (field: string, value: any) => {
                         let auxvalue = addressbook
-                        auxvalue[i] = { ...x , [field]: value }
+                        auxvalue[i] = { ...x, [field]: value }
+                        setValue("address_book", auxvalue)
+                    }
+                    const editmass = (values: any) => {
+                        let auxvalue = addressbook
+                        auxvalue[i] = { ...x, ...values,
+                            latitude: values.lat,
+                            longitude: values.lng, }
                         setValue("address_book", auxvalue)
                     }
                     return <Accordion defaultExpanded={false} style={{ marginBottom: '8px' }} key={`direccion-${i}`}>
@@ -68,16 +78,25 @@ const LocationTab: FC<LocationTabProps> = ({ setValue, watch, addressbook }) => 
                                 <div style={{ fontWeight: "bold" }}>{`${t(langKeys.additionaladdress)} ${i + 1}`}</div>
 
                                 <IconButton onClick={() => {
-                                    let auxvalue = addressbook
-                                    auxvalue.splice(i, 1);
-                                    setValue("address_book", auxvalue)
+                                    const callback = () => {
+                                        let auxvalue = addressbook
+                                        auxvalue.splice(i, 1);
+                                        setValue("address_book", auxvalue)
+                                    };
+                                    dispatch(
+                                        manageConfirmation({
+                                            callback,
+                                            question: t(langKeys.confirmation_delete),
+                                            visible: true,
+                                        })
+                                    );
                                 }}>
                                     <DeleteIcon color="primary" />
                                 </IconButton>
                             </div>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Location row={addressbook[i]} setValue={editValue} />
+                            <Location row={addressbook[i]} setValue={editValue} editmass={editmass}/>
                         </AccordionDetails>
                     </Accordion>
                 })}

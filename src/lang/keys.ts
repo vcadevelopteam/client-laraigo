@@ -6545,6 +6545,11 @@ export const langKeys = {
   clicksonlinkpercent: 'clicksonlinkpercent',
   clickurldate: 'clickurldate',
   executeddate: 'executeddate',
+  all2: 'all2',
+  validationemailexists: 'validationemailexists',
+  validationphoneexists: 'validationphoneexists',
+  sex: 'sex',
+  scheduledeventcode: 'scheduledeventcode',
 };
 
 export type LangKeys = typeof langKeys;

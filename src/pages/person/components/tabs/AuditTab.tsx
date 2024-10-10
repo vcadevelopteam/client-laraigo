@@ -1,6 +1,6 @@
 import { Grid } from "@material-ui/core";
 import { FC } from "react";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
@@ -16,6 +16,7 @@ import { useChannelItemStyles } from "pages/person/styles";
 import { SimpleTabProps } from "pages/person/model";
 
 const AuditTab: FC<SimpleTabProps> = ({ person }) => {
+    const { t } = useTranslation();
     const classes = useChannelItemStyles();
     return (
         <Grid container direction="row" style={{ border: "solid grey 1px", borderRadius: 15 }}>
@@ -105,7 +106,7 @@ const AuditTab: FC<SimpleTabProps> = ({ person }) => {
                         <Property
                             icon={<RecentActorsIcon style={{ fill: '#8F92A1', height: 35, width: 35 }} />}
                             classesAlt={classes}
-                            title={<Trans i18nKey={langKeys.personid} />}
+                            title={"Id " + t(langKeys.person)}
                             subtitle={person.personid}
                             m={1}
                         />

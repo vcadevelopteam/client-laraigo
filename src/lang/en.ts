@@ -6607,6 +6607,13 @@ const translation: LangKeys = {
   clicksonlinkpercent: '% Click on Link',
   clickurldate: 'Date of click on Link',
   executeddate: 'Execution Date',
+  all2: 'All',
+  validationemailexists: 'An email must exist',
+  validationphoneexists: 'A cell phone must exist',
+  sex: 'Sex',
+  floor_number: 'Floor number',
+  ubigeocode: 'Ubigeo code',
+  scheduledeventcode: 'Scheduled event code',
 };
 
 const enResource: ResourceLanguage = {

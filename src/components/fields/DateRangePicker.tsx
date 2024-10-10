@@ -124,7 +124,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
             isSelected: (range) => isSelected(range, lastMonthRange),
         },
         ...(fillterAllDate ? [{
-            label: t(langKeys.all),
+            label: t(langKeys.all2),
             range: () => allDateRange,
             isSelected: (range:any) => isSelected(range, allDateRange),
         }] : []),

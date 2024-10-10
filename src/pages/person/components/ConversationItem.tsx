@@ -47,7 +47,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
         }
     }
-
+    
     return (
         <div className={classes.root}>
             <DialogInteractions
@@ -57,9 +57,11 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             />
             <Grid container direction="row">
 
-                <Grid item xs={12} sm={12} md={showVoxi?1:3} lg={showVoxi?1:3} xl={showVoxi?1:3} style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
-                    <GetIcon channelType={conversation.channeltype} width={40} height={40} color='#8F92A1' />
-                </Grid>
+                <Tooltip title={conversation.channeldesc} placement="top">
+                    <Grid item xs={12} sm={12} md={showVoxi ? 1 : 3} lg={showVoxi ? 1 : 3} xl={showVoxi ? 1 : 3} style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
+                        <GetIcon channelType={conversation.channeltype} width={40} height={40} color='#8F92A1' />
+                    </Grid>
+                </Tooltip>
 
                 {(showVoxi) &&
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
