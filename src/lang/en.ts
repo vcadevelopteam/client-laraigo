@@ -6609,6 +6609,13 @@ const translation: LangKeys = {
   occupationdesc: 'Occupation',
   civilstatus: 'Civil status',
   salary: 'Salary',
+  all2: 'All',
+  validationemailexists: 'An email must exist',
+  validationphoneexists: 'A cell phone must exist',
+  sex: 'Sex',
+  floor_number: 'Floor number',
+  ubigeocode: 'Ubigeo code',
+  scheduledeventcode: 'Scheduled event code',
 };
 
 const enResource: ResourceLanguage = {

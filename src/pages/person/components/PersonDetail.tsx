@@ -167,7 +167,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
         });
         register('email', {
             validate: {
-                checkphone: (value) => (!!watchPhone ? true : !!value ? true : t(langKeys.validationphoneemail)),
+                checkphone: (value) => (!!watchPhone ? true : !!value ? true : t(langKeys.validationemailexists)),
                 isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + ""),
             }
         });
@@ -178,7 +178,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
         });
         register('phone', {
             validate: {
-                checkemail: (value) => (!!watchEmail ? true : !!value ? true : t(langKeys.validationphoneemail)),
+                checkemail: (value) => (!!watchEmail ? true : !!value ? true : t(langKeys.validationphoneexists)),
                 isperuphone: (value) => (value?.startsWith("+51") ? (value.length === 12 || t(langKeys.validationphone) + "") : true)
             }
         });

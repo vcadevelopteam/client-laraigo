@@ -119,78 +119,80 @@ const PersonalDataTab: FC<PersonalDataTabProps> = ({ getValues, trigger, setValu
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <PhoneFieldEdit
-                                style={{ margin: "0 10px" }}
-                                size="small"
-                                variant="outlined"
-                                label={<Trans style={{ fontSize: 16, marginLeft: 10 }} i18nKey={langKeys.cellphone} />}
-                                onChange={(value: any) => {
-                                    setValue('personcommunicationchannel', value || "")
-                                    setValue('personcommunicationchannelowner', value || "")
-                                    setValue('channeltype', value?.domainvalue);
-                                    setValue('phone', value || "");
-                                    setExtraTriggers({ ...extraTriggers, phone: value?.replace("+", '') || "" })
-                                }}
-                                defaultCountry={"pe"}
-                                value={getValues("phone")}
-                                enableLongNumbers={true}
-                                countryCodeEditable={false}
-                                placeholder={t(langKeys.phone)}
-                                error={errors?.phone?.message}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            {(!voxiConnection.error && userConnected) &&
-                                                <IconButton size="small" onClick={() => {
-                                                    if (voxiConnection.error) {
-                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
-                                                    } else {
-                                                        dispatch(setModalCall(true))
-                                                        dispatch(setPhoneNumber(getValues("phone")))
-                                                    }
-                                                }}>
-                                                    <PhoneIcon />
-                                                </IconButton>
-                                            }
-                                        </InputAdornment>
-                                    )
-                                }}
-                            />
+                            <div style={{ margin: 12 }}>
+                                <PhoneFieldEdit
+                                    size="small"
+                                    variant="outlined"
+                                    label={<Trans style={{ fontSize: 16, marginLeft: 10 }} i18nKey={langKeys.cellphone} />}
+                                    onChange={(value: any) => {
+                                        setValue('personcommunicationchannel', value || "")
+                                        setValue('personcommunicationchannelowner', value || "")
+                                        setValue('channeltype', value?.domainvalue);
+                                        setValue('phone', value || "");
+                                        setExtraTriggers({ ...extraTriggers, phone: value?.replace("+", '') || "" })
+                                    }}
+                                    defaultCountry={"pe"}
+                                    value={getValues("phone")}
+                                    enableLongNumbers={true}
+                                    countryCodeEditable={false}
+                                    placeholder={t(langKeys.phone)}
+                                    error={errors?.phone?.message}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                {(!voxiConnection.error && userConnected) &&
+                                                    <IconButton size="small" onClick={() => {
+                                                        if (voxiConnection.error) {
+                                                            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
+                                                        } else {
+                                                            dispatch(setModalCall(true))
+                                                            dispatch(setPhoneNumber(getValues("phone")))
+                                                        }
+                                                    }}>
+                                                        <PhoneIcon />
+                                                    </IconButton>
+                                                }
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </div>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <PhoneFieldEdit
-                                style={{ margin: "0 10px" }}
-                                size="small"
-                                variant="outlined"
-                                label={<Trans style={{ fontSize: 16, marginLeft: 10 }} i18nKey={langKeys.alternativeCellphone} />}
-                                onChange={(value: any) => {
-                                    setValue('alternativephone', value || "");
-                                }}
-                                defaultCountry={"pe"}
-                                value={getValues("alternativephone")}
-                                enableLongNumbers={true}
-                                countryCodeEditable={false}
-                                placeholder={t(langKeys.alternativephone)}
-                                error={errors?.alternativephone?.message}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            {(!voxiConnection.error && userConnected) &&
-                                                <IconButton size="small" onClick={() => {
-                                                    if (voxiConnection.error) {
-                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
-                                                    } else {
-                                                        dispatch(setModalCall(true))
-                                                        dispatch(setPhoneNumber(getValues("alternativephone")))
-                                                    }
-                                                }}>
-                                                    <PhoneIcon />
-                                                </IconButton>
-                                            }
-                                        </InputAdornment>
-                                    )
-                                }}
-                            />
+                            <div style={{ margin: 12 }}>
+                                <PhoneFieldEdit
+                                    size="small"
+                                    variant="outlined"
+                                    label={<Trans style={{ fontSize: 16, marginLeft: 10 }} i18nKey={langKeys.alternativeCellphone} />}
+                                    onChange={(value: any) => {
+                                        setValue('alternativephone', value || "");
+                                    }}
+                                    defaultCountry={"pe"}
+                                    value={getValues("alternativephone")}
+                                    enableLongNumbers={true}
+                                    countryCodeEditable={false}
+                                    placeholder={t(langKeys.alternativephone)}
+                                    error={errors?.alternativephone?.message}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                {(!voxiConnection.error && userConnected) &&
+                                                    <IconButton size="small" onClick={() => {
+                                                        if (voxiConnection.error) {
+                                                            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) }))
+                                                        } else {
+                                                            dispatch(setModalCall(true))
+                                                            dispatch(setPhoneNumber(getValues("alternativephone")))
+                                                        }
+                                                    }}>
+                                                        <PhoneIcon />
+                                                    </IconButton>
+                                                }
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </div>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <FieldEdit

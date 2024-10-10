@@ -81,6 +81,8 @@ export const Person: FC = () => {
             width: '1%',
             Cell: (props: CellProps<Dictionary>) => {
                 const person = props.cell.row.original as IPerson;
+                const { locked } = props.cell.row.original;
+                if(locked) return <></>
                 return (
                     <TemplateIcons
                         sendHSM={person && person.phonewhatsapp ? (e) => {
@@ -198,7 +200,7 @@ export const Person: FC = () => {
                     return null;
                 }
                 const { status, locked } = original;
-                if (locked) return (t(`status_BLOCKED`.toLowerCase()) || "").toUpperCase();
+                if (locked) return (t(`status_BLOCKED`) || "").toUpperCase();
                 return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
             }
 
@@ -386,7 +388,7 @@ export const Person: FC = () => {
                 && (f.email === undefined || (/\S+@\S+\.\S+/.test(f.email)))
                 && (f.phone === undefined || (`${f.phone}`.startsWith("+51") ? `${f.phone}`.length === 12 : true))
                 && (f.alternativephone === undefined || (f.alternativephone.startsWith("+51") ? f.alternativephone.length === 12 : true))
-                && (f.documenttype === undefined || (f.documenttype === "DNI" && f.documentnumber?.length === 8) || (f.documenttype === "RUC" && f.documentnumber?.length === 11) || (f.documenttype === "CE" && f.documentnumber?.length <= 12))
+                && (f.documenttype === undefined || (f.documenttype === "DNI" && String(f.documentnumber)?.length === 8) || (f.documenttype === "RUC" && String(f.documentnumber)?.length === 11) || (f.documenttype === "CE" && String(f.documentnumber)?.length <= 12))
             );
             if (data.length > 0) {
                 let datavalidation = data.reduce((acc: any, x: any) => [...acc, { phone: x.phone, alternativephone: x.alternativephone, email: x.email, alternativeemail: x.alternativeemail }], [])
@@ -405,7 +407,7 @@ export const Person: FC = () => {
                         email: d.email || null,
                         alternativeemail: d.alternativeemail || null,
                         birthday: d.birthday || null,
-                        gender: d.gender || null,
+                        sex: d.sex || null,
                         educationlevel: d.educationlevel || null,
                         civilstatus: d.civilstatus || null,
                         occupation: d.occupation || null,
@@ -418,7 +420,6 @@ export const Person: FC = () => {
                         referringpersonid: 0,
                         geographicalarea: null,
                         age: null,
-                        sex: null,
                         operation: 'INSERT',
                     }
                 }), {});
@@ -559,7 +560,7 @@ export const Person: FC = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    disabled={disableLockUnlockButtons.lock}
                     startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
                     onClick={() => {
                         setOpenDialogTemplate(true);
@@ -571,7 +572,7 @@ export const Person: FC = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    disabled={disableLockUnlockButtons.lock}
                     startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
                     onClick={() => {
                         setOpenDialogTemplate(true);
@@ -583,7 +584,7 @@ export const Person: FC = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    disabled={disableLockUnlockButtons.lock}
                     startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
                     onClick={() => {
                         setOpenDialogTemplate(true);

@@ -66,7 +66,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
-                onSubmitTrigger()
+                onSubmitTrigger && onSubmitTrigger()
             } else if (sendingRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
@@ -103,11 +103,11 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             }
 
             if (type === "MAIL") {
-                setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+                setPersonWithData(persons.filter(x => x.email && x.email.length > 0 && !x.locked))
             } else if (type === "HSM") {
-                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+                setPersonWithData(persons.filter(x => !!x.phonewhatsapp && !x.locked))
             } else {
-                setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
+                setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0 && !x.locked))
             }
         } else {
             setWaitClose(false);

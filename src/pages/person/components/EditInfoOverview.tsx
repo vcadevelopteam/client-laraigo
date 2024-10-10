@@ -20,7 +20,7 @@ const EditInfoOverview: FC<SideDataProps> = ({ items, setItems, availableFields 
         setItems && setItems(reorderedItems);
     };
     const filteredFields = availableFields.filter(
-        (field:any) => !items.some((item:any) => item.field === field.field)
+        (field: any) => !items.some((item: any) => item.field === field.field)
     );
 
     const handleDelete = (field: string) => {
@@ -29,7 +29,7 @@ const EditInfoOverview: FC<SideDataProps> = ({ items, setItems, availableFields 
 
     const handleAddItem = () => {
         if (selectedField) {
-            const newItem = availableFields.find((item:any) => item.field === selectedField);
+            const newItem = availableFields.find((item: any) => item.field === selectedField);
             if (newItem && !items.find((item: any) => item.field === selectedField)) {
                 setItems && setItems([...items, newItem]);
                 setSelectedField("");
@@ -85,12 +85,19 @@ const EditInfoOverview: FC<SideDataProps> = ({ items, setItems, availableFields 
                                                     alignItems: "center",
                                                     padding: "10px",
                                                     backgroundColor: "#d0b3ff",
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    paddingRight: 5,
+                                                    fontSize: 12
                                                 }}
                                             >
-                                                <div style={{ display: "flex", alignItems: "center" }}>
-                                                    <span style={{ marginLeft: "8px" }}>{t(item.field)}</span>
+                                                <div style={{ display: "flex", alignItems: "center", flex: 1, }}>
+                                                    <span style={{
+                                                        marginLeft: "8px",
+                                                        wordWrap: "break-word",
+                                                    }}>{t(item.field)}</span>
                                                 </div>
-                                                <IconButton onClick={() => handleDelete(item.field)}>
+                                                <IconButton onClick={() => handleDelete(item.field)} style={{margin: 0, padding: 0}}>
                                                     <CloseIcon />
                                                 </IconButton>
                                             </Paper>
