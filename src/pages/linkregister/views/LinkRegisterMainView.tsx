@@ -10,7 +10,7 @@ import {
 	showBackdrop,
 	manageConfirmation,
 } from "store/popus/actions";
-import { exportExcel, partnerIns, registeredLinksIns } from "common/helpers";
+import { convertLocalDate, dateToLocalDate, exportExcel, partnerIns, registeredLinksIns } from "common/helpers";
 import { useSelector } from "hooks";
 import { CellProps } from "react-table";
 import { Button, makeStyles } from "@material-ui/core";
@@ -34,6 +34,11 @@ const useStyles = makeStyles(() => ({
 		justifyContent: 'end'
 	},
 }));
+
+function formatDateTime(dateTimeString: any) {
+    const date = new Date(dateTimeString);
+    return date.toLocaleString();
+}
 
 const selectionKey = 'linkregisterid';
 
@@ -130,21 +135,43 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 			{
 				Header: t(langKeys.startdate),
 				accessor: "startdate",
+                type: 'date',
 				width: "auto",
+				Cell: (props: any) => {
+                    const { startdate } = props.cell.row.original;
+					const day = startdate.split('-')[2];
+					const month = startdate.split('-')[1];
+					const year = startdate.split('-')[0];
+
+					const formattedDate = `${day}/${month}/${year}`;
+                    return (formattedDate || '');
+                },
 			},
 			{
 				Header: t(langKeys.enddate),
 				accessor: "enddate",
+                type: 'date',
 				width: "auto",
+				Cell: (props: any) => {
+                    const { enddate } = props.cell.row.original;
+					const day = enddate.split('-')[2];
+					const month = enddate.split('-')[1];
+					const year = enddate.split('-')[0];
+
+					const formattedDate = `${day}/${month}/${year}`;
+                    return (formattedDate || '');
+                },
 			},
 			{
 				Header: t(langKeys.creationDate),
 				accessor: "createdate",
+                NoFilter: false,
+                type: 'date',
 				width: "auto",
-				Cell: (props: any) => {
+				Cell: (props: CellProps<Dictionary>) => {
                     const { createdate } = props.cell.row.original;
-					const dateOnly = createdate?.split(' ')[0];
-                    return (dateOnly || '');
+					const dateOnly = formatDateTime(createdate).split(',')[0]
+                    return <div>{dateOnly}</div>;
                 },
 			},
 			{
@@ -155,11 +182,13 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 			{
 				Header: t(langKeys.modificationDate),
 				accessor: "changedate",
+                NoFilter: false,
+                type: 'date',
 				width: "auto",
-				Cell: (props: any) => {
+				Cell: (props: CellProps<Dictionary>) => {
                     const { changedate } = props.cell.row.original;
-					const dateOnly = changedate?.split(' ')[0];
-                    return (dateOnly || '');
+					const dateOnly = formatDateTime(changedate).split(',')[0]
+                    return <div>{dateOnly}</div>;
                 },
 			},
 			{
