@@ -738,6 +738,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
             decoding_method: row?.decoding_method ? row.decoding_method : "sample",
+            repetition_penalty: parseFloat(row?.repetition_penalty),
+            top_k: parseFloat(row?.top_k),
             ...(conector?.modelid !== '' && { project_id: conector?.modelid }),
         }))
         setMessageAux(messageText)
