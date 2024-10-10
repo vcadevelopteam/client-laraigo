@@ -95,8 +95,19 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
 
     React.useEffect(() => {
         register('linkregisterid');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('url', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.trim().length) || t(langKeys.field_required) });
+        register('url', { 
+            validate: (value) => {
+                if (!value || !value.trim().length) {
+                    return t(langKeys.field_required);
+                }
+                const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-]*)*\/?$/;
+                if (!urlRegex.test(value)) {
+                    return `${t(langKeys.url)} ${t(langKeys.invalid)}`;
+                }
+                return true;
+            }
+        });
         register('startdate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('enddate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status');
@@ -144,23 +155,24 @@ const LinkRegisterDetail: React.FC<DetailProps> = ({ data: { row }, setViewSelec
                                 setViewSelected(view);
                             }}
                         />
-                        <div className={classes.formTitle}>{t(langKeys.linkregister)}</div>
+                        <div className={classes.formTitle}>{row?.description}</div>
                     </div>
                     <div className={classes.headerButtons}>
                         <Button
                             variant="contained"
                             type="button"
                             color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("main-view")}
-                        >{t(langKeys.back)}</Button>
+                        >
+                            {t(langKeys.cancel)}
+                        </Button>
                         <Button
                             className={classes.button}
                             variant="contained"
                             color="primary"
                             type="submit"
-                            startIcon={<SaveIcon color="secondary" />}>
+                        >
                             {t(langKeys.save)}
                         </Button>
                     </div>
