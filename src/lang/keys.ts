@@ -6507,6 +6507,10 @@ export const langKeys = {
   civilstatus: 'civilstatus',
   salary: 'salary',
   all2: 'all2',
+  validationemailexists: 'validationemailexists',
+  validationphoneexists: 'validationphoneexists',
+  sex: 'sex',
+  scheduledeventcode: 'scheduledeventcode',
 };
 
 export type LangKeys = typeof langKeys;

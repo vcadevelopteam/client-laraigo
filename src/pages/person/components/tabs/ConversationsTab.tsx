@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { getTicketListByPerson, resetGetTicketListByPerson } from "store/person/actions";
 import { showSnackbar } from "store/popus/actions";
-import { FieldEdit, FieldSelect } from "components";
+import { FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { ConversationItem } from "../index";
 import { useConversationsTabStyles } from "pages/person/styles";
 import { SimpleTabProps } from "pages/person/model";
@@ -21,7 +21,7 @@ const ConversationsTab: FC<SimpleTabProps> = ({ person }) => {
     const [page, setPage] = useState(0);
     const [channelTypeList, setChannelTypeList] = useState<any>([]);
     const [filters, setFilters] = useState({
-        channeltype: "all",
+        channeltype: "",
         ticketnum: "",
         asesorfinal: "",
         fechainicio: null,
@@ -51,10 +51,7 @@ const ConversationsTab: FC<SimpleTabProps> = ({ person }) => {
             val: channel,
             name: channel
         }));
-        setChannelTypeList([
-            { name: t(langKeys.all), val: "all" },
-            ...newList
-        ])
+        setChannelTypeList(newList)
     }, [list]);
 
     useEffect(() => {
@@ -99,9 +96,9 @@ const ConversationsTab: FC<SimpleTabProps> = ({ person }) => {
         var newArray = list.filter(function (el) {
             return el.ticketnum.includes(filters.ticketnum) &&
                 el.asesorfinal.toLowerCase().includes(filters.asesorfinal.toLowerCase()) &&
-                (filters.channeltype === "all" || el.channeldesc.toLowerCase().includes(filters.channeltype.toLowerCase())) &&
+                (filters.channeltype === "" || filters?.channeltype.split(',').includes(el.channeltype)) &&
                 el.fechainicio.includes(filters?.fechainicio || "") &&
-                el.fechafin.includes(filters?.fechafin || "")
+                (!filters?.fechafin || el?.fechafin?.includes(filters?.fechafin || ""))
         });
         setfilteredList(newArray)
     }, [filters]);
@@ -115,11 +112,11 @@ const ConversationsTab: FC<SimpleTabProps> = ({ person }) => {
             <Grid container direction="row">
 
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3} style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
-                    <FieldSelect style={{ minWidth: 110 }} label={t(langKeys.channel)} data={channelTypeList}
+                    <FieldMultiSelect style={{ minWidth: 110 }} label={t(langKeys.channel)} data={channelTypeList}
                         onChange={(e) => {
                             setFilters((prev) => ({
                                 ...prev,
-                                channeltype: e.val
+                                channeltype: e.map((o: any) => o.val).join()
                             }))
                         }}
                         valueDefault={filters.channeltype}

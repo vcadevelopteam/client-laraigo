@@ -82,6 +82,7 @@ export interface TabPanelProps {
 export interface DetailLocationProps {
     row: any;
     setValue: any;
+    editmass?: any
 }
 
 export interface PhotoProps {

@@ -1,19 +1,37 @@
-import { makeStyles } from "@material-ui/core";
 import { FieldEdit } from "components";
 import { langKeys } from "lang/keys";
 import MapLocation from "pages/MapLocation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DetailLocationProps } from "../model";
 import { useLocationStyles } from "../styles";
 
-const Location: React.FC<DetailLocationProps> = ({ row, setValue }) => {
+const Location: React.FC<DetailLocationProps> = ({ row, setValue, editmass = null }) => {
     const classes = useLocationStyles();
     const { t } = useTranslation();
     const [directionData, setDirectionData] = useState({
+        country: row?.country||"",
+        city: row?.city||"",
+        district: row?.district||"",
+        address: row?.address||"",
+        lat: row?.latitude||0,
+        lng: row?.longitude||0,
         movedmarker: false,
         searchLocation: "",
     });
+
+    useEffect(() => {
+        if(editmass){
+            editmass(directionData)
+        }else{
+            setValue("latitude",directionData.lat)
+            setValue("longitude",directionData.lng)
+            setValue("country",directionData.country)
+            setValue("city",directionData.city)
+            setValue("district",directionData.district)
+            setValue("address",directionData.address)
+        }
+    }, [directionData]);
 
     return (
         <div style={{ width: '100%' }}>

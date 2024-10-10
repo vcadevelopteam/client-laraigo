@@ -31,6 +31,19 @@ const ExtraDataTab: FC<ExtraDataTabProps> = ({ getValues, trigger, setValue }) =
                         <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                             <FieldEdit
                                 className={classes.fieldStyle}
+                                label={t(langKeys.referringpersonid)}
+                                valueDefault={getValues("referringpersonid")}
+                                helperText2="enable"
+                                onChange={value => {
+                                    setValue('referringpersonid', value)
+                                }}
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <FieldEdit
+                                className={classes.fieldStyle}
                                 label={t(langKeys.personid)}
                                 valueDefault={getValues("personid")}
                                 helperText2="enable"
@@ -92,7 +105,7 @@ const ExtraDataTab: FC<ExtraDataTabProps> = ({ getValues, trigger, setValue }) =
                         <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                             <FieldEdit
                                 className={classes.fieldStyle}
-                                label={t(langKeys.blacklist)}
+                                label={t(langKeys.blacklisted)}
                                 valueDefault={getValues("blacklist")}
                                 helperText2="enable"
                                 disabled
@@ -136,7 +149,7 @@ const ExtraDataTab: FC<ExtraDataTabProps> = ({ getValues, trigger, setValue }) =
                         <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                             <FieldEdit
                                 className={classes.fieldStyle}
-                                label={t(langKeys.eventcode)}
+                                label={t(langKeys.scheduledeventcode)}
                                 valueDefault={getValues("eventcode")}
                                 helperText2="enable"
                                 disabled
