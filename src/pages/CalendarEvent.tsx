@@ -204,7 +204,7 @@ const FormToSend: FC<{
     const dispatch = useDispatch();
     const url = new URLSearchParams(window.location.search);
 
-    const { register, handleSubmit, setValue, getValues, control, formState: { errors, isValid }, trigger } = useForm({
+    const { register, handleSubmit, setValue, getValues, control, formState: { errors, isValid }, trigger, watch } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: {
@@ -214,6 +214,19 @@ const FormToSend: FC<{
             notes: '',
         }
     });
+
+    const phoneValue = watch('phone');
+    const emailValue = watch('email');
+
+    useEffect(() => {
+        if (phoneValue && phoneValue.length >= 10) {
+            trigger("phone");
+        }
+
+        if (emailValue && emailValue !== 'null' && emailValue.length > 0) {
+            trigger("email");
+        }
+    }, [phoneValue, emailValue, trigger]);
 
     useEffect(() => {
         dispatch(getCountryList());
@@ -249,8 +262,8 @@ const FormToSend: FC<{
 
     const onSubmit = handleSubmit(async (data) => {
         const isPhoneValid = await trigger("phone");
-
-        if (!isPhoneValid) {
+        const isEmailValid = await trigger("email");
+        if (!isPhoneValid || !isEmailValid) {
             return;
         }
 
