@@ -526,6 +526,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: 1, text: 'US +1' },
         { value: 44, text: 'UK +44' }
     ]
+    const today = new Date().toISOString().split('T')[0];
 
     const {
         formState: { errors },
@@ -576,6 +577,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             type: row?.type || "",
         },
     });
+
+    const [selectedLinkIdsMul, setSelectedLinkIdsMul] = useState<number[]>([])
+    useEffect(() => {
+        const buttonsgeneric = getValues('buttonsgeneric') || [];
+        const ids = buttonsgeneric
+            .map((button: Dictionary) => button?.link_id)
+            .filter((id: number | undefined): id is number => id !== undefined);
+        
+        setSelectedLinkIdsMul(ids);
+    }, [JSON.stringify(getValues('buttonsgeneric'))])
 
     useEffect(() => {
         const quickReplyItems = getValues('buttonsquickreply');
@@ -1429,7 +1440,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             trigger('authenticationdata')
         }
     }
-
+    
     const handleImageRemove = (index: number) => {
         setValue(`carouseldata.${index}.header`, "");
         trigger('carouseldata')
@@ -3144,7 +3155,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                                                                                                                                 <div className='col-8'>
                                                                                                                                                                     <div style={{marginBottom: 4}}>{t(langKeys.selectregisteredlink)}</div>
                                                                                                                                                                     <FieldSelect
-                                                                                                                                                                        data={multiData?.[5]?.data || []}
+                                                                                                                                                                        data={(multiData?.[5]?.data || [])
+                                                                                                                                                                            .filter(item => item.enddate >= today)
+                                                                                                                                                                            .filter(item => 
+                                                                                                                                                                                !selectedLinkIdsMul.includes(item.linkregisterid) ||
+                                                                                                                                                                                item.linkregisterid === btn?.link_id
+                                                                                                                                                                            )
+                                                                                                                                                                        }
                                                                                                                                                                         error={errors?.buttonsgeneric?.[i]?.link_id?.message}
                                                                                                                                                                         onChange={(value) => {
                                                                                                                                                                             if(value) {

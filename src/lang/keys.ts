@@ -2686,6 +2686,8 @@ export const langKeys = {
   type_TIPIFICACION: "type_TIPIFICACION",
   type_CATEGORIA: "type_CATEGORIA",
   catalogmaster: "catalogmaster",
+  
+  firstclicurl: 'firstclicurl',
 
   report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',
