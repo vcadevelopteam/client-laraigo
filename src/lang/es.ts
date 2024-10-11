@@ -6485,6 +6485,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   runtime_campaign: 'Hora de Ejecución',
   campaignscheduledon: 'Campaña ya programada el',
   at: 'a las',
+  templatePreview: 'Previsualización de la Plantilla',
+
 };
 
 const esResource: ResourceLanguage = {

@@ -4,19 +4,20 @@ import { useDispatch } from 'react-redux';
 import { extractVariables, getCampaignMemberSel, getCampaignSel, getCampaignStart, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
-import { CampaignGeneral } from './campaignDetailTabs/CampaignGeneral';
-import { CampaignPerson } from './campaignDetailTabs/CampaignPerson';
-import { CampaignMessage } from './campaignDetailTabs/CampaignMessage';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Button, Tabs } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { AntTab, AntTabPanel, AntTabPanelAux, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
-import { DetailProps, FrameProps, useStyles, validateField, TableColumn } from './CDComponents';
+import { CampaignGeneral } from '../detailtabs/CampaignGeneral';
+import { CampaignPerson } from '../detailtabs/CampaignPerson';
+import { CampaignMessage } from '../detailtabs/CampaignMessage';
+import { campaignsDetailStyles } from 'pages/campaign/styles';
+import { DetailPropsDetail, FrameProps, TableColumn } from 'pages/campaign/model';
 
-export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
+export const CampaignDetail: React.FC<DetailPropsDetail> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
 
-    const classes = useStyles();
+    const classes = campaignsDetailStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
@@ -31,7 +32,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [campaignMembers, setCampaignMembers] = useState<Dictionary[]>([]);
     const [tablevariable, setTableVariable] = useState<Dictionary[]>([]);
     const [usedTablevariable, setUsedTableVariable] = useState<Dictionary>({});
-    const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
     const [messageVariables, setMessageVariables] = useState<Dictionary[]>([]);
     const [dataButtons, setDataButtons] = useState<Dictionary[]>([])
     const [idAux, setIdAux] = useState(0)
@@ -44,6 +44,30 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         { id: "view-1", name: t(langKeys.campaign) },
         { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
     ];
+
+    const validateField = (origin: string | undefined, data: Dictionary, field: string) => {
+        try {
+            switch (origin) {
+                case 'PERSON':
+                    switch (field) {
+                        case 'lastcontact':
+                            return data[field] ? new Date(data[field]).toLocaleString() : '';
+                    }
+                    break;
+                case 'LEAD':
+                    switch (field) {
+                        case 'changedate':
+                        case 'date_deadline':
+                            return data[field] ? new Date(data[field]).toLocaleString() : '';
+                    }
+                    break;
+            }
+            return data[field] || '';
+        }
+        catch (e) {
+            return data[field] || ''
+        }
+    }
 
     const formatMessage = () => {
         let subject = detaildata.subject || '';
@@ -121,109 +145,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     
         return modifiedMessage;
     };
-
-    const checkValidation = () => {
-        if (!frameProps.valid[0]) {
-            console.error("Validation failed: required fields are missing in the initial section.");
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
-        } else if (!frameProps.valid[1]) {
-            console.error("Validation failed: missing people in the campaign.");
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_people) }));
-        } else {
-            let valid = true;
-
-            if (detaildata.messagetemplatetype === 'MULTIMEDIA'
-                && (detaildata?.messagetemplateheader?.type || '') !== ''
-                && detaildata.messagetemplateheader?.value === '') {
-                valid = false;
-                console.error("Validation failed: missing header for multimedia message.");
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
-            }
-
-            const newmessages = formatMessage();
-            const localsubject = newmessages.subject || '';
-            const localheader = newmessages.header || '';
-            const localmessage = newmessages.message || '';
-            let elemVariables: string[] = [];
-            let errorIndex = null;
-            const auxbuttons = detaildata;
-
-            if (auxbuttons?.messagetemplatebuttons) {
-                auxbuttons.messagetemplatebuttons.forEach((button: Dictionary) => {
-                    if (button.payload) {
-                        button.payload = formatMessageGeneric(button.payload);
-                    }
-                });
-            }
-
-            if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                const vars = extractVariables(localsubject);
-                errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-                if (errorIndex !== -1) {
-                    valid = false;
-                    console.error("Validation failed: missing header variable in email communication channel.");
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.missing_header)} ${vars[errorIndex]}` }));
-                }
-                elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
-            }
-
-            if (detaildata.messagetemplatetype === 'MULTIMEDIA' && localheader !== '') {
-                const vars = extractVariables(localheader);
-                errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-                if (errorIndex !== -1 || localheader.includes('{{}}')) {
-                    valid = false;
-                    console.error("Validation failed: invalid parameter in multimedia message header.");
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
-                }
-                elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
-            }
-
-            if (localmessage !== '') {
-                const vars = extractVariables(localmessage);
-                errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-
-                if (errorIndex !== -1 || localmessage.includes('{{}}')) {
-                    valid = false;
-
-                    const errorDetail = {
-                        localmessage,
-                        vars,
-                        errorIndex,
-                        problematicVariable: vars[errorIndex],
-                        tableDescriptions: tablevariable.map(t => t.description),
-                    };
-
-                    console.error("Validation Error Details:", errorDetail);
-                    const errorMessage = `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}`;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errorMessage }));
-                }
-
-                elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
-            }
-
-            if (detaildata.executiontype === 'SCHEDULED') {
-                const batchjson = Array.isArray(detaildata.batchjson) ? detaildata.batchjson[0] : detaildata.batchjson;
-                const { date, time } = batchjson || {};            
-                if (!date || !time) {
-                    valid = false;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
-                }
-            }            
-
-            setDetaildata({
-                ...detaildata,
-                variablereplace: elemVariables,
-                batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
-                subject: newmessages.subject,
-                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
-                messagetemplatebuttons: auxbuttons.messagetemplatebuttons,
-                fields: detaildata.fields,
-                carouseljson: detaildata.carouseljson,
-                message: newmessages.message,
-            });
-            setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
-        }
-    }
 
     const buildingMembers = (onlyCheck: boolean = false) => {
         let campaignMemberList: Dictionary[] = [];
@@ -482,108 +403,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }, []);
 
-    useEffect(() => {
-        if (waitView) {
-            if (!mainResult.multiData.loading && !mainResult.multiData.error && row !== null) {
-                setAuxData(mainResult.multiData.data[4].data);
-                const data = mainResult.multiData.data[4].data[0];
-                if (data) {
-                    setDetaildata({
-                        isnew: false,
-                        id: row.id,
-                        communicationchannelid: data?.communicationchannelid,
-                        usergroup: data?.usergroup,
-                        type: data?.type,
-                        status: data?.status,
-                        title: data?.title,
-                        description: data?.description,
-                        subject: data?.subject,
-                        message: data?.message,
-                        startdate: data?.startdate,
-                        enddate: data?.enddate,
-                        repeatable: data?.repeatable,
-                        frecuency: data?.frecuency,
-                        source: data?.source || 'INTERNAL',
-                        messagetemplateid: data?.messagetemplateid,
-                        messagetemplatename: data?.messagetemplatename,
-                        messagetemplatenamespace: data?.messagetemplatenamespace,
-                        messagetemplatetype: data?.messagetemplatetype,
-                        messagetemplateheader: data?.messagetemplateheader || {},
-                        messagetemplatebuttons: detaildata.messagetemplatebuttons || [],
-                        messagetemplatefooter: data?.messagetemplatefooter || '',
-                        messagetemplateattachment: data?.messagetemplateattachment || '',
-                        messagetemplatelanguage: data?.messagetemplatelanguage || '',
-                        messagetemplatepriority: data?.messagetemplatepriority || '',
-                        executiontype: data?.executiontype,
-                        batchjson: data?.batchjson || [],
-                        fields: { ...new SelectedColumns(), ...data?.fields },
-                        operation: 'UPDATE',
-                        carouseljson: data?.carouseljson || [],
-                        variableshidden: data?.variableshidden || [],
-                        person: mainResult.multiData.data[5] && mainResult.multiData.data[5].success ? mainResult.multiData.data[5].data : []
-                    });
-                    setFrameProps({
-                        ...frameProps,
-                        valid: {
-                            0: Boolean(data),
-                            1: (mainResult.multiData.data[5] && mainResult.multiData.data[5].success ? mainResult.multiData.data[5].data : []).length !== 0,
-                            2: Boolean(data)
-                        }
-                    });
-                }
-                dispatch(showBackdrop(false));
-                setWaitView(false);
-                setPageSelected(0);
-            }
-        }
-    }, [mainResult, waitView]);
 
-    useEffect(() => {
-        if (save === 'VALIDATION') {
-            checkValidation();
-            setSave('PREPARING');
-        }
-        if (!Object.values(frameProps.valid).includes(false)) {
-            if (save === 'PREPARING') {
-                buildingMembers();
-            }
-            else if (save === 'SUBMIT') {
-                onSubmit();
-            }
-            else if (save === 'PARENT') {
-                if (!executeRes.loading && !executeRes.error) {
-                    setSave('MEMBERS');
-                    saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
-                    setCampaignId(executeRes.data[0]?.p_campaignid);
-                } else if (executeRes.error) {
-                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                    dispatch(showBackdrop(false));
-                    setSave('');
-                }
-            }
-            else if (save === 'MEMBERS') {
-                if (!executeRes.loading && !executeRes.error) {
-                    setTimeout(() => {
-                        dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
-                        dispatch(showBackdrop(false));
-                        fetchData();
-                        setViewSelected("view-1");
-                    }, 1000);
-
-                    if (detaildata.executiontype === "SCHEDULED" && campaignId !== null) {
-                        handleStart(campaignId);
-                        setCampaignId(null);
-                    }
-                } else if (executeRes.error) {
-                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
-                    dispatch(showBackdrop(false));
-                    setSave('');
-                }
-            }
-        }
-    }, [save, executeRes]);  
 
     useEffect(() => {
         if (pageSelected === 2) {
@@ -691,9 +511,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             color="primary"
                             type="button"
                             style={{ backgroundColor: "#55BD84" }}
-                            disabled={!frameProps.valid[0] || !frameProps.valid[1]}
                             onClick={() => {
-                                setFrameProps({ ...frameProps, executeSave: true, checkPage: true });
+                                []
                             }}
                         >{t(langKeys.save)}
                         </Button>
@@ -707,7 +526,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 variant="fullWidth"
                 style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
                 textColor="primary"
-                onChange={(_, value) => setFrameProps({ ...frameProps, page: value, checkPage: true })}
             >
                 <AntTab label={t(langKeys.generalinformation)} />
                 <AntTab label={t(langKeys.person_plural)} />
@@ -722,8 +540,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setDetaildata={setDetaildata}
                     multiData={mainResult.multiData.data}
                     fetchData={fetchData}
-                    frameProps={frameProps}
-                    setFrameProps={setFrameProps}
+                    // frameProps={frameProps}
+                    // setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
                     setIdAux={setIdAux}
@@ -741,8 +559,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         setDetaildata={setDetaildata}
                         multiData={mainResult.multiData.data}
                         fetchData={fetchData}
-                        frameProps={frameProps}
-                        setFrameProps={setFrameProps}
+                        // frameProps={frameProps}
+                        // setFrameProps={setFrameProps}
                         setPageSelected={setPageSelected}
                         setSave={setSave}
                         idAux={idAux}
@@ -762,8 +580,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     multiData={mainResult.multiData.data}
                     fetchData={fetchData}
                     tablevariable={tablevariable}
-                    frameProps={frameProps}
-                    setFrameProps={setFrameProps}
+                    // frameProps={frameProps}
+                    // setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
                     messageVariables={messageVariables}

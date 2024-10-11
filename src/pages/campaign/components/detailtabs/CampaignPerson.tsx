@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx3Opt } from 'components';
-import { Dictionary, ICampaign, IFetchData, MultiData, SelectedColumns } from "@types";
+import { Dictionary, IFetchData, SelectedColumns } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../../../../components/fields/table-simple';
-import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCampaignMemberSel, campaignPersonSel, campaignLeadPersonSel, convertLocalDate, uploadExcelCampaign } from 'common/helpers';
@@ -17,45 +16,11 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import DeleteIcon from '@material-ui/icons/Delete';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { FrameProps } from '../CDComponents';
-interface DetailProps {
-    row: Dictionary | null,
-    edit: boolean,
-    auxdata: Dictionary;
-    detaildata: ICampaign;
-    setDetaildata: (data: ICampaign) => void;
-    multiData: MultiData[];
-    fetchData: () => void;
-    frameProps: FrameProps;
-    setFrameProps: (value: FrameProps) => void;
-    setPageSelected: (page: number) => void;
-    setSave: (value: any) => void;
-    idAux: number;
-    templateAux: Dictionary;
-    setJsonPersons:  (value: Dictionary) => void;
-    detectionChangeSource: boolean;
-    //primaryKey: string;
-}
+import { DetailPropsTabPerson } from 'pages/campaign/model';
+import { campaignPersonStyles } from 'pages/campaign/styles';
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
-    },
-    flexgrow1: {
-        flexGrow: 1
-    }
-}));
-
-export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave, idAux, templateAux, setJsonPersons, detectionChangeSource }) => {
-    const classes = useStyles();
+export const CampaignPerson: React.FC<DetailPropsTabPerson> = ({ row, detaildata, setDetaildata, multiData, frameProps, setFrameProps, setPageSelected, setSave, templateAux, setJsonPersons }) => {
+    const classes = campaignPersonStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const auxResult = useSelector(state => state.main.mainAux);
@@ -63,7 +28,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [columnList, setColumnList] = useState<string[]>([]);
     const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.headers || [] : []);
     const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.jsonData || [] : []);
-    // const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
     const [jsonDataPerson, setJsonDataPerson] = useState<any[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
@@ -206,10 +170,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             const worksheet = workbook.Sheets[firstSheetName];    
             const sheetData = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
             const columnNames: string[] = sheetData[1];    
-            let variableCounter = 1;    
             const bodyVariables = currentTemplateAux.body ? currentTemplateAux.body.match(/{{\d+}}/g) || [] : [];
             const requiredVariableColumns = bodyVariables.map((_, index) => `Variable ${index + 1}`);
-            variableCounter += bodyVariables.length;
             
             const headerVariableColumns = currentTemplateAux.headertype === "TEXT" && currentTemplateAux.headervariables
                 ? currentTemplateAux.headervariables.map((_, index) => `Variable Cabecera ${index + 1}`)

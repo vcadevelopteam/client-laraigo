@@ -6,8 +6,8 @@ import { langKeys } from 'lang/keys';
 import { Card, Grid } from '@material-ui/core';
 import { TemplatesIcon, CampaignsIcon } from 'icons';
 import MessageTemplates from './messagetemplates/MessageTemplates';
-import Campaign from './campaign/campaignMainView/CampaignMainView';
 import { useSelector } from 'hooks';
+import Campaign from './campaign/Campaigns';
 
 const useStyles = makeStyles((theme) => ({
     title: {

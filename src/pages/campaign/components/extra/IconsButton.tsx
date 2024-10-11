@@ -1,78 +1,11 @@
 import React from 'react'; 
-import { makeStyles } from "@material-ui/core";
-import { Dictionary } from "@types";
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { ListItemIcon } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-export type BreadCrumb = {
-    id: string,
-    name: string
-}
-
-export interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
-
-export interface ColumnTmp {
-    Header: string;
-    accessor: string;
-    prefixTranslation?: string;
-    type?: string;
-}
-
-export interface CampaignProps {
-    arrayBread: BreadCrumb[];
-    setAuxViewSelected: (view: string) => void;  
-}
-
-export const useStyles = makeStyles((theme) => ({
-    
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
-    },
-    buttonProgrammed: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        backgroundColor: '#efe4b0'
-    },
-    containerHeader: {
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 16,
-        [theme.breakpoints.up("sm")]: {
-            display: "flex",
-        },
-    },
-    titleandcrumbs: {
-        marginBottom: 4,
-        marginTop: 4,
-    },
-}));
-
-export const columnsCampaignMainViewExcel : ColumnTmp[] = [
-    { Header: 'Campaña', accessor: 'title' },
-    { Header: 'Descripción', accessor: 'description' },
-    { Header: 'Canal', accessor: 'communicationchannel' },
-    { Header: 'Fecha de Inicio', accessor: 'startdate' },
-    { Header: 'Fecha de Fin', accessor: 'enddate' },
-    { Header: 'Estado', accessor: 'status' },
-    { Header: 'Fecha y hora de ejecución', accessor: 'datetimestart' },
-    { Header: 'Tipo de ejecución', accessor: 'executiontype' },
-];
+import { Dictionary } from "@types";
 
 export const IconOptions: React.FC<{ disabled?: boolean, onHandlerDelete?: (e?: Dictionary) => void }> = ({ onHandlerDelete }) => {
     

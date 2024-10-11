@@ -4,14 +4,13 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize, stopCampaign, exportExcel } from 'common/helpers';
 import { Dictionary } from "@types";
-import TableZyx from '../../../components/fields/table-simple';
+import TableZyx from '../../components/fields/table-simple';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { CampaignDetail } from '../campaignDetail/CampaignDetail';
-import { Blacklist } from '../Blacklist';
-import { CampaignReport } from '../../staticReports/ReportCampaign';
+import { Blacklist } from './components/blacklist/Blacklist';
+import { CampaignReport } from '../staticReports/ReportCampaign';
 import { Box,  Divider, IconButton, ListItemIcon, Typography } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -29,12 +28,15 @@ import BlockIcon from '@material-ui/icons/Block';
 import { getDateCleaned } from 'common/helpers';
 import CommentIcon from '@material-ui/icons/Comment';
 import { DownloadIcon } from 'icons';
-import { useStyles, CampaignProps, RowSelected, IconOptions, columnsCampaignMainViewExcel } from './CMVComponents';
+import { campaignsStyles } from './styles';
+import { CampaignDetail } from './components/campaignDetail/CampaignDetail';
+import { CampaignProps, ColumnTmp, RowSelected } from './model';
+import { IconOptions } from './components/extra/IconsButton';
 
 const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) => {
     
     const dispatch = useDispatch();
-    const classes = useStyles();
+    const classes = campaignsStyles();
     const { t } = useTranslation();
     const selectionKey = "id";
     const isOpenSeButtons = true;
@@ -53,6 +55,17 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
     const newArrayBread = [
         ...arrayBread,
         { id: "campaigns", name: t(langKeys.campaign_plural) }
+    ];
+
+    const columnsCampaignMainViewExcel : ColumnTmp[] = [
+        { Header: 'Campaña', accessor: 'title' },
+        { Header: 'Descripción', accessor: 'description' },
+        { Header: 'Canal', accessor: 'communicationchannel' },
+        { Header: 'Fecha de Inicio', accessor: 'startdate' },
+        { Header: 'Fecha de Fin', accessor: 'enddate' },
+        { Header: 'Estado', accessor: 'status' },
+        { Header: 'Fecha y hora de ejecución', accessor: 'datetimestart' },
+        { Header: 'Tipo de ejecución', accessor: 'executiontype' },
     ];
 
     const functionChange = (change:string) => {
@@ -415,7 +428,6 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
         document.addEventListener('mousedown', handleClickOutside);
         return () => { document.removeEventListener('mousedown', handleClickOutside) };
     }, [anchorElSeButtons]);   
-
 
     const columns = React.useMemo(
         () => [

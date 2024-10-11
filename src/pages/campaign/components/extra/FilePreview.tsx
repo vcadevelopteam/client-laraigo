@@ -1,43 +1,12 @@
 import React, { FC, useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { CircularProgress, IconButton, Paper} from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
-
-interface FilePreviewProps {
-    onClose?: (f: string) => void;
-    src: File | string;
-}
-
-const useFilePreviewStyles = makeStyles(theme => ({
-    btnContainer: {
-        color: 'lightgrey',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-    },
-    infoContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    root: {
-        alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 4,
-        display: 'flex',
-        flexDirection: 'row',
-        margin: theme.spacing(1),
-        maxHeight: 80,
-        maxWidth: 300,
-        overflow: 'hidden',
-        padding: theme.spacing(1),
-        width: 'fit-content',
-    },
-}));
+import { FilePreviewProps } from 'pages/campaign/model';
+import { filePreviewStyles } from 'pages/campaign/styles';
 
 export const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
-    const classes = useFilePreviewStyles();
 
+    const classes = filePreviewStyles();
     const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);
 
     const getFileName = useCallback(() => {

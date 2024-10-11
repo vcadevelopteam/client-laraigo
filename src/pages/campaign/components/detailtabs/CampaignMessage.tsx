@@ -1,66 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FieldEdit, FieldSelectDisabled } from 'components';
-import { Dictionary, ICampaign, MultiData } from "@types";
-import { makeStyles } from '@material-ui/core/styles';
+import { Dictionary, ICampaign } from "@types";
 import { useTranslation } from 'react-i18next';
-import { FrameProps } from '../CampaignDetail';
 import { FormControl } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import AddIcon from '@material-ui/icons/Add';
-import TemplatePreview from '../../components/TemplatePreview';
+import TemplatePreview from '../extra/TemplatePreview';
 import DeleteIcon from '@material-ui/icons/Delete';
-interface DetailProps {
-    row: Dictionary | null,
-    edit: boolean,
-    auxdata: Dictionary;
-    detaildata: ICampaign;
-    setDetaildata: (data: ICampaign) => void;
-    multiData: MultiData[];
-    fetchData: () => void;
-    tablevariable: Dictionary[];
-    frameProps: FrameProps;
-    setFrameProps: (value: FrameProps) => void;
-    setPageSelected: (page: number) => void;
-    setSave: (value: string) => void;
-    messageVariables: Dictionary[];
-    setMessageVariables: (value: Dictionary[]) => void;
-    templateAux: Dictionary;
-    jsonPersons: Dictionary;
-    detectionChangeSource: boolean;
-    dataButtons: Dictionary[];
-}
+import { DetailPropsTabMessage } from 'pages/campaign/model';
+import { campaignMessageStyles } from 'pages/campaign/styles';
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },          
-    subtitle: {
-        fontSize: '0.9rem',       
-        color: 'grey', 
-        marginBottom:'0.5rem',
-    },
-    iconHelpText: {
-        width: 'auto',
-        height: 23,
-        cursor: 'pointer',
-    },
-    containerStyle: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '16px',
-    }
-}));
-
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, templateAux, jsonPersons, detectionChangeSource}) => {
-    const classes = useStyles();
+export const CampaignMessage: React.FC<DetailPropsTabMessage> = ({ row, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables, templateAux, jsonPersons, detectionChangeSource}) => {
+    const classes = campaignMessageStyles();
     const { t } = useTranslation();  
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const templateId = templateAux.id;
     const selectedTemplate = dataMessageTemplate.find(template => template.id === templateId) || {};
-    const [filledTemplate, setFilledTemplate] = useState<Dictionary>({ ...selectedTemplate });
+    const [, setFilledTemplate] = useState<Dictionary>({ ...selectedTemplate });
     const headers = jsonPersons.length > 0 ? Object.keys(jsonPersons[0]) : [];
     const [selectedHeader, setSelectedHeader] = useState<string>('');
     const [selectedHeaders, setSelectedHeaders] = useState<{ [key: number]: string }>({});

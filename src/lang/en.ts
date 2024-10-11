@@ -6534,7 +6534,8 @@ const translation: LangKeys = {
   runtime_campaign: 'Runtime',
   campaignscheduledon: 'Campaign already scheduled on',
   at: 'at',
-  
+  templatePreview: 'Template Preview',
+
 };
 
 const enResource: ResourceLanguage = {
