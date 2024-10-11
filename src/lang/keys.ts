@@ -2686,6 +2686,8 @@ export const langKeys = {
   type_TIPIFICACION: "type_TIPIFICACION",
   type_CATEGORIA: "type_CATEGORIA",
   catalogmaster: "catalogmaster",
+  
+  firstclicurl: 'firstclicurl',
 
   report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',
@@ -6486,8 +6488,6 @@ export const langKeys = {
   clicksonlinkpercent: 'clicksonlinkpercent',
   clickurldate: 'clickurldate',
   executeddate: 'executeddate',
-
-  billingreport_conversationbillable: 'billingreport_conversationbillable',
   watsonxassistantdescription: 'watsonxassistantdescription',
   updateddate: 'updateddate',
   topk: 'topk',
