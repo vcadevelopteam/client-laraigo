@@ -6544,8 +6544,8 @@ const translation: LangKeys = {
   clicksonlink: 'Clic on Link',
   clickonlink: 'Clic on Link',
   campaignwithlinks: 'Campaign with Links',
-  clicksonlinkpercent: '% Click on Link',
-  clickurldate: 'Date of click on Link',
+  clicksonlinkpercent: '% Clic on Link',
+  clickurldate: 'Date of clic on Link',
   executeddate: 'Execution Date',
 };
 
