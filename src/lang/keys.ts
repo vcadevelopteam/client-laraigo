@@ -2691,6 +2691,8 @@ export const langKeys = {
   type_TIPIFICACION: "type_TIPIFICACION",
   type_CATEGORIA: "type_CATEGORIA",
   catalogmaster: "catalogmaster",
+  
+  firstclicurl: 'firstclicurl',
 
   report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',
@@ -6488,7 +6490,7 @@ export const langKeys = {
   campaignwithlinks: 'campaignwithlinks',
   clicksonlinkpercent: 'clicksonlinkpercent',
   clickurldate: 'clickurldate',
-  executeddate: 'executeddate', 
+  executeddate: 'executeddate',
 };
 
 export type LangKeys = typeof langKeys;

@@ -1120,6 +1120,8 @@ const translation: LangKeys = {
   calendar_connections_title: 'Connection to Calendars',
   calendar_connections_subtitle: "Connect your calendar so Laraigo knows when you're available and updates as events are scheduled.",
 
+  firstclicurl: 'Date and Time 1st Click on Link',
+
   supplier: "Supplier",
   id: 'ID',
   newmessagetemplate: 'New Message Template',
@@ -6537,10 +6539,10 @@ const translation: LangKeys = {
   addlinkdesc: 'Enter the URL of your link',
   linkstartdatedesc: 'Enter a starting date for the validity of your link',
   linkenddatedesc: 'Enter an end date for the validity of your link',
-  useregisteredlinkscount: 'Use registered link for click count',
+  useregisteredlinkscount: 'Use registered link for clic count',
   selectregisteredlink: 'Select a registered link',
-  clicksonlink: 'Clicks on Link',
-  clickonlink: 'Click on Link',
+  clicksonlink: 'Clic on Link',
+  clickonlink: 'Clic on Link',
   campaignwithlinks: 'Campaign with Links',
   clicksonlinkpercent: '% Click on Link',
   clickurldate: 'Date of click on Link',
