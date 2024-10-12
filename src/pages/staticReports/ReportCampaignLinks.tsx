@@ -417,6 +417,7 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                 useSelection={true}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
+                totalrow={main.data.length}
             />
         </div>
     )
