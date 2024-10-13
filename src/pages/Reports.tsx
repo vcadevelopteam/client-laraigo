@@ -1387,7 +1387,7 @@ const Reports: FC = () => {
                 )
             case 'CAMPAIGNLINKS':
                 return (
-                    <Grid item key={"campaignlinks"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                    <Grid item key={"campaignlinks"} xs={12} md={4} lg={2} style={{minWidth: 330}}>
                         <Card>
                             <CardActionArea onClick={() => handleSelectedString("campaignwithlinks")} className={classes.cardstyle}>
                                 <CardMedia
