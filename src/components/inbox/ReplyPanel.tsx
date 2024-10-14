@@ -51,7 +51,8 @@ import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
 import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
-import { formatTextToUnicode, removeUnicodeStyle } from "common/helpers";
+import { useUnicodeToggleTextStyle, TextStyle } from "common/helpers";
+import { useSymbolToggleTextStyle } from "./components/TextStyles";
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -819,7 +820,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
 
     useEffect(() => {
         setRichResponseToShow(richResponseList);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        //
     }, [richResponseList]);
 
     useEffect(() => {
@@ -828,7 +829,6 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
         } else {
             setRichResponseToShow(richResponseList.filter((x) => x.title.toLowerCase().includes(search.toLowerCase())));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     const reasignTicket = React.useCallback(() => {
@@ -847,7 +847,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                 event: "reassignTicket",
                 data: {
                     ...ticketSelected,
-                    userid: agentSelected?.userid, //CAMBIAR ESTO
+                    userid: agentSelected?.userid,
                     newuserid: 0,
                 },
             })
@@ -1034,8 +1034,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [flagredo, setflagredo] = useState(false);
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
-    const inputRef = useRef(null);
-
+    const inputRef = useRef<HTMLDivElement>(null);
+    const [appliedStyles, setAppliedStyles] = useState<{ [key in TextStyle]?: boolean }>({});
+    const [appliedUnicodeStyle, setAppliedUnicodeStyle] = useState<TextStyle | null>(null);
+    const symbolToggleTextStyle = useSymbolToggleTextStyle(text, setText, inputRef, appliedStyles, setAppliedStyles);
+    const unicodeToggleTextStyle = useUnicodeToggleTextStyle(text, setText, inputRef, appliedUnicodeStyle, setAppliedUnicodeStyle);
 
     useEffect(() => {
         dispatch(getInnapropiateWordTicketLst());
@@ -1414,56 +1417,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
             e.preventDefault();
             if (e.clipboardData.files[0].type.includes("image")) {
-                //uploadFile
                 setfileimage(e.clipboardData.files);
             }
         }
-    }
-    const toggleTextStyle = (style) => {
-        const input = inputRef.current.querySelector('textarea');
-        const { value, selectionStart, selectionEnd } = input;
-        const selectedText = value.slice(selectionStart, selectionEnd);
-        const beforeText = value.slice(0, selectionStart);
-        const afterText = value.slice(selectionEnd);
-    
-        let newText = selectedText;
-    
-        if (selectedText) {
-            const textWithStyle = formatTextToUnicode({ text: selectedText, [style]: true });
-            let textWithoutStyle = removeUnicodeStyle(selectedText);    
-    
-            if (style === 'underline' || style === 'strikethrough') {
-                const regex = new RegExp(`[\\u0332\\u0336]`, 'g');
-                textWithoutStyle = selectedText.replace(regex, '');
-                if (selectedText === textWithoutStyle) {
-                    newText = textWithStyle;
-                } else {
-                    newText = textWithoutStyle;
-                }
-            } else {
-                if (selectedText === textWithStyle) {
-                    newText = textWithoutStyle;
-                } else {
-                    newText = textWithStyle;
-                }
-            }
-    
-            const newValue = `${beforeText}${newText}${afterText}`;
-            setText(newValue);
-    
-            const selectionLengthDiff = newText.length - selectedText.length;
-            const newSelectionStart = selectionStart;
-            const newSelectionEnd = selectionEnd + selectionLengthDiff;
-    
-            setTimeout(() => {
-                input.setSelectionRange(newSelectionStart, newSelectionEnd);
-                input.focus();
-            }, 0);
-        } else {
-            const newValue = value; 
-            setText(newValue);
-        }
-    };
+    }  
     
     const handleKeyDown = (event: Dictionary) => {
         if ((event.altKey || user?.languagesettings?.sendingmode === "ExecutionButton") && event.key === 'Enter') {
@@ -1475,6 +1432,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const isTextEmptyOrWhitespace = (text: string) => {
         return text.trim() === '';
     };
+
+    console.log('ticketSelected?.communicationchanneltype', ticketSelected?.communicationchanneltype)
 
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
@@ -1778,43 +1737,95 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             enabled={propertyCopilotLaraigo}
                                         />
                                     </div>                                 
-
-                                    <div style={{ display: 'flex', gap: '0.7rem' }}>
-                                        <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
-                                            <IconButton onClick={() => toggleTextStyle('bold')} size='small'>
-                                            {t(langKeys.currentlanguage) === "en" ? <FormatBoldIcon className={classes.root} /> : <BoldNIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
-                                            <IconButton onClick={() => toggleTextStyle('italic')} size='small'>
-                                            {t(langKeys.currentlanguage) === "en" ? <FormatItalicIcon className={classes.root} /> : <ItalicKIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                            </IconButton>
-                                        </Tooltip>
-                                        {ticketSelected?.communicationchanneltype.includes("WHA") && (
-                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
-                                                <IconButton onClick={() => toggleTextStyle('underline')} size='small'>
-                                                {t(langKeys.currentlanguage) === "en" ? <FormatUnderlinedIcon className={classes.root} /> : <UnderlineSIcon className={classes.root} style={{ width: 18, height: 18 }} />}
+                                    
+                                    {ticketSelected?.communicationchanneltype === "WHA" || ticketSelected?.communicationchanneltype === "FBDM" || ticketSelected?.communicationchanneltype === "WHAD" || ticketSelected?.communicationchanneltype === "WHAG" ? (
+                                        <div style={{ display: 'flex', gap: '0.7rem' }}>
+                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('bold')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.bold ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <FormatBoldIcon className={classes.root} />
                                                 </IconButton>
                                             </Tooltip>
-                                        )}
-                                        <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
-                                            <IconButton onClick={() => toggleTextStyle('strikethrough')} size='small'>
-                                            {t(langKeys.currentlanguage) === "en" ? <StrikethroughSIcon className={classes.root} /> : <StrikethroughLineIcon className={classes.root} style={{ width: 18, height: 18 }} />}
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
-                                            <IconButton onClick={() => toggleTextStyle('monospaced')} size='small'>
-                                                <CodeSnippetIcon className={classes.root} style={{ width: 24, height: 24 }} />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </div>
-
-
-
-
-
-
-
+                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('italic')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.italic ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <FormatItalicIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('strikethrough')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.strikethrough ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <StrikethroughSIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('monospaced')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.monospaced ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <CodeSnippetIcon className={classes.root} style={{ width: 20, height: 20, marginBottom:'4px' }} />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </div>
+                                    ):(
+                                        <div style={{ display: 'flex', gap: '0.7rem', marginTop: '1rem' }}>
+                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('bold')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'bold' ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <FormatBoldIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('italic')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'italic' ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <FormatItalicIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('underline')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'underline' ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <FormatUnderlinedIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('strikethrough')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'strikethrough' ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <StrikethroughSIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('monospaced')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'monospaced' ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <CodeSnippetIcon className={classes.root} style={{ width: 20, height: 20, marginBottom:'4px' }} />
+                                                    </IconButton>
+                                            </Tooltip>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                             <BottomGoToUnder />
@@ -1831,7 +1842,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 textAlign: "center",
                             }}
                         >
-                            {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
+                            {showReply === null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                         </div>
                         <BottomGoToUnder />
                     </div>
