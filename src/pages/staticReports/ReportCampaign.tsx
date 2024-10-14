@@ -27,11 +27,6 @@ interface DetailProps {
     // errors: FieldErrors
 }
 
-const arrayBread = [
-    { id: "view-1", name: "Campaign" },
-    { id: "view-2", name: "Campaign report" }
-];
-
 const useStyles = makeStyles(() => ({
       select: {
         width: '200px'
@@ -89,6 +84,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
 
     const filterChannel = useSelector ((state)=> state.main.mainAux)
+
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.campaign_plural) },
+        { id: "view-2", name: `${t(langKeys.report)} ${t(langKeys.campaign_plural)}` }
+    ];
     
     const cell = (props: CellProps<Dictionary>) => {
         const column = props.cell.column;
@@ -316,8 +316,8 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'executionuser', alias: t(langKeys.executingUser)},
                     {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},  
-                    {key: 'clickurl', alias: t(langKeys.clicksonlink)},                 
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},   
+                    {key: 'firstclickurl', alias: t(langKeys.firstclicurl)},
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
@@ -356,7 +356,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'executionuserprofile', alias: t(langKeys.executingUserProfile)},   
                     {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
                     {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
-                    {key: 'clickurl', alias: t(langKeys.clicksonlink)},
+                    {key: 'firstclickurl', alias: t(langKeys.firstclicurl)}, 
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},

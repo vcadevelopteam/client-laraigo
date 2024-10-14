@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TemplateBreadcrumbs, TemplateIcons } from "components";
+import { TemplateBreadcrumbs } from "components";
 import { langKeys } from "lang/keys";
 import { Dictionary } from "@types";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
 	showBackdrop,
 	manageConfirmation,
 } from "store/popus/actions";
-import { convertLocalDate, dateToLocalDate, exportExcel, partnerIns, registeredLinksIns } from "common/helpers";
+import { exportExcel, registeredLinksIns } from "common/helpers";
 import { useSelector } from "hooks";
 import { CellProps } from "react-table";
 import { Button, makeStyles } from "@material-ui/core";
@@ -65,6 +65,7 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 	const main = useSelector((state) => state.main.mainData);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+	const [dataFixed, setDataFixed] = useState<Dictionary[]>([])
 
 	useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -165,13 +166,16 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 			{
 				Header: t(langKeys.creationDate),
 				accessor: "createdate",
-                NoFilter: false,
                 type: 'date',
 				width: "auto",
-				Cell: (props: CellProps<Dictionary>) => {
+				Cell: (props: any) => {
                     const { createdate } = props.cell.row.original;
-					const dateOnly = formatDateTime(createdate).split(',')[0]
-                    return <div>{dateOnly}</div>;
+					const day = createdate.split('-')[2];
+					const month = createdate.split('-')[1];
+					const year = createdate.split('-')[0];
+
+					const formattedDate = `${day}/${month}/${year}`;
+                    return (formattedDate || '');
                 },
 			},
 			{
@@ -182,13 +186,16 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 			{
 				Header: t(langKeys.modificationDate),
 				accessor: "changedate",
-                NoFilter: false,
                 type: 'date',
 				width: "auto",
-				Cell: (props: CellProps<Dictionary>) => {
+				Cell: (props: any) => {
                     const { changedate } = props.cell.row.original;
-					const dateOnly = formatDateTime(changedate).split(',')[0]
-                    return <div>{dateOnly}</div>;
+					const day = changedate.split('-')[2];
+					const month = changedate.split('-')[1];
+					const year = changedate.split('-')[0];
+
+					const formattedDate = `${day}/${month}/${year}`;
+                    return (formattedDate || '');
                 },
 			},
 			{
@@ -208,6 +215,24 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
 	const handleDownload = () => {
         exportExcel('Enlaces Registrados', main.data, columns)
     };
+	
+	useEffect(() => {
+        const formattedData = main.data.map(item => {
+			const formatDate = (date: string) => {
+				const [day, month, year] = formatDateTime(date).split(',')[0].split('/');
+				const formattedDay = day.length === 1 ? `0${day}` : day;
+				const formattedMonth = month.length === 1 ? `0${month}` : month;
+				return `${year}-${formattedMonth}-${formattedDay}`;
+			};
+			return {
+				...item,
+				createdate: item.createdate ? formatDate(item.createdate) : '',
+				changedate: item.changedate ? formatDate(item.changedate) : '',
+			};
+		});
+		
+		setDataFixed(formattedData);
+    }, [main.data])
 
 	return (
 		<div className={classes.main}>
@@ -233,7 +258,7 @@ const LinkRegisterMainView: FC<LinkRegisterMainViewProps> = ({
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
 				columns={columns}
-				data={main.data}
+				data={dataFixed}
 				loading={main.loading}
 				download={true}
 				exportPersonalized={handleDownload}

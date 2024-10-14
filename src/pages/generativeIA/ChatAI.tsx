@@ -731,6 +731,7 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
         dispatch(query({
             assistant_name: row?.name,
             query: messageText,
+            threadid: currentThreadLlamaId,
             system_prompt: row?.generalprompt,
             model: row?.basemodel,
             thread_id: selectedChat?.code,
@@ -738,6 +739,8 @@ const ChatAI: React.FC<ChatAIProps> = ({ setViewSelected , row}) => {
             temperature: parseFloat(row?.temperature),
             top_p: parseFloat(row?.top_p),
             decoding_method: row?.decoding_method ? row.decoding_method : "sample",
+            repetition_penalty: parseFloat(row?.repetition_penalty),
+            top_k: parseFloat(row?.top_k),
             ...(conector?.modelid !== '' && { project_id: conector?.modelid }),
         }))
         setMessageAux(messageText)

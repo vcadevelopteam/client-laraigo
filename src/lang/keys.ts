@@ -1195,6 +1195,7 @@ export const langKeys = {
   AIservices: 'AIservices',
   systemvariables: 'systemvariables',
   odoovariables: 'odoovariables',
+  invalidurl: 'invalidurl',
 
   channel: 'channel',
   channel_plural: 'channel_plural',
@@ -2685,6 +2686,8 @@ export const langKeys = {
   type_TIPIFICACION: "type_TIPIFICACION",
   type_CATEGORIA: "type_CATEGORIA",
   catalogmaster: "catalogmaster",
+  
+  firstclicurl: 'firstclicurl',
 
   report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',

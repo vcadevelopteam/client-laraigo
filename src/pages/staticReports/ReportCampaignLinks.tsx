@@ -78,6 +78,11 @@ const initialRange = {
     key: 'selection'
 }
 
+function formatDateTime(dateTimeString: any) {
+    const date = new Date(dateTimeString);
+    return date.toLocaleString();
+}
+
 export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -141,8 +146,8 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                 width: "auto",
 				Cell: (props: any) => {
                     const { rundate } = props.cell.row.original;
-					const dateOnly = rundate?.split(' ')[0];
-                    return (dateOnly || '');
+					const formatedDate = formatDateTime(rundate)
+                    return (formatedDate || '');
                 },
             },
             {
@@ -157,7 +162,7 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
             },
             {
                 Header: t(langKeys.executingUserProfile),
-                accessor: 'executedprofile_by',
+                accessor: 'executionuserprofile',
                 width: "auto",
             },
             {
@@ -208,6 +213,12 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                 type: 'number',
                 width: "auto",
             },
+            {
+                Header: t(langKeys.locked),
+                accessor: 'locked',
+                type: 'number',
+                width: "auto",
+            },
         ],
         []
     );
@@ -248,11 +259,6 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
             {
                 Header: t(langKeys.url),
                 accessor: 'urlname',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.executeddate),
-                accessor: 'executedate',
                 width: "auto",
             },
             {
@@ -304,7 +310,17 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
     useEffect(() => {
         if (waitExport) {
             if (!mainAux2.loading && !mainAux2.error) {
-                exportExcel('Reporte campañas con enlaces', mainAux2.data, columnsToExport)
+                const modifiedData = mainAux2?.data?.map((item: Dictionary) => {
+                    return {
+                        ...item,
+                        rundate: item.rundate ? formatDateTime(item.rundate) : '',
+                        succes: item.succes ? 'Ok' : 'Fail',
+                        attendedd: item.attendedd ? 'Ok' : 'Fail',
+                        clickurl: item.clickurl ? 'Ok' : 'Fail',
+                        clickurldate: item.clickurldate ? formatDateTime(item?.clickurldate) : '',
+                    };
+                });
+                exportExcel('Reporte campañas con enlaces', modifiedData, columnsToExport)
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             } else if (mainAux2.error) {
@@ -401,6 +417,7 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
                 useSelection={true}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
+                totalrow={main.data.length}
             />
         </div>
     )

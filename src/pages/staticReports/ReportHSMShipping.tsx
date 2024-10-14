@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dateToLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail, getUserMessageOutbound } from 'common/helpers';
+import { convertLocalDate, dateToLocalDate, exportExcel, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail, getUserMessageOutbound } from 'common/helpers';
 import { Dictionary } from "@types";
 import { getCollectionAux, getMultiCollection, getMultiCollectionAux3, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
+import { DownloadIcon } from 'icons';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
@@ -296,6 +297,17 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
         }
     }, [multidata]);
 
+    const handleDownload = () => {
+        const modifiedData = maindata?.map((item: Dictionary) => {
+            const [year, month, day] = item?.createdate?.split?.('-');
+            return {
+                ...item,
+                createdate: `${day}/${month}/${year}`,
+            };
+        });
+        exportExcel('prueba_enlace_defReport', modifiedData, columns)
+    }
+
     return (<div style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div>
@@ -350,10 +362,19 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                     >
                         {t(langKeys.graphic_view)}
                     </Button>
+                    <Button
+                        className={classes.button}
+                        color="primary"
+                        disabled={maindata.loading}
+                        onClick={() => handleDownload()}
+                        startIcon={<DownloadIcon />}
+                        variant="contained"
+                    >
+                        {`${t(langKeys.download)}`}
+                    </Button>
                 </div>)}
                 data={maindata}
                 loading={multidata.loading}
-                download={true}
                 filterGeneral={false}
                 groupedBy={true}
                 showHideColumns={true}
