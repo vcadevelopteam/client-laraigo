@@ -3323,7 +3323,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   createdBy: 'Creado por',
   creationDate: 'Fecha de creación',
   modifiedBy: 'Modificado por',
-  modificationDate: 'Fecha de Modificación',
+  modificationDate: 'Fecha de modificación',
   tipification_necesary: "No se pueden cerrar tickets que no han sido tipificados.",
 
   advisor: 'Asesor',

@@ -2722,6 +2722,7 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_PCC_INS',
     parameters: {
         ...person,
+        birthday: person?.birthday||null,
         alternativephone: person?.alternativephone?.replaceAll('+', '') || "",
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',

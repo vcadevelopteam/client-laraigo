@@ -242,7 +242,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
         const allOk = await trigger();
         if (allOk) {
             const values = getValues();
-            debugger
             console.log(values)
             const callback = () => {
                 const payload = editPersonBody({

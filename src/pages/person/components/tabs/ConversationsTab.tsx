@@ -45,7 +45,7 @@ const ConversationsTab: FC<SimpleTabProps> = ({ person }) => {
     }, [page, person, dispatch]);
 
     useEffect(() => {
-        const uniqueChannelTypes = Array.from(new Set(list.map(item => item.channeltype)));
+        const uniqueChannelTypes = Array.from(new Set(list.map(item => item.channeldesc)));
 
         const newList = uniqueChannelTypes.map(channel => ({
             val: channel,
@@ -96,7 +96,7 @@ const ConversationsTab: FC<SimpleTabProps> = ({ person }) => {
         var newArray = list.filter(function (el) {
             return el.ticketnum.includes(filters.ticketnum) &&
                 el.asesorfinal.toLowerCase().includes(filters.asesorfinal.toLowerCase()) &&
-                (filters.channeltype === "" || filters?.channeltype.split(',').includes(el.channeltype)) &&
+                (filters.channeltype === "" || filters?.channeltype.split(',').includes(el.channeldesc)) &&
                 el.fechainicio.includes(filters?.fechainicio || "") &&
                 (!filters?.fechafin || el?.fechafin?.includes(filters?.fechafin || ""))
         });
