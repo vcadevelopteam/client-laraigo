@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Property } from "./index";
 import { Trans } from "react-i18next";
 import { SideDataProps } from "../model";

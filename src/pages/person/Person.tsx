@@ -269,7 +269,7 @@ export const Person: FC = () => {
             } else {
                 setDisableLockUnlockButtons({
                     lock: !peopleSelected.some(person => !person.locked),
-                    unlock: false
+                    unlock: peopleSelected.some(person => !person.locked)
                 })
             }
         }
@@ -335,7 +335,7 @@ export const Person: FC = () => {
             {},
             {},
             {},
-            domains.value?.genders.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_gender_${d.domainvalue?.toLowerCase()}`) }), {}),
+            { Hombre: 'Hombre', Mujer: "Mujer" },
             domains.value?.educationLevels.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_educationlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
             domains.value?.civilStatuses.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`) }), {}),
             domains.value?.occupations.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`) }), {}),
@@ -357,7 +357,7 @@ export const Person: FC = () => {
             'email',
             'alternativeemail',
             'birthday',
-            'gender',
+            'sex',
             'educationlevel',
             'civilstatus',
             'occupation',
@@ -380,7 +380,7 @@ export const Person: FC = () => {
                 (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
                 && (f.persontype === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
                 && (f.type === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
-                && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.gender))
+                && (f.sex === undefined || [ "Hombre", "Mujer" ].includes('' + f.sex))
                 && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.educationlevel))
                 && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))

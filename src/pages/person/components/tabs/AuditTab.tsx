@@ -106,7 +106,7 @@ const AuditTab: FC<SimpleTabProps> = ({ person }) => {
                         <Property
                             icon={<RecentActorsIcon style={{ fill: '#8F92A1', height: 35, width: 35 }} />}
                             classesAlt={classes}
-                            title={"Id " + t(langKeys.person)}
+                            title={"Id " + t(langKeys.person).toLocaleLowerCase()}
                             subtitle={person.personid}
                             m={1}
                         />

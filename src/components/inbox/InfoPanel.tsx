@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
         width: 300,
         display: 'flex',
         flexDirection: 'column',
+        overflowY: "auto",
 
         overflowWrap: 'anywhere',
         borderLeft: '1px solid rgba(132, 129, 138, 0.101961);',
@@ -160,16 +161,16 @@ const InfoClient: React.FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const itemsInfo = transformPersonToItemsFormat(user?.uiconfig?.person || [])
     const getVisibleItems = () => {
-      let sizeSum = 0;
-      return itemsInfo.filter((item: any) => {
-        if (sizeSum + item.size <= 4 || displayAll) {
-          sizeSum += item.size;
-          return true;
-        }
-        return false;
-      });
+        let sizeSum = 0;
+        return itemsInfo.filter((item: any) => {
+            if (sizeSum + item.size <= 4 || displayAll) {
+                sizeSum += item.size;
+                return true;
+            }
+            return false;
+        });
     };
-    const visibleItems = getVisibleItems();  
+    const visibleItems = getVisibleItems();
 
     return (
         <>
@@ -197,26 +198,28 @@ const InfoClient: React.FC = () => {
                         >{t(langKeys.link)}
                         </Button>
                     </div>
-                    {visibleItems.map((x: any, index: number) => {
-                        return (
-                            <div
-                                key={`dataindex-${index}`}
-                                style={{
-                                    width: x.size === 2 ? "100%" : "calc(50% - 8px)",
-                                    flexBasis: x.size === 2 ? "100%" : "calc(50% - 8px)",
-                                    flexGrow: 1,
-                                }}
-                            >
-                                <Property
-                                    icon={x.icon}
-                                    title={t(x.field)}
-                                    subtitle={(person?.[x.field]||"")}
-                                    mt={1}
-                                    mb={1}
-                                />
-                            </div>
-                        );
-                    })}
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {visibleItems.map((x: any, index: number) => {
+                            return (
+                                <div
+                                    key={`dataindex-${index}`}
+                                    style={{
+                                        width: x.size === 2 ? "100%" : "calc(50% - 8px)",
+                                        flexBasis: x.size === 2 ? "100%" : "calc(50% - 8px)",
+                                        flexGrow: 1,
+                                    }}
+                                >
+                                    <Property
+                                        icon={x.icon}
+                                        title={t(x.field)}
+                                        subtitle={(person?.[x.field] || "")}
+                                        mt={1}
+                                        mb={1}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
                     {itemsInfo.length > visibleItems.length && (
                         <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
                             <IconButton onClick={() => setdisplayAll(!displayAll)} >
@@ -430,15 +433,13 @@ const InfoTab: React.FC = () => {
                             error={errors?.birthday?.message}
                         />
                         <FieldSelect
-                            onChange={(value) => setValue('sex', value?.domainvalue)}
+                            onChange={(value) => setValue('sex', value?.val)}
                             label={t(langKeys.sex)}
                             loading={multiData.loading}
-                            data={multiData.data[1]?.data || []}
-                            optionValue="domainvalue"
-                            optionDesc="domainvalue"
+                            data={[{ val: "Hombre", }, { val: "Mujer" }]}
+                            optionValue="val"
+                            optionDesc="val"
                             valueDefault={getValues('sex')}
-                            uset={true}
-                            prefixTranslation="type_gender_"
                             error={errors?.sex?.message}
                         />
                         <FieldSelect
@@ -529,7 +530,7 @@ const InfoTab: React.FC = () => {
                     <Fab
                         onClick={() => setView('view')}
                         size="small"
-                        style={{ position: 'absolute', bottom: 8, right: 8 }}
+                        style={{ position: 'fixed', bottom: 8, right: 8 }}
                     >
                         <CloseIcon color="action" />
                     </Fab>
@@ -677,7 +678,7 @@ const InfoTab: React.FC = () => {
             <Fab
                 onClick={() => setView('edit')}
                 size="small"
-                style={{ position: 'absolute', bottom: 8, right: 8 }}
+                style={{ position: 'fixed', bottom: 8, right: 8 }}
             >
                 <EditIcon color="action" />
             </Fab>
@@ -1561,15 +1562,16 @@ const InfoPanel: React.FC = () => {
                 <AntTab label={t(langKeys.lead_plural)} />
                 <AntTab label={t(langKeys.s_request)} />
             </Tabs>
-            {pageSelected === 0 && <InfoTab />}
-            {pageSelected === 1 && <Variables />}
-            {pageSelected === 2 && <PreviewTickets order={order} />}
-            {pageSelected === 3 && <Attachments />}
-            {pageSelected === 4 && <Classifications />}
-            {pageSelected === 5 && <Orders />}
-            {pageSelected === 6 && <Leads />}
-            {pageSelected === 7 && <ServiceDesk />}
-            {/* S. Servicio */}
+            <div style={{ minHeight: 100 }}>
+                {pageSelected === 0 && <InfoTab />}
+                {pageSelected === 1 && <Variables />}
+                {pageSelected === 2 && <PreviewTickets order={order} />}
+                {pageSelected === 3 && <Attachments />}
+                {pageSelected === 4 && <Classifications />}
+                {pageSelected === 5 && <Orders />}
+                {pageSelected === 6 && <Leads />}
+                {pageSelected === 7 && <ServiceDesk />}
+            </div>
         </div>
     );
 }
