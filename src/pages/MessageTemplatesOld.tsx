@@ -638,7 +638,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const dataChannel =
         multiData[2] && multiData[2].success
-            ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
+            ? multiData[2].data.filter((x) => x.type !== "WHAM")
             : [];
 
     const [bodyAlert, setBodyAlert] = useState("");
@@ -759,7 +759,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { description: t(langKeys.TEMPLATE_ZH_TW), value: "ZH_TW" },
         { description: t(langKeys.TEMPLATE_ZU), value: "ZU" },
     ];
-
+    
     const dataMessageType = [
         { value: "HSM", text: t(langKeys.messagetemplate_hsm) },
         { value: "HTML", text: t(langKeys.messagetemplate_html) },
@@ -1378,12 +1378,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         trigger("attachment");
     };
-
+    
     const changeProvider = async (value: any) => {
-        if (!value || !isProvider) {
-            setValue("category", "");
-        }
-
         if (value) {
             setIsProvider(true);
 
@@ -1620,13 +1616,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         {!isProvider && (
                             <FieldSelect
                                 className="col-6"
-                                data={dataLanguage}
+                                data={dataExternalLanguage}
                                 disabled={disableInput}
                                 error={errors?.language?.message}
                                 label={t(langKeys.language)}
-                                onChange={(value) => setValue("language", value?.domainvalue)}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                onChange={(value) => setValue("language", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
                                 uset={true}
                                 valueDefault={getValues("language")}
                             />

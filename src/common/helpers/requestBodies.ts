@@ -1183,6 +1183,8 @@ export const insMessageTemplateOld = (
             providerquality,
             providerstatus,
             operation,
+            categorychange: false,
+            firstbuttons: null,
             newversion: false,
             buttons: JSON.stringify(buttons || [])
         }
