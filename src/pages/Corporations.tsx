@@ -15,7 +15,7 @@ import {
 import {
     appsettingInvoiceSelCombo,
     getCityBillingList,
-    getCorpSel,
+    getCorpSel, getCurrencyList,
     getPaymentPlanSel,
     getValuesFromDomain,
     getValuesFromDomainCorp,
@@ -28,7 +28,16 @@ import SaveIcon from "@material-ui/icons/Save";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useForm } from "react-hook-form";
-import { cleanMemoryTable, getCollection, getMultiCollection, resetAllMain, resetUploadFile, setMemoryTable, uploadFile } from "store/main/actions";
+import {
+    cleanMemoryTable,
+    getCollection,
+    getMultiCollection,
+    getMultiCollectionAux,
+    resetAllMain,
+    resetUploadFile,
+    setMemoryTable,
+    uploadFile
+} from "store/main/actions";
 import { showSnackbar, showBackdrop, manageConfirmation } from "store/popus/actions";
 import ClearIcon from "@material-ui/icons/Clear";
 import { CommonService } from "network";
@@ -308,6 +317,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
     const locationList = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const cityList = multiData[7] && multiData[7].success ? multiData[7].data : [];
     const upload = useSelector((state) => state.main.uploadFile);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
 
     const {
         register,
@@ -341,6 +351,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
             credittype: row?.credittype || "typecredit_alcontado",
             operation: row ? "UPDATE" : "INSERT",
             paymentmethod: row?.paymentmethod || "",
+            billingcurrency: row?.billingcurrency || "",
             companysize: null,
             partner: row?.partner || "",
             iconurl: row?.iconurl || "",
@@ -649,6 +660,20 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
         e.preventDefault();
     };
 
+    useEffect(() => {
+        dispatch(getMultiCollectionAux([
+            getCurrencyList(),
+        ]));
+    }, [dispatch]);
+
+    const currencyList = useMemo(() => {
+        if (!multiDataAux?.data?.[0]?.data) return [];
+        return multiDataAux.data[0].data.sort((a, b) => {
+            return a.description.localeCompare(b.description);
+        });
+    }, [multiDataAux]);
+
+
     const handleDropIcon = (e) => {
         e.preventDefault();
         const file = e.dataTransfer.files[0];
@@ -934,6 +959,19 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                         optionDesc="domainvalue"
                                         optionValue="domainvalue"
                                     />
+                                    <FieldSelect
+                                        label={t(langKeys.billingperiod_billingcurrency)}
+                                        valueDefault={getValues('billingcurrency')}
+                                        onChange={(value) => setValue('billingcurrency', value.code)}
+                                        className="col-6"
+                                        data={currencyList}
+                                        error={typeof errors?.billingcurrency?.message === 'string' ? errors?.billingcurrency?.message : ''}
+                                        optionValue="code"
+                                        optionDesc="description"
+                                    />
+
+                                </div>
+                                <div className="row-zyx">
                                     <TemplateSwitch
                                         label={t(langKeys.autosendinvoice)}
                                         className="col-6"
@@ -941,8 +979,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                         onChange={(value) => setValue("autosendinvoice", value)}
                                         disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                     />
-                                </div>
-                                <div className="row-zyx">
                                     <TemplateSwitch
                                         label={t(langKeys.automaticpayment)}
                                         className="col-6"
@@ -950,6 +986,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                         onChange={(value) => setValue("automaticpayment", value)}
                                         disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                     />
+                                </div>
+                                <div className="row-zyx">
                                     <TemplateSwitch
                                         label={t(langKeys.automaticperiod)}
                                         className="col-6"
@@ -957,8 +995,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({
                                         onChange={(value) => setValue("automaticperiod", value)}
                                         disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                     />
-                                </div>
-                                <div className="row-zyx">
                                     <TemplateSwitch
                                         label={t(langKeys.automaticinvoice)}
                                         className="col-6"
