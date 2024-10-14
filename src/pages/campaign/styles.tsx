@@ -535,3 +535,15 @@ export const campaignPersonStyles = makeStyles((theme) => ({
         flexGrow: 1
     }
 }));
+
+export const BlacklistStyles = makeStyles(() => ({   
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    },
+    flexgrow1: {
+        flexGrow: 1
+    }
+}));

@@ -1,43 +1,23 @@
 import React, { useEffect, useState } from 'react'; 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insarrayBlacklist, insBlacklist, uploadExcel } from 'common/helpers';
+import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insarrayBlacklist, insBlacklist, uploadExcelBlacklist } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { execute, exportData, getCollectionPaginated, resetCollectionPaginated } from 'store/main/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { DialogZyx, FieldEdit, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
-import { makeStyles } from '@material-ui/core/styles';
+import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import TablePaginated from 'components/fields/table-paginated';
 import { Button } from '@material-ui/core';
-import { useForm } from 'react-hook-form';
 import { Add as AddIcon } from '@material-ui/icons';
 import { CellProps } from 'react-table';
-
-interface DetailProps {
-    setViewSelected: (view: string) => void;
-}
-
-const arrayBread = [
-    { id: "view-1", name: "Campaign" },
-    { id: "view-2", name: "Campaign blacklist" }
-];
-
-const useStyles = makeStyles(() => ({   
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
-    },
-    flexgrow1: {
-        flexGrow: 1
-    }
-}));
+import { DetailProps, UploadData, Row } from 'pages/campaign/model';
+import { BlacklistStyles } from 'pages/campaign/styles';
+import { BlacklistRegisterModal } from './BlacklistRegisterModal';
 
 export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
-    const classes = useStyles();
+    const classes = BlacklistStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainPaginated = useSelector(state => state.main.mainPaginated);
@@ -45,14 +25,18 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     const executeResult = useSelector(state => state.main.execute);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null, distinct: false })
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
-
     const [openModal, setOpenModal] = useState(false);
-    const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
-    
+    const [selectedRow, setSelectedRow] = useState<Row | null>(null);
+
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.campaign_plural) },
+        { id: "view-2", name: t(langKeys.blacklist) }
+    ];
+
     const columns = React.useMemo(
         () => [
             {
@@ -74,11 +58,11 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
             },
             {
                 Header: t(langKeys.phone),
-                accessor: 'phone'
+                accessor: 'phone',
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description'
+                accessor: 'description',
             },
             {
                 Header: t(langKeys.creationdate),
@@ -121,30 +105,30 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
         setWaitExport(true);
     };
 
-    const handleUpload = async (files: any[]) => {
+    const handleUpload = async (files: File[]) => {
         const file = files[0];
         if (file) {
-            const data: any = await uploadExcel(file, undefined);
+            const data: UploadData[] = await uploadExcelBlacklist(file);
             if (data.length > 0) {
                 const validpk = Object.keys(data[0]).includes('phone');
                 const keys = Object.keys(data[0]);
                 dispatch(showBackdrop(true));
-                dispatch(execute(insarrayBlacklist(data.reduce((ad: any[], d: any) => {
+                dispatch(execute(insarrayBlacklist(data.reduce((ad: UploadData[], d: UploadData) => {
                     ad.push({
                         ...d,
                         id: d.id || 0,
-                        phone: (validpk ? d.phone : d[keys[0]]) || '',
-                        description: (validpk ? d.description : d[keys[1]]) || '',
+                        phone: (validpk ? d.phone : String(d[keys[0]])) || '',
+                        description: (validpk ? d.description : String(d[keys[1]])) || '',
                         type: d.type || 'NINGUNO',
                         status: d.status || 'ACTIVO',
                         operation: d.operation || 'INSERT',
-                    })
+                    });
                     return ad;
                 }, []))));
-                setWaitImport(true)
+                setWaitImport(true);
             }
         }
-    }
+    };
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
@@ -161,9 +145,21 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     }
 
     const handleDetail = (row?: Dictionary) => {
-        setSelectedRow(row);
+        if (row) {
+            const convertedRow: Row = {
+                id: row.id as number,
+                name: row.name as string,
+                reason: row.reason as string,
+                date: row.date as string,
+                phone: row.phone as string,
+                description: row.description as string,
+            };
+            setSelectedRow(convertedRow);
+        } else {
+            setSelectedRow(null);
+        }
         setOpenModal(true);
-    }
+    };
 
     useEffect(() => {
         dispatch(resetCollectionPaginated());
@@ -272,120 +268,12 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                     autotrigger={false}
                 />
             </div>
-            {openModal && <ModalBlacklist
+            {openModal && <BlacklistRegisterModal
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 fetchData={() => fetchData(fetchDataAux)}
                 row={selectedRow}
             />}
         </div>
-    )
-}
-
-interface ModalProps {
-    openModal: boolean;
-    setOpenModal: (value: boolean) => any;
-    fetchData: () => any;
-    row: any;
-}
-
-const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fetchData }) => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-
-    const executeResult = useSelector(state => state.main.execute);
-
-    const [waitSave, setWaitSave] = useState(false);
-
-    const { register, handleSubmit, setValue, getValues, trigger, clearErrors, formState: { errors } } = useForm({
-        defaultValues: {
-            isnew: row ? false : true,
-            id: row ? row.id : 0,
-            description: row ? row.description : '',
-            type: 'NINGUNO',
-            status: 'ACTIVO',
-            phone: row ? row.phone : '',
-            operation: row ? "UPDATE" : "INSERT"
-        }
-    });
-
-    const handleCancelModal = () => {
-        clearErrors();
-        setOpenModal(false);
-    }
-
-    const handleSaveModal = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(insBlacklist(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-        
-    });
-
-    useEffect(() => {
-        register('phone', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-    }, [register]);
-
-    useEffect(() => {
-        if (row) {
-            setValue('id', row.id);
-            setValue('phone', row.phone);
-            setValue('description', row.description);
-            trigger();
-        }
-    }, [row]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                setOpenModal(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave]);
-
-    return (
-        <DialogZyx
-            open={openModal}
-            title={t(langKeys.detail)}
-            button1Type="button"
-            buttonText1={t(langKeys.cancel)}
-            handleClickButton1={handleCancelModal}
-            button2Type="button"
-            buttonText2={t(langKeys.save)}
-            handleClickButton2={handleSaveModal}
-        >
-            <div className="row-zyx">
-                <FieldEdit
-                    label={t(langKeys.phone)}
-                    className="col-6"
-                    valueDefault={getValues('phone')}
-                    onChange={(value) => setValue('phone', value)}
-                    error={errors?.phone?.message}
-                />
-                <FieldEdit
-                    label={t(langKeys.description)}
-                    className="col-6"
-                    valueDefault={getValues('description')}
-                    onChange={(value) => setValue('description', value)}
-                    error={errors?.description?.message}
-                />
-            </div>
-        </DialogZyx>
     )
 }

@@ -122,3 +122,33 @@ export interface DetailPropsTabPerson {
     setJsonPersons:  (value: Dictionary) => void;
     detectionChangeSource: boolean;
 }
+
+export interface DetailProps {
+    setViewSelected: (view: string) => void;
+}
+
+export interface Row {
+    id: number;
+    name: string;
+    reason: string;
+    date: string;
+    phone: string;
+    description: string;
+}
+
+export interface UploadData {
+    id?: number;
+    phone?: string;
+    description?: string;
+    type?: string;
+    status?: string;
+    operation?: string;
+    [key: string]: string | number | undefined;
+}
+
+export interface ModalProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    fetchData: () => void;
+    row: Row | null;
+}

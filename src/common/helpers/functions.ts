@@ -4,6 +4,16 @@ import { Dictionary } from "@types";
 import { showSnackbar } from 'store/popus/actions';
 // import * as XLSX from 'xlsx';
 
+interface UploadData {
+    id?: number;
+    phone?: string;
+    description?: string;
+    type?: string;
+    status?: string;
+    operation?: string;
+    [key: string]: string | number | undefined;
+}
+
 export const contactCalculateList = [
     { value: "PER_CHANNEL", description: "per_channel" },
     { value: "UNIQUE", description: "unique" },
@@ -595,6 +605,33 @@ export function uploadExcel(file: any, owner: any = {}) {
                 res(rowsx)
             };
         });
+    });
+}
+
+export function uploadExcelBlacklist(file: File): Promise<UploadData[]> {
+    return new Promise((res, rej) => {
+        import('xlsx').then(XLSX => {
+            const reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = (event: ProgressEvent<FileReader>) => {
+                const data = event.target?.result;
+                if (typeof data === 'string') {
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    const wsname = workbook.SheetNames[0];
+                    const rowsx: UploadData[] = XLSX.utils.sheet_to_json<UploadData>(workbook.Sheets[wsname])
+                        .map((row: UploadData) =>
+                            Object.keys(row).reduce((obj: UploadData, key: string) => {
+                                obj[key.trim()] = row[key];
+                                return obj;
+                            }, {} as UploadData)
+                        );
+                    res(rowsx);
+                } else {
+                    rej(new Error('Error reading file'));
+                }
+            };
+            reader.onerror = () => rej(new Error('Error reading file'));
+        }).catch(rej);
     });
 }
 
