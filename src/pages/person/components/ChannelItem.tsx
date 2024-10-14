@@ -95,7 +95,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
             }
         }
     }, [unLinkRes, waitUnLink])
-
+    console.log(channel)
     return (
         <div className={classes.root}>
             {channel.originpersonid && (
@@ -132,7 +132,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                                         : nameschannel[channel.type]}</span>
                             </div>
                             <div className={classes.subtitle}>
-                                ({channel.personcommunicationchannelowner})
+                                {channel.personcommunicationchannel.toLocaleUpperCase()}
                             </div>
                         </div>
                     </div>
