@@ -52,8 +52,9 @@ import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
 import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
 import CodeIcon from '@material-ui/icons/Code';
-import { useUnicodeToggleTextStyle, TextStyle } from "common/helpers";
+import { useUnicodeToggleTextStyle, TextStyle } from "./components/UnicodeStyles";
 import { useSymbolToggleTextStyle } from "./components/TextStyles";
+
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -1737,7 +1738,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         />
                                     </div>                                 
                                     
-                                    {ticketSelected?.communicationchanneltype === "WHA" || ticketSelected?.communicationchanneltype === "FBDM" || ticketSelected?.communicationchanneltype === "WHAD" || ticketSelected?.communicationchanneltype === "WHAG" ? (
+                                    {ticketSelected?.communicationchanneltype === "FBDM" ? (
                                         <div style={{ display: 'flex', gap: '0.7rem' }}>
                                             <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
                                                 <IconButton
