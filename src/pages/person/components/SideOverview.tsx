@@ -15,6 +15,7 @@ import { updateSidePersonView } from "common/helpers";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
+import { updateUserInformation } from "store/login/actions";
 
 const availableFields = [
     { id: "1", size: 2, field: "phone", icon: <TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} style={{ fill: "#c5c7c6" }} /> },
@@ -75,7 +76,11 @@ const SideOverview: FC<SideOverviewProps> = ({ classes, person, setValue }) => {
 
     function changeTab(){
         if(editFields){
-            dispatch(execute(updateSidePersonView(items)))
+            const config = JSON.stringify(items.map((item: any, index: number) => ({ size: item.size.toString(), field: item.field, order: index + 1 })))
+            if(user){
+                dispatch(updateUserInformation(user.firstname, user.lastname, user?.image||"", {...user.uiconfig,person: JSON.parse(config)}));
+            }
+            dispatch(execute(updateSidePersonView(config)))
             dispatch(showBackdrop(true));
             setWaitEdit(true)
         }else{
