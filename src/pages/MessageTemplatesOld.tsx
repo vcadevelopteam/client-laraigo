@@ -583,7 +583,7 @@ const MessageTemplatesOld: FC = () => {
                 filterGeneral={true}
                 handleRegister={handleRegister}
                 initialFilters={params.filters}
-                initialPageIndex={params.page}
+                initialPageIndex={fetchDataAux.pageIndex}
                 loading={mainPaginated.loading}
                 onClickRow={handleEdit}
                 pageCount={pageCount}
@@ -634,7 +634,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setTableDataVariables(auxTableData)
         setUpdatingDataTable(!updatingDataTable);
     }
-
+    
 
     const dataChannel =
         multiData[2] && multiData[2].success
@@ -1079,6 +1079,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setBodyAlert(t(langKeys.field_required));
                 return;
             }
+        }
+
+        if (tableDataVariables?.[1]?.value === "" || tableDataVariables?.[1]?.value?.includes(".")) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.mustbeinteger) }));
+            return;
         }
 
         if (isNew && isProvider) {
