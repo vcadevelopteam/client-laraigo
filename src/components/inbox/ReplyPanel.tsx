@@ -1738,7 +1738,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         />
                                     </div>                                 
                                     
-                                    {ticketSelected?.communicationchanneltype === "FBDM" ? (
+                                    {ticketSelected?.communicationchanneltype === "WHA" || ticketSelected?.communicationchanneltype === "FBDM" || ticketSelected?.communicationchanneltype === "WHAD" || ticketSelected?.communicationchanneltype === "WHAG" ? (
                                         <div style={{ display: 'flex', gap: '0.7rem' }}>
                                             <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
                                                 <IconButton
