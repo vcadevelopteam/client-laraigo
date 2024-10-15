@@ -11,7 +11,7 @@ const getSymbols = (style: TextStyle) => {
         case 'strikethrough':
             return ['~', '~'];
         case 'monospaced':
-            return ['', ''];
+            return ['`', '`'];
         default:
             return ['', ''];
     }
@@ -32,7 +32,7 @@ const checkAppliedStyles = (text: string, selectionStart: number, selectionEnd: 
         bold: checkStyle(/\*[^*]+\*/g, text),
         italic: checkStyle(/_[^_]+_/g, text),
         strikethrough: checkStyle(/~[^~]+~/g, text),
-        monospaced: checkStyle(/[^]+/g, text),
+        monospaced: checkStyle(/`[^`]+`/g, text),
     };
     return styles;
 };
