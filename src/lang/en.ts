@@ -3327,6 +3327,7 @@ const translation: LangKeys = {
 
   "personalizedreport_conversationclassification.tipification": "conversation tipification",
 
+  customfieldserror: 'There are values in custom fields that are incorrect',
   chatHeaderTitle: 'Chat header title',
   formHeaderTitle: 'Form header title',
   formFooter: "Form footer",

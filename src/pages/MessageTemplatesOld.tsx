@@ -1081,8 +1081,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
 
-        if (tableDataVariables?.[1]?.value === "" || tableDataVariables?.[1]?.value?.includes(".")) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.mustbeinteger) }));
+        const hasInvalidValue = tableDataVariables?.some(
+            item => item.variabletype === "number" && item.value?.includes(".")
+        );
+        
+        if (hasInvalidValue) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.customfieldserror) }));
             return;
         }
 

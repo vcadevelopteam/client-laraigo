@@ -3499,6 +3499,7 @@ export const langKeys = {
 
   "personalizedreport_conversationclassification.tipification": "personalizedreport_conversationclassification.tipification",
 
+  customfieldserror: 'customfieldserror', 
   chatHeaderTitle: 'chatHeaderTitle',
   formHeaderTitle: 'formHeaderTitle',
   subtitle: 'subtitle',
