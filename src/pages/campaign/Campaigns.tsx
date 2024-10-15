@@ -10,7 +10,7 @@ import { langKeys } from 'lang/keys';
 import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Blacklist } from './components/blacklist/Blacklist';
-import { CampaignReport } from '../staticReports/ReportCampaign';
+import { ReportCampaign } from '../staticReports/reportCampaign/ReportCampaign';
 import { Box,  Divider, IconButton, ListItemIcon, Typography } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -673,7 +673,7 @@ const Campaign: React.FC<CampaignProps> = ({ setAuxViewSelected, arrayBread }) =
     }
     else if (viewSelected === "report") {
         return (
-            <CampaignReport
+            <ReportCampaign
                 setViewSelected={setViewSelected}
             />
         )

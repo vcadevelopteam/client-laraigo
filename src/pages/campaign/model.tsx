@@ -128,7 +128,7 @@ export interface DetailProps {
 }
 
 export interface Row {
-    id: number;
+    id: string;
     name: string;
     reason: string;
     date: string;
@@ -151,4 +151,30 @@ export interface ModalProps {
     setOpenModal: (value: boolean) => void;
     fetchData: () => void;
     row: Row | null;
+}
+
+export interface RowReportCampaign {
+    id: string;
+    name: string;
+    reason: string;
+    date: string;
+    phone: string;
+    description: string;
+    title: string;
+    rundate: string;
+}
+
+export interface ModalPropsReportCampaign {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    row: RowReportCampaign | null;
+}
+
+export interface DetailPropsReportCampaign {
+    setViewSelected?: (view: string) => void;
+    externalUse?: boolean;   
+}
+
+export interface SelectedRows {
+    [key: string]: RowReportCampaign;
 }

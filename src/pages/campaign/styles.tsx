@@ -547,3 +547,26 @@ export const BlacklistStyles = makeStyles(() => ({
         flexGrow: 1
     }
 }));
+
+export const ReportCampaignStyles = makeStyles(() => ({
+    select: {
+      width: '200px'
+  },   
+  itemDate: {        
+      minHeight: 40,
+      height: 40,
+      border: '1px solid #bfbfc0',
+      borderRadius: 4,
+      color: 'rgb(143, 146, 161)',
+      alignItems:'left'
+  },
+  button: {
+      padding: 12,
+      fontWeight: 500,
+      fontSize: '14px',
+      textTransform: 'initial'
+  },
+  filterComponent: {
+      width: '180px'
+    },
+}));

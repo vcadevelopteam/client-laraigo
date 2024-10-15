@@ -16,6 +16,7 @@
     },
     "plugins": ["@typescript-eslint", "react"],
     "rules": {
+        "react/prop-types": "off",
         "prettier/prettier": 0,
         "eqeqeq": ["error", "always"],
         "no-empty-function": "error",

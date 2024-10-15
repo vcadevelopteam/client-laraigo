@@ -40,7 +40,7 @@ import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
 import UniqueContactsReport from './UniqueContactsReport';
-import { CampaignReport } from 'pages/staticReports/ReportCampaign';
+import { ReportCampaign } from 'pages/staticReports/reportCampaign/ReportCampaign';
 import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
@@ -1743,7 +1743,7 @@ const Reports: FC = () => {
                     breadcrumbs={getArrayBread(t('report_campaign'), t(langKeys.report_plural))}
                     handleClick={handleSelectedString}
                 />
-                <CampaignReport
+                <ReportCampaign
                     externalUse={true}
                 />
             </div>

@@ -1,5 +1,6 @@
 export * from './Campaigns';
 export * from './components/blacklist/Blacklist';
+export * from './components/blacklist/BlacklistRegisterModal';
 export * from './components/campaignDetail/CampaignDetail';
 export * from './components/detailtabs/CampaignGeneral';
 export * from './components/detailtabs/CampaignMessage';

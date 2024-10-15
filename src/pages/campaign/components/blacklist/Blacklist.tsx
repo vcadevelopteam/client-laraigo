@@ -147,7 +147,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     const handleDetail = (row?: Dictionary) => {
         if (row) {
             const convertedRow: Row = {
-                id: row.id as number,
+                id: row.id as string,
                 name: row.name as string,
                 reason: row.reason as string,
                 date: row.date as string,
