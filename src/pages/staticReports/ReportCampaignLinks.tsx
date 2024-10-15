@@ -234,52 +234,46 @@ export const CampaignLinksReport: React.FC<DetailProps> = ({ setViewSelected }) 
             {
                 Header: t(langKeys.campaign),
                 accessor: 'campaignname',
-                width: "auto",
             },
             {
                 Header: t(langKeys.templatename),
                 accessor: 'templatename',
-                width: "auto",
             },
             {
                 Header: t(langKeys.messagetemplate),
                 accessor: 'messagetemplateid',
-                width: "auto",
             },
             {
                 Header: t(langKeys.channel),
                 accessor: 'communicationchannel',
-                width: "auto",
             },
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
-                width: "auto",
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'contact',
             },
             {
                 Header: t(langKeys.url),
                 accessor: 'urlname',
-                width: "auto",
             },
             {
                 Header: t(langKeys.success),
                 accessor: 'succes',
-                width: "auto",
             },
             {
                 Header: t(langKeys.attended),
                 accessor: 'attendedd',
-                width: "auto",
             },
             {
                 Header: t(langKeys.clickonlink),
                 accessor: 'clickurl',
-                width: "auto",
             },
             {
                 Header: t(langKeys.clickurldate),
                 accessor: 'clickurldate',
-                width: "auto",
             },
         ],
         []
