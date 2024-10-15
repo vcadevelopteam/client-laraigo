@@ -36,7 +36,7 @@ export const useUnicodeToggleTextStyle = (
     return useCallback((style: TextStyle) => {
         const inputElement = inputRef.current?.querySelector('textarea') as HTMLTextAreaElement | null;
         if (!inputElement) {
-            console.error('Textarea element not found');
+            console.error('');
             return;
         }
 
