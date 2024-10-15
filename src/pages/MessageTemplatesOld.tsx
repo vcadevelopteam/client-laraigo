@@ -136,9 +136,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MessageTemplatesOld: FC = () => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const location = useLocation();
     const mainDelete = useSelector((state) => state.channel.requestDeleteTemplate);
     const mainPaginated = useSelector((state) => state.main.mainPaginated);
@@ -265,7 +263,7 @@ const MessageTemplatesOld: FC = () => {
         ],
         [showId]
     );
-
+    
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -526,8 +524,6 @@ const MessageTemplatesOld: FC = () => {
         dispatch(showBackdrop(true));
         setWaitSaveExport(true);
     };
-    
-    
 
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
@@ -593,6 +589,7 @@ const MessageTemplatesOld: FC = () => {
                 titlemodule={t(langKeys.messagetemplate_plural)}
                 totalrow={totalRow}
                 useSelection={true}
+                pageSizeDefault={fetchDataAux.pageSize}
             />
         );
     } else
@@ -613,9 +610,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     setViewSelected,
 }) => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -635,7 +630,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setUpdatingDataTable(!updatingDataTable);
     }
     
-
     const dataChannel =
         multiData[2] && multiData[2].success
             ? multiData[2].data.filter((x) => x.type !== "WHAM")
@@ -655,6 +649,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
+
     useEffect(() => {
         if (multiData[3]) {
             const variableDataList = multiData[3].data || []
@@ -1084,7 +1079,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         const hasInvalidValue = tableDataVariables?.some(
             item => item.variabletype === "number" && item.value?.includes(".")
         );
-        
         if (hasInvalidValue) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.customfieldserror) }));
             return;
