@@ -1041,8 +1041,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const symbolToggleTextStyle = useSymbolToggleTextStyle(text, setText, inputRef, appliedStyles, setAppliedStyles);
     const unicodeToggleTextStyle = useUnicodeToggleTextStyle(text, setText, inputRef, appliedUnicodeStyle, setAppliedUnicodeStyle);
 
-    console.log("text: ", text);
-
     useEffect(() => {
         dispatch(getInnapropiateWordTicketLst());
 
