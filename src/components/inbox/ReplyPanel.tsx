@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 // import "emoji-mart/css/emoji-mart.css";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon, BoldNIcon, ItalicKIcon, UnderlineSIcon, StrikethroughLineIcon, CodeSnippetIcon } from "icons";
+import { QuickresponseIcon, SendIcon, SearchIcon, RecordIcon, RecordingIcon, CopilotIconEng, CopilotIconEsp, SendToBlockIcon } from "icons";
 import { makeStyles, styled } from "@material-ui/core/styles";
 import { useSelector } from "hooks";
 import { Dictionary, IFile, ILibrary } from "@types";
@@ -51,6 +51,7 @@ import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
 import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
+import CodeIcon from '@material-ui/icons/Code';
 import { useUnicodeToggleTextStyle, TextStyle } from "common/helpers";
 import { useSymbolToggleTextStyle } from "./components/TextStyles";
 
@@ -1040,6 +1041,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const symbolToggleTextStyle = useSymbolToggleTextStyle(text, setText, inputRef, appliedStyles, setAppliedStyles);
     const unicodeToggleTextStyle = useUnicodeToggleTextStyle(text, setText, inputRef, appliedUnicodeStyle, setAppliedUnicodeStyle);
 
+    console.log("text: ", text);
+
     useEffect(() => {
         dispatch(getInnapropiateWordTicketLst());
 
@@ -1427,8 +1430,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         return text.trim() === '';
     };
 
-    console.log('ticketSelected?.communicationchanneltype', ticketSelected?.communicationchanneltype)
-
     if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (
             <div className={classes.containerResponse}>
@@ -1545,7 +1546,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             textAlign: "center",
                         }}
                     >
-                        {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
+                        {showReply === null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                     </div>
                 )}
                 <BottomGoToUnder />
@@ -1732,7 +1733,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         />
                                     </div>                                 
                                     
-                                    {ticketSelected?.communicationchanneltype === "WHA" || ticketSelected?.communicationchanneltype === "FBDM" || ticketSelected?.communicationchanneltype === "WHAD" || ticketSelected?.communicationchanneltype === "WHAG" ? (
+                                    {ticketSelected?.communicationchanneltype === "FBDM" ? (
                                         <div style={{ display: 'flex', gap: '0.7rem' }}>
                                             <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
                                                 <IconButton
@@ -1767,7 +1768,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                     size='small'
                                                     style={{ backgroundColor: appliedStyles.monospaced ? '#E7E7E7' : 'transparent' }}
                                                 >
-                                                    <CodeSnippetIcon className={classes.root} style={{ width: 20, height: 20, marginBottom:'4px' }} />
+                                                    <CodeIcon className={classes.root} style={{marginLeft: '3px', marginBottom: '2px', height: '25px'}}/>
                                                 </IconButton>
                                             </Tooltip>
                                         </div>
@@ -1777,7 +1778,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 <IconButton
                                                     onClick={() => unicodeToggleTextStyle('bold')}
                                                     size='small'
-                                                    style={{ backgroundColor: appliedUnicodeStyle === 'bold' ? '#E7E7E7' : 'transparent' }}
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'bold' ? 'transparent' : 'transparent' }}
                                                 >
                                                     <FormatBoldIcon className={classes.root} />
                                                 </IconButton>
@@ -1786,7 +1787,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 <IconButton
                                                     onClick={() => unicodeToggleTextStyle('italic')}
                                                     size='small'
-                                                    style={{ backgroundColor: appliedUnicodeStyle === 'italic' ? '#E7E7E7' : 'transparent' }}
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'italic' ? 'transparent' : 'transparent' }}
                                                 >
                                                     <FormatItalicIcon className={classes.root} />
                                                 </IconButton>
@@ -1795,7 +1796,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 <IconButton
                                                     onClick={() => unicodeToggleTextStyle('underline')}
                                                     size='small'
-                                                    style={{ backgroundColor: appliedUnicodeStyle === 'underline' ? '#E7E7E7' : 'transparent' }}
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'underline' ? 'transparent' : 'transparent' }}
                                                 >
                                                     <FormatUnderlinedIcon className={classes.root} />
                                                 </IconButton>
@@ -1804,7 +1805,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 <IconButton
                                                     onClick={() => unicodeToggleTextStyle('strikethrough')}
                                                     size='small'
-                                                    style={{ backgroundColor: appliedUnicodeStyle === 'strikethrough' ? '#E7E7E7' : 'transparent' }}
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'strikethrough' ? 'transparent' : 'transparent' }}
                                                 >
                                                     <StrikethroughSIcon className={classes.root} />
                                                 </IconButton>
@@ -1813,9 +1814,9 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                                 <IconButton
                                                     onClick={() => unicodeToggleTextStyle('monospaced')}
                                                     size='small'
-                                                    style={{ backgroundColor: appliedUnicodeStyle === 'monospaced' ? '#E7E7E7' : 'transparent' }}
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'monospaced' ? 'transparent' : 'transparent' }}
                                                 >
-                                                    <CodeSnippetIcon className={classes.root} style={{ width: 20, height: 20, marginBottom:'4px' }} />
+                                                    <CodeIcon className={classes.root} style={{marginLeft: '3px', marginBottom: '2px', height: '25px'}}/>
                                                     </IconButton>
                                             </Tooltip>
                                         </div>
