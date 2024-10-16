@@ -95,7 +95,6 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
             }
         }
     }, [unLinkRes, waitUnLink])
-    console.log(channel)
     return (
         <div className={classes.root}>
             {channel.originpersonid && (
