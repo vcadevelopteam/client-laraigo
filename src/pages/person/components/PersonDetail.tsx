@@ -244,7 +244,6 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             const values = getValues();
             console.log(values)
             const callback = () => {
-                debugger
                 const payload = editPersonBody({
                     ...values,
                     address_book: JSON.stringify(values.address_book),
