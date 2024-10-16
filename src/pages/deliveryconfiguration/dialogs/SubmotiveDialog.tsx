@@ -13,6 +13,7 @@ import { execute, getCollectionAux2 } from "store/main/actions";
 import { subReasonNonDeliveryIns, subReasonNonDeliverySel } from "common/helpers";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import ClearIcon from "@material-ui/icons/Clear";
 
 const useStyles = makeStyles(() => ({
     submotiveForm: {
@@ -47,6 +48,13 @@ const useStyles = makeStyles(() => ({
         padding: 5,
         borderRadius: 5,
         fontSize: 17
+    },
+    button: {
+        display: "flex", 
+        gap: "10px", 
+        alignItems: "center", 
+        justifyContent: "end",
+        marginTop: 20,
     },
 }));
 
@@ -193,8 +201,6 @@ const SubmotiveDialog = ({
             open={openModal}
             title={`${t(langKeys.submotive)} ${t(langKeys.undelivered)}: ${row?.description}`}
             maxWidth="md"
-            buttonText0={t(langKeys.back)}
-            handleClickButton0={handleCloseModal}
         >
             <div>
                 <div className={`${classes.submotiveForm} row-zyx`}>
@@ -279,6 +285,18 @@ const SubmotiveDialog = ({
                             ))}
                         </div>
                     )}
+                </div>
+                <div className={classes.button}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={handleCloseModal}
+                    >
+                        {t(langKeys.back)}
+                    </Button>
                 </div>
             </div>
         </DialogZyx>

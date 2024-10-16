@@ -3,7 +3,7 @@ import { ColorInput, FieldEdit } from "components";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
@@ -14,10 +14,12 @@ import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 import React, { FC, useEffect, useState } from "react";
+import { updateMetachannels } from "common/helpers";
 
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -92,8 +94,13 @@ export const ChannelAddTelegram: FC<{ edit: boolean }> = ({ edit }) => {
                 setSetins(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
-                setViewSelected("enable-virtual-assistant")
+                if (whatsAppData?.onboarding) {
+                    history.push(paths.METACHANNELS, whatsAppData);
+                    updateMetachannels(9);
+                } else {
+                    setWaitSave(false);
+                    setViewSelected("enable-virtual-assistant");
+                }
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
@@ -141,9 +148,14 @@ export const ChannelAddTelegram: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            channel?.status === "INACTIVO"
-                                ? history.push(paths.CHANNELS, whatsAppData)
-                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+
+                            if (whatsAppData?.onboarding) {
+                                history.push(paths.METACHANNELS, whatsAppData);
+                            } else {
+                                channel?.status === "INACTIVO"
+                                    ? history.push(paths.CHANNELS, whatsAppData)
+                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}
@@ -188,9 +200,9 @@ export const ChannelAddTelegram: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             </div>
         )
-    } else if(viewSelected==="enable-virtual-assistant"){
+    } else if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     } else {
         return (
@@ -202,8 +214,30 @@ export const ChannelAddTelegram: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            setViewSelected("view1");
-                            setNextbutton(true);
+                            if (whatsAppData?.onboarding) {
+                                dispatch(manageConfirmation({
+                                    visible: true,
+                                    title: t(langKeys.confirmation),
+                                    question: t(langKeys.channelconfigsave),
+                                    callback: () => {
+                                        if (channelreg || mainResult.loading || nextbutton) {
+                                            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.onboading_channelcomplete) }));
+                                        } else {
+                                            finishreg();
+                                        }
+                                    },
+                                    callbackcancel: () => {
+                                        history.push(paths.METACHANNELS, whatsAppData);
+                                    },
+                                    textCancel: t(langKeys.decline),
+                                    textConfirm: t(langKeys.accept),
+                                    isBold: true,
+                                    showClose: true,
+                                }))
+                            } else {
+                                setViewSelected("view1");
+                                setNextbutton(true);
+                            }
                         }}
                     >
                         {t(langKeys.previoustext)}
