@@ -3206,6 +3206,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   "personalizedreport_conversationclassification.tipification": "tipificación de la conversación",
 
+  customfieldserror: 'Hay valores en campos personalizados que son incorrectos',
   chatHeaderTitle: 'Título de la cabecera del chat',
   formHeaderTitle: 'Título de la cabecera del formulario',
   formFooter: "Pie del formulario",
