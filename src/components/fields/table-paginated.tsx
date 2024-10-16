@@ -818,6 +818,13 @@ const TableZyx = React.memo(({
         localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
     }, [columnVisibility]);
 
+    useEffect(() => {
+        const storedPageSize = localStorage.getItem('pageSize');
+        if (storedPageSize) {
+            setPageSize(Number(storedPageSize));
+        }
+    }, []);
+
     const handleClickSeButtons = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorElSeButtons(anchorElSeButtons ? null : event.currentTarget);
         setOpenSeButtons((prevOpen) => !prevOpen);
@@ -1016,8 +1023,9 @@ const TableZyx = React.memo(({
                                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                     id="laraigo-upload-csv-file"
                                     type="file"
-                                    style={{ display: 'none' }}    
-                                    onChange={(e) => {importCSV(e.target.files)}}
+                                    value={""}
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => importCSV(e.target.files)}
                                 />
                                 <label htmlFor="laraigo-upload-csv-file">
                                     <Button
