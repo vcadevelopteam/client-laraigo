@@ -524,8 +524,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
         if (detaildata?.type === "SMS" || detaildata?.type === "HSM") {
             if (data) {
                 for (let i = 0; i < data.length; i++) {
-                    const datakeyoriginal = data[i][`${primarykey}`];
-                    const datakeynew = data[i][`${primarykey}`].replace(/\D/g, '');
+                    const datakeyoriginal = `${data[i][`${primarykey}`]}`;
+                    const datakeynew = `${data[i][`${primarykey}`]}`.replace(/\D/g, '');
 
                     if (datakeyoriginal !== datakeynew) {
                         data[i][`${primarykey}`] = datakeynew;

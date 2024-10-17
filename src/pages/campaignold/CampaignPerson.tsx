@@ -379,8 +379,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
             if (detaildata?.type === "SMS" || detaildata?.type === "HSM") {
                 if (jsondatadatatemp) {
                     for (let i = 0; i < jsondatadatatemp.length; i++) {
-                        const datakeyoriginal = jsondatadatatemp[i][`${selectedColumns.primarykey}`];
-                        const datakeynew = jsondatadatatemp[i][`${selectedColumns.primarykey}`].replace(/\D/g, '');
+                        const datakeyoriginal = `${jsondatadatatemp[i][`${selectedColumns.primarykey}`]}`;
+                        const datakeynew = `${jsondatadatatemp[i][`${selectedColumns.primarykey}`]}`.replace(/\D/g, '');
 
                         if (datakeyoriginal !== datakeynew) {
                             jsondatadatatemp[i][`${selectedColumns.primarykey}`] = datakeynew;
@@ -413,8 +413,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
             if (detaildata?.type === "SMS" || detaildata?.type === "HSM") {
                 if (jsondatadata) {
                     for (let i = 0; i < jsondatadata.length; i++) {
-                        const datakeyoriginal = jsondatadata[i][`${selectedColumns.primarykey}`];
-                        const datakeynew = jsondatadata[i][`${selectedColumns.primarykey}`].replace(/\D/g, '');
+                        const datakeyoriginal = `${jsondatadata[i][`${selectedColumns.primarykey}`]}`;
+                        const datakeynew = `${jsondatadata[i][`${selectedColumns.primarykey}`]}`.replace(/\D/g, '');
 
                         if (datakeyoriginal !== datakeynew) {
                             jsondatadata[i][`${selectedColumns.primarykey}`] = datakeynew;
