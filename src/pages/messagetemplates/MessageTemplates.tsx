@@ -30,6 +30,7 @@ import {
     getMessageTemplateLst,
     getPaginatedMessageTemplate1,
     getValuesFromDomain,
+    registeredLinksSel,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
 
@@ -439,7 +440,8 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
                 getChannelsByOrg(),
-                getMessageTemplateLst("")
+                getMessageTemplateLst(""),
+                registeredLinksSel(),
             ])
         );
 

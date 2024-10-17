@@ -258,6 +258,7 @@ const translation: LangKeys = {
   period: "Period",
   interval: 'Intervalo',
   odoovariables: 'Odoo',
+  invalidurl: 'Invalid URL',
   percentage: "Percentage",
   dateoffirstreplytoadviser: "Date of first reply to adviser",
   timeoffirstreplytoadviser: "Time of first reply to adviser",
@@ -1118,6 +1119,8 @@ const translation: LangKeys = {
   calendar_reminders_subtitle: 'Enable the status, select which channel you want to send the notification through and which template to use for scheduled events.',
   calendar_connections_title: 'Connection to Calendars',
   calendar_connections_subtitle: "Connect your calendar so Laraigo knows when you're available and updates as events are scheduled.",
+
+  firstclicurl: 'Date and Time 1st Click on Link',
 
   supplier: "Supplier",
   id: 'ID',
@@ -6564,6 +6567,20 @@ const translation: LangKeys = {
   projectiddesc: "Registers the project ID provided by IBM Watson",
   campaigncleanwarning: 'Special characters in the key column were automatically cleaned',
   campaigncleanerror: 'The values of the key column have a maximum character limit of 40',
+  linkregister: 'Link Register',
+  validity: 'Validity',
+  linknamedesc: 'Assign a name to your link',
+  addlinkdesc: 'Enter the URL of your link',
+  linkstartdatedesc: 'Enter a starting date for the validity of your link',
+  linkenddatedesc: 'Enter an end date for the validity of your link',
+  useregisteredlinkscount: 'Use registered link for clic count',
+  selectregisteredlink: 'Select a registered link',
+  clicksonlink: 'Clic on Link',
+  clickonlink: 'Clic on Link',
+  campaignwithlinks: 'Campaign with Links',
+  clicksonlinkpercent: '% Clic on Link',
+  clickurldate: 'Date of clic on Link',
+  executeddate: 'Execution Date',
 };
 
 const enResource: ResourceLanguage = {

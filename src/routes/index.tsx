@@ -39,6 +39,7 @@ const MetaChannels = lazy(() => import('pages/MetaChannels'));
 const Supervisor = lazy(() => import('pages/Supervisor'));
 const MessageInbox = lazy(() => import('pages/MessageInbox'));
 const AdvancedTemplatesCampaigns = lazy(() => import('pages/AdvancedTemplatesCampaigns'));
+const LinkRegister = lazy(() => import('pages/linkregister/LinkRegister'));
 const MessageTemplatesOld = lazy(() => import('pages/MessageTemplatesOld'));
 const Tipifications = lazy(() => import('pages/Tipifications'));
 const InputValidation = lazy(() => import('pages/InputValidation'));
@@ -115,6 +116,7 @@ const ServiceDesk = lazy(() => import('pages/servicedesk/ServiceDesk'));
 const ServiceDeskLeadForm = lazy(() => import('pages/servicedesk/ServiceDeskLeadForm'));
 const ChangePwdFirstLogin = lazy(() => import('pages/ChangePwdFirstLogin'));
 const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
+const RedirectLink = lazy(() => import('pages/RedirectLink'));
 const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
 const PaymentOrderNiubiz = lazy(() => import('pages/PaymentOrderNiubiz'));
 const PaymentOrderNiubizStatus = lazy(() => import('pages/PaymentOrderNiubizStatus'));
@@ -265,6 +267,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.SIGNUP.path} render={() => <SignUp />} />
 					<Route exact path={paths.LOCATION.path} render={() => <GetLocations />} />
 					<Route exact path={paths.CALENDAR_EVENT.path} render={() => <CalendarEvent />} />
+					<Route exact path={paths.LINKREDIRECT} render={() => <RedirectLink />} />
 					<Route exact path={paths.CANCEL_EVENT.path} render={() => <CancelEvent />} />
 					<Route exact path={paths.CULQI_PAYMENTORDER.path} render={() => <PaymentOrder />} />
 					<Route exact path={paths.NIUBIZ_PAYMENTORDER.path} render={() => <PaymentOrderNiubiz />} />
@@ -373,6 +376,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.PERSON_DETAIL.path} component={() => <Layout mainClasses={classes.main}><PersonDetail /></Layout>} />
 					<ProtectRoute exact path={paths.METACHANNELS} component={() => <Layout mainClasses={classes.main}><MetaChannels /></Layout>} />
 					<ProtectRoute exact path={paths.ADVANCEDTEMPLATESCAMPAIGNS} component={() => <Layout mainClasses={classes.main}><AdvancedTemplatesCampaigns /></Layout>} />
+					<ProtectRoute exact path={paths.LINKREGISTER} component={() => <Layout mainClasses={classes.main}><LinkRegister /></Layout>} />
 					<ProtectRoute exact path={paths.MESSAGETEMPLATE} component={() => <Layout mainClasses={classes.main}><MessageTemplatesOld /></Layout>} />
 					<ProtectRoute exact path={paths.INTEGRATIONMANAGER} component={() => <Layout mainClasses={classes.main}><IntegrationManager /></Layout>} />
 					<ProtectRoute exact path={paths.CAMPAIGN} component={() => <Layout mainClasses={classes.main}><CampaignOld /></Layout>} />

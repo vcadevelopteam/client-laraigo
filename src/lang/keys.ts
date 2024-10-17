@@ -1195,6 +1195,7 @@ export const langKeys = {
   AIservices: 'AIservices',
   systemvariables: 'systemvariables',
   odoovariables: 'odoovariables',
+  invalidurl: 'invalidurl',
 
   channel: 'channel',
   channel_plural: 'channel_plural',
@@ -2684,6 +2685,8 @@ export const langKeys = {
   type_TIPIFICACION: "type_TIPIFICACION",
   type_CATEGORIA: "type_CATEGORIA",
   catalogmaster: "catalogmaster",
+  
+  firstclicurl: 'firstclicurl',
 
   report_leadgridtracking: "report_leadgridtracking",
   report_productivity: 'report_productivity',
@@ -6502,6 +6505,21 @@ export const langKeys = {
   projectiddesc: 'projectiddesc',
   campaigncleanwarning: 'campaigncleanwarning',
   campaigncleanerror: 'campaigncleanerror',
+
+  linkregister: 'linkregister',
+  validity: 'validity',
+  linknamedesc: 'linknamedesc',
+  addlinkdesc: 'addlinkdesc',
+  linkstartdatedesc: 'linkstartdatedesc',
+  linkenddatedesc: 'linkenddatedesc',
+  useregisteredlinkscount: 'useregisteredlinkscount',
+  selectregisteredlink: 'selectregisteredlink',
+  clicksonlink: 'clicksonlink',
+  clickonlink: 'clickonlink',
+  campaignwithlinks: 'campaignwithlinks',
+  clicksonlinkpercent: 'clicksonlinkpercent',
+  clickurldate: 'clickurldate',
+  executeddate: 'executeddate',
 };
 
 export type LangKeys = typeof langKeys;

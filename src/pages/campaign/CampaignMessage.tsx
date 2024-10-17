@@ -1929,7 +1929,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 );
                             })}                            
                             </div>
-                            {(templateToUse.buttonsgeneric?.some(button => button.btn.type === 'dynamic')) && (
+                            { (templateToUse.buttonsgeneric?.some(button =>
+                                button.btn.type === 'dynamic' && 
+                                (button.click_counter === false || button.click_counter === undefined)
+                            )) && (
                                 <div className={classes.containerStyle}>
                                     {renderDynamicUrlFields(null, row, templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [])}
                                 </div>
