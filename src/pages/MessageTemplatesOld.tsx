@@ -148,6 +148,7 @@ const MessageTemplatesOld: FC = () => {
     const selectionKey = "id";
 
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
+        distinct: null,
         daterange: null,
         filters: {},
         pageIndex: 0,
@@ -436,7 +437,7 @@ const MessageTemplatesOld: FC = () => {
 
     const handleSynchronize = (channel: any, selectedData: any) => {
         const callback = () => {
-            dispatch(synchronizeTemplate({ communicationchannel: channel, messagetemplatelist: selectedData }));
+            dispatch(synchronizeTemplate());
             dispatch(showBackdrop(true));
             setWaitSynchronize(true);
         };
@@ -1319,7 +1320,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onClickRemoveButton = async () => {
-        let btns = getValues("buttons");
+        const btns = getValues("buttons");
 
         if (btns && btns.length > 0) {
             unregister(`buttons.${btns.length - 1}`);
@@ -1342,7 +1343,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         if (file) {
             setFileAttachment(file);
-            let fd = new FormData();
+            const fd = new FormData();
             fd.append("file", file, file.name);
             dispatch(uploadFile(fd));
             setWaitUploadFile(true);
@@ -1351,10 +1352,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     useEffect(() => {
         if (fileAttachmentTemplate) {
-            let reader = new FileReader();
+            const reader = new FileReader();
             reader.readAsText(fileAttachmentTemplate);
             reader.onload = (event: any) => {
-                let content = event.target.result.toString();
+                const content = event.target.result.toString();
                 setValue("body", content);
                 setBodyAttachment(content);
             };
@@ -2031,7 +2032,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <AttachFileIcon color="primary" />
                                     </IconButton>
                                 }
-                                {!!getValues("attachment") &&
+                                {Boolean(getValues("attachment")) &&
                                     getValues("attachment")
                                         .split(",")
                                         .map((f: string, i: number) => (

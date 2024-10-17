@@ -806,7 +806,7 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname, olddomainname }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext={}, paymentplanid=0 }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext = {}, paymentplanid = 0 }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
     parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext, paymentplanid }
@@ -1101,7 +1101,7 @@ export const insMessageTemplate = (
             providerstatus,
             operation,
             categorychange,
-            firstbuttons, 
+            firstbuttons,
             buttons: []
         }
     }
@@ -1187,7 +1187,9 @@ export const insMessageTemplateOld = (
             categorychange: false,
             firstbuttons: null,
             newversion: false,
-            buttons: JSON.stringify(buttons || [])
+            buttons: JSON.stringify(buttons || []),
+            categorychange: true,
+            firstbuttons: null,
         }
     });
 
@@ -3914,8 +3916,8 @@ export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) =
 
 export const getAudit = ({ startdate, enddate }: Dictionary) => ({
     method: "UFN_AUDIT_SEL",
-    parameters: { 
-        startdate, 
+    parameters: {
+        startdate,
         enddate,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     },
@@ -5414,23 +5416,23 @@ export const conversationAttachmentHistorySel = (personid:number) => ({
     key: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
     parameters: { personid },
 });
-export const conversationClassificationHistorySel = (personid:number) => ({
+export const conversationClassificationHistorySel = (personid: number) => ({
     method: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
     key: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
     parameters: { personid },
 });
-export const conversationOrderHistorySel = (personid:number) => ({
+export const conversationOrderHistorySel = (personid: number) => ({
     method: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
     key: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
     parameters: { personid },
 });
-export const conversationOportunityHistorySel = (personid:number) => ({
+export const conversationOportunityHistorySel = (personid: number) => ({
     method: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
     key: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
     parameters: { personid },
 });
 
-export const conversationSDHistorySel = (personid:number) => ({
+export const conversationSDHistorySel = (personid: number) => ({
     method: "UFN_CONVERSATION_SEL_SS_HISTORY",
     key: "UFN_CONVERSATION_SEL_SS_HISTORY",
     parameters: { personid },

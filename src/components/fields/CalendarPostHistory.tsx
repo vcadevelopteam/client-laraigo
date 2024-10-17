@@ -159,7 +159,7 @@ const useScheduleStyles = makeStyles(theme => ({
     }
 }));
 
-const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick: (event: any) => void; index: number; totalEvents: number }> = ({ item, hourData, handleClick, index, totalEvents }) => {
+const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick: (event: any) => void; }> = ({ item, hourData, handleClick }) => {
     const classes = useScheduleStyles();
 
     return (
