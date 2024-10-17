@@ -4,6 +4,7 @@ import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
 export interface itemMulti {
+    key: string;
     data: Dictionary[];
     success: boolean;
 }
