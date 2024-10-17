@@ -159,8 +159,7 @@ const useScheduleStyles = makeStyles(theme => ({
     }
 }));
 
-const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick: (event: any) => void; }> = ({ item, hourData, handleClick }) => {
-    const classes = useScheduleStyles();
+const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick: (event: any) => void; index: number; totalEvents: number }> = ({ item, hourData, handleClick, index, totalEvents }) => {    const classes = useScheduleStyles();
 
     return (
         <div
@@ -168,9 +167,12 @@ const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick
             style={{
                 backgroundColor: item.publishtatus === "ERROR" ? "#F12601" : (item.type === "POST" ? "#FFDC73" : "#BAFFC9"),
                 color: item.publishtatus === "ERROR" ? "#FFFFFF" : "#000000",
-                height: `${item.medialink?.[0]?.thumbnail ? (item.totalTime * 2.6) : item.totalTime}%`,
+                height: `${item.totalTime}%`,
                 position: "absolute",
-                top: `${item.initTime}%`
+                top: `${item.initTime}%`,
+                width: `${100 / totalEvents}%`,
+                left: `${(index * 100) / totalEvents}%`,
+                zIndex: 2
             }}
             title={item.texttitle}
             onClick={() => handleClick(hourData)}
@@ -179,7 +181,6 @@ const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick
                 <div style={{ display: 'flex', flex: 'flex: 0 1 100%', width: '100%' }}>
                     <b style={{ marginRight: '4px' }}>{new Date(item.publishdate).toLocaleTimeString()?.slice(0, 5)}</b>{item.texttitle}
                 </div>
-                {item.medialink?.[0]?.thumbnail && <div><img loading='eager' alt="" style={{ marginLeft: 'auto', marginRight: 'auto', paddingLeft: '18px', paddingRight: '18px', paddingTop: '6px', marginBottom: '6px', display: 'flex', flex: 'flex: 0 1 100%', width: '100%', borderRadius: '10px' }} src={item.medialink?.[0]?.thumbnail || ""}></img></div>}
                 <div style={{ display: 'flex', flex: 'flex: 0 1 100%', width: '100%', justifyContent: 'right' }}>
                     {item.communicationchanneltype === 'FBWA' && <FacebookColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
                     {item.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
@@ -202,14 +203,16 @@ const BoxDay: FC<{ hourDay: HourDayProp; handleClick: (event: any) => void; }> =
             className={classes.boxDay}
             style={{ borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1", position: "relative" }}
         >
-            {hourDay.data?.map(x => (
+            {hourDay.data?.map((x, index) => (
                 <PostHistoryTime
                     handleClick={handleClick}
                     hourData={hourDay}
                     item={x}
                     key={x.posthistoryid}
+                    totalEvents={hourDay.data ? hourDay.data.length : 0}
+                    index={index}
                 />
-            ))}
+            )) ?? null}
         </div>
     )
 }
