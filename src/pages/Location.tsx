@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, Title, TemplateIcons } from 'components';
 import { array_trimmer, exportExcel, getLocationExport, getPaginatedLocation, locationIns, templateMaker, uploadExcel } from 'common/helpers';
-import { Dictionary, IFetchData } from "@types";
+import {Dictionary, IFetchData, ITransaction} from "@types";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -119,10 +119,30 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
 
     React.useEffect(() => {
         register('id');
-        register('phone');
-        register('alternativephone');
-        register('email');
-        register('alternativeemail');
+        register('phone', {
+            pattern: {
+                value: /^[0-9]{9,20}$/,
+                message: t(langKeys.invalid_phone)
+            }
+        });
+        register('alternativephone', {
+            pattern: {
+                value: /^[0-9]{9,20}$/,
+                message: t(langKeys.invalid_phone)
+            }
+        });
+        register('email', {
+            pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: t(langKeys.invalid_email)
+            }
+        });
+        register('alternativeemail', {
+            pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: t(langKeys.invalid_email)
+            }
+        });
         register('googleurl');
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -159,7 +179,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
         setValue("address",directionData.address)
         setValue("googleurl",`https://www.google.com/maps?q=${directionData.lat},${directionData.lng}`)
     }, [directionData])
-    
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(locationIns(data)));
@@ -209,14 +229,14 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.name)} 
+                            label={t(langKeys.name)}
                             className="col-6"
                             onChange={(value) => setValue('name', value)}
                             valueDefault={row ? (row.name || "") : ""}
                             error={errors?.name?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.country)} 
+                            label={t(langKeys.country)}
                             className="col-6"
                             onChange={(e) => setDirectionData((prev)=>({...prev, country: e}))}
                             valueDefault={directionData.country}
@@ -225,14 +245,14 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.city)} 
+                            label={t(langKeys.city)}
                             className="col-6"
                             onChange={(e) => setDirectionData((prev)=>({...prev, city: e}))}
                             valueDefault={directionData.city}
                             error={errors?.city?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.district)} 
+                            label={t(langKeys.district)}
                             className="col-6"
                             onChange={(e) => setDirectionData((prev)=>({...prev, district: e}))}
                             valueDefault={directionData.district}
@@ -241,14 +261,14 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.address)} 
+                            label={t(langKeys.address)}
                             className="col-6"
                             onChange={(e) => setDirectionData((prev)=>({...prev, address: e}))}
                             valueDefault={directionData.address}
                             error={errors?.address?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.phone)} 
+                            label={t(langKeys.phone)}
                             className="col-6"
                             type="number"
                             onChange={(value) => setValue('phone', value)}
@@ -258,7 +278,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.alternativephone)} 
+                            label={t(langKeys.alternativephone)}
                             className="col-6"
                             type="number"
                             onChange={(value) => setValue('alternativephone', value)}
@@ -266,7 +286,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             error={errors?.alternativephone?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.email)} 
+                            label={t(langKeys.email)}
                             className="col-6"
                             onChange={(value) => setValue('email', value)}
                             valueDefault={row ? (row.email || "") : ""}
@@ -275,14 +295,14 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.alternativeEmail)} 
+                            label={t(langKeys.alternativeEmail)}
                             className="col-6"
                             onChange={(value) => setValue('alternativeemail', value)}
                             valueDefault={row ? (row.alternativeemail || "") : ""}
                             error={errors?.alternativeemail?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.type)} 
+                            label={t(langKeys.type)}
                             className="col-6"
                             onChange={(value) => setValue('type', value)}
                             valueDefault={row ? (row.type || "") : ""}
@@ -291,7 +311,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.schedule)} 
+                            label={t(langKeys.schedule)}
                             className="col-12"
                             onChange={(value) => setValue('schedule', value)}
                             valueDefault={row ? (row.schedule || "") : ""}
@@ -300,7 +320,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.latitude)} 
+                            label={t(langKeys.latitude)}
                             className="col-6"
                             type="number"
                             onChange={(e) => setDirectionData((prev)=>({...prev, lat: e}))}
@@ -308,7 +328,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             error={errors?.latitude?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.longitude)} 
+                            label={t(langKeys.longitude)}
                             className="col-6"
                             type="number"
                             onChange={(e) => setDirectionData((prev)=>({...prev, lng: e}))}
@@ -344,9 +364,9 @@ const Location: FC = () => {
     const [waitImport, setWaitImport] = useState(false);
     const executeResult = useSelector(state => state.main.execute);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null, distinct: false })
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     const classes = useStyles();
 
     const arrayBread = [
@@ -471,7 +491,7 @@ const Location: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
-    
+
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -510,7 +530,7 @@ const Location: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.locations).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
@@ -519,7 +539,9 @@ const Location: FC = () => {
     }, [executeResult, waitImport])
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+        localStorage.setItem('pageSize', pageSize.toString());
+
         dispatch(getCollectionPaginated(getPaginatedLocation({
             take: pageSize,
             skip: pageIndex * pageSize,
@@ -530,7 +552,7 @@ const Location: FC = () => {
         })))
     };
 
-    
+
     useEffect(() => {
         fetchData(fetchDataAux)
     }, [])
@@ -583,10 +605,11 @@ const Location: FC = () => {
         ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
-    
+
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
-        if (file && file.name.split('.')[file.name.split('.').length-1]==="xlsx") {
+
+        if (file && file.name.split('.').pop() === "xlsx") {
 
             let excel: any = await uploadExcel(file, undefined);
             let data: ILocation[] = array_trimmer(excel);
@@ -601,54 +624,53 @@ const Location: FC = () => {
                 (f.latitude === undefined || !isNaN(f.latitude)) &&
                 (f.longitude === undefined || !isNaN(f.longitude))
             );
+
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
-                let table: Dictionary = data.reduce((a: any, d: ILocation) => ({
-                    ...a,
-                    [`location_${d.latitude}_${d.longitude}`]: {
-                        id: 0, 
-                        name: d.name || '',
-                        address: d.address || '',
-                        district: d.district || '',
-                        city: d.city|| '',
-                        country: d.country || '',
-                        schedule: d.schedule || '',
-                        phone: d.phone || '',
-                        alternativephone: d.alternativephone || '',
-                        email: d.email || '',
-                        alternativeemail: d.alternativeemail || '',
-                        type: d.type || '',
-                        username: user?.usr,
-                        latitude: d.latitude || 0,
-                        longitude: d.longitude || 0,
-                        status: "ACTIVO",
-                        description: '',
-                        googleurl: `https://www.google.com/maps?q=${d.latitude},${d.longitude}`,
-                        operation: 'INSERT',
-                    }
-                }), {});
-                Object.values(table).forEach((p: ILocation) => {
-                    dispatch(execute({
-                        header: locationIns({ ...p }),
-                        detail: [ ]
-                    }, true));
-                });
-                setWaitImport(true)
-            }
-            else {
+
+                const transaction: ITransaction = {
+                    header: null,
+                    detail: data.map((location: ILocation) => {
+                        return locationIns({
+                            id: 0,
+                            operation: 'INSERT',
+                            name: location.name,
+                            address: location.address,
+                            district: location.district,
+                            city: location.city,
+                            country: location.country,
+                            schedule: location.schedule,
+                            phone: location.phone || "",
+                            alternativephone: location.alternativephone || "",
+                            email: location.email || "",
+                            alternativeemail: location.alternativeemail || "",
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                            googleurl: `https://www.google.com/maps?q=${location.latitude},${location.longitude}`,
+                            description: '',
+                            status: "ACTIVO",
+                            type: location.type,
+                            username: user?.usr
+                        });
+                    })
+                };
+
+                dispatch(execute(transaction, true));
+                setWaitImport(true);
+            } else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
+        } else {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalidformat) }));
         }
-        if(file.name.split('.')[file.name.split('.').length-1]!=="xlsx"){
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalidformat) }))
-        }
-    }
+    };
+
 
     if (viewSelected === "view-1") {
 
         return (
-            
-            
+
+
             <div style={{ height: '100%', width: 'inherit' }}>
             <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
                 <div style={{ flexGrow: 1 }} >
@@ -667,6 +689,7 @@ const Location: FC = () => {
                 fetchData={fetchData}
                 onClickRow={(row)=>{setRowSelected({ row: row, edit: false });setViewSelected("view-2")}}
                 register={true}
+                initialPageIndex={fetchDataAux.pageIndex}
                 ButtonsElement={() => (
                     <Button
                         variant="contained"
