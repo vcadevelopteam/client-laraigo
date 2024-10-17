@@ -2808,7 +2808,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             </IconButton>
                                             {showEmojiPicker && (
                                                 <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                    <Picker onSelect={addEmoji} />
+                                                    <Picker onEmojiSelect={addEmoji} />
                                                 </div>
                                             )}
                                             <IconButton
