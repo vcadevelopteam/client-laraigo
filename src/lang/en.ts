@@ -6563,7 +6563,7 @@ const translation: LangKeys = {
   assistantdescriptiondesc: 'Assign a brief description to the assistant you will register.',
   assistantconnectorsdesc: 'Select the connector linked to your assistant, this is configured in “IA Connectors”.',
   assistantstatussdesc: 'Select the status of your assistant, whether you want it to be active or inactive.',
-  assistantbasemodeldesc: 'Select the base model of your assistant, this will be the engine of your answers.', 
+  assistantbasemodeldesc: 'Select the base model of your assistant, this will be the engine of your answers.',
   conflicts: 'Conflicts',
   speakwithyourmodel: 'Speak with your model',
   modelplaceholder: 'Write something to test your assistant model.',
@@ -6620,6 +6620,8 @@ const translation: LangKeys = {
   floor_number: 'Floor number',
   ubigeocode: 'Ubigeo code',
   scheduledeventcode: 'Scheduled event code',
+  campaigncleanwarning: 'Special characters in the key column were automatically cleaned',
+  campaigncleanerror: 'The values of the key column have a maximum character limit of 40',
 };
 
 const enResource: ResourceLanguage = {

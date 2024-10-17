@@ -3401,7 +3401,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_reportcompliancesla: "Reporte de cumplimiento de SLAs",
   report_reportrequestsd: "Reporte de solicitudes SD",
 
-  
+
   firstclicurl: 'Fecha y Hora 1er Clic en Enlace',
 
   manageClassification_plural: 'Gestionar clasificaciones',
@@ -6514,7 +6514,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   assistantdescriptiondesc: 'Asigna una breve descripción al asistente que registrarás.',
   assistantconnectorsdesc: 'Selecciona el conector vinculado a tu asistente, este se configura en "Conectores IA".',
   assistantstatussdesc: 'Selecciona el estado de tu asistente, si deseas que se encuentre activo o inactivo.',
-  assistantbasemodeldesc: 'Selecciona el modelo base de tu asistente, este será el motor de sus respuestas.', 
+  assistantbasemodeldesc: 'Selecciona el modelo base de tu asistente, este será el motor de sus respuestas.',
   conflicts: 'Conflictos',
   speakwithyourmodel: 'Habla con tu modelo',
   modelplaceholder: 'Escribe algo para probar tu modelo de asistente.',
@@ -6571,6 +6571,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   floor_number: 'Número de piso',
   ubigeocode: 'Código de ubigeo',
   scheduledeventcode: 'Código del evento agendado',
+  campaigncleanwarning: 'Se limpiaron automaticamente caracteres especiales encontrados en la columna llave seleccionada',
+  campaigncleanerror: 'Los valores de la columna llave tienen un máximo de 40 caracteres',
 };
 
 const esResource: ResourceLanguage = {

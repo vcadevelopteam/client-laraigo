@@ -1027,8 +1027,8 @@ const TableZyx = React.memo(({
                                     id="laraigo-upload-csv-file"
                                     type="file"
                                     value={""}
-                                    style={{ display: 'none' }}    
-                                    onChange={(e) => {importCSV(e.target.files)}}
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => importCSV(e.target.files)}
                                 />
                                 <label htmlFor="laraigo-upload-csv-file">
                                     <Button

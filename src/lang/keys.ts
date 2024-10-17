@@ -2686,7 +2686,7 @@ export const langKeys = {
   type_TIPIFICACION: "type_TIPIFICACION",
   type_CATEGORIA: "type_CATEGORIA",
   catalogmaster: "catalogmaster",
-  
+
   firstclicurl: 'firstclicurl',
 
   report_leadgridtracking: "report_leadgridtracking",
@@ -3497,7 +3497,7 @@ export const langKeys = {
 
   "personalizedreport_conversationclassification.tipification": "personalizedreport_conversationclassification.tipification",
 
-  customfieldserror: 'customfieldserror', 
+  customfieldserror: 'customfieldserror',
   chatHeaderTitle: 'chatHeaderTitle',
   formHeaderTitle: 'formHeaderTitle',
   subtitle: 'subtitle',
@@ -6499,7 +6499,7 @@ export const langKeys = {
   assistantdescriptiondesc: 'assistantdescriptiondesc',
   assistantconnectorsdesc: 'assistantconnectorsdesc',
   assistantstatussdesc: 'assistantstatussdesc',
-  assistantbasemodeldesc: 'assistantbasemodeldesc',  
+  assistantbasemodeldesc: 'assistantbasemodeldesc',
   conflicts: 'conflicts',
   speakwithyourmodel: 'speakwithyourmodel',
   modelplaceholder: 'modelplaceholder',
@@ -6556,6 +6556,8 @@ export const langKeys = {
   validationphoneexists: 'validationphoneexists',
   sex: 'sex',
   scheduledeventcode: 'scheduledeventcode',
+  campaigncleanwarning: 'campaigncleanwarning',
+  campaigncleanerror: 'campaigncleanerror',
 };
 
 export type LangKeys = typeof langKeys;
