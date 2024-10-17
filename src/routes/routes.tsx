@@ -293,8 +293,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.PARTNERS,
-        description: <Trans i18nKey={langKeys.partner} />,
-        tooltip: <Trans i18nKey={langKeys.partner} />,
+        description: <Trans i18nKey={langKeys.partners} />,
+        tooltip: <Trans i18nKey={langKeys.partners} />,
         subroute: true,
         path: paths.PARTNERS,
         initialSubroute: paths.PARTNERS,

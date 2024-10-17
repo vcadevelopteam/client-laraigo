@@ -88,6 +88,11 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
     }
   }, [importRes, waitUpload]);
 
+    const formatNumberWithTwoDecimals = (value: number | string) => {
+        const num = Number(value);
+        return num === 0 ? '0.00' : num.toFixed(2);
+    };
+
   const handleDelete = (row: Dictionary) => {
     const callback = () => {
       dispatch(
@@ -190,6 +195,10 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         Header: t(langKeys.monthlyplancost),
         accessor: "montlyplancost",
         width: "auto",
+        Cell: (props: CellProps<Dictionary>) => {
+            const { montlyplancost } = props.cell.row.original || {};
+            return formatNumberWithTwoDecimals(montlyplancost);
+        },
       },
       {
         Header: t(langKeys.contactsincludedinplan),
@@ -210,6 +219,10 @@ const PartnersMainView: FC<PartnersMainViewProps> = ({
         Header: t(langKeys.priceperbag),
         accessor: "priceperbag",
         width: "auto",
+        Cell: (props: CellProps<Dictionary>) => {
+            const { priceperbag } = props.cell.row.original || {};
+            return formatNumberWithTwoDecimals(priceperbag);
+        },
       },
       {
         Header: t(langKeys.puadditionalcontacts),
