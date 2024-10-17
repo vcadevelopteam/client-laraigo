@@ -3401,7 +3401,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_reportcompliancesla: "Reporte de cumplimiento de SLAs",
   report_reportrequestsd: "Reporte de solicitudes SD",
 
-  
+
   firstclicurl: 'Fecha y Hora 1er Clic en Enlace',
 
   manageClassification_plural: 'Gestionar clasificaciones',
@@ -6502,6 +6502,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   clicksonlinkpercent: '% Clic en Enlace',
   clickurldate: 'Fecha de clic en Enlace',
   executeddate: 'Fecha de Ejecución',
+  campaigncleanwarning: 'Se limpiaron automaticamente caracteres especiales encontrados en la columna llave seleccionada',
+  campaigncleanerror: 'Los valores de la columna llave tienen un máximo de 40 caracteres',
 
   billingreport_conversationbillable: 'Conversaciones WhatsApp Facturables',
   watsonxassistantdescription: 'Entrena tu servicio de inteligencia artificial',

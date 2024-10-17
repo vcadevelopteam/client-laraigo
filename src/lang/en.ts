@@ -6551,6 +6551,8 @@ const translation: LangKeys = {
   clicksonlinkpercent: '% Clic on Link',
   clickurldate: 'Date of clic on Link',
   executeddate: 'Execution Date',
+  campaigncleanwarning: 'Special characters in the key column were automatically cleaned',
+  campaigncleanerror: 'The values of the key column have a maximum character limit of 40',
 
   watsonxassistantdescription: 'Train your artificial intelligence service',
   updateddate: 'Updated Date',
