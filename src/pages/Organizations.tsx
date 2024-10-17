@@ -23,6 +23,7 @@ import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updat
 import { CellProps } from 'react-table';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import CustomTableZyxEditable from 'components/fields/customtable-editable';
+import { updateListOrgs } from 'store/login/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -287,6 +288,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
+                console.log("executeRes", executeRes.data)
+                const org1 = {
+                    ...executeRes.data[0],
+                    corpid: executeRes.data[0].p_corporationid,
+                    orgid: executeRes.data[0].p_orgid,
+                    corpdesc: executeRes.data[0].orgdesc
+                }
+                dispatch(updateListOrgs(org1))
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
