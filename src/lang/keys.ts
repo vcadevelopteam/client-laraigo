@@ -6480,7 +6480,7 @@ export const langKeys = {
   assistantdescriptiondesc: 'assistantdescriptiondesc',
   assistantconnectorsdesc: 'assistantconnectorsdesc',
   assistantstatussdesc: 'assistantstatussdesc',
-  assistantbasemodeldesc: 'assistantbasemodeldesc',  
+  assistantbasemodeldesc: 'assistantbasemodeldesc',
   conflicts: 'conflicts',
   speakwithyourmodel: 'speakwithyourmodel',
   modelplaceholder: 'modelplaceholder',
@@ -6500,6 +6500,8 @@ export const langKeys = {
   entity: 'entity',
   projectid: 'projectid',
   projectiddesc: 'projectiddesc',
+  campaigncleanwarning: 'campaigncleanwarning',
+  campaigncleanerror: 'campaigncleanerror',
 };
 
 export type LangKeys = typeof langKeys;
