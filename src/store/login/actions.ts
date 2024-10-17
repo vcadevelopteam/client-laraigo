@@ -1,4 +1,4 @@
-import { IActionCall } from "@types";
+import { Dictionary, IActionCall } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 import { removeAuthorizationToken } from "common/helpers";
@@ -70,6 +70,11 @@ export const logout = (): IActionCall => ({
 export const setPwdFirsLogin = (value: boolean, ignorePwdchangefirstloginValidation: boolean): IActionCall => ({
     type: actionTypes.CHANGE_PWD_FIRST_LOGIN,
     payload: { value, ignorePwdchangefirstloginValidation },
+});
+
+export const updateListOrgs = (org: Dictionary): IActionCall => ({
+    type: actionTypes.NEW_UPDATE_ORG,
+    payload: { org },
 });
 
 export const cleanValidateToken = (): IActionCall => {

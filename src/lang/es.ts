@@ -433,6 +433,7 @@ const translation: LangKeys = {
   AIservices: 'Servicios IA',
   systemvariables: 'Sistema',
   odoovariables: 'Odoo',
+  invalidurl: 'URL inválida',
 
   quantity: 'Cantidad',
   quantity_plural: "Cantidades",
@@ -3399,6 +3400,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_reportcompliancesla: "Reporte de cumplimiento de SLAs",
   report_reportrequestsd: "Reporte de solicitudes SD",
 
+  
+  firstclicurl: 'Fecha y Hora 1er Clic en Enlace',
 
   manageClassification_plural: 'Gestionar clasificaciones',
   manageRestrictedEmoji: 'Gestionar emoji restringido',
@@ -6483,6 +6486,20 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   errorimportdocuments: 'Los documentos {{docs}} no son registros válidos',
   billingreport_conversationbillable: 'Conversaciones WhatsApp Facturables',
+  linkregister: 'Registro de Enlaces',
+  validity: 'Vigencia',
+  linknamedesc: 'Asigna un nombre a tu enlace',
+  addlinkdesc: 'Ingresa el URL de tu enlace',
+  linkstartdatedesc: 'Ingresa una fecha inicial para la vigencia de tu enlace',
+  linkenddatedesc: 'Ingresa una fecha final para la vigencia de tu enlace',
+  useregisteredlinkscount: 'Usar enlace registrado para conteo de clics',
+  selectregisteredlink: 'Seleccione un enlace registrado',
+  clicksonlink: 'Clic en Enlace',
+  clickonlink: 'Clic en Enlace',
+  campaignwithlinks: 'Campaña con Enlaces',
+  clicksonlinkpercent: '% Clic en Enlace',
+  clickurldate: 'Fecha de clic en Enlace',
+  executeddate: 'Fecha de Ejecución',
 };
 
 const esResource: ResourceLanguage = {

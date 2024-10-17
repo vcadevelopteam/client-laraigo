@@ -434,9 +434,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }      
     }, [multiData]);
-
-    // console.log('template actual: ', templateToUse)
-    // console.log('campaña actual: ', multiData[4])
         
     const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
         if(row && !detectionChangeSource){
@@ -1621,7 +1618,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             </div>
 
                             <div className={classes.containerStyle}>                               
-                                {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO') && (
+                                {(templateToUse.headertype === 'IMAGE' || templateToUse.headertype === 'VIDEO' || templateToUse.headertype === 'DOCUMENT') && (
                                     row && !detectionChangeSource  ? (
                                     (() => {
                                         const campaignVariables = multiData[4].data[0].fields?.campaignvariables || {};
@@ -1932,7 +1929,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 );
                             })}                            
                             </div>
-                            {(templateToUse.buttonsgeneric?.some(button => button.btn.type === 'dynamic')) && (
+                            { (templateToUse.buttonsgeneric?.some(button =>
+                                button.btn.type === 'dynamic' && 
+                                (button.click_counter === false || button.click_counter === undefined)
+                            )) && (
                                 <div className={classes.containerStyle}>
                                     {renderDynamicUrlFields(null, row, templateToUse.buttonsgeneric?.filter(button => button.btn.type === 'dynamic') || [])}
                                 </div>
