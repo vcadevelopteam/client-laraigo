@@ -52,6 +52,11 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     key: "UFN_USERBYSUPERVISOR_SEL",
     parameters: {}
 })
+export const getTicketsByGroups = (): IRequestBody => ({
+    method: "UFN_GROUPSBYBOT_SEL",
+    key: "UFN_GROUPSBYBOT_SEL",
+    parameters: {}
+})
 export const getTimeWaiting = (useridselected: number): IRequestBody => ({
     method: "UFN_TIME_WAITING_SEL",
     key: "UFN_TIME_WAITING_SEL_" + useridselected,
@@ -5345,9 +5350,9 @@ export const getAssignmentRulesByGroup = (group: string, usergroups: string) => 
     key: "UFN_ASSIGNMENTRULE_BY_GROUP_SEL",
     parameters: { group, usergroups },
 });
-export const getDomainByDomainName = (domainname: string) => ({
+export const getDomainByDomainName = (domainname: string, key: string = "") => ({
     method: "UFN_DOMAIN_BY_DOMAINNAME",
-    key: "UFN_DOMAIN_BY_DOMAINNAME",
+    key: `UFN_DOMAIN_BY_DOMAINNAME${key}`,
     parameters: { domainname },
 });
 export const getDomainByDomainNameList = (domainnamelist: string) => ({

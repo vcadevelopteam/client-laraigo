@@ -1440,6 +1440,15 @@ export const langKeys = {
   close_date: "close_date",
   filter_by_user: "filter_by_user",
   filter_by_group: "filter_by_group",
+  view_by_groups: "view_by_groups",
+  
+  information_group_agent: "information_group_agent",
+  tickets_bot: "tickets_bot",
+  tickets_holding: "tickets_holding",
+  agents_connected_by_group: "agents_connected_by_group",
+  without_group: "without_group",
+  no_agent_available: "no_agent_available",
+
   conversation_status: "conversation_status",
 
   ticket_number: "ticket_number",
