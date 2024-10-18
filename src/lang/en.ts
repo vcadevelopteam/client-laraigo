@@ -2134,7 +2134,13 @@ const translation: LangKeys = {
   close_date: "Close date",
   filter_by_user: "Filter by agent name",
   filter_by_group: "Filter by agent group",
-
+  view_by_groups: "View by groups",
+  information_group_agent: "Information by advisory group",
+  tickets_bot: "Tickets in bot",
+  tickets_holding: "Tickets in holding",
+  without_group: "Without group",
+  no_agent_available: "No agents available",
+  agents_connected_by_group: "Advisors connected by group",
   conversation_status: "Conversation status",
 
   ticket_asesorfinal: 'Last agent',
