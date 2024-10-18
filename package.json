@@ -90,7 +90,8 @@
         "deploy": "gh-pages -d build",
         "preview": "vite preview",
         "prepare": "husky install",
-        "create-component": "node create-component.js"
+        "create-component": "node create-component.js",
+        "feature": "node create-feature.js"
     },
     "eslintConfig": {
         "extends": [
