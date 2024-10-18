@@ -1150,6 +1150,7 @@ export const insMessageTemplateOld = (
         providerquality,
         providerstatus,
         operation,
+        variablecontext,
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS_OLD",
@@ -1193,8 +1194,7 @@ export const insMessageTemplateOld = (
             firstbuttons: null,
             newversion: false,
             buttons: JSON.stringify(buttons || []),
-            categorychange: true,
-            firstbuttons: null,
+            variablecontext,
         }
     });
 
