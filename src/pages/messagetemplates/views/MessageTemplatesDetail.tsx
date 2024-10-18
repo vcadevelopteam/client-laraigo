@@ -1,5 +1,5 @@
 import { addTemplate } from "store/channel/actions";
-import { Box, Checkbox, CircularProgress, IconButton, Paper } from "@material-ui/core";
+import { Box, Checkbox, CircularProgress, ClickAwayListener, IconButton, Paper } from "@material-ui/core";
 import { Close, FileCopy, GetApp } from "@material-ui/icons";
 import { Descendant } from "slate";
 import { Dictionary, MultiData } from "@types";
@@ -2814,14 +2814,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             />
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end' }}>
-                                            <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
-                                                <EmojiEmotionsIcon />
-                                            </IconButton>
-                                            {showEmojiPicker && (
-                                                <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
-                                                    <Picker onEmojiSelect={addEmoji} />
-                                                </div>
-                                            )}
+                                        <ClickAwayListener onClickAway={() => setShowEmojiPicker(false)}>
+                                            <span>
+                                                <IconButton ref={emojiButtonRef} onClick={handleEmojiPickerClick} disabled={!isNew}>
+                                                    <EmojiEmotionsIcon />
+                                                </IconButton>
+                                                {showEmojiPicker && (
+                                                    <div style={{ position: 'absolute', top: pickerPosition.top, left: pickerPosition.left, zIndex: 1000 }}>
+                                                        <Picker onEmojiSelect={addEmoji} />
+                                                    </div>
+                                                )}
+                                            </span>
+                                        </ClickAwayListener>
                                             <IconButton
                                                 onClick={() => handleTextFormatting("*")}
                                                 disabled={!isNew}
