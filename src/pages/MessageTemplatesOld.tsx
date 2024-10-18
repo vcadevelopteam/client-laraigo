@@ -1058,7 +1058,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [waitUploadFile, uploadResult]);
-
+    
     const onSubmit = handleSubmit((data) => {
         if (data.type === "MAIL") {
             data.body = renderToString(toElement(bodyObject));
@@ -1120,6 +1120,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     providerquality: null,
                     providerstatus: null,
                     oldversion: true,
+                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},)
                 }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
@@ -1169,8 +1170,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     providerpartnerid: null,
                     providerquality: null,
                     providerstatus: null,
-                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},
-                    )
+                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},)
                 })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
