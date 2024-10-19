@@ -203,6 +203,13 @@ const DialogBooking: React.FC<{
                         <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column'}}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <FieldView
+                                    label={t(langKeys.report_opportunity_fullname)}
+                                    value={booking?.report_opportunity_fullname}
+                                    className={classes.colInput}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
                                     label={t(langKeys.assigned_agent)}
                                     value={booking?.person_name}
                                     className={classes.colInput}
@@ -484,7 +491,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                             </Button>
                         </DateRangePicker>
                         <FieldSelect 
-                            label={t(langKeys.createdBy)}
+                            label={t(langKeys.asignedto)}
                             data={mainAux?.data?.map(obj => (obj?.created_by||"")).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
                                 .map(name => ({ agent: name }))||[]} 
                             
@@ -547,7 +554,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                         <div className={classes.integrationInformation}>
                                             {x.created_by && (
                                                 <Typography>
-                                                    {t(langKeys.createdBy)}: <span>{x.created_by}</span>
+                                                    {t(langKeys.asignedto)}: <span>{x.created_by}</span>
                                                 </Typography>
                                             )}
                                             {x.person_name && (

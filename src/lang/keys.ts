@@ -3806,6 +3806,8 @@ export const langKeys = {
   type_activitylead_automated: 'type_activitylead_automated',
   type_activitylead_automatedmail: 'type_activitylead_automatedmail',
   duein: "duein",
+  scheduledfor: "scheduledfor",
+  asignedto: "asignedto",
   type_activitylead_automatedhsm: 'type_activitylead_automatedhsm',
   type_activitylead_automatedsms: 'type_activitylead_automatedsms',
   'type_activitylead_call for demo': 'type_activitylead_call for demo',

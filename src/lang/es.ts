@@ -121,7 +121,8 @@ const translation: LangKeys = {
   type_activitylead_automatedhsm: 'Automatizar mensaje HSM',
   type_activitylead_automatedsms: 'Automatizar mensaje SMS',
   duein: "Vence en",
-
+  scheduledfor: "Programado para",
+  asignedto: "Asignado a",
   lead: 'Oportunidad',
   sunday: "Domingo",
   monday: "Lunes",
