@@ -21,8 +21,6 @@ export const PhoneRedirect: FC = () => {
     const { phone }: any = useParams();
 
     useEffect(() => {
-        console.log("Opening phone: " + phone);
-
         window.open(`tel:${phone}`, "_blank");
         window.open(`tel:${phone}`, "_self");
         window.close();

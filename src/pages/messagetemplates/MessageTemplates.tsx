@@ -7,8 +7,6 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { ExpandLess, ExpandMore, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton';
 
 import {
     exportData,
@@ -21,6 +19,7 @@ import {
 
 import {
     FieldMultiSelect,
+    TagTypeCell,
     TemplateBreadcrumbs,
 } from "components";
 
@@ -31,11 +30,12 @@ import {
     getMessageTemplateLst,
     getPaginatedMessageTemplate1,
     getValuesFromDomain,
+    registeredLinksSel,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
 
 import Button from "@material-ui/core/Button";
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 import { CellProps } from "react-table";
 import DetailMessageTemplates from "./views/MessageTemplatesDetail";
@@ -62,8 +62,8 @@ const useStyles = makeStyles(() => ({
         wordBreak: 'keep-all',
     },
     tagcontainer: {
-        display: 'flex', 
-        whiteSpace: 'nowrap', 
+        display: 'flex',
+        whiteSpace: 'nowrap',
         overflow: 'hidden',
         width: '300px'
     },
@@ -81,7 +81,7 @@ type BreadCrumb = {
 }
 interface MessageTemplatesProps {
     arrayBread: BreadCrumb[];
-    setAuxViewSelected: (view: string) => void;  
+    setAuxViewSelected: (view: string) => void;
     dataChannels: Dictionary[];
 }
 
@@ -112,13 +112,13 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         pageIndex: 0,
         pageSize: 20,
         sorts: {},
+        distinct: null,
     });
     const [rowSelected, setRowSelected] = useState<RowSelected>({
         edit: false,
         row: null,
     });
 
-    const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
     const [pageCount, setPageCount] = useState(0);
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -130,7 +130,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     const [waitSynchronize, setWaitSynchronize] = useState(false);
   
     const columns = React.useMemo(
-        () => [           
+        () => [
             {
                 accessor: "createdate",
                 Header: t(langKeys.creationdate),
@@ -162,93 +162,15 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 accessor: "communicationchanneldesc",
                 Header: t(langKeys.channel),
                 width: '300px',
-                helpText: t(langKeys.message_templates_channel_help),                
+                helpText: t(langKeys.message_templates_channel_help),
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const data = row?.original?.communicationchanneldesc || '';
-                    const items = data.split(',').map((item: Dictionary) => item.trim()).filter(Boolean);
-                
-                    const [scrollPosition, setScrollPosition] = useState(0);
-                    const tagsWrapperRef = useRef<HTMLDivElement>(null);
-                    const [atEnd, setAtEnd] = useState(false);
-                    const [isOverflowing, setIsOverflowing] = useState(false);
-                
-                    useEffect(() => {
-                        if (tagsWrapperRef.current) {
-                            const isOverflowingContent = tagsWrapperRef.current.scrollWidth > tagsWrapperRef.current.clientWidth;
-                            setIsOverflowing(isOverflowingContent);
-                            setAtEnd(scrollPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth);
-                        }
-                    }, [scrollPosition, items]);
-                
-                    const handleScroll = (direction: string, event: React.MouseEvent) => {
-                        event.stopPropagation();
-                
-                        const scrollAmount = 100;
-                        const newPosition = direction === 'left'
-                            ? scrollPosition - scrollAmount
-                            : scrollPosition + scrollAmount;
-                
-                        setScrollPosition(newPosition);
-                        if (tagsWrapperRef.current) {
-                            tagsWrapperRef.current.scrollLeft = newPosition;
-                        }
-                
-                        const atEndPosition = tagsWrapperRef.current 
-                            ? newPosition + tagsWrapperRef.current.clientWidth >= tagsWrapperRef.current.scrollWidth 
-                            : false;
-                
-                        setAtEnd(atEndPosition);
-                    };
-                
-                    if (!data || items.length === 0) {
-                        return null;
-                    }
-                
-                    const shouldShowTags = items.length > 1;
-                
-                    return (
-                        <div style={{ display: 'flex', alignItems: 'center', width: '300px', overflow: 'hidden' }}>
-                            {isOverflowing && shouldShowTags && (
-                                <IconButton 
-                                    size='small' 
-                                    disabled={!(scrollPosition > 0)} 
-                                    onClick={(event) => handleScroll('left', event)} 
-                                    style={{ padding: 0 }}
-                                >
-                                    <KeyboardArrowLeft fontSize='small' />
-                                </IconButton>
-                            )}
-                            <div
-                                ref={tagsWrapperRef}
-                                className={classes.tagcontainer}
-                            >
-                                {items.map((item: Dictionary, index: number) => (
-                                    <span 
-                                        key={index}
-                                        className={shouldShowTags && item ? classes.tag : ''}
-                                    >
-                                        {item}
-                                    </span>
-                                ))}
-                            </div>
-                            {isOverflowing && shouldShowTags && (
-                                <IconButton 
-                                    size='small' 
-                                    disabled={atEnd} 
-                                    onClick={(event) => handleScroll('right', event)} 
-                                    style={{ padding: 0 }}
-                                >
-                                    <KeyboardArrowRight fontSize='small' />
-                                </IconButton>
-                            )}
-                        </div>
-                    );
+                    return <TagTypeCell separator={","} data={data} />
                 },
-                
-                                
-            },
 
+
+            },
             {
                 accessor: "name",
                 Header: t(langKeys.name),
@@ -519,7 +441,8 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
                 getChannelsByOrg(),
-                getMessageTemplateLst("")
+                getMessageTemplateLst(""),
+                registeredLinksSel(),
             ])
         );
 
@@ -534,7 +457,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
 
     useEffect(() => {
         const ids = selectedChannels.map(channel => channel.domaindesc).join(", ");
-        setChannelIds(ids); 
+        setChannelIds(ids);
     }, [selectedChannels]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
@@ -548,7 +471,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                     sorts: sorts,
                     startdate: daterange?.startDate!,
                     take: pageSize,
-                    communicationchannelids: channelIds,                
+                    communicationchannelids: channelIds,
                 })
             )
         );
@@ -647,14 +570,6 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         }
     }, [mainPaginated.data]);
 
-    useEffect(() => {
-        if (mainResult.multiData.data.length > 0) {
-            if (mainResult.multiData.data[2] && mainResult.multiData.data[2].success) {
-                setCommunicationChannelList(mainResult.multiData.data[2].data || []);
-            }
-        }
-    }, [mainResult.multiData.data]);
-
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -669,7 +584,7 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         dispatch(synchronizeTemplate());
         dispatch(showBackdrop(true));
         setWaitSynchronize(true);
-    };  
+    };
 
     const handleBulkDelete = (dataSelected: Dictionary[]) => {
         const hasHSMType = dataSelected.some(item => item.type === 'HSM');
@@ -752,31 +667,17 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         }
     }, [])
     useEffect(() => {
-        if (!multiData.loading){
+        if (!multiData.loading) {
             dispatch(showBackdrop(false));
         }
     }, [multiData])
 
 
     let formattedData: { domaindesc: string; domainvalue: string }[] = [];
-    const templateData = multiData.data[4]?.data || [];
-    const uniqueChannelIds = new Set<string>();
-
-    templateData.forEach((item: Dictionary) => {
-        if (item.communicationchannelid) {
-            item.communicationchannelid.split(',').forEach((id: string) => {
-                uniqueChannelIds.add(id.trim());
-            });
-        }
-    });
-
-    const uniqueChannelIdsArray = Array.from(uniqueChannelIds);
     const targetData = multiData.data[3];
+
     if (targetData && targetData.data) {
-        const filteredData = targetData.data.filter((item: Dictionary) => 
-            uniqueChannelIdsArray.includes(item.communicationchannelid.toString())
-        );
-        formattedData = filteredData.map((item: Dictionary) => ({
+        formattedData = targetData.data.map((item: any) => ({
             domaindesc: item.communicationchannelid.toString(),
             domainvalue: item.description,
         }));
@@ -798,18 +699,18 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 </div>
                 <TablePaginated
                     ButtonsElement={() => (
-                        <div style={{ display: "flex", justifyContent: "space-between", width: `${windowWidth-380}px` }}>
-                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>                               
+                        <div style={{ display: "flex", justifyContent: "space-between", width: `${windowWidth - 380}px` }}>
+                            <div style={{ display: "flex", gap: 8, flexGrow: 1 }}>
                                 <FieldMultiSelect
                                     variant="outlined"
                                     label={t(langKeys.channels)}
                                     className={classes.fieldsfilter}
-                                    valueDefault={selectedChannels.reduce((acc,x)=> [...acc,x.domaindesc],[]).join(",")}
-                                    onChange={(values) => {setSelectedChannels(values)}}
+                                    valueDefault={selectedChannels.reduce((acc, x) => [...acc, x.domaindesc], []).join(",")}
+                                    onChange={(values) => { setSelectedChannels(values) }}
                                     data={formattedData}
                                     optionDesc="domainvalue"
                                     optionValue="domaindesc"
-                                />                                               
+                                />
                                 <Button
                                     color="primary"
                                     style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -834,8 +735,8 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                                 </Button>
                             </div>
                         </div>
-                       
-                        
+
+
                     )}
                     autotrigger={true}
                     columns={columns}

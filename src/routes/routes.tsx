@@ -54,6 +54,7 @@ import {
     OrdersInAttentionIcon,
     ConfigurationDeliveryIcon,
     FlaskIcon,
+    LinkRegisterIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -298,8 +299,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.PARTNERS,
-        description: <Trans i18nKey={langKeys.partner} />,
-        tooltip: <Trans i18nKey={langKeys.partner} />,
+        description: <Trans i18nKey={langKeys.partners} />,
+        tooltip: <Trans i18nKey={langKeys.partners} />,
         subroute: true,
         path: paths.PARTNERS,
         initialSubroute: paths.PARTNERS,
@@ -389,6 +390,13 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.advancedtemplatescampaigns} count={2} />,
         path: paths.ADVANCEDTEMPLATESCAMPAIGNS,
         icon: (className) => <FlaskIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
+    {
+        key: paths.LINKREGISTER,
+        description: <Trans i18nKey={langKeys.linkregister} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.linkregister} count={2} />,
+        path: paths.LINKREGISTER,
+        icon: (className) => <LinkRegisterIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
         key: paths.BOTDESIGNER,

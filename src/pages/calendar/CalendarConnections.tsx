@@ -135,8 +135,6 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
 
     useEffect(() => {
         if (!mainResultAux.loading && !mainResultAux.error) {
-            console.log('data')
-            console.log(mainResultAux.data)
             setIntegrationData(mainResultAux.data as CalendarIntegrationData[])
         }
     }, [mainResultAux])

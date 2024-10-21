@@ -51,7 +51,6 @@ import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
 import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
-import { formatTextToUnicode, removeUnicodeStyle } from "common/helpers";
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -616,7 +615,6 @@ const RecordComponent: React.FC<{
                     type: "audio",
                     url: uploadResult?.url || "",
                 });
-                console.log(uploadResult?.url);
                 setStartRecording(false);
             }
         }
@@ -1037,6 +1035,16 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
     const inputRef = useRef(null);
+
+
+    useEffect(() => {
+        dispatch(getInnapropiateWordTicketLst());
+
+        return () => {
+            dispatch(resetInnapropiateWordTicketLst());
+        };
+    }, [])
+
     useEffect(() => {
         if (ticketSelected?.conversationid !== previousTicket?.conversationid) setpreviousTicket(ticketSelected);
         if (ticketSelected?.status !== "ASIGNADO") {
@@ -1380,11 +1388,10 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
         } else if (event.shiftKey) {
-            console.log("");
             return;
         } else if (
             (user?.languagesettings?.sendingmode === "Default" && event.key === 'Enter') || 
-            (user?.languagesettings?.sendingmode === "EnterKey" && event.code === 'Enter')
+            ((!user?.languagesettings?.sendingmode || user?.languagesettings?.sendingmode === "EnterKey") && event.code === 'Enter')
         ) {
             event.preventDefault();
             if ((text.trim() || files.length > 0) && user?.languagesettings?.sendingmode !== "ExecutionButton") {

@@ -162,6 +162,7 @@ function sendInteraction(type, text, customer = false) {
         typeinteraction: "NINGUNO",
         typemessage: type,
         lastmessage: text,
+        callrecording: red.recording
     };
     Logger.write("insert/withdata-body: " + JSON.stringify(body));
     Net.httpRequest(
@@ -282,6 +283,9 @@ VoxEngine.addEventListener(AppEvents.Started, function (e) {
             call.hangup();
             return;
         }
+        const splitIdentifier = identifier.split("-");
+        variables = { ...(data.variables || {}), conversationid: `${parseInt(splitIdentifier[3])}` };
+        
         const amd = detectvoicemail ? AMD.create({ model: AMD.Model.PE }) : undefined;
 
         if (configSIP?.SIP) {
@@ -785,7 +789,7 @@ const cardAudio = async (variables, { url }) => (
     })
 );
 
-async function cardHttpRequest(variables, { url, method = 'GET', postData, headers = {} }) {
+async function cardHttpRequest(variables, { url, method = 'GET', postData, headers = {}, output }) {
     return new Promise(async (resolve, reject) => {
         try {
             let options = {
@@ -796,7 +800,49 @@ async function cardHttpRequest(variables, { url, method = 'GET', postData, heade
             if (postData !== undefined) options.postData = postData
             let res = await Net.httpRequestAsync(url, options)
             if (res.code == 200 || res.code == 201) {
-                // res = JSON.parse(res.text)
+
+                try {
+                    if (output && output.length > 0) {
+                        const resultJSON = JSON.parse(res.text);
+
+                        // Iterar sobre la configuración de output
+                        output.forEach(({ parameterResponse, variable }) => {
+                            // Obtener el valor según la ruta definida en parameterResponse
+                            let value = parameterResponse.split('.').reduce((acc, key) => {
+                                if (acc !== undefined) {
+                                    // Manejar acceso a arreglos, por ejemplo: children[0]
+                                    const arrayMatch = key.match(/(.+?)\[(\d+)\]/);
+                                    if (arrayMatch) {
+                                        const arrayKey = arrayMatch[1];
+                                        const index = arrayMatch[2];
+                                        return acc[arrayKey] && acc[arrayKey][index] !== undefined ? acc[arrayKey][index] : undefined;
+                                    } else {
+                                        // Acceso normal a objetos
+                                        return acc[key] !== undefined ? acc[key] : undefined;
+                                    }
+                                }
+                                return undefined;
+                            }, resultJSON);
+
+                            // Verificar si el valor es un objeto o arreglo
+                            if (value !== undefined) {
+                                if (typeof value === 'object' && value !== null) {
+                                    // Guardar el objeto o arreglo como JSON stringificado
+                                    variables[variable] = JSON.stringify(value);
+                                } else {
+                                    // Guardar el valor como texto
+                                    variables[variable] = `${value}`;
+                                    Logger.write("httprequest-card-variable: " + variable + " = " + `${value}`);
+                                }
+                            }
+                        });
+                    }
+
+                } catch (e) {
+                    Logger.write("httprequest-card: " + e.message);
+                }
+
+                Logger.write("httprequest-card: " + `${url}(200): ${res.text}`);
                 sendInteraction("LOG", `${url}(200): ${res.text}`);
                 resolve(res.text)
             } else {
@@ -821,11 +867,16 @@ const cleanText = (text) => text
 
 const cardSetAttribute = (variables, { variable, value }) => {
     const valueCleaned = replaceTextWithVariables(value, variables);
-    if (/[+\-%*/()]/.test(valueCleaned)) {
-        evaluateExpression(valueCleaned);
+    
+    if (valueCleaned === "$NOW()") {
+        setVariable(variables, variable, new Date().toISOString());
+    } else {
+        if (/[+\-%*/()]/.test(valueCleaned)) {
+            evaluateExpression(valueCleaned);
+        }
+        const valueCalculed = /[+\-%*/()]/.test(valueCleaned) ? evaluateExpression(valueCleaned) : valueCleaned;
+        setVariable(variables, variable, `${valueCalculed}`);
     }
-    const valueCalculed = /[+\-%*/()]/.test(valueCleaned) ? evaluateExpression(valueCleaned) : valueCleaned;
-    setVariable(variables, variable, `${valueCalculed}`);
 }
 
 const validateCondition = (variables, condition) => {

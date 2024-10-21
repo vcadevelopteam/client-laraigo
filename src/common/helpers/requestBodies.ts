@@ -806,7 +806,7 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner, appsettingid, citybillingid, iconurl, logourl, startlogourl, ispoweredbylaraigo, domainname, olddomainname }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext={}, paymentplanid=0 }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext = {}, paymentplanid = 0 }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
     parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel, appsettingid, citybillingid, variablecontext, paymentplanid }
@@ -1059,8 +1059,7 @@ export const insMessageTemplate = (
         providerstatus,
         operation,
         categorychange,
-        firstbuttons, 
-        
+        firstbuttons,
     }: Dictionary): IRequestBody => ({
 
         method: "UFN_MESSAGETEMPLATE_INS",
@@ -1101,7 +1100,7 @@ export const insMessageTemplate = (
             providerstatus,
             operation,
             categorychange,
-            firstbuttons, 
+            firstbuttons,
             buttons: []
         }
     }
@@ -1185,7 +1184,9 @@ export const insMessageTemplateOld = (
             providerstatus,
             operation,
             newversion: false,
-            buttons: JSON.stringify(buttons || [])
+            buttons: JSON.stringify(buttons || []),
+            categorychange: true,
+            firstbuttons: null,
         }
     });
 
@@ -3646,10 +3647,10 @@ export const getCorpSelVariant = (corpid: number, orgid: number, username: strin
     }
 });
 
-export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
+export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month, conversationprovider }: Dictionary): IRequestBody => ({
     method: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
     key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
-    parameters: { corpid, orgid, year, month }
+    parameters: { corpid, orgid, year, month, conversationprovider }
 })
 
 export const billingReportHsmHistory = ({ corpid, orgid, year, month, type }: Dictionary): IRequestBody => ({
@@ -3907,8 +3908,8 @@ export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) =
 
 export const getAudit = ({ startdate, enddate }: Dictionary) => ({
     method: "UFN_AUDIT_SEL",
-    parameters: { 
-        startdate, 
+    parameters: {
+        startdate,
         enddate,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     },
@@ -5385,55 +5386,6 @@ export const getUserMessageOutbound = ({ startdate, enddate, communicationchanne
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     },
 });
-export const getDashboardFunnelDataSel = ({startdate, enddate, channel, userid, leadproduct}:Dictionary) => ({
-    method: "UFN_LEAD_FUNNEL_SEL",
-    key: "UFN_LEAD_FUNNEL_SEL",
-    parameters: {
-        startdate,
-        enddate,
-        channel,
-        userid,
-        leadproduct,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
-    },
-});
-export const modifyPinnedMessage = ({ conversationid, interactionid, interactiontext, operation }: Dictionary) => ({
-    method: "UPDATE_PINNED_MESSAGE",
-    key: "UPDATE_PINNED_MESSAGE",
-    parameters: { conversationid, interactionid, interactiontext, operation },
-});
-export const conversationAttachmentHistorySel = (personid:number) => ({
-    method: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
-    key: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
-    parameters: { personid },
-});
-export const conversationClassificationHistorySel = (personid:number) => ({
-    method: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
-    key: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
-    parameters: { personid },
-});
-export const conversationOrderHistorySel = (personid:number) => ({
-    method: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
-    key: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
-    parameters: { personid },
-});
-export const conversationOportunityHistorySel = (personid:number) => ({
-    method: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
-    key: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
-    parameters: { personid },
-});
-
-export const conversationSDHistorySel = (personid:number) => ({
-    method: "UFN_CONVERSATION_SEL_SS_HISTORY",
-    key: "UFN_CONVERSATION_SEL_SS_HISTORY",
-    parameters: { personid },
-});
-export const prepareAttentionOrder = (orderids: string) => ({
-    method: "UFN_ORDER_PREPARE",
-    key: "UFN_ORDER_PREPARE",
-    parameters: { orderids },
-})
-
 export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
     method: "UPDATE_LANGUAGE_SETTINGS",
     key: "UPDATE_LANGUAGE_SETTINGS",
@@ -5441,30 +5393,76 @@ export const updateLanguageSettings = ({ languagesettings }: Dictionary) => ({
         languagesettings: JSON.stringify(languagesettings)
     }
 });
-
-export const getLeadsReportSel = ({communicationchannel, startdate, enddate}:Dictionary) => ({
-    method: "UFN_LEAD_REPORT_SEL",
-    key: "UFN_LEAD_REPORT_SEL",
-    parameters: {
-        communicationchannel,
-        startdate,
-        enddate,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
-    }
-})
-
-export const getLeadReportGraphicSel = ({communicationchannel, startdate, enddate, column,summarization  }:Dictionary): IRequestBody => ({
-    method: "UFN_LEAD_REPORT_GRAPHIC_SEL",
-    key: "UFN_LEAD_REPORT_GRAPHIC_SEL",
-    parameters: {
-        filters: {}, sorts: {}, communicationchannel, startdate, enddate, column, summarization,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
-    }
-})
+export const modifyPinnedMessage = ({ conversationid, interactionid, interactiontext, operation }: Dictionary) => ({
+    method: "UPDATE_PINNED_MESSAGE",
+    key: "UPDATE_PINNED_MESSAGE",
+    parameters: { conversationid, interactionid, interactiontext, operation },
+});
 
 export const insarrayClassification = (table: Dictionary[]): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS_ARRAY",
     parameters: {
         table: JSON.stringify(table)
+    }
+});
+export const conversationAttachmentHistorySel = (personid: number) => ({
+    method: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ATTACHMENT_HISTORY",
+    parameters: { personid },
+});
+export const conversationClassificationHistorySel = (personid: number) => ({
+    method: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    key: "UFN_CONVERSATION_SEL_CLASSIFICATION_HISTORY",
+    parameters: { personid },
+});
+export const conversationOrderHistorySel = (personid: number) => ({
+    method: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    key: "UFN_CONVERSATION_SEL_ORDER_HISTORY",
+    parameters: { personid },
+});
+export const conversationOportunityHistorySel = (personid: number) => ({
+    method: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    key: "UFN_CONVERSATION_SEL_OPPORTUNITY_HISTORY",
+    parameters: { personid },
+});
+
+export const conversationSDHistorySel = (personid: number) => ({
+    method: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    key: "UFN_CONVERSATION_SEL_SS_HISTORY",
+    parameters: { personid },
+});
+
+export const registeredLinksSel = () => ({
+    method: "UFN_LINKREGISTER_SEL",
+    key: "UFN_LINKREGISTER_SEL",
+    parameters: {},
+});
+
+export const registeredLinksIns = ({ linkregisterid, operation, description, url, status, startdate, enddate }: Dictionary) => ({
+    method: "UFN_LINKREGISTER_INS",
+    key: "UFN_LINKREGISTER_INS",
+    parameters: { linkregisterid, operation, description, url, status, startdate, enddate },
+});
+
+export const reportCampaignLinksSel = ({startdate, enddate, communicationchannelid}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKS_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+    }
+});
+
+export const reportCampaignLinksDetailSel = ({startdate, enddate, communicationchannelid, identifiers}: Dictionary) => ({
+    method: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    key: "UFN_REPORTCAMPAIGNLINKSDETAIL_SEL",
+    parameters: {       
+        startdate: startdate || null,
+        enddate: enddate || null,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        communicationchannelid: communicationchannelid || 0,
+        identifiers: JSON.stringify(identifiers),
     }
 });

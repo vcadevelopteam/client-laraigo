@@ -201,7 +201,7 @@ const useStyles = makeStyles(() => ({
         display:'flex',
         alignItems:'center',
         gap:'3px',
-    },
+    }
 }));
 
 interface TemplateIconsProps {

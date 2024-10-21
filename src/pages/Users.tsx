@@ -2081,7 +2081,6 @@ const Users: FC = () => {
                     (f.showbots === undefined || isBooleanLike(f.showbots)) && f.password
                 );
             });
-            debugger
             const messageerrors = datainit
                 .filter((f: Dictionary) => {
                     const getDomainValues = (key: string, domainList: any[] | undefined) =>
