@@ -116,7 +116,7 @@ const DialogViewGroups: React.FC<{ setOpenModal: (param: boolean) => void, openM
                     </AccordionSummary>
                     <AccordionDetails>
                         <div style={{ width: '100%' }}>
-                            {groups.map((group, index) => (
+                            {groups.filter(x => x.agents?.length).map((group, index) => (
                                 <Accordion key={index}>
                                     <AccordionSummary
                                         expandIcon={<ExpandMore />}
