@@ -37,6 +37,7 @@ interface Properties {
     auto_close_holding: Dictionary;
     time_reassign_call: number | undefined;
     seconds_to_answer_call: number | undefined;
+    show_info_tickets_by_groups: boolean;
     waiting_customer_message: string | undefined;
     holding_by_supervisor: "TODO" | "CANAL" | "GRUPO" | undefined;
     bot_by_supervisor: "TODO" | "CANAL" | "GRUPO" | undefined;
