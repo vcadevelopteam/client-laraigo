@@ -333,6 +333,7 @@ const HeaderAgentPanel: FC<{
     const [filterBy, setFilterBy] = useState('user')
     const agentList = useSelector(state => state.inbox.agentList);
     const [openViewGroupDialog, setOpenViewGroupDialog] = useState(false);
+    const showInfoTicketByGroups = useSelector(state => state.login.validateToken.user?.properties?.show_info_tickets_by_groups);
 
     const onChangeSearchAgent = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setSearch(e.target.value);
 
@@ -396,14 +397,15 @@ const HeaderAgentPanel: FC<{
                                 >
                                     {t(langKeys.filter_by_group)}
                                 </MenuItem>
-                                <MenuItem
-                                    // selected={filterBy === 'group'}
-                                    onClick={() => {
-                                        setAnchorEl(null);
-                                        setOpenViewGroupDialog(true)
-                                    }}
-                                >{t(langKeys.view_by_groups)}
-                                </MenuItem>
+                                {showInfoTicketByGroups && 
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null);
+                                            setOpenViewGroupDialog(true)
+                                        }}
+                                    >{t(langKeys.view_by_groups)}
+                                    </MenuItem>
+                                }
                             </Menu>
                         </div>
                     </div> :
