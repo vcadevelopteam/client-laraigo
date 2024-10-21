@@ -128,6 +128,30 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
             "domainvalue": "gpt-4o-mini-2024-07-18",
             "domaindesc": "gpt-4o-mini-2024-07-18",
             "bydefault": null
+        },
+        {
+            "domainid": 437613,
+            "domainvalue": "gpt-4o",
+            "domaindesc": "gpt-4o",
+            "bydefault": null
+        },
+        {
+            "domainid": 437614,
+            "domainvalue": "gpt-4o-2024-05-13",
+            "domaindesc": "gpt-4o-2024-05-13",
+            "bydefault": null
+        },
+        {
+            "domainid": 437615,
+            "domainvalue": "gpt-4o-mini",
+            "domaindesc": "gpt-4o-mini",
+            "bydefault": null
+        },
+        {
+            "domainid": 437616,
+            "domainvalue": "gpt-4o-mini-2024-07-18",
+            "domaindesc": "gpt-4o-mini-2024-07-18",
+            "bydefault": null
         }
     ]
 
@@ -135,8 +159,12 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
         {
             "domainvalue": "llama3.1:70b",
             "domaindesc": "llama3.1:70b",
+            "domainvalue": "llama3.1:70b",
+            "domaindesc": "llama3.1:70b",
         },
         {
+            "domainvalue": "llama3.1:8b",
+            "domaindesc": "llama3.1:8b",
             "domainvalue": "llama3.1:8b",
             "domaindesc": "llama3.1:8b",
         }

@@ -1,8 +1,8 @@
-// import 'emoji-mart/css/emoji-mart.css'
+import 'emoji-mart/css/emoji-mart.css'
 import { AndroidColor, AppStoreColor, BloggerColor, ChannelBlogger, ChatWebColor, EmojiICon, FacebookColor, FormColor, GifIcon, InstagramColor, IosColor, LineColor, LinkedInColor, MailColor, MessengerColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WhatsAppColor, WorkplaceColor, YouTubeColor } from 'icons';
 import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon, Box, Chip } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon, Box } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Picker from '@emoji-mart/react'
@@ -10,6 +10,8 @@ import { SearchField } from 'components';
 import { Skeleton } from '@material-ui/lab';
 import { Trans, useTranslation } from 'react-i18next';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button, { ButtonProps } from '@material-ui/core/Button';
@@ -42,8 +44,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { FieldError } from 'react-hook-form';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
-// import { useStyles } from 'pages/SignIn';
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
@@ -423,6 +423,75 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 }}
                 inputProps={inputProps}
                 InputProps={InputProps}
+                inputRef={inputRef}
+            />
+        </div>
+    )
+}
+
+export const FieldEditPassword: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "", placeholder = "", inputRef = null }) => {
+    const [value, setValue] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        setValue(valueDefault);
+    }, [valueDefault]);
+
+    const handleTogglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    return (
+        <div className={className}>
+            {(variant === "standard" && !!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: "flex" }}>
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
+            }
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth={width === "100%"}
+                label={variant !== "standard" && label}
+                disabled={disabled}
+                type={showPassword ? 'text' : 'password'}
+                style={{ width: width }}
+                value={value}
+                variant={variant}
+                placeholder={placeholder}
+                error={!!error}
+                helperText={error || null}
+                minRows={rows}
+                size={size}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setValue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                InputProps={{
+                    ...InputProps,
+                    endAdornment: (
+                        <IconButton
+                            onClick={handleTogglePasswordVisibility}
+                            edge="end"
+                        >
+                            {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+
+                        </IconButton>
+                    )
+                }}
                 inputRef={inputRef}
             />
         </div>
