@@ -2149,7 +2149,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                     <div className={classes.column}>
                                         <div className={clsx(classes.row, classes.centerRow)}>
                                             <span className={classes.activityDate}>
-                                                {`${t(langKeys.duein)} ${formatDate(activity.duedate, { withTime: true, modhours: -5 })}`}
+                                                {`${t(langKeys.scheduledfor)} ${formatDate(activity.duedate, { withTime: true, modhours: -5 })}`}
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityName}>
@@ -2157,7 +2157,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityFor}>
-                                                {`${t(langKeys.duein)} ${activity.assignto}`}
+                                                {`${t(langKeys.assignedTo)} ${activity.assignto}`}
                                             </span>
                                             <div style={{ width: '0.5em' }} />
                                             <Info style={{ height: 18, width: 18, fill: 'grey' }} />
@@ -2795,7 +2795,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 error={errors?.assignto?.message}
                                             /> :
                                             <FieldEdit
-                                                label={t(langKeys.dueDate)}
+                                                label={t(langKeys.scheduledfor)}
                                                 className={classes.field}
                                                 type="datetime-local"
                                                 valueDefault={(getValues('duedate') as string)?.replace(' ', 'T')?.substring(0, 16)}
@@ -2805,7 +2805,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                         <FieldSelect
-                                            label={t(langKeys.assignedTo)}
+                                            label={t(langKeys.asignedto)}
                                             className={classes.field}
                                             data={advisers.data}
                                             optionDesc="fullname"
