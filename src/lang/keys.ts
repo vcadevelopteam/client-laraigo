@@ -3835,6 +3835,8 @@ export const langKeys = {
   activityType: 'activityType',
   summary: 'summary',
   dueDate: 'dueDate',
+  scheduledfor: "scheduledfor",
+  asignedto: "asignedto",
   assignedTo: 'assignedTo',
   schedule: 'schedule',
   schedule2: 'schedule2',

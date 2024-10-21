@@ -200,11 +200,11 @@ const DialogBooking: React.FC<{
                                 </div>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column'}}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <FieldView
                                     label={t(langKeys.report_opportunity_fullname)}
-                                    value={booking?.report_opportunity_fullname}
+                                    value={booking?.created_by}
                                     className={classes.colInput}
                                 />
                             </div>
@@ -515,7 +515,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                 {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                             </Button>
                         </DateRangePicker>
-                        <FieldSelect 
+                        <FieldSelect
                             label={t(langKeys.asignedto)}
                             data={mainAux?.data?.map(obj => (obj?.created_by||"")).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
                                 .map(name => ({ agent: name }))||[]} 
