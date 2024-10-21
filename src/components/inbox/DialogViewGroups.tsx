@@ -18,29 +18,31 @@ const DialogViewGroups: React.FC<{ setOpenModal: (param: boolean) => void, openM
     const multi = useSelector(state => state.main.multiData);
     const [dataGroups, setDataGroups] = useState<Dictionary[]>([]);
     const [groups, setGroups] = useState<Dictionary[]>([])
+    const [groupsTemp, setGroupsTemp] = useState<Dictionary[]>([])
     const [totalUser, setTotalUser] = useState<{ holding: number, bot: number }>({ holding: 0, bot: 0 });
     const agentList = useSelector(state => state.inbox.agentList);
 
     useEffect(() => {
+        
         if (!multi.error && !multi.loading) {
             const groups = multi.data.find(x => x.key === "UFN_DOMAIN_BY_DOMAINNAME_GRUPOS")
             if (groups) {
-                setGroups([...groups.data, { domainvalue: "", agents: [] }]);
+                setGroupsTemp([...groups.data, { domainvalue: "", agents: [] }]);
             }
         }
-    }, [multi, agentList])
+    }, [multi])
 
     useEffect(() => {
         const agents = (agentList.data || []).filter(x => x.status === "ACTIVO" && x.userid !== 2 && x.userid !== 3);
         setGroups(
             [
-                ...groups.map(x => ({
+                ...groupsTemp.map(x => ({
                     ...x,
                     agents: agents.filter(y => y.status === "ACTIVO" && (y.groups || "").split(",").includes(x.domainvalue)),
                 })),
             ]
         );
-    }, [agentList])
+    }, [agentList, groupsTemp])
 
     useEffect(() => {
         if (!result.error && !result.loading && result.key === "UFN_GROUPSBYBOT_SEL") {
@@ -57,7 +59,7 @@ const DialogViewGroups: React.FC<{ setOpenModal: (param: boolean) => void, openM
             dispatch(getCollection(getTicketsByGroups()))
         }
     }, [openModal])
-
+    
     return (
         <DialogZyx
             open={openModal}
