@@ -62,10 +62,6 @@ interface ModalProps {
     index: number;
     setAllIndex: (index: any) => void;
     handleDelete: (row: Dictionary | null, index: number) => void;
-    isStore: boolean;
-    setIsStore: (isStore: boolean) => void;
-    isWarehouse: boolean;
-    setIsWarehouse: (isWarehouse: boolean) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -147,10 +143,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
     triggerSave,
     setAllIndex,
     handleDelete,
-    isStore,
-    setIsStore,
-    isWarehouse,
-    setIsWarehouse,
 }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -193,7 +185,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         loading: false,
         data: [],
     });
-    
+
     const {
         register,
         handleSubmit,
@@ -203,7 +195,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         formState: { errors },
         reset,
     } = useForm();
-    
+
     useEffect(() => {
         if (triggerSave) {
             (async () => {
@@ -223,11 +215,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             })();
         }
     }, [triggerSave]);
-
-    useEffect(() => {
-        if(row?.storeid !== undefined && row?.storeid !== 0) setIsStore(true)
-        if(row?.warehouseid !== undefined && row?.warehouseid !== 0) setIsWarehouse(true)
-    }, []);
 
     function updatefield(field: string, value: any) {
         updateRecords &&
@@ -366,22 +353,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({
         register("status", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("labels");
         register("bydefault");
-        register('warehouseid', {
-            validate: (value) => {
-                const rolegroups = getValues('rolegroups');
-                const roleIds = rolegroups.split(',').map((id: string) => id.trim());
-                if (roleIds.includes('50')) return (value && value !== 0) || t(langKeys.field_required);
-                return true;
-            },
-        });
-        register('storeid', {
-            validate: (value) => {
-                const rolegroups = getValues('rolegroups');
-                const roleIds = rolegroups.split(',').map((id: string) => id.trim());
-                if (roleIds.includes('53') || roleIds.includes('51')) return (value && value !== 0) || t(langKeys.field_required);
-                return true;
-            },
-        });
+        register('warehouseid');
+        register('storeid');
 
         setDataOrganizations({
             loading: false,
@@ -396,7 +369,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             dispatch(getMultiCollectionAux([getApplicationsByRole(row.rolegroups, index + 1)]));
         }
     }, [preData]);
-    
+
     const onSubmit = handleSubmit((data) => {
         //GUARDAR MODAL
         if (!row) updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }]);
@@ -441,13 +414,13 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             setDataWarehouses({ loading: false, data: [] });
         }
     };
+
     const onChangeRole = (value: Dictionary) => {
         setValue("rolegroups", value.map((o: Dictionary) => o.roleid).join());
         setValue("roledesc", value.map((o: Dictionary) => o.roledesc).join());
         setValue("redirect", "");
-        trigger('rolegroups')
         updatefield("redirect", "");
-        switch (value.slice(-1)[0]?.roldesc) {
+        switch (value.slice(-1)[0].roldesc) {
             case "GESTOR DE SEGURIDAD":
             case "GESTOR DE CAMPAÑAS":
             case "VISOR SD":
@@ -460,7 +433,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                 break;
             default:
 
-                if (value.slice(-1)[0]?.roldesc.includes("ASESOR")) {
+                if (value.slice(-1)[0].roldesc.includes("ASESOR")) {
                     if (activateSwitchBots) setValue("showbots", true)
                     setValue("type", "ASESOR")
                     updatefield("type", "ASESOR");
@@ -496,30 +469,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({
             );
         } else {
             setDataApplications({ loading: false, data: [] });
-        }
-
-        if(value.length > 0) {
-            if(value.some((v: Dictionary) => v.roleid === 51) || value.some((v: Dictionary) => v.roleid === 53)) {
-                setIsStore(true)
-            } else {
-                setIsStore(false)
-                setValue('storeid', 0)
-                trigger('storeid')
-            }
-            if(value.some((v: Dictionary) => v.roleid === 50)) {
-                setIsWarehouse(true)
-            } else {
-                setIsWarehouse(false)
-                setValue('warehouseid', 0)
-                trigger('warehouseid')
-            }
-        } else {
-            setIsStore(false);
-            setIsWarehouse(false)
-            setValue('storeid', 0)
-            setValue('warehouseid', 0)
-            trigger('storeid')
-            trigger('warehouseid')
         }
     };
     return (
@@ -586,28 +535,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 }
 
                             </div>
-                            {isStore && (
-                                <FieldSelect
-                                    label={t(langKeys.store)}
-                                    className={classes.mb2}
-                                    valueDefault={getValues('storeid')}
-                                    error={errors?.storeid?.message}
-                                    data={dataStores.data}
-                                    onChange={(value) => {
-                                        if(value) {
-                                            setValue('storeid', value.storeid)
-                                            trigger('storeid')
-                                        } else {
-                                            setValue('storeid', 0)
-                                            trigger('storeid')
-                                        }
-                                    }}
-                                    loading={dataStores.loading}
-                                    triggerOnChangeOnFirst={true}
-                                    optionDesc="description"
-                                    optionValue="storeid"
-                                />
-                            )}
+                            {/*<FieldSelect
+                                label={t(langKeys.store)}
+                                className={classes.mb2}
+                                valueDefault={getValues('storeid')}
+                                error={errors?.storeid?.message}
+                                data={dataStores.data}
+                                onChange={(value) => setValue('storeid', value.storeid)}
+                                loading={dataStores.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="storeid"
+                            />*/}
                         </div>
                         <div className="col-6">
                             <FieldSelect
@@ -677,28 +616,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
-                            {isWarehouse && (
-                                <FieldSelect
-                                    label={t(langKeys.warehouse)}
-                                    className={classes.mb2}
-                                    valueDefault={getValues('warehouseid')}
-                                    error={errors?.warehouseid?.message}
-                                    data={dataWarehouses.data}
-                                    onChange={(value) => {
-                                        if(value) {
-                                            setValue('warehouseid', value.warehouseid)
-                                            trigger('warehouseid')
-                                        } else {
-                                            setValue('warehouseid', 0)
-                                            trigger('warehouseid')
-                                        }
-                                    }}
-                                    loading={dataWarehouses.loading}
-                                    triggerOnChangeOnFirst={true}
-                                    optionDesc="description"
-                                    optionValue="warehouseid"
-                                />
-                            )}
+                            {/*<FieldSelect
+                                label={t(langKeys.warehouse)}
+                                className={classes.mb2}
+                                valueDefault={getValues('warehouseid')}
+                                error={errors?.warehouseid?.message}
+                                data={dataWarehouses.data}
+                                onChange={(value) => setValue('warehouseid', value.warehouseid)}
+                                loading={dataWarehouses.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="warehouseid"
+                            />*/}
                         </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
@@ -1149,10 +1078,7 @@ const DetailUsers: React.FC<DetailProps> = ({
             setTableDataVariables(variableDataList.map(x => ({ ...x, value: row?.variablecontext[x.variablename] || "" })))
         }
     }, [multiData]);
-    
-    const [isStore, setIsStore] = useState((row?.storeid) ? true : false)
-    const [isWarehouse, setIsWarehouse] = useState((row?.warehouseid) ? true : false)
-    
+
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
     useEffect(() => {
@@ -1339,7 +1265,7 @@ const DetailUsers: React.FC<DetailProps> = ({
             );
         }
     }, [allIndex, triggerSave]);
-    
+
     const onSubmit = handleSubmit((data) => {
         if ((!row || !edit) && !data.password && user?.properties.environment === "CLARO") {
             data.password = '$2y$10$Pc4Aiy6e/gnatp.EowJAnuxe03pJpdavyG9q0K3o7GRKlmkPkEOEW'
@@ -1679,10 +1605,6 @@ const DetailUsers: React.FC<DetailProps> = ({
                                     triggerSave={triggerSave}
                                     handleDelete={handleDelete}
                                     setAllIndex={setAllIndex}
-                                    isStore={isStore}
-                                    setIsStore={setIsStore}
-                                    isWarehouse={isWarehouse}
-                                    setIsWarehouse={setIsWarehouse}
                                 />
                             ))
                         )}
@@ -1851,7 +1773,6 @@ const Users: FC = () => {
             {},
             {},
             {},
-            {},
             { true: "true", false: "false" },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
@@ -1873,7 +1794,6 @@ const Users: FC = () => {
             "image",
             "user",
             "password",
-            'supervisor',
             "pwdchangefirstlogin",
             "role",
             "channels",
@@ -1923,7 +1843,6 @@ const Users: FC = () => {
             getChannelsByOrg(user?.orgid),
             getSecurityRules(),
             getPropertySelByName("VISUALIZACIONBOTSUSUARIOS"),
-            getCustomVariableSelByTableName("usr")
         ]));
         dispatch(setMemoryTable({
             id: IDUSER
@@ -2203,7 +2122,7 @@ const Users: FC = () => {
                                             channels: d?.channels ? String(d?.channels).replace(/\s+/g, '') : "",
                                             status: "DESCONECTADO",
                                             type: type,
-                                            supervisor: d.supervisor || "",
+                                            supervisor: "",
                                             operation: "INSERT",
                                             redirect: "/usersettings",
                                         },

@@ -21,7 +21,6 @@ import React, { FC, useEffect, useState } from "react";
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
-    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -159,14 +158,9 @@ export const ChannelAddMessenger: FC<{ edit: boolean }> = ({ edit }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-
-                            if (whatsAppData?.onboarding) {
-                                history.push(paths.METACHANNELS, whatsAppData);
-                            } else {
-                                channel?.status === "INACTIVO"
-                                    ? history.push(paths.CHANNELS, whatsAppData)
-                                    : history.push(paths.CHANNELS_ADD, whatsAppData);
-                            }
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
                         }}
                     >
                         {t(langKeys.previoustext)}

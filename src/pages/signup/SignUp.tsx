@@ -1,14 +1,17 @@
-import React, { FC, useContext, useEffect } from 'react';
+import React, { FC, useContext, useState, useEffect } from 'react';
+import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
 import { langKeys } from "lang/keys";
+import { LogoSuscription } from "icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { RouteParams, SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
-import { useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
+import { useFormContext } from "react-hook-form";
 import { loadScripts } from 'common/helpers';
 import { useRouteMatch } from 'react-router-dom';
-import { LaraigoLogoWhite } from "icons";
 
 import Popus from "components/layout/Popus";
 import RightSideMenu from "./RightSideMenu";
+import ThirdStep from "./ThirdStep";
 
 const useSignUpStyles = makeStyles((theme) => ({
     root: {
@@ -40,19 +43,14 @@ const useSignUpStyles = makeStyles((theme) => ({
         paddingTop: 16,
     },
     containerLogo: {
-        background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)",
-        height: "100%",
+        alignItems: "center",
+        backgroundColor: "white",
         display: "flex",
-        width: "40%",
-        margin: 0,
+        flex: 1,
+        justifyContent: "center",
         [theme.breakpoints.down("sm")]: {
             display: "none",
         },
-    },
-    container: {
-        display: "flex",
-        justifyContent: "center",
-        margin: 0
     },
     notthisstep: {
         alignItems: "center",
@@ -89,18 +87,11 @@ const useSignUpStyles = makeStyles((theme) => ({
     containerLeft: {
         flex: 1,
         overflowY: "auto",
+        padding: 24,
         [theme.breakpoints.down("xs")]: {
             height: "100vh",
             minWidth: "100vw",
         },
-    },
-    image: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: "1.8rem",
-        width: "100%",
-        marginBottom: "1.8rem",
     },
 }));
 
@@ -115,11 +106,79 @@ export const SignUp: FC = () => {
 
 const SignUpFunc: FC = () => {
     const classes = useSignUpStyles();
-    const { step } = useContext(SubscriptionContext);
-    const { t } = useTranslation();
-    const planData = usePlanData();
+    const { step, setStep } = useContext(SubscriptionContext);
+    const { getValues, reset } = useFormContext();
+    const { loading: planDataLoading } = usePlanData();
 
+    const [openWarning, setOpenWarning] = useState(false);
     const match = useRouteMatch<RouteParams>();
+
+
+    function setDefaultMainData() {
+        reset({
+            ...getValues(),
+            autosendinvoice: true,
+            billingcontact: "",
+            billingcontactmail: "",
+            businessname: "",
+            companybusinessname: "",
+            confirmpassword: "",
+            country: "",
+            creditcard: "",
+            docnumber: "",
+            doctype: 0,
+            email: "",
+            facebookid: "",
+            firstandlastname: "",
+            firstnamecard: "",
+            fiscaladdress: "",
+            googleid: "",
+            join_reason: "",
+            lastnamecard: "",
+            mm: 0,
+            mobilephone: "",
+            password: "",
+            pmemail: "",
+            pmphone: "",
+            securitycode: "",
+            yyyy: "",
+        });
+    }
+
+    function setDefaultMainDataAlternate() {
+        reset({
+            ...getValues(),
+            billingcontact: "",
+            billingcontactmail: "",
+            businessname: "",
+            docnumber: "",
+            doctype: 0,
+            fiscaladdress: "",
+        });
+    }
+
+    const handleClose = () => {
+        setOpenWarning(false);
+    };
+
+    const handleStepClose = () => {
+        if (step === 4) {
+            setStep(step - 1);
+        } else if (step === 3) {
+            setStep(2.5);
+        } else if (step === 2.5) {
+            setDefaultMainDataAlternate();
+            setStep(2);
+        } else if (step === 2.6) {
+            setStep(2.5);
+        } else if (step === 2) {
+            setDefaultMainData();
+            setStep(step - 1);
+        } else {
+            setStep(step - 1);
+        }
+        setOpenWarning(false);
+    };
 
     useEffect(() => {
         if (["BASICO", "PROFESIONAL"].includes(match.params.token)) {
@@ -138,6 +197,41 @@ const SignUpFunc: FC = () => {
 
     return (
         <div className={classes.root}>
+            <Dialog
+                aria-describedby="alert-dialog-description"
+                aria-labelledby="alert-dialog-title"
+                onClose={handleClose}
+                open={openWarning}
+            >
+                <DialogTitle id="alert-dialog-title">
+                    <Trans i18nKey={langKeys.goback} />
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        <Trans i18nKey={langKeys.no} />
+                    </Button>
+                    <Button onClick={handleStepClose} color="primary" autoFocus>
+                        <Trans i18nKey={langKeys.yes} />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <div className={classes.containerHead}>
+                <div className={classes.emptyspacenumber}></div>
+                <div
+                    style={{
+                        alignItems: "center",
+                        display: "flex",
+                        flex: 1,
+                        justifyContent: "center",
+                        marginLeft: 10,
+                        marginRight: 10,
+                    }}
+                >
+                    <div className={step === 1 ? classes.purplecircle : classes.notthisstep}> 1 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 2 ? classes.purplecircle : classes.notthisstep}> 2 </div>
+                </div>
+            </div>
             <div
                 style={{
                     display: "flex",
@@ -147,30 +241,14 @@ const SignUpFunc: FC = () => {
                     overflow: "overlay",
                 }}
             >
+                {step === 1 && <div className={classes.containerLeft}>{!planDataLoading && <ThirdStep />}</div>}
                 {step !== 1 && (
                     <div className={classes.containerLogo}>
-                        <div className={classes.container} style={{ width: "100%", margin: "0 10px 0 0" }}>
-                            <div>
-                                <div className={classes.image}>
-                                    <LaraigoLogoWhite height={60} />
-                                </div>
-                                <div style={{ color: "#FFBF00", fontWeight: "bold", fontSize: "2em", textAlign: "center" }}>
-                                    {t(langKeys.signupstep2ms1)}
-                                </div>
-                                <div style={{ color: "white", fontSize: "1.5em", textAlign: "center", margin: "20px 10%" }}>
-                                    {t(langKeys.signupstep2ms2, { plan: planData?.plan?.plan })}
-                                </div>
-                                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                    <video width="80%" controls>
-                                        <source src="http://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/4a78ff62-dc91-49b3-b8d6-84dda5a0420a/Laraigo%20%EF%BD%9C%20CRM%20Omnicanal%20100%25%20Cloud.mp4" type="video/mp4" />
-                                    </video>
-                                </div>
-                            </div>
-                        </div>
+                        <LogoSuscription style={{ width: "50%" }} />
                     </div>
                 )}
-                <div className={classes.containerLeft}>
-                    <RightSideMenu />
+                <div className={classes.containerLeft} style={{ backgroundColor: "white" }}>
+                    {!planDataLoading ? <RightSideMenu setOpenWarning={setOpenWarning} /> : <CircularProgress />}
                 </div>
             </div>
         </div>

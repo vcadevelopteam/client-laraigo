@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { makeStyles, IconButton, Button } from "@material-ui/core";
+import { makeStyles, IconButton } from "@material-ui/core";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
@@ -34,13 +34,6 @@ const useStyles = makeStyles(() => ({
     },
     flex: {
         display: 'flex',
-    },
-    button: {
-        display: "flex", 
-        gap: "10px", 
-        alignItems: "center", 
-        justifyContent: "end",
-        marginTop: 20,
     },
 }));
 
@@ -201,6 +194,10 @@ const AutomaticDeliveryDialog = ({
             open={openModal}
             title={t(langKeys.automaticscheduling)}
             maxWidth="md"
+            buttonText0={t(langKeys.close)}
+            buttonText1={t(langKeys.save)}
+            handleClickButton0={closeModal}
+            handleClickButton1={handleSave}
         >
             <div className={`${classes.mainContainer} row-zyx`}>
                 <div className={`${classes.ordersTitle} col-6`}>
@@ -318,28 +315,6 @@ const AutomaticDeliveryDialog = ({
                         {registerError && (<span style={{color: 'red'}}>{t(langKeys.completeallfields)}</span>)}
                     </>
                 )}
-                <div className={classes.button}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={closeModal}
-                    >
-                        {t(langKeys.back)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        type="button"                    
-                        onClick={handleSave}
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}
-                    >
-                        {t(langKeys.save)}
-                    </Button>
-                </div>
             </div>
         </DialogZyx>
     );

@@ -1,20 +1,18 @@
 import { apiUrls } from "common/constants";
-import { Button, CircularProgress, InputAdornment, IconButton, makeStyles, TextField, Container } from "@material-ui/core";
+import { Button, CircularProgress, InputAdornment, IconButton, makeStyles, TextField } from "@material-ui/core";
 import { Controller, useFormContext } from "react-hook-form";
 import { executeCheckNewUser } from "store/signup/actions";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { Facebook, Visibility, VisibilityOff } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { MainData, SubscriptionContext } from "./context";
 import { showSnackbar } from "store/popus/actions";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
-import FacebookIcon from '@material-ui/icons/Facebook';
+
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin, { GoogleLoginResponse, GoogleLoginResponseOffline } from "react-google-login";
-import React, { FC, MouseEvent, useContext, useEffect, useState } from "react";
-import { LaraigoLogo } from "icons";
-import { OnlyCheckbox } from "components";
+import React, { CSSProperties, FC, MouseEvent, useContext, useEffect, useState } from "react";
 
 function validatePassword(password: string) {
     const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?=.{8,})/;
@@ -34,27 +32,6 @@ const useChannelAddStyles = makeStyles((theme) => ({
         margin: "auto",
         padding: 12,
         width: "280px",
-    },
-    buttonFace: {
-        borderRadius: '3px!important',
-        display: 'flex!important',
-        alignItems: 'center!important',
-        fontSize: '14px!important',
-        fontStyle: 'normal!important',
-        fontWeight: 600, textTransform: 'none',
-        justifyContent: 'center!important',
-        width: '100%!important',
-        cursor: 'pointer!important',
-        boxShadow: "none",
-        height: '2.5rem!important',
-        background: '#FFF', color: "#6d6d6d",
-        '& span': {
-            fontWeight: 'bold!important',
-            color: "#6d6d6d"
-        },
-        '& div': {
-            background: "none!important"
-        },
     },
     buttonfacebook: {
         alignItems: "center",
@@ -93,11 +70,11 @@ const useChannelAddStyles = makeStyles((theme) => ({
         },
     },
     separator: {
-        borderBottom: "2px solid #7721ad",
+        borderBottom: "2px solid #D1CBCB",
         height: "0",
         marginLeft: 32,
         marginRight: 32,
-        width: "100%",
+        width: 82,
     },
     orSeparator: {
         alignItems: "center",
@@ -106,73 +83,31 @@ const useChannelAddStyles = makeStyles((theme) => ({
         marginBottom: 18,
         marginTop: 28,
     },
-    container: {
-        background: "linear-gradient(90deg, #0C0931 0%, #1D1856 50%, #C200DB 100%)", height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    containerSignUp: {
-        [theme.breakpoints.down('xs')]: {
-            paddingLeft: 20,
-            paddingRight: 20,
-            marginLeft: 16,
-            marginRight: 16,
-            paddingBottom: 35,
-        },
-        display: 'flex',
-        alignItems: 'center',
-        borderRadius: "3.75rem",
-        backgroundColor: "white",
-        paddingLeft: 36,
-        paddingRight: 36,
-        position: "relative",
-        paddingBottom: 35,
-        maxWidth: 420
-    },
-    copyright: {
-        fontFamily: "Inter",
-        fontSize: "0.875rem",
-        color: "white",
-        fontStyle: "normal",
-        fontWeight: 400,
-        position: "absolute",
-        bottom: "calc(-1.62rem - 16px)",
-        width: "82%",
-        textAlign: "center",
-    },
-    childContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%'
-    },
-    image: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: "1.8rem",
-        marginBottom: "1.8rem",
-    },
-    paper: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    borderGoogle: {
-        border: '1px solid #757575!important',
-    },
 }));
+
+const FacebookCustomButtonStyle: CSSProperties = {
+    alignItems: "center",
+    borderRadius: "3px",
+    display: "flex",
+    fontSize: 20,
+    fontStyle: "normal",
+    fontWeight: 400,
+    height: 50,
+    justifyContent: "center",
+    marginBottom: 16,
+    textTransform: "none",
+    width: "100%",
+};
 
 const FirstStep: FC = () => {
     const { control, getValues, setValue, trigger } = useFormContext<MainData>();
-    const { setStep } = useContext(SubscriptionContext);
+    const { selectedChannels, setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
 
     const [disableButton, setDisableButton] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
-    const [acceptTOS, setAcceptTOS] = useState(false);
 
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
@@ -182,11 +117,7 @@ const FirstStep: FC = () => {
         if (waitSave) {
             if (!signUpState.loading) {
                 if (signUpState.isvalid) {
-                    if (disableButton) {
-                        showSnackbar({ message: t(langKeys.mustaccepttermsandconditions), severity: "error", show: true })
-                    } else {
-                        setStep(2);
-                    }
+                    setStep(2);
                     setWaitSave(false);
                 } else {
                     dispatch(
@@ -211,8 +142,8 @@ const FirstStep: FC = () => {
     }, [showLogin]);
 
     useEffect(() => {
-        setDisableButton(!acceptTOS);
-    }, [acceptTOS]);
+        setDisableButton(selectedChannels < 1);
+    }, [selectedChannels]);
 
     const openTermsOfService = () => {
         window.open("/termsofservice", "_blank");
@@ -308,223 +239,238 @@ const FirstStep: FC = () => {
     const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault();
 
     return (
-        <main>
+        <>
             <meta name="google-signin-client_id" content={`${apiUrls.GOOGLECLIENTID_LOGIN}`} />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
-            <div className={classes.container}>
-                <Container component="main" className={classes.containerSignUp}>
-                    <div className={classes.childContainer} style={{ height: '100%' }}>
-                        <div className={classes.image}>
-                            <LaraigoLogo height={42.8} />
+            <div>
+                <div
+                    style={{
+                        textAlign: "center",
+                        color: "#7721ad",
+                        fontSize: 32,
+                        fontWeight: 500,
+                        marginBottom: 32,
+                        marginTop: 15,
+                    }}
+                >
+                    {t(langKeys.signupstep1title)}
+                </div>
+                {showLogin ? (
+                    <div>
+                        <div className={classes.buttonfacebook}>
+                            <FacebookLogin
+                                appId={`${apiUrls.FACEBOOKAPP}`}
+                                autoLoad={false}
+                                buttonStyle={FacebookCustomButtonStyle}
+                                callback={onAuthWithFacebook}
+                                disableMobileRedirect={true}
+                                fields="name,email,picture"
+                                icon={<Facebook style={{ color: "white", marginRight: "8px" }} />}
+                                isDisabled={false}
+                                textButton={t(langKeys.signup_with_facebook)}
+                                onClick={(e: any) => {
+                                    e.view.window.FB.init({
+                                        appId: apiUrls.FACEBOOKAPP,
+                                        cookie: true,
+                                        xfbml: true,
+                                        version: apiUrls.FACEBOOKVERSION,
+                                    });
+                                }}
+                            />
                         </div>
-
-                        <div className={classes.paper} style={{ flex: 1 }}>
-                            {showLogin ? (<div style={{ alignItems: 'center', display: 'flex', flexDirection: "column", gap: "1rem", width: "100%", marginBottom: "1.02rem" }}>
-                                <FacebookLogin
-                                    appId={`${apiUrls.FACEBOOKAPP}`}
-                                    autoLoad={false}
-                                    buttonStyle={{ border: '1px solid #4D6BB7' }}
-                                    containerStyle={{ width: "100%" }}
-                                    cssClass={classes.buttonFace}
-                                    callback={onAuthWithFacebook}
-                                    disableMobileRedirect={true}
-                                    fields="name,email,picture"
-                                    icon={<FacebookIcon style={{ color: 'blue', marginRight: '8px' }} />}
-                                    isDisabled={false}
-                                    textButton={t(langKeys.signup_with_facebook)}
-                                    onClick={(e: any) => {
-                                        e.view.window.FB.init({
-                                            appId: apiUrls.FACEBOOKAPP,
-                                            cookie: true,
-                                            xfbml: true,
-                                            version: apiUrls.FACEBOOKVERSION,
-                                        });
-                                    }}
-                                />
-                                <GoogleLogin
-                                    accessType="online"
-                                    autoLoad={false}
-                                    buttonText={t(langKeys.signupgooglebutton)}
-                                    className={`${classes.buttonFace} ${classes.borderGoogle}`}
-                                    clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
-                                    cookiePolicy={"single_host_origin"}
-                                    onFailure={onGoogleLoginFailure}
-                                    onSuccess={onGoogleLoginSucess}
-                                />
-
-                            </div>) : (
-                                <CircularProgress />
-                            )}
-                            <div className={classes.separator} />
-                            <div>
-                                <Controller
-                                    control={control}
-                                    name="loginusername"
-                                    render={({ field, formState: { errors } }) => (
-                                        <TextField
-                                            {...field}
-                                            error={Boolean(errors.loginusername)}
-                                            fullWidth
-                                            helperText={errors.loginusername?.message}
-                                            label={t(langKeys.email) + " *"}
-                                            margin="normal"
-                                            size="small"
-                                            type="email"
-                                            variant="outlined"
-                                        />
-                                    )}
-                                    rules={{
-                                        validate: (value) => {
-                                            if (value.length === 0) {
-                                                return `${t(langKeys.field_required)}`;
-                                            } else if (!/\S+@\S+\.\S+/.test(value)) {
-                                                return `${t(langKeys.emailverification)}`;
-                                            }
-                                        },
-                                    }}
-                                />
-                                <Controller
-                                    control={control}
-                                    name="loginpassword"
-                                    render={({ field, formState: { errors } }) => (
-                                        <TextField
-                                            {...field}
-                                            autoComplete="current-password"
-                                            error={Boolean(errors.loginpassword)}
-                                            fullWidth
-                                            helperText={errors.loginpassword?.message}
-                                            label={t(langKeys.password) + " *"}
-                                            margin="normal"
-                                            size="small"
-                                            type={showPassword ? "text" : "password"}
-                                            variant="outlined"
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            edge="end"
-                                                            onClick={handleClickShowPassword}
-                                                            onMouseDown={handleMouseDownPassword}
-                                                        >
-                                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                    )}
-                                    rules={{
-                                        validate: (value) => {
-                                            if (value.length === 0) {
-                                                return `${t(langKeys.field_required)}`;
-                                            } else {
-                                                if (validatePassword(value) === null) {
-                                                    return `${t(langKeys.password_strongvalidation)}`;
-                                                }
-                                                if (value !== getValues("loginpasswordrepeat")) {
-                                                    return `${t(langKeys.passwordsmustbeequal)}`;
-                                                }
-                                            }
-                                        },
-                                    }}
-                                />
-                                <Controller
-                                    control={control}
-                                    name="loginpasswordrepeat"
-                                    render={({ field, formState: { errors } }) => (
-                                        <TextField
-                                            {...field}
-                                            autoComplete="current-password"
-                                            error={Boolean(errors.loginpasswordrepeat)}
-                                            fullWidth
-                                            helperText={errors.loginpasswordrepeat?.message}
-                                            label={t(langKeys.confirmpassword) + " *"}
-                                            margin="normal"
-                                            size="small"
-                                            type={showPassword ? "text" : "password"}
-                                            variant="outlined"
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            edge="end"
-                                                            onClick={handleClickShowPassword}
-                                                            onMouseDown={handleMouseDownPassword}
-                                                        >
-                                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                    )}
-                                    rules={{
-                                        validate: (value) => {
-                                            if (value.length === 0) {
-                                                return `${t(langKeys.field_required)}`;
-                                            } else if (value !== getValues("loginpassword")) {
-                                                return `${t(langKeys.passwordsmustbeequal)}`;
-                                            }
-                                        },
-                                    }}
-                                />
-                                <div style={{ fontSize: "11px", color: "#b6b4ba" }}>
-                                    {t(langKeys.signupfirststepasscond)}
-                                </div>
-                                <div style={{ display: "flex" }}>
-                                    <OnlyCheckbox
-                                        label=""
-                                        valueDefault={acceptTOS}
-                                        onChange={(value) => {
-                                            setAcceptTOS(value);
-                                        }}
-                                    />
-                                    <div style={{ padding: "10px 5px", fontWeight: "bold", fontSize: "14px" }}>
-                                        {t(langKeys.tos1)}
-                                        <a
-                                            style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
-                                            onMouseDown={openTermsOfService}
-                                            rel="noopener noreferrer"
-                                        >
-                                            {t(langKeys.termsofservicetitle)}
-                                        </a>
-                                        {t(langKeys.tos2)}
-                                        <a
-                                            style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
-                                            onMouseDown={openPrivacyPolicy}
-                                            rel="noopener noreferrer"
-                                        >
-                                            {t(langKeys.privacypoliciestitle)}
-                                        </a>
-                                    </div>
-                                </div>
-                                <Button
-                                    color="primary"
-                                    disabled={disableButton}
-                                    fullWidth
-                                    style={{ height: '2.5rem', }}
-                                    variant="contained"
-                                    type="submit"
-                                    onClick={async () => {
-                                        const valid = await trigger();
-                                        if (valid) {
-                                            handleSubmit();
-                                        }
-                                    }}
-                                >
-                                    <Trans i18nKey={langKeys.continue} />
-                                </Button>
-                            </div>
+                        <div className={classes.buttonGoogle}>
+                            <GoogleLogin
+                                accessType="online"
+                                autoLoad={false}
+                                buttonText={t(langKeys.signupgooglebutton)}
+                                clientId={`${apiUrls.GOOGLECLIENTID_LOGIN}`}
+                                cookiePolicy={"single_host_origin"}
+                                onFailure={onGoogleLoginFailure}
+                                onSuccess={onGoogleLoginSucess}
+                                style={{
+                                    borderRadius: "3px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            />
                         </div>
                     </div>
-                    <div className={classes.copyright}>
-                        {'Copyright © '} Laraigo {new Date().getFullYear()}
+                ) : (
+                    <CircularProgress />
+                )}
+                <div className={classes.orSeparator}>
+                    <div className={classes.separator} />
+                    <div style={{ fontSize: 24, fontWeight: 500, color: "#989898" }}>
+                        <Trans i18nKey={langKeys.signupor} />
                     </div>
-                </Container>
+                    <div className={classes.separator} />
+                </div>
+                <div style={{ paddingLeft: "20px", paddingRight: "20px" }}>
+                    <Controller
+                        control={control}
+                        name="loginusername"
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                error={Boolean(errors.loginusername)}
+                                fullWidth
+                                helperText={errors.loginusername?.message}
+                                label={t(langKeys.email)}
+                                margin="normal"
+                                size="small"
+                                type="email"
+                                variant="outlined"
+                            />
+                        )}
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return `${t(langKeys.field_required)}`;
+                                } else if (!/\S+@\S+\.\S+/.test(value)) {
+                                    return `${t(langKeys.emailverification)}`;
+                                }
+                            },
+                        }}
+                    />
+                    <Controller
+                        control={control}
+                        name="loginpassword"
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                autoComplete="current-password"
+                                error={Boolean(errors.loginpassword)}
+                                fullWidth
+                                helperText={errors.loginpassword?.message}
+                                label={t(langKeys.password)}
+                                margin="normal"
+                                size="small"
+                                type={showPassword ? "text" : "password"}
+                                variant="outlined"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                edge="end"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                            >
+                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return `${t(langKeys.field_required)}`;
+                                } else {
+                                    if (validatePassword(value) === null) {
+                                        return `${t(langKeys.password_strongvalidation)}`;
+                                    }
+                                    if (value !== getValues("loginpasswordrepeat")) {
+                                        return `${t(langKeys.passwordsmustbeequal)}`;
+                                    }
+                                }
+                            },
+                        }}
+                    />
+                    <Controller
+                        control={control}
+                        name="loginpasswordrepeat"
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                autoComplete="current-password"
+                                error={Boolean(errors.loginpasswordrepeat)}
+                                fullWidth
+                                helperText={errors.loginpasswordrepeat?.message}
+                                label={t(langKeys.confirmpassword)}
+                                margin="normal"
+                                size="small"
+                                type={showPassword ? "text" : "password"}
+                                variant="outlined"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                edge="end"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                            >
+                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return `${t(langKeys.field_required)}`;
+                                } else if (value !== getValues("loginpassword")) {
+                                    return `${t(langKeys.passwordsmustbeequal)}`;
+                                }
+                            },
+                        }}
+                    />
+                    <div style={{ textAlign: "center", padding: "20px" }}>
+                        {t(langKeys.tos1)}
+                        <a
+                            style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                            onMouseDown={openTermsOfService}
+                            rel="noopener noreferrer"
+                        >
+                            {t(langKeys.termsofservicetitle)}
+                        </a>
+                        {t(langKeys.tos2)}
+                        <a
+                            style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                            onMouseDown={openPrivacyPolicy}
+                            rel="noopener noreferrer"
+                        >
+                            {t(langKeys.privacypoliciestitle)}
+                        </a>
+                    </div>
+                    <div style={{ textAlign: "center", padding: "20px" }}>
+                        {t(langKeys.tossub1)}{" "}
+                        <a
+                            href="#"
+                            rel="noopener noreferrer"
+                            style={{
+                                fontWeight: "bold",
+                                color: "#6F1FA1",
+                                cursor: "default",
+                                textDecorationLine: "none",
+                            }}
+                        >
+                            {`${t(langKeys.creditcard)}`.toUpperCase()}
+                        </a>{" "}
+                        {t(langKeys.tossub2)}
+                    </div>
+                    <Button
+                        className={classes.button}
+                        color="primary"
+                        disabled={disableButton}
+                        variant="contained"
+                        onClick={async () => {
+                            const valid = await trigger();
+                            if (valid) {
+                                handleSubmit();
+                            }
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.next} />
+                    </Button>
+                </div>
             </div>
-        </main>
+        </>
     );
 };
 

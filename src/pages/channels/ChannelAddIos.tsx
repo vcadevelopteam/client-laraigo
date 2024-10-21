@@ -14,12 +14,10 @@ import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import ChannelEnableVirtualAssistant from "./ChannelEnableVirtualAssistant";
 import React, { FC, useEffect, useState } from "react";
-import { updateMetachannels } from "common/helpers";
 
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
-    onboarding?: boolean;
 }
 
 const useChannelAddStyles = makeStyles(() => ({
@@ -97,10 +95,6 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
                 setShowClose(true);
                 setShowScript(true);
                 setIntegrationId(mainResult.data[0].integrationId);
-                if (whatsAppData?.onboarding) {
-                    history.push(paths.METACHANNELS, whatsAppData);
-                    updateMetachannels(21);
-                }
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code ?? "error_unexpected_error", {
                     module: t(langKeys.property).toLocaleLowerCase(),
@@ -125,9 +119,9 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
         partialf.parameters.description = value;
         setFields(partialf);
     }
-    if (viewSelected === "enable-virtual-assistant") {
+    if(viewSelected==="enable-virtual-assistant"){
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
         />
     }
 
@@ -144,14 +138,9 @@ export const ChannelAddIos: FC<{ edit: boolean }> = ({ edit }) => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-
-                        if (whatsAppData?.onboarding) {
-                            history.push(paths.METACHANNELS, whatsAppData);
-                        } else {
-                            channel?.status === "INACTIVO"
-                                ? history.push(paths.CHANNELS, whatsAppData)
-                                : history.push(paths.CHANNELS_ADD, whatsAppData);
-                        }
+                        channel?.status === "INACTIVO"
+                            ? history.push(paths.CHANNELS, whatsAppData)
+                            : history.push(paths.CHANNELS_ADD, whatsAppData);
                     }}
                 >
                     {t(langKeys.previoustext)}

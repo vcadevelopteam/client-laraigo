@@ -124,7 +124,7 @@ const DashboardAssesorProductivity: FC<Assessor> = ({ allFilters }) => {
     const [openModalTicket, setOpenModalTicket] = useState(false);
     const [view,] = useState("GRID");
     const [dataGrid, setdataGrid] = useState<Dictionary[]>([]);
-    //const [dataGridAgentAvg, setdataGridAgentAvg] = useState<Dictionary[]>([]);
+    const [dataGridAgentAvg, setdataGridAgentAvg] = useState<Dictionary[]>([]);
 
 
     const [gaugeArcs,] = useState([100, 100]);

@@ -9,9 +9,7 @@ import { Search } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useSelector } from "hooks";
-import { Trans, useTranslation } from "react-i18next";
-import { DownloadIcon } from 'icons';
-import AddIcon from "@material-ui/icons/Add";
+import { useTranslation } from "react-i18next";
 
 import {
     cleanMemoryTable,
@@ -24,8 +22,6 @@ import {
 
 import {
     dateToLocalDate,
-    exportExcel,
-    exportExcelCustom,
     getOrgSelList,
     getValuesFromDomainCorp,
     localesLaraigo,
@@ -114,7 +110,7 @@ const TimeSheet: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
-    const classes = useStyles();
+
     const executeResult = useSelector((state) => state.main.execute);
     const mainResult = useSelector((state) => state.main);
     const memoryTable = useSelector((state) => state.main.memoryTable);
@@ -313,190 +309,88 @@ const TimeSheet: FC = () => {
         );
     };
 
-    const columnsExcel = React.useMemo(
-        () => [         
-            {
-                Header: t(langKeys.timesheet_startdate),
-                accessor: "startdate",
-                NoFilter: true,   
-                Cell: (props: any) => {
-                    const row = props.cell.row.original || {};
-                    return <div>{dateToLocalDate(row.startdate)}</div>;
-                },       
-            },
-            {
-                Header: t(langKeys.timesheet_startuser),
-                accessor: "startuser",
-                NoFilter: true,               
-            },
-            {
-                Header: t(langKeys.timesheet_registerdate),
-                accessor: "registerdate",
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original || {};
-                    return <div>{dateToLocalDate(row.registerdate)}</div>;
-                },
-            },
-            {
-                Header: t(langKeys.timesheet_registeruser),
-                accessor: "registeruser",
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.timesheet_organization),
-                accessor: "orgdescription",
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.timesheet_registerprofile),
-                accessor: "registerprofile",
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original || {};
-                    return (t(`${row.registerprofile}`.toLowerCase()) || "").toUpperCase();
-                },
-            },
-            {
-                Header: t(langKeys.timesheet_timeduration),
-                accessor: "timeduration",
-                type: "time",
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.timesheet_registerdetail),
-                accessor: "registerdetail",
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { registerdetail } = props.cell.row.original || {};
-                    return (
-                        <Fragment>
-                            <div style={{ display: "inline-block" }}>{(registerdetail || "").substring(0, 50)}... </div>
-                        </Fragment>
-                    );
-                },
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: "status",
-                NoFilter: true,
-                prefixTranslation: "status_",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original || {};
-                    return (t(`status_${row.status}`.toLowerCase()) || "").toUpperCase();
-                },
-            },                    
-        ],
-        []
-    );
-
-    const handleDownload = () => {
-        exportExcel('Horas Consultoría Reporto', mainResult.mainData.data, columnsExcel)    
-    };    
-
     if (viewSelected === "view-1") {
         if (mainResult.mainData.error || !userRole?.includes("SUPERADMIN")) {
             return <h1>ERROR</h1>;
         } else {
             return (
-                <>
-
-                   
-                    <TableZyx 
-                        ButtonsElement={() => (
-                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: 10 }}>
-                                <MuiPickersUtilsProvider
-                                    locale={localesLaraigo()[navigator.language.split("-")[0]]}
-                                    utils={DateFnsUtils}
-                                >
-                                    <KeyboardDatePicker
-                                        defaultValue={mainFilter.startdate}
-                                        format="dd-MM-yyyy"
-                                        InputProps={{ disableUnderline: true }}
-                                        invalidDateMessage={""}
-                                        placeholder={t(langKeys.timesheet_startdate)}
-                                        value={mainFilter.startdate}
-                                        onChange={(value: any) =>
-                                            setMainFilter((prev) => ({ ...prev, startdate: value || null }))
-                                        }
-                                        style={{
-                                            border: "1px solid #bfbfc0",
-                                            borderRadius: 4,
-                                            color: "rgb(143, 146, 161)",
-                                            paddingBottom: "3px",
-                                            paddingLeft: "12px",
-                                            paddingTop: "3px",
-                                            width: 260,
-                                        }}
-                                    />
-                                </MuiPickersUtilsProvider>
-                                <FieldSelect
-                                    data={organizationList || []}
-                                    label={t(langKeys.timesheet_organization)}
+                <TableZyx
+                    ButtonsElement={() => (
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: 10 }}>
+                            <MuiPickersUtilsProvider
+                                locale={localesLaraigo()[navigator.language.split("-")[0]]}
+                                utils={DateFnsUtils}
+                            >
+                                <KeyboardDatePicker
+                                    defaultValue={mainFilter.startdate}
+                                    format="dd-MM-yyyy"
+                                    InputProps={{ disableUnderline: true }}
+                                    invalidDateMessage={""}
+                                    placeholder={t(langKeys.timesheet_startdate)}
+                                    value={mainFilter.startdate}
                                     onChange={(value: any) =>
-                                        setMainFilter((prev) => ({ ...prev, orgid: value?.orgid || 0 }))
+                                        setMainFilter((prev) => ({ ...prev, startdate: value || null }))
                                     }
-                                    optionDesc="orgdesc"
-                                    optionValue="orgid"
-                                    orderbylabel={true}
-                                    style={{ width: 260 }}
-                                    valueDefault={mainFilter.orgid}
-                                    variant="outlined"
-                                />
-                                <Button
-                                    color="primary"
-                                    disabled={mainResult.mainData.loading}
-                                    startIcon={<Search style={{ color: "white" }} />}
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    variant="contained"
-                                    onClick={() => {
-                                        fetchData();
+                                    style={{
+                                        border: "1px solid #bfbfc0",
+                                        borderRadius: 4,
+                                        color: "rgb(143, 146, 161)",
+                                        paddingBottom: "3px",
+                                        paddingLeft: "12px",
+                                        paddingTop: "3px",
+                                        width: 260,
                                     }}
-                                >
-                                    {t(langKeys.search)}
-                                </Button>
-                                <Button
-                                    color="primary"                                    
-                                    startIcon={<AddIcon style={{ color: "white" }} />}
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    variant="contained"
-                                    onClick={handleRegister}
-                                >
-                                    {t(langKeys.register)}
-                                </Button>
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    color="primary"  
-                                    disabled={mainResult.mainData.loading}                            
-                                    startIcon={<DownloadIcon />}
-                                    onClick={handleDownload}                                       
-                                >
-                                    <Trans i18nKey={langKeys.download} />
-                                </Button>                              
-                            </div>
-                        )}
-                        columns={columns}
-                        data={mainResult.mainData.data}
-                        download={false}
-                        filterGeneral={false}
-                        hoverShadow={true}
-                        loading={mainResult.mainData.loading}
-                        onClickRow={handleEdit}
-                        titlemodule={t(langKeys.timesheet)}
-                        initialPageIndex={
-                            IDTIMESHEET === memoryTable.id ? (memoryTable.page === -1 ? 0 : memoryTable.page) : 0
-                        }
-                        initialStateFilter={
-                            IDTIMESHEET === memoryTable.id
-                                ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
-                                : undefined
-                        }
-                        pageSizeDefault={
-                            IDTIMESHEET === memoryTable.id ? (memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize) : 20
-                        }
-                    />
-                </>
+                                />
+                            </MuiPickersUtilsProvider>
+                            <FieldSelect
+                                data={organizationList || []}
+                                label={t(langKeys.timesheet_organization)}
+                                onChange={(value: any) =>
+                                    setMainFilter((prev) => ({ ...prev, orgid: value?.orgid || 0 }))
+                                }
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                                orderbylabel={true}
+                                style={{ width: 260 }}
+                                valueDefault={mainFilter.orgid}
+                                variant="outlined"
+                            />
+                            <Button
+                                color="primary"
+                                disabled={mainResult.mainData.loading}
+                                startIcon={<Search style={{ color: "white" }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                                onClick={() => {
+                                    fetchData();
+                                }}
+                            >
+                                {t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    columns={columns}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    filterGeneral={false}
+                    handleRegister={handleRegister}
+                    hoverShadow={true}
+                    loading={mainResult.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={true}
+                    titlemodule={t(langKeys.timesheet)}
+                    initialPageIndex={
+                        IDTIMESHEET === memoryTable.id ? (memoryTable.page === -1 ? 0 : memoryTable.page) : 0
+                    }
+                    initialStateFilter={
+                        IDTIMESHEET === memoryTable.id
+                            ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
+                            : undefined
+                    }
+                    pageSizeDefault={
+                        IDTIMESHEET === memoryTable.id ? (memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize) : 20
+                    }
+                />
             );
         }
     } else

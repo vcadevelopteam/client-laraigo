@@ -147,7 +147,7 @@ const ChannelEdit: FC = () => {
                         severity: "success",
                     })
                 );
-                history.push(paths.CHANNELS);
+                history.push(paths.CHANNELS);                
             }
         }
     }, [edit, history, dispatch]);
@@ -518,7 +518,7 @@ const ChannelEdit: FC = () => {
         );
     }
     else {
-        return <ChannelEnableVirtualAssistant />
+        return <ChannelEnableVirtualAssistant/>
     }
 };
 

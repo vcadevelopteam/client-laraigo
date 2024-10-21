@@ -39,13 +39,6 @@ const useStyles = makeStyles(() => ({
     flex: {
         display: 'flex',
     },
-    button: {
-        display: "flex", 
-        gap: "10px", 
-        alignItems: "center", 
-        justifyContent: "end",
-        marginTop: 20,
-    },
 }));
 
 interface DeliveryShift {
@@ -165,6 +158,10 @@ const DeliverySchedulesDialog: React.FC<{
             open={openModal}
             title={t(langKeys.deliveryshifts)}
             maxWidth="md"
+            buttonText0={t(langKeys.close)}
+            buttonText1={t(langKeys.save)}
+            handleClickButton0={handleClose}
+            handleClickButton1={handleSave}
         >
             <div className="row-zyx" style={{marginBottom: 0, display: 'flex', justifyContent: 'center'}}>
                 {deliveryShifts?.length > 0 && (
@@ -272,28 +269,6 @@ const DeliverySchedulesDialog: React.FC<{
                         {`${t(langKeys.new)} ${t(langKeys.shift)}`}
                     </Button>
                 )}
-                <div className={classes.button}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={handleClose}
-                    >
-                        {t(langKeys.back)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        type="button"                    
-                        onClick={handleSave}
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}
-                    >
-                        {t(langKeys.save)}
-                    </Button>
-                </div>
             </div>
         </DialogZyx>
     );

@@ -62,11 +62,6 @@ const DeliveryAddressTabDetail: React.FC<InventoryTabDetailProps> = ({ row }) =>
             <div className={classes.centerSelf}>
                 <div className={classes.addressForm}>
                     <FieldEdit
-                        label={t(langKeys.deliveryaddress)}
-                        disabled={true}
-                        valueDefault={row?.person_address}
-                    />
-                    <FieldEdit
                         label={t(langKeys.latitude)}
                         type="number"
                         disabled={true}

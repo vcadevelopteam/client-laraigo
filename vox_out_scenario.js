@@ -467,15 +467,6 @@ function handleSimultaneousCall() {
     );
 }
 
-const cardReassignAgent = (variables, { messageBusy: messageBusy1, retrytime = 3000, type }) => {
-    const messageBusy2 = messageBusy1 ? replaceTextWithVariables(messageBusy1, variables) : messageBusy;
-    Logger.write("derivar simultaneous: " + type);
-    if (type === "simultaneous") {
-        handleSimultaneousCall()
-    } else {
-        handleACDQueue({ messageBusy2, retrytime })
-    }
-}
 
 const handleACDQueue = ({ messageBusy2, retrytime }) => {
     request = VoxEngine.enqueueACDRequest(`${site}.laraigo`, phone_number, {
@@ -939,4 +930,14 @@ const loopInteractions = async (call, variables, flow, blockid = "genesis") => {
         }
     }
     return next;
+}
+
+const cardReassignAgent = (variables, { messageBusy: messageBusy1, retrytime = 3000, type }) => {
+    const messageBusy2 = messageBusy1 ? replaceTextWithVariables(messageBusy1, variables) : messageBusy;
+    Logger.write("derivar simultaneous: " + type);
+    if (type === "simultaneous") {
+        handleSimultaneousCall()
+    } else {
+        handleACDQueue({ messageBusy2, retrytime })
+    }
 }

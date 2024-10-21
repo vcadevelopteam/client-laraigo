@@ -234,7 +234,6 @@ export { ReactComponent as XlsIcon } from './xlsIcon.svg';
 export { ReactComponent as DuplicateIcon } from './duplicate.svg';
 
 export { ReactComponent as LaraigoLogo } from './Laraigo-logo.svg';
-export { ReactComponent as LaraigoLogoWhite } from './Laraigo-logo-white.svg';
 export { ReactComponent as LogoSuscription } from './LogoSuscription.svg';
 export { ReactComponent as LaraigoOnlyLogo } from './laraigo-onlylogo.svg';
 export { ReactComponent as EnvioIcon } from './envioAuto-01.svg';
@@ -334,20 +333,6 @@ export { ReactComponent as InventoryIcon } from './inventarios.svg';
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
 export {ReactComponent as PDFRedIcon} from './pdf-red-20dp.svg';
 
-export {ReactComponent as DeliveryIcon} from './delivery.svg'
-export {ReactComponent as ConfigurationDeliveryIcon} from './configuraciones-delivery_black_24dp.svg'
-export {ReactComponent as OrdersListIcon} from './lista-pedidos.svg'
-export {ReactComponent as OrdersInAttentionIcon} from './pedidos-atencion_black_24dp.svg'
-export {ReactComponent as OrdersInStoreIcon} from './pedidos-tienda.svg'
-export {ReactComponent as StoreCoverageIcon} from './zona-cobertural_black_24dp.svg'
-export {ReactComponent as RoutingLogicIcon} from './logica_ruta_black_24dp.svg'
-export {ReactComponent as TipificationIcon} from './tipificar.svg'
-export {ReactComponent as PrintIcon} from './print_black_24dp.svg'
-export {ReactComponent as DeliveryTicketIcon} from './boleta_24dp.svg'
-export {ReactComponent as CheckPrepareIcon} from './check-enviar.svg'
-export {ReactComponent as EmailSendIcon} from './email_black_24dp 2.svg'
-export {ReactComponent as WhatsappSendIcon} from './whatsapp-delineado.svg'
-
 export {ReactComponent as TemplatesIcon} from './Plantillas.svg'
 export {ReactComponent as CampaignsIcon} from './campañas.svg'
 export {ReactComponent as FlaskIcon} from './flask_icon.svg'
@@ -363,10 +348,6 @@ export {ReactComponent as ItalicKIcon} from './italicKIcon.svg'
 export {ReactComponent as UnderlineSIcon} from './underlineSIcon.svg'
 export {ReactComponent as StrikethroughLineIcon} from './strikethroughLineIcon.svg'
 export {ReactComponent as TackIcon} from './tackIcon.svg'
-
-export {ReactComponent as IAIcon} from './IAIcon.svg'
-export { ReactComponent as AIIcon } from './AI.svg';
-
 export {ReactComponent as TackPinnedIcon} from './tackIcon-pinned.svg'
 export {ReactComponent as BusinessMessageIcon} from './businessMessage.svg'
 export {ReactComponent as OrderMiniatureIcon} from './documnt3linedown.svg'

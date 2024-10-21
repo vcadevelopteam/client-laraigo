@@ -23,8 +23,6 @@ import { useSelector } from 'hooks';
 interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
     title?: React.ReactNode;
     open: boolean;
-    fillterAllDate?: Boolean;
-    showSelectionPreview?: Boolean;
     range: Range;
     limitMonth?: number;
     setOpen: (open: boolean) => void;
@@ -52,7 +50,6 @@ const thisWeekRange: Range = { startDate: defineds.startOfWeek, endDate: defined
 const lastWeekRange: Range = { startDate: defineds.startOfLastWeek, endDate: defineds.endOfLastWeek };
 const thisMonthRange: Range = { startDate: defineds.startOfMonth, endDate: defineds.endOfMonth };
 const lastMonthRange: Range = { startDate: defineds.startOfLastMonth, endDate: defineds.endOfLastMonth };
-const allDateRange: Range = { startDate: new Date("1995-01-01"), endDate: new Date() };
 
 const isSelected = (range: Range, definedRange: Range) => {
     return (
@@ -72,7 +69,6 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
         onSelect,
         months = 2,
         direction = "horizontal",
-        fillterAllDate=false,
         showSelectionPreview = true,
         moveRangeOnFirstSelection = false,
         limitMonth = 0,
@@ -123,11 +119,6 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
             range: () => lastMonthRange,
             isSelected: (range) => isSelected(range, lastMonthRange),
         },
-        ...(fillterAllDate ? [{
-            label: t(langKeys.all2),
-            range: () => allDateRange,
-            isSelected: (range:any) => isSelected(range, allDateRange),
-        }] : []),
     ];
 
     return (
@@ -147,7 +138,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                             onChange={(range) => {
                                 const selection = (range as { selection: RangeWithKey }).selection;
                                 const limitExec = limitMonth || rangeDateFilter;
-                                if (limitExec && !fillterAllDate) {
+                                if (limitExec) {
                                     const { startDate, endDate } = selection;
                                     const diffYear = endDate!!.getFullYear() - startDate!!.getFullYear()
                                     const diffmonth = endDate!!.getMonth() + 12 * diffYear - startDate!!.getMonth()

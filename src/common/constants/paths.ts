@@ -95,7 +95,6 @@ const paths = {
         resolve: (token: string) => `/activateuser/${token}`
     },
     CHANNELS: '/channels',
-    METACHANNELS: '/metachannels',
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',

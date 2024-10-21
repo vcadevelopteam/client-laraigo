@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx } from 'components';
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDetaildata, frameProps, setFrameProps, setPageSelected, setSave }) => {
+export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -134,7 +135,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
     }, [jsonData])
 
     useEffect(() => {
-        //Load Headers
+        // Load Headers
         switch (detaildata.source) {
             case 'INTERNAL':
                 setHeaders([
@@ -223,13 +224,13 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                 ]);
                 break;
         }
-        //Clean selected data on source change
+        // Clean selected data on source change
         if (detaildata.sourcechanged) {
             setDetaildata({ ...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
         }
     }, [])
 
-    //Internal data
+    // Internal data
     useEffect(() => {
         if (!auxResult.loading && !auxResult.error && auxResult.data.length > 0) {
             if (detaildata.source === 'INTERNAL') {
@@ -239,7 +240,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                     selectedRowsTemp = { ...detaildata.selectedRows };
                 }
                 else {
-                    selectedRowsTemp = { ...auxResult.data.reduce((ad, d) => ({ ...ad, [d.campaignmemberid]: true }), {}) };
+                    selectedRowsTemp = { ...auxResult.data.reduce((ad, d, i) => ({ ...ad, [d.campaignmemberid]: true }), {}) };
                 }
                 setSelectedRows(selectedRowsTemp)
                 setDetaildata({
@@ -249,7 +250,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                     selectedColumns: selectedColumns,
                     selectedRows: selectedRowsTemp,
                     person: auxResult.data.map(j =>
-                        Object.keys(selectedRowsTemp).includes(String(j[selectionKey])) ? j : { ...j, status: 'ELIMINADO' }
+                        Object.keys(selectedRowsTemp).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' }
                     )
                 });
                 setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 1: Object.keys(selectedRowsTemp).length > 0 } });
@@ -257,7 +258,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
         }
     }, [auxResult]);
 
-    //Person, Lead Data
+    // Person, Lead Data
     useEffect(() => {
         if (paginatedWait) {
             if (!paginatedAuxResult.loading && !paginatedAuxResult.error) {
@@ -269,7 +270,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
         }
     }, [paginatedAuxResult]);
 
-    //External Data Logic
+    // External Data Logic //
     const handleUpload = async (files: any) => {
         const file = files[0];
         const data = await uploadExcel(file);
@@ -288,34 +289,34 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.too_many_records) }));
             return null;
         }
-        const actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
-        const newHeaders = Object.keys(data[0]);
+        let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
+        let newHeaders = Object.keys(data[0]);
         if (actualHeaders) {
             if (!actualHeaders.every(h => newHeaders?.includes(h))) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_incompatbile_with_previous_one) }));
                 return null;
             }
         }
-        //Set only new records
+        // Set only new records
         setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
-        //Set actual headers or new headers
-        const localColumnList = actualHeaders ? actualHeaders : newHeaders;
+        // Set actual headers or new headers
+        let localColumnList = actualHeaders ? actualHeaders : newHeaders;
         setColumnList(localColumnList);
-        //Backup of columns if user cancel modal
+        // Backup of columns if user cancel modal
         setSelectedColumnsBackup({ ...selectedColumns });
-        //Initialize primary key
+        // Initialize primary key
         let localSelectedColumns = { ...selectedColumns };
         if (!localColumnList.includes(localSelectedColumns.primarykey)) {
             localSelectedColumns = { ...localSelectedColumns, primarykey: '' };
         }
-        //Initialize selected column booleans
+        // Initialize selected column booleans
         if (selectedColumns.columns.length === 0) {
             localSelectedColumns = { ...localSelectedColumns, column: new Array(localColumnList.length).fill(false) };
         }
-        //Code for reuse campaign
+        // Code for reuse campaign
         else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
-            //Asign [true, false] if columns has new order
-            //Asign columns that exist
+            // Asign [true, false] if columns has new order
+            // Asign columns that exist
             localSelectedColumns = {
                 ...localSelectedColumns,
                 column: localColumnList.map(c => localSelectedColumns.columns.includes(c)),
@@ -362,41 +363,20 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
 
     const handleSaveModal = () => {
         if (selectedColumns.primarykey !== '') {
-            const columns = columnList.reduce((h: string[], c: string, i: number) => {
+            let columns = columnList.reduce((h: string[], c: string, i: number) => {
                 if (c !== selectedColumns.primarykey && selectedColumns.column[i]) {
                     h.push(c);
                 }
                 return h
             }, []);
             setSelectedColumns({ ...selectedColumns, columns: columns });
-
-            let keywarning = false;
-
-            const jsondatadatatemp = JSON.parse(JSON.stringify(jsonDataTemp, [
-                selectedColumns.primarykey,
-                ...columns
-            ]));
-            if (detaildata?.type === "SMS" || detaildata?.type === "HSM") {
-                if (jsondatadatatemp) {
-                    for (let i = 0; i < jsondatadatatemp.length; i++) {
-                        const datakeyoriginal = `${jsondatadatatemp[i][`${selectedColumns.primarykey}`]}`;
-                        const datakeynew = `${jsondatadatatemp[i][`${selectedColumns.primarykey}`]}`.replace(/\D/g, '');
-
-                        if (datakeyoriginal !== datakeynew) {
-                            jsondatadatatemp[i][`${selectedColumns.primarykey}`] = datakeynew;
-                            keywarning = true;
-
-                            if (`${datakeynew}`.length > 40) {
-                                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.campaigncleanerror) }));
-                                return null;
-                            }
-                        }
-                    }
-                }
-            }
-            setJsonDataTemp(jsondatadatatemp);
-
-            const jsondatadata = [
+            setJsonDataTemp(
+                JSON.parse(JSON.stringify(jsonDataTemp, [
+                    selectedColumns.primarykey,
+                    ...columns
+                ]))
+            )
+            let jsondatadata = [
                 ...JSON.parse(JSON.stringify(jsonData,
                     [
                         selectedColumns.primarykey,
@@ -410,35 +390,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                         ...columns
                     ]))
             ];
-            if (detaildata?.type === "SMS" || detaildata?.type === "HSM") {
-                if (jsondatadata) {
-                    for (let i = 0; i < jsondatadata.length; i++) {
-                        const datakeyoriginal = `${jsondatadata[i][`${selectedColumns.primarykey}`]}`;
-                        const datakeynew = `${jsondatadata[i][`${selectedColumns.primarykey}`]}`.replace(/\D/g, '');
-
-                        if (datakeyoriginal !== datakeynew) {
-                            jsondatadata[i][`${selectedColumns.primarykey}`] = datakeynew;
-                            keywarning = true;
-
-                            if (`${datakeynew}`.length > 40) {
-                                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.campaigncleanerror) }));
-                                return null;
-                            }
-                        }
-                    }
-                }
-            }
             setJsonData(jsondatadata);
-
-            if (keywarning) {
-                dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.campaigncleanwarning) }));
-            }
-
-            //Changing field(n) with new order
+            // Changing field(n) with new order
             let message: string = detaildata.message || '';
             if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
                 detaildata.fields?.columns.forEach((c: string, i: number) => {
-                    const newi = selectedColumns.columns.findIndex(cs => cs === c);
+                    let newi = selectedColumns.columns.findIndex(cs => cs === c);
                     if (newi === -1) {
                         message = message?.replace(`{{${c}}}`, `{{${i + 1}}}`);
                         message = message?.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
@@ -469,7 +426,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
     const setHeaderTableData = (localSelectedColumns: SelectedColumns) => {
         if (openModal === false && selectedColumns.primarykey !== '') {
             setSelectionKey(selectedColumns.primarykey);
-            const headers = [
+            let headers = [
                 localSelectedColumns.primarykey,
                 ...localSelectedColumns.columns
             ].map(c => {
@@ -479,10 +436,11 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                 }
             });
             setHeaders(headers);
+            // setDetaildata({...detaildata, headers: headers});
             return headers;
         }
     }
-    //External Data Logic
+    // External Data Logic //
 
     const changeStep = (step: number) => {
         if (Object.keys(selectedRows).length === 0) {
@@ -500,19 +458,19 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                     selectedColumns: selectedColumns,
                     selectedRows: selectedRows,
                     person: jsonData.map(j =>
-                        Object.keys(selectedRows).includes(String(j[selectionKey])) ? j : { ...j, status: 'ELIMINADO' }
+                        Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : { ...j, status: 'ELIMINADO' }
                     )
                 });
                 break;
             case 'EXTERNAL':
                 setDetaildata({
                     ...detaildata,
-                    //Update headers only where upload has used
+                    // Update headers only where upload has used
                     headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
                     jsonData: jsonData,
                     selectedColumns: selectedColumns,
                     selectedRows: selectedRows,
-                    person: jsonData.filter(j => Object.keys(selectedRows).includes(String(j[selectionKey])))
+                    person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
                 });
                 break;
             case 'PERSON':
@@ -523,7 +481,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                         new Map([
                             ...(detaildata.person || []),
                             ...jsonDataPerson
-                        ].map(d => [d['personid'], d])).values()).filter(j => Object.keys(selectedRows).includes(String(j[selectionKey])))
+                        ].map(d => [d['personid'], d])).values()).filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
                 });
                 break;
             case 'LEAD':
@@ -534,7 +492,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
                         new Map([
                             ...(detaildata.person || []),
                             ...jsonData
-                        ].map(d => [d['leadid'], d])).values()).filter(j => Object.keys(selectedRows).includes(String(j[selectionKey])))
+                        ].map(d => [d['leadid'], d])).values()).filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
                 });
                 break;
         }
@@ -689,7 +647,7 @@ const ModalCampaignColumns: React.FC<ModalProps> = ({ columnList, selectedColumn
                                         type="radio"
                                         value={c}
                                         checked={selectedColumns.primarykey === c || false}
-                                        onChange={() => {
+                                        onChange={(e) => {
                                             setSelectedColumns({
                                                 ...selectedColumns,
                                                 primarykey: c || '',

@@ -3,9 +3,7 @@ import { DialogZyx, FieldEdit } from "components";
 import { langKeys } from "lang/keys";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import ClearIcon from "@material-ui/icons/Clear";
 import DeleteIcon from "@material-ui/icons/Delete";
-import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles(() => ({
     vehicleTypeContainer: {
@@ -50,13 +48,6 @@ const useStyles = makeStyles(() => ({
 	vehicleListTitle: {
 		fontSize: 15, margin: '10px 0', fontWeight: 'bold'
 	},
-    button: {
-        display: "flex", 
-        gap: "10px", 
-        alignItems: "center", 
-        justifyContent: "end",
-        marginTop: 20,
-    },
 }));
 interface VehicleType {
     vehicle: string;
@@ -180,6 +171,10 @@ const VehicleTypeDialog: React.FC<{
             open={openModal}
             title={t(langKeys.vehicletype)}
             maxWidth="md"
+            buttonText0={t(langKeys.close)}
+            buttonText1={t(langKeys.save)}
+            handleClickButton0={closeModal}
+			handleClickButton1={handleSave}
         >
             <div className="row-zyx" style={{ marginBottom: 0 }}>
                 <div className="col-6" style={{ marginBottom: 0 }}>
@@ -303,28 +298,6 @@ const VehicleTypeDialog: React.FC<{
                             <p>No hay tipos de vehículos registrados</p>
                         </div>
                     )}
-                </div>
-                <div className={classes.button}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={closeModal}
-                    >
-                        {t(langKeys.back)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        type="button"                    
-                        onClick={handleSave}
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}
-                    >
-                        {t(langKeys.save)}
-                    </Button>
                 </div>
             </div>
         </DialogZyx>

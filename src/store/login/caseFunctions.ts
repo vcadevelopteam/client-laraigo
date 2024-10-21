@@ -98,17 +98,6 @@ export const updateUserInformation = (state: IState, action: IAction): IState =>
     }
 });
 
-export const updateUserUIConfig = (state: IState, action: IAction): IState => ({
-    ...state,
-    validateToken: {
-        ...state.validateToken,
-        user: {
-            ...state.validateToken.user,
-            ...action.payload
-        },
-    }
-});
-
 export const validateToken = (state: IState): IState => ({
     ...state,
     validateToken: {

@@ -1,22 +1,23 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
 import Aside from './Aside';
 import Box from '@material-ui/core/Box';
 import { useSelector } from 'hooks';
-import { Button, CssBaseline } from '@material-ui/core';
+import { Button, CssBaseline, Icon } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Popus from 'components/layout/Popus';
 import MakeCall from 'components/inbox/MakeCall';
-import { useHistory } from 'react-router-dom'; import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
+import { useHistory, useLocation } from 'react-router-dom'; import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import IconButton from '@material-ui/core/IconButton';
+import { notCustomUrl } from 'pages/dashboard/constants';
 const drawerWidth = 260;
 const drawerWidthCompressed = 73;
 const headerHeight = 54;
@@ -117,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
     drawerItemActive: {
         color: theme.palette.primary.main,
         fill: theme.palette.primary.main,
-        //stroke: theme.palette.primary.main,
+        // stroke: theme.palette.primary.main,
     },
     drawerCloseItemActive: {
         color: 'white',
@@ -126,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
         opacity: 1,
     },
     drawerItemInactive: {
-        //stroke: "#8F92A1",
+        // stroke: "#8F92A1",
         fill: "#8F92A1",
     },
     drawerCloseItemInactive: {
@@ -202,12 +203,12 @@ const useStyles = makeStyles((theme) => ({
     },
     mainContentBox: {
         flex: 1,
-        //padding: theme.spacing(2),
+        // padding: theme.spacing(2),
         display: 'flex',
         height: 'calc(100vh - 54px)',
         minHeight: 'calc(100vh - 54px)',
         maxHeight: 'calc(100vh - 54px)',
-        //height: '100%'
+        // height: '100%'
     },
     ASlistItem: {
         position: 'relative',
@@ -252,15 +253,15 @@ const useStylesDialog = makeStyles(() => ({
     },
     dialogContentWithBar: {
         position: 'relative',
-        //... cualquier otro estilo que necesites
+        // ... cualquier otro estilo que necesites
         "&::before": {
-            content: '""', //Esto es necesario para crear un pseudo-elemento
+            content: '""', // Esto es necesario para crear un pseudo-elemento
             position: 'absolute',
             left: 0,
             top: "10%",
             bottom: "20%",
-            width: '6px', //El grosor de la barra
-            backgroundColor: '#7721ad', //El color de la barra
+            width: '6px', // El grosor de la barra
+            backgroundColor: '#7721ad', // El color de la barra
         },
     },
 }));
@@ -271,6 +272,7 @@ interface LayoutProps {
 
 const WelcomeDialog = React.memo(() => {
     const classes = useStylesDialog();
+    const location = useLocation();
     const history = useHistory();
     const { t } = useTranslation();
 
@@ -279,8 +281,13 @@ const WelcomeDialog = React.memo(() => {
     const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
-        if (newChannels && localStorage.getItem("firstLoad")) {
-            history.push("/metachannels")
+        if (newChannels && !localStorage.getItem("firstloadeddialog")) {
+            if (location.pathname !== "/channels") {
+                history.push("/channels")
+            } else {
+                setOpenModal(true);
+                localStorage.setItem("firstloadeddialog", "1")
+            }
         }
     }, [])
     return (<Dialog

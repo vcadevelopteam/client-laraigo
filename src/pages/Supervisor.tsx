@@ -27,7 +27,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import memoize from 'memoize-one';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import DialogViewGroups from 'components/inbox/DialogViewGroups';
+
 interface Dimensions {
     height: number;
     width: number;
@@ -180,7 +180,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const [extraInfo, setextraInfo] = useState({ avgtimewaiting: "00:00:00", maxtimewaiting: "00:00:00", mintimewaiting: "00:00:00" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
-
+    
     const handlerSelectAgent = () => {
         if (agent.showinfo) {
             dispatch(selectAgent(agent));
@@ -332,7 +332,6 @@ const HeaderAgentPanel: FC<{
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [filterBy, setFilterBy] = useState('user')
     const agentList = useSelector(state => state.inbox.agentList);
-    const [openViewGroupDialog, setOpenViewGroupDialog] = useState(false);
 
     const onChangeSearchAgent = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => setSearch(e.target.value);
 
@@ -396,14 +395,6 @@ const HeaderAgentPanel: FC<{
                                 >
                                     {t(langKeys.filter_by_group)}
                                 </MenuItem>
-                                <MenuItem
-                                    // selected={filterBy === 'group'}
-                                    onClick={() => {
-                                        setAnchorEl(null);
-                                        setOpenViewGroupDialog(true)
-                                    }}
-                                >{t(langKeys.view_by_groups)}
-                                </MenuItem>
                             </Menu>
                         </div>
                     </div> :
@@ -425,10 +416,6 @@ const HeaderAgentPanel: FC<{
                     />
                 }
             </div>
-            <DialogViewGroups
-                openModal={openViewGroupDialog}
-                setOpenModal={setOpenViewGroupDialog}
-            />
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
@@ -523,7 +510,7 @@ const Supervisor: FC = () => {
             getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
-            getDomainByDomainName("GRUPOS", "_GRUPOS"),
+            getDomainByDomainName("GRUPOS"),
             getListQuickReply(),
             getMessageTemplateLst(''),
             getCommChannelLst(),
@@ -537,8 +524,8 @@ const Supervisor: FC = () => {
             getPropertySelByName("ASESORDELEGACION", "ASESORDELEGACION"),
             getPropertySelByName("ASESORSUSPENDE", "ASESORSUSPENDE"),
             getDocumentLibraryByUser(),
-            getPropertySelByName("GRUPODELEGACION", "GRUPODELEGACION"),
-            getPropertySelByName("COPILOTLARAIGO", "COPILOTLARAIGO"),
+            getPropertySelByName("GRUPODELEGACION","GRUPODELEGACION"),
+            getPropertySelByName("COPILOTLARAIGO","COPILOTLARAIGO"),
         ]))
         return () => {
             dispatch(resetAllMain());

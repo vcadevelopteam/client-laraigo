@@ -153,10 +153,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
             {
                 Header: t(langKeys.report_inputretry_datehour),
                 accessor: 'createdate',  
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { createdate } = props.cell.row.original || {};
-                    return new Date(createdate).toLocaleString()
-                }
+                Cell: cell
             }, 
             {
                 Header: t(langKeys.report_inputretry_answer),
@@ -171,7 +168,7 @@ const InputRetryReport: React.FC<ItemProps> = ({ setViewSelected, setSearchValue
                 Cell: ({ value }) => {
                     return t(value);
                 }
-            },  
+            }, 
                  
         ],
         []

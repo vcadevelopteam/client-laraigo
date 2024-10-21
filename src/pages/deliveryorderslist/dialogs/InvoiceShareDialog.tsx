@@ -1,4 +1,4 @@
-import { Button, Checkbox, makeStyles } from "@material-ui/core";
+import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, makeStyles } from "@material-ui/core";
 import { DialogZyx } from "components";
 import { langKeys } from "lang/keys";
 import React, { useEffect, useState } from "react";
@@ -8,9 +8,9 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "hooks";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DoneIcon from "@material-ui/icons/Done";
+import WhatsAppIcon from '@material-ui/icons/WhatsApp';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import { Dictionary } from "@types";
-import { WhatsappSendIcon } from "icons";
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -34,8 +34,8 @@ const InvoiceShareDialog: React.FC<{
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector((state) => state.main.execute);
-    const [wspState, setWspState] = useState(false);
-    const [emailState, setEmailState] = useState(false);
+    const [wspState, setWspState] = useState(config?.wspi);
+    const [emailState, setEmailState] = useState(config?.emaili);
 
     useEffect(() => {
         if (waitSave) {
@@ -68,30 +68,26 @@ const InvoiceShareDialog: React.FC<{
         >
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20}}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end', width: 145, }}>
-                    {config?.wspi && (
-                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <WhatsappSendIcon className={classes.icon}/>
-                            <span>{t(langKeys.WHATSAPP)}</span>
-                            <Checkbox
-                                color="primary"
-                                style={{ pointerEvents: "auto" }}
-                                checked={wspState}
-                                onChange={(e) => setWspState(e.target.checked)}
-                            />
-                        </div>
-                    )}
-                    {config?.emaili && (
-                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <MailOutlineIcon className={classes.icon}/>
-                            <span>{t(langKeys.email)}</span>
-                            <Checkbox
-                                color="primary"
-                                style={{ pointerEvents: "auto" }}
-                                checked={emailState}
-                                onChange={(e) => setEmailState(e.target.checked)}                    
-                            />
-                        </div>
-                    )}
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <WhatsAppIcon className={classes.icon}/>
+                        <span>{t(langKeys.WHATSAPP)}</span>
+                        <Checkbox
+                            color="primary"
+                            style={{ pointerEvents: "auto" }}
+                            checked={wspState}
+                            onChange={(e) => setWspState(e.target.checked)}
+                        />
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <MailOutlineIcon className={classes.icon}/>
+                        <span>{t(langKeys.email)}</span>
+                        <Checkbox
+                            color="primary"
+                            style={{ pointerEvents: "auto" }}
+                            checked={emailState}
+                            onChange={(e) => setEmailState(e.target.checked)}                    
+                        />
+                    </div>
                 </div>
             </div>
             <div className={classes.button}>

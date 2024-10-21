@@ -40,8 +40,7 @@ const AssociatedVehicleDialog: React.FC<{
     data: RowSelected;
     fetchVehicles: ()=> void;
     vehicleTypes: VehicleType[];
-    alreadyDrivers: number[];
-}> = ({ openModal, setOpenModal, data:{row2, edit}, fetchVehicles, vehicleTypes, alreadyDrivers }) => {
+}> = ({ openModal, setOpenModal, data:{row2, edit}, fetchVehicles, vehicleTypes }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -246,7 +245,7 @@ const AssociatedVehicleDialog: React.FC<{
                 <FieldSelect
                     label={t(langKeys.carriername)}
                     className="col-6"
-                    data={multiData?.data?.[1]?.data?.filter(user => !alreadyDrivers.includes(user.userid)) || []}
+                    data={multiData?.data?.[1]?.data || []}
                     valueDefault={row2?.userid}
                     onChange={(value)=> setValue('userid', value.userid)}
                     error={typeof errors?.userid?.message === 'string' ? errors?.userid?.message : ''}

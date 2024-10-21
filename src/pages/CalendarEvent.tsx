@@ -203,70 +203,50 @@ const FormToSend: FC<{
     const [phoneCountry, setPhoneCountry] = useState('');
     const dispatch = useDispatch();
     const url = new URLSearchParams(window.location.search);
-
-    const { register, handleSubmit, setValue, getValues, control, formState: { errors, isValid }, trigger, watch } = useForm({
-        mode: 'onChange',
-        reValidateMode: 'onChange',
+    const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
         defaultValues: {
             name: url.get("n") || event?.personname,
             email: url.get("c") || event?.email,
             phone: url.get("t") || event?.phone,
             notes: '',
         }
-    });
-
-    const phoneValue = watch('phone');
-    const emailValue = watch('email');
+    })
 
     useEffect(() => {
-        if (phoneValue && phoneValue.length >= 10) {
-            trigger("phone");
-        }
-
-        if (emailValue && emailValue !== 'null' && emailValue.length > 0) {
-            trigger("email");
-        }
-    }, [phoneValue, emailValue, trigger]);
-
-    useEffect(() => {
-        dispatch(getCountryList());
+        dispatch(getCountryList())
         try {
             fetch(URL, { method: "get" })
                 .then((response) => response.json())
                 .then((data) => {
                     const countryCode = data.country_code.toUpperCase();
                     setPhoneCountry(countryCode);
-                });
-        } catch (error) {
+                })
+        }
+        catch (error) {
             console.error("error");
         }
         return () => {
             dispatch(resetMain());
         };
-    }, [dispatch]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         register('notes');
         register('name', { validate: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + "") });
         register('email', {
             validate: {
-                required: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + ""),
-                validEmail: (value) => {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return emailRegex.test(value) || (t(langKeys.emailverification) + "");
-                }
-            }
-        });
-        register('phone', { validate: (value) => (!!value && value.length >= 10) || (t(langKeys.field_required) + "") });
-    }, [register, t]);
+              required: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + ""),
+              validEmail: (value) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(value) || (t(langKeys.emailverification) + "");
+              },
+            },
+          });
+        register('phone', { validate: (value) => event?.notificationtype === "MAIL" || !!value || (t(langKeys.field_required) + "") });
+    }, [register, t, event])
 
-    const onSubmit = handleSubmit(async (data) => {
-        const isPhoneValid = await trigger("phone");
-        const isEmailValid = await trigger("email");
-        if (!isPhoneValid || !isEmailValid) {
-            return;
-        }
-
+    const onSubmit = handleSubmit((data) => {
         if (event.calendarbookingid) {
             dispatch(manageConfirmation({
                 visible: true,
@@ -275,9 +255,9 @@ const FormToSend: FC<{
                     new_event: new Date(`${time?.localyeardate} ${time?.localstarthour}`).toLocaleString()
                 }),
                 callback: () => handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
-            }));
+            }))
         } else {
-            handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") });
+            handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
         }
     });
 
@@ -307,7 +287,6 @@ const FormToSend: FC<{
                                 } else if ((value?.length || "") < 10) {
                                     return t(langKeys.validationphone) as string;
                                 }
-                                return true;
                             }
                         }}
                         render={({ field, formState: { errors } }) => (
@@ -320,10 +299,6 @@ const FormToSend: FC<{
                                 defaultCountry={getValues('phone') ? undefined : phoneCountry.toLowerCase()}
                                 error={!!errors?.phone}
                                 helperText={errors?.phone?.message}
-                                onChange={(e) => {
-                                    field.onChange(e);
-                                    trigger("phone");
-                                }}
                             />
                         )}
                     />
@@ -356,15 +331,16 @@ const FormToSend: FC<{
                         variant="contained"
                         startIcon={<SaveIcon color="secondary" />}
                         color="primary"
-                        disabled={!isValid || disabledSubmit}
+                        disabled={disabledSubmit}
                     >
                         {t((event.calendarbookingid ? langKeys.reschedule_event : langKeys.schedule_event))}
                     </Button>
+
                 </div>
             </div>
         </form>
-    );
-};
+    )
+}
 
 export const CalendarEvent: FC = () => {
     const dispatch = useDispatch();

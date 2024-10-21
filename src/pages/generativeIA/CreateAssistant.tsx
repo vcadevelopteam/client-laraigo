@@ -89,6 +89,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     ];      
     const [encryptedApikey, setEncryptedApikey] = useState<string | null>(null)
     const [generalprompt, setGeneralPrompt] = useState<string | null>(null)
+    const [documentId, setDocumentId] = useState<string | null>(null)
     const [waitSaveCreateAssistant, setWaitSaveCreateAssistant] = useState(false)
     const [waitSaveCreateAssistantFile, setWaitSaveCreateAssistantFile] = useState(false)
     const [waitSaveCreateAssistantAssignFile, setWaitSaveCreateAssistantAssignFile] = useState(false)
@@ -110,7 +111,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     })
     const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
     const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
-    const [selectedProvider, setSelectedProvider] = React.useState(''); 
 
     useEffect(() => {
         if (waitSave) {
@@ -154,10 +154,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             temperature: row?.temperature || 0,
             max_tokens: row?.max_tokens || 0,
             top_p: row?.top_p || 0,
-            top_k: row?.top_k || 0,
-            repetition_penalty: row?.repetition_penalty || 0,
-            chunk_size: row?.chunk_size || 1024,
-            chunk_overlap: row?.chunk_overlap || 20,
             apikey: row?.basemodel.startsWith('gpt') ? (edit ? decrypt(row?.apikey, PUBLICKEYPEM) : '') : (edit ? row?.apikey : ''),
             retrieval: row?.retrieval || true,
             codeinterpreter: row?.codeinterpreter || false,
@@ -182,13 +178,9 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         register('prompt', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('negativeprompt');
         register('generalprompt');
-        register('temperature', { validate: (value) => (!value ? t(langKeys.required) : (parseFloat(value) <= 0 || parseFloat(value) > 2.0 ? t(langKeys.invalid) : true)) });
+        register('temperature', { validate: (value) => (value && value > 0 && parseFloat(value) <= 2.0) || t(langKeys.required) });
         register('max_tokens', { validate: (value) => (value && value > 0) || t(langKeys.required) });
-        register('top_p', { validate: (value) => (!value ? t(langKeys.required) : (parseFloat(value) <= 0 || parseFloat(value) > 1.0 ? t(langKeys.invalid) : true)) });
-        register('top_k', { validate: (value) => (!value ? t(langKeys.required) : (parseFloat(value) < 0 || parseFloat(value) > 100 ? t(langKeys.invalid) : true)) });
-        register('repetition_penalty', { validate: (value) => (!value ? t(langKeys.required) : (parseInt(value, 10) !== 1 && parseInt(value, 10) !== 2 ? t(langKeys.invalid) : true)) });
-        register('chunk_size', { validate: (value) => (!value ? t(langKeys.required) : (parseInt(value, 10) <= 0 ? t(langKeys.invalid) : true)) });
-        register('chunk_overlap', { validate: (value) => (!value ? t(langKeys.required) : (parseInt(value, 10) <= 0 ? t(langKeys.invalid) : true)) });        
+        register('top_p', { validate: (value) => (value && value > 0 && parseFloat(value) <= 1.0) || t(langKeys.required) });
         register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('retrieval');
         register('codeinterpreter');
@@ -301,8 +293,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     codeinterpreter: data.codeinterpreter,
                     apikey: encryptedApikey,
                     file_ids: filesIds,
-                    temperature: parseFloat(data.temperature),
-                    top_p: parseFloat(data.top_p)
                 }))
                 setWaitSaveUpdateAssistant(true)    
             } else {
@@ -313,8 +303,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     retrieval: data.retrieval,
                     codeinterpreter: data.codeinterpreter,
                     apikey: encryptedApikey,
-                    temperature: parseFloat(data.temperature),
-                    top_p: parseFloat(data.top_p)
                 }))            
                 setWaitSaveCreateAssistant2(true)        
             }                   
@@ -367,8 +355,6 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                 retrieval: data.retrieval,
                 codeinterpreter: data.codeinterpreter,
                 apikey: encryptedApikey2,
-                temperature: parseFloat(data.temperature),
-                top_p: parseFloat(data.top_p)
             }))
             setWaitSaveCreateAssistant(true)
         };
@@ -486,7 +472,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
         const callback = async () => {
             dispatch(showBackdrop(true));
-            if(provider === "LaraigoLLM" || provider === "Laraigo") {
+            if(provider === "LaraigoLLM") {
                 dispatch(createCollection3({
                     collection: data.name,
                 }))
@@ -499,7 +485,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         };
         const callbackEdit = async () => {
             dispatch(showBackdrop(true));
-            if(provider === "LaraigoLLM" || provider === "Laraigo") {
+            if(provider === "LaraigoLLM") {
                 dispatch(editCollection3({
                     name: row?.name,
                     new_name: data.name
@@ -559,12 +545,10 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
             }
             setGeneralPrompt(generalprompt)
 
-            if(provider === "LaraigoLLM" || provider === "Laraigo") {
+            if(provider === "LaraigoLLM") {
                 dispatch(createCollectionDocuments3({
                     urls: cosFile.map((item: Dictionary) => item.file_url),
-                    collection: data.name,
-                    chunk_size: data?.chunk_size,
-                    chunk_overlap: data?.chunk_overlap,
+                    collection: data.name
                 }))
                 setWaitSaveCreateCollection(true)
             } else {
@@ -586,7 +570,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     useEffect(() => {
         if (waitSaveCreateMeta) {
-            if(provider === "LaraigoLLM" || provider === "Laraigo"){
+            if(provider === "LaraigoLLM"){
                 if (!llm3Result.loading && !llm3Result.error) {
                     setWaitSaveCreateMeta(false);
                     dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
@@ -618,7 +602,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
 
     useEffect(() => {
         if (waitSaveCreateCollection) {
-            if(provider === "LaraigoLLM" || provider === "Laraigo") {
+            if(provider === "LaraigoLLM") {
                 if (!llm3Result.loading && !llm3Result.error) {
                     setWaitSaveCreateCollection(false);
                     dispatch(execute(insAssistantAi({ ...getValues(), generalprompt: generalprompt, code: 'llamatest' })));
@@ -683,7 +667,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
         } else if (tabIndex === 1) {
             handleChangeTab(e, 2);
         } else {
-            if(provider === 'OpenAI') {
+            if(provider === 'Open AI') {
                 if (cosFile.length < 1) {
                     onMainSubmit();
                 } else {
@@ -797,13 +781,13 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     />
                 </Tabs>
                 <AntTabPanelAux index={0} currentIndex={tabIndex}>
-                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} setSelectedProvider={setSelectedProvider} />
+                    <AssistantTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setProvider={setProvider} firstData={firstData} setFirstData={setFirstData} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={1} currentIndex={tabIndex}>
-                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} provider={selectedProvider} />
+                    <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} provider={selectedProvider} getValues={getValues} setValue={setValue} errors={errors} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} />
                 </AntTabPanelAux>
             </form>
         </>

@@ -83,7 +83,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ChannelEnableVirtualAssistant: FC<{ communicationchannelid?: number, finishFunction?: any, gobackFunction?: any }> = ({ communicationchannelid, finishFunction, gobackFunction }) => {
+const ChannelEnableVirtualAssistant: FC<{communicationchannelid?:number}> = ({communicationchannelid}) => {
     const { t } = useTranslation();
     const history = useHistory();
     const location = useLocation();
@@ -124,11 +124,7 @@ const ChannelEnableVirtualAssistant: FC<{ communicationchannelid?: number, finis
     const handleGoBack = useCallback(
         (e: React.MouseEvent) => {
             e.preventDefault();
-            if (gobackFunction) {
-                gobackFunction();
-            } else {
-                history.push(paths.CHANNELS);
-            }
+            history.push(paths.CHANNELS);
         },
         [history]
     );
@@ -139,11 +135,7 @@ const ChannelEnableVirtualAssistant: FC<{ communicationchannelid?: number, finis
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_enablecirtualassistant) }))
-                if (finishFunction) {
-                    finishFunction()
-                } else {
-                    history.push(paths.CHANNELS);
-                }
+                history.push(paths.CHANNELS);
             } else if (response.error) {
                 const errormessage = t(response.code ?? "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -155,17 +147,13 @@ const ChannelEnableVirtualAssistant: FC<{ communicationchannelid?: number, finis
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            if (data.chatblockid) {
+            if(data.chatblockid){
                 dispatch(showBackdrop(true));
                 dispatch(execute(templatesChatflowClone(data)));
-
+    
                 setWaitSave(true);
-            } else {
-                if (finishFunction) {
-                    finishFunction()
-                } else {
-                    history.push(paths.CHANNELS);
-                }
+            }else{
+                history.push(paths.CHANNELS);
             }
         };
         dispatch(
@@ -245,20 +233,20 @@ const ChannelEnableVirtualAssistant: FC<{ communicationchannelid?: number, finis
                             <Input
                                 value={getValues("prop_value")}
                                 style={{ width: "50%" }}
-                                onChange={(e) => {
+                                onChange={(e)=> {
                                     const value = parseFloat(e.target.value);
                                     if (!isNaN(value) && value > 0) {
-                                        setValue("prop_value", value);
+                                      setValue("prop_value", value);
                                     } else {
-                                        setValue("prop_value", 0);
+                                      setValue("prop_value", 0);
                                     }
                                     trigger('prop_value');
-
+                                    
                                 }}
                                 inputProps={{
                                     "aria-label": "description",
                                     type: "number",
-                                    min: "0"
+                                    min: "0" 
                                 }}
                             />
                             <Trans i18nKey={langKeys.minute_plural} />

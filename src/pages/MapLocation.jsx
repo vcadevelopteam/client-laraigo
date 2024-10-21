@@ -54,7 +54,6 @@ export default function MapLocation({ directionData, setDirectionData }) {
 	}
 
 	function cleanDataAddres(r) {
-		debugger
 		const street_number = r.find(x => x.types.includes("street_number"));
 		const postal_code = r.find(x => x.types.includes("postal_code"));
 		const route = r.find(x => x.types.includes("route"));
@@ -62,7 +61,6 @@ export default function MapLocation({ directionData, setDirectionData }) {
 		const administrative_area_level_2 = r.find(x => x.types.includes("administrative_area_level_2"));
 		const locality = r.find(x => x.types.includes("locality"));
 		const sublocality_level_1 = r.find(x => x.types.includes("sublocality_level_1"));
-		const country = r.find(x => x.types.includes("country"));
 
 		setDirectionData((prev) => ({
 			...prev,
@@ -72,7 +70,6 @@ export default function MapLocation({ directionData, setDirectionData }) {
 			zone: sublocality_level_1 ? sublocality_level_1.long_name : "",
 			zipcode: postal_code ? postal_code.long_name : "",
 			street: route ? route.long_name : "",
-			country: country ? country.long_name : "",
 			streetNumber: street_number ? street_number.long_name : "",
 		}))
 	}

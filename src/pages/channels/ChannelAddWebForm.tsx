@@ -10,8 +10,8 @@ import { useDispatch } from "react-redux";
 import { apiUrls } from "common/constants";
 import { TabPanel } from "pages/crm/components";
 import { useSelector } from "hooks";
-import { manageConfirmation, showSnackbar } from "store/popus/actions";
-import { getEditChatWebChannel, getInsertChatwebChannel, updateMetachannels } from "common/helpers";
+import { showSnackbar } from "store/popus/actions";
+import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
 
 import {
     editChannel as getEditChannel,
@@ -1027,7 +1027,6 @@ const useStyles = makeStyles((theme) => ({
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
-    onboarding?: boolean;
 }
 
 export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
@@ -1048,19 +1047,14 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     const channel = whatsAppData?.row ? (whatsAppData?.row as IChannel | null) : (location.state as IChannel | null);
 
     if (!whatsAppData?.row) {
-        if (channel && !service.current && channel.servicecredentials?.length > 0) {
+        if (channel && !service.current && channel.servicecredentials.length > 0) {
             service.current = JSON.parse(channel.servicecredentials);
         }
     }
 
     useEffect(() => {
         if (edit && !channel) {
-            if (whatsAppData?.onboarding) {
-                updateMetachannels(14);
-                history.push(paths.METACHANNELS, whatsAppData);
-            } else {
-                history.push(paths.CHANNELS);
-            }
+            history.push(paths.CHANNELS);
         }
 
         return () => {
@@ -1087,10 +1081,6 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                     severity: "success",
                 })
             );
-
-            if (whatsAppData?.onboarding) {
-                history.push(paths.METACHANNELS, whatsAppData);
-            }
         }
     }, [dispatch, insertChannel, t]);
 
@@ -1112,13 +1102,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                     severity: "success",
                 })
             );
-
-            if (whatsAppData?.onboarding) {
-                updateMetachannels(14);
-                history.push(paths.METACHANNELS, whatsAppData);
-            } else {
-                history.push(paths.CHANNELS);
-            }
+            history.push(paths.CHANNELS);
         }
     }, [dispatch, editChannel]);
 
@@ -1203,43 +1187,25 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
         }
     };
 
-    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
+    const handleSubmit = (name: string, auto: boolean) => {
         const values = form.getValues();
-        if (!channel || channel?.onboarding === true) {
-            const body = getInsertChatwebChannel(0, name, auto, hexIconColor, values, "FORM", true);
+        if (!channel) {
+            const body = getInsertChatwebChannel(0, name, auto, "", values, "FORM");
             dispatch(insertChannel2(body));
         } else if (channel.status === "INACTIVO") {
             const id = channel.communicationchannelid;
-            const body = getInsertChatwebChannel(id, name, auto, hexIconColor, values, "FORM", false);
+            const body = getInsertChatwebChannel(id, name, auto, "", values, "FORM");
             dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
-            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor, "FORM");
+            const body = getEditChatWebChannel(id, channel, values, name, auto, "", "FORM");
             dispatch(getEditChannel(body, "CHAZ"));
         }
     };
 
     const handleGoBack: React.MouseEventHandler = (e) => {
         e.preventDefault();
-
-        if (whatsAppData?.onboarding) {
-            dispatch(manageConfirmation({
-                visible: true,
-                title: t(langKeys.confirmation),
-                question: t(langKeys.channelconfigsave),
-                callback: () => {
-                    handleSubmit("DEFAULT", false, "#7721ad");
-                },
-                callbackcancel: () => {
-                    history.push(paths.METACHANNELS, whatsAppData);
-                },
-                textCancel: t(langKeys.decline),
-                textConfirm: t(langKeys.accept),
-                isBold: true,
-                showClose: true,
-            }))
-        }
-        else if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
+        if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     };
 
     if (edit && !channel) {
@@ -1332,7 +1298,7 @@ const useFinalStepStyles = makeStyles(() => ({
 interface ChannelAddEndProps {
     loading: boolean;
     integrationId?: string;
-    onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
+    onSubmit: (name: string, auto: boolean) => void;
     onClose?: () => void;
     channel: IChannel | null;
 }
@@ -1343,36 +1309,14 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const auto = true;
     const [name, setName] = useState(channel?.communicationchanneldesc ?? "");
-    const location = useLocation();
-    const dispatch = useDispatch();
-    const whatsAppData = location.state as WhatsAppData | null;
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
-
-        if (whatsAppData?.onboarding) {
-            dispatch(manageConfirmation({
-                visible: true,
-                title: t(langKeys.confirmation),
-                question: t(langKeys.channelconfigsave),
-                callback: () => {
-                    onSubmit(name || "DEFAULT", false, "#7721ad");
-                },
-                callbackcancel: () => {
-                    window.location.reload();
-                },
-                textCancel: t(langKeys.decline),
-                textConfirm: t(langKeys.accept),
-                isBold: true,
-                showClose: true,
-            }))
-        } else {
-            if (!integrationId) onClose?.();
-        }
+        if (!integrationId) onClose?.();
     };
 
     const handleSave = () => {
-        onSubmit(name, auto, "#7721ad");
+        onSubmit(name, auto);
     };
 
     return (
@@ -1396,35 +1340,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         valueDefault={channel?.communicationchanneldesc}
                     />
                 </div>
-                {(channel?.communicationchannelsite && channel?.status === "ACTIVO") && <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        marginLeft: 120,
-                        marginRight: 120,
-                    }}
-                >
-                    <pre
-                        style={{
-                            background: "#f4f4f4",
-                            border: "1px solid #ddd",
-                            color: "#666",
-                            pageBreakInside: "avoid",
-                            fontFamily: "monospace",
-                            lineHeight: 1.6,
-                            maxWidth: "100%",
-                            overflow: "auto",
-                            padding: "1em 1.5em",
-                            display: "block",
-                            wordWrap: "break-word",
-                        }}
-                    >
-                        <code>
-                            {`<div id="${name}"></div><script src="${apiUrls.WEBFORMCHANNEL_FORM}" integrationid="${channel?.communicationchannelsite}" containerid="${name}"></script>`}
-                        </code>
-                    </pre>
-                    <div style={{ height: 20 }} />
-                </div>}
                 <div style={{ paddingLeft: "80%" }}>
                     <Button
                         onClick={handleSave}
@@ -1482,13 +1397,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 <div style={{ display: integrationId ? "flex" : "none", flexDirection: "column", marginBottom: 20 }}>
                     *{t(langKeys.containeridExplained)}
                 </div>
-                <Button variant="contained" color="primary" onClick={() => {
-                    if (whatsAppData?.onboarding) {
-                        history.push(paths.METACHANNELS, whatsAppData);
-                    } else {
-                        history.push(paths.CHANNELS);
-                    }
-                }}>
+                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}
                 </Button>
             </div>

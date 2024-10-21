@@ -255,7 +255,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
           },
           {
             Header: t(langKeys.carriername),
-            accessor: "usr",
+            accessor: "userid",
             width: "auto",
           },
           {
@@ -325,7 +325,7 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                                         onChange={handleChange('predefineda')} 
                                         name="predef" 
                                     />}
-                                label={t(langKeys.default)}
+                                label={t(langKeys.default2)}
                             />
                             <FormControlLabel
                                 className={classes.formControlLabelPointer}
@@ -766,7 +766,6 @@ const DeliveryConfigurationTabDetail: React.FC<ConfigurationTabDetailProps> = ({
                         data={selectedRow}   
                         fetchVehicles={fetchVehicles}
                         vehicleTypes={vehicleTypes}
-                        alreadyDrivers={mainVehicles.data.map(vehicle => vehicle.userid)}
                     />
                 </div>
                 <div className='row-zyx'>                

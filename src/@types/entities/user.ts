@@ -20,14 +20,6 @@ interface Organization {
     corpdesc: string;
 }
 
-interface Balance {
-    balanceCurrent: number;
-    balanceNotificationEnabled: boolean | undefined;
-    balanceNotificationMessage: string;
-    balanceNotificationMinimum: number;
-    showBalance: boolean | undefined;
-}
-
 interface Properties {
     alertTicketNew: boolean | undefined;
     alertMessageIn: boolean | undefined;
@@ -101,10 +93,9 @@ export interface IUser {
     logourl?: string;
     startlogourl?: string;
     iconurl?: string;
-    balance: Balance;
     samlAuth?: boolean;
     languagesettings?: ILanguageSettings;    
-    uiconfig?: any
+    // notifications: Notification[];
 }
 
 export interface NotificationZyx {

@@ -12,12 +12,32 @@ export const createCollection3 = (requestBody: any): IActionCall => ({
     type: null,
 })
 
+export const createCollectionDocument3 = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService3.createCollectionDocument3(requestBody),
+    types: {
+        loading: actionTypes.CREATE_COLLECTION_DOCUMENT,
+        success: actionTypes.CREATE_COLLECTION_DOCUMENT_SUCCESS,
+        failure: actionTypes.CREATE_COLLECTION_DOCUMENT_FAILURE,
+    },
+    type: null,
+})
+
 export const createCollectionDocuments3 = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService3.createCollectionDocuments3(requestBody),
     types: {
         loading: actionTypes.CREATE_COLLECTION_DOCUMENTS,
         success: actionTypes.CREATE_COLLECTION_DOCUMENTS_SUCCESS,
         failure: actionTypes.CREATE_COLLECTION_DOCUMENTS_FAILURE,
+    },
+    type: null,
+})
+
+export const deleteCollection3 = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService3.deleteCollection3(requestBody),
+    types: {
+        loading: actionTypes.DELETE_COLLECTION,
+        success: actionTypes.DELETE_COLLECTION_SUCCESS,
+        failure: actionTypes.DELETE_COLLECTION_FAILURE,
     },
     type: null,
 })
@@ -42,6 +62,16 @@ export const editCollection3 = (requestBody: any): IActionCall => ({
     type: null,
 })
 
+export const addFileLlama3= (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService3.addFile3(requestBody),
+    types: {
+        loading: actionTypes.ADD_FILE,
+        success: actionTypes.ADD_FILE_SUCCESS,
+        failure: actionTypes.ADD_FILE_FAILURE,
+    },
+    type: null,
+})
+
 export const addFilesLlama3 = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService3.addFiles3(requestBody),
     types: {
@@ -62,22 +92,22 @@ export const deleteFileLlama3 = (requestBody: any): IActionCall => ({
     type: null,
 })
 
-export const deleteThreadLlama3 = (requestBody: any): IActionCall => ({
-    callAPI: () => LlamaService3.deleteThread3(requestBody),
-    types: {
-        loading: actionTypes.DELETE_THREAD,
-        success: actionTypes.DELETE_THREAD_SUCCESS,
-        failure: actionTypes.DELETE_THREAD_FAILURE,
-    },
-    type: null,
-})
-
 export const query3 = (requestBody: any): IActionCall => ({
     callAPI: () => LlamaService3.query3(requestBody),
     types: {
         loading: actionTypes.QUERY,
         success: actionTypes.QUERY_SUCCESS,
         failure: actionTypes.QUERY_FAILURE,
+    },
+    type: null,
+})
+
+export const deleteThreadLlama3 = (requestBody: any): IActionCall => ({
+    callAPI: () => LlamaService3.deleteThread3(requestBody),
+    types: {
+        loading: actionTypes.DELETE_THREAD,
+        success: actionTypes.DELETE_THREAD_SUCCESS,
+        failure: actionTypes.DELETE_THREAD_FAILURE,
     },
     type: null,
 })

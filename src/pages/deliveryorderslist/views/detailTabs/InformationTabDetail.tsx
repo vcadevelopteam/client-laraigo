@@ -37,12 +37,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const transformDate = (dateString: string) => {
-    const [datePart, timePart] = dateString.split(' ');
-    const [day, month, year] = datePart.split('/');
-    return `${year}-${month}-${day}`;
-};
-
 interface InformationTabDetailProps {
     row: Dictionary | null;
 }
@@ -51,7 +45,6 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const productsData = useSelector((state) => state.main.mainAux2);
-    const deliveryDate = row?.deliverydate ? transformDate(row.deliverydate) : '';
 
     const columns = React.useMemo(
         () => [
@@ -108,8 +101,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                         label={t(langKeys.deliverydate)}
                         className="col-4"
                         type="date"
-                        disabled={true}
-                        valueDefault={deliveryDate}
+                        valueDefault={row?.deliverydate}
                     />
                     <FieldEdit
                         label={t(langKeys.ticket_number)}
@@ -167,7 +159,7 @@ const InformationTabDetail: React.FC<InformationTabDetailProps> = ({ row }) => {
                             className="col-3"
                             type="text"
                             disabled={true}
-                            valueDefault={row?.person_address}
+                            valueDefault={row?.deliveryaddress}
                         />
                     </div>
                 </div>

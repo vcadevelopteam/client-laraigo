@@ -361,7 +361,6 @@ export const getExchangeRateSuccess = (state: IState, action: IAction): IState =
         error: false,
         exchangerate: action.payload.exchangerate,
         exchangeratesol: action.payload.exchangeratesol,
-        exchangeratecop: action.payload.exchangeratecop,
         code: action.payload.code ? action.payload.code : action.payload.message,
         message: action.payload.message,
     },

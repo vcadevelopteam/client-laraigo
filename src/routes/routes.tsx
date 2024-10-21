@@ -48,11 +48,6 @@ import {
     InventoryConsumptionIcon,
     InventoryIcon,
     DocumentLibraryIcon,
-    DeliveryIcon,
-    StoreCoverageIcon,
-    OrdersListIcon,
-    OrdersInAttentionIcon,
-    ConfigurationDeliveryIcon,
     FlaskIcon,
     LinkRegisterIcon,
 } from 'icons';
@@ -92,7 +87,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         key: "delivery",
         description: <Trans i18nKey={langKeys.delivery} />,
         // tooltip: <Trans i18nKey={langKeys.reason_sales} />,
-        icon: (className) => <DeliveryIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        icon: (className) => <SalesRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
         // options: [paths.CONFIGURATIONDELIVERY,paths.ORDERLIST]
     },
     {
@@ -322,7 +317,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.CONFIGURATIONDELIVERY,
         initialSubroute: paths.CONFIGURATIONDELIVERY,
-        icon: (className) => <ConfigurationDeliveryIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ConfigPropertiesIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.ORDERLIST,
@@ -331,7 +326,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORDERLIST,
         initialSubroute: paths.ORDERLIST,
-        icon: (className) => <OrdersListIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.ORDERINSTORE,
@@ -349,7 +344,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.ORDERSINATTENTION,
         initialSubroute: paths.ORDERSINATTENTION,
-        icon: (className) => <OrdersInAttentionIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ProductsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.STORECOVERAGE,
@@ -358,7 +353,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.STORECOVERAGE,
         initialSubroute: paths.STORECOVERAGE,
-        icon: (className) => <StoreCoverageIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <OrganizationsIcon style={{ width: 22, height: 22 }} className={className} />,
     },    
     {
         key: '/channels',
@@ -486,13 +481,6 @@ export const routes: RouteConfig[] = [
         icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
     },
     {
-        key: paths.USERS,
-        description: <Trans i18nKey={langKeys.user_plural} />,
-        tooltip: "",
-        path: paths.USERS,
-        icon: (className) => <UserGroupIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
-    },   
-    {
         key: paths.CUSTOMVARIABLE,
         description: <Trans i18nKey={langKeys.customvariables}/>,
         tooltip: <Trans i18nKey={langKeys.customvariables} />,
@@ -506,6 +494,14 @@ export const routes: RouteConfig[] = [
         path: paths.CUSTOMFIELDS,
         icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className}  />,
     },*/
+    {
+        key: paths.USERS,
+        description: <Trans i18nKey={langKeys.user_plural} />,
+        tooltip: "",
+        path: paths.USERS,
+        icon: (className) => <UserGroupIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+    },
+   
     {
         key: paths.GROUPCONFIG,
         description: <Trans i18nKey={langKeys.groupconfig} />,

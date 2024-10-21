@@ -434,7 +434,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             }
         }      
     }, [multiData]);
-
+        
     const updateValues = (variableNumber, selectedOption, variableType, carouselIndex) => {
         if(row && !detectionChangeSource){
             const key = selectedOption.key;

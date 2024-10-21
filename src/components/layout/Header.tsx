@@ -19,7 +19,6 @@ import { answerCall, holdCall, setHold } from 'store/voximplant/actions';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { notCustomUrl } from 'pages/dashboard/constants';
-import AccountBalance from 'components/session/AccountBalance';
 
 type IProps = {
     classes: any;
@@ -295,7 +294,6 @@ const Header = ({ classes }: IProps) => {
                             <div className={myClasses.statusConnection}>
                                 <StatusConnection />
                             </div>
-                            <AccountBalance />
                             <NotificationMenu />
                             <AccountMenu />
                             <LaraigoHelp />

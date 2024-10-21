@@ -17,4 +17,3 @@ export * from './entities/domain';
 export * from './entities/channel';
 export * from './entities/lead';
 export * from './entities/dashboardtemplate';
-export * from './entities/billingsetup';

@@ -64,8 +64,6 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
     const thirdColRef = useRef<HTMLTableCellElement>(null);
     const [calculatedWidth, setCalculatedWidth] = useState<number | null>(null);
 
-    console.log('user', user?.plan)
-
     const calculateWidth = () => {
         if (tableRef.current && thirdColRef.current) {
             const tableRect = tableRef.current.getBoundingClientRect();

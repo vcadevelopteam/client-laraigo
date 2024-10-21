@@ -673,24 +673,10 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
 
 
     let formattedData: { domaindesc: string; domainvalue: string }[] = [];
-    const templateData = multiData.data[4]?.data || [];
-    const uniqueChannelIds = new Set<string>();
-
-    templateData.forEach((item: Dictionary) => {
-        if (item.communicationchannelid) {
-            item.communicationchannelid.split(',').forEach((id: string) => {
-                uniqueChannelIds.add(id.trim());
-            });
-        }
-    });
-
-    const uniqueChannelIdsArray = Array.from(uniqueChannelIds);
     const targetData = multiData.data[3];
+
     if (targetData && targetData.data) {
-        const filteredData = targetData.data.filter((item: Dictionary) =>
-            uniqueChannelIdsArray.includes(item.communicationchannelid.toString())
-        );
-        formattedData = filteredData.map((item: Dictionary) => ({
+        formattedData = targetData.data.map((item: any) => ({
             domaindesc: item.communicationchannelid.toString(),
             domainvalue: item.description,
         }));
@@ -748,6 +734,8 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                                 </Button>
                             </div>
                         </div>
+
+
                     )}
                     autotrigger={true}
                     columns={columns}

@@ -7,7 +7,6 @@ import { TitleDetail } from "components";
 import TableZyx from "components/fields/table-simple";
 import { Typography } from "@material-ui/core";
 import { useSelector } from "hooks";
-import { format } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -59,10 +58,6 @@ const OrderStatusTabDetail: React.FC<OrderStatusTabDetailProps> = ({ row }) => {
                 Header: t(langKeys.date),
                 accessor: "createdate",
                 width: "auto",
-                Cell: ({ value }) => {
-                    const formattedDate = format(new Date(value), 'yyyy-MM-dd HH:mm:ss');
-                    return <span>{formattedDate}</span>;
-                },
             },
         ],
         []

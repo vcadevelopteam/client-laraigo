@@ -187,53 +187,11 @@ export const useStyles = makeStyles((theme) => ({
     },
     chip: {
         '& .MuiChip-deleteIcon': {
-          display: 'none',
-          marginRight: '1rem',
-          cursor: 'pointer',
+            display: 'none',
+            marginRight: '1rem',
+            cursor:'pointer'
         },
-        '& .MuiChip-label': {
-          userSelect: 'text', 
-          cursor: 'text',
-         
-        },
-      },
-      customChip: {
-        display: 'inline-flex',
-        alignItems: 'center',
-        borderRadius: '16px',
-        backgroundColor: '#EFEFEF',
-        color: '#A1A1A1',
-        cursor: 'default',
-        userSelect: 'text',
-        pointerEvents: 'auto',
-        transition: 'none !important',
-        '&:hover': {
-            backgroundColor: '#EFEFEF',
-            boxShadow: 'none',
-            transition: 'none',
-        },
-        '&:focus': {
-            backgroundColor: '#EFEFEF',
-            boxShadow: 'none',
-            transition: 'none',
-        },
-        '&:active': {
-            backgroundColor: '#EFEFEF',
-            boxShadow: 'none',
-            transition: 'none', 
-        },
-        '&::selection': {
-            backgroundColor: '#EFEFEF',
-            color: 'inherit',
-            transition: 'none', 
-        },
-        '& .MuiTouchRipple-root': {
-            display: 'none', 
-        },
-        '& *': {
-            transition: 'none !important',
-        },
-    }, 
+    },
 }));
 
 const opentermsofservice = () => {

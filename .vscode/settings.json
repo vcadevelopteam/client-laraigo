@@ -1,17 +1,14 @@
 {
+    "liveServer.settings.port": 5501,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
     "[javascript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features"
     },
-    "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "compile-hero.disable-compile-files-on-did-save-code": false,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "liveServer.settings.port": 5501
+    "compile-hero.disable-compile-files-on-did-save-code": false
 }

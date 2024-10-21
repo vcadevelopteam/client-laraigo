@@ -38,5 +38,4 @@ export interface IChannel {
     voximplantholdtone?: string;
     voximplantrecording?: string;
     voximplantwelcometone?: string;
-    onboarding?: boolean;
 }

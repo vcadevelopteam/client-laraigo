@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DateRangePicker, FieldEdit, FieldEditMulti, FieldSelect, FieldView, IOSSwitch } from 'components';
-import { getDateCleaned, insCommentsBooking, calendarBookingCancel, getDateToday, selBookingCalendar, dayNames, editCalendarBooking, hash256 } from 'common/helpers';
+import { getDateCleaned, insCommentsBooking, calendarBookingCancel, getDateToday, selBookingCalendar, dayNames, editCalendarBooking } from 'common/helpers';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
@@ -133,7 +133,7 @@ const DialogBooking: React.FC<{
             <DialogContent>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div style={{ display: 'flex', gap: 8 }}>
-                        <div style={{ width: "50%", display: 'flex', gap: 8 }}>
+                        <div style={{width:"50%", display: 'flex', gap: 8}}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
                             </div>
@@ -181,7 +181,7 @@ const DialogBooking: React.FC<{
                         </div>
                     </div>
                     <div style={{ display: 'flex', gap: 20 }}>
-                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column'}}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <FieldView
                                     label={t(langKeys.event)}
@@ -200,7 +200,7 @@ const DialogBooking: React.FC<{
                                 </div>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column'}}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <FieldView
                                     label={t(langKeys.report_opportunity_fullname)}
@@ -323,11 +323,11 @@ const DialogCancelBooking: React.FC<{
                         { name: "eventlocation", "text": event.location },
                         { name: "eventlink", "text": event.eventlink },
                         { name: "eventcode", "text": event.code },
-                        { name: "monthdate", "text": booking?.monthdate },
-                        { name: "hourstart", "text": booking?.hourstart },
-                        { name: "hourend", "text": booking?.hourend },
-                        { name: "personname", "text": booking?.personname },
-                        { name: "personcontact", "text": booking?.personcontact },
+                        { name: "monthdate", "text": booking?.monthdate},
+                        { name: "hourstart", "text": booking?.hourstart},
+                        { name: "hourend", "text": booking?.hourend},
+                        { name: "personname", "text": booking?.personname},
+                        { name: "personcontact", "text": booking?.personcontact},
                         { name: "personmail", "text": booking?.personmail }
                     ]
                 }
@@ -405,31 +405,6 @@ interface CalendarScheduledEventsProps {
     event: Dictionary;
 }
 
-const BookingViewer = ({ item }: { item: Dictionary }) => {
-    const [color, setColor] = useState(item?.color || "#e1e1e1")
-
-    useEffect(() => {
-        if (item.email) {
-            hash256(item.email).then((res) => {
-                setColor('#' + res.substring(0, 6))
-            })
-        }
-    }, [item])
-
-    return (
-        <div
-            style={{
-                backgroundColor: color,
-                paddingLeft: 4
-            }}
-            title={`${item.name} - ${item.personname}`}
-        >
-            {item.personname}
-        </div>
-    )
-}
-
-
 const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
     calendarEventID,
     event
@@ -484,9 +459,9 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                     haveDate: bookingDates.find(y => y.calendarbookingid === x.calendarbookingid)
                 };
             })
-            setDataBooking(processedDataBooking.filter(x => (x?.created_by || "").includes(filterAgent)));
+            setDataBooking(processedDataBooking.filter(x=>(x?.created_by||"").includes(filterAgent)));
         }
-    }, [mainAux, filterAgent])
+    }, [mainAux,filterAgent])
 
     return (
         <div style={{ gap: 16, marginTop: 16, overflowY: 'auto' }}>
@@ -519,15 +494,16 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                             label={t(langKeys.asignedto)}
                             data={mainAux?.data?.map(obj => (obj?.created_by||"")).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
                                 .map(name => ({ agent: name }))||[]} 
+                            
                             onChange={(value) => {
-                                setFilterAgent(value?.agent || "")
+                                setFilterAgent(value?.agent||"")
                             }}
                             valueDefault={filterAgent}
                             loading={mainAux.loading}
-                            style={{ width: "200px" }}
-                            optionValue={'agent'}
-                            optionDesc={'agent'}
-                            variant="outlined"
+                            style={{width:"200px"}}
+                            optionValue={'agent'} 
+                            optionDesc={'agent'}    
+                            variant="outlined"                    
                         />
                         <Button
                             disabled={mainAux.loading}
@@ -639,18 +615,14 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
             {view === "calendar" && (
                 <div style={{ width: "100%" }}>
                     <CalendarWithInfo
-                        rb={selBookingCalendar(
-                            "",
-                            "",
-                            calendarEventID
-                        )}
+                        calendarEventID={calendarEventID}
                         date={dateRange.startDate!!}
-                        BookingView={BookingViewer}
                         selectBooking={(item) => {
                             setBookingSelected(item);
                             setOpenDialog(true);
                         }}
                         setDateRange={setDateRange}
+                        booking={event}
                     />
                 </div>
             )}

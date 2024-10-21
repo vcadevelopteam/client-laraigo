@@ -13,7 +13,7 @@ import { FieldEdit } from "components";
 import { execute, uploadFile } from "store/main/actions";
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from "@types";
-import { FieldErrors, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { insAssistantAiDoc } from "common/helpers";
 import { CellProps } from "react-table";
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
@@ -27,21 +27,12 @@ import { addFilesLlama, deleteFileLlama } from "store/llama/actions";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { addFilesLlama3, deleteFileLlama3 } from "store/llama3/actions";
 
+
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: "#fff",
-    },
-    containerDetail2: {
-        marginTop: '1rem',
-        display: 'flex',
-        gap:'1rem'
-    },
-    containerBox: {
-        width:'50%', 
-        background: "#fff",
-        padding: '1rem'
     },
     containerHeader: {
         marginTop: '1rem',
@@ -146,10 +137,6 @@ const useStyles = makeStyles((theme) => ({
     gridWidth: {
         minWidth: 500
     },
-    gridWidth2: {
-        minWidth: 200,
-        width: '100%', 
-    },    
     block10: {
         height: 10
     },
@@ -195,23 +182,6 @@ const useStyles = makeStyles((theme) => ({
         padding: '10px',
         marginTop: 20
     },
-    parameterContainer: {
-        display: 'flex',
-        alignItems: 'center'
-    },
-    detailTitle: {
-        fontWeight:'bold',
-        fontSize: 18
-    },
-    widthBlock10: {
-        width: 10
-    },
-    parameterDesc: {
-        marginTop: 15
-    }, 
-    text: {
-        fontSize: 16
-    },
 }));
 
 interface TrainingTabDetailProps {
@@ -220,10 +190,6 @@ interface TrainingTabDetailProps {
     fetchAssistants: () => void;
     edit: boolean;
     setFile: (data: Dictionary[]) => void;
-    provider: string;
-    getValues: (field: string) => any;
-    setValue: (field: any, value: any) => void;
-    errors: FieldErrors
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -231,16 +197,13 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     fetchData,
     fetchAssistants,
     edit,
-    setFile,
-    provider,
-    getValues,
-    setValue,
-    errors
+    setFile
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveFileDelete, setWaitSaveFileDelete] = useState(false);
     const [viewSelected, setViewSelected] = useState('main');
@@ -286,7 +249,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [selectedRows]);
 
-    const { register, handleSubmit, setValue: setFormValue, getValues: getFormValues } = useForm({
+    const { register, handleSubmit, setValue, getValues } = useForm({
         defaultValues: {
             assistantaiid: row?.assistantaiid,
             id: 0,
@@ -298,6 +261,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             operation: 'INSERT',
         }
     });
+
     React.useEffect(() => {
         register('assistantaiid');
         register('id');
@@ -307,7 +271,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         register('type');
         register('status');
         register('operation');
-    }, [register, setFormValue]);
+    }, [register, setValue]);
 
     const onClickAttachment = useCallback(() => {
         const input = document.getElementById('attachmentInput');
@@ -398,7 +362,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     useEffect(() => {
         if (waitSaveAddFileLlama) {
-            if(conector?.provider === "Laraigo") {
+            if(conector?.provider === "LaraigoLLM") {
                 if (!llm3Result.loading && !llm3Result.error) {
                     setWaitSaveAddFileLlama(false);
                     fileAttachments.map(async (file) => {
@@ -455,7 +419,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         setFile(fileAttachments)
     }
 
-    const handleUpload = handleSubmit(async () => {
+    const handleUpload = handleSubmit(async (data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
             dispatch(addFile({
@@ -478,9 +442,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             dispatch(showBackdrop(true));
             dispatch(addFilesLlama3({
                 urls: fileAttachments.map((item: Dictionary) => item.file_url),
-                collection: row?.name,
-                chunk_size: row?.chunk_size,
-                chunk_overlap: row?.chunk_overlap,
+                collection: row?.name
             }))
             setWaitSaveAddFileLlama(true);
         }
@@ -489,7 +451,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
-                callback: (conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? callback : conector?.provider === 'Laraigo' ? callbackLlm3 : callbackMeta,
+                callback: conector?.provider === 'Open AI' ? callback : conector?.provider === 'LaraigoLLM' ? callbackLlm3 : callbackMeta,
             })
         );
     });
@@ -588,6 +550,34 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeFiles, waitSaveFileDelete]);
 
+    const handleDelete = (row2: Dictionary) => {
+        const callback = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(deleteFile({
+                file_id: row2.fileid,
+                apikey: row?.apikey,
+            }))
+            setRowAux(row2)
+            setWaitSaveFileDelete(true)
+        };
+        const callbackMeta = async () => {
+            dispatch(showBackdrop(true));
+            dispatch(deleteFileLlama({
+                collection: row?.name,
+                filename: row2?.description,
+            }))
+            setRowAux(row2)
+            setWaitSaveFileDeleteLlama(true)
+        };
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_delete),
+                callback: conector?.provider === 'Open AI' ? callback : callbackMeta,
+            })
+        );
+    };
+
     useEffect(() => {
         if (waitSaveFileDeleteLlama) {
             if (!llamaResult.loading && !llamaResult.error) {
@@ -649,6 +639,22 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
 
     const columns = React.useMemo(
         () => [
+            /*{
+                accessor: "assistantaidocumentid",
+                NoFilter: true,
+                disableGlobalFilter: true,
+                isComponent: true,
+                minWidth: 60,
+                width: "1%",
+                Cell: (props: CellProps<Dictionary>) => {
+                  const row = props.cell.row.original;
+                  return (
+                    <TemplateIcons
+                      deleteFunction={() => handleDelete(row)}
+                    />
+                  );
+                },
+            },*/
             {
                 Header: t(langKeys.name),
                 accessor: 'description',
@@ -725,23 +731,23 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
         }
     }, [executeResult, waitSave]);
 
-    const handleDrop = (event: Dictionary) => {
+    const handleDrop = (event) => {
         event.preventDefault();
         const files = event.dataTransfer.files;
         onChangeAttachment(files);
     };
 
-    const handleDragOver = (event: Dictionary) => {
+    const handleDragOver = (event) => {
         event.preventDefault();
     };
 
-    const handleRemoveAttachment = (index: number) => {
+    const handleRemoveAttachment = (index) => {
         setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
-    
+//get values code inter true
     const handleUploadGeneral = () => {        
         if(edit) {
-            if(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') {
+            if(conector?.provider === 'Open AI') {
                 if(fileAttachments.some((attachment) => attachment.file_name.endsWith('.xlsx'))) {
                     if(row?.codeinterpreter) {
                         handleUpload()
@@ -762,102 +768,31 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     if (viewSelected === 'main') {
         return (
             <>
-                { provider?.trim().toLowerCase() === 'openai' ? (
-                    <div className={classes.containerDetail}>
-                         <div className="row-zyx">
-                             <div className={classes.container2}>
-                                 <div>
-                                     <span className={classes.title}>
-                                         {t(langKeys.knowledge_base)}
-                                     </span>
-                                     <div className={classes.titleMargin}>
-                                         <span>{t(langKeys.knowledge_based_description)}</span>
-                                     </div>
-                                 </div>
-                             </div>
-                             <div className={classes.cardsContainer}>
-                                 <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
-                                     <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
-                                         <div className={classes.cardContent}>
-                                             <UploadFileIcon className={classes.logo} />
-                                             <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                             <div className={classes.cardText}>{(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
-                                         </div>
-                                     </Card>
-                                 </Grid>
-                             </div>
-                         </div>
-                    </div>
-                    ) : (
-                        <div className={classes.containerDetail2}>
-                            <div className={classes.containerBox}>
-                                <div className={classes.container2}>
-                                    <div>
-                                        <span className={classes.title}>
-                                            {t(langKeys.knowledge_base)}
-                                        </span>
-                                        <div className={classes.titleMargin}>
-                                            <span>{t(langKeys.knowledge_based_description)}</span>
-                                        </div>
-                                    </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <div className={classes.container2}>
+                            <div>
+                                <span className={classes.title}>
+                                    {t(langKeys.knowledge_base)}
+                                </span>
+                                <div className={classes.titleMargin}>
+                                    <span>{t(langKeys.knowledge_based_description)}</span>
                                 </div>
-                                <div className={classes.cardsContainer}>
-                                    <Grid item xs={12} sm={8} md={8} lg={6} className={classes.gridWidth2}>
-                                        <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
-                                            <div className={classes.cardContent}>
-                                                <UploadFileIcon className={classes.logo} />
-                                                <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                                <div className={classes.cardText}>{(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
-                                            </div>
-                                        </Card>
-                                    </Grid>
-                                </div>
-                            </div>
-                            <div className={classes.containerBox}>
-                                <div className={classes.container2}>
-                                    <div>
-                                        <span className={classes.title}>
-                                            {t(langKeys.parameters)}
-                                        </span>                                
-                                    </div>
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{'Tamaño del chunk'}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <div className={classes.widthBlock10}/>
-                                        <FieldEdit
-                                            type="number"
-                                            variant="outlined"
-                                            size="small"
-                                            width={80}
-                                            valueDefault={getValues('chunk_size')}
-                                            onChange={(value) => setValue('chunk_size', value)}
-                                            error={errors?.chunk_size?.message}
-                                        />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{'Cantidad de caracteres para cada fragmento del documento a subir a la base de conocimientos. Cuando los documentos se agrega a la base de conocimientos, estos se dividen en fragmentos (chunks).'}</span></div>
-                                <div className={classes.block20}/>
-                                <div className={classes.parameterContainer}>
-                                    <span className={classes.detailTitle}>{'Superposición del chunk'}</span>
-                                    <div className={classes.widthBlock10}/>
-                                    <div className={classes.widthBlock10}/>
-                                    <FieldEdit
-                                        type="number"
-                                        variant="outlined"
-                                        size="small"
-                                        width={80}
-                                        valueDefault={getValues('chunk_overlap')}
-                                        onChange={(value) => setValue('chunk_overlap', value)}
-                                        error={errors?.chunk_overlap?.message}
-                                    />
-                                </div>
-                                <div className={classes.parameterDesc}><span className={classes.text}>{'Asigna la cantidad máxima de caracteres que deben superponerse entre dos chunks adyacentes. Los parámetros de tamaño y superposición del chunk se utilizan para controlar la granularidad de la división del texto.'}</span></div>
                             </div>
                         </div>
-                    )
-                }
+                        <div className={classes.cardsContainer}>
+                            <Grid item xs={2} md={1} lg={2} className={classes.gridWidth}>
+                                <Card className={classes.card} onClick={() => setViewSelected('uploadFile')}>
+                                    <div className={classes.cardContent}>
+                                        <UploadFileIcon className={classes.logo} />
+                                        <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
+                                        <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                        </div>
+                    </div>
+                </div>
                 <div className={classes.containerDetail}>
                     <div className={classes.header}>
                         <div>
@@ -1095,7 +1030,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                 <FieldEdit
                                     variant="outlined"
                                     label="URL"
-                                    valueDefault={getFormValues('url')}
+                                    valueDefault={getValues('url')}
                                     style={{ flexGrow: 1 }}
                                     disabled={true}
                                 />
