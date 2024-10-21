@@ -3820,6 +3820,8 @@ const translation: LangKeys = {
   complete_transfer: "Complete transfer",
   tocall: "Call",
   duein: "Due in",
+  scheduledfor: "Scheduled for",
+  asignedto: "Assigned to",
   type_activitylead_automatedsms: 'Automate message sms',
   'type_activitylead_call for demo': 'Call for demo',
   'type_activitylead_email: welcome demo': 'Email: Welcome demo',

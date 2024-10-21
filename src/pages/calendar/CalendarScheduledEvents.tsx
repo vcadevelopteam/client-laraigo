@@ -203,6 +203,13 @@ const DialogBooking: React.FC<{
                         <div style={{ display: 'flex', gap: 24, flex: 1, flexDirection: 'column' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                                 <FieldView
+                                    label={t(langKeys.report_opportunity_fullname)}
+                                    value={booking?.report_opportunity_fullname}
+                                    className={classes.colInput}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                                <FieldView
                                     label={t(langKeys.assigned_agent)}
                                     value={booking?.person_name}
                                     className={classes.colInput}
@@ -508,11 +515,10 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                 {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                             </Button>
                         </DateRangePicker>
-                        <FieldSelect
-                            label={t(langKeys.createdBy)}
-                            data={mainAux?.data?.map(obj => (obj?.created_by || "")).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
-                                .map(name => ({ agent: name })) || []}
-
+                        <FieldSelect 
+                            label={t(langKeys.asignedto)}
+                            data={mainAux?.data?.map(obj => (obj?.created_by||"")).filter(name => name.trim() !== '').filter((value, index, self) => self.indexOf(value) === index)
+                                .map(name => ({ agent: name }))||[]} 
                             onChange={(value) => {
                                 setFilterAgent(value?.agent || "")
                             }}
@@ -572,7 +578,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                         <div className={classes.integrationInformation}>
                                             {x.created_by && (
                                                 <Typography>
-                                                    {t(langKeys.createdBy)}: <span>{x.created_by}</span>
+                                                    {t(langKeys.asignedto)}: <span>{x.created_by}</span>
                                                 </Typography>
                                             )}
                                             {x.person_name && (
