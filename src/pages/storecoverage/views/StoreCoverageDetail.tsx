@@ -53,14 +53,15 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [coverageError, setCoverageError] = useState(false)
 
     const arrayBread = [
         { id: "main-view", name: t(langKeys.delivery) },
         { id: "detail-view", name: `${t(langKeys.storecoveragearea)} ${t(langKeys.detail)}` },
     ];
     
-    const [storeAreaCoordinates, setStoreAreaCoordinates] =useState();
-
+    const [storeAreaCoordinates, setStoreAreaCoordinates]=useState([]);
+    
     const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.storeid || 0,
@@ -106,19 +107,21 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         dispatch(resetMainAux());
     }, [register]);
 
-    console.log(storeAreaCoordinates)
-
     const onMainSubmit = handleMainSubmit((data) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            dispatch(execute(insStore({...data, coveragearea: JSON.stringify(storeAreaCoordinates)})));
-            setWaitSave(true);
+        if(storeAreaCoordinates?.length >= 4) {
+            const callback = () => {
+                dispatch(showBackdrop(true));
+                dispatch(execute(insStore({...data, coveragearea: JSON.stringify(storeAreaCoordinates)})));
+                setWaitSave(true);
+            }
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        } else {
+            setCoverageError(true);
         }
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
     });
 
     return (
@@ -161,7 +164,16 @@ const StoreCoverageDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                     </div>
 
                 </div>
-                <NewStoreCoverageTabDetail errors={errors} row={row} getValues={getValues} setValue={setValue} setStoreAreaCoordinates={setStoreAreaCoordinates}/>
+                <NewStoreCoverageTabDetail
+                    errors={errors}
+                    row={row}
+                    getValues={getValues}
+                    setValue={setValue}
+                    setStoreAreaCoordinates={setStoreAreaCoordinates}
+                    storeAreaCoordinates={storeAreaCoordinates}
+                    coverageError={coverageError}
+                    setCoverageError={setCoverageError}
+                />
             </form>
         </>
     );

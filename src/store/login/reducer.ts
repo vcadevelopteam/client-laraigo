@@ -50,6 +50,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHANGE_ORGANIZATION_RESET]: caseFunctions.changeOrganizationReset,
 
     [actionTypes.CHANGE_DATA_USER]: caseFunctions.updateUserInformation,
+    [actionTypes.CHANGE_UICONFIG_USER]: caseFunctions.updateUserUIConfig,
     [actionTypes.LOGOUT]: caseFunctions.logout,
     [actionTypes.LOGOUT_SUCCESS]: caseFunctions.logoutSuccess,
     [actionTypes.LOGOUT_FAILURE]: caseFunctions.logoutFailure,

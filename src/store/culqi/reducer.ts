@@ -8,6 +8,7 @@ interface culqiResponse {
     code: string;
     exchangerate: number;
     exchangeratesol: number;
+    exchangeratecop: number;
     id: string;
     message: string;
     object: string;
@@ -19,6 +20,7 @@ export interface IRequest extends ITemplate {
     datareport?: any | null;
     exchangerate?: number | null;
     exchangeratesol?: number | null;
+    exchangeratecop?: number | null;
     msg?: string | null;
 }
 
@@ -49,6 +51,7 @@ export const initialState: IState = {
         error: false,
         exchangerate: 0,
         exchangeratesol: 0,
+        exchangeratecop: 0,
         loading: false,
     },
 };

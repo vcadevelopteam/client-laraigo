@@ -1369,11 +1369,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                 {user!.currencysymbol}
                                             </InputAdornment>
                                         ),
-                                        style: { textAlign: 'right' },
+                                        style: { textAlign: 'left' },
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                     inputProps={{
-                                        style: { textAlign: 'right' },
+                                        style: { textAlign: 'left' },
                                     }}
                                 />
                                 <FieldMultiSelectFreeSolo
@@ -2161,7 +2161,9 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                             </span>
 
                                             <div style={{ width: '0.5em' }} />
-                                            <Info style={{ height: 18, width: 18, fill: 'grey' }} />
+                                            <Tooltip title={t(langKeys.activity_information)} arrow placement="top">
+                                                <Info style={{ height: 18, width: 18, fill: 'grey' }} />
+                                            </Tooltip>
                                         </div>
                                         {!readOnly && <div style={{ height: 4 }} />}
                                         {(!readOnly && leadId !== 0) && (
@@ -3270,6 +3272,18 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
         }
     }, []);
 
+    //Filtro provisional
+    const filteredHistory = history.reduce((acc, item) => {
+        const existing = acc.find(histItem => histItem.globalid === item.globalid);
+
+        if (!existing || item.description.startsWith("En espera de atención")) {
+            return [...acc.filter(histItem => histItem.globalid !== item.globalid), item];
+        }
+
+        return acc;
+    }, [] as ICrmLeadHistory[]);
+
+
     const ItemDescription = useCallback(({ item }: { item: ICrmLeadHistory }): JSX.Element => {
         switch (item.type) {
             case "CHANGESTATUS": // cambio de fase/columna
@@ -3292,7 +3306,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
     return (
         <Box>
             <Timeline align="left">
-                {history.map((item, i) => (
+                {filteredHistory.map((item, i) => (
                     <TimelineItem key={i} className={classes.timelineItemBefore}>
                         <TimelineSeparator>
                             <TimelineDot className={classes.timelineDot}>
@@ -3303,13 +3317,13 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                         <TimelineContent>
                             <div className={classes.itemRoot}>
                                 <div className={classes.itemHeader}>
-                                    <span className={classes.name}>
-                                        <Trans i18nKey={item.type} />
-                                    </span>
+                <span className={classes.name}>
+                  <Trans i18nKey={item.type} />
+                </span>
                                     <div style={{ width: '1em' }} />
                                     <span className={classes.dateTime}>
-                                        {formatDate(item.createdate)}
-                                    </span>
+                  {formatDateHour(item.createdate)}
+                </span>
                                 </div>
                                 {item.description && <ItemDescription item={item} />}
                             </div>
@@ -3402,6 +3416,12 @@ interface Options {
     withTime?: boolean;
     modhours?: number
 }
+
+const formatDateHour = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleString();
+};
 
 const formatDate = (strDate: string = "", options: Options = { withTime: true, modhours: 0 }) => {
     if (!strDate || strDate === '') return '';

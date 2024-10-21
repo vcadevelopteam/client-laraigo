@@ -49,6 +49,7 @@ import ReportLeadGridTracking from 'components/report/ReportLeadGridTracking';
 const isIncremental = window.location.href.includes("incremental")
 import { columnsHideShow, columnsHideGraphic, columnGroupedBy } from 'common/helpers/columnsReport';
 import TipificationReport from './staticReports/ReportTipification';
+import OpportunityReport from "./staticReports/ReportOpportunity";
 import ProductivityHoursReport from './staticReports/ReportProductivityHours';
 import { CellProps } from 'react-table';
 import InputRetryReport from './staticReports/ReportInputRetry';
@@ -1363,6 +1364,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'CRM':
+                return (
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => { setRowSelected(report);handleSelectedString("opportunityreport")}} className={classes.cardstyle}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://publico-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20SOPORTE/4dd8a9b8-f441-4180-8cf3-493bab284823/Reporte%20Informacio%CC%81n02.png"
+                                    title={t('report_' + report?.origin)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t('report_' + report?.origin)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'CAMPAIGNLINKS':
                 return (
                     <Grid item key={"campaignlinks"} xs={12} md={4} lg={2} style={{minWidth: 330}}>
@@ -1782,7 +1804,7 @@ const Reports: FC = () => {
         return (
             <CampaignLinksReport setViewSelected={handleSelectedString}/>
         )
-    } else if (viewSelected === "reportcompliancesla") {
+    }else if (viewSelected === "reportcompliancesla") {
         return (
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <TemplateBreadcrumbs
@@ -1828,7 +1850,24 @@ const Reports: FC = () => {
                 setSearchValue={setSearchValue}
             />
         )
-    } else if (viewSelected === "inputretryreport") {
+    } else if (viewSelected === "opportunityreport") {
+        return (
+            <>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t(langKeys.report_opportunity), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <OpportunityReport
+                        row={rowSelected}
+                        allFilters={rowSelected.filters}
+                    />
+                </div>
+
+            </>
+
+        )
+    }else if (viewSelected === "inputretryreport") {
         return (
             <InputRetryReport
                 setViewSelected={setViewSelected}

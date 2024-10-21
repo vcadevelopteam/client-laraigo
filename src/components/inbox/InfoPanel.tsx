@@ -35,6 +35,10 @@ import DetailOrdersModal from 'pages/orders/components/DetailOrdersModal';
 import { Rating } from '@material-ui/lab';
 import LeadFormModal from 'pages/crm/LeadFormModal';
 import ServiceDeskLeadFormModal from 'pages/servicedesk/ServiceDeskLeadFormModal';
+import { transformPersonToItemsFormat } from 'pages/person/components/SideOverview';
+import { Property } from 'pages/person/components';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -42,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
         width: 300,
         display: 'flex',
         flexDirection: 'column',
+        overflowY: "auto",
 
         overflowWrap: 'anywhere',
         borderLeft: '1px solid rgba(132, 129, 138, 0.101961);',
@@ -151,7 +156,21 @@ const InfoClient: React.FC = () => {
     const dispatch = useDispatch();
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
     const [showLinkPerson, setShowLinkPerson] = useState(false)
+    const [displayAll, setdisplayAll] = useState(false)
     const person = useSelector(state => state.inbox.person.data);
+    const user = useSelector(state => state.login.validateToken.user);
+    const itemsInfo = transformPersonToItemsFormat(user?.uiconfig?.person || [])
+    const getVisibleItems = () => {
+        let sizeSum = 0;
+        return itemsInfo.filter((item: any) => {
+            if (sizeSum + item.size <= 4 || displayAll) {
+                sizeSum += item.size;
+                return true;
+            }
+            return false;
+        });
+    };
+    const visibleItems = getVisibleItems();
 
     return (
         <>
@@ -179,20 +198,42 @@ const InfoClient: React.FC = () => {
                         >{t(langKeys.link)}
                         </Button>
                     </div>
-                    <div className={classes.containerName}>
-                        <PhoneIcon className={classes.propIcon} />
-                        <div style={{ flex: 1 }}>
-                            <div className={classes.label}>{t(langKeys.phone)}</div>
-                            <div>{person?.phone}</div>
-                        </div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {visibleItems.map((x: any, index: number) => {
+                            return (
+                                <div
+                                    key={`dataindex-${index}`}
+                                    style={{
+                                        width: x.size === 2 ? "100%" : "calc(50% - 8px)",
+                                        flexBasis: x.size === 2 ? "100%" : "calc(50% - 8px)",
+                                        flexGrow: 1,
+                                    }}
+                                >
+                                    <Property
+                                        icon={x.icon}
+                                        title={t(x.field)}
+                                        subtitle={(person?.[x.field] || "")}
+                                        mt={1}
+                                        mb={1}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
-                    <div className={classes.containerName}>
-                        <EMailInboxIcon className={classes.propIcon} />
-                        <div style={{ flex: 1 }}>
-                            <div className={classes.label}>{t(langKeys.email)}</div>
-                            <div>{person?.email}</div>
+                    {itemsInfo.length > visibleItems.length && (
+                        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                            <IconButton onClick={() => setdisplayAll(!displayAll)} >
+                                <ExpandMoreIcon />
+                            </IconButton>
                         </div>
-                    </div>
+                    )}
+                    {displayAll && (
+                        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                            <IconButton onClick={() => setdisplayAll(!displayAll)} >
+                                <ExpandLessIcon />
+                            </IconButton>
+                        </div>
+                    )}
                 </div>
             </div>
             <DialogLinkPerson
@@ -258,7 +299,7 @@ const InfoTab: React.FC = () => {
             }
         });
         register('birthday');
-        register('gender');
+        register('sex');
         register('occupation');
         register('civilstatus');
         register('educationlevel');
@@ -392,16 +433,14 @@ const InfoTab: React.FC = () => {
                             error={errors?.birthday?.message}
                         />
                         <FieldSelect
-                            onChange={(value) => setValue('gender', value?.domainvalue)}
-                            label={t(langKeys.gender)}
+                            onChange={(value) => setValue('sex', value?.val)}
+                            label={t(langKeys.sex)}
                             loading={multiData.loading}
-                            data={multiData.data[1]?.data || []}
-                            optionValue="domainvalue"
-                            optionDesc="domainvalue"
-                            valueDefault={getValues('gender')}
-                            uset={true}
-                            prefixTranslation="type_gender_"
-                            error={errors?.gender?.message}
+                            data={[{ val: "Hombre", }, { val: "Mujer" }]}
+                            optionValue="val"
+                            optionDesc="val"
+                            valueDefault={getValues('sex')}
+                            error={errors?.sex?.message}
                         />
                         <FieldSelect
                             onChange={(value) => setValue('educationlevel', value?.domainvalue)}
@@ -491,7 +530,7 @@ const InfoTab: React.FC = () => {
                     <Fab
                         onClick={() => setView('view')}
                         size="small"
-                        style={{ position: 'absolute', bottom: 8, right: 8 }}
+                        style={{ position: 'fixed', bottom: 8, right: 8 }}
                     >
                         <CloseIcon color="action" />
                     </Fab>
@@ -559,8 +598,8 @@ const InfoTab: React.FC = () => {
                 </div>}
                 {<div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.gender)}</div>
-                        <div>{(person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())) || "-"}</div>
+                        <div className={classes.label}>{t(langKeys.sex)}</div>
+                        <div>{(person?.sex && t("type_gender_" + person?.sex.toLocaleLowerCase())) || "-"}</div>
                     </div>
                 </div>}
                 {<div className={classes.containerName}>
@@ -639,7 +678,7 @@ const InfoTab: React.FC = () => {
             <Fab
                 onClick={() => setView('edit')}
                 size="small"
-                style={{ position: 'absolute', bottom: 8, right: 8 }}
+                style={{ position: 'fixed', bottom: 8, right: 8 }}
             >
                 <EditIcon color="action" />
             </Fab>
@@ -1221,7 +1260,7 @@ const LeadsList: React.FC<{ leads: any, handleClickOpen: (x: any) => void }> = (
                 >
                     <SubdirectoryArrowRightIcon style={{ color: "grey" }} />
                     <div style={{ width: "100%" }}>
-                        <div style={{display: "flex", justifyContent: "space-between", fontSize: "1rem", alignItems: "center"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1rem", alignItems: "center" }}>
                             <div>{x.columndesc}</div>
                             <div>
                                 <Rating
@@ -1231,13 +1270,13 @@ const LeadsList: React.FC<{ leads: any, handleClickOpen: (x: any) => void }> = (
                                     defaultValue={x.priority === 'LOW' ? 1 : x.priority === 'MEDIUM' ? 2 : x.priority === 'HIGH' ? 3 : 1}
                                     readOnly
                                 />
-                            </div>                        
+                            </div>
                         </div>
                         <div style={{ display: "flex", fontSize: "1.2rem" }}>
                             {x.description}
                         </div>
                         <div style={{ display: "flex", fontSize: "0.8rem", color: "grey" }}>
-                            {t(langKeys.expectedRevenue) + ": " + (Number(x?.expected_revenue||0)).toFixed(2)}
+                            {t(langKeys.expectedRevenue) + ": " + (Number(x?.expected_revenue || 0)).toFixed(2)}
                         </div>
                     </div>
                 </div>
@@ -1342,8 +1381,8 @@ const Leads: React.FC = () => {
             {openModalDetail && <LeadFormModal
                 openModal={openModalDetail}
                 setOpenModal={setOpenModalDetail}
-                leadId={rowSelectedDetail?.oportunityid||0}
-                phase={rowSelectedDetail?.columndesc||""}
+                leadId={rowSelectedDetail?.oportunityid || 0}
+                phase={rowSelectedDetail?.columndesc || ""}
             />}
         </div>
     )
@@ -1364,7 +1403,7 @@ const SDList: React.FC<{ service: any, handleClickOpen: (x: any) => void }> = ({
                     <SubdirectoryArrowRightIcon style={{ color: "grey" }} />
                     <div style={{ width: "100%" }}>
                         <div className={classes.titlePreviewTicket}>
-                            <ServiceDeskIcon height={20} style={{fill: "grey"}} />
+                            <ServiceDeskIcon height={20} style={{ fill: "grey" }} />
                             <div>{x.sd_request}</div>
                         </div>
                         <div style={{ display: "flex" }}>
@@ -1479,7 +1518,7 @@ const ServiceDesk: React.FC = () => {
             {openModalDetail && <ServiceDeskLeadFormModal
                 openModal={openModalDetail}
                 setOpenModal={setOpenModalDetail}
-                leadId={rowSelectedDetail?.oportunityid||0}
+                leadId={rowSelectedDetail?.oportunityid || 0}
             />}
         </div>
     )
@@ -1523,15 +1562,16 @@ const InfoPanel: React.FC = () => {
                 <AntTab label={t(langKeys.lead_plural)} />
                 <AntTab label={t(langKeys.s_request)} />
             </Tabs>
-            {pageSelected === 0 && <InfoTab />}
-            {pageSelected === 1 && <Variables />}
-            {pageSelected === 2 && <PreviewTickets order={order} />}
-            {pageSelected === 3 && <Attachments />}
-            {pageSelected === 4 && <Classifications />}
-            {pageSelected === 5 && <Orders />}
-            {pageSelected === 6 && <Leads />}
-            {pageSelected === 7 && <ServiceDesk />}
-            {/* S. Servicio */}
+            <div style={{ minHeight: 100 }}>
+                {pageSelected === 0 && <InfoTab />}
+                {pageSelected === 1 && <Variables />}
+                {pageSelected === 2 && <PreviewTickets order={order} />}
+                {pageSelected === 3 && <Attachments />}
+                {pageSelected === 4 && <Classifications />}
+                {pageSelected === 5 && <Orders />}
+                {pageSelected === 6 && <Leads />}
+                {pageSelected === 7 && <ServiceDesk />}
+            </div>
         </div>
     );
 }

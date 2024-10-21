@@ -51,6 +51,10 @@ import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
 import StrikethroughSIcon from '@material-ui/icons/StrikethroughS';
+import CodeIcon from '@material-ui/icons/Code';
+import { useUnicodeToggleTextStyle, TextStyle } from "./components/UnicodeStyles";
+import { useSymbolToggleTextStyle } from "./components/TextStyles";
+
 
 const useStylesInteraction = makeStyles(() => ({
     textFileLibrary: {
@@ -462,8 +466,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
 
     useEffect(() => {
         const ismail = ticketSelected?.communicationchanneltype === "MAIL"
-        const favoritequickreplies = quickReplies.data.filter(x=> !!x.favorite)
-        
+        const favoritequickreplies = quickReplies.data.filter(x => Boolean(x.favorite))
         setquickRepliesToShow(ismail? favoritequickreplies.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : favoritequickreplies.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []);
     }, [quickReplies, ticketSelected]);
 
@@ -471,7 +474,7 @@ const QuickReplyIcon: React.FC<{ classes: ClassNameMap; setText: (param: string)
         const ismail = ticketSelected?.communicationchanneltype === "MAIL"
         const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
         if (search === "") {
-            setquickRepliesToShow(quickreplyFiltered.filter((x) => !!x.favorite));
+            setquickRepliesToShow(quickreplyFiltered.filter((x) => Boolean(x.favorite)));
         } else {
             setquickRepliesToShow(
                 quickreplyFiltered.filter((x) => x.description.toLowerCase().includes(search.toLowerCase()))
@@ -598,9 +601,9 @@ const RecordComponent: React.FC<{
                 const myElement = document.querySelector(".audio-recorder");
                 const childNodes = myElement?.childNodes;
                 if (childNodes) {
-                    if (childNodes[0]) childNodes[0].style.display = "none";
-                    if (childNodes[3]) childNodes[3].style.display = "none";
-                    if (childNodes[4]) childNodes[4].style.display = "none";
+                    if (childNodes[0] && childNodes[0] instanceof HTMLElement) (childNodes[0] as HTMLElement).style.display = "none";
+                    if (childNodes[3] && childNodes[3] instanceof HTMLElement) (childNodes[3] as HTMLElement).style.display = "none";
+                    if (childNodes[4] && childNodes[4] instanceof HTMLElement) (childNodes[4] as HTMLElement).style.display = "none";
                 }
             }
         }
@@ -743,7 +746,7 @@ const RecordAudioIcon: React.FC<{
     startRecording: boolean;
     setStartRecording: (param: boolean) => void;
     setRecord: (param: IFile | null) => void;
-}> = ({ classes, startRecording, setStartRecording, setRecord }) => {
+}> = ({ classes, startRecording, setStartRecording }) => {
     const { t } = useTranslation();
     const handleClick = () => {
         setStartRecording(!startRecording);
@@ -819,7 +822,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
 
     useEffect(() => {
         setRichResponseToShow(richResponseList);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        //
     }, [richResponseList]);
 
     useEffect(() => {
@@ -828,7 +831,6 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
         } else {
             setRichResponseToShow(richResponseList.filter((x) => x.title.toLowerCase().includes(search.toLowerCase())));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     const reasignTicket = React.useCallback(() => {
@@ -847,7 +849,7 @@ const TmpRichResponseIcon: React.FC<{ classes: ClassNameMap; setText: (param: st
                 event: "reassignTicket",
                 data: {
                     ...ticketSelected,
-                    userid: agentSelected?.userid, //CAMBIAR ESTO
+                    userid: agentSelected?.userid,
                     newuserid: 0,
                 },
             })
@@ -1034,8 +1036,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     const [flagredo, setflagredo] = useState(false);
     const [undotext, setundotext] = useState<any>([]);
     const [redotext, setredotext] = useState<any>([]);
-    const inputRef = useRef(null);
-
+    const inputRef = useRef<HTMLDivElement>(null);
+    const [appliedStyles, setAppliedStyles] = useState<{ [key in TextStyle]?: boolean }>({});
+    const [appliedUnicodeStyle, setAppliedUnicodeStyle] = useState<TextStyle | null>(null);
+    const symbolToggleTextStyle = useSymbolToggleTextStyle(text, setText, inputRef, appliedStyles, setAppliedStyles);
+    const unicodeToggleTextStyle = useUnicodeToggleTextStyle(text, setText, inputRef, appliedUnicodeStyle, setAppliedUnicodeStyle);
 
     useEffect(() => {
         dispatch(getInnapropiateWordTicketLst());
@@ -1338,12 +1343,6 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
     }, [quickReplies, ticketSelected]);
 
     useEffect(() => {
-        if(!innapropiateWords.loading && !innapropiateWords.error){
-            setinnappropiatewordsList(innapropiateWords?.data||[])
-        }
-    }, [innapropiateWords]);
-
-    useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
             const ismail = ticketSelected?.communicationchanneltype === "MAIL"
             const quickreplyFiltered = ismail? quickReplies.data.filter(x=>x.quickreply_type === "CORREO ELECTRONICO") : quickReplies.data.filter(x=>x.quickreply_type !== "CORREO ELECTRONICO") || []
@@ -1378,8 +1377,8 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
             .replace("{{user_group}}", ticketSelected?.usergroup || "");
 
         variablesList.forEach((x: any) => {
-            let variableData = variablecontext?.[x.substring(2, x.length - 2)];
-            if (!!variableData) {
+            const variableData = variablecontext?.[x.substring(2, x.length - 2)];
+            if (variableData) {
                 myquickreply = myquickreply.replaceAll(x, variableData.Value);
             } else {
                 myquickreply = myquickreply.replaceAll(x, "");
@@ -1389,7 +1388,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         setText(myquickreply);
     };
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {     
         if (event.ctrlKey && event.code === 'Enter') {
             setText((prevText) => prevText + '\n');
             event.preventDefault();
@@ -1404,7 +1403,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                 triggerReplyMessage();
             }
         }
-    };
+    };    
 
     const handleSelectionChange = (event: Dictionary) => {
         setLastSelection(event?.target?.selectionEnd ?? 0);
@@ -1414,12 +1413,11 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
         if (!lock_send_file_pc && e.clipboardData.files.length) {
             e.preventDefault();
             if (e.clipboardData.files[0].type.includes("image")) {
-                //uploadFile
                 setfileimage(e.clipboardData.files);
             }
         }
-    }
-
+    }  
+    
     const handleKeyDown = (event: Dictionary) => {
         if ((event.altKey || user?.languagesettings?.sendingmode === "ExecutionButton") && event.key === 'Enter') {
             event.preventDefault();
@@ -1547,7 +1545,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                             textAlign: "center",
                         }}
                     >
-                        {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
+                        {showReply === null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                     </div>
                 )}
                 <BottomGoToUnder />
@@ -1585,7 +1583,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                         className={clsx(classes.iconSend, {
                                             [classes.iconSendDisabled]: !(
                                                 text ||
-                                                files.filter((x) => !!x.url).length > 0 ||
+                                                files.filter((x) => Boolean(x.url)).length > 0 ||
                                                 record
                                             ),
                                         })}
@@ -1733,7 +1731,95 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                             enabled={propertyCopilotLaraigo}
                                         />
                                     </div>                                 
-
+                                    
+                                    {ticketSelected?.communicationchanneltype === "WHA" || ticketSelected?.communicationchanneltype === "FBDM" || ticketSelected?.communicationchanneltype === "WHAD" || ticketSelected?.communicationchanneltype === "WHAG" ? (
+                                        <div style={{ display: 'flex', gap: '0.7rem' }}>
+                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('bold')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.bold ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <FormatBoldIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('italic')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.italic ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <FormatItalicIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('strikethrough')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.strikethrough ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <StrikethroughSIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => symbolToggleTextStyle('monospaced')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedStyles.monospaced ? '#E7E7E7' : 'transparent' }}
+                                                >
+                                                    <CodeIcon className={classes.root} style={{marginLeft: '3px', marginBottom: '2px', height: '25px'}}/>
+                                                </IconButton>
+                                            </Tooltip>
+                                        </div>
+                                    ):(
+                                        <div style={{ display: 'flex', gap: '0.7rem', marginTop: '1rem' }}>
+                                            <Tooltip title={String(t(langKeys.bold))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('bold')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'bold' ? 'transparent' : 'transparent' }}
+                                                >
+                                                    <FormatBoldIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.italic))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('italic')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'italic' ? 'transparent' : 'transparent' }}
+                                                >
+                                                    <FormatItalicIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.underline))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('underline')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'underline' ? 'transparent' : 'transparent' }}
+                                                >
+                                                    <FormatUnderlinedIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.strikethrough))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('strikethrough')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'strikethrough' ? 'transparent' : 'transparent' }}
+                                                >
+                                                    <StrikethroughSIcon className={classes.root} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={String(t(langKeys.monospaced))} arrow placement="top">
+                                                <IconButton
+                                                    onClick={() => unicodeToggleTextStyle('monospaced')}
+                                                    size='small'
+                                                    style={{ backgroundColor: appliedUnicodeStyle === 'monospaced' ? 'transparent' : 'transparent' }}
+                                                >
+                                                    <CodeIcon className={classes.root} style={{marginLeft: '3px', marginBottom: '2px', height: '25px'}}/>
+                                                    </IconButton>
+                                            </Tooltip>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                             <BottomGoToUnder />
@@ -1750,7 +1836,7 @@ const ReplyPanel: React.FC<{ classes: ClassNameMap }> = ({ classes }) => {
                                 textAlign: "center",
                             }}
                         >
-                            {showReply == null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
+                            {showReply === null ? t(langKeys.no_reply_claro) : t(langKeys.no_reply_use_hsm)}
                         </div>
                         <BottomGoToUnder />
                     </div>

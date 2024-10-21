@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 // import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, BusinessMessageIcon, LaraigoOnlyLogo, TackPinnedIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon, TackIcon, LaraigoOnlyLogo, TackPinnedIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -454,20 +454,29 @@ const checkUrl = (url: string) => {
     const hasExtension = url.replace(/^.*[\\/]/, '').includes('.');
     return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(`${url}`.toLocaleLowerCase()) !== null || !hasExtension);
 }
-const highlightWords = (text: any, searchTerm: any) => {
-    if (!searchTerm) return text;
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    return text.replace(regex, '<span style="background-color: yellow;">$1</span>');
+const formatWhatsAppText = (text: string) => {
+    return text
+        .replace(/\*(.*?)\*/g, '<b>$1</b>') // Bold
+        .replace(/`(.*?)`/g, '<code>$1</code>') // Monospace
+        .replace(/_(.*?)_/g, '<i>$1</i>') // Italic
+        .replace(/~(.*?)~/g, '<s>$1</s>'); // Strikethrough
 };
 
-const HighlightedText = ({ interactiontext, searchTerm, showfulltext }) => {
+const highlightWords = (text: string, searchTerm: string) => {
+    if (!searchTerm) return formatWhatsAppText(text);
+    const formattedText = formatWhatsAppText(text);
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return formattedText.replace(regex, '<span style="background-color: yellow;">$1</span>');
+};
+
+const HighlightedText = ({ interactiontext, searchTerm, showfulltext }: { interactiontext: string; searchTerm: string, showfulltext: boolean }) => {
     const textToShow = showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ";
     const highlightedText = highlightWords(textToShow, searchTerm);
 
     return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
 };
 
-const HighlightedTextSimple = ({ interactiontext, searchTerm }) => {
+const HighlightedTextSimple = ({ interactiontext, searchTerm }: { interactiontext: string; searchTerm: string }) => {
     const highlightedText = highlightWords(interactiontext, searchTerm);
 
     return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;

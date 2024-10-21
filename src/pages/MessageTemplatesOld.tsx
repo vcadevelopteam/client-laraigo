@@ -136,9 +136,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MessageTemplatesOld: FC = () => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const location = useLocation();
     const mainDelete = useSelector((state) => state.channel.requestDeleteTemplate);
     const mainPaginated = useSelector((state) => state.main.mainPaginated);
@@ -245,6 +243,11 @@ const MessageTemplatesOld: FC = () => {
             {
                 accessor: "language",
                 Header: t(langKeys.language),
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { row } = props.cell;
+                    const { language } = row?.original || {};
+                    return language.toUpperCase();
+                }
             },
             {
                 accessor: "templatetype",
@@ -266,7 +269,7 @@ const MessageTemplatesOld: FC = () => {
         ],
         [showId]
     );
-
+    
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -528,8 +531,6 @@ const MessageTemplatesOld: FC = () => {
         setWaitSaveExport(true);
     };
 
-
-
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
@@ -584,7 +585,7 @@ const MessageTemplatesOld: FC = () => {
                 filterGeneral={true}
                 handleRegister={handleRegister}
                 initialFilters={params.filters}
-                initialPageIndex={params.page}
+                initialPageIndex={fetchDataAux.pageIndex}
                 loading={mainPaginated.loading}
                 onClickRow={handleEdit}
                 pageCount={pageCount}
@@ -594,6 +595,7 @@ const MessageTemplatesOld: FC = () => {
                 titlemodule={t(langKeys.messagetemplate_plural)}
                 totalrow={totalRow}
                 useSelection={true}
+                pageSizeDefault={fetchDataAux.pageSize}
             />
         );
     } else
@@ -614,9 +616,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     setViewSelected,
 }) => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -635,11 +635,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         setTableDataVariables(auxTableData)
         setUpdatingDataTable(!updatingDataTable);
     }
-
-
+    
     const dataChannel =
         multiData[2] && multiData[2].success
-            ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
+            ? multiData[2].data.filter((x) => x.type !== "WHAM")
             : [];
 
     const [bodyAlert, setBodyAlert] = useState("");
@@ -656,6 +655,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
+
     useEffect(() => {
         if (multiData[3]) {
             const variableDataList = multiData[3].data || []
@@ -760,7 +760,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { description: t(langKeys.TEMPLATE_ZH_TW), value: "ZH_TW" },
         { description: t(langKeys.TEMPLATE_ZU), value: "ZU" },
     ];
-
+    
     const dataMessageType = [
         { value: "HSM", text: t(langKeys.messagetemplate_hsm) },
         { value: "HTML", text: t(langKeys.messagetemplate_html) },
@@ -1061,7 +1061,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             }
         }
     }, [waitUploadFile, uploadResult]);
-
+    
     const onSubmit = handleSubmit((data) => {
         if (data.type === "MAIL") {
             data.body = renderToString(toElement(bodyObject));
@@ -1080,6 +1080,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setBodyAlert(t(langKeys.field_required));
                 return;
             }
+        }
+
+        const hasInvalidValue = tableDataVariables?.some(
+            item => item.variabletype === "number" && item.value?.includes(".")
+        );
+        if (hasInvalidValue) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.customfieldserror) }));
+            return;
         }
 
         if (isNew && isProvider) {
@@ -1115,6 +1123,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     providerquality: null,
                     providerstatus: null,
                     oldversion: true,
+                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},)
                 }));
                 dispatch(showBackdrop(true));
                 setWaitAdd(true);
@@ -1164,8 +1173,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     providerpartnerid: null,
                     providerquality: null,
                     providerstatus: null,
-                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},
-                    )
+                    variablecontext: tableDataVariables.filter(x => x.value).reduce((acc, x) => ({ ...acc, [x.variablename]: x.value }), {},)
                 })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
@@ -1379,12 +1387,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         trigger("attachment");
     };
-
+    
     const changeProvider = async (value: any) => {
-        if (!value || !isProvider) {
-            setValue("category", "");
-        }
-
         if (value) {
             setIsProvider(true);
 
@@ -1621,15 +1625,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         {!isProvider && (
                             <FieldSelect
                                 className="col-6"
-                                data={dataLanguage}
+                                data={dataExternalLanguage}
                                 disabled={disableInput}
                                 error={errors?.language?.message}
                                 label={t(langKeys.language)}
-                                onChange={(value) => setValue("language", value?.domainvalue)}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                onChange={(value) => setValue("language", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
                                 uset={true}
-                                valueDefault={getValues("language")}
+                                valueDefault={getValues("language")?.toUpperCase()}
                             />
                         )}
                     </div>

@@ -30,6 +30,7 @@ const useChannelAddStyles = makeStyles(() => ({
 interface WhatsAppData {
     row?: unknown;
     typeWhatsApp?: string;
+    onboarding?: boolean;
 }
 
 interface CallbackData {
@@ -238,9 +239,9 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
             }
         }
     };
-    if(viewSelected==="enable-virtual-assistant"){
+    if (viewSelected === "enable-virtual-assistant") {
         return <ChannelEnableVirtualAssistant
-            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid||null}
+            communicationchannelid={mainResult?.data?.[0]?.communicantionchannelid || null}
         />
     }
     if (edit && !channel) {
@@ -256,9 +257,14 @@ export const ChannelAddWhatsAppOnboarding: FC<{ edit: boolean }> = ({ edit }) =>
                     key={"mainview"}
                     onClick={(e) => {
                         e.preventDefault();
-                        channel?.status === "INACTIVO"
-                            ? history.push(paths.CHANNELS, whatsAppData)
-                            : history.push(paths.CHANNELS_ADD, whatsAppData);
+
+                        if (whatsAppData?.onboarding) {
+                            history.push(paths.METACHANNELS, whatsAppData);
+                        } else {
+                            channel?.status === "INACTIVO"
+                                ? history.push(paths.CHANNELS, whatsAppData)
+                                : history.push(paths.CHANNELS_ADD, whatsAppData);
+                        }
                     }}
                 >
                     {t(langKeys.previoustext)}

@@ -1225,6 +1225,11 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         }
     }, [mainAux2])
 
+    useEffect(() => {
+        // console.log(multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL"))
+        // console.log(!!multiDataAux?.data?.find(x=>x.key==="UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data?.length)
+    }, [multiDataAux])
+
     return (
         <>
             <div className={classes.containerButtonsChat} style={{ justifyContent: "center", display: "flex", alignItems: "center" }}>

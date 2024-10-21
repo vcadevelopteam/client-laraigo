@@ -53,6 +53,8 @@ export const changeOrganization = (newcorpid: number, neworgid: number, corpdesc
 
 export const updateUserInformation = (firstname: string, lastname: string, image: string): IActionCall => ({ type: actionTypes.CHANGE_DATA_USER, payload: { firstname, lastname, image } });
 
+export const updateUIConfig = (uiconfig: any): IActionCall => ({ type: actionTypes.CHANGE_UICONFIG_USER, payload: { uiconfig } });
+
 export const resetChangeOrganization = (): IActionCall => ({ type: actionTypes.CHANGE_ORGANIZATION_RESET });
 
 

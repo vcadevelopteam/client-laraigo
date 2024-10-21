@@ -469,6 +469,7 @@ const TableZyx = React.memo(({
     HeadComponent,
     ButtonsElement,
     exportPersonalized,
+    pageSizeDefault = 20,
     loading,
     importCSV,
     autotrigger = false,
@@ -491,6 +492,7 @@ const TableZyx = React.memo(({
     groupedBy,
     showHideColumns,
     ExtraMenuOptions,
+    fillterAllDate=false,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, distinct: "", pageIndex: initialPageIndex });
@@ -521,7 +523,7 @@ const TableZyx = React.memo(({
         {
             columns,
             data,
-            initialState: { pageIndex: initialPageIndex, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
+            initialState: { pageIndex: initialPageIndex, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {} },
             manualPagination: true, // Tell the usePagination
             pageCount: controlledPageCount,
             useControlledState: (state: any) => {
@@ -960,6 +962,7 @@ const TableZyx = React.memo(({
                     {filterrange && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             <DateRangePicker
+                                fillterAllDate={fillterAllDate}
                                 open={openDateRangeModal}
                                 setOpen={setOpenDateRangeModal}
                                 range={dateRange}
@@ -1024,8 +1027,8 @@ const TableZyx = React.memo(({
                                     id="laraigo-upload-csv-file"
                                     type="file"
                                     value={""}
-                                    style={{ display: 'none' }}
-                                    onChange={(e) => importCSV(e.target.files)}
+                                    style={{ display: 'none' }}    
+                                    onChange={(e) => {importCSV(e.target.files)}}
                                 />
                                 <label htmlFor="laraigo-upload-csv-file">
                                     <Button

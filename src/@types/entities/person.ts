@@ -28,6 +28,7 @@ export interface IPerson {
     documentnumber: string; // edit
     firstname: string;
     lastname: string;
+    nickname?: string;
     imageurldef?: string;
     sex: string; // edit
     gender?: string;
@@ -51,6 +52,16 @@ export interface IPerson {
     longitude?: string;
     referringpersonid: number;
     referringpersonname?: string;
+    termsandconditions?: boolean;
+    blacklist?: any;
+    eventname?: any;
+    eventdate?: any;
+    eventtime?: any;
+    eventcode?: any;
+    eventlink?: any;
+    eventlinkcode?: any;
+    contact?: string;
+    clientnumber?: number;
     // displayname: string;
     variablecontext: Dictionary;
     locked?: boolean;
@@ -67,6 +78,9 @@ export interface IPerson {
     usergroup?: string;
     pinnedmessages?: any;
     tags?: string;
+    age?: number;
+    address_book?: any;
+    salary?: number;
 }
 
 export interface IPersonCommunicationChannel {
