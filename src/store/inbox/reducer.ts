@@ -190,6 +190,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SHOW_INFO_PANEL]: caseFunctions.showInfoPanel,
     //[actionTypes.REPLY_MESSAGE]: caseFunctions.addMessage,
     [actionTypes.SET_USER_TYPE]: caseFunctions.setUserType,
+    [actionTypes.UPDATE_COUNTER_AGENTS]: caseFunctions.updateCounterAgents,
     [actionTypes.ADD_TICKET]: caseFunctions.addTicket,
     [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
     [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,

@@ -79,6 +79,21 @@ export interface INewMessageParams extends ITicket {
     ticketWasAnswered: boolean
 }
 
+export interface IUpdateCounterPrams {
+    newConversation?: boolean;
+    userid: number;
+    status?: string;
+    usertype?: string;
+    communicationchannelid?: number;
+    usergroup?: string;
+    closedTicket?: string;
+    isAnswered?: boolean;
+    isanswered?: boolean;
+    delete?: boolean;
+    update?: boolean;
+    ticketWasAnswered?: boolean
+}
+
 export interface IDeleteTicketParams {
     conversationid: number;
     ticketnum: string;
