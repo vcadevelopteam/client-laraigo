@@ -14,6 +14,7 @@ const eventsListeners = [
     { event: 'personSawChat', type: typesInbox.PERSON_SAW_CHAT, extra: {} },
     { event: 'forceddisconnect', type: typesInbox.FORCEDDISCONECTION },
     { event: 'changeStatusTicket', type: typesInbox.CHANGE_STATUS_TICKET_WS },
+    { event: 'updateCounterAgents', type: typesInbox.UPDATE_COUNTER_AGENTS },
     { event: 'newNotification', type: typesLogin.NEW_NOTIFICATION },
     { event: 'callWasAnswred', type: typesInbox.ANSWERED_CALL, extra: {} },
     { event: 'updateExternalIDs', type: typesInbox.UPDATE_EXTERNAL_IDS, extra: {} },

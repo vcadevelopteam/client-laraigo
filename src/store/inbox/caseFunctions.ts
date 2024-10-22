@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary, IVariablesSyncParams } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary, IVariablesSyncParams, IUpdateCounterPrams } from "@types";
 import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
 import { keys } from 'common/constants';
@@ -483,8 +483,12 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 }
 
 
-export const newMessageFromClient = (state: IState, action: IAction): IState => {
-    const data: INewMessageParams = action.payload;
+export const updateCounterAgents = (state: IState, action: IAction): IState => {
+    if (state.userType !== 'SUPERVISOR') {
+        return state;
+    }
+    const data: IUpdateCounterPrams = action.payload;
+
     if (state.role.split(",").includes("SUPERVISOR") && data.newConversation) {
         const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
         if (property === "GRUPO") {
@@ -497,29 +501,91 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             }
         }
     }
-    let newticketList = [...state.ticketList.data];
-    let newInteractionList = [...state.interactionList.data];
-    let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
-    let newAgentList = [...state.agentList.data];
-    let newInteraction = null;
-    const { agentSelected, ticketSelected, userType } = state;
-    if (userType === 'SUPERVISOR') {
-        if (data.newConversation) {
-            newAgentList = newAgentList.map(x => x.userid === data.userid ? {
-                ...x,
-                countAnswered: (data.status === "ASIGNADO") ? (x.countAnswered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0))) : x.countAnswered,
-                countNotAnswered: (data.status === "ASIGNADO") ? ((x.countNotAnswered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1))) : x.countNotAnswered,
 
-                countPaused: (data.status === "SUSPENDIDO") ? x.countPaused + 1 : x.countPaused
-            } : x)
-        } else if (data.usertype === "agent" && data.ticketWasAnswered) {
+    let newAgentList = [...state.agentList.data];
+
+    if (data.newConversation) {
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? {
+            ...x,
+            countAnswered: (data.status === "ASIGNADO") ? (x.countAnswered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0))) : x.countAnswered,
+            countNotAnswered: (data.status === "ASIGNADO") ? ((x.countNotAnswered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1))) : x.countNotAnswered,
+
+            countPaused: (data.status === "SUSPENDIDO") ? x.countPaused + 1 : x.countPaused
+        } : x)
+    } else if (data.ticketWasAnswered) {
+        if (data.usertype === "agent") {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
                 ...x,
                 countAnswered: (data.status === "ASIGNADO") ? x.countAnswered + 1 : x.countAnswered,
                 countNotAnswered: (data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
             } : x)
         }
+    } else if (data.delete) {
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? {
+            ...x,
+            countClosed: data.closedTicket ? x.countClosed + 1 : x.countClosed,
+            countAnswered: ((data.isanswered || data.userid === 2) && data.status === "ASIGNADO") ? x.countAnswered - 1 : x.countAnswered,
+            countNotAnswered: ((!data.isanswered && data.userid !== 2) && data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
+            countPaused: (data.status === "SUSPENDIDO") ? x.countPaused - 1 : x.countPaused
+        } : x)
+    } else if (data.update) {
+        newAgentList = state.agentList.data.map(x => x.userid === data.userid ? {
+            ...x,
+            countPaused: data.status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
+            countAnswered: data.isanswered ? x.countAnswered + (data.status === "ASIGNADO" ? 1 : -1) : x.countAnswered,
+            countNotAnswered: !data.isanswered ? (x.countNotAnswered || 0) + (data.status === "ASIGNADO" ? 1 : -1) : x.countNotAnswered,
+        } : x)
     }
+
+    return {
+        ...state,
+        agentList: {
+            data: newAgentList,
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        }
+    };
+}
+
+export const newMessageFromClient = (state: IState, action: IAction): IState => {
+    const data: INewMessageParams = action.payload;
+    // if (state.role.split(",").includes("SUPERVISOR") && data.newConversation) {
+    //     const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
+    //     if (property === "GRUPO") {
+    //         if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
+    //             return state;
+    //         }
+    //     } else if (property === "CANAL") {
+    //         if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
+    //             return state;
+    //         }
+    //     }
+    // }
+    let newticketList = [...state.ticketList.data];
+    let newInteractionList = [...state.interactionList.data];
+    const newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
+    // let newAgentList = [...state.agentList.data];
+    let newInteraction = null;
+    const { agentSelected, ticketSelected } = state;
+
+    // if (userType === 'SUPERVISOR') {
+    //     if (data.newConversation) {
+    //         newAgentList = newAgentList.map(x => x.userid === data.userid ? {
+    //             ...x,
+    //             countAnswered: (data.status === "ASIGNADO") ? (x.countAnswered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0))) : x.countAnswered,
+    //             countNotAnswered: (data.status === "ASIGNADO") ? ((x.countNotAnswered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1))) : x.countNotAnswered,
+
+    //             countPaused: (data.status === "SUSPENDIDO") ? x.countPaused + 1 : x.countPaused
+    //         } : x)
+    //     } else if (data.usertype === "agent" && data.ticketWasAnswered) {
+    //         newAgentList = newAgentList.map(x => x.userid === data.userid ? {
+    //             ...x,
+    //             countAnswered: (data.status === "ASIGNADO") ? x.countAnswered + 1 : x.countAnswered,
+    //             countNotAnswered: (data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
+    //         } : x)
+    //     }
+    // }
 
     if (agentSelected?.userid === data.userid || newticketList.some(x => x.conversationid === data.conversationid)) {
         if (data.newConversation) {
@@ -587,12 +653,12 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         interactionBaseList: !!newInteraction ? [...state.interactionBaseList, newInteraction] : state.interactionBaseList,
         aNewTicket: (data.newConversation && data.usertype !== "agent") ? !(state.aNewTicket || false) : state.aNewTicket,
         aNewMessage: (!data.newConversation && data.usertype !== "agent") ? !(state.aNewMessage || false) : state.aNewMessage,
-        agentList: {
-            data: newAgentList,
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
+        // agentList: {
+        //     data: newAgentList,
+        //     count: action.payload.count,
+        //     loading: false,
+        //     error: false,
+        // },
         ticketSelected: newTicketSelected,
         interactionList: {
             data: newInteractionList,
@@ -604,26 +670,26 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 }
 
 export const changeStatusTicketWS = (state: IState, action: IAction): IState => {
-    const { userid, status, isanswered }: Dictionary = action.payload;
+    // const { userid, status, isanswered }: Dictionary = action.payload;
 
-    let newAgentList = [...state.agentList.data];
+    // let newAgentList = [...state.agentList.data];
 
-    const { agentList: { data }, userType } = state;
+    // const { agentList: { data }, userType } = state;
 
-    if (userType === 'SUPERVISOR') {
+    // if (userType === 'SUPERVISOR') {
 
-        newAgentList = data.map(x => x.userid === userid ? {
-            ...x,
-            countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
-            countAnswered: isanswered ? x.countAnswered + (status === "ASIGNADO" ? 1 : -1) : x.countAnswered,
-            countNotAnswered: !isanswered ? (x.countNotAnswered || 0) + (status === "ASIGNADO" ? 1 : -1) : x.countNotAnswered,
-        } : x)
-    }
+    //     newAgentList = data.map(x => x.userid === userid ? {
+    //         ...x,
+    //         countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
+    //         countAnswered: isanswered ? x.countAnswered + (status === "ASIGNADO" ? 1 : -1) : x.countAnswered,
+    //         countNotAnswered: !isanswered ? (x.countNotAnswered || 0) + (status === "ASIGNADO" ? 1 : -1) : x.countNotAnswered,
+    //     } : x)
+    // }
 
     return {
         ...state,
         ticketSelected: state.ticketSelected?.conversationid === action.payload.conversationid ? {
-            ...state.ticketSelected!!,
+            ...state.ticketSelected,
             status: action.payload.status
         } : state.ticketSelected,
         ticketList: {
@@ -633,12 +699,12 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
                 status: action.payload.status
             } : x)
         },
-        agentList: {
-            data: newAgentList,
-            count: newAgentList.length,
-            loading: false,
-            error: false,
-        },
+        // agentList: {
+        //     data: newAgentList,
+        //     count: newAgentList.length,
+        //     loading: false,
+        //     error: false,
+        // },
     };
 }
 
@@ -717,41 +783,41 @@ export const resetShowModal = (state: IState): IState => ({
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
 
-    if (state.role.split(",").includes("SUPERVISOR")) {
-        const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
-        if (property === "GRUPO") {
-            if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
-                return state;
-            }
-        } else if (property === "CANAL") {
-            if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
-                return state;
-            }
-        }
-    }
+    // if (state.role.split(",").includes("SUPERVISOR")) {
+    //     const property = data.userid === 3 ? state.holdingBySupervisor : (data.userid === 2 ? state.botBySupervisor : "")
+    //     if (property === "GRUPO") {
+    //         if (state.userGroup && !state.userGroup.split(",").includes(data.usergroup || "")) {
+    //             return state;
+    //         }
+    //     } else if (property === "CANAL") {
+    //         if (state.channels && !state.channels.split(",").includes(`${data.communicationchannelid}`)) {
+    //             return state;
+    //         }
+    //     }
+    // }
     
-    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && !!state.userGroup) {
-        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
-            return state;
-        }
-    }
+    // if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && state.userGroup) {
+    //     if (!state.userGroup.split(",").includes(data.usergroup || "")) {
+    //         return state;
+    //     }
+    // }
 
     let newticketList = [...state.ticketList.data];
-    let newAgentList = [...state.agentList.data];
+    // let newAgentList = [...state.agentList.data];
     let ticketToClose = null;
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
     let showModalClose = state.showModalClose;
     const { agentSelected, userType } = state;
 
-    if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? {
-            ...x,
-            countClosed: data.closedTicket ? x.countClosed + 1 : x.countClosed,
-            countAnswered: ((data.isanswered || data.userid === 2) && data.status === "ASIGNADO") ? x.countAnswered - 1 : x.countAnswered,
-            countNotAnswered: ((!data.isanswered && data.userid !== 2) && data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
-            countPaused: (data.status === "SUSPENDIDO") ? x.countPaused - 1 : x.countPaused
-        } : x)
-    }
+    // if (userType === 'SUPERVISOR') {
+    //     newAgentList = newAgentList.map(x => x.userid === data.userid ? {
+    //         ...x,
+            // countClosed: data.closedTicket ? x.countClosed + 1 : x.countClosed,
+    //         countAnswered: ((data.isanswered || data.userid === 2) && data.status === "ASIGNADO") ? x.countAnswered - 1 : x.countAnswered,
+    //         countNotAnswered: ((!data.isanswered && data.userid !== 2) && data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
+    //         countPaused: (data.status === "SUSPENDIDO") ? x.countPaused - 1 : x.countPaused
+    //     } : x)
+    // }
 
 
     if ((userType === 'AGENT') || (userType === 'SUPERVISOR' && agentSelected?.userid === data.userid)) {
@@ -781,12 +847,12 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         },
         ticketToClose: showModalClose === state.showModalClose ? null : ticketToClose,
         showModalClose: showModalClose,
-        agentList: {
-            data: newAgentList,
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
+        // agentList: {
+        //     data: newAgentList,
+        //     count: action.payload.count,
+        //     loading: false,
+        //     error: false,
+        // },
     };
 }
 
