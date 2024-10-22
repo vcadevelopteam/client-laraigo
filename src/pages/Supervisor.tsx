@@ -184,6 +184,12 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
     const handlerSelectAgent = () => {
         if (agent.showinfo) {
             dispatch(selectAgent(agent));
+            dispatch(emitEvent({
+                event: 'viewAgent',
+                data: {
+                    userid: agent.userid,
+                }
+            }));
         } else {
             dispatch(getCollectionAux2(getTimeWaiting(agent?.userid ?? 0)))
         }
