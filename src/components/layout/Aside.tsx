@@ -197,8 +197,12 @@ const Aside = ({ classes, headerHeight }: IProps) => {
                 const roles = userData?.roledesc?.split(",") ?? [];
                 if (subroutes.length > 0) {
                     if (subroutes.includes('/invoice')) {
-                        if (roles.includes('SUPERADMIN') || roles.includes("SUPERADMINISTRADOR SOCIOS") || roles?.includes('ADMINISTRADOR')) {
+                        if (roles.includes('SUPERADMIN')  || roles?.includes('ADMINISTRADOR')) {
                             const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
+                            acc.push({ ...view, options: filteredSubroutes });
+                        }
+                        if ( roles.includes("ADMINISTRADOR SOCIO")) {
+                            const filteredSubroutes = ['/invoice'];
                             acc.push({ ...view, options: filteredSubroutes });
                         }
                         //  else if (roles.includes('ADMINISTRADOR') || roles.includes('SUPERVISOR')) {
