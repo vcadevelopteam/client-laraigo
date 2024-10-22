@@ -92,7 +92,6 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                         return value;
                     }
                 },
-                width: '200px'                
             },                     
             {
                 Header: t(langKeys.provider),
@@ -109,7 +108,6 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                         return provider !== '' ? provider : t(langKeys.none);
                     }
                 },
-                width: '200px',
             },            
             {
                 accessor: "createdate",
@@ -120,28 +118,19 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                 Cell: (props: CellProps<Dictionary>) => {
                     const { createdate } = props.cell.row.original || {};
                     if (createdate) {
-                        const date = new Date(createdate);
-                        return date.toLocaleString('es-PE', { day: 'numeric', month: 'numeric', year: 'numeric' });
+                        const date = new Date(createdate + 'T00:00:00');
+                        return date.toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
                     }
                     return null;
                 },
-                width: '200px',                     
+                width: '200px',                             
             },  
             {
-                accessor: "registertime",
+                accessor: "createtime",
                 Header: t(langKeys.registertime),
                 NoFilter: false,              
-                type: "time",  
-                Cell: (props: CellProps<Dictionary>) => {
-                    const { createdate } = props.cell.row.original || {};
-                    if (createdate) {
-                        const date = new Date(createdate)
-                        return date.toLocaleString('es-PE', {day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false})
-                        return date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false})
-                    }
-                    return null;
-                },             
-                width: '200px',                                  
+                type: "time",
+                width: '200px',
             },
             {
                 Header: t(langKeys.createdBy),
