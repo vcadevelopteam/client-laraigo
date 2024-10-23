@@ -87,6 +87,7 @@ const useStyles = makeStyles((theme) => ({
     button: {
         backgroundColor: '#ffff',
         color: '#7721AD',
+        marginBottom: 14,
         '&:hover': {
             backgroundColor: '#EBEAED',
             borderRadius: 4
@@ -890,38 +891,46 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                         />
                     </div>
                 </div>
-                <Modal open={isModalOpen}>
-                    <div style={{ padding: '15vh 4%', alignItems: 'center', justifyContent: 'center' }}>
-                        <div className={!documentUrl ? classes.errorModalContent : ''}>
-                            {documentUrl && (
+                <Modal open={isModalOpen} onClose={() => setModalOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className={!documentUrl ? classes.errorModalContent : ''} style={{ width: '80%'}}>
+                        {documentUrl && (
+                            <>
+                                <Button
+                                    style={{ border: '1px solid #7721AD' }}
+                                    className={classes.button}
+                                    variant="contained"
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={() => setModalOpen(false)}
+                                >
+                                    {t(langKeys.back)}
+                                </Button>
                                 <iframe title="Document Viewer" src={documentUrl} width="100%" height="700" />
-                            )}
-                            {!documentUrl && (
-                                <>
-                                    <p>{t(langKeys.error_previewing_file)}</p>
-                                    <p>{t(langKeys.download_file_instead)}</p>
-
-                                    <Button
-                                        className={classes.button}
-                                        style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
-                                        variant="contained"
-                                        onClick={() => handleDownloadDocument()}
-                                        startIcon={<CloudDownloadIcon />}
-                                    >
-                                        {t(langKeys.download)}
-                                    </Button>
-                                </>
-                            )}
-                            <Button
-                                style={{ border: '1px solid #7721AD' }}
-                                className={classes.button}
-                                variant="contained"
-                                startIcon={<ArrowBackIcon />}
-                                onClick={() => setModalOpen(false)}
-                            >
-                                {t(langKeys.back)}
-                            </Button>
-                        </div>
+                            </>
+                        )}
+                        {!documentUrl && (
+                            <>
+                                <p>{t(langKeys.error_previewing_file)}</p>
+                                <p>{t(langKeys.download_file_instead)}</p>
+                                <Button
+                                    className={classes.button}
+                                    style={{ border: '1px solid #7721AD', marginRight: '1rem' }}
+                                    variant="contained"
+                                    onClick={() => handleDownloadDocument()}
+                                    startIcon={<CloudDownloadIcon />}
+                                >
+                                    {t(langKeys.download)}
+                                </Button>
+                                <Button
+                                    style={{ border: '1px solid #7721AD' }}
+                                    className={classes.button}
+                                    variant="contained"
+                                    startIcon={<ArrowBackIcon />}
+                                    onClick={() => setModalOpen(false)}
+                                >
+                                    {t(langKeys.back)}
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </Modal>
             </>
