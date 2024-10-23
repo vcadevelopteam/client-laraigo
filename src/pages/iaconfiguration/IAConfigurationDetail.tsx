@@ -160,6 +160,7 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
     });
 
     const watchConnectorType = watch("connectortype")
+    const watchTranslation = watch("translation")
     const watchProvider = watch("provider")
     const watchIntelligentmodelsid = watch("intelligentmodelsid")
 
@@ -183,7 +184,6 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
-                debugger
                 if(!row?.intelligentmodelsconfigurationid && watchProvider === "IBM"){
                     dispatch(watsonxSync(watchIntelligentmodelsid,true))
                 }
@@ -263,9 +263,10 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
                             onChange={(value) => { setValue('intelligentmodelsid', value?.id || ''); 
                                 setValue("connectortype", value?.type || "")
                                 setValue("provider", value?.provider || "")
+                                setValue('model', value?.type === "Conversor de voz"?"Large": "")
                              }}
                             data={dataModels}
-                            optionDesc="description"
+                            optionDesc="name"
                             optionValue="id"
                             variant="outlined"
                         />
@@ -381,24 +382,6 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
                     {watchConnectorType === "Conversor de voz" && <>
                         <div className="row-zyx">
                             <FieldSelect
-                                label={t(langKeys.languagemodel)}
-                                helperText2={t(langKeys.languagemodelhelper)}
-                                className="col-6"
-                                valueDefault={getValues("model")}
-                                onChange={(value) => setValue('model', value?.desc || "")}
-                                error={errors?.model?.message}
-                                data={[
-                                    { desc: "Small" },
-                                    { desc: "Medium" },
-                                    { desc: "Large" },
-                                ]}
-                                optionDesc="desc"
-                                optionValue="desc"
-                                variant="outlined"
-                            />
-                        </div>
-                        <div className="row-zyx">
-                            <FieldSelect
                                 label={t(langKeys.translationai)}
                                 helperText2={t(langKeys.translationaihelper)}
                                 className="col-6"
@@ -412,7 +395,7 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
                                 optionValue="domainvalue"
                                 variant="outlined"
                             />
-                            <FieldSelect
+                            {watchTranslation==="ACTIVO" && <FieldSelect
                                 className="col-6"
                                 valueDefault={getValues("language")}
                                 onChange={(value) => setValue('language', value?.domainvalue || "")}
@@ -424,7 +407,7 @@ const IAConfigurationDetail: React.FC<IAConfigurationDetailProps> = ({ data: { r
                                 optionValue="domainvalue"
                                 label={t(langKeys.language)}
                                 helperText2={t(langKeys.languageaihelper)}
-                            />
+                            />}
                         </div>
                     </>}
                 </div>}
