@@ -63,7 +63,7 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
             {
                 Header: t(langKeys.channeldesc),
                 accessor: 'channeldesc',
-                width: 'auto',
+                width: "350px",
                 Cell: (props: CellProps<Dictionary>) => {
                     const { row } = props.cell;
                     const data = row?.original?.channeldesc || '';
