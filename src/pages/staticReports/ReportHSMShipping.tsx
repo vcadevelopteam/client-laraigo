@@ -581,90 +581,83 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
     }
     if (viewSelected2 === "view-2") {
         return (
-            <div style={{ width: '100%' }}>
+            <>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                             handleClick={setView}
                         />
-                    </div>
                 </div>
-                <div style={{ position: 'relative', height: '100%' }}>
-
-
-
-                    <TableZyx
-                        columns={columns}
-                        data={multiAux3?.data?.[0]?.data || []}
-                        groupedBy={true}
-                        showHideColumns={true}
-                        loading={multiAux3.loading}
-                        onClickRow={handleEdit}
-                        download={true}
-                        ButtonsElement={() => (
-                            <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto', marginTop: 5 }}>
-                                <DateRangePicker
-                                    open={openDateRangeCreateDateModal}
-                                    setOpen={setOpenDateRangeCreateDateModal}
-                                    range={dateRangeCreateDate}
-                                    onSelect={setDateRangeCreateDate}
-                                >
-                                    <Button
-                                        className={classes.itemDate}
-                                        startIcon={<CalendarIcon />}
-                                        onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                                    >
-                                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                    </Button>
-                                </DateRangePicker>
-
-                                <FieldSelect
-                                    label={t(langKeys.channel)}
-                                    variant="outlined"
-                                    className={classes.filterComponent}
-                                    data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
-                                    valueDefault={selectedChannel}
-                                    onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
-                                    optionDesc="communicationchanneldesc"
-                                    optionValue="communicationchannelid"
-                                />
-                                <FieldMultiSelect
-                                    label={t(langKeys.user)}
-                                    className={classes.filterComponent}
-                                    valueDefault={selectedUser}
-                                    onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.username).join() : '')}
-                                    variant="outlined"
-                                    data={multiAux3?.data?.[0]?.data?.length ? [{ username: "EXTERNAL" }, ...(multiAux3?.data?.[1]?.data || [])] : []}
-                                    optionDesc="username"
-                                    optionValue="username"
-                                    disabled={multiAux3.loading}
-                                />
-
-
+                <TableZyx
+                    columns={columns}
+                    data={multiAux3?.data?.[0]?.data || []}
+                    groupedBy={true}
+                    showHideColumns={true}
+                    loading={multiAux3.loading}
+                    onClickRow={handleEdit}
+                    download={true}
+                    ButtonsElement={() => (
+                        <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto', marginTop: 5 }}>
+                            <DateRangePicker
+                                open={openDateRangeCreateDateModal}
+                                setOpen={setOpenDateRangeCreateDateModal}
+                                range={dateRangeCreateDate}
+                                onSelect={setDateRangeCreateDate}
+                            >
                                 <Button
-                                    disabled={multiAux3.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    onClick={() => fetchData()}
+                                    className={classes.itemDate}
+                                    startIcon={<CalendarIcon />}
+                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                                 >
-                                    {t(langKeys.search)}
+                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                                 </Button>
+                            </DateRangePicker>
 
-                            </div>
-                        )}
-                        filterGeneral={false}
-                    />
-                </div>
+                            <FieldSelect
+                                label={t(langKeys.channel)}
+                                variant="outlined"
+                                className={classes.filterComponent}
+                                data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
+                                valueDefault={selectedChannel}
+                                onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.user)}
+                                className={classes.filterComponent}
+                                valueDefault={selectedUser}
+                                onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.username).join() : '')}
+                                variant="outlined"
+                                data={multiAux3?.data?.[0]?.data?.length ? [{ username: "EXTERNAL" }, ...(multiAux3?.data?.[1]?.data || [])] : []}
+                                optionDesc="username"
+                                optionValue="username"
+                                disabled={multiAux3.loading}
+                            />
+
+
+                            <Button
+                                disabled={multiAux3.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => fetchData()}
+                            >
+                                {t(langKeys.search)}
+                            </Button>
+
+                        </div>
+                    )}
+                    filterGeneral={false}
+                />
 
                 {openModal && <ModalReport
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     row={rowSelected}
                 />}
-            </div>
+            </>
         )
     } else if (viewSelected2 === "view-3") {
         return <ReportHSMShippingDetail

@@ -112,8 +112,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         )
     }
 
-    const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
-  
     const columns = React.useMemo(
         () => [                    
             {
@@ -255,10 +253,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
         ],
         []
     );
-
-    React.useEffect(() => {
-        setColumnOrder(columns.map(column => column.accessor));
-    }, [columns]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, distinct }: IFetchData) => {
         dispatch(showBackdrop(true))
@@ -416,7 +410,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
     const fetchFiltersChannels = () => dispatch(getCollectionAux(getCommChannelLst()))
 
     return (
-        <div style={{ width: '100%' }}>
+        <>
             {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs
@@ -439,12 +433,8 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
             </div>}
             {externalUse && <div style={{ height: 10 }}></div>}
 
-         
-            
-            <div style={{position: 'relative', height:'100%'}}>     
-
+            <div style={{position: 'relative', height:'100%', flex: 1, display: "flex", flexDirection: "column"}}>     
                 <div style={{ width: 'calc(100% - 60px)', display: 'flex', background:'white', padding:'1rem 0 0 1rem', position: 'absolute', top: 0, right: 50 }}>                 
-                    
                     <div style={{textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto'   }}>
                         <DateRangePicker
                             open={openDateRangeCreateDateModal}
@@ -508,12 +498,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                                 {`${t(langKeys.download)}`}
                             </Button>                        
                     </div>     
-
-
-                    
-                    <div>
-                                        
-                    </div>                                                                                
                 </div> 
 
                 <TablePaginated
@@ -539,7 +523,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 setOpenModal={setOpenModal}
                 row={selectedRow}
             />}
-        </div>
+        </>
     )
 }
 
