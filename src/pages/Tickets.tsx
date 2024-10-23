@@ -1938,7 +1938,7 @@ const Tickets = () => {
     
     return (
         <div className={classes.container}>
-            {(viewSelected === "view-1") && <div>
+            {(viewSelected === "view-1") && <>
                 <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
                     <div className={classes.title}>
                         {t(langKeys.ticket_plural)}
@@ -2019,7 +2019,7 @@ const Tickets = () => {
                     filterRangeDate="today"
                     FiltersElement={FilterElements}
                 />
-            </div>}
+            </>}
             {(viewSelected === "view-2") && 
             <TicketDetail row={rowDetail} setViewSelected={setViewSelected} openDialogInteractions={openDialogInteractions}/>}
             <DialogInteractions

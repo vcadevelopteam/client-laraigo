@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         display: 'flex',
         flexDirection: 'row',
+        marginTop:'1.3rem',
         gap: '1em',
         alignItems: 'center',
         flexWrap: 'wrap',
@@ -1293,8 +1294,7 @@ const CRM: FC = () => {
             }
 
             {display === 'GRID' &&
-                <div style={{ width: 'inherit', marginTop:'1.3rem' }}>
-
+                <>
                     <div className={classes.canvasFiltersHeader}>
                         <div style={{ flexGrow: 1 }} />  
                         <DialogZyx 
@@ -1359,9 +1359,6 @@ const CRM: FC = () => {
                             </div>           
                         </DialogZyx>   
                     </div> 
-
-                                 
-                    
                     <TablePaginated
                         columns={columns}
                         data={mainPaginated.data}
@@ -1475,7 +1472,7 @@ const CRM: FC = () => {
                         gridModalProps={gridModal}
                         setGridModal={setGridModal}
                     />}
-                </div>
+                </>
             }
         </div>
     );
