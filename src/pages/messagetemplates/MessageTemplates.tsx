@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { FieldMultiSelect } from 'components';
 
 import {
     exportData,
@@ -19,6 +18,7 @@ import {
 } from "store/main/actions";
 
 import {
+    FieldMultiSelect,
     TagTypeCell,
     TemplateBreadcrumbs,
 } from "components";
@@ -27,8 +27,10 @@ import {
     dateToLocalDate,
     getChannelsByOrg,
     getMessageTemplateExport,
+    getMessageTemplateLst,
     getPaginatedMessageTemplate1,
     getValuesFromDomain,
+    registeredLinksSel,
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
 
@@ -438,6 +440,8 @@ const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 getValuesFromDomain("LANGUAGE"),
                 selCommunicationChannelWhatsApp(),
                 getChannelsByOrg(),
+                getMessageTemplateLst(""),
+                registeredLinksSel(),
             ])
         );
 

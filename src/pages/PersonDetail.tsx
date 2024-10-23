@@ -975,8 +975,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ paddingLeft: 8 }}>
                     <Box>
                         <div className={classes.contentContainer}>
                             <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
@@ -1005,7 +1004,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
                         title={<Trans i18nKey={langKeys.firstConnection} />}
-                        subtitle={channel.firstcontact}
+                        subtitle={(channel.conversations || 0) > 0 ? channel.firstcontact : ""}
                         m={1}
                     />
                 </Grid>
@@ -2674,7 +2673,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
                 {!!person.personid &&
                     <div className={classes.profile}>
-                        <label className={classes.label}>Overview</label>
+                        <label className={classes.label}>{t(langKeys.resume)}</label>
                         <div style={{ height: 16 }} />
                         <Photo src={person.imageurldef} radius={50} />
                         <h2>{person.name}</h2>

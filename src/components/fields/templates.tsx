@@ -675,50 +675,16 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
         <div className={className}>
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
             {(emoji || hashtag) && <div style={{ display: 'flex', width: '100%', alignItems: 'right', alignContent: 'right', justifyContent: 'flex-end', marginLeft: '6px' }}>
-                {emoji && <QuickReactions
-                    reactionsArray={[
-                        {
-                            id: "laughing",
-                            name: "Laughing",
-                            content: "😂",
-                        },
-                        {
-                            id: "crying",
-                            name: "Crying",
-                            content: "😢",
-                        },
-                        {
-                            id: "thinking",
-                            name: "Thinking",
-                            content: "🤔",
-                        },
-                        {
-                            id: "screaming",
-                            name: "Screaming",
-                            content: "😱",
-                        },
-                    ]}
-                    isVisible={isVisible}
-                    onClose={() => setIsVisible(false)}
-                    onClickReaction={(reaction) => {
-                        if (maxLength === 0 || `${value}${reaction.content}`.length <= maxLength) {
-                            setvalue(`${value}${reaction.content}`);
-                            onChange && onChange(`${value}${reaction.content}`);
-                        }
-                    }}
-                    trigger={
-                        <button
-                            type='button'
-                            onClick={() => {
-                                setIsVisible(!isVisible);
-                            }}
-                            style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d710976d-8894-4f37-935b-f4dc102bc294/Emoji.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
-                        >
-                        </button>
-                    }
-                    placement={'left'}
-                    header={'Emojis'}
-                />}
+                {emoji && (
+                    <EmojiPickerZyx
+                        onSelect={(emoji) => {
+                            if (maxLength === 0 || `${value}${emoji.native}`.length <= maxLength) {
+                                setvalue(`${value}${emoji.native}`);
+                                onChange && onChange(`${value}${emoji.native}`);
+                            }
+                        }}
+                    />
+                )}
                 {hashtag && <button
                     type='button'
                     onClick={() => {

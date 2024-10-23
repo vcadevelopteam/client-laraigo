@@ -88,7 +88,9 @@
         "analyze": "source-map-explorer 'build/static/js/*.js'",
         "deploy": "gh-pages -d build",
         "preview": "vite preview",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "create-component": "node create-component.js",
+        "feature": "node create-feature.js"
     },
     "eslintConfig": {
         "extends": [

@@ -686,33 +686,41 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data || []
-            const grouprules = rules.map(item => item.assignedgroup)
+            const limitreassigngroup = user?.properties?.limit_reassign_group;
+            const rules = multiDataAux?.data?.find(x => x.key === "UFN_ASSIGNMENTRULE_BY_GROUP_SEL")?.data || [];
+            const grouprules = rules.map(item => item.assignedgroup);
+
             let groups = [];
+
             if (grouprules.length && propertyGrupoDelegacion) {
-                groups = grouprules
+                groups = grouprules;
             }
-            setUsableGroups(groups)
-            
-            setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
-            
+            else {
+                if (limitreassigngroup && user?.groups) {
+                    groups = `${user?.groups}`.split(',');
+                }
+            }
+
+            setUsableGroups(groups);
+            setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true));
+
             if (propertyAsesorReassign && !propertyGrupoDelegacion) {
                 setAgentList(agentToReassignList.filter(agent => {
                     const agentGroups = (agent.groups || "").split(',');
-                    return agentGroups.some((group:any) => grouprules.includes(group.trim()));
+                    return agentGroups.some((group: any) => grouprules.includes(group.trim()));
                 }))
             }
         }
     }, [user, multiData, multiDataAux, propertyAsesorReassign])
 
     useEffect(() => {
-        if(propertyGrupoDelegacion){
-            if(watchNewUserGroup){
+        if (propertyGrupoDelegacion) {
+            if (watchNewUserGroup) {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && x.groups.includes(watchNewUserGroup)))
-            }else{
+            } else {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => !usableGroups.length || usableGroups.includes(group))))
             }
-        }else{
+        } else {
             if (propertyAsesorReassign) {
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (x.groups || "").split(",").some(group => !usableGroups.length || usableGroups.includes(group))))
             }
@@ -720,7 +728,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 setAgentList(agentToReassignList.filter(x => x.status === "ACTIVO"))
             }
         }
-    }, [propertyAsesorReassign,propertyGrupoDelegacion, userToReassign, watchNewUserGroup, usableGroups])
+    }, [propertyAsesorReassign, propertyGrupoDelegacion, userToReassign, watchNewUserGroup, usableGroups])
 
     return (
         <DialogZyx
@@ -1513,7 +1521,10 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
 
     return (
         <div style={{ backgroundColor: 'white', border: '1px solid #e1e1e1', borderRadius: 16, paddingLeft: 4, paddingRight: 4, display: 'flex', alignItems: 'center' }}>
-            <IconButton size="small" onClick={() => setShowSearcher(false)}>
+            <IconButton size="small" onClick={() => {
+                setShowSearcher(false)
+                dispatch(setSearchTerm(""))
+            }}>
                 <CloseIcon style={{ color: '#8F92A1' }} />
             </IconButton>
             <InputBase

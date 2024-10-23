@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dateToLocalDate, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail, getUserMessageOutbound } from 'common/helpers';
+import { convertLocalDate, dateToLocalDate, exportExcel, getCampaignReportExport, getCommChannelLst, getDateCleaned, getHSMShipping, getHSMShippingDetail, getUserMessageOutbound } from 'common/helpers';
 import { Dictionary } from "@types";
 import { getCollectionAux, getMultiCollection, getMultiCollectionAux3, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
+import { DownloadIcon } from 'icons';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { TemplateBreadcrumbs, DialogZyx, FieldSelect, DateRangePicker, FieldMultiSelect } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
@@ -257,6 +258,16 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                 showColumn: true,
             },
             {
+                Header: t(langKeys.clicksonlink),
+                accessor: 'clickurl',
+                showGroupedBy: true,
+                showColumn: true,
+                Cell: (props: CellProps<Dictionary>) => {
+                    const { clickurl } = props.cell.row.original;
+                    return clickurl === 0 ? 'Fail' : 'Ok'
+                }
+            },
+            {
                 Header: "Log",
                 accessor: 'log',
                 showGroupedBy: true,
@@ -285,6 +296,17 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
             }) || [])
         }
     }, [multidata]);
+
+    const handleDownload = () => {
+        const modifiedData = maindata?.map((item: Dictionary) => {
+            const [year, month, day] = item?.createdate?.split?.('-');
+            return {
+                ...item,
+                createdate: `${day}/${month}/${year}`,
+            };
+        });
+        exportExcel('prueba_enlace_defReport', modifiedData, columns)
+    }
 
     return (<div style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -340,10 +362,19 @@ export const ReportHSMShippingDetail: React.FC<{ row: any, arrayBread: any, setV
                     >
                         {t(langKeys.graphic_view)}
                     </Button>
+                    <Button
+                        className={classes.button}
+                        color="primary"
+                        disabled={maindata.loading}
+                        onClick={() => handleDownload()}
+                        startIcon={<DownloadIcon />}
+                        variant="contained"
+                    >
+                        {`${t(langKeys.download)}`}
+                    </Button>
                 </div>)}
                 data={maindata}
                 loading={multidata.loading}
-                download={true}
                 filterGeneral={false}
                 groupedBy={true}
                 showHideColumns={true}
@@ -460,6 +491,14 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
                 showGroupedBy: true,
                 showColumn: true,
             },
+            {
+                Header: t(langKeys.clicksonlink),
+                type: 'number',
+                sortType: 'number',
+                accessor: 'clickurl',
+                showGroupedBy: true,
+                showColumn: true,
+            },
         ],
         []
     );
@@ -542,90 +581,83 @@ export const ReportHSMShipping: React.FC<DetailProps> = ({ setViewSelected }) =>
     }
     if (viewSelected2 === "view-2") {
         return (
-            <div style={{ width: '100%' }}>
+            <>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                             handleClick={setView}
                         />
-                    </div>
                 </div>
-                <div style={{ position: 'relative', height: '100%' }}>
-
-
-
-                    <TableZyx
-                        columns={columns}
-                        data={multiAux3?.data?.[0]?.data || []}
-                        groupedBy={true}
-                        showHideColumns={true}
-                        loading={multiAux3.loading}
-                        onClickRow={handleEdit}
-                        download={true}
-                        ButtonsElement={() => (
-                            <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto', marginTop: 5 }}>
-                                <DateRangePicker
-                                    open={openDateRangeCreateDateModal}
-                                    setOpen={setOpenDateRangeCreateDateModal}
-                                    range={dateRangeCreateDate}
-                                    onSelect={setDateRangeCreateDate}
-                                >
-                                    <Button
-                                        className={classes.itemDate}
-                                        startIcon={<CalendarIcon />}
-                                        onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                                    >
-                                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                    </Button>
-                                </DateRangePicker>
-
-                                <FieldSelect
-                                    label={t(langKeys.channel)}
-                                    variant="outlined"
-                                    className={classes.filterComponent}
-                                    data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
-                                    valueDefault={selectedChannel}
-                                    onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
-                                    optionDesc="communicationchanneldesc"
-                                    optionValue="communicationchannelid"
-                                />
-                                <FieldMultiSelect
-                                    label={t(langKeys.user)}
-                                    className={classes.filterComponent}
-                                    valueDefault={selectedUser}
-                                    onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.username).join() : '')}
-                                    variant="outlined"
-                                    data={multiAux3?.data?.[0]?.data?.length ? [{ username: "EXTERNAL" }, ...(multiAux3?.data?.[1]?.data || [])] : []}
-                                    optionDesc="username"
-                                    optionValue="username"
-                                    disabled={multiAux3.loading}
-                                />
-
-
+                <TableZyx
+                    columns={columns}
+                    data={multiAux3?.data?.[0]?.data || []}
+                    groupedBy={true}
+                    showHideColumns={true}
+                    loading={multiAux3.loading}
+                    onClickRow={handleEdit}
+                    download={true}
+                    ButtonsElement={() => (
+                        <div style={{ textAlign: 'left', display: 'flex', gap: '0.5rem', marginRight: 'auto', marginTop: 5 }}>
+                            <DateRangePicker
+                                open={openDateRangeCreateDateModal}
+                                setOpen={setOpenDateRangeCreateDateModal}
+                                range={dateRangeCreateDate}
+                                onSelect={setDateRangeCreateDate}
+                            >
                                 <Button
-                                    disabled={multiAux3.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    onClick={() => fetchData()}
+                                    className={classes.itemDate}
+                                    startIcon={<CalendarIcon />}
+                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                                 >
-                                    {t(langKeys.search)}
+                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                                 </Button>
+                            </DateRangePicker>
 
-                            </div>
-                        )}
-                        filterGeneral={false}
-                    />
-                </div>
+                            <FieldSelect
+                                label={t(langKeys.channel)}
+                                variant="outlined"
+                                className={classes.filterComponent}
+                                data={filterChannel.data.filter(x => x.type.includes("WHA")) || []}
+                                valueDefault={selectedChannel}
+                                onChange={(value) => setSelectedChannel(value?.communicationchannelid || 0)}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.user)}
+                                className={classes.filterComponent}
+                                valueDefault={selectedUser}
+                                onChange={(value) => setSelectedUser(value ? value.map((o: Dictionary) => o.username).join() : '')}
+                                variant="outlined"
+                                data={multiAux3?.data?.[0]?.data?.length ? [{ username: "EXTERNAL" }, ...(multiAux3?.data?.[1]?.data || [])] : []}
+                                optionDesc="username"
+                                optionValue="username"
+                                disabled={multiAux3.loading}
+                            />
+
+
+                            <Button
+                                disabled={multiAux3.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => fetchData()}
+                            >
+                                {t(langKeys.search)}
+                            </Button>
+
+                        </div>
+                    )}
+                    filterGeneral={false}
+                />
 
                 {openModal && <ModalReport
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     row={rowSelected}
                 />}
-            </div>
+            </>
         )
     } else if (viewSelected2 === "view-3") {
         return <ReportHSMShippingDetail

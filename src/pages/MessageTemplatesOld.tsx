@@ -150,6 +150,7 @@ const MessageTemplatesOld: FC = () => {
     const selectionKey = "id";
 
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
+        distinct: null,
         daterange: null,
         filters: {},
         pageIndex: 0,
@@ -433,7 +434,7 @@ const MessageTemplatesOld: FC = () => {
 
     const handleSynchronize = (channel: any, selectedData: any) => {
         const callback = () => {
-            dispatch(synchronizeTemplate({ communicationchannel: channel, messagetemplatelist: selectedData }));
+            dispatch(synchronizeTemplate());
             dispatch(showBackdrop(true));
             setWaitSynchronize(true);
         };
@@ -526,8 +527,8 @@ const MessageTemplatesOld: FC = () => {
         dispatch(showBackdrop(true));
         setWaitSaveExport(true);
     };
-    
-    
+
+
 
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
@@ -807,7 +808,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             buttons: row ? row.buttons || [] : [],
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
-            communicationchannelid: row?.communicationchannelid || 0,
+            communicationchannelid: (parseInt((row?.communicationchannelid || "").split(",")[0])) || 0,
             communicationchanneltype: row?.communicationchanneltype || "",
             description: row?.description || "",
             exampleparameters: row?.exampleparameters || "",
@@ -1311,7 +1312,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     };
 
     const onClickRemoveButton = async () => {
-        let btns = getValues("buttons");
+        const btns = getValues("buttons");
 
         if (btns && btns.length > 0) {
             unregister(`buttons.${btns.length - 1}`);
@@ -1334,7 +1335,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         if (file) {
             setFileAttachment(file);
-            let fd = new FormData();
+            const fd = new FormData();
             fd.append("file", file, file.name);
             dispatch(uploadFile(fd));
             setWaitUploadFile(true);
@@ -1343,10 +1344,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     useEffect(() => {
         if (fileAttachmentTemplate) {
-            let reader = new FileReader();
+            const reader = new FileReader();
             reader.readAsText(fileAttachmentTemplate);
             reader.onload = (event: any) => {
-                let content = event.target.result.toString();
+                const content = event.target.result.toString();
                 setValue("body", content);
                 setBodyAttachment(content);
             };
@@ -2027,7 +2028,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         <AttachFileIcon color="primary" />
                                     </IconButton>
                                 }
-                                {!!getValues("attachment") &&
+                                {Boolean(getValues("attachment")) &&
                                     getValues("attachment")
                                         .split(",")
                                         .map((f: string, i: number) => (
@@ -2045,21 +2046,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     )}
                 </div>}
                 {pageSelected === 1 &&
-                <div className={classes.containerDetail}>                    
-                    <CustomTableZyxEditable
-                        columns={columns}
-                        download={false}
-                        data={(tableDataVariables).map(x => ({
-                            ...x,
-                            domainvalues: (domainsCustomTable?.data||[]).filter(y=>y.domainname===x?.domainname)
-                        }))}
-                        //loading={multiData.loading}
-                        register={false}
-                        filterGeneral={false}
-                        updateCell={updateCell}
-                        skipAutoReset={skipAutoReset}
-                    />
-                </div>}
+                    <div className={classes.containerDetail}>
+                        <CustomTableZyxEditable
+                            columns={columns}
+                            download={false}
+                            data={(tableDataVariables).map(x => ({
+                                ...x,
+                                domainvalues: (domainsCustomTable?.data || []).filter(y => y.domainname === x?.domainname)
+                            }))}
+                            //loading={multiData.loading}
+                            register={false}
+                            filterGeneral={false}
+                            updateCell={updateCell}
+                            skipAutoReset={skipAutoReset}
+                        />
+                    </div>}
             </form>
         </div>
     );
