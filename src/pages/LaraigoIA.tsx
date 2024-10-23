@@ -6,7 +6,7 @@ import { TemplateBreadcrumbs } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollectionAux, resetAllMain } from 'store/main/actions';
+import { getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
 import { IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa, RASATrainingIcon, GenerativeAIIcon, WitIcon, AIGenerative, AIBussiness } from 'icons';
@@ -15,7 +15,7 @@ import { Entities } from './assistant/Entities';
 import { IntentionsRasa } from './rasa/IntentionsRasa';
 import { SynonimsRasa } from './rasa/SynonimsRasa';
 import TestModelDialog from 'components/inbox/TestModelDialog';
-import { rasaModelSel } from 'common/helpers';
+import { getIntelligentModelsSel, rasaModelSel } from 'common/helpers';
 import { ModelsRasa } from './rasa/ModelsRasa';
 import GenerativeAIMainView from './generativeIA/GenerativeAIMainView';
 
@@ -443,6 +443,8 @@ const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}
 const CorporateIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}> = ({ setViewSelected, arrayBread }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const mainConectores = useSelector(state => state.main);
 
     const newArrayBread = [
         ...arrayBread,
@@ -456,6 +458,12 @@ const CorporateIA: React.FC<{arrayBread: any, setViewSelected: (view: string) =>
             setViewSelected(change);
         }
     }
+
+    const fetchData = () => dispatch(getCollection(getIntelligentModelsSel(0)));
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     return (
         <div style={{ width: "100%" }}>
@@ -472,61 +480,63 @@ const CorporateIA: React.FC<{arrayBread: any, setViewSelected: (view: string) =>
                     </span>
                 </Box>
                 <div className={classes.containerDetails}>
-                    
                     <Grid container spacing={3} >
-                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                            <Card style={{ position: 'relative', display:"flex" }}>
-                                <div className={classes.containerInner}>
+                        {mainConectores?.mainData?.data?.some(item => item?.type === 'Assistant' && item?.provider === 'Meta') && (
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
 
-                                    <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
-                                        <div>
-                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>WIT IA</div>
-                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
-                                        </div>                                           
-                                        <Button
-                                            className={classes.button}
-                                            variant="contained"
-                                            color="primary"
-                                            style={{ backgroundColor: "#55BD84", width: "fit-content" }}
-                                            onClick={()=>setViewSelected("witia")}
-                                        >{t(langKeys.enter)}
-                                        </Button>
-                                    </div>
-                                    
-                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <WitIcon style={{ height: 220, width:"100%" }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Grid>
-
-                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                            <Card style={{ position: 'relative', display:"flex" }}>
-                                <div className={classes.containerInner}>
-
-                                    <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
-                                        <div>
-                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>RASA IA</div>
-                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
+                                        <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                            <div>
+                                                <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                                <div className={classes.containerInnertittle2}>WIT IA</div>
+                                                <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
+                                            </div>                                           
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                                onClick={()=>setViewSelected("witia")}
+                                            >{t(langKeys.enter)}
+                                            </Button>
                                         </div>
-                                        <Button
-                                            className={classes.button}
-                                            variant="contained"
-                                            color="primary"
-                                            style={{ backgroundColor: "#55BD84", width: "fit-content" }}
-                                            onClick={()=>setViewSelected("rasaia")}
-                                        >{t(langKeys.enter)}
-                                        </Button>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <WitIcon style={{ height: 220, width:"100%" }} />
+                                        </div>
                                     </div>
-                                    
-                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <RASATrainingIcon style={{ height: 220, width:"100%" }} />
+                                </Card>
+                            </Grid>
+                        )}
+                        {mainConectores?.mainData?.data?.some(item => item?.type === 'Assistant' && item?.provider === 'Rasa') && (
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%", display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                                            <div>
+                                                <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                                <div className={classes.containerInnertittle2}>RASA IA</div>
+                                                <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>
+                                            </div>
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84", width: "fit-content" }}
+                                                onClick={()=>setViewSelected("rasaia")}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <RASATrainingIcon style={{ height: 220, width:"100%" }} />
+                                        </div>
                                     </div>
-                                </div>
-                            </Card>
-                        </Grid>
+                                </Card>
+                            </Grid>
+                        )}
                     </Grid>
                 </div>
             </div>
