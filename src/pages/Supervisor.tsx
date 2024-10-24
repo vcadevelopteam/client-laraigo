@@ -555,6 +555,14 @@ const Supervisor: FC = () => {
                 dispatch(selectTicket(null))
             }
         }
+        return () => {
+            if (wsConnected) {
+                dispatch(emitEvent({
+                    event: 'connectChat',
+                    data: { usertype: '' }
+                }));
+            }
+        }
     }, [wsConnected])
 
     return (
