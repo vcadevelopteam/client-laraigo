@@ -238,14 +238,13 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
 
     if (viewSelected === "view-1") {
         return (            
-            <div style={{ width: "100%", marginTop:'1rem', marginRight:'0.5rem' }}>
+            <>
                 {Boolean(arrayBread) && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={[...(arrayBread ?? []), { id: "view-1", name: t(langKeys.iaconnectors) }]}
                         handleClick={functionChange}
                     />
                 </div>}
-                <div style={{fontSize:'1.5rem', fontWeight:'bolder'}}>{t(langKeys.connectors)}</div>
                 <TableZyx
                     ButtonsElement={() => {
                         if (!setExternalViewSelected) {
@@ -294,9 +293,9 @@ const AiConnectors: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBr
                     useSelection={true}                  
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
-                    titlemodule={window.location.href.includes("iaconectors")?" ":t(langKeys.intelligentmodels, { count: 2 })}
+                    titlemodule={t(langKeys.connectors, { count: 2 })}
                 />
-            </div>
+            </>
         )
     }
     else if (viewSelected === "view-2") {

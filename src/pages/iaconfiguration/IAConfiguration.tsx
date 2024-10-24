@@ -151,8 +151,8 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
 
         return (
 
-            <div style={{ width: "100%" }}>
-                {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <>
+                {arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={[...arrayBread, { id: "view-1", name: t(langKeys.iaconfiguration) }]}
                         handleClick={functionChange}
@@ -199,7 +199,7 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
                 />
-            </div>
+            </>
         )
     }
     else if (viewSelected === "view-2") {

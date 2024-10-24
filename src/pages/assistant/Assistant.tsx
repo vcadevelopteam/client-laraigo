@@ -29,8 +29,7 @@ export const Assistant: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                {user?.roledesc?.includes("SUPERADMIN") &&
-                    <AntTab label={t(langKeys.intentions)} />
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.intentions)} />
                 }
                 {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.entities)} />
