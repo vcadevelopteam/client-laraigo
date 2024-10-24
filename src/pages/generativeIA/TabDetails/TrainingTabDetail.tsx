@@ -189,6 +189,7 @@ interface TrainingTabDetailProps {
     fetchAssistants: () => void;
     edit: boolean;
     setFile: (data: Dictionary[]) => void;
+    creationProvider: string;
 }
 
 const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
@@ -196,7 +197,8 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     fetchData,
     fetchAssistants,
     edit,
-    setFile
+    setFile,
+    creationProvider,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -762,7 +764,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 handleUpload()
             }
         } else {
-            if((conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') && fileAttachments.length > 20){
+            if((creationProvider === 'Open AI' || creationProvider === 'OpenAI') && fileAttachments.length > 20){
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
             } else {
                 handleUploadInNewAssistant()
