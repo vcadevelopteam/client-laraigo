@@ -757,7 +757,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                 handleUpload()
             }
         } else {
-            if((conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') && fileAttachments.length > 20){
+            if((provider === 'Open AI' || provider === 'OpenAI') && fileAttachments.length > 20){
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
             } else {
                 handleUploadInNewAssistant()
