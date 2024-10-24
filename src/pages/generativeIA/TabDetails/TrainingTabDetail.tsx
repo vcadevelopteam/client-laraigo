@@ -27,7 +27,6 @@ import { addFilesLlama, deleteFileLlama } from "store/llama/actions";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { addFilesLlama3, deleteFileLlama3 } from "store/llama3/actions";
 
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -451,7 +450,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
-                callback: conector?.provider === 'Open AI' ? callback : conector?.provider === 'LaraigoLLM' ? callbackLlm3 : callbackMeta,
+                callback: (conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? callback : conector?.provider === 'LaraigoLLM' ? callbackLlm3 : callbackMeta,
             })
         );
     });
@@ -744,24 +743,30 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
     const handleRemoveAttachment = (index) => {
         setFileAttachments(prev => prev.filter((_, i) => i !== index));
     };
-//get values code inter true
-    const handleUploadGeneral = () => {        
+
+    const handleUploadGeneral = () => {
         if(edit) {
-            if(conector?.provider === 'Open AI') {
+            if(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') {
                 if(fileAttachments.some((attachment) => attachment.file_name.endsWith('.xlsx'))) {
                     if(row?.codeinterpreter) {
-                        handleUpload()
+                        if(dataDocuments.data.length + fileAttachments.length > 20) dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
+                        else handleUpload()
                     } else {
                         dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir excel a un asistente Open AI se necesita activar code interpreter. Si desea lograrlo, active code interpreter y guarde el asistente antes de subir este tipo de archivo." }));
                     }
                 } else {
-                    handleUpload()
+                    if(dataDocuments.data.length + fileAttachments.length > 20) dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
+                    else handleUpload()
                 }
             } else {
                 handleUpload()
             }
         } else {
-            handleUploadInNewAssistant()
+            if((conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') && fileAttachments.length > 20){
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
+            } else {
+                handleUploadInNewAssistant()
+            }
         }
     }
 
@@ -786,7 +791,7 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
                                     <div className={classes.cardContent}>
                                         <UploadFileIcon className={classes.logo} />
                                         <div className={classes.cardTitle}>{t(langKeys.upload_document)}</div>
-                                        <div className={classes.cardText}>{conector?.provider === 'Open AI' ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
+                                        <div className={classes.cardText}>{(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') ? t(langKeys.upload_document_description) : t(langKeys.upload_document_description).replace(', Excel', '')}</div>
                                     </div>
                                 </Card>
                             </Grid>

@@ -129,7 +129,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
             }
         }
     }, [executeResult, waitSave]);
-
+    
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx" style={{marginBottom: 0}}>
@@ -159,7 +159,7 @@ const AssistantTabDetail: React.FC<AssistantTabDetailProps> = ({
                 />
                 <FieldSelect
                     className="col-6"
-                    data={multiDataAux?.data?.[3]?.data.filter(item => item.type === 'LARGE LANGUAGE MODEL') || []}
+                    data={multiDataAux?.data?.[3]?.data.filter(item => (item.type === 'LARGE LANGUAGE MODEL' || item.type === 'Gen AI')) || []}
                     label={t(langKeys.conector)}
                     valueDefault={getValues('intelligentmodelsid')}
                     onChange={(value) => {
