@@ -476,23 +476,21 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, detaildata, setDeta
 
     const detectPrimaryKeyIndex = (data: any[]): number => {
         if (data.length === 0) return 0;
-
+    
         const firstRow = data[0];
         const keys = Object.keys(firstRow);
-
+    
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^\d+$/;
-
+        const phoneRegex = /^\d{8,15}$/;
+    
         for (let i = 0; i < keys.length; i++) {
             const value = firstRow[keys[i]];
             if (emailRegex.test(value) || phoneRegex.test(value)) {
                 return i;
             }
-        }
-
+        }    
         return 0;
     };
-
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
