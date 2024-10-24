@@ -1502,6 +1502,7 @@ const translation: LangKeys = {
   available_columns: 'Available columns',
   selected_plural: 'Selected',
   select_a_field_then_add_it: 'Select a field then add it',
+  openaifileslimit: 'The file limit for OpenAI wizards is 20 records, delete some before uploading more.',
 
   default_application: 'Default application',
   default_application_tooltip: "This is the module that will always be displayed on the main screen of the platform when logging in.",

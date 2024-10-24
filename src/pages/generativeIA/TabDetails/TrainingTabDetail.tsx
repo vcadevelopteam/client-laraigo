@@ -744,18 +744,24 @@ const TrainingTabDetail: React.FC<TrainingTabDetailProps> = ({
             if(conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') {
                 if(fileAttachments.some((attachment) => attachment.file_name.endsWith('.xlsx'))) {
                     if(row?.codeinterpreter) {
-                        handleUpload()
+                        if(dataDocuments.data.length + fileAttachments.length > 20) dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
+                        else handleUpload()
                     } else {
                         dispatch(showSnackbar({ show: true, severity: "error", message: "Para subir excel a un asistente Open AI se necesita activar code interpreter. Si desea lograrlo, active code interpreter y guarde el asistente antes de subir este tipo de archivo." }));
                     }
                 } else {
-                    handleUpload()
+                    if(dataDocuments.data.length + fileAttachments.length > 20) dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
+                    else handleUpload()
                 }
             } else {
                 handleUpload()
             }
         } else {
-            handleUploadInNewAssistant()
+            if((conector?.provider === 'Open AI' || conector?.provider === 'OpenAI') && fileAttachments.length > 20){
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.openaifileslimit) }));
+            } else {
+                handleUploadInNewAssistant()
+            }
         }
     }
 
