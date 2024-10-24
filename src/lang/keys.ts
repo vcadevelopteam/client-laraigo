@@ -1600,6 +1600,7 @@ export const langKeys = {
   last_reading: 'last_reading',
   variance: 'variance',
   last_update: 'last_update',
+  openaifileslimit: 'openaifileslimit',
 
   calendar: 'calendar',
   calendar_detail: 'calendar_detail',

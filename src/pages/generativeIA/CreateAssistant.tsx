@@ -110,7 +110,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     })
     const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
     const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
-    const [selectedProvider, setSelectedProvider] = React.useState(''); 
+    const [selectedProvider, setSelectedProvider] = React.useState('');
 
     useEffect(() => {
         if (waitSave) {

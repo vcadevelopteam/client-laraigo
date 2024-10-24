@@ -1465,6 +1465,7 @@ const translation: LangKeys = {
   calendar_reminders_subtitle: 'Habilita el estado, selecciona por cual canal quieres enviar la notificación y que plantilla utilizar para los eventos programados.',
   calendar_connections_title: 'Conexión a Calendarios',
   calendar_connections_subtitle: 'Conecta tu calendario para que Laraigo sepa cuándo estás disponible y se actualiza a medida que se programan los eventos.',
+  openaifileslimit: 'El limite de archivos para asistentes de OpenAI es de 20 registros, borre algunos antes de subir más.',
 
   id: 'ID',
   tooltipintegrationname: "El nombre de la tabla aparecerá en el URL, por lo tanto, no se podrá añadir caracteres especiales, mayúscula y espacio.",
