@@ -111,6 +111,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
     })
     const [validatePrompt, setValidatePrompt] = useState(row ? row.prompt : '')
     const [fileIdsAux, setFileIdsAux] = useState<string[]>([])
+    const [selectedProvider, setSelectedProvider] = React.useState('');
 
     useEffect(() => {
         if (waitSave) {
@@ -787,7 +788,7 @@ const CreateAssistant: React.FC<CreateAssistantProps> = ({
                     <ParametersTabDetail data={{row,edit}} setValue={setValue} getValues={getValues} errors={errors} setValidatePrompt={setValidatePrompt} trigger={trigger} />
                 </AntTabPanelAux>
                 <AntTabPanelAux index={2} currentIndex={tabIndex}>
-                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} creationProvider={provider} />
+                    <TrainingTabDetail row={row} fetchData={fetchDocumentsByAssistant} fetchAssistants={fetchData} edit={edit} setFile={setCosFile} provider={selectedProvider} />
                 </AntTabPanelAux>
             </form>
         </>
