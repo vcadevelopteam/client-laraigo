@@ -75,40 +75,6 @@ export const Person: FC = () => {
     }
     const columns = useMemo(() => ([
         {
-            accessor: 'leadid',
-            isComponent: true,
-            minWidth: 60,
-            width: '1%',
-            Cell: (props: CellProps<Dictionary>) => {
-                const person = props.cell.row.original as IPerson;
-                const { locked } = props.cell.row.original;
-                if(locked) return <></>
-                return (
-                    <TemplateIcons
-                        sendHSM={person && person.phonewhatsapp ? (e) => {
-                            e.stopPropagation();
-                            setPeopleSelected([person]);
-                            setOpenDialogTemplate(true);
-                            setTypeTemplate("HSM");
-                        } : undefined}
-                        sendSMS={(e) => {
-                            e.stopPropagation();
-                            setPeopleSelected([person]);
-                            setOpenDialogTemplate(true);
-                            setTypeTemplate("SMS");
-                        }}
-                        sendMAIL={(e) => {
-                            e.stopPropagation();
-                            setPeopleSelected([person]);
-                            setOpenDialogTemplate(true);
-                            setTypeTemplate("MAIL");
-                        }}
-                    />
-
-                )
-            }
-        },
-        {
             Header: t(langKeys.name),
             accessor: 'firstname',
         },
@@ -343,7 +309,7 @@ export const Person: FC = () => {
             {},
             {},
             {},
-            {}
+            {},
         ];
         const header = [
             'firstname',
@@ -380,11 +346,11 @@ export const Person: FC = () => {
                 (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
                 && (f.persontype === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
                 && (f.type === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
-                && (f.sex === undefined || [ "Hombre", "Mujer" ].includes('' + f.sex))
+                && (f.sex === undefined || ["Hombre", "Mujer"].includes('' + f.sex))
                 && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.educationlevel))
                 && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
-                && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
+                && (f.groups === undefined || f.groups.split(',').every((group:any) => Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes(group.trim())))
                 && (f.email === undefined || (/\S+@\S+\.\S+/.test(f.email)))
                 && (f.phone === undefined || (`${f.phone}`.startsWith("+51") ? `${f.phone}`.length === 12 : true))
                 && (f.alternativephone === undefined || (f.alternativephone.startsWith("+51") ? f.alternativephone.length === 12 : true))

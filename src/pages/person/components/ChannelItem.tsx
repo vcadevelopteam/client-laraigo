@@ -1,4 +1,4 @@
-import { Box, Button, Grid, IconButton, makeStyles } from "@material-ui/core";
+import { Box, Button, IconButton } from "@material-ui/core";
 import { getChannelListByPersonBody, unLinkPerson } from "common/helpers";
 import { useSelector } from "hooks";
 import { langKeys } from "lang/keys";
@@ -117,8 +117,8 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                     </Button>
                 </div>
             )}
-            <GetIcon channelType={channel.type} width={120} height={120} color='#8F92A1' />
-            <div style={{paddingLeft: 15}}>
+            <GetIcon channelType={channel.type} width={120} height={120} color='#8F92A1'/>
+            <div style={{ padding: "0 50px", }}>
                 <Box className={classes.propertyRoot}>
                     <div className={classes.contentContainer}>
                         <label className={classes.propTitle}>{<Trans i18nKey={langKeys.communicationchannel} />}</label>
@@ -140,26 +140,26 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
             <div>
 
             </div>
-            <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+            <div style={{  width: "100%" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                     <Property
+                        style={{width: 220}}
                         icon={<LibraryAddIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.firstConnection} />}
                         subtitle={channel.firstcontact}
                         m={1}
                         classesAlt={classes}
                     />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
+                        style={{width: 220}}
                         icon={<PersonOutlineIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.fullname} />}
                         subtitle={
                             <div style={{ display: "flex" }}>
                                 {(false && (!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && (channel.type.includes("WHA") || channel.type.includes("VOXI")))) &&
                                     <IconButton
-                                    className={classes.buttonphone}
-                                    onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}
+                                        className={classes.buttonphone}
+                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>
@@ -168,45 +168,43 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel, person }) => {
                             </div>}
                         m={1}
                         classesAlt={classes}
-                        />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                    />
                     <Property
+                        style={{width: 220}}
                         icon={<CallIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.cellphone} />}
                         subtitle={personIdentifier}
                         classesAlt={classes}
                         m={1}
                     />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                     <Property
+                        style={{width: 220}}
                         title={<Trans i18nKey={langKeys.lastConnection} />}
                         subtitle={channel.lastcontact}
                         icon={<LibraryAddIcon style={{ color: "#8F92A1" }} />}
                         classesAlt={classes}
                         m={1}
                     />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
+                        style={{width: 220}}
                         icon={<ForumIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.conversationquantity} />}
                         subtitle={(channel.conversations || 0) > 0 ? channel.conversations : ""}
                         classesAlt={classes}
                         m={1}
                     />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
+                        style={{width: 220}}
                         icon={<RecentActorsIcon style={{ color: "#8F92A1" }} />}
                         title={<Trans i18nKey={langKeys.document} />}
                         subtitle={person.documentnumber || '0'}
                         classesAlt={classes}
                         m={1}
                     />
-                </Grid>
-            </Grid>
+                </div>
+            </div>
         </div>
     );
 }

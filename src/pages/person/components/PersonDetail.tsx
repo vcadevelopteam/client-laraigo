@@ -77,7 +77,7 @@ const PersonDetail2: FC<{ person: any; setrefresh: (a: boolean) => void }> = ({ 
             documentnumber: person?.documentnumber || '',
             firstname: person?.firstname || '',
             lastname: person?.lastname || '',
-            nickname: person?.nickname || '',
+            nickname: person?.name || '',
             sex: person?.sex || '',
             gender: person?.gender || '',
             civilstatus: person?.civilstatus || '',
